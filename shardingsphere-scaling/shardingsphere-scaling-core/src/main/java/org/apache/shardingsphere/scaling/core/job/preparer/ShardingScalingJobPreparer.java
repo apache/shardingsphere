@@ -58,8 +58,8 @@ public final class ShardingScalingJobPreparer {
         String databaseType = shardingScalingJob.getSyncConfigurations().get(0).getDumperConfiguration().getDataSourceConfiguration().getDatabaseType().getName();
         try (DataSourceManager dataSourceManager = new DataSourceManager(shardingScalingJob.getSyncConfigurations())) {
             checkDatasources(databaseType, dataSourceManager);
-            splitInventoryDataTasks(shardingScalingJob, dataSourceManager);
             initIncrementalDataTasks(databaseType, shardingScalingJob, dataSourceManager);
+            splitInventoryDataTasks(shardingScalingJob, dataSourceManager);
         } catch (PrepareFailedException ex) {
             log.warn("Preparing sharding scaling job {} : {} failed", shardingScalingJob.getJobId(), shardingScalingJob.getJobName(), ex);
             shardingScalingJob.setStatus(SyncTaskControlStatus.PREPARING_FAILURE.name());

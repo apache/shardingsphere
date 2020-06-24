@@ -17,23 +17,28 @@
 
 package org.apache.shardingsphere.orchestration.core.configcenter;
 
+import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
+import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
+import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,6 +47,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,6 +60,8 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -65,13 +74,13 @@ public final class ConfigCenterTest {
     private static final String DATA_SOURCE_YAML = ""
             + "ds_0: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-            + "  properties:\n"
+            + "  props:\n"
             + "    driverClassName: com.mysql.jdbc.Driver\n"
             + "    url: jdbc:mysql://localhost:3306/ds_0\n"
             + "    username: root\n" + "    password: root\n"
             + "ds_1: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-            + "  properties:\n"
+            + "  props:\n"
             + "    driverClassName: com.mysql.jdbc.Driver\n"
             + "    url: jdbc:mysql://localhost:3306/ds_1\n"
             + "    username: root\n"
@@ -90,16 +99,18 @@ public final class ConfigCenterTest {
     private static final String SHARDING_RULE_YAML = ""
             + "rules:\n"
             + "- !SHARDING\n"
+            + "  shardingAlgorithms:\n"
+            + "    table_inline:\n"
+            + "      props:\n"
+            + "        algorithm.expression: t_order_${order_id % 2}\n"
+            + "      type: INLINE\n"
             + "  tables:\n"
             + "    t_order:\n"
             + "      actualDataNodes: ds_${0..1}.t_order_${0..1}\n"
             + "      logicTable: t_order\n"
             + "      tableStrategy:\n"
             + "        standard:\n"
-            + "          shardingAlgorithm:\n"
-            + "            props:\n"
-            + "              algorithm.expression: t_order_${order_id % 2}\n"
-            + "            type: INLINE\n"
+            + "          shardingAlgorithmName: table_inline\n"
             + "          shardingColumn: order_id\n";
     
     private static final String SHARDING_AND_ENCRYPT_RULE_YAML = ""
@@ -111,21 +122,26 @@ public final class ConfigCenterTest {
             + "      tableStrategy:\n"
             + "        standard:\n"
             + "          shardingColumn: order_id\n"
-            + "          shardingAlgorithm:\n"
-            + "            type: INLINE\n"
-            + "            props:\n"
-            + "              algorithm.expression: t_order_${order_id % 2}\n"
-            + "      keyGenerator:\n"
-            + "        type: SNOWFLAKE\n"
+            + "          shardingAlgorithmName: table_inline\n"
+            + "      keyGenerateStrategy:\n"
             + "        column: order_id\n"
+            + "        keyGeneratorName: snowflake\n"
+            + "  shardingAlgorithms:\n"
+            + "    table_inline:\n"
+            + "      type: INLINE\n"
+            + "      props:\n"
+            + "        algorithm.expression: t_order_${order_id % 2}\n"
+            + "  keyGenerators:\n"
+            + "    snowflake:\n"
+            + "      type: SNOWFLAKE\n"
             + "- !ENCRYPT\n"
             + "  encryptors:\n"
             + "    aes_encryptor:\n"
-            + "      type: aes\n"
+            + "      type: AES\n"
             + "      props:\n"
             + "        aes.key.value: 123456abcd\n"
             + "    md5_encryptor:\n"
-            + "      type: md5\n"
+            + "      type: MD5\n"
             + "  tables:\n"
             + "    t_encrypt:\n"
             + "      columns:\n"
@@ -155,7 +171,7 @@ public final class ConfigCenterTest {
             + "    order_encryptor:\n"
             + "      props:\n"
             + "        aes.key.value: 123456\n"
-            + "      type: aes\n"
+            + "      type: AES\n"
             + "  tables:\n"
             + "    t_order:\n"
             + "      columns:\n"
@@ -179,12 +195,17 @@ public final class ConfigCenterTest {
             + "    authorizedSchemas: sharding_db,ms_db\n"
             + "    password: root2\n";
     
+    private static final String METRICS_YAML = ""
+            + "  name: prometheus\n"
+            + "  host: 127.0.0.1\n"
+            + "  port: 9190\n";
+    
     private static final String PROPS_YAML = "sql.show: false\n";
     
     private static final String DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQLS = ""
             + "ds_0: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-            + "  properties:\n"
+            + "  props:\n"
             + "    driverClassName: com.mysql.jdbc.Driver\n"
             + "    url: jdbc:mysql://localhost:3306/ds_0\n"
             + "    username: root\n"
@@ -194,7 +215,7 @@ public final class ConfigCenterTest {
             + "        - set names utf8;\n"
             + "ds_1: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-            + "  properties:\n"
+            + "  props:\n"
             + "    driverClassName: com.mysql.jdbc.Driver\n"
             + "    url: jdbc:mysql://localhost:3306/ds_1\n"
             + "    username: root\n"
@@ -203,6 +224,8 @@ public final class ConfigCenterTest {
             + "        - set names utf8mb4;\n"
             + "        - set names utf8;\n";
     
+    private static final String DATA_CLUSTER_YAML = "yaml/data-cluster.yaml";
+    
     @Mock
     private ConfigCenterRepository configCenterRepository;
     
@@ -210,22 +233,19 @@ public final class ConfigCenterTest {
     public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         when(configCenterRepository.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
         when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
-        when(configCenterRepository.get("/test/config/props")).thenReturn(PROPS_YAML);
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), null, createProperties(), false);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
         verify(configCenterRepository, times(0)).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository, times(0)).persist("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML);
-        verify(configCenterRepository, times(0)).persist("/test/config/props", PROPS_YAML);
     }
     
     @Test
     public void assertMoreShardingSchema() {
         when(configCenterRepository.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
         when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
-        when(configCenterRepository.get("/test/config/props")).thenReturn(PROPS_YAML);
         when(configCenterRepository.get("/test/config/schema")).thenReturn("myTest1,myTest2");
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), null, createProperties(), false);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
         verify(configCenterRepository, times(1)).persist("/test/config/schema", "myTest1,myTest2,sharding_db");
     }
     
@@ -233,134 +253,111 @@ public final class ConfigCenterTest {
     public void assertMoreAndContainsShardingSchema() {
         when(configCenterRepository.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
         when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
-        when(configCenterRepository.get("/test/config/props")).thenReturn(PROPS_YAML);
         when(configCenterRepository.get("/test/config/schema")).thenReturn("myTest1,sharding_db");
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), null, createProperties(), false);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
         verify(configCenterRepository, times(0)).persist("/test/config/schema", "myTest1,sharding_db");
     }
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), null, createProperties(), false);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
         verify(configCenterRepository).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository).persist("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML);
-        verify(configCenterRepository).persist("/test/config/props", PROPS_YAML);
     }
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsOverwrite() {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), null, createProperties(), true);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), true);
         verify(configCenterRepository).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository).persist("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML);
-        verify(configCenterRepository).persist("/test/config/props", PROPS_YAML);
     }
     
     @Test
     public void assertPersistConfigurationForMasterSlaveRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         when(configCenterRepository.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
         when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
-        when(configCenterRepository.get("/test/config/props")).thenReturn(PROPS_YAML);
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), null, createProperties(), false);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), false);
         verify(configCenterRepository, times(0)).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository, times(0)).persist("/test/config/schema/sharding_db/rule", MASTER_SLAVE_RULE_YAML);
-        verify(configCenterRepository, times(0)).persist("/test/config/props", PROPS_YAML);
     }
     
     @Test
     public void assertPersistConfigurationForMasterSlaveRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), null, createProperties(), false);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), false);
         verify(configCenterRepository).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository).persist("/test/config/schema/sharding_db/rule", MASTER_SLAVE_RULE_YAML);
-        verify(configCenterRepository).persist("/test/config/props", PROPS_YAML);
     }
     
     @Test
     public void assertPersistConfigurationForMasterSlaveRuleWithoutAuthenticationAndIsOverwrite() {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), null, createProperties(), true);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), true);
         verify(configCenterRepository).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository).persist("/test/config/schema/sharding_db/rule", MASTER_SLAVE_RULE_YAML);
-        verify(configCenterRepository).persist("/test/config/props", PROPS_YAML);
     }
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         when(configCenterRepository.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_PARAMETER_YAML);
         when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
-        when(configCenterRepository.get("/test/config/authentication")).thenReturn(AUTHENTICATION_YAML);
-        when(configCenterRepository.get("/test/config/props")).thenReturn(PROPS_YAML);
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), createAuthentication(), createProperties(), false);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
         verify(configCenterRepository, times(0)).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository, times(0)).persist("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML);
-        verify(configCenterRepository, times(0)).persist("/test/config/authentication", AUTHENTICATION_YAML);
-        verify(configCenterRepository, times(0)).persist("/test/config/props", PROPS_YAML);
     }
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), createAuthentication(), createProperties(), false);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
         verify(configCenterRepository).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository).persist("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML);
-        verify(configCenterRepository).persist("/test/config/authentication", AUTHENTICATION_YAML);
-        verify(configCenterRepository).persist("/test/config/props", PROPS_YAML);
     }
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithAuthenticationAndIsOverwrite() {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), createAuthentication(), createProperties(), true);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), true);
         verify(configCenterRepository).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository).persist("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML);
-        verify(configCenterRepository).persist("/test/config/authentication", AUTHENTICATION_YAML);
-        verify(configCenterRepository).persist("/test/config/props", PROPS_YAML);
     }
     
     @Test
     public void assertPersistConfigurationForMasterSlaveRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         when(configCenterRepository.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_PARAMETER_YAML);
         when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
-        when(configCenterRepository.get("/test/config/authentication")).thenReturn(AUTHENTICATION_YAML);
-        when(configCenterRepository.get("/test/config/props")).thenReturn(PROPS_YAML);
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), createAuthentication(), createProperties(), false);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), false);
         verify(configCenterRepository, times(0)).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository, times(0)).persist("/test/config/schema/sharding_db/rule", MASTER_SLAVE_RULE_YAML);
-        verify(configCenterRepository, times(0)).persist("/test/config/authentication", AUTHENTICATION_YAML);
-        verify(configCenterRepository, times(0)).persist("/test/config/props", PROPS_YAML);
     }
     
     @Test
     public void assertPersistConfigurationForMasterSlaveRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         configurationService.persistConfigurations("sharding_db",
-                createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), createAuthentication(), createProperties(), false);
+                createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), false);
         verify(configCenterRepository).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository).persist("/test/config/schema/sharding_db/rule", MASTER_SLAVE_RULE_YAML);
-        verify(configCenterRepository).persist("/test/config/authentication", AUTHENTICATION_YAML);
-        verify(configCenterRepository).persist("/test/config/props", PROPS_YAML);
     }
     
     @Test
     public void assertPersistConfigurationForMasterSlaveRuleWithAuthenticationAndIsOverwrite() {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), createAuthentication(), createProperties(), true);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), true);
         verify(configCenterRepository).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository).persist("/test/config/schema/sharding_db/rule", MASTER_SLAVE_RULE_YAML);
-        verify(configCenterRepository).persist("/test/config/authentication", AUTHENTICATION_YAML);
-        verify(configCenterRepository).persist("/test/config/props", PROPS_YAML);
     }
     
     @Test
     public void assertPersistConfigurationForEncrypt() {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createEncryptRuleConfiguration(), null, createProperties(), true);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createEncryptRuleConfiguration(), true);
         verify(configCenterRepository).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository).persist("/test/config/schema/sharding_db/rule", ENCRYPT_RULE_YAML);
     }
@@ -368,16 +365,24 @@ public final class ConfigCenterTest {
     @Test
     public void assertNullRuleConfiguration() {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), Collections.emptyList(), null, createProperties(), true);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), Collections.emptyList(), true);
     }
     
     @Test
     @Ignore
     public void assertPersistConfigurationForShadow() {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createShadowRuleConfiguration(), null, createProperties(), true);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createShadowRuleConfiguration(), true);
         verify(configCenterRepository).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository).persist("/test/config/schema/sharding_db/rule", SHADOW_RULE_YAML);
+    }
+    
+    @Test
+    public void assertPersistGlobalConfiguration() {
+        ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
+        configurationService.persistGlobalConfiguration(createAuthentication(), createProperties(), true);
+        verify(configCenterRepository).persist("/test/config/authentication", AUTHENTICATION_YAML);
+        verify(configCenterRepository).persist("/test/config/props", PROPS_YAML);
     }
     
     private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
@@ -421,7 +426,7 @@ public final class ConfigCenterTest {
     }
     
     private Authentication createAuthentication() {
-        return new AuthenticationYamlSwapper().swap(YamlEngine.unmarshal(AUTHENTICATION_YAML, YamlAuthenticationConfiguration.class));
+        return new AuthenticationYamlSwapper().swapToObject(YamlEngine.unmarshal(AUTHENTICATION_YAML, YamlAuthenticationConfiguration.class));
     }
     
     private Properties createProperties() {
@@ -442,9 +447,9 @@ public final class ConfigCenterTest {
     
     private void assertDataSourceConfiguration(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
         assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
-        assertThat(actual.getProperties().get("url"), is(expected.getProperties().get("url")));
-        assertThat(actual.getProperties().get("username"), is(expected.getProperties().get("username")));
-        assertThat(actual.getProperties().get("password"), is(expected.getProperties().get("password")));
+        assertThat(actual.getProps().get("url"), is(expected.getProps().get("url")));
+        assertThat(actual.getProps().get("username"), is(expected.getProps().get("username")));
+        assertThat(actual.getProps().get("password"), is(expected.getProps().get("password")));
     }
     
     @Test
@@ -461,9 +466,9 @@ public final class ConfigCenterTest {
             } else if (each instanceof EncryptRuleConfiguration) {
                 EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) each;
                 assertThat(encryptRuleConfiguration.getEncryptors().size(), is(2));
-                EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptors().get("aes_encryptor");
-                assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
-                assertThat(encryptAlgorithmConfiguration.getProperties().get("aes.key.value").toString(), is("123456abcd"));
+                ShardingSphereAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptors().get("aes_encryptor");
+                assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
+                assertThat(encryptAlgorithmConfiguration.getProps().get("aes.key.value").toString(), is("123456abcd"));
             }
         }
     }
@@ -496,9 +501,9 @@ public final class ConfigCenterTest {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         EncryptRuleConfiguration actual = (EncryptRuleConfiguration) configurationService.loadRuleConfigurations("sharding_db").iterator().next();
         assertThat(actual.getEncryptors().size(), is(1));
-        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = actual.getEncryptors().get("order_encryptor");
-        assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
-        assertThat(encryptAlgorithmConfiguration.getProperties().get("aes.key.value").toString(), is("123456"));
+        ShardingSphereAlgorithmConfiguration encryptAlgorithmConfiguration = actual.getEncryptors().get("order_encryptor");
+        assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
+        assertThat(encryptAlgorithmConfiguration.getProps().get("aes.key.value").toString(), is("123456"));
     }
     
     @Test
@@ -519,6 +524,17 @@ public final class ConfigCenterTest {
         Authentication actual = configurationService.loadAuthentication();
         assertThat(actual.getUsers().size(), is(2));
         assertThat(actual.getUsers().get("root1").getPassword(), is("root1"));
+    }
+    
+    @Test
+    public void assertLoadMetricsConfiguration() {
+        when(configCenterRepository.get("/test/config/metrics")).thenReturn(METRICS_YAML);
+        ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
+        MetricsConfiguration actual = configurationService.loadMetricsConfiguration();
+        assertThat(actual.getMetricsName(), is("prometheus"));
+        assertThat(actual.getPort(), is(9190));
+        assertThat(actual.getHost(), is("127.0.0.1"));
+        assertThat(actual.getAsync(), is(true));
     }
     
     @Test
@@ -549,6 +565,30 @@ public final class ConfigCenterTest {
         assertDataSourceConfigurationWithConnectionInitSqls(actual.get("ds_1"), createDataSourceConfiguration(createDataSourceWithConnectionInitSqls("ds_1")));
     }
     
+    @Test
+    public void assertPersistClusterConfiguration() {
+        ClusterConfiguration clusterConfiguration = new ClusterConfigurationYamlSwapper()
+                .swapToObject(YamlEngine.unmarshal(readYAML(DATA_CLUSTER_YAML), YamlClusterConfiguration.class));
+        ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
+        configurationService.persistClusterConfiguration(clusterConfiguration, true);
+        verify(configCenterRepository, times(0)).persist(eq("/test/config/cluster"), eq(readYAML(DATA_CLUSTER_YAML)));
+    }
+    
+    @Test
+    public void loadClusterConfiguration() {
+        when(configCenterRepository.get("/test/config/cluster")).thenReturn(readYAML(DATA_CLUSTER_YAML));
+        ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
+        ClusterConfiguration clusterConfiguration = configurationService.loadClusterConfiguration();
+        assertNotNull(clusterConfiguration);
+        assertNotNull(clusterConfiguration.getHeartbeat());
+        assertThat(clusterConfiguration.getHeartbeat().getSql(), is("select 1"));
+        assertThat(clusterConfiguration.getHeartbeat().getThreadCount(), is(1));
+        assertThat(clusterConfiguration.getHeartbeat().getInterval(), is(60));
+        assertFalse(clusterConfiguration.getHeartbeat().getRetryEnable());
+        assertThat(clusterConfiguration.getHeartbeat().getRetryMaximum(), is(3));
+        assertThat(clusterConfiguration.getHeartbeat().getRetryInterval(), is(3));
+    }
+    
     private DataSource createDataSourceWithConnectionInitSqls(final String name) {
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");
@@ -561,9 +601,14 @@ public final class ConfigCenterTest {
     
     private void assertDataSourceConfigurationWithConnectionInitSqls(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
         assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
-        assertThat(actual.getProperties().get("url"), is(expected.getProperties().get("url")));
-        assertThat(actual.getProperties().get("username"), is(expected.getProperties().get("username")));
-        assertThat(actual.getProperties().get("password"), is(expected.getProperties().get("password")));
-        assertThat(actual.getProperties().get("connectionInitSqls"), is(expected.getProperties().get("connectionInitSqls")));
+        assertThat(actual.getProps().get("url"), is(expected.getProps().get("url")));
+        assertThat(actual.getProps().get("username"), is(expected.getProps().get("username")));
+        assertThat(actual.getProps().get("password"), is(expected.getProps().get("password")));
+        assertThat(actual.getProps().get("connectionInitSqls"), is(expected.getProps().get("connectionInitSqls")));
+    }
+    
+    @SneakyThrows
+    private String readYAML(final String yamlFile) {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }

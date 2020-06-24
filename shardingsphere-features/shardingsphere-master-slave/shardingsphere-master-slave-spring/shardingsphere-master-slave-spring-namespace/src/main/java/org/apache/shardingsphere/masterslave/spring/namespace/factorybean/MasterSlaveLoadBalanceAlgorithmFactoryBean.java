@@ -17,44 +17,22 @@
 
 package org.apache.shardingsphere.masterslave.spring.namespace.factorybean;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
-import org.springframework.beans.factory.FactoryBean;
+import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 
 import java.util.Properties;
 
 /**
  * Master-slave load balance algorithm factory bean.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MasterSlaveLoadBalanceAlgorithmFactoryBean implements FactoryBean<MasterSlaveLoadBalanceAlgorithm> {
+public final class MasterSlaveLoadBalanceAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<MasterSlaveLoadBalanceAlgorithm> {
     
     static {
         ShardingSphereServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
     }
     
-    private final String id;
-    
-    private final String type;
-    
-    private final Properties properties;
-    
-    @Override
-    public MasterSlaveLoadBalanceAlgorithm getObject() {
-        return TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class, type, properties);
-    }
-    
-    @Override
-    public Class<?> getObjectType() {
-        return MasterSlaveLoadBalanceAlgorithm.class;
-    }
-    
-    @Override
-    public boolean isSingleton() {
-        return true;
+    public MasterSlaveLoadBalanceAlgorithmFactoryBean(final String type, final Properties props) {
+        super(type, props, MasterSlaveLoadBalanceAlgorithm.class);
     }
 }

@@ -30,25 +30,25 @@ public final class DataSourceConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYaml() {
         DataSourceConfiguration dataSourceConfiguration = new DataSourceConfiguration("xxx.jdbc.driver");
-        dataSourceConfiguration.getProperties().put("url", "xx:xxx");
-        dataSourceConfiguration.getProperties().put("username", "root");
-        YamlDataSourceConfiguration actual = dataSourceConfigurationYamlSwapper.swap(dataSourceConfiguration);
+        dataSourceConfiguration.getProps().put("url", "xx:xxx");
+        dataSourceConfiguration.getProps().put("username", "root");
+        YamlDataSourceConfiguration actual = dataSourceConfigurationYamlSwapper.swapToYamlConfiguration(dataSourceConfiguration);
         assertThat(actual.getDataSourceClassName(), is("xxx.jdbc.driver"));
-        assertThat(actual.getProperties().size(), is(2));
-        assertThat(actual.getProperties().get("url").toString(), is("xx:xxx"));
-        assertThat(actual.getProperties().get("username").toString(), is("root"));
+        assertThat(actual.getProps().size(), is(2));
+        assertThat(actual.getProps().get("url").toString(), is("xx:xxx"));
+        assertThat(actual.getProps().get("username").toString(), is("root"));
     }
     
     @Test
     public void assertSwapToConfiguration() {
         YamlDataSourceConfiguration yamlConfiguration = new YamlDataSourceConfiguration();
         yamlConfiguration.setDataSourceClassName("xxx.jdbc.driver");
-        yamlConfiguration.getProperties().put("url", "xx:xxx");
-        yamlConfiguration.getProperties().put("username", "root");
-        DataSourceConfiguration actual = dataSourceConfigurationYamlSwapper.swap(yamlConfiguration);
+        yamlConfiguration.getProps().put("url", "xx:xxx");
+        yamlConfiguration.getProps().put("username", "root");
+        DataSourceConfiguration actual = dataSourceConfigurationYamlSwapper.swapToObject(yamlConfiguration);
         assertThat(actual.getDataSourceClassName(), is("xxx.jdbc.driver"));
-        assertThat(actual.getProperties().size(), is(2));
-        assertThat(actual.getProperties().get("url").toString(), is("xx:xxx"));
-        assertThat(actual.getProperties().get("username").toString(), is("root"));
+        assertThat(actual.getProps().size(), is(2));
+        assertThat(actual.getProps().get("url").toString(), is("xx:xxx"));
+        assertThat(actual.getProps().get("username").toString(), is("root"));
     }
 }

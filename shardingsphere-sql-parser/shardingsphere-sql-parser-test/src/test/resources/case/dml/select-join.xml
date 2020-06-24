@@ -20,11 +20,11 @@
     <select sql-case-id="select_inner_join_related_with_alias" parameters="1000">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
+                    <table name="t_order_item" alias="i" start-index="37" stop-index="50" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -108,11 +108,11 @@
     <select sql-case-id="select_join_using" parameters="1000">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </table-factor>
                 <joinSpecification />
             </join-table>

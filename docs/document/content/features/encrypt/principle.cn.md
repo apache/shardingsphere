@@ -75,7 +75,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 -!ENCRYPT
   encryptors:
     aes_encryptor:
-      type: aes
+      type: AES
       props:
         aes.key.value: 123456abc
   tables:
@@ -115,7 +115,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 -!ENCRYPT
   encryptors:
     aes_encryptor:
-      type: aes
+      type: AES
       props:
         aes.key.value: 123456abc
   tables:
@@ -170,7 +170,7 @@ props:
 -!ENCRYPT
   encryptors:
     aes_encryptor:
-      type: aes
+      type: AES
       props:
         aes.key.value: 123456abc
   tables:

@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -198,7 +197,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void close() throws SQLException {
         closed = true;
         MasterVisitedManager.clear();
-        TransactionTypeHolder.clear();
         int connectionSize = cachedConnections.size();
         try {
             forceExecuteTemplateForClose.execute(cachedConnections.entries(), cachedConnections -> cachedConnections.getValue().close());

@@ -17,44 +17,22 @@
 
 package org.apache.shardingsphere.encrypt.spring.namespace.factorybean;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
-import org.springframework.beans.factory.FactoryBean;
+import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 
 import java.util.Properties;
 
 /**
  * Encrypt algorithm factory bean.
  */
-@RequiredArgsConstructor
-@Getter
-public final class EncryptAlgorithmFactoryBean implements FactoryBean<EncryptAlgorithm> {
+public final class EncryptAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<EncryptAlgorithm> {
     
     static {
         ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
     }
     
-    private final String id;
-    
-    private final String type;
-    
-    private final Properties properties;
-    
-    @Override
-    public EncryptAlgorithm getObject() {
-        return TypedSPIRegistry.getRegisteredService(EncryptAlgorithm.class, type, properties);
-    }
-    
-    @Override
-    public Class<?> getObjectType() {
-        return EncryptAlgorithm.class;
-    }
-    
-    @Override
-    public boolean isSingleton() {
-        return true;
+    public EncryptAlgorithmFactoryBean(final String type, final Properties props) {
+        super(type, props, EncryptAlgorithm.class);
     }
 }

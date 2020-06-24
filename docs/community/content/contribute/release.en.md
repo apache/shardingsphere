@@ -126,6 +126,8 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 
 ### Update Release Notes
 
+Update the following file in master branch, and submit a PR to master branch:
+
 ```
 https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md
 ```
@@ -526,15 +528,15 @@ mvn clean package -Prelease,docker
 Check the image ID through `docker images`, for example: e9ea51023687
 
 ```shell
-docker tag e9ea51023687 apache/shardingsphere-proxy:latest
-docker tag e9ea51023687 apache/shardingsphere-proxy:${RELEASE.VERSION}
+docker tag e9ea51023687 apache/sharding-proxy:latest
+docker tag e9ea51023687 apache/sharding-proxy:${RELEASE.VERSION}
 ```
 
 #### Publish Docker Image
 
 ```shell
-docker push apache/shardingsphere-proxy:latest
-docker push apache/shardingsphere-proxy:${RELEASE_VERSION}
+docker push apache/sharding-proxy:latest
+docker push apache/sharding-proxy:${RELEASE_VERSION}
 ```
 
 #### Confirm the successful release

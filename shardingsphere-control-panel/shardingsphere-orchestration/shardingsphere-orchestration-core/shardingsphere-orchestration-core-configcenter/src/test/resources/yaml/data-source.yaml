@@ -17,7 +17,7 @@
 
 master_ds: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  properties:
+  props:
     url: jdbc:mysql://localhost:3306/demo_ds_master
     username: root
     password: null

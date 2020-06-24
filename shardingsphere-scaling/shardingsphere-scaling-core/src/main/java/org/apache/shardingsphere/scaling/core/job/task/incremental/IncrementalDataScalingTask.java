@@ -81,6 +81,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
         
             @Override
             public void onFailure(final Throwable throwable) {
+                log.error("get an error when migrating the increment data", throwable);
                 dumper.stop();
             }
         });

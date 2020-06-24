@@ -61,10 +61,10 @@ public final class ApolloOpenApiWrapperTest {
     @SneakyThrows({NoSuchFieldException.class, SecurityException.class})
     @Before
     public void setUp() {
-        Properties properties = new Properties();
-        properties.setProperty(ApolloPropertyKey.PORTAL_URL.getKey(), PORTAL_URL);
-        properties.setProperty(ApolloPropertyKey.TOKEN.getKey(), TOKEN);
-        apolloOpenApiWrapper = new ApolloOpenApiWrapper(new CenterConfiguration("apollo", new Properties()), new ApolloProperties(properties));
+        Properties props = new Properties();
+        props.setProperty(ApolloPropertyKey.PORTAL_URL.getKey(), PORTAL_URL);
+        props.setProperty(ApolloPropertyKey.TOKEN.getKey(), TOKEN);
+        apolloOpenApiWrapper = new ApolloOpenApiWrapper(new CenterConfiguration("apollo", new Properties()), new ApolloProperties(props));
         FieldSetter.setField(apolloOpenApiWrapper, ApolloOpenApiWrapper.class.getDeclaredField("client"), client);
         FieldSetter.setField(apolloOpenApiWrapper, ApolloOpenApiWrapper.class.getDeclaredField("namespace"), NAME_SPACE);
         FieldSetter.setField(apolloOpenApiWrapper, ApolloOpenApiWrapper.class.getDeclaredField("appId"), ApolloPropertyKey.APP_ID.getDefaultValue());

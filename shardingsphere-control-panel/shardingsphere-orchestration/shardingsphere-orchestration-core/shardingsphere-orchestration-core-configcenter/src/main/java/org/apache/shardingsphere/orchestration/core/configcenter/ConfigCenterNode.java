@@ -46,6 +46,10 @@ public final class ConfigCenterNode {
     
     private static final String PROPS_NODE = "props";
     
+    private static final String CLUSTER_NODE = "cluster";
+    
+    private static final String METRICS_NODE = "metrics";
+    
     private static final String COMMA_SEPARATOR = ",";
     
     private static final String PATH_SEPARATOR = "/";
@@ -101,9 +105,9 @@ public final class ConfigCenterNode {
     }
     
     /**
-     * Get props path.
+     * Get properties path.
      *
-     * @return props path
+     * @return properties path
      */
     public String getPropsPath() {
         return getFullPath(PROPS_NODE);
@@ -153,5 +157,23 @@ public final class ConfigCenterNode {
             result.add(getDataSourcePath(schemaName));
         }
         return result;
+    }
+    
+    /**
+     * Get cluster node path.
+     *
+     * @return cluster node path
+     */
+    public String getClusterPath() {
+        return getFullPath(CLUSTER_NODE);
+    }
+    
+    /**
+     * Get metrics node path.
+     *
+     * @return metrics node path
+     */
+    public String getMetricsPath() {
+        return getFullPath(METRICS_NODE);
     }
 }

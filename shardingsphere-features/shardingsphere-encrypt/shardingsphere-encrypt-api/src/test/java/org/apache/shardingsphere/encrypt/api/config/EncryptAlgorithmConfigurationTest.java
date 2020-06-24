@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.api.config;
 
-import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -29,22 +29,22 @@ public final class EncryptAlgorithmConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutType() {
-        new EncryptAlgorithmConfiguration(null, new Properties());
+        new ShardingSphereAlgorithmConfiguration(null, new Properties());
     }
     
     @Test
     public void assertConstructorWithoutProperties() {
-        EncryptAlgorithmConfiguration actual = new EncryptAlgorithmConfiguration("TEST", new Properties());
+        ShardingSphereAlgorithmConfiguration actual = new ShardingSphereAlgorithmConfiguration("TEST", new Properties());
         assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getProperties(), is(new Properties()));
+        assertThat(actual.getProps(), is(new Properties()));
     }
     
     @Test
     public void assertConstructorWithProperties() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptAlgorithmConfiguration actual = new EncryptAlgorithmConfiguration("TEST", props);
+        ShardingSphereAlgorithmConfiguration actual = new ShardingSphereAlgorithmConfiguration("TEST", props);
         assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getProperties(), is(props));
+        assertThat(actual.getProps(), is(props));
     }
 }

@@ -20,7 +20,7 @@
     <select sql-case-id="select_order_by_asc_and_index_desc">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="14" stop-index="20" />
+                <table name="t_order" alias="o" start-index="14" stop-index="22" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="7">
@@ -37,12 +37,12 @@
     <select sql-case-id="select_order_by_desc_and_index_asc">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
         </table-reference>
         <table-reference>
             <table-factor>
-                <table name="t_order_item" alias="i" start-index="27" stop-index="38" />
+                <table name="t_order_item" alias="i" start-index="27" stop-index="40" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="9">
@@ -84,7 +84,7 @@
     <select sql-case-id="select_order_by_with_ordered_column">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="40" stop-index="46" />
+                <table name="t_order" alias="o" start-index="40" stop-index="48" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="33">
@@ -102,12 +102,12 @@
     <select sql-case-id="select_order_by_with_date">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
         </table-reference>
         <table-reference>
             <table-factor>
-                <table name="t_order_item" alias="i" start-index="27" stop-index="38" />
+                <table name="t_order_item" alias="i" start-index="27" stop-index="40" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="9">
@@ -154,7 +154,7 @@
     <select sql-case-id="select_order_by_for_nulls_first">
         <table-reference>
             <table-factor>
-                <table  name="t_order" alias="o" start-index="40" stop-index="46" />
+                <table  name="t_order" alias="o" start-index="40" stop-index="48" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="33">
@@ -173,7 +173,7 @@
     <select sql-case-id="select_order_by_for_nulls_last">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="40" stop-index="46" />
+                <table name="t_order" alias="o" start-index="40" stop-index="48" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="33">
@@ -191,7 +191,7 @@
     <select sql-case-id="select_order_by_with_multiple_stars">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="29" stop-index="35" />
+                <table name="t_order" alias="o" start-index="29" stop-index="37" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="22">
@@ -211,7 +211,7 @@
     <select sql-case-id="select_order_by_with_alias_star_alias_name">
         <table-reference>
             <table-factor>
-                <table  name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table  name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="9">
@@ -229,7 +229,7 @@
     <select sql-case-id="select_order_by_with_star_table_alias">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="14" stop-index="20" />
+                <table name="t_order" alias="o" start-index="14" stop-index="22" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="7">
@@ -280,11 +280,11 @@
     <select sql-case-id="select_order_by_with_table_star_without_table_name">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="21" stop-index="27" />
+                <table name="t_order" alias="o" start-index="21" stop-index="29" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="36" stop-index="47" />
+                    <table name="t_order_item" alias="i" start-index="36" stop-index="49" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>

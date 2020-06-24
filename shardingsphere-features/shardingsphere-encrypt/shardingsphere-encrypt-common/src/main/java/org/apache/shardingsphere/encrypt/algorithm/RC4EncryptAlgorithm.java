@@ -32,8 +32,6 @@ import java.util.Properties;
 /**
  * RC4 encrypt algorithm.
  */
-@Getter
-@Setter
 public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
     
     private static final String RC4_KEY = "rc4.key.value";
@@ -46,18 +44,15 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
     
     private int[] sBox = new int[SBOX_LENGTH];
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "RC4";
-    }
+    @Getter
+    @Setter
+    private Properties props = new Properties();
     
     @Override
     @SneakyThrows
     public void init() {
         reset();
-        setKey(StringUtils.getBytesUtf8(properties.get(RC4_KEY).toString()));
+        setKey(StringUtils.getBytesUtf8(props.getProperty(RC4_KEY)));
     }
     
     @Override
@@ -149,6 +144,11 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
             throw new ShardingSphereException("Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1));
         }
         this.key = key;
+    }
+    
+    @Override
+    public String getType() {
+        return "RC4";
     }
 }
 

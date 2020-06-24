@@ -37,7 +37,7 @@ public final class MasterSlaveSpringBootConditionTest {
     @Test
     public void assertNotMatch() {
         MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.rules.encrypt.encryptors.aes_encryptor.type", "aes");
+        mockEnvironment.setProperty("spring.shardingsphere.rules.encrypt.encryptors.aes_encryptor.type", "AES");
         mockEnvironment.setProperty("spring.shardingsphere.rules.shadow.column", "user_id");
         ConditionContext context = Mockito.mock(ConditionContext.class);
         AnnotatedTypeMetadata metadata = Mockito.mock(AnnotatedTypeMetadata.class);

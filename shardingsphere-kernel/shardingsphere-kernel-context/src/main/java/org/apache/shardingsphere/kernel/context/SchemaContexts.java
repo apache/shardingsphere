@@ -31,28 +31,28 @@ public final class SchemaContexts implements SchemaContextsAware {
     
     private final Map<String, SchemaContext> schemaContexts = new HashMap<>();
     
-    private final ConfigurationProperties properties;
+    private final ConfigurationProperties props;
     
     private final Authentication authentication;
     
     private final boolean isCircuitBreak;
     
     public SchemaContexts() {
-        properties = new ConfigurationProperties(new Properties());
+        props = new ConfigurationProperties(new Properties());
         authentication = new Authentication();
         isCircuitBreak = false;
     }
     
-    public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final ConfigurationProperties properties, final Authentication authentication) {
+    public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final ConfigurationProperties props, final Authentication authentication) {
         this.schemaContexts.putAll(schemaContexts);
-        this.properties = properties;
+        this.props = props;
         this.authentication = authentication;
         isCircuitBreak = false;
     }
     
-    public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final ConfigurationProperties properties, final Authentication authentication, final boolean isCircuitBreak) {
+    public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final ConfigurationProperties props, final Authentication authentication, final boolean isCircuitBreak) {
         this.schemaContexts.putAll(schemaContexts);
-        this.properties = properties;
+        this.props = props;
         this.authentication = authentication;
         this.isCircuitBreak = isCircuitBreak;
     }

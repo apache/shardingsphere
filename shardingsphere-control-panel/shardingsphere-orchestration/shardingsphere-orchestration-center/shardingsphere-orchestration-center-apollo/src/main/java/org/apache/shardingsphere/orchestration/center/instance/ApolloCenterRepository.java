@@ -52,11 +52,11 @@ public final class ApolloCenterRepository implements ConfigCenterRepository {
     
     @Getter
     @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     
     @Override
     public void init(final CenterConfiguration config) {
-        ApolloProperties apolloProperties = new ApolloProperties(properties);
+        ApolloProperties apolloProperties = new ApolloProperties(props);
         configWrapper = new ApolloConfigWrapper(config, apolloProperties);
         openApiWrapper = new ApolloOpenApiWrapper(config, apolloProperties);
     }

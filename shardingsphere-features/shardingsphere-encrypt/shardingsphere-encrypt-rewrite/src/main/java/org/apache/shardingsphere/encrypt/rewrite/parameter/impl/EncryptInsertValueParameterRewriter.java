@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedPar
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,12 +40,12 @@ import java.util.Optional;
  * Insert value parameter rewriter for encrypt.
  */
 public final class EncryptInsertValueParameterRewriter extends EncryptParameterRewriter<InsertStatementContext> {
-    
+
     @Override
     protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext && !(((InsertStatementContext) sqlStatementContext).getSqlStatement()).getSetAssignment().isPresent();
     }
-    
+
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
@@ -54,21 +56,26 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
                 encryptAlgorithm -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, encryptAlgorithm, tableName, columnName));
         }
     }
-    
+
     private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder,
                                      final InsertStatementContext insertStatementContext, final EncryptAlgorithm encryptAlgorithm, final String tableName, final String encryptLogicColumnName) {
         int columnIndex = getColumnIndex(parameterBuilder, insertStatementContext, encryptLogicColumnName);
         int count = 0;
         for (List<Object> each : insertStatementContext.getGroupedParameters()) {
+            int paramterIndex = insertStatementContext.getInsertValueContexts().get(count).getParameterIndex(columnIndex);
             if (!each.isEmpty()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder.getParameterBuilders().get(count);
-                encryptInsertValue(
-                        encryptAlgorithm, tableName, columnIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), standardParameterBuilder, encryptLogicColumnName);
+                ExpressionSegment expressionSegment = insertStatementContext.getInsertValueContexts().get(count).getValueExpressions().get(columnIndex);
+                if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
+                    encryptInsertValue(
+                            encryptAlgorithm, tableName, paramterIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex),
+                            standardParameterBuilder, encryptLogicColumnName);
+                }
             }
             count++;
         }
     }
-    
+
     private int getColumnIndex(final GroupedParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final String encryptLogicColumnName) {
         List<String> columnNames;
         if (parameterBuilder.getDerivedColumnName().isPresent()) {
@@ -79,13 +86,10 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         }
         return columnNames.indexOf(encryptLogicColumnName);
     }
-    
-    private void encryptInsertValue(final EncryptAlgorithm encryptAlgorithm, final String tableName, final int columnIndex,
+
+    private void encryptInsertValue(final EncryptAlgorithm encryptAlgorithm, final String tableName, final int paramterIndex,
                                     final Object originalValue, final StandardParameterBuilder parameterBuilder, final String encryptLogicColumnName) {
-        // FIXME: can process all part of insert value is ? or literal, can not process mix ? and literal
-        // For example: values (?, ?), (1, 1) can process
-        // For example: values (?, 1), (?, 2) can not process
-        parameterBuilder.addReplacedParameters(columnIndex, encryptAlgorithm.encrypt(originalValue));
+        parameterBuilder.addReplacedParameters(paramterIndex, encryptAlgorithm.encrypt(originalValue));
         Collection<Object> addedParameters = new LinkedList<>();
         if (encryptAlgorithm instanceof QueryAssistedEncryptAlgorithm) {
             Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
@@ -96,10 +100,10 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
             addedParameters.add(originalValue);
         }
         if (!addedParameters.isEmpty()) {
-            if (!parameterBuilder.getAddedIndexAndParameters().containsKey(columnIndex + 1)) {
-                parameterBuilder.getAddedIndexAndParameters().put(columnIndex + 1, new LinkedList<>());
+            if (!parameterBuilder.getAddedIndexAndParameters().containsKey(paramterIndex + 1)) {
+                parameterBuilder.getAddedIndexAndParameters().put(paramterIndex + 1, new LinkedList<>());
             }
-            parameterBuilder.getAddedIndexAndParameters().get(columnIndex + 1).addAll(addedParameters);
+            parameterBuilder.getAddedIndexAndParameters().get(paramterIndex + 1).addAll(addedParameters);
         }
     }
 }

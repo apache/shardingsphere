@@ -20,11 +20,11 @@
     <select sql-case-id="select_pagination_with_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="22" stop-index="28" />
+                <table name="t_order" alias="o" start-index="22" stop-index="30" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
+                    <table name="t_order_item" alias="i" start-index="37" stop-index="50" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -98,11 +98,11 @@
     <select sql-case-id="select_pagination_with_diff_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="22" stop-index="28" />
+                <table name="t_order" alias="o" start-index="22" stop-index="30" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
+                    <table name="t_order_item" alias="i" start-index="37" stop-index="50" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -410,11 +410,11 @@
                                                 </projections>
                                                 <table-reference>
                                                     <table-factor>
-                                                        <table start-index="146" stop-index="152" name="t_order" alias="order0_"/>
+                                                        <table start-index="146" stop-index="160" name="t_order" alias="order0_"/>
                                                     </table-factor>
                                                     <join-table>
                                                         <table-factor>
-                                                            <table start-index="167" stop-index="178" name="t_order_item" alias="i"/>
+                                                            <table start-index="167" stop-index="180" name="t_order_item" alias="i"/>
                                                         </table-factor>
                                                         <joinSpecification>
                                                             <and-predicate>
@@ -545,11 +545,11 @@
                                                 </projections>
                                                 <table-reference>
                                                     <table-factor>
-                                                        <table start-index="146" stop-index="152" name="t_order" alias="order0_"/>
+                                                        <table start-index="146" stop-index="160" name="t_order" alias="order0_"/>
                                                     </table-factor>
                                                     <join-table>
                                                         <table-factor>
-                                                            <table start-index="167" stop-index="178" name="t_order_item" alias="i"/>
+                                                            <table start-index="167" stop-index="180" name="t_order_item" alias="i"/>
                                                         </table-factor>
                                                         <joinSpecification>
                                                             <and-predicate>

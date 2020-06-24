@@ -38,16 +38,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class DataSourceManagerTest {
-
+    
     private static final Gson GSON = new Gson();
-
+    
     private List<SyncConfiguration> syncConfigurations;
-
+    
     @Before
     public void setUp() {
         initConfig("/config.json");
     }
-
+    
     @Test
     public void assertCreateWithConfiguration() throws NoSuchFieldException, IllegalAccessException {
         DataSourceManager dataSourceManager = new DataSourceManager(syncConfigurations);
@@ -62,7 +62,7 @@ public final class DataSourceManagerTest {
         DataSource actual = dataSourceManager.getDataSource(syncConfigurations.get(0).getDumperConfiguration().getDataSourceConfiguration());
         assertThat(actual, instanceOf(HikariDataSource.class));
     }
-
+    
     @Test
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
         DataSourceManager dataSourceManager = new DataSourceManager(syncConfigurations);
@@ -71,7 +71,7 @@ public final class DataSourceManagerTest {
         assertNotNull(cachedDataSources);
         assertThat(cachedDataSources.size(), is(0));
     }
-
+    
     private void initConfig(final String configFile) {
         InputStream fileInputStream = DataSourceManagerTest.class.getResourceAsStream(configFile);
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);

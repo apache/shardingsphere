@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.spring.namespace.orchestration.algorithm;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -25,7 +27,15 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 
+@Getter
+@Setter
 public final class StandardModuloTableShardingAlgorithm implements StandardShardingAlgorithm<Integer> {
+    
+    private Properties props = new Properties();
+    
+    @Override
+    public void init() {
+    }
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
@@ -53,18 +63,5 @@ public final class StandardModuloTableShardingAlgorithm implements StandardShard
     @Override
     public String getType() {
         return "STANDARD_TEST_TBL";
-    }
-    
-    @Override
-    public Properties getProperties() {
-        return new Properties();
-    }
-    
-    @Override
-    public void setProperties(final Properties properties) {
-    }
-
-    @Override
-    public void init() {
     }
 }

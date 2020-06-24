@@ -22,9 +22,9 @@ rules:
       actualDataNodes: jdbc_${0..1}.t_order_${0..1}
     t_order_item:
       actualDataNodes: jdbc_${0..1}.t_order_item_${0..1}
-      keyGenerator:
-        type: INCREMENT
+      keyGenerateStrategy:
         column: item_id
+        keyGeneratorName: increment
     t_config:
       actualDataNodes: jdbc_${0..1}.t_config
     t_user:
@@ -32,13 +32,22 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_user_${id % 2}
-      keyGenerator:
-        type: RESET_INCREMENT
+          shardingAlgorithmName: table_inline
+      keyGenerateStrategy:
         column: id
+        keyGeneratorName: reset_increment
+  autoTables:
+    t_order_auto:
+      actualDataSources: jdbc_0, jdbc_1
+      shardingStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: mod
+    t_order_item_auto:
+      shardingStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: mod
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
@@ -46,10 +55,26 @@ rules:
   defaultTableStrategy:
     standard:
       shardingColumn: order_id
-      shardingAlgorithm:
-        type: STANDARD_TEST
+      shardingAlgorithmName: standard_test
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithm:
+      shardingAlgorithmName: standard_test
+  
+  shardingAlgorithms:
+    standard_test:
         type: STANDARD_TEST
+    table_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_user_${id % 2}
+    mod:
+      type: MOD
+      props:
+        sharding.count: 2
+  
+  keyGenerators:
+    increment:
+      type: INCREMENT
+    reset_increment:
+      type: RESET_INCREMENT

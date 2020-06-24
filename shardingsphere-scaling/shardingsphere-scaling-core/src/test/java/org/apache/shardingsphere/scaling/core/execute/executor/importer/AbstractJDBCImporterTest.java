@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
 import org.apache.shardingsphere.scaling.core.job.position.NopLogPosition;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
@@ -35,8 +38,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.sql.DataSource;
 
 import static org.mockito.Mockito.verify;
@@ -49,9 +55,9 @@ public final class AbstractJDBCImporterTest {
     
     private static final String INSERT_SQL = "INSERT INTO test_table (id,user,status) VALUES(?,?,?)";
     
-    private static final String DELETE_SQL = "DELETE FROM test_table WHERE id = ?";
+    private static final String DELETE_SQL = "DELETE FROM test_table WHERE id = ? and user = ?";
     
-    private static final String UPDATE_SQL = "UPDATE test_table SET user = ?,status = ? WHERE id = ?";
+    private static final String UPDATE_SQL = "UPDATE test_table SET user = ?,status = ? WHERE id = ? and user = ?";
     
     @Mock
     private DataSourceManager dataSourceManager;
@@ -107,25 +113,31 @@ public final class AbstractJDBCImporterTest {
     @Test
     public void assertDeleteDataRecord() throws SQLException {
         DataRecord deleteRecord = getDataRecord("DELETE");
-        when(sqlBuilder.buildDeleteSQL(deleteRecord)).thenReturn(DELETE_SQL);
+        when(sqlBuilder.buildDeleteSQL(deleteRecord, mockConditionColumns(deleteRecord))).thenReturn(DELETE_SQL);
         when(connection.prepareStatement(DELETE_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(100, 3)).thenReturn(mockRecords(deleteRecord));
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 1);
+        verify(preparedStatement).setObject(2, 10);
         verify(preparedStatement).execute();
     }
     
     @Test
     public void assertUpdateDataRecord() throws SQLException {
         DataRecord updateRecord = getDataRecord("UPDATE");
-        when(sqlBuilder.buildUpdateSQL(updateRecord)).thenReturn(UPDATE_SQL);
+        when(sqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord))).thenReturn(UPDATE_SQL);
         when(connection.prepareStatement(UPDATE_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(100, 3)).thenReturn(mockRecords(updateRecord));
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 10);
         verify(preparedStatement).setObject(2, "UPDATE");
         verify(preparedStatement).setObject(3, 1);
+        verify(preparedStatement).setObject(4, 10);
         verify(preparedStatement).execute();
+    }
+    
+    private Collection<Column> mockConditionColumns(final DataRecord dataRecord) {
+        return RecordUtil.extractConditionColumns(dataRecord, Sets.newHashSet("user"));
     }
     
     private List<Record> mockRecords(final DataRecord dataRecord) {
@@ -149,6 +161,9 @@ public final class AbstractJDBCImporterTest {
         RdbmsConfiguration result = new RdbmsConfiguration();
         result.setTableName(TABLE_NAME);
         result.setDataSourceConfiguration(dataSourceConfiguration);
+        Map<String, Set<String>> shardingColumnsMap = Maps.newHashMap();
+        shardingColumnsMap.put("test_table", Sets.newHashSet("user"));
+        result.setShardingColumnsMap(shardingColumnsMap);
         return result;
     }
 }

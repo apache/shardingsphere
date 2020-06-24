@@ -31,12 +31,7 @@ import java.util.Properties;
 @Setter
 public final class MD5EncryptAlgorithm implements EncryptAlgorithm {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "MD5";
-    }
+    private Properties props = new Properties();
     
     @Override
     public void init() {
@@ -53,5 +48,10 @@ public final class MD5EncryptAlgorithm implements EncryptAlgorithm {
     @Override
     public Object decrypt(final String ciphertext) {
         return ciphertext;
+    }
+    
+    @Override
+    public String getType() {
+        return "MD5";
     }
 }

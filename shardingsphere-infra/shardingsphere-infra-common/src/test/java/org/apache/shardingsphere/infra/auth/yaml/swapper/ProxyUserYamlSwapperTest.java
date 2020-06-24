@@ -30,7 +30,7 @@ public final class ProxyUserYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlProxyUserConfiguration actual = new ProxyUserYamlSwapper().swap(new ProxyUser("pwd", Collections.singleton("db1")));
+        YamlProxyUserConfiguration actual = new ProxyUserYamlSwapper().swapToYamlConfiguration(new ProxyUser("pwd", Collections.singleton("db1")));
         assertThat(actual.getAuthorizedSchemas(), is("db1"));
         assertThat(actual.getPassword(), is("pwd"));
     }
@@ -40,7 +40,7 @@ public final class ProxyUserYamlSwapperTest {
         YamlProxyUserConfiguration yamlProxyUserConfiguration = new YamlProxyUserConfiguration();
         yamlProxyUserConfiguration.setAuthorizedSchemas("db1");
         yamlProxyUserConfiguration.setPassword("pwd");
-        ProxyUser actual = new ProxyUserYamlSwapper().swap(yamlProxyUserConfiguration);
+        ProxyUser actual = new ProxyUserYamlSwapper().swapToObject(yamlProxyUserConfiguration);
         assertThat(actual.getAuthorizedSchemas().iterator().next(), is("db1"));
         assertThat(actual.getPassword(), is("pwd"));
     }
@@ -49,7 +49,7 @@ public final class ProxyUserYamlSwapperTest {
     public void assertSwapToObjectWithoutAuthorizedSchemas() {
         YamlProxyUserConfiguration yamlProxyUserConfiguration = new YamlProxyUserConfiguration();
         yamlProxyUserConfiguration.setPassword("pwd");
-        ProxyUser actual = new ProxyUserYamlSwapper().swap(yamlProxyUserConfiguration);
+        ProxyUser actual = new ProxyUserYamlSwapper().swapToObject(yamlProxyUserConfiguration);
         assertThat(actual.getAuthorizedSchemas().size(), is(0));
     }
 }

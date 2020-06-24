@@ -26,7 +26,7 @@ import java.util.Properties;
 @Setter
 public final class TypedSPIFixtureImpl implements TypedSPIFixture {
     
-    private Properties properties;
+    private Properties props = new Properties();
     
     @Override
     public String getType() {

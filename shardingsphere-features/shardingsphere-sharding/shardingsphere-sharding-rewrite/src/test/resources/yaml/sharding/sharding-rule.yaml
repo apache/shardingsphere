@@ -30,21 +30,29 @@ rules:
       tableStrategy: 
         standard:
           shardingColumn: account_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_account_${account_id % 2}
-      keyGenerator:
-        type: TEST
+          shardingAlgorithmName: t_account_inline
+      keyGenerateStrategy:
         column: account_id
+        keyGeneratorName: test
     t_account_detail:
       actualDataNodes: db.t_account_detail_${0..1}
       tableStrategy: 
         standard:
           shardingColumn: account_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_account_detail_${account_id % 2}
+          shardingAlgorithmName: t_account_detail_inline
   bindingTables:
     - t_account, t_account_detail
+  
+  shardingAlgorithms:
+    t_account_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_account_${account_id % 2}
+    t_account_detail_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_account_detail_${account_id % 2}
+  
+  keyGenerators:
+    test:
+      type: TEST

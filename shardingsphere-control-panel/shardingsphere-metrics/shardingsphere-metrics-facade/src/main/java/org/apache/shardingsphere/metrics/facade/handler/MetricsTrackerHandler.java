@@ -78,7 +78,7 @@ public final class MetricsTrackerHandler {
     public void init(final boolean async, final int threadCount, final MetricsTrackerManager metricsTrackerManager) {
         this.async = async;
         this.metricsTrackerManager = metricsTrackerManager;
-        if (async) {
+        if (this.async) {
             executorService = new MetricsThreadPoolExecutor(NAME_FORMAT, threadCount, QUEUE_SIZE);
         }
     }
@@ -193,6 +193,7 @@ public final class MetricsTrackerHandler {
      * Executor service close.
      */
     public void close() {
+        async = false;
         if (null != executorService && !executorService.isShutdown()) {
             executorService.shutdown();
         }

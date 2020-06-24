@@ -79,6 +79,8 @@ class SeataATOrderService {
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (user_id, status) VALUES (?, ?)");
             doInsert(preparedStatement);
             connection.commit();
+        } finally {
+            TransactionTypeHolder.clear();
         }
     }
     
@@ -94,6 +96,8 @@ class SeataATOrderService {
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (user_id, status) VALUES (?, ?)");
             doInsert(preparedStatement);
             connection.rollback();
+        } finally {
+            TransactionTypeHolder.clear();
         }
     }
     

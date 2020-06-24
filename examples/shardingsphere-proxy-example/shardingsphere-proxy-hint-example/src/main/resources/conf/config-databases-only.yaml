@@ -47,7 +47,10 @@ rules:
 
   defaultDatabaseStrategy:
     hint:
-      shardingAlgorithm:
-        type: HINT_TEST
+      shardingAlgorithmName: hint_test
   defaultTableStrategy:
     none:
+  
+  shardingAlgorithms:
+    hint_test:
+      type: HINT_TEST

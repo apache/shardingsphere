@@ -20,9 +20,9 @@ package org.apache.shardingsphere.encrypt.log;
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +70,7 @@ public final class EncryptConfigurationLoggerTest {
                 + "    aes_encryptor:\n"
                 + "      props:\n"
                 + "        aes.key.value: 123456abc\n"
-                + "      type: aes\n"
+                + "      type: AES\n"
                 + "  tables:\n"
                 + "    t_encrypt:\n"
                 + "      columns:\n"
@@ -84,9 +84,9 @@ public final class EncryptConfigurationLoggerTest {
     }
     
     private EncryptRuleConfiguration getEncryptConfiguration() {
-        Properties properties = new Properties();
-        properties.put("aes.key.value", "123456abc");
-        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = new EncryptAlgorithmConfiguration("aes", properties);
+        Properties props = new Properties();
+        props.put("aes.key.value", "123456abc");
+        ShardingSphereAlgorithmConfiguration encryptAlgorithmConfiguration = new ShardingSphereAlgorithmConfiguration("AES", props);
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = new EncryptTableRuleConfiguration(
                 "t_encrypt", Collections.singleton(new EncryptColumnRuleConfiguration("user_id", "user_encrypt", "user_assisted", "user_decrypt", "aes_encryptor")));
         return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfiguration), ImmutableMap.of("aes_encryptor", encryptAlgorithmConfiguration));

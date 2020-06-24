@@ -72,7 +72,7 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
         Map<String, EncryptAlgorithm> encryptAlgorithms = configuration.getEncryptors();
         assertThat(encryptAlgorithms.size(), is(2));
         assertThat(encryptAlgorithms.get("aes_encryptor").getType(), is("AES"));
-        assertThat(encryptAlgorithms.get("aes_encryptor").getProperties().getProperty("aes.key.value"), is("123456"));
+        assertThat(encryptAlgorithms.get("aes_encryptor").getProps().getProperty("aes.key.value"), is("123456"));
         assertThat(encryptAlgorithms.get("md5_encryptor").getType(), is("MD5"));
     }
     
@@ -87,6 +87,6 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     private ConfigurationProperties getProperties(final String encryptDatasourceName) {
         OrchestrationSpringShardingSphereDataSource orchestrationDataSource = applicationContext.getBean(encryptDatasourceName, OrchestrationSpringShardingSphereDataSource.class);
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(orchestrationDataSource, "dataSource", true);
-        return dataSource.getSchemaContexts().getProperties();
+        return dataSource.getSchemaContexts().getProps();
     }
 }

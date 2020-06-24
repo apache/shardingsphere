@@ -25,19 +25,25 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ResetIncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
-
+    
     @Getter
     private static final AtomicInteger COUNT = new AtomicInteger();
     
     @Getter
-    private final String type = "RESET_INCREMENT";
-
-    @Getter
     @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
+    
+    @Override
+    public void init() {
+    }
     
     @Override
     public Comparable<?> generateKey() {
         return COUNT.incrementAndGet();
+    }
+    
+    @Override
+    public String getType() {
+        return "RESET_INCREMENT";
     }
 }

@@ -9,10 +9,10 @@ Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguratio
 
 Attributes:
 
-| *Name*         | *DataType*                                   | *Description*                              |
-| -------------- | -------------------------------------------- | ------------------------------------------ |
-| tables (+)     | Collection\<EncryptTableRuleConfiguration\>  | Encrypt table rule configurations          |
-| encryptors (+) | Map\<String, EncryptAlgorithmConfiguration\> | Encrypt algorithm name and configurations  |
+| *Name*         | *DataType*                                          | *Description*                             |
+| -------------- | --------------------------------------------------- | ----------------------------------------- |
+| tables (+)     | Collection\<EncryptTableRuleConfiguration\>         | Encrypt table rule configurations         |
+| encryptors (+) | Map\<String, ShardingSphereAlgorithmConfiguration\> | Encrypt algorithm name and configurations |
 
 ## Encrypt Table Rule Configuration
 
@@ -41,7 +41,7 @@ Attributes:
 
 ## Encrypt Algorithm Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.strategy.EncryptAlgorithmConfiguration
+Class name: org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
 
 Attributes:
 
@@ -51,30 +51,4 @@ Attributes:
 | type       | String     | Encrypt algorithm type       |
 | properties | Properties | Encrypt algorithm properties |
 
-Apache ShardingSphere built-in implemented classes of encrypt algorithm are:
-
-### MD5 Encrypt Algorithm
-
-Class name: org.apache.shardingsphere.encrypt.algorithm.MD5EncryptAlgorithm
-
-Attributes: None
-
-### AES Encrypt Algorithm
-
-Class name: org.apache.shardingsphere.encrypt.algorithm.AESEncryptAlgorithm
-
-Attributes:
-
-| *Name*        | *DataType* | *Description* |
-| ------------- | ---------- | ------------- |
-| aes.key.value | String     | AES KEY       |
-
-### RC4 Encrypt Algorithm
-
-Class name: org.apache.shardingsphere.encrypt.algorithm.RC4EncryptAlgorithm
-
-Attributes:
-
-| *Name*        | *DataType* | *Description* |
-| ------------- | ---------- | ------------- |
-| rc4.key.value | String     | RC4 KEY       |
+Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt) for more details about type of algorithm.

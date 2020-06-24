@@ -23,8 +23,11 @@ rules:
       actualDataNodes: ds_${0..1}.t_order_${0..1}
       tableStrategy:
         standard:
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_order_${order_id % 2}
           shardingColumn: order_id
+          shardingAlgorithmName: table_inline
+  
+  shardingAlgorithms:
+    table_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_${order_id % 2}

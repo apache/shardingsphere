@@ -45,13 +45,13 @@ public interface RuleMetaDataLoader<T extends ShardingSphereRule> extends Ordere
      * @param dataSourceMap data source map
      * @param dataNodes data nodes
      * @param rule rule
-     * @param properties configuration properties
+     * @param props configuration properties
      * @param excludedTableNames excluded table names
      * @return table name and meta data map
      * @throws SQLException SQL exception
      */
-    SchemaMetaData load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, DataNodes dataNodes,
-                        T rule, ConfigurationProperties properties, Collection<String> excludedTableNames) throws SQLException;
+    SchemaMetaData load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, 
+                        DataNodes dataNodes, T rule, ConfigurationProperties props, Collection<String> excludedTableNames) throws SQLException;
     
     /**
      * Load table meta data.
@@ -61,10 +61,9 @@ public interface RuleMetaDataLoader<T extends ShardingSphereRule> extends Ordere
      * @param dataNodes data nodes
      * @param tableName table name
      * @param rule rule
-     * @param properties configuration properties
+     * @param props configuration properties
      * @return meta data
      * @throws SQLException SQL exception
      */
-    Optional<TableMetaData> load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, DataNodes dataNodes, 
-                                 String tableName, T rule, ConfigurationProperties properties) throws SQLException;
+    Optional<TableMetaData> load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, DataNodes dataNodes, String tableName, T rule, ConfigurationProperties props) throws SQLException;
 }

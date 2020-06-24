@@ -17,48 +17,22 @@
 
 package org.apache.shardingsphere.sharding.spring.namespace.factorybean;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.springframework.beans.factory.FactoryBean;
+import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 
 import java.util.Properties;
 
 /**
  * Key generate algorithm factory bean.
  */
-@Getter
-public final class KeyGenerateAlgorithmFactoryBean implements FactoryBean<KeyGenerateAlgorithm> {
+public final class KeyGenerateAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<KeyGenerateAlgorithm> {
     
     static {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
     }
     
-    private String type;
-    
-    private Properties properties;
-    
-    public KeyGenerateAlgorithmFactoryBean(final String type, final Properties properties) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "The type of keyGenerateAlgorithm is required.");
-        this.type = type;
-        this.properties = properties;
-    }
-    
-    @Override
-    public KeyGenerateAlgorithm getObject() {
-        return TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, type, properties);
-    }
-    
-    @Override
-    public Class<?> getObjectType() {
-        return KeyGenerateAlgorithm.class;
-    }
-    
-    @Override
-    public boolean isSingleton() {
-        return true;
+    public KeyGenerateAlgorithmFactoryBean(final String type, final Properties props) {
+        super(type, props, KeyGenerateAlgorithm.class);
     }
 }

@@ -1,5 +1,5 @@
 +++
-title = "Graduate from Incubator" 
+title = "Congratulations on graduation of Apache ShardingSphere as a Top-Level Project!" 
 weight = 2
 chapter = true
 +++
@@ -7,15 +7,12 @@ chapter = true
 ## Congratulations on graduation of Apache ShardingSphere as a Top-Level Project!
 
 
-Wakefield, MA, April 16, 2020 -- The world's largest open source software foundation, the Apache Software Foundation (ASF), announced Apache ShardingSphere as a Top-Level Project (TLP).
+Apache Software Foundation (ASF), The most popular open-source software foundation, announced Apache ShardingSphere as a Top-Level Project (TLP) on Wakefield, MA, 16th April 2020.
 
-ShardingSphere was submitted to the Apache Incubator and entered incubation in November 2018. Afterwards, under the guidance of the mentor, the members of the Incubator Project Management Committee (IPMC) effectively manages the process of incubation. On March 28, 2020, the proposal for graduation was put to the Apache Foundation's Incubator for a vote and approved with 10 votes in favor.
+ShardingSphere entered into the Apache incubator since 10th November 2018. With the help of mentors and the whole community, The Apache board approved its graduation proposal with 10 +1 votes successfully, which ends up its 17 months incubator and promotes it as TLP.
 
-On April 15, the Apache Software Foundation (ASF) board has passed the resolution for ShardingSphere to graduate from the Apache Incubator to become a top-level project, ending the 17-month incubation. And Vice President of Marketing and Publicity at The Apache Software Foundation, Sally Khudairi announced it on the official channels of the Apache Software Foundation. ShardingSphere is the first Top-Level Project to graduate from Apache incubator in 2020.
+As the first project graduating from Incubator in 2020, this cheering news was published subsequently on Apache official blog with the support of Sally Khudairi, Vice President Marketing & Publicity of ASF.
 
-Apache ShardingSphere is an open-source ecosystem, which has 3 sub-projects that form the database solutions, for ShardingSphere-JDBC, ShardingSphere-Proxy and ShardingSphere-Sidecar (TODO). ShardingSphere originated from Dangdang and developed in JD Digital Technology, becoming the first Apache distributed database middleware project.
+Apache ShardingSphere was born in dangdang.com, grew up fastly in JD.com, and now becomes a famous Apache distributed database middleware ecosystem. The evolvement from a light JDBC driver into an ecosystem presents the efforts and enthusiasm of the whole community in the past 17 months.
 
-Graduation as a Top-Level Project reflects the efforts of the Apache ShardingSphere community over the past year and a half. Since entering the Apache incubator, ShardingSphere has evolved from a JDBC driver for sharding into a distributed ecosystem.
-
-Thanks to our mentors, contributors, and the Apache Incubator for their support, especially during the period of the coronavirus outbreak. Moreover, we are very pleased to see that the community has been active and diverse, with the involvement of more than 120 contributors from all over the world.
-
+Special thanks for the guidance from IPMCs, mentors. Many thanks for contributions from 120+ committers all over the world. What's more, we are glad to see the community still move actively during the coronavirus outbreak. 

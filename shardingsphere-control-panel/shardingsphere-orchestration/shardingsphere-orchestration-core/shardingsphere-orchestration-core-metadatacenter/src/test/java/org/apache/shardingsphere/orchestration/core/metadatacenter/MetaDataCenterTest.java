@@ -55,7 +55,7 @@ public final class MetaDataCenterTest {
     
     @Test
     public void assertPersistMetaDataCenterNode() {
-        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swap(YamlEngine.unmarshal(MetaDataTest.META_DATA, YamlRuleSchemaMetaData.class));
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(MetaDataTest.META_DATA, YamlRuleSchemaMetaData.class));
         metaDataCenter.persistMetaDataCenterNode("schema", ruleSchemaMetaData);
         verify(repository).persist(eq("/test/metadata/schema"), anyString());
     }

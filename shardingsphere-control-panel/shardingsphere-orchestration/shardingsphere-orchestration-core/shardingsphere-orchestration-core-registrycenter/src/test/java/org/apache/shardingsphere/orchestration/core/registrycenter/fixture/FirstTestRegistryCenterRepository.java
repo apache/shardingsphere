@@ -27,11 +27,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+@Getter
+@Setter
 public final class FirstTestRegistryCenterRepository implements RegistryCenterRepository {
     
-    @Getter
-    @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     
     @Override
     public void init(final CenterConfiguration config) {

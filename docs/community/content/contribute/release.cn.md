@@ -125,6 +125,8 @@ gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
 
 ### 更新版本说明
 
+在Github主干上更新如下文件，并提交PR到主干：
+ 
 ```
 https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md
 ```
@@ -517,15 +519,15 @@ mvn clean package -Prelease,docker
 通过`docker images`查看到IMAGE ID，例如为：e9ea51023687
 
 ```shell
-docker tag e9ea51023687 apache/shardingsphere-proxy:latest
-docker tag e9ea51023687 apache/shardingsphere-proxy:${RELEASE.VERSION}
+docker tag e9ea51023687 apache/sharding-proxy:latest
+docker tag e9ea51023687 apache/sharding-proxy:${RELEASE.VERSION}
 ```
 
 #### 发布Docker镜像
 
 ```shell
-docker push apache/shardingsphere-proxy:latest
-docker push apache/shardingsphere-proxy:${RELEASE_VERSION}
+docker push apache/sharding-proxy:latest
+docker push apache/sharding-proxy:${RELEASE_VERSION}
 ```
 
 #### 确认发布成功

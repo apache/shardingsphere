@@ -25,6 +25,6 @@ rules:
             encryptorName: order_encryptor
     encryptors:
       order_encryptor:
-        type: aes
+        type: AES
         props:
           aes.key.value: 123456

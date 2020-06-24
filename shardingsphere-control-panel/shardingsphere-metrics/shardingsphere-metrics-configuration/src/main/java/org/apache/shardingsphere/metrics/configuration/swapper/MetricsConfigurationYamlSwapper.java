@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.metrics.configuration.swapper;
 
+import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
  * Metrics configuration YAML swapper.
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 public final class MetricsConfigurationYamlSwapper implements YamlSwapper<YamlMetricsConfiguration, MetricsConfiguration> {
     
     @Override
-    public YamlMetricsConfiguration swap(final MetricsConfiguration metricsConfiguration) {
+    public YamlMetricsConfiguration swapToYamlConfiguration(final MetricsConfiguration metricsConfiguration) {
         YamlMetricsConfiguration configuration = new YamlMetricsConfiguration();
         configuration.setHost(metricsConfiguration.getHost());
         configuration.setName(metricsConfiguration.getMetricsName());
@@ -39,7 +39,7 @@ public final class MetricsConfigurationYamlSwapper implements YamlSwapper<YamlMe
     }
     
     @Override
-    public MetricsConfiguration swap(final YamlMetricsConfiguration metricsConfiguration) {
+    public MetricsConfiguration swapToObject(final YamlMetricsConfiguration metricsConfiguration) {
         return new MetricsConfiguration(metricsConfiguration.getName(), metricsConfiguration.getHost(),
                 null == metricsConfiguration.getPort() ? 9190 : metricsConfiguration.getPort(),
                 null == metricsConfiguration.getAsync(),

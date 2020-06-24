@@ -37,38 +37,28 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlOrchestrationConfiguration() {
         OrchestrationConfiguration data = getOrchestrationConfiguration();
-        YamlOrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swap(data);
+        YamlOrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swapToYamlConfiguration(data);
         for (String each : result.getCenterRepositoryConfigurationMap().keySet()) {
             assertNotNull(result.getCenterRepositoryConfigurationMap().get(each));
-            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getOrchestrationType(),
-                    is(data.getInstanceConfigurationMap().get(each).getOrchestrationType()));
-            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getInstanceType(),
-                    is(data.getInstanceConfigurationMap().get(each).getType()));
-            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getNamespace(),
-                    is(data.getInstanceConfigurationMap().get(each).getNamespace()));
-            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getServerLists(),
-                    is(data.getInstanceConfigurationMap().get(each).getServerLists()));
-            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getProps(),
-                    is(data.getInstanceConfigurationMap().get(each).getProperties()));
+            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getOrchestrationType(), is(data.getInstanceConfigurationMap().get(each).getOrchestrationType()));
+            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getInstanceType(), is(data.getInstanceConfigurationMap().get(each).getType()));
+            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getNamespace(), is(data.getInstanceConfigurationMap().get(each).getNamespace()));
+            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getServerLists(), is(data.getInstanceConfigurationMap().get(each).getServerLists()));
+            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getProps(), is(data.getInstanceConfigurationMap().get(each).getProps()));
         }
     }
     
     @Test
     public void assertSwapToOrchestrationConfiguration() {
         YamlOrchestrationConfiguration data = getYamlOrchestrationConfiguration();
-        OrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swap(data);
+        OrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swapToObject(data);
         for (String each : result.getInstanceConfigurationMap().keySet()) {
             assertNotNull(result.getInstanceConfigurationMap().get(each));
-            assertThat(result.getInstanceConfigurationMap().get(each).getOrchestrationType(),
-                    is(data.getCenterRepositoryConfigurationMap().get(each).getOrchestrationType()));
-            assertThat(result.getInstanceConfigurationMap().get(each).getType(),
-                    is(data.getCenterRepositoryConfigurationMap().get(each).getInstanceType()));
-            assertThat(result.getInstanceConfigurationMap().get(each).getNamespace(),
-                    is(data.getCenterRepositoryConfigurationMap().get(each).getNamespace()));
-            assertThat(result.getInstanceConfigurationMap().get(each).getServerLists(),
-                    is(data.getCenterRepositoryConfigurationMap().get(each).getServerLists()));
-            assertThat(result.getInstanceConfigurationMap().get(each).getProperties(),
-                    is(data.getCenterRepositoryConfigurationMap().get(each).getProps()));
+            assertThat(result.getInstanceConfigurationMap().get(each).getOrchestrationType(), is(data.getCenterRepositoryConfigurationMap().get(each).getOrchestrationType()));
+            assertThat(result.getInstanceConfigurationMap().get(each).getType(), is(data.getCenterRepositoryConfigurationMap().get(each).getInstanceType()));
+            assertThat(result.getInstanceConfigurationMap().get(each).getNamespace(), is(data.getCenterRepositoryConfigurationMap().get(each).getNamespace()));
+            assertThat(result.getInstanceConfigurationMap().get(each).getServerLists(), is(data.getCenterRepositoryConfigurationMap().get(each).getServerLists()));
+            assertThat(result.getInstanceConfigurationMap().get(each).getProps(), is(data.getCenterRepositoryConfigurationMap().get(each).getProps()));
         }
     }
     

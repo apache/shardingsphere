@@ -17,13 +17,23 @@
 
 package org.apache.shardingsphere.spring.algorithm;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
 import java.util.Collection;
 import java.util.Properties;
 
+@Getter
+@Setter
 public final class DefaultComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm<Integer> {
+    
+    private Properties props = new Properties();
+    
+    @Override
+    public void init() {
+    }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
@@ -33,18 +43,5 @@ public final class DefaultComplexKeysShardingAlgorithm implements ComplexKeysSha
     @Override
     public String getType() {
         return "COMPLEX_TEST";
-    }
-    
-    @Override
-    public Properties getProperties() {
-        return new Properties();
-    }
-    
-    @Override
-    public void setProperties(final Properties properties) {
-    }
-
-    @Override
-    public void init() {
     }
 }

@@ -40,7 +40,7 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
         assertEquals(configuration.getOrchestrationType(), yamlCenterRepositoryConfiguration.getOrchestrationType());
         assertEquals(configuration.getNamespace(), yamlCenterRepositoryConfiguration.getNamespace());
         assertEquals(configuration.getServerLists(), yamlCenterRepositoryConfiguration.getServerLists());
-        assertEquals(configuration.getProperties(), yamlCenterRepositoryConfiguration.getProps());
+        assertEquals(configuration.getProps(), yamlCenterRepositoryConfiguration.getProps());
     }
     
     private YamlCenterRepositoryConfiguration getYamlInstanceConfiguration() {

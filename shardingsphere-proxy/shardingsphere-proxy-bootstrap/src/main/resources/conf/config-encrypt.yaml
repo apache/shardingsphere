@@ -41,11 +41,11 @@
 #- !ENCRYPT
 #  encryptors:
 #    aes_encryptor:
-#      type: aes
+#      type: AES
 #      props:
 #        aes.key.value: 123456abc
 #    md5_encryptor:
-#      type: md5
+#      type: MD5
 #  tables:
 #    t_encrypt:
 #      columns:
@@ -78,11 +78,11 @@
 #- !ENCRYPT
 #  encryptors:
 #    aes_encryptor:
-#      type: aes
+#      type: AES
 #      props:
 #        aes.key.value: 123456abc
 #    md5_encryptor:
-#      type: md5
+#      type: MD5
 #  tables:
 #    t_encrypt:
 #      columns:

@@ -17,13 +17,23 @@
 
 package org.apache.shardingsphere.spring.namespace.orchestration.algorithm;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 
 import java.util.Collection;
 import java.util.Properties;
 
+@Getter
+@Setter
 public final class DefaultHintShardingAlgorithm implements HintShardingAlgorithm<Integer> {
+    
+    private Properties props = new Properties();
+    
+    @Override
+    public void init() {
+    }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
@@ -33,18 +43,5 @@ public final class DefaultHintShardingAlgorithm implements HintShardingAlgorithm
     @Override
     public String getType() {
         return "HINT_TEST";
-    }
-    
-    @Override
-    public Properties getProperties() {
-        return new Properties();
-    }
-    
-    @Override
-    public void setProperties(final Properties properties) {
-    }
-
-    @Override
-    public void init() {
     }
 }

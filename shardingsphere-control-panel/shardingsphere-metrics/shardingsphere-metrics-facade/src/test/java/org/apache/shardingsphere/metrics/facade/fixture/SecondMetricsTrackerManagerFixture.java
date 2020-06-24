@@ -31,16 +31,14 @@ public final class SecondMetricsTrackerManagerFixture implements MetricsTrackerM
     
     private MetricsTrackerFactory metricsTrackerFactory = new SecondMetricsTrackerFactoryFixture();
     
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     
     @Override
     public void start(final MetricsConfiguration metricsConfiguration) {
-    
     }
     
     @Override
     public void stop() {
-    
     }
     
     @Override

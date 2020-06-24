@@ -46,7 +46,7 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     
     private final ShardingConditions shardingConditions;
 
-    private final ConfigurationProperties properties;
+    private final ConfigurationProperties props;
     
     @Override
     public RouteResult route(final ShardingRule shardingRule) {
@@ -56,7 +56,7 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
-                    result.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), sqlStatementContext, shardingConditions, properties).route(shardingRule));
+                    result.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), sqlStatementContext, shardingConditions, props).route(shardingRule));
                 }
                 shardingRule.findBindingTableRule(each).ifPresent(bindingTableRule -> bindingTableNames.addAll(
                     bindingTableRule.getTableRules().stream().map(TableRule::getLogicTable).collect(Collectors.toList())));

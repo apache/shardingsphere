@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.orchestration.core.registrycenter;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.core.registrycenter.instance.OrchestrationInstance;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * RegistryCenter hold and persist instance state.
@@ -86,5 +88,34 @@ public final class RegistryCenter {
      */
     public Collection<String> loadAllInstances() {
         return repository.getChildrenKeys(node.getInstanceNodeRootPath());
+    }
+    
+    /**
+     * Load all data sources nodes.
+     *
+     * @return Collection of all data sources nodes
+     */
+    public Collection<String> loadAllDataSourcesNodes() {
+        return repository.getChildrenKeys(node.getDataSourcesNodeFullRootPath());
+    }
+    
+    /**
+     * Get data sources node data.
+     *
+     * @param schemaDataSourceName schema name and data source name
+     * @return data sources node data
+     */
+    public String getDataSourcesNodeData(final String schemaDataSourceName) {
+        return repository.get(node.getDataSourcesNodeFullPath(schemaDataSourceName));
+    }
+    
+    /**
+     * Load disabled data sources.
+     *
+     * @return Collection of disabled data sources
+     */
+    public Collection<String> loadDisabledDataSources() {
+        return loadAllDataSourcesNodes().stream().filter(each -> !Strings.isNullOrEmpty(getDataSourcesNodeData(each))
+                && RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(getDataSourcesNodeData(each))).collect(Collectors.toList());
     }
 }

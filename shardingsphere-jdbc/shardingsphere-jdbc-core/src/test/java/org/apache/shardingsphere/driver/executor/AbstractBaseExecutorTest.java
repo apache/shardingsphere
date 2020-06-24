@@ -74,7 +74,7 @@ public abstract class AbstractBaseExecutorTest {
         when(schemaContexts.getDefaultSchemaContext()).thenReturn(schemaContext);
         when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
         when(runtimeContext.getExecutorKernel()).thenReturn(executorKernel);
-        when(schemaContexts.getProperties()).thenReturn(getProperties());
+        when(schemaContexts.getProps()).thenReturn(getProperties());
         when(schemaContext.getSchema()).thenReturn(schema);
         when(schema.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         ShardingRule shardingRule = getShardingRule();

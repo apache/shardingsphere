@@ -41,7 +41,7 @@ rules:
           encryptorName: status_encryptor
   encryptors:
     status_encryptor:
-      type: aes
+      type: AES
       props:
         aes.key.value: 123456
 

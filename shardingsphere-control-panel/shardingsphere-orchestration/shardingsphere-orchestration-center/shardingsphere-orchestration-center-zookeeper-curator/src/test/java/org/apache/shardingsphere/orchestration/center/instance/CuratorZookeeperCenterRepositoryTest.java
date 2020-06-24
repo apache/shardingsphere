@@ -83,7 +83,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
     public void assertWatchUpdatedChangedType() throws Exception {
         REPOSITORY.persist("/test/children_updated/1", "value1");
         AtomicReference<DataChangedEvent> dataChangedEventActual = new AtomicReference<>();
-        REPOSITORY.watch("/test/children_updated", dataChangedEvent -> dataChangedEventActual.set(dataChangedEvent));
+        REPOSITORY.watch("/test/children_updated", dataChangedEventActual::set);
         REPOSITORY.persist("/test/children_updated/1", "value2");
         Thread.sleep(50L);
         DataChangedEvent dataChangedEvent = dataChangedEventActual.get();
@@ -101,7 +101,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
         field.setAccessible(true);
         CuratorFramework client = (CuratorFramework) field.get(REPOSITORY);
         AtomicReference<DataChangedEvent> dataChangedEventActual = new AtomicReference<>();
-        REPOSITORY.watch("/test/children_deleted/5", dataChangedEvent -> dataChangedEventActual.set(dataChangedEvent));
+        REPOSITORY.watch("/test/children_deleted/5", dataChangedEventActual::set);
         client.delete().forPath("/test/children_deleted/5");
         Thread.sleep(50L);
         DataChangedEvent dataChangedEvent = dataChangedEventActual.get();
@@ -132,19 +132,19 @@ public final class CuratorZookeeperCenterRepositoryTest {
     @Test
     public void assertBuildCuratorClientWithCustomConfig() {
         final CuratorZookeeperCenterRepository customCenterRepository = new CuratorZookeeperCenterRepository();
-        Properties properties = new Properties();
-        properties.setProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000");
-        properties.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1");
-        properties.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
-        properties.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "1000");
+        Properties props = new Properties();
+        props.setProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000");
+        props.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1");
+        props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
+        props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000");
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
         configuration.setServerLists(serverLists);
-        customCenterRepository.setProperties(properties);
+        customCenterRepository.setProps(props);
         customCenterRepository.init(configuration);
-        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
-        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey()), is("1"));
-        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("1000"));
-        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("1000"));
+        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
+        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey()), is("1"));
+        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("1000"));
+        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("2000"));
         customCenterRepository.persist("/test/children/build/1", "value1");
         assertThat(customCenterRepository.get("/test/children/build/1"), is("value1"));
     }
@@ -152,13 +152,13 @@ public final class CuratorZookeeperCenterRepositoryTest {
     @Test
     public void assertBuildCuratorClientWithTimeToLiveSecondsEqualsZero() {
         final CuratorZookeeperCenterRepository customCenterRepository = new CuratorZookeeperCenterRepository();
-        Properties properties = new Properties();
-        properties.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
+        Properties props = new Properties();
+        props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
         configuration.setServerLists(serverLists);
-        customCenterRepository.setProperties(properties);
+        customCenterRepository.setProps(props);
         customCenterRepository.init(configuration);
-        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("0"));
+        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("0"));
         customCenterRepository.persist("/test/children/build/2", "value1");
         assertThat(customCenterRepository.get("/test/children/build/2"), is("value1"));
     }
@@ -166,13 +166,13 @@ public final class CuratorZookeeperCenterRepositoryTest {
     @Test
     public void assertBuildCuratorClientWithOperationTimeoutMillisecondsEqualsZero() {
         final CuratorZookeeperCenterRepository customCenterRepository = new CuratorZookeeperCenterRepository();
-        Properties properties = new Properties();
-        properties.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
+        Properties props = new Properties();
+        props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
         configuration.setServerLists(serverLists);
-        customCenterRepository.setProperties(properties);
+        customCenterRepository.setProps(props);
         customCenterRepository.init(configuration);
-        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
+        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
         customCenterRepository.persist("/test/children/build/3", "value1");
         assertThat(customCenterRepository.get("/test/children/build/3"), is("value1"));
     }
@@ -180,13 +180,13 @@ public final class CuratorZookeeperCenterRepositoryTest {
     @Test
     public void assertBuildCuratorClientWithDigest() {
         final CuratorZookeeperCenterRepository customCenterRepository = new CuratorZookeeperCenterRepository();
-        Properties properties = new Properties();
-        properties.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
+        Properties props = new Properties();
+        props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
         configuration.setServerLists(serverLists);
-        customCenterRepository.setProperties(properties);
+        customCenterRepository.setProps(props);
         customCenterRepository.init(configuration);
-        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.DIGEST.getKey()), is("any"));
+        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.DIGEST.getKey()), is("any"));
         customCenterRepository.persist("/test/children/build/4", "value1");
         assertThat(customCenterRepository.get("/test/children/build/4"), is("value1"));
     }
@@ -201,19 +201,18 @@ public final class CuratorZookeeperCenterRepositoryTest {
         assertNull(REPOSITORY.get("/test/children/1"));
         assertNull(REPOSITORY.get("/test/children/2"));
     }
-
+    
     @Test
     public void assertZKCloseAndException() {
         final CuratorZookeeperCenterRepository customCenterRepository = new CuratorZookeeperCenterRepository();
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
-        Properties properties = new Properties();
-        properties.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "digest");
+        Properties props = new Properties();
+        props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "digest");
         configuration.setServerLists(serverLists);
-        customCenterRepository.setProperties(properties);
+        customCenterRepository.setProps(props);
         customCenterRepository.init(configuration);
-
         customCenterRepository.close();
-
+        
         try {
             customCenterRepository.get("/test/children/1");
             fail("must be failed after close.");
@@ -222,7 +221,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
             // CHECKSTYLE:ON
             Assert.assertTrue(ex instanceof OrchestrationException);
         }
-
+        
         try {
             customCenterRepository.persist("/test/children/01", "value1");
             fail("must be failed after close.");
@@ -231,7 +230,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
             // CHECKSTYLE:ON
             Assert.assertTrue(ex instanceof OrchestrationException);
         }
-
+        
         try {
             customCenterRepository.delete("/test/children/02");
             fail("must be failed after close.");
@@ -240,7 +239,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
             // CHECKSTYLE:ON
             Assert.assertTrue(ex instanceof OrchestrationException);
         }
-
+        
         try {
             customCenterRepository.persistEphemeral("/test/children/03", "value1");
             fail("must be failed after close.");
@@ -249,7 +248,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
             // CHECKSTYLE:ON
             Assert.assertTrue(ex instanceof OrchestrationException);
         }
-
+        
         try {
             customCenterRepository.getChildrenKeys("/test/children");
             fail("must be failed after close.");

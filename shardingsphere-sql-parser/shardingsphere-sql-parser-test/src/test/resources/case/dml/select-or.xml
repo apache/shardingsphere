@@ -285,11 +285,11 @@
     <select sql-case-id="select_or_mix_and_with_binding_tables" parameters="1, 2, 3">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -369,11 +369,11 @@
     <select sql-case-id="select_or_mix_and_with_binding_and_broadcast_tables" parameters="1, 2, 3, 'init'">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -398,7 +398,7 @@
             </join-table>
             <join-table>
                 <table-factor>
-                    <table name="t_broadcast_table" alias="c" start-index="104" stop-index="120" />
+                    <table name="t_broadcast_table" alias="c" start-index="104" stop-index="122" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>

@@ -20,9 +20,9 @@ package org.apache.shardingsphere.encrypt.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.algorithm.YamlEncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,7 +36,7 @@ public final class YamlEncryptRuleConfiguration implements YamlRuleConfiguration
     
     private Map<String, YamlEncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
     
-    private Map<String, YamlEncryptAlgorithmConfiguration> encryptors = new LinkedHashMap<>();
+    private Map<String, YamlShardingSphereAlgorithmConfiguration> encryptors = new LinkedHashMap<>();
     
     @Override
     public Class<EncryptRuleConfiguration> getRuleConfigurationType() {

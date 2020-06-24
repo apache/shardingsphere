@@ -35,18 +35,18 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 ### Update Release Notes
 
 ```
-https://github.com/apache/shardingsphere/blob/master/shardingsphere-ui/RELEASE-NOTES.md
+https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
 ```
 
 ### Create Release Branch
 
-Suppose ShardingSphere source codes downloaded from github is under `~/shardingsphere/` directory and the version to be released is `4.0.0-RC`. 
+Suppose ShardingSphere source codes downloaded from github is under `~/shardingsphere-ui/` directory and the version to be released is `4.0.0-RC`. 
 Create `${RELEASE.VERSION}-release-ui` branch, where all the following operations are performed.
 
 ```shell
 ## ${name} is the properly branch, e.g. master, dev-4.x
-git clone --branch ${name} https://github.com/apache/shardingsphere.git ~/shardingsphere
-cd ~/shardingsphere/
+git clone --branch ${name} https://github.com/apache/shardingsphere-ui.git ~/shardingsphere-ui
+cd ~/shardingsphere-ui/
 git pull
 git checkout -b ${RELEASE.VERSION}-release-ui
 git push origin ${RELEASE.VERSION}-release-ui
@@ -55,11 +55,11 @@ git push origin ${RELEASE.VERSION}-release-ui
 ### Pre-Release Check
 
 ```shell
-cd ~/shardingsphere/shardingsphere-ui
+cd ~/shardingsphere-ui
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github username}
 ```
 
--Prelease: choose release profile, which will pack all the source codes, jar files and executable binary packages of ShardingSphere-Proxy.
+-Prelease: choose release profile, which will pack all the source codes, jar files and executable binary packages of ShardingSphere-UI.
 
 -DautoVersionSubmodules=true: it can make the version number is inputted only once and not for each sub-module.
 
@@ -70,14 +70,14 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 First, clean local pre-release check information.
 
 ```shell
-cd ~/shardingsphere/shardingsphere-ui
+cd ~/shardingsphere-ui
 mvn release:clean
 ```
 
 Then, prepare to execute the release.
 
 ```shell
-cd ~/shardingsphere/shardingsphere-ui
+cd ~/shardingsphere-ui
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github username}
 ```
 
@@ -95,7 +95,7 @@ git push origin --tags
 ### Deploy the Release
 
 ```shell
-cd ~/shardingsphere/shardingsphere-ui
+cd ~/shardingsphere-ui
 mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github username}
 ```
 
@@ -138,10 +138,10 @@ cd ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
 Add source code packages, binary packages and executable binary packages of ShardingSphere-Proxy to SVN working directory.
 
 ```shell
-cp -f ~/shardingsphere/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
+cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
+cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
+cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
+cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
 ```
 
 ### Generate sign files
@@ -206,10 +206,10 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.
 #### compare release source with github tag
 
 ```
-curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/shardingsphere-ui-${RELEASE.VERSION}.zip
+curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-ui/archive/shardingsphere-ui-${RELEASE.VERSION}.zip
 unzip tag-shardingsphere-ui-${RELEASE.VERSION}.zip
 unzip apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip
-diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ shardingsphere-shardingsphere-ui-${RELEASE.VERSION}/shardingsphere-ui/
+diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ shardingsphere-shardingsphere-ui-${RELEASE.VERSION}/
 ```
 
 #### Check source package
@@ -265,16 +265,16 @@ Hello ShardingSphere Community,
 This is a call for vote to release Apache ShardingSphere UI version ${RELEASE.VERSION}
 
 Release notes:
-https://github.com/apache/shardingsphere/blob/master/shardingsphere-ui/RELEASE-NOTES.md
+https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}/
 
 Git tag for the release:
-https://github.com/apache/shardingsphere/tree/shardingsphere-ui-${RELEASE.VERSION}/
+https://github.com/apache/shardingsphere-ui/tree/shardingsphere-ui-${RELEASE.VERSION}/
 
 Release Commit ID:
-https://github.com/apache/shardingsphere/commit/xxxxxxxxxxxxxxxxxxxxxxx
+https://github.com/apache/shardingsphere-ui/commit/xxxxxxxxxxxxxxxxxxxxxxx
 
 Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
@@ -392,7 +392,7 @@ Keep one latest versions in `Latest releases`. Incubating stage versions will be
 
 ### Publish release in GitHub
 
-Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere/releases)'s `shardingsphere-ui-${RELEASE_VERSION}` version
+Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere-ui/releases)'s `shardingsphere-ui-${RELEASE_VERSION}` version
 
 Edit version number and release notes, click `Publish release`
 
@@ -421,12 +421,12 @@ Therefore, at the current stage, we prefer to focus on its increment instead of 
 
 Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 
-Release Notes: https://github.com/apache/shardingsphere/blob/master/shardingsphere-ui/RELEASE-NOTES.md
+Release Notes: https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
 
 Website: https://shardingsphere.apache.org/
 
 ShardingSphere Resources:
-- Issue: https://github.com/apache/shardingsphere/issues/
+- Issue: https://github.com/apache/shardingsphere-ui/issues/
 - Mailing list: dev@shardingsphere.apache.org
 - Documents: https://shardingsphere.apache.org/document/current/
 

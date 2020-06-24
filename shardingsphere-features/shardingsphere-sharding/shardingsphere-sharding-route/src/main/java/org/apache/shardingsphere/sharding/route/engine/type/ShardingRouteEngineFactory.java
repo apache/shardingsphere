@@ -63,11 +63,11 @@ public final class ShardingRouteEngineFactory {
      * @param metaData meta data of ShardingSphere
      * @param sqlStatementContext SQL statement context
      * @param shardingConditions shardingConditions
-     * @param properties sharding sphere properties
+     * @param props ShardingSphere properties
      * @return new instance of routing engine
      */
     public static ShardingRouteEngine newInstance(final ShardingRule shardingRule, final ShardingSphereMetaData metaData, 
-                                                  final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions, final ConfigurationProperties properties) {
+                                                  final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions, final ConfigurationProperties props) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         if (sqlStatement instanceof TCLStatement) {
@@ -91,7 +91,7 @@ public final class ShardingRouteEngineFactory {
         if (!shardingRule.tableRuleExists(tableNames)) {
             return new ShardingUnconfiguredTablesRoutingEngine(tableNames, metaData.getSchema().getUnconfiguredSchemaMetaDataMap());
         }
-        return getShardingRoutingEngine(shardingRule, sqlStatementContext, shardingConditions, tableNames, properties);
+        return getShardingRoutingEngine(shardingRule, sqlStatementContext, shardingConditions, tableNames, props);
     }
     
     private static ShardingRouteEngine getDALRoutingEngine(final ShardingRule shardingRule, 
@@ -126,12 +126,12 @@ public final class ShardingRouteEngineFactory {
     }
     
     private static ShardingRouteEngine getShardingRoutingEngine(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
-                                                                final ShardingConditions shardingConditions, final Collection<String> tableNames, final ConfigurationProperties properties) {
+                                                                final ShardingConditions shardingConditions, final Collection<String> tableNames, final ConfigurationProperties props) {
         Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
         if (1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) {
-            return new ShardingStandardRoutingEngine(shardingTableNames.iterator().next(), sqlStatementContext, shardingConditions, properties);
+            return new ShardingStandardRoutingEngine(shardingTableNames.iterator().next(), sqlStatementContext, shardingConditions, props);
         }
         // TODO config for cartesian set
-        return new ShardingComplexRoutingEngine(tableNames, sqlStatementContext, shardingConditions, properties);
+        return new ShardingComplexRoutingEngine(tableNames, sqlStatementContext, shardingConditions, props);
     }
 }

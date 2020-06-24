@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.merge.result.impl.memory;
 
 import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 
 import java.sql.SQLException;
@@ -25,6 +26,7 @@ import java.sql.SQLException;
 /**
  * Memory query result row.
  */
+@RequiredArgsConstructor
 public final class MemoryQueryResultRow {
     
     private final Object[] data;

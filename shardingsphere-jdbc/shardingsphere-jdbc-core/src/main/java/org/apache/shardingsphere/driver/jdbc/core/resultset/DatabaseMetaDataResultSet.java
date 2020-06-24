@@ -59,17 +59,20 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private final Iterator<DatabaseMetaDataObject> databaseMetaDataObjectIterator;
     
+    private final ResultSet resultSet;
+    
     private volatile boolean closed;
     
     private DatabaseMetaDataObject currentDatabaseMetaDataObject;
     
     public DatabaseMetaDataResultSet(final ResultSet resultSet, final Collection<ShardingSphereRule> rules) throws SQLException {
-        this.type = resultSet.getType();
-        this.concurrency = resultSet.getConcurrency();
+        this.resultSet = resultSet;
         this.rules = rules;
-        this.resultSetMetaData = resultSet.getMetaData();
-        this.columnLabelIndexMap = initIndexMap();
-        this.databaseMetaDataObjectIterator = initIterator(resultSet);
+        type = resultSet.getType();
+        concurrency = resultSet.getConcurrency();
+        resultSetMetaData = resultSet.getMetaData();
+        columnLabelIndexMap = initIndexMap();
+        databaseMetaDataObjectIterator = initIterator(resultSet);
     }
     
     private Map<String, Integer> initIndexMap() throws SQLException {
@@ -334,6 +337,26 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     }
     
     @Override
+    public void setFetchDirection(final int direction) throws SQLException {
+        resultSet.setFetchDirection(direction);
+    }
+    
+    @Override
+    public int getFetchDirection() throws SQLException {
+        return resultSet.getFetchDirection();
+    }
+    
+    @Override
+    public int getFetchSize() throws SQLException {
+        return resultSet.getFetchSize();
+    }
+    
+    @Override
+    public void setFetchSize(final int rows) throws SQLException {
+        resultSet.setFetchSize(rows);
+    }
+    
+    @Override
     public boolean isClosed() {
         return closed;
     }
@@ -356,7 +379,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         private final ArrayList<Object> objects;
         
         private DatabaseMetaDataObject(final int columnCount) {
-            this.objects = new ArrayList<>(columnCount);
+            objects = new ArrayList<>(columnCount);
         }
         
         public void addObject(final Object object) {

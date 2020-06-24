@@ -30,15 +30,19 @@ public final class DecrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     @Getter
     @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     
     @Override
-    public String getType() {
-        return "DECREMENT";
+    public void init() {
     }
     
     @Override
     public Comparable<?> generateKey() {
         return sequence.decrementAndGet();
+    }
+    
+    @Override
+    public String getType() {
+        return "DECREMENT";
     }
 }

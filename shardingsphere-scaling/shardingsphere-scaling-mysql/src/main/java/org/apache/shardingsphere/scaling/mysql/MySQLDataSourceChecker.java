@@ -37,7 +37,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     
     private static final String SHOW_GRANTS_SQL = "SHOW GRANTS";
     
-    private static final String[][] REQUIRED_PRIVILEGES = {{"ALL PRIVILEGES", "ON *.*"}, {"SELECT", "REPLICATION SLAVE", "REPLICATION CLIENT", "ON *.*"}};
+    private static final String[][] REQUIRED_PRIVILEGES = {{"ALL PRIVILEGES", "ON *.*"}, {"REPLICATION SLAVE", "REPLICATION CLIENT", "ON *.*"}};
     
     private static final String SHOW_VARIABLES_SQL = "SHOW VARIABLES LIKE '%s'";
     
@@ -68,7 +68,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
         } catch (SQLException e) {
             throw new PrepareFailedException("Source datasource check privileges failed.");
         }
-        throw new PrepareFailedException("Source datasource is lack of SELECT, REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges.");
+        throw new PrepareFailedException("Source datasource is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges.");
     }
     
     private boolean matchPrivileges(final String privilege) {

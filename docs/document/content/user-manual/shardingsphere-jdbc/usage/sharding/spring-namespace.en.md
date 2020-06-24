@@ -27,14 +27,14 @@ weight = 4
                         ">
     <!-- Configure actual data sources -->
     <!-- Configure the first data source -->
-    <bean id="ds0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds0" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
     <!-- Configure the second data source -->
-    <bean id="ds1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds1" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds1" />
         <property name="username" value="root" />
@@ -43,17 +43,17 @@ weight = 4
     
     <!-- Configure database sharding strategy -->
     <sharding:sharding-algorithm id="dbShardingAlgorithm" type="INLINE">
-        <props>
+        <properties>
             <prop key="algorithm.expression">ds$->{user_id % 2}</prop>
-        </props>
+        </properties>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="dbStrategy" sharding-column="user_id" algorithm-ref="dbShardingAlgorithm" />
     
     <!-- Configure table sharding strategy -->
     <sharding:sharding-algorithm id="tableShardingAlgorithm" type="INLINE">
-        <props>
+        <properties>
             <prop key="algorithm.expression">t_order$->{order_id % 2}</prop>
-        </props>
+        </properties>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="tableStrategy" sharding-column="user_id" algorithm-ref="tableShardingAlgorithm" />
     

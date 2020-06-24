@@ -26,14 +26,20 @@ import java.util.Properties;
 public final class ConstantKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Getter
-    private final String type = "CONSTANT";
-    
-    @Getter
     @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
+    
+    @Override
+    public void init() {
+    }
     
     @Override
     public Comparable<?> generateKey() {
         return 1;
+    }
+    
+    @Override
+    public String getType() {
+        return "CONSTANT";
     }
 }

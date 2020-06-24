@@ -23,13 +23,13 @@ whose databases take module and split according to `order_id`, tables take modul
 # Configure actual data sources
 dataSources:
   # Configure the first data source
-  ds0: !!org.apache.commons.dbcp.BasicDataSource
+  ds0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds0
     username: root
     password:
   # Configure the second data source
-  ds1: !!org.apache.commons.dbcp.BasicDataSource
+  ds1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds1
     username: root
@@ -46,21 +46,26 @@ rules:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: ds${user_id % 2}
+          shardingAlgorithmName: database_inline
       # Configure table sharding strategy
       tableStrategy:
         standard:
           shardingColumn: order_id
-            shardingAlgorithm:
-              type: INLINE
-                props:
-                  algorithm.expression: t_order${order_id % 2}
+          shardingAlgorithmName: table_inline
     t_order_item: 
     # Omit t_order_item table rule configuration ...
     # ...
+  
+  # Configure sharding algorithms
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm.expression: ds${user_id % 2}
+    table_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_${order_id % 2}
 ```
 
 ```java

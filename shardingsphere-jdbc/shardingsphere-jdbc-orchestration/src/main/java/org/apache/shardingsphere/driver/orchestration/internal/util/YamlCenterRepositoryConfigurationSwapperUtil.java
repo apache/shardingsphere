@@ -43,7 +43,7 @@ public final class YamlCenterRepositoryConfigurationSwapperUtil {
     public static Map<String, CenterConfiguration> marshal(final Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap) {
         Map<String, CenterConfiguration> result = new LinkedHashMap<>(yamlInstanceConfigurationMap.size(), 1);
         for (Map.Entry<String, YamlCenterRepositoryConfiguration> each : yamlInstanceConfigurationMap.entrySet()) {
-            result.put(each.getKey(), INSTANCE_SWAPPER.swap(each.getValue()));
+            result.put(each.getKey(), INSTANCE_SWAPPER.swapToObject(each.getValue()));
         }
         return result;
     }

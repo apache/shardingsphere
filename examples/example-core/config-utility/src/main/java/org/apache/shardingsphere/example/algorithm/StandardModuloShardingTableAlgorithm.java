@@ -29,6 +29,8 @@ import java.util.Set;
 
 public final class StandardModuloShardingTableAlgorithm implements StandardShardingAlgorithm<Long> {
     
+    private Properties props = new Properties();
+    
     @Override
     public void init() {
     }
@@ -59,16 +61,17 @@ public final class StandardModuloShardingTableAlgorithm implements StandardShard
     }
     
     @Override
+    public Properties getProps() {
+        return props;
+    }
+    
+    @Override
+    public void setProps(final Properties props) {
+        this.props = props;
+    }
+    
+    @Override
     public String getType() {
         return "STANDARD_TEST_TBL";
-    }
-    
-    @Override
-    public Properties getProperties() {
-        return new Properties();
-    }
-    
-    @Override
-    public void setProperties(final Properties properties) {
     }
 }

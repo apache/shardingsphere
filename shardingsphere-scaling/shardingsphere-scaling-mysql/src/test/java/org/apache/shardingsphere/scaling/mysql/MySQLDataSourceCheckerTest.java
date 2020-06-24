@@ -70,7 +70,7 @@ public class MySQLDataSourceCheckerTest {
     @Test
     public void assertCheckPrivilegeWithParticularSuccess() throws SQLException {
         when(resultSet.next()).thenReturn(true);
-        when(resultSet.getString(1)).thenReturn("GRANT SELECT, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO '%'@'%'");
+        when(resultSet.getString(1)).thenReturn("GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO '%'@'%'");
         dataSourceChecker.checkPrivilege(dataSources);
         verify(preparedStatement, Mockito.times(1)).executeQuery();
     }
@@ -89,7 +89,7 @@ public class MySQLDataSourceCheckerTest {
         try {
             dataSourceChecker.checkPrivilege(dataSources);
         } catch (PrepareFailedException checkFailedEx) {
-            assertThat(checkFailedEx.getMessage(), is("Source datasource is lack of SELECT, REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges."));
+            assertThat(checkFailedEx.getMessage(), is("Source datasource is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges."));
         }
     }
     
