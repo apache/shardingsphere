@@ -17,22 +17,19 @@
 
 package org.apache.shardingsphere.scaling.core.execute.engine;
 
-import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
-
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.kernel.impl.ShardingSphereThreadFactoryBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import lombok.RequiredArgsConstructor;
 
 /**
  * Sharding scaling executor engine.
@@ -43,7 +40,7 @@ public class ShardingScalingExecuteEngine {
     
     public ShardingScalingExecuteEngine(final int maxWorkerNumber) {
         this.executorService = MoreExecutors.listeningDecorator(
-            new ThreadPoolExecutor(maxWorkerNumber, maxWorkerNumber, 0, TimeUnit.SECONDS, new SynchronousQueue<>(), new ThreadPoolExecutor.AbortPolicy()));
+                Executors.newFixedThreadPool(maxWorkerNumber, ShardingSphereThreadFactoryBuilder.build("ShardingScaling-execute-%d")));
     }
     
     /**
