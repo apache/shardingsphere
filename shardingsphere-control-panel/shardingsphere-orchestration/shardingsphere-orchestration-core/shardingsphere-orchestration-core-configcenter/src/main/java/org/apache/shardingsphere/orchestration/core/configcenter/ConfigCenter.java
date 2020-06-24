@@ -272,7 +272,8 @@ public final class ConfigCenter {
      * @return metrics configuration
      */
     public MetricsConfiguration loadMetricsConfiguration() {
-        return new MetricsConfigurationYamlSwapper().swapToObject(YamlEngine.unmarshal(repository.get(node.getMetricsPath()), YamlMetricsConfiguration.class));
+        return Strings.isNullOrEmpty(repository.get(node.getMetricsPath())) ? null
+            : new MetricsConfigurationYamlSwapper().swapToObject(YamlEngine.unmarshal(repository.get(node.getMetricsPath()), YamlMetricsConfiguration.class));
     }
     
     /**

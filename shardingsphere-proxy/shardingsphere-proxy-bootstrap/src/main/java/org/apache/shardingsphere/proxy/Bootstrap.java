@@ -235,9 +235,8 @@ public final class Bootstrap {
             shardingOrchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs),
                     getRuleConfigurations(ruleConfigs), new AuthenticationYamlSwapper().swapToObject(serverConfig.getAuthentication()), serverConfig.getProps());
         }
-        shardingOrchestrationFacade.initMetricsConfiguration(new MetricsConfigurationYamlSwapper().swapToObject(serverConfig.getMetrics()));
-        shardingOrchestrationFacade.initClusterConfiguration(null == serverConfig.getCluster() ? null
-                : new ClusterConfigurationYamlSwapper().swapToObject(serverConfig.getCluster()));
+        shardingOrchestrationFacade.initMetricsConfiguration(Optional.ofNullable(serverConfig.getMetrics()).map(new MetricsConfigurationYamlSwapper()::swapToObject).orElse(null));
+        shardingOrchestrationFacade.initClusterConfiguration(Optional.ofNullable(serverConfig.getCluster()).map(new ClusterConfigurationYamlSwapper()::swapToObject).orElse(null));
     }
     
     private static void initOpenTracing() {
