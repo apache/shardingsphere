@@ -40,7 +40,7 @@ public final class InstanceStateChangedListenerTest {
     
     @Before
     public void setUp() {
-        instanceStateChangedListener = new InstanceStateChangedListener("test", registryCenterRepository);
+        instanceStateChangedListener = new InstanceStateChangedListener("test", 3307, registryCenterRepository);
     }
     
     @Test

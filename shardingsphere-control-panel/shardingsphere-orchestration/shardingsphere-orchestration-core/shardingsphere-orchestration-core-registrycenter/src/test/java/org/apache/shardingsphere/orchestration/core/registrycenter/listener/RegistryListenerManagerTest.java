@@ -41,7 +41,7 @@ public final class RegistryListenerManagerTest {
     
     @Test
     public void assertInitListeners() {
-        RegistryListenerManager actual = new RegistryListenerManager("test", registryCenterRepository);
+        RegistryListenerManager actual = new RegistryListenerManager("test", 3307, registryCenterRepository);
         FieldUtil.setField(actual, "instanceStateChangedListener", instanceStateChangedListener);
         FieldUtil.setField(actual, "dataSourceStateChangedListener", dataSourceStateChangedListener);
         actual.initListeners();
