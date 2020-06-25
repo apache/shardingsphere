@@ -20,8 +20,6 @@ package org.apache.shardingsphere.orchestration.core.registrycenter.instance;
 import lombok.Getter;
 import org.apache.shardingsphere.orchestration.core.registrycenter.util.IpUtils;
 
-import java.lang.management.ManagementFactory;
-import java.util.UUID;
 
 /**
  * Orchestration instance.
@@ -30,21 +28,30 @@ import java.util.UUID;
 public final class OrchestrationInstance {
     
     private static final String DELIMITER = "@";
-    
-    private static final OrchestrationInstance INSTANCE = new OrchestrationInstance();
+
+    private static OrchestrationInstance instance;
     
     private final String instanceId;
-    
-    private OrchestrationInstance() {
-        instanceId = IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] + DELIMITER + UUID.randomUUID().toString();
+
+    public OrchestrationInstance(final int port) {
+        instanceId = IpUtils.getIp() + DELIMITER + port;
     }
-    
+
     /**
      * Get instance.
-     * 
-     * @return instance
+     *
+     * @param   port        port on which the instance is running
+     * @return  instance    the orchestration instance
      */
-    public static OrchestrationInstance getInstance() {
-        return INSTANCE;
+    public static OrchestrationInstance getInstance(final int port) {
+        if (null == instance) {
+            synchronized (OrchestrationInstance.class) {
+                if (null == instance) {
+                    instance = new OrchestrationInstance(port);
+                }
+            }
+        }
+        return instance;
     }
+
 }
