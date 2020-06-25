@@ -40,9 +40,9 @@ public final class ShardingOrchestrationListenerManager {
     public ShardingOrchestrationListenerManager(final String registryCenterRepositoryName, final RegistryCenterRepository registryCenterRepository,
                                                 final String configCenterRepositoryName, final ConfigCenterRepository configCenterRepository,
                                                 final String metadataCenterRepositoryName, final CenterRepository centerRepository,
-                                                final Collection<String> shardingSchemaNames) {
+                                                final Collection<String> shardingSchemaNames, final int port) {
         configurationChangedListenerManager = new ConfigurationChangedListenerManager(configCenterRepositoryName, configCenterRepository, shardingSchemaNames);
-        registryListenerManager = new RegistryListenerManager(registryCenterRepositoryName, registryCenterRepository);
+        registryListenerManager = new RegistryListenerManager(registryCenterRepositoryName, port, registryCenterRepository);
         metaDataListenerManager = new MetaDataListenerManager(metadataCenterRepositoryName, centerRepository, shardingSchemaNames);
     }
     

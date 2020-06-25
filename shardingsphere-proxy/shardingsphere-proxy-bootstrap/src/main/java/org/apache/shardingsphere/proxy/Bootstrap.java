@@ -137,7 +137,7 @@ public final class Bootstrap {
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig, final Collection<String> shardingSchemaNames,
                                                 final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final int port) throws SQLException {
         try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(
-                new OrchestrationConfigurationYamlSwapper().swapToObject(new YamlOrchestrationConfiguration(serverConfig.getOrchestration())), shardingSchemaNames)) {
+                new OrchestrationConfigurationYamlSwapper().swapToObject(new YamlOrchestrationConfiguration(serverConfig.getOrchestration())), shardingSchemaNames, port)) {
             initShardingOrchestrationFacade(serverConfig, ruleConfigs, shardingOrchestrationFacade);
             Authentication authentication = shardingOrchestrationFacade.getConfigCenter().loadAuthentication();
             Properties properties = shardingOrchestrationFacade.getConfigCenter().loadProperties();

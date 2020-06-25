@@ -81,7 +81,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     
     private final ShardingOrchestrationListenerManager listenerManager;
     
-    public ShardingOrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
+    public ShardingOrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames, final int port) {
         Optional<String> configCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), CenterType.CONFIG_CENTER.getValue());
         Preconditions.checkArgument(configCenterName.isPresent(), "Can not find instance configuration with config center orchestration type.");
         CenterConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName.get());
@@ -97,7 +97,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         Preconditions.checkNotNull(registryCenterConfiguration, "Registry center configuration cannot be null.");
         registryCenterRepository = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfiguration.getType(), registryCenterConfiguration.getProps());
         registryCenterRepository.init(registryCenterConfiguration);
-        registryCenter = new RegistryCenter(registryCenterName.get(), registryCenterRepository);
+        registryCenter = new RegistryCenter(registryCenterName.get(), port, registryCenterRepository);
         Optional<String> metaDataCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), CenterType.METADATA_CENTER.getValue());
         Preconditions.checkArgument(metaDataCenterName.isPresent(), "Can not find instance configuration with metadata center orchestration type.");
         CenterConfiguration metaDataCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(metaDataCenterName.get());
@@ -108,9 +108,9 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         listenerManager = shardingSchemaNames.isEmpty()
                 ? new ShardingOrchestrationListenerManager(
                 registryCenterName.get(), registryCenterRepository, configCenterName.get(),
-                configCenterRepository, metaDataCenterName.get(), centerRepository, configCenter.getAllShardingSchemaNames())
+                configCenterRepository, metaDataCenterName.get(), centerRepository, configCenter.getAllShardingSchemaNames(), port)
                 : new ShardingOrchestrationListenerManager(registryCenterName.get(), registryCenterRepository,
-                configCenterName.get(), configCenterRepository, metaDataCenterName.get(), centerRepository, shardingSchemaNames);
+                configCenterName.get(), configCenterRepository, metaDataCenterName.get(), centerRepository, shardingSchemaNames, port);
         instance = this;
     }
     
