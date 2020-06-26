@@ -136,19 +136,18 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         }
         return false;
     }
-
+    
     private List<MemoryQueryResultRow> getMemoryResultSetRows(final SelectStatementContext selectStatementContext,
                                                               final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
         if (dataMap.isEmpty()) {
             Object[] data = generateReturnData(selectStatementContext);
             return Collections.singletonList(new MemoryQueryResultRow(data));
         }
-        
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
         result.sort(new GroupByRowComparator(selectStatementContext, valueCaseSensitive));
         return result;
     }
-
+    
     private Object[] generateReturnData(final SelectStatementContext selectStatementContext) {
         List projections = new LinkedList(selectStatementContext.getProjectionsContext().getProjections());
         Object[] data = new Object[projections.size()];
