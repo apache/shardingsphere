@@ -93,7 +93,7 @@ projection
     ;
 
 top
-    : TOP LP_? expr RP_? ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_ 
+    : TOP LP_? numberLiterals RP_? PERCENT? (WITH TIES)?
     ;
 
 alias

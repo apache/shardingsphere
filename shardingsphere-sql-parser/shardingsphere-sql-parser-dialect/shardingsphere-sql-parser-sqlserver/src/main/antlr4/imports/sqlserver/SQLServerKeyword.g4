@@ -918,3 +918,11 @@ GEOMETRY
 GEOGRAPHY
     : G E O G R A P H Y
     ;
+
+TIES
+    : T I E S
+    ;
+
+PERCENT
+    : P E R C E N T
+    ;
