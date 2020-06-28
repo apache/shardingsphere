@@ -196,7 +196,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         List<RouteValue> copiedTableShardingValues = tableShardingValues;
         for (String each : routedDataSources) {
 
-            if ( null != tableRule.getDatabaseShardingStrategy() && null != tableRule.getTableShardingStrategy()
+            if (null != tableRule.getDatabaseShardingStrategy() && null != tableRule.getTableShardingStrategy()
                 && 0 != tableRule.getDatabaseShardingStrategy().getShardingColumns().size() && 0 != tableRule.getTableShardingStrategy().getShardingColumns().size()
                 && databaseShardingValues.size() > 0 && tableShardingValues.size() > 0
                 && tableRule.getDatabaseShardingStrategy().getShardingColumns().size() == tableRule.getTableShardingStrategy().getShardingColumns().size()
