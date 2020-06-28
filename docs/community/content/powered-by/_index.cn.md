@@ -155,5 +155,6 @@ chapter = true
 1. <a href="https://zowiesunglasses.com/" rel="nofollow">卓唯眼镜</a>
 1. <a href="http://www.hydee.cn/" rel="nofollow">海典软件</a>
 1. <a href="http://www.chiscdc.com/" rel="nofollow">中卫信</a>
+1. <a href="https://kada.hhdd.com/" rel="nofollow">KaDa故事</a>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
