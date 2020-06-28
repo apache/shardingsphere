@@ -177,28 +177,28 @@ Data migration is a standard expansion and reduction solution for users to custo
 
 The specific process is as follows:
 
-1.  通过配置中心修改数据分片配置，以触发迁移流程。
+1. Modify the data sharding configuration through the configuration center to trigger the migration process.
     
-2.  记录当前迁移数据开启前的位点之后，开启历史迁移作业，分批迁移全量数据。
+2. After recording the location before the current migration data is turned on, start the historical migration operation and migrate the entire amount of data in batches.
     
-3.  开启 Binlog 订阅作业，迁移位点之后的增量数据。
+3. Open the Binlog subscription job and migrate the incremental data after the site.
     
-4.  根据采样率设置比对数据。
+4. Set the comparison data according to the sampling rate.
     
-5.  设置原数据源只读，确保实时数据迁移完成。
+5. Set the original data source to be read-only to ensure the completion of real-time data migration.
     
-6.  将应用连接切换至新数据源。
+6. Switch the application connection to the new data source.
     
-7.  旧数据源下线。
+7. The old data source goes offline.
     
 
-迁移时长根据数据量的大小可能是几分钟至几周不等。迁移过程中可以随时回退或重新迁移。整个迁移流程完全自主可控，降低迁移过程中的风险；并且通过自动化工具完全屏蔽人工操作，避免繁琐的操作带来的巨大工作量。
+The time of migration may vary from a few minutes to several weeks depending on the amount of data. You can roll back or re-migrate at any time during the migration process. The entire migration process is completely autonomous and controllable, reducing the risks during the migration process; and through manual tools to completely shield manual operations, to avoid the huge workload caused by cumbersome operations.
 
-范围扩容
+Range expansion
 
-如果弹性迁移称之为硬伸缩的话，那么范围扩容则称之为软伸缩。Apache ShardingSphere 的范围扩容不涉及内核改造，也无需迁移数据，它只需通过优化范围分片策略，即可达到自动扩（缩）容的目标。使用范围扩容，用户无需感知分片策略和分片键等分库分表方案中必要概念，让 Apache ShardingSphere 更加接近一体化的分布式数据库。
+If elastic migration is called hard scaling, then range expansion is called soft scaling. The scope expansion of Apache ShardingSphere does not involve kernel transformation and data migration. It only needs to optimize the scope sharding strategy to achieve the goal of automatic expansion (shrinkage). With scope expansion, users do not need to be aware of the necessary concepts in the sharding strategy and sharding key and other database partitioning schemes, making Apache ShardingSphere closer to an integrated distributed database.
 
-使用范围扩容的用户，只需向 Apache ShardingSphere 提供数据库资源池。容量巡检器会在表容量到达阈值时，从资源池中依次寻找下一个数据节点，并在新数据节点创建新表之后，修改分片策略的范围元数据。当资源池中没有新数据节点后，Apache ShardingSphere 会按照同样的顺序，在已经创建过表的数据库中增加新表。当表数据大量删除时，之前的数据节点的数据将不再紧凑，垃圾回收器会定时压缩表范围，以释放更多的碎片空间。范围扩容的结构如下：
+Range expansion users only need to provide a database resource pool to Apache ShardingSphere. The capacity inspector will look for the next data node in order from the resource pool when the table capacity reaches the threshold, and modify the range metadata of the sharding strategy after the new data node creates a new table. When there are no new data nodes in the resource pool, Apache ShardingSphere will add new tables to the database that has already created tables in the same order. When a large amount of table data is deleted, the data of the previous data node will no longer be compact, and the garbage collector will periodically compress the table range to free up more fragmented space. The structure of scope expansion is as follows:
 
 ![](https://shardingsphere.apache.org/blog/img/database12.jpg)
 
