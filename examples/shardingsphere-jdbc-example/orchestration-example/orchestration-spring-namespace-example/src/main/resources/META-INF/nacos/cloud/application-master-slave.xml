@@ -32,7 +32,7 @@
     <import resource="classpath*:META-INF/nacos/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
 
-    <orchestration:master-slave-data-source id="masterSlaveDataSource" instance-ref="regCenter,confCenter" overwrite="false" />
+    <orchestration:data-source id="masterSlaveDataSource" instance-ref="regCenter,confCenter" />
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="masterSlaveDataSource" />
