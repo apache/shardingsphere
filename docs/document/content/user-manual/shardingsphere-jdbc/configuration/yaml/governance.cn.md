@@ -9,12 +9,12 @@ weight = 6
 
 ```yaml
 orchestration:
-  demo_yaml_ds_sharding: #治理实例 ID
-    orchestrationType: #治理类型，例如 config_center, registry_center, metadata_center
+  demo_yaml_ds_sharding: #治理实例名称
+    orchestrationType: #治理类型，多个类型用逗号分隔，例如 config_center,registry_center,metadata_center
     instanceType: #治理实例类型。如：zookeeper, etcd, apollo, nacos
     serverLists: #治理服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
     namespace: #治理命名空间
-    props: #其它属性
+    props: #配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等
       overwrite: #本地配置是否覆盖配置中心配置。如果可覆盖，每次启动都以本地配置为准
 ```
 

@@ -38,12 +38,12 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/orchestration
 
 | *Name*                              | *Type* | *Description*                                                                                    |
 | ----------------------------------- | ----- | ------------------------------------------------------------------------------------------|
-| id                                  | Attribute  | Orchestration ID                                                                   |
-| orchestration-type                  | Attribute  | Orchestration type: config_center, registry_center, metadata_center                       |
+| id                                  | Attribute  | Orchestration instance name                                                                 |
+| orchestration-type                  | Attribute  | Orchestration type, use commas to separate, such as: config_center,registry_center,metadata_center                       |
 | instance-type                       | Attribute  | Orchestration instance type. Example:zookeeper, etcd, apollo, nacos                                                           |
 | server-lists                        | Attribute  | The list of servers that connect to orchestration instance, including IP and port number; use commas to separate   |
 | namespace (?)                       | Attribute  | Orchestration namespace                                                                         |
-| props (?)                       | Attribute  | Other properties    
+| props (?)                       | Attribute  | Properties for center instance config, such as options of zookeeper    
 
 ### Cluster
 
