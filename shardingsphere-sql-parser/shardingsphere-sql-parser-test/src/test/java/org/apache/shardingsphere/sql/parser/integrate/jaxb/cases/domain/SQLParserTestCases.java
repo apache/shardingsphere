@@ -56,6 +56,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statemen
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.ReplaceStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.tcl.BeginTransactionStatementTestCase;
@@ -92,7 +93,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "insert")
     private final List<InsertStatementTestCase> insertTestCases = new LinkedList<>();
-    
+
+    @XmlElement(name = "replace")
+    private final List<ReplaceStatementTestCase> replaceTestCases = new LinkedList<>();
+
     @XmlElement(name = "create-table")
     private final List<CreateTableStatementTestCase> createTableTestCases = new LinkedList<>();
     
@@ -224,6 +228,7 @@ public final class SQLParserTestCases {
         putAll(updateTestCases, result);
         putAll(deleteTestCases, result);
         putAll(insertTestCases, result);
+        putAll(replaceTestCases, result);
         putAll(createTableTestCases, result);
         putAll(alterTableTestCases, result);
         putAll(dropTableTestCases, result);

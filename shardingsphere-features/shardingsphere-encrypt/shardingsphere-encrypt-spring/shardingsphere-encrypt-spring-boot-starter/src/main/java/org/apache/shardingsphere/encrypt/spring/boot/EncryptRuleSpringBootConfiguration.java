@@ -17,20 +17,32 @@
 
 package org.apache.shardingsphere.encrypt.spring.boot;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spring.boot.condition.EncryptSpringBootCondition;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleAlgorithmProviderConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 /**
  * Encrypt rule configuration for spring boot.
  */
 @Configuration
+@ConditionalOnClass(YamlEncryptRuleConfiguration.class)
+@Conditional(EncryptSpringBootCondition.class)
 public class EncryptRuleSpringBootConfiguration {
+    
+    private final EncryptRuleAlgorithmProviderConfigurationYamlSwapper swapper = new EncryptRuleAlgorithmProviderConfigurationYamlSwapper();
     
     /**
      * Encrypt YAML rule spring boot configuration.
@@ -39,10 +51,33 @@ public class EncryptRuleSpringBootConfiguration {
      */
     @Bean
     @ConfigurationProperties(prefix = "spring.shardingsphere.rules.encrypt")
-    @ConditionalOnClass(YamlEncryptRuleConfiguration.class)
-    @Conditional(EncryptSpringBootCondition.class)
-    public YamlRuleConfiguration encrypt() {
+    public YamlEncryptRuleConfiguration encryptConfig() {
         return new YamlEncryptRuleConfiguration();
+    }
+    
+    /**
+     * Encrypt rule configuration for spring boot.
+     *
+     * @param yamlEncryptRuleConfiguration YAML encrypt rule configuration
+     * @param encryptors encryptors algorithm to map
+     * @return encrypt rule configuration
+     */
+    @Bean
+    public RuleConfiguration encryptRuleConfiguration(final YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration, final ObjectProvider<Map<String, EncryptAlgorithm>> encryptors) {
+        AlgorithmProvidedEncryptRuleConfiguration ruleConfiguration = swapper.swapToObject(yamlEncryptRuleConfiguration);
+        ruleConfiguration.setEncryptors(Optional.ofNullable(encryptors.getIfAvailable()).orElse(Collections.emptyMap()));
+        return ruleConfiguration;
+    }
+    
+    /**
+     * Encrypt algorithm provided bean registry.
+     *
+     * @param environment environment
+     * @return encrypt algorithm provided bean registry
+     */
+    @Bean
+    public static EncryptAlgorithmProvidedBeanRegistry encryptAlgorithmProvidedBeanRegistry(final Environment environment) {
+        return new EncryptAlgorithmProvidedBeanRegistry(environment);
     }
 }
 

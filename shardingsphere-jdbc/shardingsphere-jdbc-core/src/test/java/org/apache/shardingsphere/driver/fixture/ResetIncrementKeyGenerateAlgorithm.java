@@ -34,6 +34,10 @@ public final class ResetIncrementKeyGenerateAlgorithm implements KeyGenerateAlgo
     private Properties props = new Properties();
     
     @Override
+    public void init() {
+    }
+    
+    @Override
     public Comparable<?> generateKey() {
         return COUNT.incrementAndGet();
     }

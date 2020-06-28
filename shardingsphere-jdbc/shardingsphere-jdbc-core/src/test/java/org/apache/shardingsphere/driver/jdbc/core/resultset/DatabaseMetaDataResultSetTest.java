@@ -104,6 +104,8 @@ public final class DatabaseMetaDataResultSetTest {
         when(result.getType()).thenReturn(ResultSet.TYPE_FORWARD_ONLY);
         when(result.getConcurrency()).thenReturn(ResultSet.CONCUR_READ_ONLY);
         when(result.next()).thenReturn(true, true, false);
+        when(result.getFetchDirection()).thenReturn(ResultSet.FETCH_FORWARD);
+        when(result.getFetchSize()).thenReturn(3);
         return result;
     }
     
@@ -335,6 +337,18 @@ public final class DatabaseMetaDataResultSetTest {
     @Test
     public void assertGetConcurrency() throws Exception {
         assertThat(databaseMetaDataResultSet.getConcurrency(), is(ResultSet.CONCUR_READ_ONLY));
+    }
+    
+    @Test
+    public void assertGetFetchDirection() throws Exception {
+        databaseMetaDataResultSet.setFetchDirection(ResultSet.FETCH_FORWARD);
+        assertThat(databaseMetaDataResultSet.getFetchDirection(), is(ResultSet.FETCH_FORWARD));
+    }
+    
+    @Test
+    public void assertGetFetchSize() throws Exception {
+        databaseMetaDataResultSet.setFetchSize(3);
+        assertThat(databaseMetaDataResultSet.getFetchSize(), is(3));
     }
     
     @Test(expected = SQLException.class)

@@ -56,8 +56,8 @@ public final class MySQLCommandPacketDecoderTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertDecodeUnsupportedAuthenticationMethod() {
-        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) MySQLServerInfo.PROTOCOL_VERSION);
-        when(byteBuf.readShortLE()).thenReturn((short) MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) MySQLServerInfo.PROTOCOL_VERSION);
+        when(byteBuf.readUnsignedShortLE()).thenReturn(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
         commandPacketDecoder.decode(null, byteBuf, null);
     }
@@ -103,7 +103,7 @@ public final class MySQLCommandPacketDecoderTest {
     }
     
     private ByteBuf mockOkPacket() {
-        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) MySQLOKPacket.HEADER);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) MySQLOKPacket.HEADER);
         when(byteBuf.getByte(1)).thenReturn((byte) MySQLOKPacket.HEADER);
         return byteBuf;
     }
@@ -119,7 +119,7 @@ public final class MySQLCommandPacketDecoderTest {
     
     private ByteBuf mockErrPacket() {
         when(byteBuf.getByte(1)).thenReturn((byte) MySQLErrPacket.HEADER);
-        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) MySQLErrPacket.HEADER);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) MySQLErrPacket.HEADER);
         return byteBuf;
     }
     
@@ -143,7 +143,7 @@ public final class MySQLCommandPacketDecoderTest {
     
     private ByteBuf mockFieldDefinition41Packet() {
         when(byteBuf.getByte(1)).thenReturn((byte) 3);
-        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) 3, (byte) 0x0c);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) 3, (short) 0x0c);
         when(byteBuf.readBytes(new byte[3])).then(invocationOnMock -> {
             byte[] input = invocationOnMock.getArgument(0);
             System.arraycopy("def".getBytes(), 0, input, 0, input.length);
@@ -154,7 +154,7 @@ public final class MySQLCommandPacketDecoderTest {
     
     private ByteBuf mockEofPacket() {
         when(byteBuf.getByte(1)).thenReturn((byte) MySQLEofPacket.HEADER);
-        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) MySQLEofPacket.HEADER);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) MySQLEofPacket.HEADER);
         return byteBuf;
     }
     

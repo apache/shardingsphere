@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegm
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -72,11 +73,19 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                     result.add(generateSQLToken((ColumnProjectionSegment) each, tableName));
                 }
             }
-            if (each instanceof ShorthandProjectionSegment) {
+            if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
                 result.add(generateSQLToken((ShorthandProjectionSegment) each, selectStatementContext.getProjectionsContext(), tableName, encryptTable));
             }
         }
         return result;
+    }
+    
+    private boolean isToGeneratedSQLToken(final ProjectionSegment projectionSegment, final SelectStatementContext selectStatementContext, final String tableName) {
+        if (!(projectionSegment instanceof ShorthandProjectionSegment)) {
+            return false;
+        }
+        Optional<OwnerSegment> ownerSegment = ((ShorthandProjectionSegment) projectionSegment).getOwner();
+        return ownerSegment.map(segment -> selectStatementContext.getTablesContext().findTableNameFromSQL(segment.getIdentifier().getValue()).equalsIgnoreCase(tableName)).orElse(true);
     }
     
     private SubstitutableColumnNameToken generateSQLToken(final ColumnProjectionSegment segment, final String tableName) {

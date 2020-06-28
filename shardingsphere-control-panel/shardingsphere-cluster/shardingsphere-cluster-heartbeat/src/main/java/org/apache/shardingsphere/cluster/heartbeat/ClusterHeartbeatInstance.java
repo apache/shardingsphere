@@ -70,6 +70,14 @@ public final class ClusterHeartbeatInstance {
         return heartbeatHandler.handle(schemaContexts, ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadAllDataSourcesNodes());
     }
     
+    /**
+     * Close cluster heartbeat instance.
+     */
+    public void close() {
+        heartbeatTaskManager.close();
+        heartbeatHandler.close();
+    }
+    
     private static final class ClusterHeartbeatInstanceHolder {
         
         private static final ClusterHeartbeatInstance INSTANCE = new ClusterHeartbeatInstance();

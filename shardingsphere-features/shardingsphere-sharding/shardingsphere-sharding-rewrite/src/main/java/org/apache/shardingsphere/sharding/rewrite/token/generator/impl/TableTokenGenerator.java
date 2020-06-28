@@ -52,7 +52,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
         Collection<TableToken> result = new LinkedList<>();
         for (SimpleTableSegment each : sqlStatementContext.getAllTables()) {
             if (shardingRule.findTableRule(each.getTableName().getIdentifier().getValue()).isPresent()) {
-                result.add(new TableToken(each.getStartIndex(), each.getStopIndex(), each.getTableName().getIdentifier(), (SQLStatementContext) sqlStatementContext, shardingRule));
+                result.add(new TableToken(each.getStartIndex(), each.getTableName().getStopIndex(), each, (SQLStatementContext) sqlStatementContext, shardingRule));
             }
         }
         return result;

@@ -131,10 +131,11 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     }
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
+        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, rdbmsConfiguration.getShardingColumnsMap().get(record.getTableName()));
         List<Column> values = new ArrayList<>();
         values.addAll(RecordUtil.extractUpdatedColumns(record));
-        values.addAll(RecordUtil.extractPrimaryColumns(record));
-        String updateSql = sqlBuilder.buildUpdateSQL(record);
+        values.addAll(conditionColumns);
+        String updateSql = sqlBuilder.buildUpdateSQL(record, conditionColumns);
         PreparedStatement ps = connection.prepareStatement(updateSql);
         for (int i = 0; i < values.size(); i++) {
             ps.setObject(i + 1, values.get(i).getValue());
@@ -143,11 +144,11 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     }
     
     private void executeDelete(final Connection connection, final DataRecord record) throws SQLException {
-        String deleteSql = sqlBuilder.buildDeleteSQL(record);
-        List<Column> primaryKeys = RecordUtil.extractPrimaryColumns(record);
+        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, rdbmsConfiguration.getShardingColumnsMap().get(record.getTableName()));
+        String deleteSql = sqlBuilder.buildDeleteSQL(record, conditionColumns);
         PreparedStatement ps = connection.prepareStatement(deleteSql);
-        for (int i = 0; i < primaryKeys.size(); i++) {
-            ps.setObject(i + 1, primaryKeys.get(i).getValue());
+        for (int i = 0; i < conditionColumns.size(); i++) {
+            ps.setObject(i + 1, conditionColumns.get(i).getValue());
         }
         ps.execute();
     }

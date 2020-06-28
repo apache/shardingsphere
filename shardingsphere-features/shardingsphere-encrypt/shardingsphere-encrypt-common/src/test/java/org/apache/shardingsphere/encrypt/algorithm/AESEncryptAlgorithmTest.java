@@ -35,6 +35,7 @@ public final class AESEncryptAlgorithmTest {
         Properties props = new Properties();
         props.setProperty("aes.key.value", "test");
         encryptAlgorithm.setProps(props);
+        encryptAlgorithm.init();
     }
     
     @Test
@@ -51,6 +52,7 @@ public final class AESEncryptAlgorithmTest {
     public void assertEncodeWithoutKey() {
         Properties props = new Properties();
         encryptAlgorithm.setProps(props);
+        encryptAlgorithm.init();
         assertThat(encryptAlgorithm.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
@@ -68,6 +70,7 @@ public final class AESEncryptAlgorithmTest {
     public void assertDecodeWithoutKey() {
         Properties props = new Properties();
         encryptAlgorithm.setProps(props);
+        encryptAlgorithm.init();
         assertThat(encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
     }
     

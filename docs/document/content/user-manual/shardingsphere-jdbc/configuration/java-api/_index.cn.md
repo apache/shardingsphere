@@ -6,7 +6,7 @@ chapter = true
 
 ## 简介
 
-Java API 是 ShardingSphere-JDBC 中所有配置方式的基础，其他配置最终都将转化成为Java API 的配置方式。
+Java API 是 ShardingSphere-JDBC 中所有配置方式的基础，其他配置最终都将转化成为 Java API 的配置方式。
 
 Java API 是最复杂也是最灵活的配置方式，适合需要通过编程进行动态配置的场景下使用。
 

@@ -42,7 +42,7 @@ public final class MySQLPacketPayload implements PacketPayload {
      * @return 1 byte fixed length integer
      */
     public int readInt1() {
-        return byteBuf.readByte() & 0xff;
+        return byteBuf.readUnsignedByte();
     }
     
     /**
@@ -64,7 +64,7 @@ public final class MySQLPacketPayload implements PacketPayload {
      * @return 2 byte fixed length integer
      */
     public int readInt2() {
-        return byteBuf.readShortLE() & 0xffff;
+        return byteBuf.readUnsignedShortLE();
     }
     
     /**
@@ -86,7 +86,7 @@ public final class MySQLPacketPayload implements PacketPayload {
      * @return 3 byte fixed length integer
      */
     public int readInt3() {
-        return byteBuf.readMediumLE() & 0xffffff;
+        return byteBuf.readUnsignedMediumLE();
     }
     
     /**
@@ -188,10 +188,10 @@ public final class MySQLPacketPayload implements PacketPayload {
             return 0;
         }
         if (0xfc == firstByte) {
-            return byteBuf.readShortLE();
+            return readInt2();
         }
         if (0xfd == firstByte) {
-            return byteBuf.readMediumLE();
+            return readInt3();
         }
         return byteBuf.readLongLE();
     }

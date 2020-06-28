@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 import com.google.common.collect.Collections2;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
 
 import java.util.Collection;
 import java.util.List;
@@ -84,12 +83,13 @@ public abstract class AbstractSqlBuilder {
      * Build update SQL.
      *
      * @param dataRecord data record
+     * @param conditionColumns condition columns
      * @return update SQL
      */
-    public String buildUpdateSQL(final DataRecord dataRecord) {
+    public String buildUpdateSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(dataRecord.getTableName(), RecordUtil.extractPrimaryColumns(dataRecord)));
+            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(dataRecord.getTableName(), conditionColumns));
         }
         StringBuilder updatedColumnString = new StringBuilder();
         for (Column each : extractUpdatedColumns(dataRecord.getColumns())) {
@@ -99,13 +99,8 @@ public abstract class AbstractSqlBuilder {
         return String.format(sqlCacheMap.get(sqlCacheKey), updatedColumnString.toString());
     }
     
-    private String buildUpdateSQLInternal(final String tableName, final Collection<Column> extractPrimaryColumns) {
-        StringBuilder where = new StringBuilder();
-        for (Column each : extractPrimaryColumns) {
-            where.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each.getName(), getRightIdentifierQuoteString()));
-        }
-        where.setLength(where.length() - 1);
-        return String.format("UPDATE %s%s%s SET %%s WHERE %s", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), where.toString());
+    private String buildUpdateSQLInternal(final String tableName, final Collection<Column> conditionColumns) {
+        return String.format("UPDATE %s%s%s SET %%s WHERE %s", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), buildWhereSQL(conditionColumns));
     }
     
     private Collection<Column> extractUpdatedColumns(final Collection<Column> columns) {
@@ -116,22 +111,27 @@ public abstract class AbstractSqlBuilder {
      * Build delete SQL.
      *
      * @param dataRecord data record
+     * @param conditionColumns condition columns
      * @return delete SQL
      */
-    public String buildDeleteSQL(final DataRecord dataRecord) {
+    public String buildDeleteSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(dataRecord.getTableName(), RecordUtil.extractPrimaryColumns(dataRecord)));
+            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(dataRecord.getTableName(), conditionColumns));
         }
         return sqlCacheMap.get(sqlCacheKey);
     }
     
-    private String buildDeleteSQLInternal(final String tableName, final Collection<Column> primaryColumns) {
+    private String buildDeleteSQLInternal(final String tableName, final Collection<Column> conditionColumns) {
+        return String.format("DELETE FROM %s%s%s WHERE %s", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), buildWhereSQL(conditionColumns));
+    }
+    
+    private String buildWhereSQL(final Collection<Column> conditionColumns) {
         StringBuilder where = new StringBuilder();
-        for (Column each : primaryColumns) {
-            where.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each.getName(), getRightIdentifierQuoteString()));
+        for (Column each : conditionColumns) {
+            where.append(String.format("%s%s%s = ? and ", getLeftIdentifierQuoteString(), each.getName(), getRightIdentifierQuoteString()));
         }
-        where.setLength(where.length() - 1);
-        return String.format("DELETE FROM %s%s%s WHERE %s", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), where.toString());
+        where.setLength(where.length() - 5);
+        return where.toString();
     }
 }

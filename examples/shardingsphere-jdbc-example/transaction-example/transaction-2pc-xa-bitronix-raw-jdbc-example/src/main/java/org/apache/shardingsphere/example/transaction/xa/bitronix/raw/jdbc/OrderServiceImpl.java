@@ -65,6 +65,8 @@ class OrderServiceImpl implements ExampleService {
             doInsert(preparedStatement);
             connection.commit();
             System.out.println("INSERT 10 orders success");
+        } finally {
+            TransactionTypeHolder.clear();
         }
         int quantity = selectAll();
         System.out.printf("Commit, expect:10, actual:%d \n", quantity);
@@ -82,6 +84,8 @@ class OrderServiceImpl implements ExampleService {
             doInsert(preparedStatement);
             connection.rollback();
             System.out.println("INSERT 10 orders failed");
+        } finally {
+            TransactionTypeHolder.clear();
         }
         int quantity = selectAll();
         System.out.printf("Rollback, expect:0, actual:%d \n", quantity);

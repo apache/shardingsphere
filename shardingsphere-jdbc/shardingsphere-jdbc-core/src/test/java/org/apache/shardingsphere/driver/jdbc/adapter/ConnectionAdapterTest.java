@@ -79,6 +79,8 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
             for (Connection each : cachedConnections.values()) {
                 assertTrue(each.getAutoCommit());
             }
+        } finally {
+            TransactionTypeHolder.clear();
         }
     }
     
@@ -88,6 +90,8 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
         try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.setAutoCommit(true);
             assertFalse(actual.getShardingTransactionManager().isInTransaction());
+        } finally {
+            TransactionTypeHolder.clear();
         }
         TransactionTypeHolder.set(TransactionType.XA);
         try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
@@ -96,6 +100,8 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
             assertThat(XAShardingTransactionManagerFixture.getInvocations().size(), is(1));
             actual.setAutoCommit(false);
             assertThat(XAShardingTransactionManagerFixture.getInvocations().size(), is(1));
+        } finally {
+            TransactionTypeHolder.clear();
         }
     }
     
@@ -114,6 +120,8 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
         try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.commit();
             assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.COMMIT));
+        } finally {
+            TransactionTypeHolder.clear();
         }
     }
     
@@ -124,6 +132,8 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
             actual.setAutoCommit(false);
             actual.setAutoCommit(true);
             assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.COMMIT));
+        } finally {
+            TransactionTypeHolder.clear();
         }
     }
     
@@ -142,6 +152,8 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
         try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.rollback();
             assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
+        } finally {
+            TransactionTypeHolder.clear();
         }
     }
     
@@ -158,6 +170,16 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
         assertTrue(actual.isClosed());
         Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
         assertTrue(cachedConnections.isEmpty());
+    }
+    
+    @Test
+    public void assertCloseShouldNotClearTransactionType() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        TransactionType currentTransactionType = TransactionTypeHolder.get();
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
+            actual.createStatement().executeQuery(sql);
+        }
+        assertThat(TransactionTypeHolder.get(), is(currentTransactionType));
     }
     
     @Test

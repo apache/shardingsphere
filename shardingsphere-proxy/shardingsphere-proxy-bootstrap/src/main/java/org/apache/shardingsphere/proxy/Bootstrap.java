@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.proxy;
 
+import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
@@ -34,10 +36,12 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
+import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
@@ -65,6 +69,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -124,7 +129,8 @@ public final class Bootstrap {
         Authentication authentication = new AuthenticationYamlSwapper().swapToObject(yamlAuthenticationConfig);
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(ruleConfigs);
         Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(ruleConfigs);
-        initialize(authentication, properties, schemaDataSources, schemaRules, new MetricsConfigurationYamlSwapper().swapToObject(metricsConfiguration), clusterConfiguration, false);
+        initialize(authentication, properties, schemaDataSources, schemaRules, getMetricsConfiguration(metricsConfiguration),
+                getClusterConfiguration(clusterConfiguration), false);
         ShardingSphereProxy.getInstance().start(port);
     }
     
@@ -138,14 +144,15 @@ public final class Bootstrap {
             Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(shardingOrchestrationFacade);
             Map<String, Collection<RuleConfiguration>> schemaRules = getSchemaRules(shardingOrchestrationFacade);
             MetricsConfiguration metricsConfiguration = shardingOrchestrationFacade.getConfigCenter().loadMetricsConfiguration();
-            initialize(authentication, properties, schemaDataSources, schemaRules, metricsConfiguration, serverConfig.getCluster(), true);
+            ClusterConfiguration clusterConfiguration = shardingOrchestrationFacade.getConfigCenter().loadClusterConfiguration();
+            initialize(authentication, properties, schemaDataSources, schemaRules, metricsConfiguration, clusterConfiguration, true);
             ShardingSphereProxy.getInstance().start(port);
         }
     }
     
     private static void initialize(final Authentication authentication, final Properties properties, final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
                                    final Map<String, Collection<RuleConfiguration>> schemaRules, final MetricsConfiguration metricsConfiguration,
-                                   final YamlClusterConfiguration cluster, final boolean isOrchestration) throws SQLException {
+                                   final ClusterConfiguration cluster, final boolean isOrchestration) throws SQLException {
         initProxySchemaContexts(schemaDataSources, schemaRules, authentication, properties, isOrchestration);
         log(authentication, properties);
         initMetrics(metricsConfiguration);
@@ -163,12 +170,30 @@ public final class Bootstrap {
         ProxySchemaContexts.getInstance().init(schemaContexts);
         if (isOrchestration) {
             persistMetaData(schemaContexts);
+            disableDataSources(schemaContexts);
         }
     }
     
     private static void persistMetaData(final SchemaContextsAware schemaContexts) {
         schemaContexts.getSchemaContexts().forEach((key, value) -> ShardingOrchestrationFacade.getInstance()
                 .getMetaDataCenter().persistMetaDataCenterNode(key, value.getSchema().getMetaData().getSchema()));
+    }
+    
+    private static void disableDataSources(final SchemaContextsAware schemaContexts) {
+        Collection<String> disabledDataSources = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadDisabledDataSources();
+        if (!disabledDataSources.isEmpty()) {
+            schemaContexts.getSchemaContexts().entrySet().forEach(entry -> entry.getValue().getSchema().getRules()
+                    .stream().filter(each -> each instanceof MasterSlaveRule).forEach(e -> disableDataSources((MasterSlaveRule) e, disabledDataSources, entry.getKey())));
+        }
+    }
+    
+    private static void disableDataSources(final MasterSlaveRule masterSlaveRule,
+                                    final Collection<String> disabledDataSources, final String schemaName) {
+        masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames().forEach(each -> {
+            if (disabledDataSources.contains(Joiner.on(".").join(schemaName, each))) {
+                masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true));
+            }
+        });
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
@@ -210,7 +235,8 @@ public final class Bootstrap {
             shardingOrchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs),
                     getRuleConfigurations(ruleConfigs), new AuthenticationYamlSwapper().swapToObject(serverConfig.getAuthentication()), serverConfig.getProps());
         }
-        shardingOrchestrationFacade.initMetricsConfiguration(new MetricsConfigurationYamlSwapper().swapToObject(serverConfig.getMetrics()));
+        shardingOrchestrationFacade.initMetricsConfiguration(Optional.ofNullable(serverConfig.getMetrics()).map(new MetricsConfigurationYamlSwapper()::swapToObject).orElse(null));
+        shardingOrchestrationFacade.initClusterConfiguration(Optional.ofNullable(serverConfig.getCluster()).map(new ClusterConfigurationYamlSwapper()::swapToObject).orElse(null));
     }
     
     private static void initOpenTracing() {
@@ -225,9 +251,9 @@ public final class Bootstrap {
         }
     }
     
-    private static void initCluster(final YamlClusterConfiguration clusterConfiguration) {
+    private static void initCluster(final ClusterConfiguration clusterConfiguration) {
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
-            ClusterFacade.getInstance().init(new ClusterConfigurationYamlSwapper().swapToObject(clusterConfiguration));
+            ClusterFacade.getInstance().init(clusterConfiguration);
         }
     }
     
@@ -273,6 +299,14 @@ public final class Bootstrap {
         result.setReadOnly(yamlDataSourceParameter.isReadOnly());
         result.setUrl(yamlDataSourceParameter.getUrl());
         return result;
+    }
+    
+    private static MetricsConfiguration getMetricsConfiguration(final YamlMetricsConfiguration yamlMetricsConfiguration) {
+        return Optional.ofNullable(yamlMetricsConfiguration).map(new MetricsConfigurationYamlSwapper()::swapToObject).orElse(null);
+    }
+    
+    private static ClusterConfiguration getClusterConfiguration(final YamlClusterConfiguration yamlClusterConfiguration) {
+        return Optional.ofNullable(yamlClusterConfiguration).map(new ClusterConfigurationYamlSwapper()::swapToObject).orElse(null);
     }
     
     /**

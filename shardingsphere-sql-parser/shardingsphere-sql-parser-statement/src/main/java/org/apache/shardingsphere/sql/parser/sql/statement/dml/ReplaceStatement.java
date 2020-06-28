@@ -54,7 +54,7 @@ public final class ReplaceStatement extends DMLStatement {
      * 
      * @return replace columns segment
      */
-    public Optional<InsertColumnsSegment> getInsertColumns() {
+    public Optional<InsertColumnsSegment> getReplaceColumns() {
         return Optional.ofNullable(replaceColumns);
     }
     

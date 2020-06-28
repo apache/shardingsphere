@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.sharding.log;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.log.ConfigurationLogger;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,9 +69,8 @@ public final class ShardingConfigurationLoggerTest {
                 + "      logicTable: user\n"
                 + "      tableStrategy:\n"
                 + "        none: ''\n";
-//        assertLogInfo(yaml);
+        assertLogInfo(yaml);
         ConfigurationLogger.log(Collections.singletonList(getShardingRuleConfiguration()));
-        System.out.println(ShardingSphereServiceLoader.newServiceInstances(YamlRuleConfigurationSwapper.class).size());
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {

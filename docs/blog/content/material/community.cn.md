@@ -1,6 +1,6 @@
 +++
-title = "社区探索与拓展"
-weight = 2
+title = "Apache ShardingSphere社区的探索与拓展"
+weight = 3
 chapter = true
 +++
 
@@ -13,7 +13,7 @@ Apache ShardingSphere社区受邀参与了11月9日在清华大学举办的《Ap
 
 做开源对于个人来讲，能获得两方面的收益：更好的职业生涯和享受乐趣。  
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/commu1.jpg)
+![](https://shardingsphere.apache.org/blog/img/commu1.jpg)
 
 \-1- 更好的职业生涯
 
@@ -90,7 +90,7 @@ Apache软件基金会提供了一个社区成熟度的评估模型，从代码�
 
 愿Apache ShardingSphere社区成为您参与的候选之一。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/commu2.jpg)
+![](https://shardingsphere.apache.org/blog/img/commu2.jpg)
 
 * * *
 

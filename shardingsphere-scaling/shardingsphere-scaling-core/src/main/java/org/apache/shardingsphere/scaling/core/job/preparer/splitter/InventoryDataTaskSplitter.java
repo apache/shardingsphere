@@ -123,7 +123,7 @@ public final class InventoryDataTaskSplitter {
             long min = rs.getLong(1);
             long max = rs.getLong(2);
             long step = (max - min) / concurrency;
-            for (int i = 0; i < concurrency; i++) {
+            for (int i = 0; i < concurrency && min <= max; i++) {
                 RdbmsConfiguration splitDumperConfig = RdbmsConfiguration.clone(dumperConfiguration);
                 if (i < concurrency - 1) {
                     splitDumperConfig.setWhereCondition(String.format("WHERE %s BETWEEN %d AND %d", primaryKey, min, min + step));

@@ -52,6 +52,10 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
             factory.addConstructorArgReference(dataSourceName);
         }
         factory.addConstructorArgValue(getOrchestrationConfiguration(element));
+        String cluster = element.getAttribute(DataSourceBeanDefinitionTag.CLUSTER_REF_TAG);
+        if (!Strings.isNullOrEmpty(cluster)) {
+            factory.addConstructorArgReference(cluster);
+        }
     }
     
     private BeanDefinition getOrchestrationConfiguration(final Element element) {

@@ -89,7 +89,12 @@ public final class TablesContext {
         return findTableNameFromMetaData(column.getName(), schemaMetaData);
     }
     
-    private String findTableNameFromSQL(final String tableNameOrAlias) {
+    /**
+     * Find table name from SQL.
+     * @param tableNameOrAlias table name or alias
+     * @return table name
+     */
+    public String findTableNameFromSQL(final String tableNameOrAlias) {
         for (SimpleTableSegment each : tables) {
             if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orElse(null))) {
                 return each.getTableName().getIdentifier().getValue();

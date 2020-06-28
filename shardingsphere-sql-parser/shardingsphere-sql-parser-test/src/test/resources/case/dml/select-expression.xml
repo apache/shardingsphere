@@ -35,7 +35,7 @@
     <select sql-case-id="select_with_date_function">
         <table-reference>
             <table-factor>
-                <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="64" />
+                <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="69" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="44">
@@ -49,7 +49,7 @@
     <select sql-case-id="select_with_regexp" parameters="'init', 1, 2">
         <table-reference>
             <table-factor>
-                <table name="t_order_item" alias="t" start-index="14" stop-index="25" />
+                <table name="t_order_item" alias="t" start-index="14" stop-index="27" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="7">
@@ -91,11 +91,11 @@
 
         <table-reference>
             <table-factor>
-                <table start-index="134" stop-index="140" name="t_order" alias="t" />
+                <table start-index="134" stop-index="142" name="t_order" alias="t" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table start-index="154" stop-index="165" name="t_order_item" alias="o" />
+                    <table start-index="154" stop-index="170" name="t_order_item" alias="o" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>

@@ -17,21 +17,29 @@
 
 package org.apache.shardingsphere.scaling.core.config.utils;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Sync configuration Util.
@@ -52,7 +60,7 @@ public final class SyncConfigurationUtil {
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDatasource.keySet());
         for (String each : dataSourceTableNameMap.keySet()) {
             RdbmsConfiguration dumperConfiguration = createDumperConfiguration(sourceDatasource.get(each));
-            RdbmsConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration);
+            RdbmsConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration, sourceRule);
             Map<String, String> tableNameMap = dataSourceTableNameMap.get(each);
             result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), tableNameMap, dumperConfiguration, importerConfiguration));
         }
@@ -110,13 +118,36 @@ public final class SyncConfigurationUtil {
         return result;
     }
     
-    private static RdbmsConfiguration createImporterConfiguration(final ScalingConfiguration scalingConfiguration) {
+    private static RdbmsConfiguration createImporterConfiguration(final ScalingConfiguration scalingConfiguration, final ShardingRuleConfiguration shardingRuleConfig) {
         RdbmsConfiguration result = new RdbmsConfiguration();
         JDBCDataSourceConfiguration importerDataSourceConfiguration = new JDBCDataSourceConfiguration(
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUrl(),
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUsername(),
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getPassword());
         result.setDataSourceConfiguration(importerDataSourceConfiguration);
+        result.setShardingColumnsMap(toShardingColumnsMap(shardingRuleConfig));
         return result;
     }
+    
+    private static Map<String, Set<String>> toShardingColumnsMap(final ShardingRuleConfiguration shardingRuleConfig) {
+        Map<String, Set<String>> result = Maps.newConcurrentMap();
+        for (ShardingTableRuleConfiguration each : shardingRuleConfig.getTables()) {
+            Set<String> shardingColumns = Sets.newHashSet();
+            shardingColumns.addAll(extractShardingColumns(each.getDatabaseShardingStrategy()));
+            shardingColumns.addAll(extractShardingColumns(each.getTableShardingStrategy()));
+            result.put(each.getLogicTable(), shardingColumns);
+        }
+        return result;
+    }
+    
+    private static Set<String> extractShardingColumns(final ShardingStrategyConfiguration shardingStrategy) {
+        if (shardingStrategy instanceof StandardShardingStrategyConfiguration) {
+            return Sets.newHashSet(((StandardShardingStrategyConfiguration) shardingStrategy).getShardingColumn());
+        }
+        if (shardingStrategy instanceof ComplexShardingStrategyConfiguration) {
+            return Sets.newHashSet(((ComplexShardingStrategyConfiguration) shardingStrategy).getShardingColumns().split(","));
+        }
+        return Collections.EMPTY_SET;
+    }
+    
 }

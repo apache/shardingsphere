@@ -25,9 +25,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class RegistryCenterTest {
@@ -66,6 +69,15 @@ public final class RegistryCenterTest {
     @Test
     public void assertLoadInstanceData() {
         registryCenter.loadInstanceData();
+        verify(registryCenterRepository).get(anyString());
+    }
+    
+    @Test
+    public void assertLoadDisabledDataSources() {
+        List<String> disabledDataSources = Collections.singletonList("slave_ds_0");
+        when(registryCenterRepository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
+        registryCenter.loadDisabledDataSources();
+        verify(registryCenterRepository).getChildrenKeys(anyString());
         verify(registryCenterRepository).get(anyString());
     }
 }

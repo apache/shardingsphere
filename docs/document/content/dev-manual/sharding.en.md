@@ -11,15 +11,15 @@ chapter = true
 | ------------------------------- | -------------------------------------- |
 | ShardingAlgorithm               | Sharding algorithm                     |
 
-| *Implementation Class*          | *Description*                          |
-| ------------------------------- | -------------------------------------- |
-| InlineShardingAlgorithm         | Inline sharding algorithm              |
-| ModuloShardingAlgorithm         | Modulo sharding algorithm              |
-| HashShardingAlgorithm           | Hash sharding algorithm                |
-| DatetimeShardingAlgorithm       | Datetime sharding algorithm            |
-| CustomDateTimeShardingAlgorithm | Customized datetime sharding algorithm |
-| StandardRangeShardingAlgorithm  | Range sharding algorithm               |
-| CustomRangeShardingAlgorithm    | Customized range sharding algorithm    |
+| *Implementation Class*              | *Description*                           |
+| ----------------------------------- | --------------------------------------- |
+| InlineShardingAlgorithm             | Inline sharding algorithm               |
+| ModShardingAlgorithm                | Modulo sharding algorithm               |
+| HashModShardingAlgorithm            | Hash modulo sharding algorithm          |
+| FixedIntervalShardingAlgorithm      | Fixed interval sharding algorithm       |
+| MutableIntervalShardingAlgorithm    | Mutable interval sharding algorithm     |
+| VolumeBasedRangeShardingAlgorithm   | Volume based range sharding algorithm   |
+| BoundaryBasedRangeShardingAlgorithm | Boundary based range sharding algorithm |
 
 ## KeyGenerateAlgorithm
 
