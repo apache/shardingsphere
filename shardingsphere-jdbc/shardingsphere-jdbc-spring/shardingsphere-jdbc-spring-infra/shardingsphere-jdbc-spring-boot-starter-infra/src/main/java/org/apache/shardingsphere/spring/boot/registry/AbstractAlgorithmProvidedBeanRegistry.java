@@ -39,9 +39,9 @@ import org.springframework.core.env.Environment;
  * Abstract algorithm provided bean registry.
  */
 public abstract class AbstractAlgorithmProvidedBeanRegistry implements BeanDefinitionRegistryPostProcessor, BeanPostProcessor {
-
+    
     private final Environment environment;
-
+    
     /**
      * Instantiates a new abstract algorithm provided bean registry.
      *
@@ -50,18 +50,11 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry implements BeanDefin
     public AbstractAlgorithmProvidedBeanRegistry(final Environment environment) {
         this.environment = environment;
     }
-
+    
     @SuppressWarnings("all")
     protected void registerBean(final String preFix, final Class clazz, final BeanDefinitionRegistry registry) {
         Map<String, Object> paramMap = PropertyUtil.handle(environment, preFix, Map.class);
-        Set<String> keySet = paramMap.keySet().stream().map(k -> {
-            int idx = k.indexOf(".");
-            if (idx > 0) {
-                return k.substring(0, idx);
-            } else {
-                return k;
-            }
-        }).collect(Collectors.toSet());
+        Set<String> keySet = paramMap.keySet().stream().map(k -> k.substring(0, k.indexOf("."))).collect(Collectors.toSet());
         Map<String, YamlShardingSphereAlgorithmConfiguration> shardingAlgorithmMap = new LinkedHashMap<>();
         keySet.forEach(key -> {
             String type = environment.getProperty(preFix + key + ".type");
@@ -79,16 +72,16 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry implements BeanDefin
             registry.registerBeanDefinition(k, builder.getBeanDefinition());
         });
     }
-
+    
     @Override
     public void postProcessBeanFactory(final ConfigurableListableBeanFactory configurableListableBeanFactory) throws BeansException {
     }
-
+    
     @Override
     public Object postProcessBeforeInitialization(final Object bean, final String beanName) throws BeansException {
         return bean;
     }
-
+    
     @Override
     public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {
         if (bean instanceof ShardingSphereAlgorithmPostProcessor) {
