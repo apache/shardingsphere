@@ -8,7 +8,7 @@ chapter = true
 
 Author | Liang Zhang
 
-  In the past few decades, relational database continuously occupy an absolute dominant position in the field of databases. The advantages of relation database, like stability, safety, ease of use that are the cornerstone of a modern system. With the rapid development of the Internet, databases built on stand-alone systems are no longer able to meet higher and higher concurrent requests and larger and larger data storage requirements. Therefore, distributed databases are more and more widely adopted.
+  In the past few decades, relational database continuously occupy an absolute dominant position in the field of databases. The advantages of relational database, like stability, safety, ease of use that are the cornerstone of a modern system. With the rapid development of the Internet, databases built on stand-alone systems are no longer able to meet higher and higher concurrent requests and larger and larger data storage requirements. Therefore, distributed databases are more and more widely adopted.
 
   All along, the database field has been dominated by Western technology companies and communities. Nowadays, more and more domestic database solutions take distributed as the fulcrum, and gradually make achievements in this field. Apache ShardingSphere is one of the distributed database solutions and the only database middleware in the Apache Software Foundation so far.
 
