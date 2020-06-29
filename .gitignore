@@ -35,4 +35,3 @@ logs/
 # system ignore
 .DS_Store
 Thumbs.db
-*.factorypath
