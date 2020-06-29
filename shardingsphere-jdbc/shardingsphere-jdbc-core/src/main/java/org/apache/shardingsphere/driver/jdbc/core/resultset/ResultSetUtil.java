@@ -20,6 +20,10 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -49,6 +53,15 @@ public final class ResultSetUtil {
         if (value.getClass() == convertType) {
             return value;
         }
+        if (LocalDateTime.class.equals(convertType)) {
+            return convertLocalDateTimeValue(value);
+        }
+        if (LocalDate.class.equals(convertType)) {
+            return convertLocalDateValue(value);
+        }
+        if (LocalTime.class.equals(convertType)) {
+            return convertLocalTimeValue(value);
+        }
         if (value instanceof Number) {
             return convertNumberValue(value, convertType);
         }
@@ -64,7 +77,22 @@ public final class ResultSetUtil {
             return value;
         }
     }
-    
+
+    private static Object convertLocalDateTimeValue(final Object value) {
+        Timestamp timestamp = (Timestamp) value;
+        return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    private static Object convertLocalDateValue(final Object value) {
+        Timestamp timestamp = (Timestamp) value;
+        return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    private static Object convertLocalTimeValue(final Object value) {
+        Timestamp timestamp = (Timestamp) value;
+        return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+    }
+
     private static Object convertNullValue(final Class<?> convertType) {
         switch (convertType.getName()) {
             case "boolean":
