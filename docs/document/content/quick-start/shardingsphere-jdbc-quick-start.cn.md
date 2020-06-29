@@ -14,7 +14,7 @@ weight = 1
 </dependency>
 ```
 
-注意: 请将`${latest.release.version}`更改为实际的版本号。
+注意：请将 `${latest.release.version}` 更改为实际的版本号。
 
 ## 2. 规则配置
 

@@ -28,6 +28,7 @@
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">3000</prop>
+            <prop key="overwrite">false</prop>
         </props>
     </orchestration:instance>
     
@@ -35,6 +36,7 @@
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">3000</prop>
+            <prop key="overwrite">false</prop>
         </props>
     </orchestration:instance>
 </beans>
