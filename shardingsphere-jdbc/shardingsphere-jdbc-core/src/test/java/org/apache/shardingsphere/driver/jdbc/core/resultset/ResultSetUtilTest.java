@@ -20,7 +20,9 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
+import java.time.LocalDateTime;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -37,6 +39,14 @@ public final class ResultSetUtilTest {
         Object object = new Object();
         assertThat(ResultSetUtil.convertValue(object, String.class), is(object.toString()));
         assertThat(ResultSetUtil.convertValue("1", int.class), is("1"));
+    }
+
+    @Test
+    public void assertConvertLocalDateTime() {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime dateTime = (LocalDateTime) ResultSetUtil.convertValue(timestamp, LocalDateTime.class);
+        Assert.assertNotNull(dateTime);
+        assertThat(dateTime.toString(), is(timestamp.toLocalDateTime().toString()));
     }
     
     @Test
