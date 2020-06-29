@@ -32,7 +32,7 @@
     <import resource="classpath*:META-INF/nacos/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
 
-    <orchestration:sharding-data-source id="shardingDatabasesTablesDataSource" instance-ref="regCenter,confCenter" overwrite="false" />
+    <orchestration:data-source id="shardingDatabasesTablesDataSource" instance-ref="regCenter,confCenter" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shardingDatabasesTablesDataSource" />

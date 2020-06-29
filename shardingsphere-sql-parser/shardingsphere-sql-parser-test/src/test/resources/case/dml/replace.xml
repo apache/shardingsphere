@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <replace sql-case-id="replace_with_all_placeholders" parameters="1, 1, 'init'">
+    <insert sql-case-id="replace_with_all_placeholders" parameters="1, 1, 'init'">
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="21" stop-index="47">
             <column name="order_id" start-index="22" stop-index="29" />
@@ -40,9 +40,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_now_function" parameters="1, 1, 'init'">
+    <insert sql-case-id="replace_with_now_function" parameters="1, 1, 'init'">
         <table name="t_order_item" start-index="13" stop-index="24" />
         <columns start-index="26" stop-index="76">
             <column name="item_id" start-index="27" stop-index="33" />
@@ -73,9 +73,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_without_parameters">
+    <insert sql-case-id="replace_without_parameters">
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="21" stop-index="47">
             <column name="order_id" start-index="22" stop-index="29" />
@@ -98,9 +98,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_multiple_values">
+    <insert sql-case-id="replace_with_multiple_values">
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="21" stop-index="47">
             <column name="order_id" start-index="22" stop-index="29" />
@@ -131,9 +131,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_special_characters">
+    <insert sql-case-id="replace_with_special_characters">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="13" stop-index="21" />
         <columns start-index="23" stop-index="55">
             <column name="order_id" start-delimiter="`" end-delimiter="`" start-index="24" stop-index="33" />
@@ -153,9 +153,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
+    <insert sql-case-id="replace_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="21" stop-index="71">
             <column name="order_id" start-index="22" stop-index="37">
@@ -184,9 +184,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_without_columns_with_all_placeholders" parameters="1, 1, 'init'">
+    <insert sql-case-id="replace_without_columns_with_all_placeholders" parameters="1, 1, 'init'">
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="20" stop-index="20" />
         <values>
@@ -205,9 +205,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_set_with_all_placeholders" parameters="1, 1, 'init'">
+    <insert sql-case-id="replace_set_with_all_placeholders" parameters="1, 1, 'init'">
         <table name="t_order" start-index="13" stop-index="19" />
         <set start-index="21" stop-index="61" literal-stop-index="66">
             <assignment>
@@ -232,9 +232,9 @@
                 </assignment-value>
             </assignment>
         </set>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_partial_placeholders" parameters="1, 1">
+    <insert sql-case-id="replace_with_partial_placeholders" parameters="1, 1">
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="21" stop-index="47">
             <column name="order_id" start-index="22" stop-index="29" />
@@ -256,9 +256,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_set_with_partial_placeholders" parameters="1, 1">
+    <insert sql-case-id="replace_set_with_partial_placeholders" parameters="1, 1">
         <table name="t_order" start-index="13" stop-index="19" />
         <set start-index="21" stop-index="69">
             <assignment>
@@ -282,9 +282,9 @@
                 </assignment-value>
             </assignment>
         </set>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_generate_key_column" parameters="10000, 1000, 10">
+    <insert sql-case-id="replace_with_generate_key_column" parameters="10000, 1000, 10">
         <table name="t_order_item" start-index="13" stop-index="24" />
         <columns start-index="25" stop-index="75">
             <column name="item_id" start-index="26" stop-index="32" />
@@ -315,9 +315,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_without_generate_key_column" parameters="1000, 10">
+    <insert sql-case-id="replace_without_generate_key_column" parameters="1000, 10">
         <table name="t_order_item" start-index="13" stop-index="24" />
         <columns start-index="25" stop-index="66">
             <column name="order_id" start-index="26" stop-index="33" />
@@ -343,9 +343,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_set_with_generate_key_column" parameters="10000, 1000, 10">
+    <insert sql-case-id="replace_set_with_generate_key_column" parameters="10000, 1000, 10">
         <table name="t_order_item" start-index="13" stop-index="24" />
         <set start-index="26" stop-index="115" literal-stop-index="123">
             <assignment>
@@ -382,9 +382,9 @@
                 </assignment-value>
             </assignment>
         </set>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_set_without_generate_key_column" parameters="1000, 10">
+    <insert sql-case-id="replace_set_without_generate_key_column" parameters="1000, 10">
         <table name="t_order_item" start-index="13" stop-index="24" />
         <set start-index="26" stop-index="102" literal-stop-index="106">
             <assignment>
@@ -414,9 +414,9 @@
                 </assignment-value>
             </assignment>
         </set>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_set_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
+    <insert sql-case-id="replace_set_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
         <table name="t_order" start-index="13" stop-index="19" />
         <set start-index="21" stop-index="85" literal-stop-index="90">
             <assignment>
@@ -447,9 +447,9 @@
                 </assignment-value>
             </assignment>
         </set>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_batch" parameters="1000, 10, 'init', 1100, 11, 'init'">
+    <insert sql-case-id="replace_with_batch" parameters="1000, 10, 'init', 1100, 11, 'init'">
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="21" stop-index="47">
             <column name="order_id" start-index="22" stop-index="29" />
@@ -486,9 +486,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_batch_and_irregular_parameters" parameters="1, 2, 2, 'init'">
+    <insert sql-case-id="replace_with_batch_and_irregular_parameters" parameters="1, 2, 2, 'init'">
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="21" stop-index="47">
             <column name="order_id" start-index="22" stop-index="29" />
@@ -523,13 +523,13 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
     <!--<replace sql-case-id="replace_with_batch_and_composite_expression" parameters="1, 1, 'init', 2, 2, 'init'">-->
     <!--<table name="t_order" start-index="13" stop-index="19" />-->
     <!--</replace>-->
 
-    <replace sql-case-id="replace_with_batch_and_with_generate_key_column" parameters="10000, 1000, 10, 10010, 1001, 10">
+    <insert sql-case-id="replace_with_batch_and_with_generate_key_column" parameters="10000, 1000, 10, 10010, 1001, 10">
         <table name="t_order_item" start-index="13" stop-index="24" />
         <columns start-index="25" stop-index="75">
             <column name="item_id" start-index="26" stop-index="32" />
@@ -580,9 +580,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_batch_and_without_generate_key_column" parameters="1000, 10, 1001, 10">
+    <insert sql-case-id="replace_with_batch_and_without_generate_key_column" parameters="1000, 10, 1001, 10">
         <table name="t_order_item" start-index="13" stop-index="24" />
         <columns start-index="25" stop-index="66">
             <column name="order_id" start-index="26" stop-index="33" />
@@ -624,9 +624,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_without_columns_and_with_generate_key_column" parameters="10000, 1000, 10">
+    <insert sql-case-id="replace_without_columns_and_with_generate_key_column" parameters="10000, 1000, 10">
         <table name="t_order_item" start-index="13" stop-index="24" />
         <columns start-index="25" stop-index="25" />
         <values>
@@ -651,9 +651,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_without_columns_and_without_generate_key_column" parameters="1000, 10">
+    <insert sql-case-id="replace_without_columns_and_without_generate_key_column" parameters="1000, 10">
         <table name="t_order_item" start-index="13" stop-index="24" />
         <columns start-index="25" stop-index="25" />
         <values>
@@ -674,7 +674,7 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
     <!-- // TODO
     <replace sql-case-id="assertInsertSelect" sql="REPLACE INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )"">
@@ -685,15 +685,15 @@
     </replace>
     -->
 
-    <replace sql-case-id="replace_with_one_auto_increment_column">
+    <insert sql-case-id="replace_with_one_auto_increment_column">
         <table name="t_auto_increment_table" start-index="13" stop-index="34" />
         <columns start-index="35" stop-index="35" />
         <values>
             <value />
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_double_value">
+    <insert sql-case-id="replace_with_double_value">
         <table name="t_double_test" start-index="13" stop-index="25" />
         <columns start-index="26" stop-index="31">
             <column name="col1" start-index="27" stop-index="30" />
@@ -705,9 +705,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_null_value">
+    <insert sql-case-id="replace_with_null_value">
         <table name="t_null_value_test" start-index="13" stop-index="29" />
         <columns start-index="30" stop-index="35">
             <column name="col1" start-index="31" stop-index="34" />
@@ -719,9 +719,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_blob_value">
+    <insert sql-case-id="replace_with_blob_value">
         <table name="t_blob_value_test" start-index="13" stop-index="29" />
         <columns start-index="30" stop-index="35">
             <column name="col1" start-index="31" stop-index="34" />
@@ -733,9 +733,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_function" parameters="1000, 10">
+    <insert sql-case-id="replace_with_function" parameters="1000, 10">
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="20" stop-index="52">
             <column name="present_date" start-index="21" stop-index="32" />
@@ -757,9 +757,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_unix_timestamp_function" parameters="2019-10-19, 1000, 10">
+    <insert sql-case-id="replace_with_unix_timestamp_function" parameters="2019-10-19, 1000, 10">
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="20" stop-index="46">
             <column name="status" start-index="21" stop-index="26" />
@@ -781,9 +781,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_str_to_date" parameters="2019-12-10, 1, 1">
+    <insert sql-case-id="replace_with_str_to_date" parameters="2019-12-10, 1, 1">
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="20" stop-index="52">
             <column name="present_date" start-index="21" stop-index="32" />
@@ -806,9 +806,9 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 
-    <replace sql-case-id="replace_with_str_date_add" parameters="1, 1, 1">
+    <insert sql-case-id="replace_with_str_date_add" parameters="1, 1, 1">
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="20" stop-index="52">
             <column name="present_date" start-index="21" stop-index="32" />
@@ -831,5 +831,5 @@
                 </assignment-value>
             </value>
         </values>
-    </replace>
+    </insert>
 </sql-parser-test-cases>
