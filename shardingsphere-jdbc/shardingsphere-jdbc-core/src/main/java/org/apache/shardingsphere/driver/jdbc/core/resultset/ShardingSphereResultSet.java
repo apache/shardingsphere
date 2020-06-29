@@ -387,7 +387,10 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
 
     @Override
     public <T> T getObject(final String columnLabel, final Class<T> type) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
+        Integer columnIndex = columnLabelAndIndexMap.get(columnLabel);
+        if (columnIndex == null) {
+            throw new SQLFeatureNotSupportedException("getObject with type");
+        }
         return getObject(columnIndex, type);
     }
 }
