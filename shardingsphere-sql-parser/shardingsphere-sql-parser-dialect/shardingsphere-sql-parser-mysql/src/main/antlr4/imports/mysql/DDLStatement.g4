@@ -65,11 +65,11 @@ dropIndex
     ;
 
 algorithmOption
-    : ALGORITHM EQ_? (DEFAULT | INPLACE | COPY)
+    : ALGORITHM EQ_? (DEFAULT | 'INPLACE' | 'COPY')
     ;
 
 lockOption
-    : LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
+    : LOCK EQ_? (DEFAULT | NONE | 'SHARED' | 'EXCLUSIVE')
     ;
 
 truncateTable
@@ -389,7 +389,7 @@ alterSpecification
     | ADD checkConstraintDefinition
     | DROP CHECK ignoredIdentifier_
     | ALTER CHECK ignoredIdentifier_ NOT? ENFORCED
-    | ALGORITHM EQ_? (DEFAULT | INSTANT | INPLACE | COPY)
+    | ALGORITHM EQ_? (DEFAULT | 'INSTANT' | 'INPLACE' | 'COPY')
     | ALTER COLUMN? columnName (SET DEFAULT (literals | LP_ expr RP_) | DROP DEFAULT)
     | ALTER INDEX indexName (VISIBLE | INVISIBLE)
     | changeColumnSpecification
@@ -397,7 +397,7 @@ alterSpecification
     | DEFAULT? characterSet_ collateClause_?
     | CONVERT TO characterSet_ collateClause_?
     | (DISABLE | ENABLE) KEYS
-    | (DISCARD | IMPORT_) TABLESPACE
+    | (DISCARD | IMPORT) TABLESPACE
     | dropColumnSpecification
     | dropIndexSpecification
     | dropPrimaryKeySpecification
@@ -413,7 +413,7 @@ alterSpecification
     | ADD PARTITION LP_ partitionDefinition_ RP_
     | DROP PARTITION ignoredIdentifiers_
     | DISCARD PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
-    | IMPORT_ PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
+    | IMPORT PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
     | TRUNCATE PARTITION (ignoredIdentifiers_ | ALL)
     | COALESCE PARTITION NUMBER_
     | REORGANIZE PARTITION ignoredIdentifiers_ INTO partitionDefinitions_
