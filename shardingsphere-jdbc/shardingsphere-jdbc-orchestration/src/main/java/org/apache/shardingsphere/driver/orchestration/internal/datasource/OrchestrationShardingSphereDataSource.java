@@ -68,6 +68,7 @@ import java.util.Map;
 public class OrchestrationShardingSphereDataSource extends AbstractOrchestrationDataSource {
 
     private static final String DELIMITER = "@";
+
     private static final int THREAD_ID = Integer.parseInt(ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0]);
     
     private ShardingSphereDataSource dataSource;
