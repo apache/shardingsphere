@@ -39,6 +39,8 @@ public final class MetricsConfiguration {
     
     private Boolean async;
     
+    private Boolean enable;
+    
     private Integer threadCount;
     
     private Properties props;
