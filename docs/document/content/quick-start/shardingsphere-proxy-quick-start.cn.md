@@ -25,12 +25,12 @@ weight = 2
 sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh
 ```
 
-默认启动端口为`3307`。
+默认启动端口为 `3307`，默认配置文件目录为：`%SHARDINGSPHERE_PROXY_HOME%/conf/`。
 
-* 自定义端口
+* 自定义端口和配置文件目录
 
 ```bash
-sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh ${proxy_port}
+sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh ${proxy_port} ${proxy_conf_directory}
 ```
 
 ## 4. 使用ShardingSphere-Proxy
