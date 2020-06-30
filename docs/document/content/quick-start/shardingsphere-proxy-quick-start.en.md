@@ -25,12 +25,12 @@ and decompress, then copy `mysql-connector-java-5.1.47.jar` to `%SHARDINGSPHERE_
 sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh
 ```
 
-Default port is `3307`
+Default port is `3307`, default profile directory is `%SHARDINGSPHERE_PROXY_HOME%/conf/` .
 
-* Customize port
+* Customize port and profile directory
 
 ```bash
-sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh ${port}
+sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh ${port} ${proxy_conf_directory}
 ```
 
 ## 4. Use ShardingSphere-Proxy
