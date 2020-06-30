@@ -13,6 +13,5 @@ ShardingSphere-Proxy has provided the solution of Zookeeper in default, which im
 ## Other Third Party Components
 Refer to [Supported Third Party Components](/cn/features/governance/management/dependency/) for details.
 
-1. Delete `shardingsphere-orchestration-center-zookeeper-curator-${shardingsphere.version}.jar` under the lib folder of ShardingSphere-Proxy.
 1. Use SPI methods in logic coding and put the generated jar package to the lib folder of ShardingSphere-Proxy.
 1. Follow [Configuration Rules](/en/user-manual/shardingsphere-jdbc/configuration/yaml/governance/) to configure and use it.
