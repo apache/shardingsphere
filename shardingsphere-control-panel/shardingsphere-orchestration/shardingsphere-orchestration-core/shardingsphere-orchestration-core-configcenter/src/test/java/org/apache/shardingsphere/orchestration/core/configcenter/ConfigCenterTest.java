@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.core.common.utils.IpUtils;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -528,13 +529,15 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertLoadMetricsConfiguration() {
-        when(configCenterRepository.get("/test/config/metrics")).thenReturn(METRICS_YAML);
+        when(configCenterRepository.get("/test/config/metrics/" + IpUtils.getIp())).thenReturn(METRICS_YAML);
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         MetricsConfiguration actual = configurationService.loadMetricsConfiguration();
+        assertNotNull(actual);
         assertThat(actual.getMetricsName(), is("prometheus"));
         assertThat(actual.getPort(), is(9190));
         assertThat(actual.getHost(), is("127.0.0.1"));
         assertThat(actual.getAsync(), is(true));
+        assertThat(actual.getEnable(), is(true));
     }
     
     @Test

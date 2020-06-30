@@ -41,6 +41,7 @@ import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
@@ -162,10 +163,13 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
      */
     @Subscribe
     public synchronized void renew(final MetricsConfigurationChangedEvent event) {
-        MetricsTrackerFacade.getInstance().stop();
-        MetricsTrackerFacade.getInstance().init(event.getMetricsConfiguration());
+        MetricsConfiguration metricsConfiguration = event.getMetricsConfiguration();
+        if (metricsConfiguration.getEnable()) {
+            MetricsTrackerFacade.getInstance().restart(metricsConfiguration);
+        } else {
+            MetricsTrackerFacade.getInstance().stop();
+        }
     }
-    
     
     /**
      * Renew meta data of the schema.
