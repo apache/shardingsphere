@@ -25,4 +25,3 @@ Apache ShardingSphere 提供属性配置的方式配置系统级配置。
 | proxy.hint.enabled (?)             | boolean     | 是否允许在 ShardingSphere-Proxy 中使用 Hint。使用 Hint 会将 Proxy 的线程处理模型由 IO 多路复用变更为每个请求一个独立的线程，会降低 Proxy 的吞吐量。                                                  | false    |
 | proxy.metrics.enabled (?)             | boolean     | 是否允许在 ShardingSphere-Proxy 中使用 Metrics。                                                | false    |
 | proxy.cluster.enabled (?)             | boolean     | 是否允许在 ShardingSphere-Proxy 中使用心跳检测。                                                  | false    |
-
