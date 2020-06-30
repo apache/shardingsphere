@@ -20,7 +20,6 @@ package org.apache.shardingsphere.orchestration.core.schema;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
-import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartbeatEventBus;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -75,7 +74,6 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     
     public OrchestrationSchemaContexts(final SchemaContexts schemaContexts) {
         ShardingOrchestrationEventBus.getInstance().register(this);
-        HeartbeatEventBus.getInstance().register(this);
         this.schemaContexts = schemaContexts;
     }
     
