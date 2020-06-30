@@ -1,5 +1,5 @@
 +++
-title = "成为Apache官方认可的Committer有什么优势"
+title = "3.成为Apache官方认可的Committer有什么优势"
 weight = 4
 chapter = true
 +++
