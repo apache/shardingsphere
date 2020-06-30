@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
@@ -452,5 +454,13 @@ public final class ShardingSphereResultSetTest {
     public void assertGetObjectWithColumnLabel() throws SQLException {
         when(mergeResultSet.getValue(1, Object.class)).thenReturn("object_value");
         assertThat(shardingSphereResultSet.getObject("label"), is("object_value"));
+    }
+
+    @Test
+    public void assertGetObjectWithLocalDateColumnLabel() throws SQLException {
+        LocalDateTime now = LocalDateTime.now();
+        long curMillis = now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(new Timestamp(curMillis));
+        assertThat(shardingSphereResultSet.getObject(1, LocalDateTime.class), is(now));
     }
 }
