@@ -20,6 +20,7 @@ package org.apache.shardingsphere.cluster.facade;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.cluster.heartbeat.ClusterHeartbeatInstance;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
@@ -28,9 +29,13 @@ import org.apache.shardingsphere.cluster.state.ClusterStateInstance;
 import org.apache.shardingsphere.cluster.state.DataSourceState;
 import org.apache.shardingsphere.cluster.state.InstanceState;
 import org.apache.shardingsphere.cluster.state.enums.NodeState;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.orchestration.core.common.event.ClusterConfigurationChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
+import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,11 +44,14 @@ import java.util.Map;
 /**
  * Cluster facade.
  */
+@Slf4j
 public final class ClusterFacade {
     
     private ClusterHeartbeatInstance clusterHeartbeatInstance;
     
     private ClusterStateInstance clusterStateInstance;
+    
+    private volatile boolean enabled;
     
     private ClusterFacade() {
         ShardingOrchestrationEventBus.getInstance().register(this);
@@ -55,10 +63,13 @@ public final class ClusterFacade {
      * @param clusterConfiguration cluster configuration
      */
     public void init(final ClusterConfiguration clusterConfiguration) {
-        Preconditions.checkNotNull(clusterConfiguration, "cluster configuration can not be null.");
-        clusterHeartbeatInstance = ClusterHeartbeatInstance.getInstance();
-        clusterHeartbeatInstance.init(clusterConfiguration.getHeartbeat());
-        clusterStateInstance = ClusterStateInstance.getInstance();
+        if (!enabled) {
+            Preconditions.checkNotNull(clusterConfiguration, "cluster configuration can not be null.");
+            clusterHeartbeatInstance = ClusterHeartbeatInstance.getInstance();
+            clusterHeartbeatInstance.init(clusterConfiguration.getHeartbeat());
+            clusterStateInstance = ClusterStateInstance.getInstance();
+            enabled = true;
+        }
     }
     
     /**
@@ -91,8 +102,29 @@ public final class ClusterFacade {
         init(event.getClusterConfiguration());
     }
     
+    /**
+     *  Renew cluster facade after properties changed.
+     *
+     * @param event properties changed event
+     */
+    @Subscribe
+    public void renew(final PropertiesChangedEvent event) {
+        boolean clusterEnabled = new ConfigurationProperties(event.getProps()).<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED);
+        if (enabled != clusterEnabled) {
+            if (clusterEnabled) {
+                init(ShardingOrchestrationFacade.getInstance().getConfigCenter().loadClusterConfiguration());
+            } else {
+                stop();
+            }
+        }
+    }
+    
     private void stop() {
-        clusterHeartbeatInstance.close();
+        if (enabled) {
+            clusterHeartbeatInstance.close();
+            enabled = false;
+            log.info("heart beat detect stopped");
+        }
     }
     
     private InstanceState buildInstanceState(final HeartbeatResponse heartbeatResponse) {
