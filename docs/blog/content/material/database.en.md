@@ -10,7 +10,7 @@ Author | Liang Zhang
 
   In the past few decades, relational database continuously occupy an absolute dominant position in the field of databases. The advantages of relational database, like stability, safety, ease of use that are the cornerstone of a modern system. With the rapid development of the Internet, databases built on stand-alone systems are no longer able to meet higher and higher concurrent requests and larger and larger data storage requirements. Therefore, distributed databases are more and more widely adopted.
 
-  All along, the database field has been dominated by Western technology companies and communities. Nowadays, more and more domestic database solutions take distributed as the fulcrum, and gradually make achievements in this field. Apache ShardingSphere is one of the distributed database solutions and the only database middleware in the Apache Software Foundation so far.
+  Apache ShardingSphere is one of the distributed database solutions and the only database middleware in the Apache Software Foundation so far.
 
 ### 1 Background
 
@@ -24,12 +24,12 @@ Author | Liang Zhang
     
 - Elastic scaling: You can dynamically expand and shrink data storage nodes anytime, anywhere without affecting existing applications;
     
-- Multiple data copies: Automatically copy the data to multiple copies across datacenters in a strong and consistent manner to ensure the absolute security of the data;
+- Multiple replica: Automatically copy the data to multiple copies across datacenters in a strong and consistent manner to ensure the absolute security of the data;
     
 - HTAP: The same set of products is used to mix transactional operations of OLTP and analytical operations of OLAP.
     
 
-The implementation solutions of distributed database can be divided into aggressive and stable. The aggressive implementation solution refers to the development of a new architecture of NewSQL. Such products are in pursuit of higher performance in exchange for the lack of stability and the lack of experience in operation and maintenance; the stable implementation solution refers to the middleware that provides incremental capabilities based on the existing database. Such products sacrifice some performance to ensure the stability of the database and reuse of operation and maintenance experience.
+The implementation solutions of distributed database can be divided into aggressive and stable. The aggressive implementation solution refers to the development of a new architecture of NewSQL. Such products are focus on higher performance in exchange for the lack of stability and the lack of experience in operation and maintenance; the stable implementation solution refers to the middleware that provides incremental capabilities based on the existing database. Such products sacrifice some performance to ensure the stability of the database and reuse of operation and maintenance experience.
 
 ### 2 Architecture
 
@@ -37,25 +37,25 @@ Apache ShardingSphere is an ecosystem of open source distributed database middle
 
 **Sharding-JDBC**
 
-Positioned as a lightweight Java framework, additional services provided in Java's JDBC layer. It uses the client to connect directly to the database and provides services in the form of jar packages without additional deployment and dependencies. It can be understood as an enhanced version of the JDBC driver and is fully compatible with JDBC and various ORM frameworks.
+Defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. With the client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
 
 ![](https://shardingsphere.apache.org/blog/img/database1.jpg)
 
 **Sharding-Proxy**
 
-Positioned as a transparent database agent, it provides a server-side version that encapsulates the database binary protocol to complete support for heterogeneous languages. Currently, MySQL and PostgreSQL versions are available. It can use any access client compatible with MySQL and PostgreSQL protocol (such as: MySQL Command Client, MySQL Workbench, Navicat, etc.) to operate data, which is more friendly to DBA.
+Defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
 
 ![](https://shardingsphere.apache.org/blog/img/database2.jpg)
 
 **Sharding-Sidecar（Planned）**
 
-Positioned as a cloud-native database agent for Kubernetes, it will proxy all access to the database in the form of Sidecar. Through a non-central, zero-intrusion solution, it provides the meshing layer that interacts with the database, called as Database Mesh, which can also be called a database grid.
+Defines itself as a cloud native database agent of the Kubernetes environment, in charge of all the access to the database in the form of sidecar. It provides a mesh layer interacting with the database, we call this as Database Mesh.
 
 ![](https://shardingsphere.apache.org/blog/img/database3.jpg)
 
 **Hybrid architecture with separate computing and storage**
 
-Sharding-JDBC adopts a decentralized architecture, suitable for high-performance lightweight OLTP applications developed in Java; Sharding-Proxy provides static entry and heterogeneous language support, suitable for OLAP applications and management and operation and maintenance of sharded databases scene.
+ShardingSphere-JDBC adopts decentralized architecture, applicable to high-performance light-weight OLTP application developed with Java; ShardingSphere-Proxy provides static entry and all languages support, applicable for OLAP application and the sharding databases management and operation situation.
 
 Each architecture solution has its own advantages and disadvantages. The following table compares the advantages and disadvantages of various architecture models in different scenarios:
 
@@ -73,9 +73,9 @@ Data sharding, distributed transactions, elastic scaling, and distributed govern
 
 #### Data sharding
 
-Divide and conquer is the solution used by Apache ShardingSphere to process massive data. Apache ShardingSphere enables distributed storage capabilities in databases through data sharding solutions.
+Divide and governance is the solution used by Apache ShardingSphere to process big data. Apache ShardingSphere enables distributed storage capabilities in databases through data sharding solutions.
 
-It can automatically route SQL to the corresponding data node according to the user's preset sharding algorithm to achieve the purpose of operating multiple databases. Users can use multiple databases managed by Apache ShardingSphere like a stand-alone database. Currently supports MySQL, PostgreSQL, Oracle, SQLServer and any database that supports SQL92 standard and JDBC standard protocol. The core flow of data sharding is shown in the figure below:
+It can automatically route SQL to the corresponding data node according to the user's configured sharding algorithm to achieve the purpose of operating multiple databases. Users can use multiple databases managed by Apache ShardingSphere like a stand-alone database. Currently supports MySQL, PostgreSQL, Oracle, SQLServer and any database that supports SQL92 standard and JDBC standard protocol. The core flow of data sharding is shown in the figure below:
 
 ![](https://shardingsphere.apache.org/blog/img/database6.jpg)
 
@@ -83,9 +83,9 @@ The main process is as follows:
 
 1. Obtain the SQL and parameters input by the user by parsing the database protocol package or JDBC driver;
     
-2. Parse SQL into AST (Abstract Syntax Tree) according to lexical analyzer and grammar analyzer, and extract the information required for fragmentation;
+2. Parse SQL into AST (Abstract Syntax Tree) according to lexical analyzer and grammar analyzer, and extract the information required for sharding;
     
-3. Match the shard key according to the user preset algorithm and calculate the routing path;
+3. Match the shard key according to the user configured algorithm and calculate the routing path;
     
 4. Rewrite SQL as distributed executable SQL;
     
@@ -98,28 +98,28 @@ The main process is as follows:
 
 #### Distributed transaction
 
-Transaction is the core function of the database system. Distributed uncertainty and transaction complexity determine that there is no one-size-fits-all solution in the field of distributed transactions.
+Transaction is the core function of the database system. Distributed uncertainty and transaction complexity determine that there is no standard solution in the field of distributed transactions.
 
-Facing the current situation of blooming flowers, Apache ShardingSphere provides a highly open solution that uses standard interfaces to unify and integrate third-party distributed transaction frameworks independently selected by developers to meet the application requirements of various scenarios. In addition, Apache ShardingSphere also provides a new distributed transaction solution JDTX to make up for the lack of existing solutions.
+Facing the current situation, Apache ShardingSphere provides a highly open solution that uses standard interfaces to unify and integrate third-party distributed transaction frameworks independently selected by developers to meet the application requirements of various scenarios. In addition, Apache ShardingSphere also provides a new distributed transaction solution JDTX to make up for the lack of existing solutions.
 
 Standardized integrated interface
 
-Apache ShardingSphere provides a unified adaptation interface for local transactions, two-phase transactions, and flexible transactions, and docks with a large number of existing third-party mature solutions. Through the standard interface, developers can easily integrate other integration solutions into the Apache ShardingSphere platform.
+Apache ShardingSphere provides a unified adaptation interface for local transactions, two-phase transactions, and BASE transactions, and docks with a large number of existing third-party mature solutions. Through the standard interface, developers can easily integrate other integration solutions into the Apache ShardingSphere platform.
 
 ![](https://shardingsphere.apache.org/blog/img/database7.jpg)
 
-However, the integration of a large number of third-party solutions cannot cover all branches of distributed transaction requirements. Each solution has its own suitable and unsuitable scenarios. The solutions are mutually exclusive, and their advantages cannot be used together. For the most common 2PC (two-phase commit) and flexible transactions, there are the following advantages and disadvantages:
+However, the integration of a large number of third-party solutions cannot cover all branches of distributed transaction requirements. Each solution has its own suitable and unsuitable scenarios. The solutions are mutually exclusive, and their advantages cannot be used together. For the most common 2PC (two-phase commit) and BASE transactions, there are the following advantages and disadvantages:
 
 - Two-phase commit: The two-phase distributed transaction based on the XA protocol incurs little business intrusion. Its biggest advantage is that it is transparent to the user. Developers can use distributed transactions based on the XA protocol like local transactions. The XA protocol can strictly guarantee the ACID characteristics of transactions, but it is also a double-edged sword. In the process of transaction execution, all required resources need to be locked, which is more suitable for short transactions whose execution time is determined. For long transactions, the exclusive use of resources during the entire transaction will cause the concurrency performance of business systems that rely on hot data to decline significantly. Therefore, in high-concurrency performance-oriented scenarios, distributed transactions based on the XA protocol two-phase commit type are not the best choice.
     
-- Flexible transaction: If the transaction that implements the transaction element of ACID is called a rigid transaction, the transaction based on the BASE transaction element is called a flexible transaction. BASE is an abbreviation of the three elements of basic availability, flexible state and final consistency. In ACID transactions, the requirements for consistency and isolation are very high. During the execution of the transaction, all resources must be occupied. The idea of flexible transactions is to move the mutex operation from the resource level to the business level through business logic. By relaxing the requirements for strong consistency and isolation, only when the entire transaction ends, the data is consistent. During the execution of the transaction, any data obtained by the read operation may be changed. This weak consistency design can be used in exchange for system throughput improvement.
+- BASE transaction: If the transaction that implements the transaction element of ACID is called a rigid transaction, the transaction based on the BASE transaction element is called a BASE transaction. BASE is an abbreviation of the three elements of basic availability, flexible state and final consistency. In ACID transactions, the requirements for consistency and isolation are very high. During the execution of the transaction, all resources must be occupied. The idea of BASE transactions is to move the mutex operation from the resource level to the business level through business logic. By relaxing the requirements for strong consistency and isolation, only when the entire transaction ends, the data is consistent. During the execution of the transaction, any data obtained by the read operation may be changed. This weak consistency design can be used in exchange for system throughput improvement.
     
 
 Both ACID-based two-phase transactions and BASE-based final consistency transactions are not silver bullets, and the differences between them can be compared in detail through the following table.
 
 ![](https://shardingsphere.apache.org/blog/img/database8.jpg)
 
-A two-phase transaction that lacks concurrency guarantee cannot be called a perfect distributed transaction solution; a flexible transaction that lacks the original support of ACID cannot even be called a database transaction, which is more suitable for service layer transaction processing.
+A two-phase transaction that lacks concurrency guarantee cannot be called a perfect distributed transaction solution; a BASE transaction that lacks the original support of ACID cannot even be called a database transaction, which is more suitable for service layer transaction processing.
 
 At present, it is difficult to find a distributed transaction solution that can be used universally without trade-offs.
 
@@ -135,11 +135,11 @@ Its design feature is to separate the data in the transaction (called active dat
 
 JDTX reinterprets the database transaction model with a new architecture. The main highlights are:
 
-**1. The internalized distributed transaction is a local transaction**
+**1. Convert distributed transactions to local one**
 
 JDTX's MVCC engine is a centralized cache. It can internalize the two-phase commit to the one-phase commit to maintain the atomicity and consistency of the data in a single node, that is, reduce the scope of distributed transactions to the scope of local transactions. JDTX guarantees the atomicity and consistency of transaction data by ensuring that all access to transaction data passes through the active data of the MVCC engine + the final data-end data combination.
 
-**2. Non-destructive transaction isolation mechanism**
+**2. Fully support all transaction isolation levels**
 
 Implementing transaction isolation in the way of MVCC. At present, it fully supports the read and repeatable reads in the four standard isolation levels, which can already meet most of the needs.
 
@@ -153,7 +153,7 @@ Similar to the WAL system of the database, the WAL of JDTX also adopts the way o
 
 Both WAL and MVCC engines can maintain high availability and horizontal scalability through active and standby and sharding. When the MVCC engine is completely unavailable, the data in WAL can be synchronized to the database through the recovery mode to ensure the integrity of the data.
 
-**5. Cross-multiple database transactions**
+**5. Support transactions between different databases**
 
 The design scheme of separating transaction active data and order placement data makes its placement data storage end without any restrictions. Since the transaction active data is stored in the back-end storage medium through the asynchronous drop-off executor, whether the back-end is a homogeneous database has no effect. Using JDTX can ensure that distributed transactions across multiple storage ends (such as MySQL, PostgreSQL, and even MongoDB, Redis, and NoSQL) are maintained within the same transaction semantics.
 
@@ -165,7 +165,7 @@ It can be said that the existence of JDTX has made Apache ShardingSphere break t
 
 #### Elastic Scaling
 
-Unlike stateless service-based applications, data nodes hold important user data that cannot be lost. When the capacity of the data node is not enough to bear the rapidly growing business, the expansion of the data node is inevitable. According to the different sharding strategies preset by the user, the expansion strategy will also be different.
+Unlike stateless service-based applications, data nodes hold important user data that cannot be lost. When the capacity of the data node is not enough to bear the rapidly growing business, the expansion of the data node is inevitable. According to the different sharding strategies configured by the user, the expansion strategy will also be different.
 
 Elastic scaling allows the database managed by Apache ShardingSphere to expand and contract without stopping external services. Elastic scaling is divided into two components, elastic migration and range expansion, which are currently incubating.
 
@@ -210,7 +210,7 @@ The design goal of the governance module is to better manage and use distributed
 
 Database governance
 
-In line with the design philosophy of all distributed systems, divide and conquer is also a guideline for distributed databases. The existence of database governance capabilities can prevent management costs from increasing with the number of database instances.
+In line with the design philosophy of all distributed systems, divide and governance is also a guideline for distributed databases. The existence of database governance capabilities can prevent management costs from increasing with the number of database instances.
 
 Dynamic configuration
 
@@ -240,7 +240,7 @@ Shadow Schema Table
 
 Apache ShardingSphere can automatically route user-marked data to the shadow schema (table) when the system performs a full link pressure test. The shadow schema (table) pressure measurement function can make online pressure measurement a normal state, and users do not need to care about the cleaning of pressure measurement data. This function is also under high-speed incubation.
 
-### 4 Route planning
+### 4 Roadmap
 
 As you can see, Apache ShardingSphere is on the track of rapid development, and more and more functions that have no strong relationship with the "sub-database and sub-table" were added to it. But the functions of these products are not obtrusive, but they can help Apache ShardingSphere become a more diversified distributed database solution. Apache ShardingSphere will focus on the following lines in the future.
 
@@ -248,7 +248,7 @@ As you can see, Apache ShardingSphere is on the track of rapid development, and 
 
 More and more scattered functions need to be further sorted out. The existing architecture of Apache ShardingSphere is not enough to fully absorb such a wide range of product functions. The flexible functional pluggable platform is the adjustment direction of Apache ShardingSphere's future architecture.
 
-The pluggable platform completely disassembles Apache ShardingSphere from both technical and functional aspects. The panoramic view of Apache ShardingSphere is as follows:
+The pluggable platform completely disassembles Apache ShardingSphere from both technical and functional aspects. The landscape of Apache ShardingSphere is as follows:
 
 ![](https://shardingsphere.apache.org/blog/img/database13.jpg)
 
@@ -256,11 +256,11 @@ Apache ShardingSphere will be horizontally divided into 4 layers according to th
 
 Apache ShardingSphere's support for database types will be completely open. In addition to relational databases, NoSQL will also be fully open. The database dialects do not affect each other and are completely decoupled. In terms of functions, Apache ShardingSphere uses a superimposed architecture model, so that various functions can be flexibly combined. Each functional module only needs to pay attention to its own core functions, and the Apache ShardingSphere architecture is responsible for the superposition and combination of functions. Even if there is no function, Apache ShardingSphere can be directly started as a blank access terminal, providing developers with customized development of infrastructure such as scaffolding and SQL parsing. The database integrated into the Apache ShardingSphere ecosystem will directly obtain all the basic capabilities provided by the platform; the functions developed on the Apache ShardingSphere platform will also directly receive all the support of the database types that have been connected to the platform. The database type and function type will be arranged and combined in a multiplied manner. The combination of infrastructure and Lego will provide Apache ShardingSphere with various imagination and improvement spaces.
 
-#### Query engine
+#### Query optimizer
 
-At present, Apache ShardingSphere only distributes SQL to the corresponding database through correct routing and rewriting to manipulate the data. The query engine that calculates and issues the database that can be fully utilized, but cannot effectively support complex related queries and subqueries. The SQL on KV query engine based on relational algebra has become mature with the development of JDTX, and its accumulated experience is fed back to the SQL query engine, which can enable Apache ShardingSphere to better support complex queries such as subqueries and cross-database related queries.
+At present, Apache ShardingSphere only distributes SQL to the corresponding database through correct routing and rewriting to manipulate the data. The query optimizer that calculates and issues the database that can be fully utilized, but cannot effectively support complex related queries and subqueries. The SQL on KV query optimizer based on relational algebra has become mature with the development of JDTX, and its accumulated experience is fed back to the SQL query optimizer, which can enable Apache ShardingSphere to better support complex queries such as subqueries and cross-database related queries.
 
-#### Multiple data copies
+#### Multiple replica
 
 The multiple data copy capabilities required by distributed databases are not currently available in Apache ShardingSphere. In the future, Apache ShardingSphere will provide multi-copy write capability based on Raft.
 
@@ -272,7 +272,7 @@ The focus of Database Mesh is how to organically connect distributed data access
 
 #### Data Federation
 
-After supporting more database types, Apache ShardingSphere will focus on the unified query engine of multiple and heterogeneous database types. In addition, Apache ShardingSphere will also cooperate with JDTX to incorporate more diverse data storage media into the same transaction.
+After supporting more database types, Apache ShardingSphere will focus on the unified query optimizer of multiple and heterogeneous database types. In addition, Apache ShardingSphere will also cooperate with JDTX to incorporate more diverse data storage media into the same transaction.
 
 ### 5 Open source and community
 
@@ -288,11 +288,11 @@ As the community matures, Apache ShardingSphere grows faster and faster. We sinc
 
 **project address:**
 
-https://github.com/apache/incubator-shardingsphere
+https://github.com/apache/shardingsphere
 
 ### 6 About the author
 
-Zhang Liang, head of data research and development at JD.com, initiator of Apache ShardingSphere & PPMC, head of JDTX.
+Zhang Liang, head of data research and development at JD.com, initiator of Apache ShardingSphere & PMC, head of JDTX.
   
 Love open source, leading open source projects ShardingSphere (formerly known as Sharding-JDBC) and Elastic-Job. Good at using java as the main distributed architecture, admiring elegant code, and having more research on how to write expressive code. 
   
