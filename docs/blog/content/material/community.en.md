@@ -1,5 +1,5 @@
 +++
-title = "Exploration and expansion of the community"
+title = "2.Exploration and expansion of the community"
 weight = 3
 chapter = true
 +++

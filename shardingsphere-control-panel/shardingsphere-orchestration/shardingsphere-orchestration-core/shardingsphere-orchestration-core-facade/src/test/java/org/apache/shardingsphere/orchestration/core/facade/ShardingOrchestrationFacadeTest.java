@@ -109,7 +109,7 @@ public final class ShardingOrchestrationFacadeTest {
     
     @Test
     public void assertInitMetricsConfiguration() {
-        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, 8, null);
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, true, 8, null);
         shardingOrchestrationFacade.initMetricsConfiguration(metricsConfiguration);
         verify(configCenter).persistMetricsConfiguration(metricsConfiguration, false);
     }

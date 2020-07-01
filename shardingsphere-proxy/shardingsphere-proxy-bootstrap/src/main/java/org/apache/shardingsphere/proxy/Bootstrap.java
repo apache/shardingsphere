@@ -143,9 +143,8 @@ public final class Bootstrap {
             Properties properties = shardingOrchestrationFacade.getConfigCenter().loadProperties();
             Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(shardingOrchestrationFacade);
             Map<String, Collection<RuleConfiguration>> schemaRules = getSchemaRules(shardingOrchestrationFacade);
-            MetricsConfiguration metricsConfiguration = shardingOrchestrationFacade.getConfigCenter().loadMetricsConfiguration();
             ClusterConfiguration clusterConfiguration = shardingOrchestrationFacade.getConfigCenter().loadClusterConfiguration();
-            initialize(authentication, properties, schemaDataSources, schemaRules, metricsConfiguration, clusterConfiguration, true);
+            initialize(authentication, properties, schemaDataSources, schemaRules, getMetricsConfiguration(serverConfig.getMetrics()), clusterConfiguration, true);
             ShardingSphereProxy.getInstance().start(port);
         }
     }
@@ -246,7 +245,7 @@ public final class Bootstrap {
     }
     
     private static void initMetrics(final MetricsConfiguration metricsConfiguration) {
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_METRICS_ENABLED)) {
+        if (null != metricsConfiguration && metricsConfiguration.getEnable()) {
             MetricsTrackerFacade.getInstance().init(metricsConfiguration);
         }
     }
