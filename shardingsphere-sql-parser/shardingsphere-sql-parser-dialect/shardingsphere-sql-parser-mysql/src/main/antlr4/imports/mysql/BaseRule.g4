@@ -23,6 +23,29 @@ parameterMarker
     : QUESTION_
     ;
 
+customKeyword
+    : MAX
+    | MIN
+    | SUM
+    | COUNT
+    | GROUP_CONCAT
+    | CAST
+    | POSITION
+    | SUBSTRING
+    | SUBSTR
+    | EXTRACT
+    | TRIM
+    | LAST_DAY
+    | TRADITIONAL
+    | TREE
+    | MYSQL_ADMIN
+    | INSTANT
+    | INPLACE
+    | COPY
+    | UL_BINARY
+    | AUTOCOMMIT
+    ;
+
 literals
     : stringLiterals
     | numberLiterals
@@ -71,7 +94,7 @@ collationName_
    ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord
+    : IDENTIFIER_ | unreservedWord | customKeyword
     ;
 
 unreservedWord
@@ -105,7 +128,7 @@ unreservedWord
     | ORDINALITY | OTHERS | OWNER | PACK_KEYS | PAGE | PARSER | PARTIAL | PARTITIONING | PASSWORD | PASSWORD_LOCK_TIME
     | PATH | PERSIST | PERSIST_ONLY | PHASE | PLUGIN | PLUGINS | PLUGIN_DIR | POINT | POLYGON | PORT | PRECEDES
     | PRECEDING | PREPARE | PRESERVE | PREV | PRIVILEGES | PRIVILEGE_CHECKS_USER | PROCESS | PROCESSLIST | PROFILE
-    | PROFILES | PROXY | QUARTER | QUERY| QUICK | RANDOM | READ_ONLY | REBUILD | RECOVER | REDOFILE | REDO_BUFFER_SIZE
+    | PROFILES | PROXY | QUARTER | QUERY| QUICK | RANDOM | READ_ONLY | REBUILD | RECOVER | REDO_BUFFER_SIZE
     | REDUNDANT | REFERENCE | RELAY | RELAYLOG | RELAY_LOG_FILE | RELAY_LOG_POS | RELAY_THREAD
     | RELOAD | REMOVE | REORGANIZE | REPAIR | REPEATABLE | REPLICATE_DO_DB | REPLICATE_DO_TABLE | REPLICATE_IGNORE_DB
     | REPLICATE_IGNORE_TABLE | REPLICATE_REWRITE_DB | REPLICATE_WILD_DO_TABLE | REPLICATE_WILD_IGNORE_TABLE | REPLICATION
@@ -372,7 +395,7 @@ aggregationFunction
     ;
 
 aggregationFunctionName
-    : ('MAX'|'max') | ('MIN'|'min') | ('SUM'|'sum') | ('COUNT'| 'count') | AVG
+    : MAX | MIN | SUM | COUNT | AVG
     ;
 
 distinct
@@ -413,7 +436,7 @@ specialFunction
     ;
 
 groupConcatFunction
-    : 'GROUP_CONCAT' LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
+    : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
     ;
 
 windowFunction
@@ -421,7 +444,7 @@ windowFunction
     ;
 
 castFunction
-    : 'CAST' LP_ expr AS dataType RP_
+    : CAST LP_ expr AS dataType RP_
     ;
 
 convertFunction
@@ -430,16 +453,16 @@ convertFunction
     ;
 
 positionFunction
-    : 'POSITION' LP_ expr IN expr RP_
+    : POSITION LP_ expr IN expr RP_
     ;
 
 substringFunction
-    : ('SUBSTRING' | 'SUBSTR') LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
-    | ('SUBSTRING' | 'SUBSTR') LP_ expr COMMA_ NUMBER_ (COMMA_ NUMBER_)? RP_
+    : (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
+    | (SUBSTRING | SUBSTR) LP_ expr COMMA_ NUMBER_ (COMMA_ NUMBER_)? RP_
     ;
 
 extractFunction
-    : 'EXTRACT' LP_ identifier FROM expr RP_
+    : EXTRACT LP_ identifier FROM expr RP_
     ;
 
 charFunction
@@ -447,7 +470,7 @@ charFunction
     ;
 
 trimFunction_
-    : 'TRIM' LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
+    : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
     ;
 
 valuesFunction_
@@ -472,7 +495,7 @@ regularFunction
     ;
     
 shorthandRegularFunction
-    : CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | ('last_day'|'LAST_DAY') | LOCALTIME | LOCALTIMESTAMP
+    : CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | LAST_DAY | LOCALTIME | LOCALTIMESTAMP
     ;
   
 completeRegularFunction

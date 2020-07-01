@@ -89,7 +89,7 @@ assignmentValue
     ;
 
 blobValue
-    : '_BINARY' STRING_
+    : UL_BINARY STRING_
     ;
 
 delete

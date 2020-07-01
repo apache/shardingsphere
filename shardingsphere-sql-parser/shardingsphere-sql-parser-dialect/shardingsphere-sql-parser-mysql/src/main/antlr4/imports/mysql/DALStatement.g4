@@ -231,7 +231,7 @@ showVariables
     ;
 
 showWarnings
-    : SHOW ('COUNT' LP_ ASTERISK_ RP_)? WARNINGS (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
+    : SHOW (COUNT LP_ ASTERISK_ RP_)? WARNINGS (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
     ;
 
 setCharacter
@@ -385,5 +385,5 @@ explainableStatement
     ;
 
 formatName
-    : 'TRADITIONAL' | JSON | 'TREE'
+    : TRADITIONAL | JSON | TREE
     ;

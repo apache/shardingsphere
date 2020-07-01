@@ -24,7 +24,7 @@ setTransaction
     ;
 
 setAutoCommit
-    : SET scope_? 'AUTOCOMMIT' EQ_ autoCommitValue
+    : SET scope_? AUTOCOMMIT EQ_ autoCommitValue
     ;
 
 scope_

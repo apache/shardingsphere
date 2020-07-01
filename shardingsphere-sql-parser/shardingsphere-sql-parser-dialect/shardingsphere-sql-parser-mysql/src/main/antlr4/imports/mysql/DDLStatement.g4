@@ -109,7 +109,7 @@ instanceAction
     ;
 
 channel
-    : 'mysql_admin' | 'mysql_main'
+    : MYSQL_ADMIN
     ;
 
 createEvent
@@ -389,7 +389,7 @@ alterSpecification
     | ADD checkConstraintDefinition
     | DROP CHECK ignoredIdentifier_
     | ALTER CHECK ignoredIdentifier_ NOT? ENFORCED
-    | ALGORITHM EQ_? (DEFAULT | 'INSTANT' | 'INPLACE' | 'COPY')
+    | ALGORITHM EQ_? (DEFAULT | INSTANT | INPLACE | COPY)
     | ALTER COLUMN? columnName (SET DEFAULT (literals | LP_ expr RP_) | DROP DEFAULT)
     | ALTER INDEX indexName (VISIBLE | INVISIBLE)
     | changeColumnSpecification
