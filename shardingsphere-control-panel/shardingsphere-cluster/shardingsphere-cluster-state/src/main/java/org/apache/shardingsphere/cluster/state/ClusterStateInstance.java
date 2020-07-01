@@ -27,10 +27,6 @@ import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrch
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Cluster state instance.
  */
@@ -94,20 +90,6 @@ public final class ClusterStateInstance {
         InstanceState instanceState = loadInstanceState();
         instanceState.getDataSources().entrySet().stream().filter(entry -> dataSourceName.equals(entry.getKey())).findFirst().get().getValue().setState(state);
         persistInstanceState(instanceState);
-    }
-    
-    /**
-     * Load all instance states.
-     *
-     * @return all instance states
-     */
-    public Map<String, InstanceState> loadAllInstanceStates() {
-        Collection<String> instances = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadAllInstances();
-        Map<String, InstanceState> instanceStateMap = new HashMap<>();
-        instances.forEach(each -> {
-            instanceStateMap.put(each, loadInstanceState(each));
-        });
-        return instanceStateMap;
     }
     
     private static class ClusterStateInstanceHolder {

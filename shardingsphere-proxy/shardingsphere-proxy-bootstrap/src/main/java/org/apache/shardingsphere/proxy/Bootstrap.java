@@ -251,7 +251,8 @@ public final class Bootstrap {
     }
     
     private static void initCluster(final ClusterConfiguration clusterConfiguration) {
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
+        if (null != ClusterFacade.getInstance()
+                && ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
             ClusterFacade.getInstance().init(clusterConfiguration);
         }
     }
