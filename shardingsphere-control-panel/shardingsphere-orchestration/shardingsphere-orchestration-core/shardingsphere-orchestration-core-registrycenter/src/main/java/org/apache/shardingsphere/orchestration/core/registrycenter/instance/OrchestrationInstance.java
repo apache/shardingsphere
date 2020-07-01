@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.orchestration.core.registrycenter.instance;
 
 import lombok.Getter;
-
 import java.util.UUID;
 import org.apache.shardingsphere.orchestration.core.registrycenter.util.IpUtils;
 
