@@ -61,7 +61,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.ReplaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.rl.ChangeMasterStatement;
@@ -89,7 +88,7 @@ public final class MySQLComStmtPrepareChecker {
             CreateTableStatement.class, DropTableStatement.class, CreateUserStatement.class, RenameUserStatement.class, DropUserStatement.class,
             CreateViewStatement.class, DropViewStatement.class, DeleteStatement.class, DoStatement.class, FlushStatement.class,
             GrantStatement.class, InsertStatement.class, InstallPluginStatement.class, KillStatement.class, LoadIndexInfoStatement.class,
-            OptimizeTableStatement.class, RenameTableStatement.class, RepairTableStatement.class, ReplaceStatement.class, ResetStatement.class,
+            OptimizeTableStatement.class, RenameTableStatement.class, RepairTableStatement.class, ResetStatement.class,
             RevokeStatement.class, SelectStatement.class, SetStatement.class, ShowWarningsStatement.class, ShowErrorsStatement.class,
             ShowBinlogStatement.class, ShowCreateProcedureStatement.class, ShowCreateFunctionStatement.class, ShowCreateEventStatement.class,
             ShowCreateTableStatement.class, ShowCreateViewStatement.class, ShowBinaryLogsStatement.class, ShowStatusStatement.class,

@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -54,6 +55,8 @@ public final class GroupByMemoryMergedResultTest {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
         MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), null);
         assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class), is(0));
+        assertThat(actual.getValue(2, Object.class), is(nullValue()));
         assertFalse(actual.next());
     }
     
@@ -110,6 +113,40 @@ public final class GroupByMemoryMergedResultTest {
                 new GroupByContext(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))), false),
                 projectionsContext, new PaginationContext(null, null, Collections.emptyList()));
+    }
+
+    @Test
+    public void assertNextForAggregationResultSetsEmpty() throws SQLException {
+        QueryResult queryResult1 = createQueryResult();
+        when(queryResult1.next()).thenReturn(true, false);
+        when(queryResult1.getValue(1, Object.class)).thenReturn(20);
+        when(queryResult1.getValue(2, Object.class)).thenReturn(0);
+        when(queryResult1.getValue(3, Object.class)).thenReturn(2);
+        when(queryResult1.getValue(4, Object.class)).thenReturn(2);
+        when(queryResult1.getValue(5, Object.class)).thenReturn(20);
+        QueryResult queryResult2 = createQueryResult();
+        QueryResult queryResult3 = createQueryResult();
+        when(queryResult3.next()).thenReturn(true, true, false);
+        when(queryResult3.getValue(1, Object.class)).thenReturn(20, 30);
+        when(queryResult3.getValue(2, Object.class)).thenReturn(0);
+        when(queryResult3.getValue(3, Object.class)).thenReturn(2, 3);
+        when(queryResult3.getValue(4, Object.class)).thenReturn(2, 2, 3);
+        when(queryResult3.getValue(5, Object.class)).thenReturn(20, 20, 30);
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), null);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(30)));
+        assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
+        assertThat(actual.getValue(3, Object.class), is(3));
+        assertThat(actual.getValue(4, Object.class), is(new BigDecimal(3)));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(30)));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
+        assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
+        assertThat(actual.getValue(3, Object.class), is(2));
+        assertThat(actual.getValue(4, Object.class), is(new BigDecimal(4)));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(40)));
+        assertFalse(actual.next());
     }
     
     private OrderByItem createOrderByItem(final IndexOrderByItemSegment indexOrderByItemSegment) {

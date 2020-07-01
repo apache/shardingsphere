@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.registrycenter.util;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package org.apache.shardingsphere.orchestration.core.common.utils;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * IP utilities.

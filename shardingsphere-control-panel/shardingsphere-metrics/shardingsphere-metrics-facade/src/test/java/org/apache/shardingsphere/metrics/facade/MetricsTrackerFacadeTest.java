@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.metrics.facade;
 
+import java.util.Optional;
 import org.apache.shardingsphere.metrics.api.HistogramMetricsTrackerDelegate;
 import org.apache.shardingsphere.metrics.api.NoneHistogramMetricsTrackerDelegate;
 import org.apache.shardingsphere.metrics.api.NoneSummaryMetricsTrackerDelegate;
@@ -28,8 +29,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -43,13 +42,13 @@ public final class MetricsTrackerFacadeTest {
     
     @Before
     public void setUp() {
-        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, 8, null);
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, true, 8, null);
         metricsTrackerFacade.init(metricsConfiguration);
     }
     
     @Test
     public void assertInit() {
-        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, 8, null);
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, true, 8, null);
         metricsTrackerFacade.init(metricsConfiguration);
         assertThat(metricsTrackerFacade.isEnabled(), is(true));
     }
@@ -109,6 +108,13 @@ public final class MetricsTrackerFacadeTest {
     public void testStop() {
         metricsTrackerFacade.stop();
         assertThat(metricsTrackerFacade.isEnabled(), is(false));
+    }
+    
+    @Test
+    public void restart() {
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, true, 8, null);
+        metricsTrackerFacade.restart(metricsConfiguration);
+        assertThat(metricsTrackerFacade.isEnabled(), is(true));
     }
 }
 

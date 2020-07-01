@@ -6,7 +6,7 @@ weight = 3
 
 ## 1. 规则配置
 
-编辑`%SHARDINGSPHERE_SCALING_HOME%\conf\server.yaml`。详情请参见[使用手册](/cn/user-manual/shardingsphere-scaling/usage/)。
+编辑`%SHARDINGSPHERE_SCALING_HOME%/conf/server.yaml`。详情请参见[使用手册](/cn/user-manual/shardingsphere-scaling/usage/)。
 
 ## 2. 引入依赖
 
@@ -18,7 +18,7 @@ weight = 3
 ## 3. 启动服务
 
 ```bash
-sh %SHARDINGSPHERE_SCALING_HOME%\bin\start.sh
+sh %SHARDINGSPHERE_SCALING_HOME%/bin/start.sh
 ```
 
 ## 4. 创建迁移任务

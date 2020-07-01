@@ -20,7 +20,6 @@ package org.apache.shardingsphere.orchestration.core.schema;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
-import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartbeatEventBus;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -42,6 +41,7 @@ import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
@@ -75,7 +75,6 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     
     public OrchestrationSchemaContexts(final SchemaContexts schemaContexts) {
         ShardingOrchestrationEventBus.getInstance().register(this);
-        HeartbeatEventBus.getInstance().register(this);
         this.schemaContexts = schemaContexts;
     }
     
@@ -164,10 +163,13 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
      */
     @Subscribe
     public synchronized void renew(final MetricsConfigurationChangedEvent event) {
-        MetricsTrackerFacade.getInstance().stop();
-        MetricsTrackerFacade.getInstance().init(event.getMetricsConfiguration());
+        MetricsConfiguration metricsConfiguration = event.getMetricsConfiguration();
+        if (metricsConfiguration.getEnable()) {
+            MetricsTrackerFacade.getInstance().restart(metricsConfiguration);
+        } else {
+            MetricsTrackerFacade.getInstance().stop();
+        }
     }
-    
     
     /**
      * Renew meta data of the schema.

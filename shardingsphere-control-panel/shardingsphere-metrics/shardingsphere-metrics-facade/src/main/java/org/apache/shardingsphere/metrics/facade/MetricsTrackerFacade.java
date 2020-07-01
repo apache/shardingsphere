@@ -18,6 +18,10 @@
 package org.apache.shardingsphere.metrics.facade;
 
 import com.google.common.base.Preconditions;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.ServiceLoader;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.metrics.api.HistogramMetricsTrackerDelegate;
@@ -25,11 +29,6 @@ import org.apache.shardingsphere.metrics.api.SummaryMetricsTrackerDelegate;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.facade.handler.MetricsTrackerHandler;
 import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ServiceLoader;
 
 /**
  * Metrics tracker facade.
@@ -74,6 +73,9 @@ public final class MetricsTrackerFacade {
      * @param metricsConfiguration metrics configuration
      */
     public void init(final MetricsConfiguration metricsConfiguration) {
+        if (enabled) {
+            return;
+        }
         Preconditions.checkNotNull(metricsConfiguration, "metrics configuration can not be null.");
         metricsTrackerManager = findMetricsTrackerManager(metricsConfiguration.getMetricsName());
         Preconditions.checkNotNull(metricsTrackerManager, "Can not find metrics tracker manager with metrics name in metrics configuration.");
@@ -172,9 +174,24 @@ public final class MetricsTrackerFacade {
      * Stop to metrics.
      */
     public void stop() {
-        enabled = false;
-        metricsTrackerManager.stop();
+        if (!enabled) {
+            return;
+        }
+        if (null != metricsTrackerManager) {
+            metricsTrackerManager.stop();
+        }
         MetricsTrackerHandler.getInstance().close();
+        enabled = false;
+    }
+    
+    /**
+     * Restart to metrics.
+     *
+     * @param metricsConfiguration metrics configuration
+     */
+    public void restart(final MetricsConfiguration metricsConfiguration) {
+        stop();
+        init(metricsConfiguration);
     }
     
     private void loadMetricsManager() {
