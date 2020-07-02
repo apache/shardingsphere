@@ -8,24 +8,24 @@ chapter = true
 
 ### Author
 
-Liang Zhang，Head of Data R&D of JD.com, initiator of Apache ShardingSphere & PPMC
+Liang Zhang，Leader of Data R&D of JD.com, Founder & PPMC of Apache ShardingSphere. 
 
-Love open source, currently leading open source projects ShardingSphere (formerly known as Sharding-JDBC) and Elastic-Job. Good at using Java as the main distributed architecture and Kubernetes and Mesos as the main cloud platform, admiring elegant code, and having more research on how to write expressive code.
+Love open source, currently leading open source projects ShardingSphere (formerly known as Sharding-JDBC) and Elastic-Job. Good at using Java as the popular distributed architecture and Kubernetes and Mesos as the popular cloud platforms, admiring elegant codes, and having more research on how to write expressive codes.
 
-At present, the main energy is invested in building ShardingSphere into the industry's first-class financial data solution. ShardingSphere has entered the Apache incubator, is the first open source project of the Jingdong Group to enter the Apache Foundation, and is also the first distributed database middleware of the Apache Foundation.
-
----
-Ning Jiang，Technical expert of Huawei Open Source Competency Center, project leader of Apache ServiceComb. Former chief software engineer of Red Hat Software, he has more than ten years of experience in enterprise-level open source middleware development, rich experience in Java development and use, and he also is the enthusiast of functional programming. Since 2006, he has been engaged in the development of the Apache open source middleware project, and has participated in the development of Apache CXF, Apache Camel, and Apache ServiceMix. He has in-depth research in the microservice architecture, such as WebServices, Enterprise Integration Pattern, SOA and OSGi.
-
-Blog address：https://willemjiang.github.io/
+At present, focus on improving ShardingSphere to be the industry's first-class financial data solution. ShardingSphere has entered the Apache Incubator, is the first open source project of the Jingdong Group to enter the Apache Software Foundation, and is also the first distributed database middleware of the Apache Software Foundation.
 
 ---
+Ning Jiang，Technical expert of Huawei Open Source Competency Center, project leader of Apache ServiceComb, former chief software engineer of Red Hat Software. He has more than ten years of experience in enterprise-level open source middleware development, rich experience in Java development, and also is the enthusiast of functional programming. Since 2006, he has been engaged in the development of the Apache open source middleware projects, and has participated in the development of Apache CXF, Apache Camel, and Apache ServiceMix. He has in-depth research in the microservice architecture, such as WebServices, Enterprise Integration Pattern, SOA and OSGi.
 
-Zheng Feng is a software engineer at Red Hat. Joined Red Hat Software in 2009, mainly engaged in the work of the transaction manager. As a core developer, he participated in the Narayan and Blacktie projects. He had contributed to the integration of transaction processing of multiple application servers (Wildfly, Karaf, Tomcat) and frameworks (Common DBCP, Spring Boot ). Since 2017, he has participated in the Apache ServiceComb project and is currently a member of PMC. He has in-depth research on distributed transaction processing and transaction processing in a microservice environment.
+Blog site：https://willemjiang.github.io/
+
+---
+
+Zheng Feng is a software engineer at Red Hat, joined Red Hat Software in 2009, mainly engaged in the work of the transaction manager. As a core developer, he participated in the Narayan and Blacktie projects. He had contributed to the integration of transaction processing of multiple application servers (Wildfly, Karaf, Tomcat) and frameworks (Common DBCP, Spring Boot ). Since 2017, he has participated in the Apache ServiceComb project and is currently a member of PMC. He has in-depth research on distributed transaction processing and transaction processing in a microservice environment.
 
 ### Guide
 
-Compared with the gradual maturity of data sharding solutions, distributed transaction solutions that combine performance, transparency, automation, strong consistency, and can be applied to various application scenarios in one are very rare. Based on the performance bottlenecks of distributed transactions submitted in two (three) stages and the business transformation of flexible transactions, distributed transactions are still a headache for architects.
+Compared with the gradual maturity of data sharding, distributed transaction that combine performance, transparency, automation, strong consistency, and can be applied to various application scenarios, the solutions those are applicable to all of them are very rare. Based on the performance bottlenecks of distributed transactions submitted in two (three) phases and the business transformation of flexible transactions, distributed transactions are still a headache for architects.
 
 At the beginning of 2019, Apache ShardingSphere (Incubating) provided a rigid and flexible integrated distributed transaction solution. If your application system is being troubled by this aspect, why not pour a cup of coffee and spend ten minutes reading this article, maybe you will gain something?
 
@@ -59,34 +59,29 @@ Strictly guaranteeing ACID characteristics of transactions is a double-edged swo
 
 #### Flexible transaction
 
-If the transaction that implements the ACID transaction element is called a rigid transaction, the transaction based on the BASE transaction element is called a flexible transaction. BASE is an abbreviation of the three elements of basic availability, flexible state and final consistency.
+If the transaction that implements the ACID transaction element is called a rigid transaction, the transaction based on the BASE transaction element is called a flexible transaction. BASE is an abbreviation of the three elements of Basic Availability, Soft state and Eventually consistent.
 
 - Basically Available	Ensure that participants in distributed transactions are not necessarily online at the same time.
 
 - Soft state	It allows a certain delay in the system status update, and this delay may not be noticeable to customers.
 
-- Eventually consistent	Usually, the final consistency of the system is ensured by means of message passing.
+- Eventually consistent Usually, the eventually consistency of the system is ensured by means of message passing.
 
 In ACID transactions, the requirements for consistency and isolation are very high. During the execution of the transaction, all resources must be occupied. The idea of flexible transactions is to move the mutex operation from the resource level to the business level through business logic. By relaxing the requirements for strong consistency and isolation, only when the entire transaction ends, the data is consistent. During the execution of the transaction, any data obtained by the read operation may be changed. This weak consistency design can be used in exchange for system throughput improvement.
 
-Saga is a typical flexible transaction manager. The concept of Sagas comes from a database paper more than thirty years ago [http://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf], a Saga transaction is A long-term transaction which is composed of multiple short-term transactions. In the distributed transaction scenario, we regard a Saga distributed transaction as a transaction composed of multiple local transactions, and each local transaction has a corresponding compensation transaction. During the execution of the Saga transaction, if an abnormality occurs in a certain step, the Saga transaction will be terminated, and the corresponding compensation transaction will be called to complete the related recovery operation, so as to ensure that the local transactions related to Saga are all executed successfully, or through compensation restore to the state before the transaction was executed.
+Saga is a typical flexible transaction manager. The concept of Sagas comes from a database paper more than thirty years ago [http://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf], a Saga transaction is a long-term transaction which is composed of multiple short-term transactions. In the distributed transaction scenario, we regard a Saga distributed transaction as a transaction composed of multiple local transactions, and each local transaction has a corresponding compensation transaction. During the execution of the Saga transaction, if an abnormality occurs in a certain step, the Saga transaction will be terminated, and the corresponding compensation transaction will be called to complete the related recovery operation, so as to ensure that the local transactions related to Saga are all executed successfully, or through compensation restore to the state before the transaction was executed.
 
-TCC (Try-Cancel/Confirm implementation) is another kind of flexible transaction coordination implementation. TCC provides a more perfect recovery method with the help of a two-phase submission agreement. In TCC mode, cancel compensation obviously needs to execute business logic in the second stage to cancel the consequences of the first stage. Try is to perform related business operations in the first stage to complete the occupation of related business resources, such as pre-allocating ticket resources, or checking and refreshing the user account credit limit. During the cancellation phase, relevant business resources are released, such as releasing pre-allocated ticketing resources or restoring previously occupied user credits. Why do we need to add confirmation operations? This needs to start with the use life cycle of business resources. In the try process, we are only occupying business resources, and the related execution operations are only in a pending state. Only after the confirmation operation is completed, the business resources can be truly confirmed.
+TCC (Try-Cancel/Confirm implementation) is another kind of flexible transaction coordination implementation. TCC provides a more perfect recovery method with two-phase commit agreement. In TCC mode, `cancel` compensation obviously needs to execute business logic in the second stage to cancel the consequences of the first stage. `Try` is to perform related business operations in the first stage to complete the occupation of related business resources, such as pre-allocating ticket resources, or checking and refreshing the user account credit limit. During the cancellation phase, relevant business resources are released, such as releasing pre-allocated ticketing resources or restoring previously occupied user credits. Why do we need to add `confirm` operations? This needs to start with the life cycle of business resources. In the `try` process, we are only occupying business resources, and the related execution operations are only in a pending state. Only after the confirm operation is completed, the business resources can be truly confirmed.
 
-The strong consistency transaction based on ACID and the final consistency transaction based on BASE are not silver bullets, and their greatest strengths can only be used in the most suitable scenarios. The following table can be used to compare the differences between them in detail to help developers choose technologies.
+The strong consistency transaction based on ACID and the eventually consistency transaction based on BASE are not silver bullets, and their greatest strengths can only be used in the most suitable scenarios. The following table can be used to compare the differences between them in detail to help developers make a choice.
 
-<center>
-
-
-|        Contrast         |             Local Transaction             |        Two-phase Submission         |        Flexible Transaction         |
+|        Contrast         |             Local Transaction             |          Two-Phase Commit           |        Flexible Transaction         |
 | :---------------------: | :---------------------------------------: | :---------------------------------: | :---------------------------------: |
 | Business Transformation |                  No need                  |               No need               |    Implement related interfaces     |
 |       Consistency       |                Not support                |               Support               |          Final consistency          |
 |        Isolation        |                Not support                |               Support               |         Business guarantee          |
 | Concurrent Performance  |                 No effect                 |           Severe decline            |           Slight decline            |
 |   Suitable Scenarios    | Inconsistent processing by business party | Short transaction & Low concurrency | Long transaction & High concurrency |
-
-</center>
 
 #### Challenge
 
@@ -98,11 +93,11 @@ The XA-based two-phase commit transaction is relatively simple to use, but it ca
 
 ### Distributed transactions of ShardingSphere
 
-Integrate existing mature transaction solutions, provide a unified distributed transaction interface for local transactions, two-phase commit and flexible transactions, and make up for the shortcomings of the current solution, the main design goal of the Apache ShardingSphere (Incubating) distribution transactional module is providing a one-stop distributed transaction solution. The name of the module is sharding-transaction. The three key words of combination of hardness and softness, automation and transparency can be used to summarize the design concept and functional presentation of the sharding-transaction module.
+Integrate existing mature transaction solutions, provide a unified distributed transaction interface for local transactions, two-phase commit and flexible transactions, and make up for the shortcomings of the current solution, the main design goal of the Apache ShardingSphere (Incubating) distribution transactional module is providing a one-stop distributed transaction solution. The name of the module is sharding-transaction. The three key words of `mixture`, `automation` and `transparency` can be used to summarize the design concept and functional presentation of the sharding-transaction module.
 
-1.The combination of hardness and softness
+1.Mixture
 
-At the same time provide XA-based two-phase commit transaction and Saga-based flexible transaction solution, and can be used together.
+Provide both XA-based two-phase commit transaction and Saga-based flexible transaction solution, and can be used together.
 
 2.Automation
 
@@ -110,7 +105,7 @@ XA transactions and Saga transactions are completed in an automated manner, and 
 
 3.Transparency
 
-In the two access points of Apache ShardingSphere (Incubating), Sharding-JDBC and Sharding-Proxy, respectively provide the encapsulation for the local transaction interface. The user can fully use the multiple data sources of horizontal sharding managed by ShardingSphere as one database, and the complete distributed transaction capability can be achieved through the local transaction API. Users can transparently switch transaction types in the application.
+In the two access layers of Apache ShardingSphere (Incubating), Sharding-JDBC and Sharding-Proxy, respectively provide the encapsulation for the local transaction interface. Users can fully use the multiple data sources of horizontal sharding managed by ShardingSphere as one database, and the complete distributed transaction capability can be achieved through the local transaction API. Users can transparently switch transaction types in the application.
 
 The sharding-transaction module consists of three sub-modules: sharding-transaction-core, sharding-transaction-2pc and sharding-transaction-base.
 
@@ -120,7 +115,7 @@ Provides APIs for users and SPIs for developers.
 
 - sharding-transaction-2pc:
 
-The parent module of two-stage commit transaction. Currently only the sharding-transaction-xa module provides XA protocol support. In the future, more types of transactions based on two-phase commit will be introduced, such as: percolator, see:
+The parent module of two-phases commit transaction. Currently only the sharding-transaction-xa module provides XA protocol support. In the future, more types of transactions based on two-phase commit will be introduced, such as `percolator`, see:
 
 [https://storage.googleapis.com/pub-tools-public-publication-data/pdf/36726.pdf]。
 
@@ -185,11 +180,11 @@ The user developer provides resource occupancy and compensation operations, whic
 
 
 
-Apache ShardingSphere (Incubating) uses reverse SQL technology to automatically generate data snapshots and reverse SQL for the SQL that updates the database, and it is executed by Apache ServiceComb Saga Actuator. The user does not need to pay attention to how to implement the compensation method. The application category of the transaction manager is successfully positioned back to the source of the transaction -- the database level.
+Apache ShardingSphere (Incubating) uses reverse SQL technology to automatically generate data snapshots and reverse SQL for the SQL that updates the database, and it is executed by Apache ServiceComb Saga Actuator. The user does not need to pay attention to how to implement the compensation methods. The application category of the transaction manager is successfully positioned back to the source of the transaction -- in the database level.
 
 
 
-For the Apache ShardingSphere (Incubating) SQL parsing engine that can process complex query statements, the difficulty of parsing statements such as insert/update/delete is much smaller; ShardingSphere intercepts the SQL executed by the user to perform data sharding. All SQL Can be directly controlled by it. Therefore, the combination of reverse SQL and compensation capabilities with Apache ServiceComb Saga Actuator achieves the ability to automate flexible transactions, which is a model of combining data sharding and flexible transactions.
+For the Apache ShardingSphere (Incubating) SQL parsing engine that can process complex query statements, the difficulty of parsing statements such as `insert/update/delete` is much smaller. ShardingSphere intercepts the SQL executed by the users to perform data sharding. All SQL can be directly controlled by it. Therefore, the combination of reverse SQL and compensation capabilities with Apache ServiceComb Saga Actuator achieves the ability to automate flexible transactions, which is a model of combining data sharding and flexible transactions.
 
 
 
@@ -199,7 +194,7 @@ The architecture diagram of the Saga module is as follows：
 
 #### Access point -- Distributed transaction for native transaction interface
 
-The goal of Apache ShardingSphere (Incubating) is to use sharded multi-database like a database. In the transaction module, this goal is still applicable. No matter how fragmented the database managed by ShardingSphere, there is always only one logical database for developers. Therefore, ShardingSphere's transaction interface is still the native local transaction interface, namely the setAutoCommit, commit and rollback methods of JDBC's java.sql.Connection; and the begin, commit and rollback statements for the database transaction manager. While the user calls the native local transaction interface, ShardingSphere guarantees the distributed transactions of the backend sharded database through the sharding-transaction module.
+The goal of Apache ShardingSphere (Incubating) is to use sharded multi-databases like a database. In the transaction module, this goal is still applicable. No matter how fragmented the database managed by ShardingSphere, there is always only one logical database for developers. Therefore, ShardingSphere's transaction interface is still the native local transaction interface, namely the `setAutoCommit`, `commit` and `rollback` methods of JDBC's `java.sql.Connection`. And the `begin`, `commit` and `rollback` statements for the database transaction manager. While the users calls the native local transaction interface, ShardingSphere guarantees the distributed transactions of the backend sharded database through the sharding-transaction module.
 
 
 
@@ -207,11 +202,11 @@ Since the native transaction interface does not support transaction types, Shard
 
 
 
-1.Switch the current transaction type through SCTL (sharding-ctl, the database management command provided by ShardingSphere). Just enter it in SQL execution mode, and it is applicable to Sharding-JDBC and Sharding-Proxy. For example: SCTL:SET TRANSACTION_TYPE=BASE
+1.Switch the current transaction type through SCTL (sharding-ctl, the database management command provided by ShardingSphere). Just enter it in SQL execution mode, and it is applicable to Sharding-JDBC and Sharding-Proxy. For example: `SCTL:SET TRANSACTION_TYPE=BASE`.
 
-2.Switch the current transaction type through Threadlocal, suitable for Sharding-JDBC. For example: TransactionTypeHolder.set (TransactionType.XA)
+2.Switch the current transaction type through `Threadlocal`, suitable for Sharding-JDBC. For example: `TransactionTypeHolder.set (TransactionType.XA)`.
 
-3.Through meta-annotation, and used with Spring to switch the current transaction type, suitable for Sharding-JDBC and Sharding-Proxy. For example: @ShardingTransactionType (TransactionType.BASE)
+3.Through meta-annotation, and used with Spring to switch the current transaction type, suitable for Sharding-JDBC and Sharding-Proxy. For example: `@ShardingTransactionType (TransactionType.BASE)`.
 
 ### Future plan
 
@@ -223,15 +218,15 @@ After the SQL reverse engine is stabilized, the focus of flexible transactions w
 
 
 
-Apache ShardingSphere (Incubating) will support the isolation level of read committed, read uncommitted, repeatable read, and serialization through several strategies such as optimistic locking, pessimistic locking, and no isolation. And through the multi-version snapshot to further improve the concurrency of the system.
+Apache ShardingSphere (Incubating) will support the isolation level of `read committed`, `read uncommitted`, `repeatable read`, and `serialization` through several strategies such as optimistic locking, pessimistic locking, and no isolation. And through the multi-version snapshot to further improve the concurrency of the system.
 
 #### External XA transaction interface
 
-The two access ends of Apache ShardingSphere (Incubating), Sharding-JDBC and Sharding-Proxy, after supporting their own internal transaction issues, will provide the ability to integrate with other data sources to be managed by distributed transaction manager such as JTA.
+The two access layers of Apache ShardingSphere (Incubating), Sharding-JDBC and Sharding-Proxy, after supporting their own internal transaction issues, will provide the ability to integrate with other data sources to be managed by distributed transaction manager such as JTA.
 
 
 
-After the external XA transaction interface is implemented, the Sharding-JDBC DataSource will implement the XADataSource interface, providing the possibility to join with other data sources in an XA transaction; Sharding-Proxy's database protocol will also implement a two-stage XA-based submission protocol; Let it become the resource manager loaded by XA.
+After the external XA transaction interface is implemented, the Sharding-JDBC DataSource will implement the `XADataSource` interface, providing the possibility to join with other data sources in an XA transaction; Sharding-Proxy's database protocol will also implement a two-phases XA-based commit protocol. Let it become the resource manager loaded by XA.
 
 
 
@@ -243,7 +238,7 @@ In addition, ShardingSphere will also implement the recovery part of the XA prot
 The distributed transaction capabilities provided by Apache ShardingSphere (Incubating) can be summarized by the following table. Readers may wish to compare with the table at the beginning of the article to see the changes brought by ShardingSphere's distributed transaction module.
 
 
-|        Contrast         |             Local Transaction             |        Two-phase Submission         |        Flexible Transaction         |
+|        Contrast         |             Local Transaction             |          Two-Phase Commit           |        Flexible Transaction         |
 | :---------------------: | :---------------------------------------: | :---------------------------------: | :---------------------------------: |
 | Business Transformation |                  No need                  |               No need               | <font color=#ff0000>No need</font>  |
 |       Consistency       |                Not support                |               Support               |          Final consistency          |
@@ -251,5 +246,5 @@ The distributed transaction capabilities provided by Apache ShardingSphere (Incu
 | Concurrent Performance  |                 No effect                 |           Severe decline            |           Slight decline            |
 |   Suitable Scenarios    | Inconsistent processing by business party | Short transaction & Low concurrency | Long transaction & High concurrency |
 
-In the fast-developing Apache ShardingSphere (Incubating), the prototype of distributed transactions has been established. We will build it into a usable product as soon as possible and continue to provide quality solutions to the community. For an article that is not short, after reading this article, I believe you must be interested in this field. Let’s try it first. Does it meet your expectations? Or simply join our community to create a more complete distributed transaction solution.
+In the fast-developing Apache ShardingSphere (Incubating), the prototype of distributed transactions has been established. We will build it into a usable product as soon as possible and continue to provide quality solutions to the community. As this article is not short, after reading it, I believe you must be interested in this field. Let’s try it first. Does it meet your expectations? Or simply join our community to create a more complete distributed transaction solution.
 
