@@ -151,7 +151,7 @@ showEngines
     ;
 
 showErrors
-    : SHOW (('COUNT'|'count') LP_ ASTERISK_ RP_)? ERRORS (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
+    : SHOW (COUNT LP_ ASTERISK_ RP_)? ERRORS (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
     ;
 
 showEvents
