@@ -5,7 +5,7 @@ weight = 3
 
 ## Configuration Item Explanation
 
-Namespace: http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.0.0.xsd)
 
 \<encrypt:rule />
 

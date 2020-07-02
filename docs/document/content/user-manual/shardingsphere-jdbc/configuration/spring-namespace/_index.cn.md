@@ -47,7 +47,7 @@ ShardingSphere-JDBC 提供官方的 Spring 命名空间配置，使开发者可�
 
 ### 配置项说明
 
-命名空间：http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.0.0.xsd)
 
 \<shardingsphere:data-source />
 
