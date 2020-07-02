@@ -33,7 +33,7 @@ public final class PrometheusMetricsTrackerManagerTest {
     @Test
     public void startNoHost() {
         PrometheusMetricsTrackerManager manager = new PrometheusMetricsTrackerManager();
-        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("metricsName", "", 9191, false, 8, null);
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("metricsName", "", 9191, false, true, 8, null);
         manager.start(metricsConfiguration);
         HTTPServer server = manager.getServer();
         assertNotNull(server);
@@ -44,7 +44,7 @@ public final class PrometheusMetricsTrackerManagerTest {
     @Test
     public void startHost() {
         PrometheusMetricsTrackerManager manager = new PrometheusMetricsTrackerManager();
-        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("metricsName", "127.0.0.1", 9195, false, 8, null);
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("metricsName", "127.0.0.1", 9195, false, true, 8, null);
         manager.start(metricsConfiguration);
         HTTPServer server = manager.getServer();
         assertThat(server.getPort(), is(9195));
