@@ -25,7 +25,7 @@ In the last two years, the core developer spent much time maintaining and contri
 We are pleased to announce the good news at the first time, and there would be more news about ElasticJob in the future.
 
 ## References
- https://lists.apache.org/thread.html/rd6171e2065be6bcfbeb7aba7e5c876eeed04db585c6ab78fc03a581c%40%3Cdev.shardingsphere.apache.org%3E -->
+
 * [Discussion email](https://lists.apache.org/thread.html/rd6171e2065be6bcfbeb7aba7e5c876eeed04db585c6ab78fc03a581c%40%3Cdev.shardingsphere.apache.org%3E)
 * [Donation Proposal](https://cwiki.apache.org/confluence/display/SHARDINGSPHERE/ElasticJob+Donation+Proposal)
 * [Community discussion](https://github.com/elasticjob/elastic-job-lite/issues/728)
