@@ -65,11 +65,11 @@ dropIndex
     ;
 
 algorithmOption
-    : ALGORITHM EQ_? (DEFAULT | 'INPLACE' | 'COPY')
+    : ALGORITHM EQ_? (DEFAULT | INPLACE | COPY)
     ;
 
 lockOption
-    : LOCK EQ_? (DEFAULT | NONE | 'SHARED' | 'EXCLUSIVE')
+    : LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
     ;
 
 truncateTable
