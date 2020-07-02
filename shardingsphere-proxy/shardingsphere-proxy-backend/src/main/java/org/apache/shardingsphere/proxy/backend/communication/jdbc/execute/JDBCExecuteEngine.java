@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.control.panel.spi.engine.MetricsHandlerFacadeEngine;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ExecutorConstant;
@@ -35,7 +36,6 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.Exec
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
-import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.callback.ProxySQLExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
@@ -97,7 +97,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
         ExecuteResult executeResult = executeResults.iterator().next();
         if (executeResult instanceof ExecuteQueryResult) {
-            MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), "SELECT");
+            MetricsHandlerFacadeEngine.build().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), "SELECT"));
             return getExecuteQueryResponse(((ExecuteQueryResult) executeResult).getQueryHeaders(), executeResults);
         } else {
             UpdateResponse updateResponse = new UpdateResponse(executeResults);
@@ -109,7 +109,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
                 updateResponse.setType("UPDATE");
             }
             if (!Strings.isNullOrEmpty(updateResponse.getType())) {
-                MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), updateResponse.getType());
+                MetricsHandlerFacadeEngine.build().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), updateResponse.getType()));
             }
             return updateResponse;
         }

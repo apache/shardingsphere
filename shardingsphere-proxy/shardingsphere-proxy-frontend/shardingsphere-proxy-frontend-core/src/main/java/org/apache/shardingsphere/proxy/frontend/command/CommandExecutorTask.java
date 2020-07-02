@@ -19,15 +19,16 @@ package org.apache.shardingsphere.proxy.frontend.command;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.control.panel.spi.engine.MetricsHandlerFacadeEngine;
+import org.apache.shardingsphere.control.panel.spi.metrics.MetricsHandlerFacade;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.metrics.api.HistogramMetricsTrackerDelegate;
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
-import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.api.QueryCommandExecutor;
@@ -65,7 +66,11 @@ public final class CommandExecutorTask implements Runnable {
     public void run() {
         RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
         rootInvokeHook.start();
-        Optional<HistogramMetricsTrackerDelegate> trackerDelegate = MetricsTrackerFacade.getInstance().histogramStartTimer(MetricsLabelEnum.REQUEST_LATENCY.getName());
+        Supplier<Boolean> histogramSupplier = null;
+        Optional<MetricsHandlerFacade> handlerFacade = MetricsHandlerFacadeEngine.build();
+        if (handlerFacade.isPresent()) {
+            histogramSupplier = handlerFacade.get().histogramStartTimer(MetricsLabelEnum.REQUEST_LATENCY.getName());
+        }
         int connectionSize = 0;
         boolean isNeedFlush = false;
         try (BackendConnection backendConnection = this.backendConnection;
@@ -86,7 +91,9 @@ public final class CommandExecutorTask implements Runnable {
                 context.flush();
             }
             rootInvokeHook.finish(connectionSize);
-            trackerDelegate.ifPresent(HistogramMetricsTrackerDelegate::observeDuration);
+            if (null != histogramSupplier) {
+                histogramSupplier.get();
+            }
         }
     }
     

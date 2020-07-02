@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.orchestration.core.schema;
 
 import com.google.common.eventbus.Subscribe;
+import java.util.List;
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
+import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -42,7 +45,7 @@ import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
+import org.apache.shardingsphere.metrics.facade.MetricsInitFacade;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.MetricsConfigurationChangedEvent;
@@ -165,9 +168,9 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     public synchronized void renew(final MetricsConfigurationChangedEvent event) {
         MetricsConfiguration metricsConfiguration = event.getMetricsConfiguration();
         if (metricsConfiguration.getEnable()) {
-            MetricsTrackerFacade.getInstance().restart(metricsConfiguration);
+            MetricsInitFacade.restart(metricsConfiguration);
         } else {
-            MetricsTrackerFacade.getInstance().stop();
+            MetricsInitFacade.close();
         }
     }
     
