@@ -5,7 +5,7 @@ weight = 2
 
 ## Configuration Item Explanation
 
-Namespace: http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave-5.0.0.xsd)
 
 \<master-slave:rule />
 

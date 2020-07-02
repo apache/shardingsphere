@@ -5,7 +5,7 @@ weight = 2
 
 ## 配置项说明
 
-命名空间：http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave-5.0.0.xsd)
 
 \<master-slave:rule />
 
