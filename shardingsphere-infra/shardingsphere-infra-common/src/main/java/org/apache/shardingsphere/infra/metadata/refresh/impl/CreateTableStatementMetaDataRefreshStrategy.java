@@ -53,7 +53,7 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
     private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, 
                                              final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String tableName) throws SQLException {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Optional<TableMetaData> tableMetaData = TableMetaDataLoader.load(entry.getValue(), tableName, databaseType.getName());
+            Optional<TableMetaData> tableMetaData = TableMetaDataLoader.loadWithoutColumnMetaData(entry.getValue(), tableName, databaseType.getName());
             if (tableMetaData.isPresent()) {
                 refreshUnconfiguredMetaData(metaData, tableName, entry.getKey(), tableMetaData.get());
                 return;
