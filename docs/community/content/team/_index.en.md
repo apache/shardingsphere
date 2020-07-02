@@ -25,6 +25,7 @@ chapter = true
 | Xiaoguang Ma        | maxiaoguang64           |
 | Yang Yi             | KomachiSion             |
 | Yonglun Zhang       | tuohai666, zhangyonglun |
+| Kimm King           | kimmking                |
 
 ### Committer
 
@@ -40,7 +41,6 @@ chapter = true
 | Zonglei Dong    | dongzl                  |
 | Xiaofeng Jiang  | SteNicholas             |
 | Ling Yue        | yue530tom               |
-| Kimm King       | kimmking                |
 
 ## Contributors
 
