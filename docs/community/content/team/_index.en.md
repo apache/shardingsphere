@@ -41,6 +41,8 @@ chapter = true
 | Zonglei Dong    | dongzl                  |
 | Xiaofeng Jiang  | SteNicholas             |
 | Ling Yue        | yue530tom               |
+| Xiao Yu         | yu199195                |
+| Haoran Meng     | menghaoranss            |
 
 ## Contributors
 

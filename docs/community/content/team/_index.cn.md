@@ -41,6 +41,8 @@ chapter = true
 | 董宗磊 | dongzl      |
 | 蒋晓峰 | SteNicholas |
 | 岳令   | yue530tom   |
+| 肖宇   | yu199195    |
+| 孟浩然 | menghaoranss|
 
 ## 贡献者
 
