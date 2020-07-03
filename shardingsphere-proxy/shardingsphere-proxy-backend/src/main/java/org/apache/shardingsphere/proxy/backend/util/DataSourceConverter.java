@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.util;
 
 import com.zaxxer.hikari.HikariDataSource;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
@@ -28,6 +27,7 @@ import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Data source parameter converter.
@@ -52,8 +52,8 @@ public final class DataSourceConverter {
         for (Field each : result.getClass().getDeclaredFields()) {
             try {
                 each.setAccessible(true);
-                if (dataSourceConfiguration.getProperties().containsKey(each.getName())) {
-                    each.set(result, dataSourceConfiguration.getProperties().get(each.getName()));
+                if (dataSourceConfiguration.getProps().containsKey(each.getName())) {
+                    each.set(result, dataSourceConfiguration.getProps().get(each.getName()));
                 }
             } catch (final ReflectiveOperationException ignored) {
             }
@@ -82,16 +82,16 @@ public final class DataSourceConverter {
     
     private static DataSourceConfiguration createDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
         DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
-        result.getProperties().put("jdbcUrl", dataSourceParameter.getUrl());
-        result.getProperties().put("username", dataSourceParameter.getUsername());
-        result.getProperties().put("password", dataSourceParameter.getPassword());
-        result.getProperties().put("connectionTimeout", dataSourceParameter.getConnectionTimeoutMilliseconds());
-        result.getProperties().put("idleTimeout", dataSourceParameter.getIdleTimeoutMilliseconds());
-        result.getProperties().put("maxLifetime", dataSourceParameter.getMaxLifetimeMilliseconds());
-        result.getProperties().put("maxPoolSize", dataSourceParameter.getMaxPoolSize());
-        result.getProperties().put("minPoolSize", dataSourceParameter.getMinPoolSize());
-        result.getProperties().put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
-        result.getProperties().put("readOnly", dataSourceParameter.isReadOnly());
+        result.getProps().put("jdbcUrl", dataSourceParameter.getUrl());
+        result.getProps().put("username", dataSourceParameter.getUsername());
+        result.getProps().put("password", dataSourceParameter.getPassword());
+        result.getProps().put("connectionTimeout", dataSourceParameter.getConnectionTimeoutMilliseconds());
+        result.getProps().put("idleTimeout", dataSourceParameter.getIdleTimeoutMilliseconds());
+        result.getProps().put("maxLifetime", dataSourceParameter.getMaxLifetimeMilliseconds());
+        result.getProps().put("maxPoolSize", dataSourceParameter.getMaxPoolSize());
+        result.getProps().put("minPoolSize", dataSourceParameter.getMinPoolSize());
+        result.getProps().put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
+        result.getProps().put("readOnly", dataSourceParameter.isReadOnly());
         return result;
     }
 }

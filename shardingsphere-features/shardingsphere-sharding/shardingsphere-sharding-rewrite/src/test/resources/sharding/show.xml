@@ -28,12 +28,12 @@
     </rewrite-assertion>
     
     <rewrite-assertion id="show_columns_from_table_with_owner" db-type="MySQL">
-        <input sql="SHOW COLUMNS FROM sharding_db.t_account" />
-        <output sql="SHOW COLUMNS FROM t_account_0" />
+        <input sql="SHOW COLUMNS FROM db.t_account" />
+        <output sql="SHOW COLUMNS FROM db.t_account_0" />
     </rewrite-assertion>
     
     <rewrite-assertion id="show_columns_from_table_with_back_quote" db-type="MySQL">
-        <input sql="SHOW COLUMNS FROM `sharding_db`.`t_account` FROM `sharding_db`" />
-        <output sql="SHOW COLUMNS FROM `t_account_0` " />
+        <input sql="SHOW COLUMNS FROM `db`.`t_account` FROM `sharding_db`" />
+        <output sql="SHOW COLUMNS FROM `db`.`t_account_0` " />
     </rewrite-assertion>
 </rewrite-assertions>

@@ -311,7 +311,7 @@ public final class MockDataSource implements DataSource, AutoCloseable {
         }
     
         @Override
-        public void setClientInfo(final Properties properties) {
+        public void setClientInfo(final Properties props) {
         }
     
         @Override

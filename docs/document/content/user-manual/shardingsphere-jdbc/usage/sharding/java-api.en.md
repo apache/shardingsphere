@@ -44,20 +44,10 @@ dataSourceMap.put("ds1", dataSource2);
 ShardingTableRuleConfiguration orderTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order${0..1}");
 
 // Configure database sharding strategy
-StandardShardingAlgorithm dbShardingAlgorithm = new InlineShardingAlgorithm();
-Properties dbProps = new Properties();
-dbProps.setProperty(InlineShardingAlgorithm.ALGORITHM_EXPRESSION, "ds${user_id % 2}");
-dbShardingAlgorithm.setProperties(dbProps);
-StandardShardingStrategyConfiguration dbShardingStrategyConfig = new StandardShardingStrategyConfiguration("user_id", dbShardingAlgorithm);
-orderTableRuleConfig.setDatabaseShardingStrategy(dbShardingStrategyConfig);
+orderTableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "dbShardingAlgorithm"));
 
 // Configure table sharding strategy
-StandardShardingAlgorithm tableShardingAlgorithm = new InlineShardingAlgorithm();
-Properties tableProps = new Properties();
-tableProps.setProperty(InlineShardingAlgorithm.ALGORITHM_EXPRESSION, "t_order${order_id % 2}");
-tableShardingAlgorithm.setProperties(tableProps);
-StandardShardingStrategyConfiguration tableShardingStrategy = new StandardShardingStrategyConfiguration("order_id", tableShardingAlgorithm);
-orderTableRuleConfig.setTableShardingStrategy(tableShardingStrategy);
+orderTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "tableShardingAlgorithm"));
 
 // Omit t_order_item table rule configuration ...
 // ...
@@ -65,6 +55,16 @@ orderTableRuleConfig.setTableShardingStrategy(tableShardingStrategy);
 // Configure sharding rule
 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
 shardingRuleConfig.getTables().add(orderTableRuleConfig);
+
+// Configure database sharding algorithm
+Properties dbShardingAlgorithmrProps = new Properties();
+dbShardingAlgorithmrProps.setProperty("algorithm.expression", "ds${user_id % 2}");
+shardingRuleConfig.getShardingAlgorithms().put("dbShardingAlgorithm", new ShardingSphereAlgorithmConfiguration("INLINE", dbShardingAlgorithmrProps));
+
+// Configure table sharding algorithm
+Properties tableShardingAlgorithmrProps = new Properties();
+tableShardingAlgorithmrProps.setProperty("algorithm.expression", "t_order${order_id % 2}");
+shardingRuleConfig.getShardingAlgorithms().put("tableShardingAlgorithm", new ShardingSphereAlgorithmConfiguration("INLINE", tableShardingAlgorithmrProps));
 
 // Create ShardingSphereDataSource
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton((shardingRuleConfig), new Properties());

@@ -71,11 +71,11 @@ public final class ShardingSphereProxyContextTest {
     
     @Test
     public void assertRenewProperties() {
-        assertTrue(ProxySchemaContexts.getInstance().getSchemaContexts().getProperties().getProps().isEmpty());
+        assertTrue(ProxySchemaContexts.getInstance().getSchemaContexts().getProps().getProps().isEmpty());
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         ShardingOrchestrationEventBus.getInstance().post(new PropertiesChangedEvent(props));
-        assertFalse(ProxySchemaContexts.getInstance().getSchemaContexts().getProperties().getProps().isEmpty());
+        assertFalse(ProxySchemaContexts.getInstance().getSchemaContexts().getProps().getProps().isEmpty());
     }
     
     @Test

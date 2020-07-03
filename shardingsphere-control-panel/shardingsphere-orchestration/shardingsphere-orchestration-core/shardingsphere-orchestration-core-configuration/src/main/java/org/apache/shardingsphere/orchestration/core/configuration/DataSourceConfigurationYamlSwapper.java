@@ -26,17 +26,17 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 public final class DataSourceConfigurationYamlSwapper implements YamlSwapper<YamlDataSourceConfiguration, DataSourceConfiguration> {
     
     @Override
-    public YamlDataSourceConfiguration swap(final DataSourceConfiguration configuration) {
+    public YamlDataSourceConfiguration swapToYamlConfiguration(final DataSourceConfiguration configuration) {
         YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
         result.setDataSourceClassName(configuration.getDataSourceClassName());
-        result.setProperties(configuration.getProperties());
+        result.setProps(configuration.getProps());
         return result;
     }
     
     @Override
-    public DataSourceConfiguration swap(final YamlDataSourceConfiguration yamlConfiguration) {
+    public DataSourceConfiguration swapToObject(final YamlDataSourceConfiguration yamlConfiguration) {
         DataSourceConfiguration result = new DataSourceConfiguration(yamlConfiguration.getDataSourceClassName());
-        result.getProperties().putAll(yamlConfiguration.getProperties());
+        result.getProps().putAll(yamlConfiguration.getProps());
         return result;
     }
 }

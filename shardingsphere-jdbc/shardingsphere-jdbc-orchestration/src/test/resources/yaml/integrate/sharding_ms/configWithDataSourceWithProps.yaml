@@ -51,32 +51,24 @@ rules:
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          shardingAlgorithm:
-            type: STANDARD_TEST
+          shardingAlgorithmName: standard_test
       tableStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_order_${order_id % 2}
-      keyGenerator:
-        type: INCREMENT
+          shardingAlgorithmName: t_order_inline
+      keyGenerateStrategy:
         column: order_id
+        keyGeneratorName: increment
     t_order_item:
       actualDataNodes: db_ms_${0..1}.t_order_item_${0..1}
       databaseStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: STANDARD_TEST
+          shardingAlgorithmName: standard_test
       tableStrategy: 
         standard:
           shardingColumn: id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_order_item_${id % 2}
+          shardingAlgorithmName: t_order_item_inline
   bindingTables:
     - t_order,t_order_item
   defaultDatabaseStrategy:
@@ -84,26 +76,47 @@ rules:
   defaultTableStrategy:
     complex:
       shardingColumns: id, order_id
-      shardingAlgorithm:
-        type: COMPLEX_TEST
+      shardingAlgorithmName: complex_test
+  
+  shardingAlgorithms:
+    standard_test:
+      type: STANDARD_TEST
+    complex_test:
+      type: COMPLEX_TEST
+    database_inline:
+      type: INLINE
+      props:
+        algorithm.expression: ds_${order_id % 2}
+    t_order_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_${order_id % 2}
+    t_order_item_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_item_${id % 2}
+  
+  keyGenerators:
+    increment:
+      type: INCREMENT
 
 - !MASTER_SLAVE
-  loadBalanceStrategies:
-    random:
-        type: RANDOM
-    roundRobin:
-      type: ROUND_ROBIN
   dataSources:
     db_ms_0:
       masterDataSourceName: db0_master
       slaveDataSourceNames:
         - db0_slave
-      loadBalanceStrategyName: random
+      loadBalancerName: random
     db_ms_1:
       masterDataSourceName: db1_master
       slaveDataSourceNames:
         - db1_slave
-      loadBalanceStrategyName: roundRobin
+      loadBalancerName: roundRobin
+  loadBalancers:
+    random:
+        type: RANDOM
+    roundRobin:
+      type: ROUND_ROBIN
 
 orchestration:
   test_sharding_ms_registry_name:

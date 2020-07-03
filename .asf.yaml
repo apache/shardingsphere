@@ -15,6 +15,11 @@
 # limitations under the License.
 #
 
+notifications:
+  commits: notifications@shardingsphere.apache.org
+  issues: notifications@shardingsphere.apache.org
+  pullrequests: notifications@shardingsphere.apache.org
+
 github:
   description: Distributed database middleware
   labels:

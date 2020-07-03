@@ -11,15 +11,15 @@ chapter = true
 | ------------------------------- | ---------------------------- |
 | ShardingAlgorithm               | 分片算法                      |
 
-| *已知实现类*                     | *详细说明*                    |
-| ------------------------------- | ---------------------------- |
-| InlineShardingAlgorithm         | 基于行表达式的分片算法          |
-| ModuloShardingAlgorithm         | 基于取模的分片算法             |
-| HashShardingAlgorithm           | 基于哈希取模的分片算法          |
-| DatetimeShardingAlgorithm       | 基于时间的分片算法             |
-| CustomDateTimeShardingAlgorithm | 基于用户自定义时间格式的分片算法 |
-| StandardRangeShardingAlgorithm  | 基于范围的分片算法             |
-| CustomRangeShardingAlgorithm    | 基于用户自定义范围的分片算法     |
+| *已知实现类*                         | *详细说明*                |
+| ----------------------------------- | ------------------------ |
+| InlineShardingAlgorithm             | 基于行表达式的分片算法      |
+| ModShardingAlgorithm                | 基于取模的分片算法         |
+| HashModShardingAlgorithm            | 基于哈希取模的分片算法      |
+| FixedIntervalShardingAlgorithm      | 基于固定时间范围的分片算法  |
+| MutableIntervalShardingAlgorithm    | 基于可变时间范围的分片算法  |
+| VolumeBasedRangeShardingAlgorithm   | 基于分片容量的范围分片算法  |
+| BoundaryBasedRangeShardingAlgorithm | 基于分片边界的范围分片算法  |
 
 ## KeyGenerateAlgorithm
 

@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.encrypt.rule.EncryptRuleBuilder
+org.apache.shardingsphere.encrypt.rule.builder.EncryptRuleBuilder
+org.apache.shardingsphere.encrypt.rule.builder.AlgorithmProvidedEncryptRuleBuilder

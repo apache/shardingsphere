@@ -34,17 +34,17 @@ public final class PropertiesUtils {
      */
     public static void createProperties(final String driverClassName, final String sql) {
         try {
-            Properties properties = new Properties();
-            properties.put("dataSourceType", "com.zaxxer.hikari.HikariDataSource");
-            properties.put("jdbcUrl", "jdbc:test");
-            properties.put("username", "root");
-            properties.put("password", "root");
-            properties.put("driverClassName", driverClassName);
+            Properties props = new Properties();
+            props.put("dataSourceType", "com.zaxxer.hikari.HikariDataSource");
+            props.put("jdbcUrl", "jdbc:test");
+            props.put("username", "root");
+            props.put("password", "root");
+            props.put("driverClassName", driverClassName);
             if (null != sql) {
-                properties.put("sql", sql);
+                props.put("sql", sql);
             }
             FileOutputStream stream = new FileOutputStream(FILE);
-            properties.store(stream, null);
+            props.store(stream, null);
             stream.close();
         } catch (IOException ignore) {
         }

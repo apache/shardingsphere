@@ -27,7 +27,7 @@ Apache ShardingSphere 会将用户请求的明文进行加密后存储到底层�
 
 **数据源配置**：指数据源配置。
 
-**加密算法配置**：指使用什么加密策略进行加解密。目前ShardingSphere内置了两种加解密策略：AES/MD5。用户还可以通过实现ShardingSphere提供的接口，自行实现一套加解密算法。
+**加密算法配置**：指使用什么加密算法进行加解密。目前ShardingSphere内置了两种加解密算法：AES/MD5。用户还可以通过实现ShardingSphere提供的接口，自行实现一套加解密算法。
 
 **加密表配置**：用于告诉ShardingSphere数据表里哪个列用于存储密文数据（cipherColumn）、哪个列用于存储明文数据（plainColumn）以及用户想使用哪个列进行SQL编写（logicColumn）。
 
@@ -73,9 +73,9 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 
 ```yaml
 -!ENCRYPT
-  encryptStrategies:
-    aes_encrypt_strategy:
-      type: aes
+  encryptors:
+    aes_encryptor:
+      type: AES
       props:
         aes.key.value: 123456abc
   tables:
@@ -83,7 +83,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
       columns:
         pwd:
           cipherColumn: pwd
-          encryptStrategyName: aes_encrypt_strategy
+          encryptorName: aes_encryptor
 ```
 
 使用这套配置， Apache ShardingSphere 只需将 logicColumn 和 cipherColumn 进行转换，底层数据表不存储明文，只存储了密文，这也是安全审计部分的要求所在。
@@ -113,9 +113,9 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 
 ```yaml
 -!ENCRYPT
-  encryptStrategies:
-    aes_encrypt_strategy:
-      type: aes
+  encryptors:
+    aes_encryptor:
+      type: AES
       props:
         aes.key.value: 123456abc
   tables:
@@ -124,7 +124,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
         pwd:
           plainColumn: pwd
           cipherColumn: pwd_cipher
-          encryptStrategyName: aes_encrypt_strategy
+          encryptorName: aes_encryptor
 props:
   query.with.cipher.column: false
 ```
@@ -168,9 +168,9 @@ props:
 
 ```yaml
 -!ENCRYPT
-  encryptStrategies:
-    aes_encrypt_strategy:
-      type: aes
+  encryptors:
+    aes_encryptor:
+      type: AES
       props:
         aes.key.value: 123456abc
   tables:
@@ -178,7 +178,7 @@ props:
       columns:
         pwd: # pwd 与 pwd_cipher 的转换映射
           cipherColumn: pwd_cipher
-          encryptStrategyName: aes_encrypt_strategy
+          encryptorName: aes_encryptor
 props:
   query.with.cipher.column: true
 ```
@@ -193,14 +193,14 @@ props:
 ## 中间件加密服务优势
 
 1. 自动化&透明化数据加密过程，用户无需关注加密中间实现细节。
-2. 提供多种内置、第三方(AKS)的加密策略，用户仅需简单配置即可使用。
-3. 提供加密策略API接口，用户可实现接口，从而使用自定义加密策略进行数据加密。
-4. 支持切换不同的加密策略。
-5. 针对已上线业务，可实现明文数据与密文数据同步存储，并通过配置决定使用明文列还是密文列进行查询。可实现在不改变业务查询SQL前提下，已上线系统对加密前后数据进行安全、透明化迁移。
+2. 提供多种内置、第三方(AKS)的加密算法，用户仅需简单配置即可使用。
+3. 提供加密算法 API 接口，用户可实现接口，从而使用自定义加密算法进行数据加密。
+4. 支持切换不同的加密算法。
+5. 针对已上线业务，可实现明文数据与密文数据同步存储，并通过配置决定使用明文列还是密文列进行查询。可实现在不改变业务查询 SQL 前提下，已上线系统对加密前后数据进行安全、透明化迁移。
 
-## 加密策略解析
+## 加密算法解析
 
-Apache ShardingSphere 提供了两种加密策略用于数据加密，该两种策略分别对应 Apache ShardingSphere 的两种加解密的接口，即 `EncryptAlgorithm` 和 `QueryAssistedEncryptAlgorithm`。
+Apache ShardingSphere 提供了两种加密算法用于数据加密，该两种策略分别对应 Apache ShardingSphere 的两种加解密的接口，即 `EncryptAlgorithm` 和 `QueryAssistedEncryptAlgorithm`。
 
 一方面，Apache ShardingSphere 为用户提供了内置的加解密实现类，用户只需进行配置即可使用；
 另一方面，为了满足用户不同场景的需求，我们还开放了相关加解密接口，用户可依据该两种类型的接口提供具体实现类。

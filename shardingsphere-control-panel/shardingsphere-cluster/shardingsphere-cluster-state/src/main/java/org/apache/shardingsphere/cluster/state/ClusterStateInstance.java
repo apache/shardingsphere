@@ -17,22 +17,24 @@
 
 package org.apache.shardingsphere.cluster.state;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.cluster.state.enums.NodeState;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 
 /**
  * Cluster state instance.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ClusterStateInstance {
+    
+    private ClusterStateInstance() {
+        ShardingOrchestrationEventBus.getInstance().register(this);
+    }
     
     /**
      * Get cluster state instance.
@@ -77,17 +79,17 @@ public final class ClusterStateInstance {
     }
     
     /**
-     * Load all instance states.
+     * Disabled data source after state changed.
      *
-     * @return all instance states
+     * @param event disabled state changed event
      */
-    public Map<String, InstanceState> loadAllInstanceStates() {
-        Collection<String> instances = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadAllInstances();
-        Map<String, InstanceState> instanceStateMap = new HashMap<>();
-        instances.forEach(each -> {
-            instanceStateMap.put(each, loadInstanceState(each));
-        });
-        return instanceStateMap;
+    @Subscribe
+    public void dataSourceStateChanged(final DisabledStateChangedEvent event) {
+        String dataSourceName = Joiner.on(".").join(event.getOrchestrationSchema().getSchemaName(), event.getOrchestrationSchema().getDataSourceName());
+        NodeState state = event.isDisabled() ? NodeState.DISABLED : NodeState.ONLINE;
+        InstanceState instanceState = loadInstanceState();
+        instanceState.getDataSources().entrySet().stream().filter(entry -> dataSourceName.equals(entry.getKey())).findFirst().get().getValue().setState(state);
+        persistInstanceState(instanceState);
     }
     
     private static class ClusterStateInstanceHolder {

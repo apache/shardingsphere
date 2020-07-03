@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling;
 
 import com.google.common.base.Preconditions;
+import com.google.common.io.Resources;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -27,11 +28,10 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.utils.RuntimeUtil;
 import org.apache.shardingsphere.scaling.web.HttpServerInitializer;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +42,7 @@ import java.io.IOException;
 @Slf4j
 public final class Bootstrap {
     
-    private static final String DEFAULT_CONFIG_PATH = "/conf/";
+    private static final String DEFAULT_CONFIG_PATH = "conf/";
     
     private static final String DEFAULT_CONFIG_FILE_NAME = "server.yaml";
     
@@ -77,7 +77,7 @@ public final class Bootstrap {
     }
     
     private static void initServerConfig() throws IOException {
-        File yamlFile = new File(RuntimeUtil.getResourcePath(DEFAULT_CONFIG_PATH + DEFAULT_CONFIG_FILE_NAME));
+        File yamlFile = new File(Resources.getResource(DEFAULT_CONFIG_PATH + DEFAULT_CONFIG_FILE_NAME).getPath());
         ServerConfiguration serverConfiguration = YamlEngine.unmarshal(yamlFile, ServerConfiguration.class);
         Preconditions.checkNotNull(serverConfiguration, "Server configuration file `%s` is invalid.", yamlFile.getName());
         ScalingContext.getInstance().init(serverConfiguration);

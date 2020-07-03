@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.orchestration.center.yaml.swapper;
 
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Orchestration instance configuration YAML swapper.
@@ -33,24 +33,18 @@ import java.util.Map.Entry;
 public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<YamlOrchestrationConfiguration, OrchestrationConfiguration> {
     
     @Override
-    public YamlOrchestrationConfiguration swap(final OrchestrationConfiguration configuration) {
-        Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap = new HashMap<>();
-        Map<String, CenterConfiguration> instanceConfigurationMap = configuration.getInstanceConfigurationMap();
+    public YamlOrchestrationConfiguration swapToYamlConfiguration(final OrchestrationConfiguration configuration) {
         CenterRepositoryConfigurationYamlSwapper swapper = new CenterRepositoryConfigurationYamlSwapper();
-        for (Entry<String, CenterConfiguration> each : instanceConfigurationMap.entrySet()) {
-            yamlInstanceConfigurationMap.put(each.getKey(), swapper.swap(each.getValue()));
-        }
-        return new YamlOrchestrationConfiguration(yamlInstanceConfigurationMap);
+        Map<String, YamlCenterRepositoryConfiguration> configurationMap =
+                configuration.getInstanceConfigurationMap().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapper.swapToYamlConfiguration(entry.getValue())));
+        return new YamlOrchestrationConfiguration(configurationMap);
     }
     
     @Override
-    public OrchestrationConfiguration swap(final YamlOrchestrationConfiguration yamlConfiguration) {
-        Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<>();
-        Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap = yamlConfiguration.getCenterRepositoryConfigurationMap();
+    public OrchestrationConfiguration swapToObject(final YamlOrchestrationConfiguration configuration) {
         CenterRepositoryConfigurationYamlSwapper swapper = new CenterRepositoryConfigurationYamlSwapper();
-        for (Entry<String, YamlCenterRepositoryConfiguration> each : yamlInstanceConfigurationMap.entrySet()) {
-            instanceConfigurationMap.put(each.getKey(), swapper.swap(each.getValue()));
-        }
+        Map<String, CenterConfiguration> instanceConfigurationMap =
+                configuration.getCenterRepositoryConfigurationMap().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapper.swapToObject(entry.getValue())));
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }
 }

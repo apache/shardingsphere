@@ -37,7 +37,7 @@ public final class ShardingSpringBootConditionTest {
     @Test
     public void assertNotMatch() {
         MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.rules.encrypt.encrypt-strategies.aes_encrypt_strategy.type", "aes");
+        mockEnvironment.setProperty("spring.shardingsphere.rules.encrypt.encryptors.aes_encryptor.type", "AES");
         ConditionContext context = Mockito.mock(ConditionContext.class);
         AnnotatedTypeMetadata metadata = Mockito.mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);
@@ -58,4 +58,3 @@ public final class ShardingSpringBootConditionTest {
         assertThat(matchOutcome.isMatch(), is(true));
     }
 }
-

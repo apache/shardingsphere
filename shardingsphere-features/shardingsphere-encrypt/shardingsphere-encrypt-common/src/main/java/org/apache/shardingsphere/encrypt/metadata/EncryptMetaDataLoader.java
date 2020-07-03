@@ -40,8 +40,8 @@ import java.util.Optional;
 public final class EncryptMetaDataLoader implements RuleMetaDataLoader<EncryptRule> {
     
     @Override
-    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, 
-                               final EncryptRule encryptRule, final ConfigurationProperties properties, final Collection<String> excludedTableNames) throws SQLException {
+    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
+                               final EncryptRule encryptRule, final ConfigurationProperties props, final Collection<String> excludedTableNames) throws SQLException {
         DataSource dataSource = dataSourceMap.values().iterator().next();
         Collection<String> encryptTableNames = encryptRule.getEncryptTableNames();
         Map<String, TableMetaData> result = new HashMap<>(encryptTableNames.size(), 1);
@@ -55,7 +55,7 @@ public final class EncryptMetaDataLoader implements RuleMetaDataLoader<EncryptRu
     
     @Override
     public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, 
-                                        final String tableName, final EncryptRule encryptRule, final ConfigurationProperties properties) throws SQLException {
+                                        final String tableName, final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
         return encryptRule.findEncryptTable(tableName).isPresent()
                 ? TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType.getName()) : Optional.empty();
     }

@@ -48,11 +48,19 @@ derivedColumns_
     ;
 
 replace
-    : REPLACE replaceSpecification_? INTO? tableName partitionNames_? (insertValuesClause | setAssignmentsClause | insertSelectClause)
+    : REPLACE replaceSpecification_? INTO? tableName partitionNames_? (replaceValuesClause | setAssignmentsClause | replaceSelectClause)
     ;
 
 replaceSpecification_
     : LOW_PRIORITY | DELAYED
+    ;
+
+replaceValuesClause
+    : columnNames? (VALUES | VALUE) (assignmentValues (COMMA_ assignmentValues)* | rowConstructorList) valueReference_?
+    ;
+
+replaceSelectClause
+    : valueReference_? columnNames? select
     ;
 
 update

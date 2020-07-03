@@ -40,44 +40,34 @@ rules:
       databaseStrategy: 
         complex:
           shardingColumns: region_id, user_id
-          shardingAlgorithm:
-            type: COMPLEX_TEST
+          shardingAlgorithmName: complex_test
       tableStrategy: 
         complex:
           shardingColumns: region_id, user_id
-          shardingAlgorithm:
-            type: COMPLEX_TEST
+          shardingAlgorithmName: complex_test
     t_stock:
       actualDataNodes: ds_${0..1}.t_stock{0..8}
       databaseStrategy: 
         hint:
-          shardingAlgorithm:
-            type: HINT_TEST
+          shardingAlgorithmName: hint_test
       tableStrategy: 
         hint:
-          shardingAlgorithm:
-            type: HINT_TEST
+          shardingAlgorithmName: hint_test
     t_order: 
       actualDataNodes: ds_${0..1}.t_order_${0..1}
       tableStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_order_${order_id % 2}
-      keyGenerator:
-        type: SNOWFLAKE
+          shardingAlgorithmName: table_inline
+      keyGenerateStrategy:
         column: order_id
-        props:
-          worker.id: 123
+        keyGeneratorName: snowflake
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: STANDARD_TEST
+          shardingAlgorithmName: standard_test
   bindingTables:
     - t_order, t_order_item
   broadcastTables:
@@ -85,12 +75,31 @@ rules:
   defaultDatabaseStrategy: 
     standard:
       shardingColumn: order_id
-      shardingAlgorithm:
-        type: INLINE
-        props:
-          algorithm.expression: ds_${order_id % 2}
+      shardingAlgorithmName: database_inline
   defaultTableStrategy: 
     none:
+  
+  shardingAlgorithms:
+    standard_test:
+      type: STANDARD_TEST
+    complex_test:
+      type: COMPLEX_TEST
+    hint_test:
+      type: HINT_TEST
+    database_inline:
+      type: INLINE
+      props:
+        algorithm.expression: ds_${order_id % 2}
+    table_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_${order_id % 2}
+  
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      props:
+        worker.id: 123
 
 props:
   sql.show: true

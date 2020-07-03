@@ -35,18 +35,18 @@ chapter = true
 ### 更新版本说明
 
 ```
-https://github.com/apache/shardingsphere/blob/master/shardingsphere-ui/RELEASE-NOTES.md
+https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
 ```
 
 ### 创建发布分支
 
-假设从github下载的ShardingSphere源代码在`~/shardingsphere/`目录；假设即将发布的版本为`${RELEASE.VERSION}`。
+假设从github下载的ShardingSphere源代码在`~/shardingsphere-ui/`目录；假设即将发布的版本为`${RELEASE.VERSION}`。
 创建`${RELEASE.VERSION}-release-ui`分支，接下来的操作都在该分支进行。
 
 ```shell
 ## ${name}为源码所在分支，如：master，dev-4.x
-git clone --branch ${name} https://github.com/apache/shardingsphere.git ~/shardingsphere
-cd ~/shardingsphere/
+git clone --branch ${name} https://github.com/apache/shardingsphere-ui.git ~/shardingsphere-ui
+cd ~/shardingsphere-ui/
 git pull
 git checkout -b ${RELEASE.VERSION}-release-ui
 git push origin ${RELEASE.VERSION}-release-ui
@@ -55,11 +55,11 @@ git push origin ${RELEASE.VERSION}-release-ui
 ### 发布预校验
 
 ```shell
-cd ~/shardingsphere/shardingsphere-ui
+cd ~/shardingsphere-ui
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
 ```
 
--Prelease: 选择release的profile，这个profile会打包所有源码、jar文件以及ShardingSphere-Proxy的可执行二进制包。
+-Prelease: 选择release的profile，这个profile会打包所有源码、jar文件以及ShardingSphere-UI的可执行二进制包。
 
 -DautoVersionSubmodules=true：作用是发布过程中版本号只需要输入一次，不必为每个子模块都输入一次。
 
@@ -70,14 +70,14 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 首先清理发布预校验本地信息。
 
 ```shell
-cd ~/shardingsphere/shardingsphere-ui
+cd ~/shardingsphere-ui
 mvn release:clean
 ```
 
 然后准备执行发布。
 
 ```shell
-cd ~/shardingsphere/shardingsphere-ui
+cd ~/shardingsphere-ui
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github用户名}
 ```
 
@@ -95,7 +95,7 @@ git push origin --tags
 ### 部署发布
 
 ```shell
-cd ~/shardingsphere/shardingsphere-ui
+cd ~/shardingsphere-ui
 mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github用户名}
 ```
 
@@ -137,10 +137,10 @@ cd ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
 将源码包和二进制包添加至SVN工作目录。
 
 ```shell
-cp -f ~/shardingsphere/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
+cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
+cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
+cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
+cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
 ```
 
 ### 生成文件签名
@@ -203,10 +203,10 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.
 #### 对比源码包与Github上tag的内容差异
 
 ```
-curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/shardingsphere-ui-${RELEASE.VERSION}.zip
+curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-ui/archive/shardingsphere-ui-${RELEASE.VERSION}.zip
 unzip tag-shardingsphere-ui-${RELEASE.VERSION}.zip
 unzip apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip
-diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ shardingsphere-shardingsphere-ui-${RELEASE.VERSION}/shardingsphere-ui/
+diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ shardingsphere-shardingsphere-ui-${RELEASE.VERSION}/
 ```
 
 #### 检查源码包的文件内容
@@ -260,16 +260,16 @@ Hello ShardingSphere Community,
 This is a call for vote to release Apache ShardingSphere UI version ${RELEASE.VERSION}
 
 Release notes:
-https://github.com/apache/shardingsphere/blob/master/shardingsphere-ui/RELEASE-NOTES.md
+https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}/
 
 Git tag for the release:
-https://github.com/apache/shardingsphere/tree/shardingsphere-ui-${RELEASE.VERSION}/
+https://github.com/apache/shardingsphere-ui/tree/shardingsphere-ui-${RELEASE.VERSION}/
 
 Release Commit ID:
-https://github.com/apache/shardingsphere/commit/xxxxxxxxxxxxxxxxxxxxxxx
+https://github.com/apache/shardingsphere-ui/commit/xxxxxxxxxxxxxxxxxxxxxxx
 
 Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
@@ -384,7 +384,7 @@ GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `
 
 ### GitHub版本发布
 
-在[GitHub Releases](https://github.com/apache/shardingsphere/releases)页面的`shardingsphere-ui-${RELEASE_VERSION}`版本上点击`Edit`
+在[GitHub Releases](https://github.com/apache/shardingsphere-ui/releases)页面的`shardingsphere-ui-${RELEASE_VERSION}`版本上点击`Edit`
 
 编辑版本号及版本说明，并点击`Publish release`
 
@@ -413,12 +413,12 @@ Therefore, at the current stage, we prefer to focus on its increment instead of 
 
 Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 
-Release Notes: https://github.com/apache/shardingsphere/blob/master/shardingsphere-ui/RELEASE-NOTES.md
+Release Notes: https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
 
 Website: https://shardingsphere.apache.org/
 
 ShardingSphere Resources:
-- Issue: https://github.com/apache/shardingsphere/issues/
+- Issue: https://github.com/apache/shardingsphere-ui/issues/
 - Mailing list: dev@shardingsphere.apache.org
 - Documents: https://shardingsphere.apache.org/document/current/
 

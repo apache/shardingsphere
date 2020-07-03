@@ -62,7 +62,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
     
     @Test(expected = RuntimeException.class)
     public void assertDecodeWithPacketError() {
-        when(byteBuf.readByte()).thenReturn((byte) 255);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 255);
         binlogEventPacketDecoder.decode(null, byteBuf, null);
     }
     
@@ -74,7 +74,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
     
     @Test
     public void assertDecodeRotateEvent() {
-        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) 0, (byte) MySQLBinlogEventType.ROTATE_EVENT.getValue());
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) 0, (short) MySQLBinlogEventType.ROTATE_EVENT.getValue());
         List<Object> decodedEvents = new ArrayList<>();
         binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(0));
@@ -83,8 +83,8 @@ public final class MySQLBinlogEventPacketDecoderTest {
     
     @Test
     public void assertDecodeFormatDescriptionEvent() {
-        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) 0, (byte) MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT.getValue(), (byte) 19);
-        when(byteBuf.readShortLE()).thenReturn((short) 4);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) 0, (short) MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT.getValue(), (short) 19);
+        when(byteBuf.readUnsignedShortLE()).thenReturn(4);
         List<Object> decodedEvents = new ArrayList<>();
         binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(0));
@@ -93,7 +93,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
     
     @Test
     public void assertDecodeTableMapEvent() {
-        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) 0, (byte) MySQLBinlogEventType.TABLE_MAP_EVENT.getValue(), (byte) 0);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) 0, (short) MySQLBinlogEventType.TABLE_MAP_EVENT.getValue(), (short) 0);
         List<Object> decodedEvents = new ArrayList<>();
         binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(0));
@@ -103,8 +103,8 @@ public final class MySQLBinlogEventPacketDecoderTest {
     
     @Test
     public void assertDecodeWriteRowEvent() {
-        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) 0, (byte) MySQLBinlogEventType.WRITE_ROWS_EVENTv2.getValue(), (byte) 0);
-        when(byteBuf.readShortLE()).thenReturn((short) 2);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) 0, (short) MySQLBinlogEventType.WRITE_ROWS_EVENTv2.getValue(), (short) 0);
+        when(byteBuf.readUnsignedShortLE()).thenReturn(2);
         binlogContext.getTableMap().put(0L, tableMapEventPacket);
         when(tableMapEventPacket.getColumnDefs()).thenReturn(Collections.emptyList());
         List<Object> decodedEvents = new ArrayList<>();
@@ -115,8 +115,8 @@ public final class MySQLBinlogEventPacketDecoderTest {
     
     @Test
     public void assertDecodeUpdateRowEvent() {
-        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) 0, (byte) MySQLBinlogEventType.UPDATE_ROWS_EVENTv2.getValue(), (byte) 0);
-        when(byteBuf.readShortLE()).thenReturn((short) 2);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) 0, (short) MySQLBinlogEventType.UPDATE_ROWS_EVENTv2.getValue(), (short) 0);
+        when(byteBuf.readUnsignedShortLE()).thenReturn(2);
         binlogContext.getTableMap().put(0L, tableMapEventPacket);
         when(tableMapEventPacket.getColumnDefs()).thenReturn(Collections.emptyList());
         List<Object> decodedEvents = new ArrayList<>();
@@ -127,8 +127,8 @@ public final class MySQLBinlogEventPacketDecoderTest {
     
     @Test
     public void assertDecodeDeleteRowEvent() {
-        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) 0, (byte) MySQLBinlogEventType.DELETE_ROWS_EVENTv2.getValue(), (byte) 0);
-        when(byteBuf.readShortLE()).thenReturn((short) 2);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) 0, (short) MySQLBinlogEventType.DELETE_ROWS_EVENTv2.getValue(), (short) 0);
+        when(byteBuf.readUnsignedShortLE()).thenReturn(2);
         binlogContext.getTableMap().put(0L, tableMapEventPacket);
         when(tableMapEventPacket.getColumnDefs()).thenReturn(Collections.emptyList());
         List<Object> decodedEvents = new ArrayList<>();

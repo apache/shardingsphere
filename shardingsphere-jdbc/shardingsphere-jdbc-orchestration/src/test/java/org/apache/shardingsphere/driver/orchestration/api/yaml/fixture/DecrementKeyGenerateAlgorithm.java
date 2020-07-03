@@ -19,24 +19,30 @@ package org.apache.shardingsphere.driver.orchestration.api.yaml.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class DecrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
-    @Getter
-    private final String type = "DECREMENT";
-    
     private final AtomicInteger sequence = new AtomicInteger(100);
     
     @Getter
     @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
+    
+    @Override
+    public void init() {
+    }
     
     @Override
     public Comparable<?> generateKey() {
         return sequence.decrementAndGet();
+    }
+    
+    @Override
+    public String getType() {
+        return "DECREMENT";
     }
 }

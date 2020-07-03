@@ -35,25 +35,19 @@ rules:
       tableStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: STANDARD_TEST_TBL
-      keyGenerator:
-        type: SNOWFLAKE
+          shardingAlgorithmName: standard_test_tbl
+      keyGenerateStrategy:
         column: order_id
-        props:
-          worker.id: 123
+        keyGeneratorName: snowflake
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: STANDARD_TEST_TBL
-      keyGenerator:
-        type: SNOWFLAKE
+          shardingAlgorithmName: standard_test_tbl
+      keyGenerateStrategy:
         column: order_item_id
-        props:
-          worker.id: 123
+        keyGeneratorName: snowflake
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
@@ -61,10 +55,21 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithm:
-        type: STANDARD_TEST_DB
+      shardingAlgorithmName: standard_test_db
   defaultTableStrategy:
     none:
+  
+  shardingAlgorithms:
+    standard_test_db:
+      type: STANDARD_TEST_DB
+    standard_test_tbl:
+      type: STANDARD_TEST_TBL
+  
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      props:
+          worker.id: 123
 
 props:
   sql.show: false

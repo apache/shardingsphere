@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring;
 
-import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
 import org.apache.shardingsphere.spring.fixture.IncrementKeyGenerateAlgorithm;
 import org.junit.Test;

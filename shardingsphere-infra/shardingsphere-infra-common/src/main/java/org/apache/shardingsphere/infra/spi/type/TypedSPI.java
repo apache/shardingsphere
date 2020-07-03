@@ -36,12 +36,12 @@ public interface TypedSPI {
      * 
      * @return properties
      */
-    Properties getProperties();
+    Properties getProps();
     
     /**
      * Set properties.
      * 
-     * @param properties properties
+     * @param props properties
      */
-    void setProperties(Properties properties);
+    void setProps(Properties props);
 }

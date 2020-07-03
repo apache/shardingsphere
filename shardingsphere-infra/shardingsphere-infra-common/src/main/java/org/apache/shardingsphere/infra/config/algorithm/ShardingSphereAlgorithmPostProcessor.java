@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.config.algorithm;
 
 /**
  * ShardingSphere algorithm post processor.
- *
- * @author zhangliang
  */
 public interface ShardingSphereAlgorithmPostProcessor {
     

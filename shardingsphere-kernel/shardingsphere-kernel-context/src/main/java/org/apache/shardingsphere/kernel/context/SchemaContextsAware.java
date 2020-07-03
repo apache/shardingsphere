@@ -40,7 +40,7 @@ public interface SchemaContextsAware extends AutoCloseable {
      * 
      * @return configuration properties
      */
-    ConfigurationProperties getProperties();
+    ConfigurationProperties getProps();
     
     /**
      * Get authentication.

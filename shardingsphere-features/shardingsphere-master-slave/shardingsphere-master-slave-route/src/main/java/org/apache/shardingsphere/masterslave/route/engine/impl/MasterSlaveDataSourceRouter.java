@@ -44,7 +44,7 @@ public final class MasterSlaveDataSourceRouter {
             MasterVisitedManager.setMasterVisited();
             return masterSlaveDataSourceRule.getMasterDataSourceName();
         }
-        return masterSlaveDataSourceRule.getLoadBalanceAlgorithm().getDataSource(
+        return masterSlaveDataSourceRule.getLoadBalancer().getDataSource(
                 masterSlaveDataSourceRule.getName(), masterSlaveDataSourceRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveDataSourceRule.getSlaveDataSourceNames()));
     }
     

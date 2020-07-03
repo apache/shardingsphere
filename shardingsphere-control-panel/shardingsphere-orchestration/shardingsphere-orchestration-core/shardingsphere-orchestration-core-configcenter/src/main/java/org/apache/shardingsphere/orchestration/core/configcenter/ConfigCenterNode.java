@@ -20,13 +20,13 @@ package org.apache.shardingsphere.orchestration.core.configcenter;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.orchestration.core.common.utils.IpUtils;
 
 /**
  * Configuration node.
@@ -45,6 +45,10 @@ public final class ConfigCenterNode {
     private static final String AUTHENTICATION_NODE = "authentication";
     
     private static final String PROPS_NODE = "props";
+    
+    private static final String CLUSTER_NODE = "cluster";
+    
+    private static final String METRICS_NODE = "metrics";
     
     private static final String COMMA_SEPARATOR = ",";
     
@@ -101,9 +105,9 @@ public final class ConfigCenterNode {
     }
     
     /**
-     * Get props path.
+     * Get properties path.
      *
-     * @return props path
+     * @return properties path
      */
     public String getPropsPath() {
         return getFullPath(PROPS_NODE);
@@ -153,5 +157,23 @@ public final class ConfigCenterNode {
             result.add(getDataSourcePath(schemaName));
         }
         return result;
+    }
+    
+    /**
+     * Get cluster node path.
+     *
+     * @return cluster node path
+     */
+    public String getClusterPath() {
+        return getFullPath(CLUSTER_NODE);
+    }
+    
+    /**
+     * Get metrics node path.
+     *
+     * @return metrics node path
+     */
+    public String getMetricsPath() {
+        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, METRICS_NODE, IpUtils.getIp());
     }
 }

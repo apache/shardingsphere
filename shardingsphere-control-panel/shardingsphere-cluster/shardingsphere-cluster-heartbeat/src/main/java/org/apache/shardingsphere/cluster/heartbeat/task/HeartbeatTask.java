@@ -19,7 +19,7 @@ package org.apache.shardingsphere.cluster.heartbeat.task;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatEvent;
-import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartbeatEventBus;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 
 /**
  * Heartbeat task.
@@ -36,6 +36,6 @@ public final class HeartbeatTask implements Runnable {
     @Override
     public void run() {
         log.info("heart beat detect running");
-        HeartbeatEventBus.getInstance().post(heartbeatEvent);
+        ShardingOrchestrationEventBus.getInstance().post(heartbeatEvent);
     }
 }

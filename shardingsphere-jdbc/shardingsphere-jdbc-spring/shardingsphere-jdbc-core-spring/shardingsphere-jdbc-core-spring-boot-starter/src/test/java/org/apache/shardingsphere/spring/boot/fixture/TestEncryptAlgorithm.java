@@ -19,20 +19,15 @@ package org.apache.shardingsphere.spring.boot.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.SPIEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 import java.util.Properties;
 
 @Getter
 @Setter
-public final class TestEncryptAlgorithm implements SPIEncryptAlgorithm {
+public final class TestEncryptAlgorithm implements EncryptAlgorithm {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "test";
-    }
+    private Properties props = new Properties();
     
     @Override
     public void init() {
@@ -46,5 +41,10 @@ public final class TestEncryptAlgorithm implements SPIEncryptAlgorithm {
     @Override
     public Object decrypt(final String ciphertext) {
         return "";
+    }
+    
+    @Override
+    public String getType() {
+        return "test";
     }
 }

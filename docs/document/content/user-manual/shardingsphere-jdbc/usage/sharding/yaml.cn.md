@@ -22,13 +22,13 @@ ShardingSphere-JDBC 的 YAML 配置文件 通过数据源集合、规则集合�
 # 配置真实数据源
 dataSources:
   # 配置第 1 个数据源
-  ds0: !!org.apache.commons.dbcp.BasicDataSource
+  ds0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds0
     username: root
     password:
   # 配置第 2 个数据源
-  ds1: !!org.apache.commons.dbcp.BasicDataSource
+  ds1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds1
     username: root
@@ -45,21 +45,26 @@ rules:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: ds${user_id % 2}
+          shardingAlgorithmName: database_inline
       # 配置分表策略
       tableStrategy:
         standard:
           shardingColumn: order_id
-            shardingAlgorithm:
-              type: INLINE
-                props:
-                  algorithm.expression: t_order${order_id % 2}
+          shardingAlgorithmName: table_inline
     t_order_item: 
     # 省略配置 t_order_item 表规则...
     # ...
+    
+  # 配置分片算法
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm.expression: ds${user_id % 2}
+    table_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_${order_id % 2}
 ```
 
 ```java

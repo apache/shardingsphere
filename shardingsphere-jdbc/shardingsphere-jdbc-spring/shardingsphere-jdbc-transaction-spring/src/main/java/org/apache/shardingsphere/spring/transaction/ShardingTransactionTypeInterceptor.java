@@ -20,6 +20,7 @@ package org.apache.shardingsphere.spring.transaction;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.shardingsphere.transaction.annotation.ShardingTransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.BridgeMethodResolver;
@@ -37,8 +38,16 @@ public final class ShardingTransactionTypeInterceptor implements MethodIntercept
     public Object invoke(final MethodInvocation methodInvocation) throws Throwable {
         ShardingTransactionType shardingTransactionType = getAnnotation(methodInvocation);
         Objects.requireNonNull(shardingTransactionType, "could not found sharding transaction type annotation");
+        TransactionType preTransactionType = TransactionTypeHolder.get();
         TransactionTypeHolder.set(shardingTransactionType.value());
-        return methodInvocation.proceed();
+        try {
+            return methodInvocation.proceed();
+        } finally {
+            TransactionTypeHolder.clear();
+            if (null != preTransactionType) {
+                TransactionTypeHolder.set(preTransactionType);
+            }
+        }
     }
     
     private ShardingTransactionType getAnnotation(final MethodInvocation invocation) {

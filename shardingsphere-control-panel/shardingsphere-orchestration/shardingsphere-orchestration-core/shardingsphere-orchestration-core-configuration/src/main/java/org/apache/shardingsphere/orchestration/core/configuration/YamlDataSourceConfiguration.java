@@ -33,5 +33,5 @@ public final class YamlDataSourceConfiguration implements YamlConfiguration {
     
     private String dataSourceClassName;
     
-    private Map<String, Object> properties = new HashMap<>();
+    private Map<String, Object> props = new HashMap<>();
 }

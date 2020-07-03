@@ -9,10 +9,10 @@ Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguratio
 
 Attributes:
 
-| *Name*                | *DataType*                                  | *Description*       |
-| --------------------- | ------------------------------------------- | ------------------- |
-| encryptStrategies (+) | Collection\<EncryptStrategyConfiguration\>  | Encrypt strategies  |
-| tables (+)            | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rules |
+| *Name*         | *DataType*                                          | *Description*                             |
+| -------------- | --------------------------------------------------- | ----------------------------------------- |
+| tables (+)     | Collection\<EncryptTableRuleConfiguration\>         | Encrypt table rule configurations         |
+| encryptors (+) | Map\<String, ShardingSphereAlgorithmConfiguration\> | Encrypt algorithm name and configurations |
 
 ## Encrypt Table Rule Configuration
 
@@ -20,10 +20,10 @@ Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleCo
 
 Attributes:
 
-| *Name*      | *DataType*                                   | *Description*        |
-| ----------- | -------------------------------------------- | -------------------- |
-| name        | String                                       | Table name           |
-| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rules |
+| *Name*      | *DataType*                                   | *Description*                      |
+| ----------- | -------------------------------------------- | ---------------------------------- |
+| name        | String                                       | Table name                         |
+| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rule configurations |
 
 ### Encrypt Column Rule Configuration
 
@@ -37,44 +37,18 @@ Attributes:
 | cipherColumn            | String     | Cipher column name         |
 | assistedQueryColumn (?) | String     | Assisted query column name |
 | plainColumn (?)         | String     | Plain column name          |
-| encryptStrategyName     | String     | Encrypt strategy name      |
+| encryptorName           | String     | Encrypt algorithm name     |
 
-## Encrypt Strategy Configuration
+## Encrypt Algorithm Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration
-
-Attributes:
-
-| *Name*     | *DataType* | *Description*               |
-| ---------- | ---------- | --------------------------- |
-| name       | String     | Encrypt strategy name       |
-| type       | String     | Encrypt strategy type       |
-| properties | Properties | Encrypt strategy properties |
-
-Apache ShardingSphere built-in implemented classes of encrypt algorithm are:
-
-### MD5 Encrypt Algorithm
-
-Class name: org.apache.shardingsphere.encrypt.strategy.impl.MD5EncryptAlgorithm
-
-Attributes: None
-
-### AES Encrypt Algorithm
-
-Class name: org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptAlgorithm
+Class name: org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
 
 Attributes:
 
-| *Name*        | *DataType* | *Description* |
-| ------------- | ---------- | ------------- |
-| aes.key.value | String     | AES KEY       |
+| *Name*     | *DataType* | *Description*                |
+| ---------- | ---------- | ---------------------------- |
+| name       | String     | Encrypt algorithm name       |
+| type       | String     | Encrypt algorithm type       |
+| properties | Properties | Encrypt algorithm properties |
 
-### RC4 Encrypt Algorithm
-
-Class name: org.apache.shardingsphere.encrypt.strategy.impl.RC4EncryptAlgorithm
-
-Attributes:
-
-| *Name*        | *DataType* | *Description* |
-| ------------- | ---------- | ------------- |
-| rc4.key.value | String     | RC4 KEY       |
+Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt) for more details about type of algorithm.

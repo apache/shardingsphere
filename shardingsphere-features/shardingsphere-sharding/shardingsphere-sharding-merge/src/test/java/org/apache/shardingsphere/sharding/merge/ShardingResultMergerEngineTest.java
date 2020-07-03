@@ -51,19 +51,19 @@ public final class ShardingResultMergerEngineTest {
     
     @Test
     public void assertNewInstanceWithSelectStatement() {
-        ConfigurationProperties properties = new ConfigurationProperties(new Properties());
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementContext sqlStatementContext = new SelectStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(ShardingDQLResultMerger.class));
+        assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, props, sqlStatementContext), instanceOf(ShardingDQLResultMerger.class));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertNewInstanceWithDALStatement() {
-        ConfigurationProperties properties = new ConfigurationProperties(new Properties());
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new ShowStatement());
-        assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(ShardingDALResultMerger.class));
+        assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, props, sqlStatementContext), instanceOf(ShardingDALResultMerger.class));
     }
     
     @Test
@@ -73,7 +73,7 @@ public final class ShardingResultMergerEngineTest {
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         insertStatement.setInsertColumns(insertColumnsSegment);
         SQLStatementContext sqlStatementContext = new InsertStatementContext(mock(SchemaMetaData.class), Collections.emptyList(), insertStatement);
-        ConfigurationProperties properties = new ConfigurationProperties(new Properties());
-        assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(TransparentResultMerger.class));
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, props, sqlStatementContext), instanceOf(TransparentResultMerger.class));
     }
 }

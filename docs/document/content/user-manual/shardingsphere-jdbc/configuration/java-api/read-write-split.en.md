@@ -9,9 +9,10 @@ Class name: org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConf
 
 Attributes:
 
-| *Name*          | *DataType*                                           | *Description*                     |
-| --------------- | ---------------------------------------------------- | --------------------------------- |
-| dataSources (+) | Collection\<MasterSlaveDataSourceRuleConfiguration\> | Data sources of master and slaves |
+| *Name*            | *DataType*                                           | *Description*                                                        |
+| ----------------- | ---------------------------------------------------- | -------------------------------------------------------------------- |
+| dataSources (+)   | Collection\<MasterSlaveDataSourceRuleConfiguration\> | Data sources of master and slaves                                    |
+| loadBalancers (*) | Map\<String, ShardingSphereAlgorithmConfiguration\>  | Load balance algorithm name and configurations of slave data sources |
 
 ## Master Slave Data Source Configuration
 
@@ -19,30 +20,11 @@ Class name: org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDat
 
 Attributes:
 
-| *Name*                  | *DataType*                       | *Description*                         | *Default Value*                    |
-| ----------------------- | -------------------------------- | ------------------------------------- | ---------------------------------- |
-| name                    | String                           | Read-write split data source name     | -                                  |
-| masterDataSourceName    | String                           | Master database source name           | -                                  |
-| slaveDataSourceNames    | Collection\<String\>             | Slave database source name list       | -                                  |
-| loadBalanceStrategy (?) | LoadBalanceStrategyConfiguration | Slave database load balance algorithm | Round robin load balance algorithm |
+| *Name*                   | *DataType*           | *Description*                                | *Default Value*                    |
+| ------------------------ | -------------------- | -------------------------------------------- | ---------------------------------- |
+| name                     | String               | Read-write split data source name            | -                                  |
+| masterDataSourceName     | String               | Master sources source name                   | -                                  |
+| slaveDataSourceNames (+) | Collection\<String\> | Slave sources source name list               | -                                  |
+| loadBalancerName (?)     | String               | Load balance algorithm name of slave sources | Round robin load balance algorithm |
 
-## Slave Data Sources Load Balance Strategy Configuration
-
-| *Name*         | *DataType* | *Description*                                        | *Default Value* |
-| -------------- | ---------- | ---------------------------------------------------- | --------------- |
-| type           | String     | Slave data sources load balance algorithm type       | -               |
-| properties (?) | Properties | Slave data sources load balance algorithm Properties | Empty           |
-
-Apache ShardingSphere built-in implemented classes of MasterSlaveLoadBalanceAlgorithm are:
-
-### Round Robin Algorithm
-
-Class name: org.apache.shardingsphere.masterslave.strategy.RoundRobinMasterSlaveLoadBalanceAlgorithm
-
-Attributes: None
-
-### Random Algorithm
-
-Class name: org.apache.shardingsphere.masterslave.strategy.RandomMasterSlaveLoadBalanceAlgorithm
-
-Attributes: None
+Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance) for more details about type of algorithm.

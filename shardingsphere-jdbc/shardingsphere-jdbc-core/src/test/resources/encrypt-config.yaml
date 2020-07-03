@@ -17,34 +17,34 @@
 
 rules:
 - !ENCRYPT
-  encryptStrategies:
-    test:
-      type: test
-    assistedTest:
-      type: assistedTest
   tables:
     t_encrypt:
       columns:
         pwd:
           plainColumn: plain_pwd
           cipherColumn: cipher_pwd
-          encryptStrategyName: test
+          encryptorName: test
     t_query_encrypt:
       columns:
         pwd:
           cipherColumn: cipher_pwd
           assistedQueryColumn: assist_pwd
-          encryptStrategyName: assistedTest
+          encryptorName: assistedTest
     t_encrypt_contains_column:
       columns:
         plain_pwd:
           plainColumn: plain_pwd
           cipherColumn: cipher_pwd
-          encryptStrategyName: test
+          encryptorName: test
         plain_pwd2:
           plainColumn: plain_pwd2
           cipherColumn: cipher_pwd2
-          encryptStrategyName: test
+          encryptorName: test
+  encryptors:
+    test:
+      type: test
+    assistedTest:
+      type: assistedTest
 
 props:
   sql.show: true

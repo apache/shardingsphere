@@ -39,7 +39,7 @@ public final class EncryptTable {
     public EncryptTable(final EncryptTableRuleConfiguration config) {
         columns = new LinkedHashMap<>(config.getColumns().size());
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
-            columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getEncryptStrategyName()));
+            columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getEncryptorName()));
         }
     }
     
@@ -142,15 +142,15 @@ public final class EncryptTable {
     }
     
     /**
-     * Find encrypt strategy name.
+     * Find encrypt algorithm name.
      *
      * @param logicColumn column name
-     * @return encrypt strategy name
+     * @return encrypt algorithm name
      */
-    public Optional<String> findEncryptStrategyName(final String logicColumn) {
+    public Optional<String> findEncryptorName(final String logicColumn) {
         Optional<String> originLogicColumnName = findOriginLogicColumnName(logicColumn);
         return originLogicColumnName.isPresent() && columns.containsKey(originLogicColumnName.get())
-                ? Optional.of(columns.get(originLogicColumnName.get()).getEncryptStrategyName()) : Optional.empty();
+                ? Optional.of(columns.get(originLogicColumnName.get()).getEncryptorName()) : Optional.empty();
     }
     
     private Optional<String> findOriginLogicColumnName(final String logicColumn) {

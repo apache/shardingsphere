@@ -34,10 +34,10 @@ public final class DataSourceConverterTest {
     public void assertGetDataSourceParameterMap() {
         Map<String, DataSourceConfiguration> dataSourceConfigurationMap = new HashMap<>(2, 1);
         DataSourceConfiguration dataSourceConfiguration0 = new DataSourceConfiguration(HikariDataSource.class.getName());
-        dataSourceConfiguration0.getProperties().put("url", "jdbc:mysql://localhost:3306/demo_ds_0");
+        dataSourceConfiguration0.getProps().put("url", "jdbc:mysql://localhost:3306/demo_ds_0");
         dataSourceConfigurationMap.put("ds_0", dataSourceConfiguration0);
         DataSourceConfiguration dataSourceConfiguration1 = new DataSourceConfiguration(HikariDataSource.class.getName());
-        dataSourceConfiguration1.getProperties().put("jdbcUrl", "jdbc:mysql://localhost:3306/demo_ds_1");
+        dataSourceConfiguration1.getProps().put("jdbcUrl", "jdbc:mysql://localhost:3306/demo_ds_1");
         dataSourceConfigurationMap.put("ds_1", dataSourceConfiguration1);
         Map<String, DataSourceParameter> actual = DataSourceConverter.getDataSourceParameterMap(dataSourceConfigurationMap);
         assertThat(actual.size(), is(2));
@@ -65,15 +65,15 @@ public final class DataSourceConverterTest {
     }
     
     private void assertParameter(final DataSourceConfiguration actual) {
-        Map<String, Object> properties = actual.getProperties();
-        assertThat(properties.get("maxPoolSize"), is(50));
-        assertThat(properties.get("minPoolSize"), is(1));
-        assertThat(properties.get("connectionTimeout"), is(30 * 1000L));
-        assertThat(properties.get("idleTimeout"), is(60 * 1000L));
-        assertThat(properties.get("maxLifetime"), is(0L));
-        assertThat(properties.get("maintenanceIntervalMilliseconds"), is(30 * 1000L));
-        assertThat(properties.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
-        assertThat(properties.get("username"), is("root"));
-        assertThat(properties.get("password"), is("root"));
+        Map<String, Object> props = actual.getProps();
+        assertThat(props.get("maxPoolSize"), is(50));
+        assertThat(props.get("minPoolSize"), is(1));
+        assertThat(props.get("connectionTimeout"), is(30 * 1000L));
+        assertThat(props.get("idleTimeout"), is(60 * 1000L));
+        assertThat(props.get("maxLifetime"), is(0L));
+        assertThat(props.get("maintenanceIntervalMilliseconds"), is(30 * 1000L));
+        assertThat(props.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
+        assertThat(props.get("username"), is("root"));
+        assertThat(props.get("password"), is("root"));
     }
 }

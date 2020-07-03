@@ -19,20 +19,15 @@ package org.apache.shardingsphere.sharding.rewrite.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.SPIQueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 
 import java.util.Properties;
 
 @Getter
 @Setter
-public final class QueryAssistedEncryptAlgorithmFixture implements SPIQueryAssistedEncryptAlgorithm {
+public final class QueryAssistedEncryptAlgorithmFixture implements QueryAssistedEncryptAlgorithm {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "ASSISTED_QUERY_ENCRYPT";
-    }
+    private Properties props = new Properties();
     
     @Override
     public void init() {
@@ -51,5 +46,10 @@ public final class QueryAssistedEncryptAlgorithmFixture implements SPIQueryAssis
     @Override
     public String queryAssistedEncrypt(final String plaintext) {
         return "assisted_query_" + plaintext;
+    }
+    
+    @Override
+    public String getType() {
+        return "ASSISTED_QUERY_ENCRYPT";
     }
 }

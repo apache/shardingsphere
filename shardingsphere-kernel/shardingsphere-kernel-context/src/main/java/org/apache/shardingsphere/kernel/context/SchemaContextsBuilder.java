@@ -61,7 +61,7 @@ public final class SchemaContextsBuilder {
     
     private final Map<String, Collection<RuleConfiguration>> configurations;
     
-    private final ConfigurationProperties properties;
+    private final ConfigurationProperties props;
     
     private final ExecutorKernel executorKernel;
     
@@ -72,8 +72,8 @@ public final class SchemaContextsBuilder {
         this.dataSources = dataSources;
         this.databaseType = databaseType;
         this.configurations = configurations;
-        properties = new ConfigurationProperties(null == props ? new Properties() : props);
-        executorKernel = new ExecutorKernel(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
+        this.props = new ConfigurationProperties(null == props ? new Properties() : props);
+        executorKernel = new ExecutorKernel(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         authentication = new Authentication();
         log(configurations, props);
     }
@@ -83,8 +83,8 @@ public final class SchemaContextsBuilder {
         this.dataSources = dataSources;
         this.databaseType = databaseType;
         this.configurations = configurations;
-        properties = new ConfigurationProperties(null == props ? new Properties() : props);
-        executorKernel = new ExecutorKernel(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
+        this.props = new ConfigurationProperties(null == props ? new Properties() : props);
+        executorKernel = new ExecutorKernel(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         this.dataSourceParameters.putAll(dataSourceParameters);
         this.authentication = authentication;
         log(configurations, props);
@@ -101,7 +101,7 @@ public final class SchemaContextsBuilder {
         for (String each : configurations.keySet()) {
             schemaContexts.put(each, createSchemaContext(each));
         }
-        return new SchemaContexts(schemaContexts, properties, authentication);
+        return new SchemaContexts(schemaContexts, props, authentication);
     }
     
     private SchemaContext createSchemaContext(final String schemaName) throws SQLException {
@@ -130,7 +130,7 @@ public final class SchemaContextsBuilder {
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
         long start = System.currentTimeMillis();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
-        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(databaseType, dataSourceMap, properties, executorKernel.getExecutorService().getExecutorService());
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(databaseType, dataSourceMap, props, executorKernel.getExecutorService().getExecutorService());
         ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
         log.info("Meta data load finished, cost {} milliseconds.", System.currentTimeMillis() - start);
         return result;

@@ -37,25 +37,32 @@ rules:
       tableStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_order_${order_id % 2}
-      keyGenerator:
-        type: SNOWFLAKE
+          shardingAlgorithmName: table_inline
+      keyGenerateStrategy:
         column: order_id
-        props:
-          worker.id: 123
-
+        keyGeneratorName: snowflake
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithm:
-        type: INLINE
-        props:
-          algorithm.expression: ds_${user_id % 2}
+      shardingAlgorithmName: database_inline
   defaultTableStrategy:
     none:
+  
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm.expression: ds_${user_id % 2}
+    table_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_${order_id % 2}
+  
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      props:
+          worker.id: 123
 
 props:
   sql.show: false

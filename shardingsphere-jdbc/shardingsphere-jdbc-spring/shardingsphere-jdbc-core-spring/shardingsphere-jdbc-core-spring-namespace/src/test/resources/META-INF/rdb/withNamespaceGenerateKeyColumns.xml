@@ -38,14 +38,14 @@
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="standardModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" algorithm-ref="standardModuloTableShardingAlgorithm" />
     
-    <sharding:key-generator id="defaultKeyGenerator" column="id" algorithm-ref="incrementAlgorithm" />
-    <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="decrementAlgorithm" />
-    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="incrementAlgorithm" />
+    <sharding:key-generate-strategy id="defaultKeyGenerator" column="id" algorithm-ref="incrementAlgorithm" />
+    <sharding:key-generate-strategy id="itemKeyGenerator" column="order_item_id" algorithm-ref="decrementAlgorithm" />
+    <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="incrementAlgorithm" />
     
-    <sharding:rule id="shardingRule" default-key-generator-ref="defaultKeyGenerator">
+    <sharding:rule id="shardingRule" default-key-generate-strategy-ref="defaultKeyGenerator">
         <sharding:table-rules>
-            <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" key-generator-ref="orderKeyGenerator" />
-            <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_${0..1}.t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" key-generator-ref="itemKeyGenerator" />
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+            <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_${0..1}.t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" key-generate-strategy-ref="itemKeyGenerator" />
         </sharding:table-rules>
     </sharding:rule>
     

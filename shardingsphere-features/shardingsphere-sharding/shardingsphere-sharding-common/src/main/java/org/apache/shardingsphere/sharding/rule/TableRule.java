@@ -26,15 +26,16 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
-import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategyFactory;
-import org.apache.shardingsphere.sharding.strategy.route.none.NoneShardingStrategy;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.strategy.ShardingStrategy;
+import org.apache.shardingsphere.sharding.strategy.ShardingStrategyFactory;
+import org.apache.shardingsphere.sharding.strategy.none.NoneShardingStrategy;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -72,7 +73,7 @@ public final class TableRule {
     @Getter(AccessLevel.NONE)
     private final String generateKeyColumn;
     
-    private final KeyGenerateAlgorithm keyGenerateAlgorithm;
+    private final String keyGeneratorName;
     
     private final Collection<String> actualDatasourceNames = new LinkedHashSet<>();
     
@@ -86,39 +87,45 @@ public final class TableRule {
         databaseShardingStrategy = null;
         tableShardingStrategy = null;
         generateKeyColumn = null;
-        keyGenerateAlgorithm = null;
+        keyGeneratorName = null;
     }
     
-    public TableRule(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
+    public TableRule(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, 
+                     final ShardingAlgorithm databaseShardingAlgorithm, final ShardingAlgorithm tableShardingAlgorithm, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
         List<String> dataNodes = new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
-        databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategy() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategy());
-        tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategy() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategy());
-        final KeyGeneratorConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGenerator();
+        databaseShardingStrategy = createShardingStrategy(tableRuleConfig.getDatabaseShardingStrategy(), databaseShardingAlgorithm);
+        tableShardingStrategy = createShardingStrategy(tableRuleConfig.getTableShardingStrategy(), tableShardingAlgorithm);
+        KeyGenerateStrategyConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGenerateStrategy();
         generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
-        keyGenerateAlgorithm = containsKeyGenerateAlgorithm(tableRuleConfig.getKeyGenerator()) ? tableRuleConfig.getKeyGenerator().getKeyGenerateAlgorithm() : null;
+        keyGeneratorName = null == keyGeneratorConfiguration ? null : keyGeneratorConfiguration.getKeyGeneratorName();
         checkRule(dataNodes);
     }
-
-    public TableRule(final ShardingAutoTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
+    
+    public TableRule(final ShardingAutoTableRuleConfiguration tableRuleConfig, 
+                     final Collection<String> dataSourceNames, final ShardingAlgorithm shardingAlgorithm, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
-        databaseShardingStrategy = null;
-        tableShardingStrategy = null == tableRuleConfig.getShardingStrategy() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getShardingStrategy());
+        databaseShardingStrategy = new NoneShardingStrategy();
+        tableShardingStrategy = createShardingStrategy(tableRuleConfig.getShardingStrategy(), shardingAlgorithm);
         Preconditions.checkArgument(null == tableRuleConfig.getShardingStrategy() || tableShardingStrategy.getShardingAlgorithm() instanceof ShardingAutoTableAlgorithm,
                 "ShardingAutoTableAlgorithm is required.");
         List<String> dataNodes = getDataNodes(tableRuleConfig, dataSourceNames);
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
-        final KeyGeneratorConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGenerator();
+        KeyGenerateStrategyConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGenerateStrategy();
         generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
-        keyGenerateAlgorithm = containsKeyGenerateAlgorithm(tableRuleConfig.getKeyGenerator()) ? tableRuleConfig.getKeyGenerator().getKeyGenerateAlgorithm() : null;
+        keyGeneratorName = null == keyGeneratorConfiguration ? null : keyGeneratorConfiguration.getKeyGeneratorName();
         checkRule(dataNodes);
     }
-
+    
+    private ShardingStrategy createShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration, final ShardingAlgorithm shardingAlgorithm) {
+        return null == shardingStrategyConfiguration ? null : ShardingStrategyFactory.newInstance(shardingStrategyConfiguration, shardingAlgorithm);
+    }
+    
     private List<String> getDataNodes(final ShardingAutoTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames) {
         if (null == tableShardingStrategy) {
             return new LinkedList<>();
@@ -136,17 +143,13 @@ public final class TableRule {
         }
         return result;
     }
-
+    
     private Set<String> getActualTables() {
         return actualDataNodes.stream().map(DataNode::getTableName).collect(Collectors.toSet());
     }
     
     private void addActualTable(final String datasourceName, final String tableName) {
         datasourceToTablesMap.computeIfAbsent(datasourceName, key -> new LinkedHashSet<>()).add(tableName);
-    }
-    
-    private boolean containsKeyGenerateAlgorithm(final KeyGeneratorConfiguration keyGenerator) {
-        return null != keyGenerator && null != keyGenerator.getKeyGenerateAlgorithm();
     }
     
     private boolean isEmptyDataNodes(final List<String> dataNodes) {

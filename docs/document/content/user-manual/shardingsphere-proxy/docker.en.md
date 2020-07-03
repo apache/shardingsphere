@@ -6,13 +6,13 @@ weight = 3
 
 ## Pull Official Docker Clone
 
-```
+```bash
 docker pull apache/shardingsphere-proxy
 ```
 
 ## Build Docker Clone Manually (Optional)
 
-```
+```bash
 git clone https://github.com/apache/shardingsphere
 mvn clean install
 cd shardingsphere-distribution/shardingsphere-proxy-distribution
@@ -27,30 +27,36 @@ Please refer to [Example](https://github.com/apache/shardingsphere/tree/master/s
 
 ## Run Docker
 
-```
+```bash
 docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
 ```
+
 **Notice**
+
 * You can define port `3308` and `13308` by yourself. `3308` refers to docker port; `13308` refers to the host port.
 * You have to volume conf dir to /opt/shardingsphere-proxy/conf.
 
-```
+```bash
 docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e JVM_OPTS="-Djava.awt.headless=true" -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
 ```
+
 **Notice**
+
 * You can define JVM related parameters to environment variable `JVM_OPTS`.
 
-```
+```bash
 docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -v /${your_work_dir}/ext-lib:/opt/shardingsphere-proxy/ext-lib -p13308:3308 apache/shardingsphere-proxy:latest
 ```
+
 **Notice**
+
 * If you want to import external jar packages, whose directory is supposed to volume to /opt/shardingsphere-proxy/ext-lib.
 
 ## Access ShardingSphere-Proxy
 
 It is in the same way as connecting to PostgreSQL.
 
-```
+```bash
 psql -U ${your_user_name} -h ${your_host} -p 13308
 ```
 

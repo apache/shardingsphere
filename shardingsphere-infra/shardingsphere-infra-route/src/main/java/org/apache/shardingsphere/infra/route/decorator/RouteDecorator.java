@@ -36,8 +36,8 @@ public interface RouteDecorator<T extends ShardingSphereRule> extends OrderedSPI
      * @param routeContext route context
      * @param metaData meta data of ShardingSphere
      * @param rule rule
-     * @param properties configuration properties
+     * @param props configuration properties
      * @return decorated route context
      */
-    RouteContext decorate(RouteContext routeContext, ShardingSphereMetaData metaData, T rule, ConfigurationProperties properties);
+    RouteContext decorate(RouteContext routeContext, ShardingSphereMetaData metaData, T rule, ConfigurationProperties props);
 }

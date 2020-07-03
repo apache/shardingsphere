@@ -59,12 +59,12 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
     private static final int FUTURE_GET_TIME_OUT_SECOND = 5;
     
     @Override
-    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, 
-                               final ShardingRule shardingRule, final ConfigurationProperties properties, final Collection<String> excludedTableNames) throws SQLException {
+    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
+                               final ShardingRule shardingRule, final ConfigurationProperties props, final Collection<String> excludedTableNames) throws SQLException {
         SchemaMetaData result = new SchemaMetaData(new HashMap<>(shardingRule.getTableRules().size(), 1));
         for (TableRule each : shardingRule.getTableRules()) {
             if (!excludedTableNames.contains(each.getLogicTable())) {
-                load(databaseType, dataSourceMap, dataNodes, each.getLogicTable(), shardingRule, properties).ifPresent(tableMetaData -> result.put(each.getLogicTable(), tableMetaData));
+                load(databaseType, dataSourceMap, dataNodes, each.getLogicTable(), shardingRule, props).ifPresent(tableMetaData -> result.put(each.getLogicTable(), tableMetaData));
             }
         }
         return result;
@@ -72,12 +72,12 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
     
     @Override
     public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, 
-                                        final String tableName, final ShardingRule shardingRule, final ConfigurationProperties properties) throws SQLException {
+                                        final String tableName, final ShardingRule shardingRule, final ConfigurationProperties props) throws SQLException {
         if (!shardingRule.findTableRule(tableName).isPresent()) {
             return Optional.empty();
         }
-        boolean isCheckingMetaData = properties.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        int maxConnectionsSizePerQuery = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        boolean isCheckingMetaData = props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
+        int maxConnectionsSizePerQuery = props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         TableRule tableRule = shardingRule.getTableRule(tableName);
         if (!isCheckingMetaData) {
             DataNode dataNode = dataNodes.getDataNodes(tableName).iterator().next();

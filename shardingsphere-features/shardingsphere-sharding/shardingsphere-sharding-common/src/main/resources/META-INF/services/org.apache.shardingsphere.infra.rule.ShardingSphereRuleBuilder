@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.rule.ShardingRuleBuilder
+org.apache.shardingsphere.sharding.rule.builder.ShardingRuleBuilder
+org.apache.shardingsphere.sharding.rule.builder.AlgorithmProvidedShardingRuleBuilder

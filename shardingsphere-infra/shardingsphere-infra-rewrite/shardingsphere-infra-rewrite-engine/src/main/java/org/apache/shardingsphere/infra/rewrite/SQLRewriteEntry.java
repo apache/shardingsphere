@@ -45,13 +45,13 @@ public final class SQLRewriteEntry {
     
     private final SchemaMetaData schemaMetaData;
     
-    private final ConfigurationProperties properties;
+    private final ConfigurationProperties props;
     
     private final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators;
     
-    public SQLRewriteEntry(final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<ShardingSphereRule> rules) {
+    public SQLRewriteEntry(final SchemaMetaData schemaMetaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.schemaMetaData = schemaMetaData;
-        this.properties = properties;
+        this.props = props;
         decorators = OrderedSPIRegistry.getRegisteredServices(rules, SQLRewriteContextDecorator.class);
     }
     
@@ -78,6 +78,6 @@ public final class SQLRewriteEntry {
     
     @SuppressWarnings("unchecked")
     private void decorate(final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
-        decorators.forEach((key, value) -> value.decorate(key, properties, sqlRewriteContext, routeContext));
+        decorators.forEach((key, value) -> value.decorate(key, props, sqlRewriteContext, routeContext));
     }
 }

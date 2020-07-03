@@ -66,7 +66,7 @@ public final class RuntimeContext implements AutoCloseable {
     
     private final Collection<ShardingSphereRule> rules;
     
-    private final ConfigurationProperties properties;
+    private final ConfigurationProperties props;
     
     private final ExecutorKernel executorKernel;
     
@@ -85,8 +85,8 @@ public final class RuntimeContext implements AutoCloseable {
         this.databaseType = databaseType;
         this.configurations = configurations;
         rules = ShardingSphereRulesBuilder.build(configurations, dataSourceMap.keySet());
-        properties = new ConfigurationProperties(null == props ? new Properties() : props);
-        executorKernel = new ExecutorKernel(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
+        this.props = new ConfigurationProperties(null == props ? new Properties() : props);
+        executorKernel = new ExecutorKernel(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType));
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
@@ -108,7 +108,7 @@ public final class RuntimeContext implements AutoCloseable {
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {
         long start = System.currentTimeMillis();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
-        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(getDatabaseType(), dataSourceMap, getProperties(), executorKernel.getExecutorService().getExecutorService());
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(getDatabaseType(), dataSourceMap, getProps(), executorKernel.getExecutorService().getExecutorService());
         ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
         log.info("Meta data load finished, cost {} milliseconds.", System.currentTimeMillis() - start);
         return result;

@@ -82,6 +82,17 @@ public final class InsertValueContext {
         ExpressionSegment valueExpression = valueExpressions.get(index);
         return valueExpression instanceof ParameterMarkerExpressionSegment ? parameters.get(getParameterIndex(valueExpression)) : ((LiteralExpressionSegment) valueExpression).getLiterals();
     }
+
+    /**
+     * Get parameter index via column index.
+     *
+     * @param index column index
+     * @return parameter index
+     */
+    public int getParameterIndex(final int index) {
+        ExpressionSegment valueExpression = valueExpressions.get(index);
+        return getParameterIndex(valueExpression);
+    }
     
     private int getParameterIndex(final ExpressionSegment valueExpression) {
         int result = 0;

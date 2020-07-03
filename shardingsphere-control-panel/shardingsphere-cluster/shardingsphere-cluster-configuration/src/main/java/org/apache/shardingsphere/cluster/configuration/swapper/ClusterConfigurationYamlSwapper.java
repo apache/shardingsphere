@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 public final class ClusterConfigurationYamlSwapper implements YamlSwapper<YamlClusterConfiguration, ClusterConfiguration> {
     
     @Override
-    public YamlClusterConfiguration swap(final ClusterConfiguration clusterConfiguration) {
+    public YamlClusterConfiguration swapToYamlConfiguration(final ClusterConfiguration clusterConfiguration) {
         final YamlClusterConfiguration yamlClusterConfiguration = new YamlClusterConfiguration();
         final YamlHeartbeatConfiguration yamlHeartBeatConfiguration = new YamlHeartbeatConfiguration();
         HeartbeatConfiguration heartbeat = clusterConfiguration.getHeartbeat();
@@ -44,7 +44,7 @@ public final class ClusterConfigurationYamlSwapper implements YamlSwapper<YamlCl
     }
     
     @Override
-    public ClusterConfiguration swap(final YamlClusterConfiguration yamlConfiguration) {
+    public ClusterConfiguration swapToObject(final YamlClusterConfiguration yamlConfiguration) {
         final ClusterConfiguration clusterConfiguration = new ClusterConfiguration();
         final HeartbeatConfiguration heartBeatConfiguration = new HeartbeatConfiguration();
         YamlHeartbeatConfiguration heartbeat = yamlConfiguration.getHeartbeat();

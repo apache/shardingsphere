@@ -172,7 +172,7 @@ public final class PreparedStatementExecutor {
             RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(schemaContext.getSchema().getRules());
             refreshStrategy.get().refreshMetaData(schemaContext.getSchema().getMetaData(), schemaContext.getSchema().getDatabaseType(), 
                     dataSourceMap, sqlStatementContext, tableName -> metaDataLoader.load(schemaContext.getSchema().getDatabaseType(), 
-                            dataSourceMap, tableName, schemaContexts.getProperties()));
+                            dataSourceMap, tableName, schemaContexts.getProps()));
         }
     }
 }

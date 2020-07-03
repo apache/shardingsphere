@@ -27,13 +27,14 @@
         <xsd:complexType>
             <xsd:all>
                 <xsd:element ref="table-rules" minOccurs="0" />
+                <xsd:element ref="auto-table-rules" minOccurs="0" />
                 <xsd:element ref="binding-table-rules" minOccurs="0" />
                 <xsd:element ref="broadcast-table-rules" minOccurs="0" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="default-database-strategy-ref" type="xsd:string" />
             <xsd:attribute name="default-table-strategy-ref" type="xsd:string" />
-            <xsd:attribute name="default-key-generator-ref" type="xsd:string" />
+            <xsd:attribute name="default-key-generate-strategy-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     
@@ -50,8 +51,22 @@
             <xsd:attribute name="actual-data-nodes" type="xsd:string" />
             <xsd:attribute name="database-strategy-ref" type="xsd:string" />
             <xsd:attribute name="table-strategy-ref" type="xsd:string" />
-            <xsd:attribute name="key-generator-ref" type="xsd:string" />
-            <xsd:attribute name="logic-index" type="xsd:string" />
+            <xsd:attribute name="key-generate-strategy-ref" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="auto-table-rules">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="auto-table-rule" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="auto-table-rule">
+        <xsd:complexType>
+            <xsd:attribute name="logic-table" type="xsd:string" use="required" />
+            <xsd:attribute name="actual-data-sources" type="xsd:string" />
+            <xsd:attribute name="sharding-strategy-ref" type="xsd:string" />
+            <xsd:attribute name="key-generate-strategy-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="binding-table-rules">
@@ -115,7 +130,7 @@
         </xsd:complexType>
     </xsd:element>
     
-    <xsd:element name="key-generator">
+    <xsd:element name="key-generate-strategy">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="column" type="xsd:string" use="required" />

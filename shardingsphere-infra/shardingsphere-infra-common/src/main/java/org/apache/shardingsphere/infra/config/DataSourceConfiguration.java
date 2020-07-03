@@ -57,7 +57,7 @@ public final class DataSourceConfiguration {
     
     private final String dataSourceClassName;
     
-    private final Map<String, Object> properties = new LinkedHashMap<>();
+    private final Map<String, Object> props = new LinkedHashMap<>();
     
     /**
      * Get data source configuration.
@@ -67,7 +67,7 @@ public final class DataSourceConfiguration {
      */
     public static DataSourceConfiguration getDataSourceConfiguration(final DataSource dataSource) {
         DataSourceConfiguration result = new DataSourceConfiguration(dataSource.getClass().getName());
-        result.getProperties().putAll(findAllGetterProperties(dataSource));
+        result.getProps().putAll(findAllGetterProperties(dataSource));
         return result;
     }
     
@@ -102,7 +102,7 @@ public final class DataSourceConfiguration {
     public DataSource createDataSource() {
         DataSource result = (DataSource) Class.forName(dataSourceClassName).newInstance();
         Method[] methods = result.getClass().getMethods();
-        for (Entry<String, Object> entry : properties.entrySet()) {
+        for (Entry<String, Object> entry : props.entrySet()) {
             if (SKIPPED_PROPERTY_NAMES.contains(entry.getKey())) {
                 continue;
             }
@@ -133,8 +133,8 @@ public final class DataSourceConfiguration {
         if (!this.dataSourceClassName.equals(dataSourceConfiguration.getDataSourceClassName())) {
             return false;
         }
-        for (Entry<String, Object> entry : properties.entrySet()) {
-            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceConfiguration.getProperties().get(entry.getKey())))) {
+        for (Entry<String, Object> entry : props.entrySet()) {
+            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceConfiguration.getProps().get(entry.getKey())))) {
                 return false;
             }
         }
@@ -144,7 +144,7 @@ public final class DataSourceConfiguration {
     @Override
     public int hashCode() {
         StringBuilder stringBuilder = new StringBuilder();
-        for (Entry<String, Object> entry : properties.entrySet()) {
+        for (Entry<String, Object> entry : props.entrySet()) {
             stringBuilder.append(entry.getKey()).append(entry.getValue().toString());
         }
         return Objects.hashCode(dataSourceClassName, stringBuilder.toString());
@@ -158,15 +158,15 @@ public final class DataSourceConfiguration {
     public void addAlias(final String... alias) {
         Object value = null;
         for (String each : alias) {
-            if (null != properties.get(each)) {
-                value = properties.get(each);
+            if (props.containsKey(each)) {
+                value = props.get(each);
             }
         }
         if (null == value) {
             return;
         }
         for (String each : alias) {
-            properties.put(each, value);
+            props.put(each, value);
         }
     }
 }

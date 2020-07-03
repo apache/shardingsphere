@@ -19,21 +19,27 @@ package org.apache.shardingsphere.dbtest.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.Properties;
 
 public final class ConstantKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Getter
-    private final String type = "CONSTANT";
-    
-    @Getter
     @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
+    
+    @Override
+    public void init() {
+    }
     
     @Override
     public Comparable<?> generateKey() {
         return 1;
+    }
+    
+    @Override
+    public String getType() {
+        return "CONSTANT";
     }
 }

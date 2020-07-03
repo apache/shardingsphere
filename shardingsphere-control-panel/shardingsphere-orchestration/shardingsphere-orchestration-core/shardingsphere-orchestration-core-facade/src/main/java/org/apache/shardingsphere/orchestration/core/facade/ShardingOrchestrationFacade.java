@@ -21,7 +21,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
@@ -85,22 +87,22 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         CenterConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName.get());
         Preconditions.checkNotNull(configCenterConfiguration, "Config center configuration cannot be null.");
         configCenterRepository = TypedSPIRegistry.getRegisteredService(
-                ConfigCenterRepository.class, configCenterConfiguration.getType(), configCenterConfiguration.getProperties());
+                ConfigCenterRepository.class, configCenterConfiguration.getType(), configCenterConfiguration.getProps());
         configCenterRepository.init(configCenterConfiguration);
-        isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProperties()).getValue(OrchestrationPropertyKey.OVERWRITE);
+        isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProps()).getValue(OrchestrationPropertyKey.OVERWRITE);
         configCenter = new ConfigCenter(configCenterName.get(), configCenterRepository);
         Optional<String> registryCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), CenterType.REGISTRY_CENTER.getValue());
         Preconditions.checkArgument(registryCenterName.isPresent(), "Can not find instance configuration with registry center orchestration type.");
         CenterConfiguration registryCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(registryCenterName.get());
         Preconditions.checkNotNull(registryCenterConfiguration, "Registry center configuration cannot be null.");
-        registryCenterRepository = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfiguration.getType(), registryCenterConfiguration.getProperties());
+        registryCenterRepository = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfiguration.getType(), registryCenterConfiguration.getProps());
         registryCenterRepository.init(registryCenterConfiguration);
         registryCenter = new RegistryCenter(registryCenterName.get(), registryCenterRepository);
         Optional<String> metaDataCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), CenterType.METADATA_CENTER.getValue());
         Preconditions.checkArgument(metaDataCenterName.isPresent(), "Can not find instance configuration with metadata center orchestration type.");
         CenterConfiguration metaDataCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(metaDataCenterName.get());
         Preconditions.checkNotNull(metaDataCenterConfiguration, "MetaData center configuration cannot be null.");
-        centerRepository = TypedSPIRegistry.getRegisteredService(ConfigCenterRepository.class, metaDataCenterConfiguration.getType(), metaDataCenterConfiguration.getProperties());
+        centerRepository = TypedSPIRegistry.getRegisteredService(ConfigCenterRepository.class, metaDataCenterConfiguration.getType(), metaDataCenterConfiguration.getProps());
         centerRepository.init(metaDataCenterConfiguration);
         metaDataCenter = new MetaDataCenter(metaDataCenterName.get(), centerRepository);
         listenerManager = shardingSchemaNames.isEmpty()
@@ -122,8 +124,9 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
      */
     public void init(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurationMap,
                      final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final Authentication authentication, final Properties props) {
+        configCenter.persistGlobalConfiguration(authentication, props, isOverwrite);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigurationMap.entrySet()) {
-            configCenter.persistConfigurations(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), authentication, props, isOverwrite);
+            configCenter.persistConfigurations(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), isOverwrite);
         }
         init();
     }
@@ -135,6 +138,24 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         registryCenter.persistInstanceOnline();
         registryCenter.persistDataSourcesNode();
         listenerManager.initListeners();
+    }
+    
+    /**
+     * Init metrics configuration to config center.
+     *
+     * @param metricsConfiguration metrics configuration
+     */
+    public void initMetricsConfiguration(final MetricsConfiguration metricsConfiguration) {
+        configCenter.persistMetricsConfiguration(metricsConfiguration, isOverwrite);
+    }
+    
+    /**
+     * Init cluster configuration to config center.
+     *
+     * @param clusterConfiguration cluster configuration
+     */
+    public void initClusterConfiguration(final ClusterConfiguration clusterConfiguration) {
+        configCenter.persistClusterConfiguration(clusterConfiguration, isOverwrite);
     }
     
     @Override

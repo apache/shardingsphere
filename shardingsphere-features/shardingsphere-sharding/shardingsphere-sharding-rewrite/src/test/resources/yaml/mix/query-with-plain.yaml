@@ -30,36 +30,45 @@ rules:
       tableStrategy: 
         standard:
           shardingColumn: account_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_account_${account_id % 2}
-      keyGenerator:
-        type: TEST
+          shardingAlgorithmName: t_account_inline
+      keyGenerateStrategy:
         column: account_id
+        keyGeneratorName: test
     t_account_bak:
       actualDataNodes: db.t_account_bak_${0..1}
       tableStrategy: 
         standard:
           shardingColumn: account_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_account_bak_${account_id % 2}
-      keyGenerator:
-        type: TEST
+          shardingAlgorithmName: t_account_bak_inline
+      keyGenerateStrategy:
         column: account_id
+        keyGeneratorName: test
     t_account_detail:
       actualDataNodes: db.t_account_detail_${0..1}
       tableStrategy: 
         standard:
           shardingColumn: account_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_account_${account_id % 2}
+          shardingAlgorithmName: t_account_detail_inline
   bindingTables:
     - t_account, t_account_detail
+  
+  shardingAlgorithms:
+    t_account_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_account_${account_id % 2}
+    t_account_bak_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_account_bak_${account_id % 2}
+    t_account_detail_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_account_detail_${account_id % 2}
+  
+  keyGenerators:
+    test:
+      type: TEST
 
 - !ENCRYPT
   tables:
@@ -68,22 +77,22 @@ rules:
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
-          encryptStrategyName: assisted_query
+          encryptorName: assisted_query
         amount:
           cipherColumn: cipher_amount
-          encryptStrategyName: normal
+          encryptorName: normal
     t_account_bak:
       columns:
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
           plainColumn: plain_password
-          encryptStrategyName: assisted_query
+          encryptorName: assisted_query
         amount:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
-          encryptStrategyName: normal
-  encryptStrategies:
+          encryptorName: normal
+  encryptors:
     normal:
       type: NORMAL_ENCRYPT
     assisted_query:

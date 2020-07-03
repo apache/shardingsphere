@@ -173,7 +173,7 @@ public abstract class AbstractUnsupportedOperationConnection extends WrapperAdap
     }
     
     @Override
-    public final void setClientInfo(final Properties properties) {
+    public final void setClientInfo(final Properties props) {
         throw new UnsupportedOperationException("setClientInfo properties");
     }
 }

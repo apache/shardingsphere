@@ -23,6 +23,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Relational database management system configuration.
@@ -35,6 +36,8 @@ public final class RdbmsConfiguration implements Cloneable {
     private DataSourceConfiguration dataSourceConfiguration;
     
     private String tableName;
+    
+    private Map<String, Set<String>> shardingColumnsMap;
     
     private String whereCondition;
     

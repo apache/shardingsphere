@@ -23,5 +23,5 @@
         <column name="itemid" />
         <column name="stateName" />
     </metadata>
-    <row values="1000,10,init,100000,已启用" />
+    <row values="1000,10,init,100001,已启用" />
 </dataset>

@@ -51,7 +51,7 @@
     </update>
 
     <update sql-case-id="update_with_alias" parameters="'update', 1, 1">
-        <table name="t_order" alias="o" start-index="7" stop-index="13" />
+        <table name="t_order" alias="o" start-index="7" stop-index="18" />
         <set start-index="20" stop-index="35" literal-stop-index="42">
             <assignment start-index="24" stop-index="35" literal-stop-index="42">
                 <column name="status" start-index="24" stop-index="31">
@@ -156,7 +156,7 @@
     </update>
 
     <update sql-case-id="update_without_condition">
-        <table name="t_order" alias="o" start-index="7" stop-index="13" />
+        <table name="t_order" alias="o" start-index="7" stop-index="15" />
         <set start-index="17" stop-index="41">
             <assignment start-index="21" stop-index="41">
                 <column name="status" start-index="21" stop-index="28">

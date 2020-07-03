@@ -44,7 +44,7 @@ public final class MetaDataChangedListener extends PostShardingCenterRepositoryE
 
     @Override
     protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swap(YamlEngine.unmarshal(event.getValue(), YamlRuleSchemaMetaData.class));
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlRuleSchemaMetaData.class));
         return new MetaDataChangedEvent(schemaNames, ruleSchemaMetaData);
     }
 }

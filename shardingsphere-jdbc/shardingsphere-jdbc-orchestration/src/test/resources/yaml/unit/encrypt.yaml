@@ -28,9 +28,9 @@ rules:
       columns:
         user_id:
           cipherColumn: user_id
-          encryptStrategyName: order_encrypt_strategy
-  encryptStrategies:
-    order_encrypt_strategy:
-      type: aes
+          encryptorName: order_encryptor
+  encryptors:
+    order_encryptor:
+      type: AES
       props:
         aes.key.value: 123456

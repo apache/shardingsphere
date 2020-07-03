@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spring.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,15 +30,19 @@ public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     @Getter
     @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     
     @Override
-    public String getType() {
-        return "INCREMENT";
+    public void init() {
     }
     
     @Override
     public Comparable<?> generateKey() {
         return sequence.incrementAndGet();
+    }
+    
+    @Override
+    public String getType() {
+        return "INCREMENT";
     }
 }

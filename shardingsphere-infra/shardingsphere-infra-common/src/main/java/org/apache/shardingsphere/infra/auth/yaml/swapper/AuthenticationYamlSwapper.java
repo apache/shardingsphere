@@ -30,16 +30,16 @@ public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenti
     private final ProxyUserYamlSwapper proxyUserYamlSwapper = new ProxyUserYamlSwapper();
     
     @Override
-    public YamlAuthenticationConfiguration swap(final Authentication data) {
+    public YamlAuthenticationConfiguration swapToYamlConfiguration(final Authentication data) {
         YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
-        result.getUsers().putAll(Maps.transformValues(data.getUsers(), proxyUserYamlSwapper::swap));
+        result.getUsers().putAll(Maps.transformValues(data.getUsers(), proxyUserYamlSwapper::swapToYamlConfiguration));
         return result;
     }
     
     @Override
-    public Authentication swap(final YamlAuthenticationConfiguration yamlConfiguration) {
+    public Authentication swapToObject(final YamlAuthenticationConfiguration yamlConfiguration) {
         Authentication result = new Authentication();
-        result.getUsers().putAll(Maps.transformValues(yamlConfiguration.getUsers(), proxyUserYamlSwapper::swap));
+        result.getUsers().putAll(Maps.transformValues(yamlConfiguration.getUsers(), proxyUserYamlSwapper::swapToObject));
         return result;
     }
 }

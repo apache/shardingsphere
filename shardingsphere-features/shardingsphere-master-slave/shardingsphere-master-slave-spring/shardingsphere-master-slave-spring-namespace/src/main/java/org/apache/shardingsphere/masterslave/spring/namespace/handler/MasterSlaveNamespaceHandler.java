@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.masterslave.spring.namespace.handler;
 
-import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceStrategyBeanDefinitionTag;
-import org.apache.shardingsphere.masterslave.spring.namespace.tag.MasterSlaveRuleBeanDefinitionTag;
-import org.apache.shardingsphere.masterslave.spring.namespace.parser.MasterSlaveLoadBalanceStrategyBeanDefinitionParser;
+import org.apache.shardingsphere.masterslave.spring.namespace.factorybean.MasterSlaveLoadBalanceAlgorithmFactoryBean;
 import org.apache.shardingsphere.masterslave.spring.namespace.parser.MasterSlaveRuleBeanDefinitionParser;
+import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceAlgorithmBeanDefinitionTag;
+import org.apache.shardingsphere.masterslave.spring.namespace.tag.MasterSlaveRuleBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -31,6 +32,6 @@ public final class MasterSlaveNamespaceHandler extends NamespaceHandlerSupport {
     @Override
     public void init() {
         registerBeanDefinitionParser(MasterSlaveRuleBeanDefinitionTag.ROOT_TAG, new MasterSlaveRuleBeanDefinitionParser());
-        registerBeanDefinitionParser(LoadBalanceStrategyBeanDefinitionTag.ROOT_TAG, new MasterSlaveLoadBalanceStrategyBeanDefinitionParser());
+        registerBeanDefinitionParser(LoadBalanceAlgorithmBeanDefinitionTag.ROOT_TAG, new ShardingSphereAlgorithmBeanDefinitionParser(MasterSlaveLoadBalanceAlgorithmFactoryBean.class));
     }
 }

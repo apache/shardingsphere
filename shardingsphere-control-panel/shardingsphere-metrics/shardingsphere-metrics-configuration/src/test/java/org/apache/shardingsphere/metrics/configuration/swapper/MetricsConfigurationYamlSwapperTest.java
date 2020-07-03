@@ -33,13 +33,12 @@ public final class MetricsConfigurationYamlSwapperTest {
         YamlMetricsConfiguration yaml = new YamlMetricsConfiguration();
         yaml.setHost("127.0.0.1");
         yaml.setName("prometheus");
-        
-        MetricsConfiguration metricsConfiguration = swapper.swap(yaml);
+        MetricsConfiguration metricsConfiguration = swapper.swapToObject(yaml);
         assertThat(metricsConfiguration.getPort(), is(9190));
         assertThat(metricsConfiguration.getAsync(), is(true));
+        assertThat(metricsConfiguration.getEnable(), is(true));
         assertThat(metricsConfiguration.getThreadCount(), is(Runtime.getRuntime().availableProcessors() << 1));
-    
-        YamlMetricsConfiguration yamlSwap = swapper.swap(metricsConfiguration);
+        YamlMetricsConfiguration yamlSwap = swapper.swapToYamlConfiguration(metricsConfiguration);
         assertNotNull(yamlSwap);
         assertThat(yamlSwap.getPort(), is(9190));
         assertThat(yamlSwap.getName(), is("prometheus"));
@@ -57,18 +56,19 @@ public final class MetricsConfigurationYamlSwapperTest {
         yaml.setPort(9195);
         yaml.setThreadCount(8);
         yaml.setAsync(false);
-        
-        MetricsConfiguration metricsConfiguration = swapper.swap(yaml);
+        yaml.setEnable(false);
+        MetricsConfiguration metricsConfiguration = swapper.swapToObject(yaml);
         assertThat(metricsConfiguration.getPort(), is(9195));
         assertThat(metricsConfiguration.getAsync(), is(false));
+        assertThat(metricsConfiguration.getEnable(), is(false));
         assertThat(metricsConfiguration.getThreadCount(), is(8));
-        
-        YamlMetricsConfiguration yamlSwap = swapper.swap(metricsConfiguration);
+        YamlMetricsConfiguration yamlSwap = swapper.swapToYamlConfiguration(metricsConfiguration);
         assertNotNull(yamlSwap);
         assertThat(yamlSwap.getPort(), is(9195));
         assertThat(yamlSwap.getName(), is("prometheus"));
         assertThat(yamlSwap.getHost(), is("127.0.0.1"));
         assertThat(yamlSwap.getAsync(), is(false));
+        assertThat(yamlSwap.getEnable(), is(false));
         assertThat(yamlSwap.getThreadCount(), is(8));
     }
 }

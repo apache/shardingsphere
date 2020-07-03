@@ -26,6 +26,12 @@ import java.util.Properties;
 
 public final class ModuloHintShardingAlgorithm implements HintShardingAlgorithm<String> {
     
+    private Properties props = new Properties();
+    
+    @Override
+    public void init() {
+    }
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<String> shardingValue) {
         Collection<String> result = new ArrayList<>();
@@ -40,16 +46,17 @@ public final class ModuloHintShardingAlgorithm implements HintShardingAlgorithm<
     }
     
     @Override
+    public Properties getProps() {
+        return props;
+    }
+    
+    @Override
+    public void setProps(final Properties props) {
+        this.props = props;
+    }
+    
+    @Override
     public String getType() {
         return "HINT_TEST";
-    }
-    
-    @Override
-    public Properties getProperties() {
-        return new Properties();
-    }
-    
-    @Override
-    public void setProperties(final Properties properties) {
     }
 }

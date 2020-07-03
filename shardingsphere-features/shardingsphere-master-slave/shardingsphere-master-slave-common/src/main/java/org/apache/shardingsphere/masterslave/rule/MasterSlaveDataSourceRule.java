@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.masterslave.api.config.algorithm.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 
 import java.util.Collection;
@@ -44,17 +44,17 @@ public final class MasterSlaveDataSourceRule {
     
     private final List<String> slaveDataSourceNames;
     
-    private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
+    private final MasterSlaveLoadBalanceAlgorithm loadBalancer;
     
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public MasterSlaveDataSourceRule(final MasterSlaveDataSourceRuleConfiguration configuration, final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm) {
+    public MasterSlaveDataSourceRule(final MasterSlaveDataSourceRuleConfiguration configuration, final MasterSlaveLoadBalanceAlgorithm loadBalancer) {
         checkConfiguration(configuration);
         name = configuration.getName();
         masterDataSourceName = configuration.getMasterDataSourceName();
         slaveDataSourceNames = configuration.getSlaveDataSourceNames();
-        this.loadBalanceAlgorithm = loadBalanceAlgorithm;
+        this.loadBalancer = loadBalancer;
     }
     
     private void checkConfiguration(final MasterSlaveDataSourceRuleConfiguration configuration) {

@@ -52,6 +52,6 @@ public final class MasterSlaveShadowDatabasesConfiguration implements ExampleCon
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
         MasterSlaveDataSourceRuleConfiguration masterSlaveDataSourceRuleConfiguration = new MasterSlaveDataSourceRuleConfiguration("ds_ms", "ds_master", Collections.singletonList("ds_slave"), null);
-        return new MasterSlaveRuleConfiguration(Collections.emptyList(), Collections.singletonList(masterSlaveDataSourceRuleConfiguration));
+        return new MasterSlaveRuleConfiguration(Collections.singletonList(masterSlaveDataSourceRuleConfiguration), Collections.emptyMap());
     }
 }

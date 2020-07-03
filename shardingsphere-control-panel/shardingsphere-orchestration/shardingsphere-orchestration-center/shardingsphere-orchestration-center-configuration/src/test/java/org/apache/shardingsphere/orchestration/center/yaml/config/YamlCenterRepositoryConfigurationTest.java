@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.orchestration.center.yaml.config;
 
-import java.util.Properties;
 import org.junit.Test;
+
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -58,10 +59,10 @@ public class YamlCenterRepositoryConfigurationTest {
     }
     
     @Test
-    public void assertProperties() {
-        Properties properties = new Properties();
+    public void assertGetProps() {
+        Properties props = new Properties();
         YamlCenterRepositoryConfiguration yamlInstanceConfiguration = new YamlCenterRepositoryConfiguration();
-        yamlInstanceConfiguration.setProps(properties);
-        assertThat(yamlInstanceConfiguration.getProps(), is(properties));
+        yamlInstanceConfiguration.setProps(props);
+        assertThat(yamlInstanceConfiguration.getProps(), is(props));
     }
 }

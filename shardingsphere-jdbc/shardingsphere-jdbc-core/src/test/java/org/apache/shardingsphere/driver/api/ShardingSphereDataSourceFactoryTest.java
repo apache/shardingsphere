@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.api;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -47,7 +47,7 @@ public final class ShardingSphereDataSourceFactoryTest {
         Properties props = new Properties();
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource(
                 getDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), props);
-        assertThat(dataSource.getSchemaContexts().getProperties().getProps(), is(props));
+        assertThat(dataSource.getSchemaContexts().getProps().getProps(), is(props));
     }
     
     private Map<String, DataSource> getDataSourceMap() throws SQLException {

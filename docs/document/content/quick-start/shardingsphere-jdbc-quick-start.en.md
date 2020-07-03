@@ -28,5 +28,5 @@ Use `ShardingSphereDataSourceFactory` and rule configurations to create `Shardin
 It can used for native JDBC or JPA, MyBatis and other ORM frameworks.
 
 ```java
-DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props);
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, properties);
 ```

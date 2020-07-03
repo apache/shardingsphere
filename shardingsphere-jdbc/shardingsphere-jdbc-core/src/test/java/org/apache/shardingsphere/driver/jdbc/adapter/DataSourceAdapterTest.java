@@ -83,7 +83,7 @@ public final class DataSourceAdapterTest extends AbstractShardingSphereDataSourc
     }
     
     @Test
-    public void assertGetConnectionWithUsername() throws SQLException {
+    public void assertGetConnectionWithUsername() {
         assertThat(getShardingSphereDataSource().getConnection("username", "password"), instanceOf(ShardingSphereConnection.class));
     }
 }
