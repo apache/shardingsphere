@@ -93,8 +93,14 @@ public final class MySQLProtocolFrontendEngineTest {
     private void initProxySchemaContexts() {
         Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
+        field.set(ProxySchemaContexts.getInstance(), getProxyOrchestrationSchemaContexts());
+    }
+    
+    private ProxyOrchestrationSchemaContexts getProxyOrchestrationSchemaContexts() {
+        ProxyOrchestrationSchemaContexts result = new ProxyOrchestrationSchemaContexts(new SchemaContexts());
         SchemaContexts schemaContexts = new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication());
-        field.set(ProxySchemaContexts.getInstance(), new ProxyOrchestrationSchemaContexts(schemaContexts));
+        result.getSchemaContexts().putAll(schemaContexts.getSchemaContexts());
+        return result;
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
