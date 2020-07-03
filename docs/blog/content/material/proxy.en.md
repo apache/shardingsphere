@@ -4,7 +4,7 @@ weight = 8
 chapter = true
 +++
 
-## Revealing Sharding-Proxy —— Database Middleware oriented DBA 
+## Revealing Sharding-Proxy —— Database Middleware Oriented DBA 
 
 ### Lecturer introduction
 
