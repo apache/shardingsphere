@@ -54,8 +54,7 @@ public final class ShardingSphereProxyContextTest {
     public void setUp() {
         Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        SchemaContexts schemaContexts = new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication());
-        field.set(ProxySchemaContexts.getInstance(), new ProxyOrchestrationSchemaContexts(schemaContexts));
+        field.set(ProxySchemaContexts.getInstance(), getProxyOrchestrationSchemaContexts());
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
@@ -66,6 +65,13 @@ public final class ShardingSphereProxyContextTest {
             RuntimeContext runtimeContext = mock(RuntimeContext.class);
             result.put(name, new SchemaContext(name, schema, runtimeContext));
         }
+        return result;
+    }
+    
+    private ProxyOrchestrationSchemaContexts getProxyOrchestrationSchemaContexts() {
+        ProxyOrchestrationSchemaContexts result = new ProxyOrchestrationSchemaContexts(new SchemaContexts());
+        SchemaContexts schemaContexts = new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication());
+        result.getSchemaContexts().putAll(schemaContexts.getSchemaContexts());
         return result;
     }
     

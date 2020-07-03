@@ -37,8 +37,8 @@ import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
-import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
+import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
@@ -80,7 +80,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
         ShardingOrchestrationEventBus.getInstance().register(this);
         this.schemaContexts = schemaContexts;
         persistMetaData();
-        disableDataSources();
+        disableMasterSlaveRules();
     }
     
     private void persistMetaData() {
@@ -88,15 +88,23 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
                 .getMetaDataCenter().persistMetaDataCenterNode(key, value.getSchema().getMetaData().getSchema()));
     }
     
-    private void disableDataSources() {
+    private void disableMasterSlaveRules() {
+        Map<String, Collection<MasterSlaveRule>> masterSlaveRules = schemaContexts.getRules(MasterSlaveRule.class);
+        if (masterSlaveRules.isEmpty()) {
+            return;
+        }
         Collection<String> disabledDataSources = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadDisabledDataSources();
-        if (!disabledDataSources.isEmpty()) {
-            schemaContexts.getSchemaContexts().entrySet().forEach(entry -> entry.getValue().getSchema().getRules()
-                    .stream().filter(each -> each instanceof MasterSlaveRule).forEach(e -> disableDataSources((MasterSlaveRule) e, disabledDataSources, entry.getKey())));
+        if (disabledDataSources.isEmpty()) {
+            return;
+        }
+        for (Entry<String, Collection<MasterSlaveRule>> entry : masterSlaveRules.entrySet()) {
+            for (MasterSlaveRule each : entry.getValue()) {
+                disableMasterSlaveRules(each, disabledDataSources, entry.getKey());
+            }
         }
     }
     
-    private static void disableDataSources(final MasterSlaveRule masterSlaveRule,
+    private static void disableMasterSlaveRules(final MasterSlaveRule masterSlaveRule,
                                            final Collection<String> disabledDataSources, final String schemaName) {
         masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames().forEach(each -> {
             if (disabledDataSources.contains(Joiner.on(".").join(schemaName, each))) {

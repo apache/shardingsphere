@@ -21,8 +21,12 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -55,6 +59,28 @@ public final class SchemaContexts implements SchemaContextsAware {
         this.props = props;
         this.authentication = authentication;
         this.isCircuitBreak = isCircuitBreak;
+    }
+    
+    /**
+     * Get sharding sphere rules.
+     *
+     * @param ruleType rule type
+     * @param <T> rule
+     * @return rules
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends ShardingSphereRule> Map<String, Collection<T>> getRules(final Class<T> ruleType) {
+        Map<String, Collection<T>> result = new LinkedHashMap<>();
+        for (Map.Entry<String, SchemaContext> entry : schemaContexts.entrySet()) {
+            Collection<T> rules = new LinkedList<>();
+            for (ShardingSphereRule each : entry.getValue().getSchema().getRules()) {
+                if (each.getClass() == ruleType) {
+                    rules.add((T) each);
+                }
+            }
+            result.put(entry.getKey(), rules);
+        }
+        return result;
     }
     
     @Override
