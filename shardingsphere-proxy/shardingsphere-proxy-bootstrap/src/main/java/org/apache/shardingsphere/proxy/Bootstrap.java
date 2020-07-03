@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy;
 
-import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,12 +40,10 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
@@ -127,7 +124,7 @@ public final class Bootstrap {
     
     private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs,
                                                    final YamlAuthenticationConfiguration yamlAuthenticationConfig,
-                                                   final YamlMetricsConfiguration metricsConfiguration, final YamlClusterConfiguration clusterConfiguration, 
+                                                   final YamlMetricsConfiguration metricsConfiguration, final YamlClusterConfiguration clusterConfiguration,
                                                    final Properties properties, final int port) throws SQLException {
         Authentication authentication = new AuthenticationYamlSwapper().swapToObject(yamlAuthenticationConfig);
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(ruleConfigs);
@@ -181,32 +178,6 @@ public final class Bootstrap {
                 new SchemaContextsBuilder(createDataSourcesMap(schemaDataSources), schemaDataSources, authentication, databaseType, schemaRules, properties);
         SchemaContextsAware schemaContexts = isOrchestration ? new ProxyOrchestrationSchemaContexts(schemaContextsBuilder.build()) : schemaContextsBuilder.build();
         ProxySchemaContexts.getInstance().init(schemaContexts);
-        if (isOrchestration) {
-            persistMetaData(schemaContexts);
-            disableDataSources(schemaContexts);
-        }
-    }
-    
-    private static void persistMetaData(final SchemaContextsAware schemaContexts) {
-        schemaContexts.getSchemaContexts().forEach((key, value) -> ShardingOrchestrationFacade.getInstance()
-                .getMetaDataCenter().persistMetaDataCenterNode(key, value.getSchema().getMetaData().getSchema()));
-    }
-    
-    private static void disableDataSources(final SchemaContextsAware schemaContexts) {
-        Collection<String> disabledDataSources = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadDisabledDataSources();
-        if (!disabledDataSources.isEmpty()) {
-            schemaContexts.getSchemaContexts().forEach((key, value) -> value.getSchema().getRules()
-                    .stream().filter(each -> each instanceof MasterSlaveRule).forEach(e -> disableDataSources((MasterSlaveRule) e, disabledDataSources, key)));
-        }
-    }
-    
-    private static void disableDataSources(final MasterSlaveRule masterSlaveRule,
-                                    final Collection<String> disabledDataSources, final String schemaName) {
-        masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames().forEach(each -> {
-            if (disabledDataSources.contains(Joiner.on(".").join(schemaName, each))) {
-                masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true));
-            }
-        });
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
