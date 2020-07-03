@@ -20,29 +20,27 @@ package org.apache.shardingsphere.opentracing;
 import com.google.common.base.Preconditions;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.control.panel.spi.ControlPanelFacade;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
 
 /**
  * Sharding tracer object container.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingTracer {
+public final class ShardingTracer implements ControlPanelFacade<OpenTracingConfiguration> {
     
     private static final String OPENTRACING_TRACER_CLASS_NAME = "org.apache.shardingsphere.opentracing.tracer.class";
+    
+    @Override
+    public void init(final OpenTracingConfiguration configuration) {
+        doInit();
+    }
     
     /**
      * Initialize sharding tracer.
      */
     public static void init() {
-        String tracerClassName = System.getProperty(OPENTRACING_TRACER_CLASS_NAME);
-        Preconditions.checkNotNull(tracerClassName, "Can not find opentracing tracer implementation class via system property `%s`", OPENTRACING_TRACER_CLASS_NAME);
-        try {
-            init((Tracer) Class.forName(tracerClassName).newInstance());
-        } catch (final ReflectiveOperationException ex) {
-            throw new ShardingSphereException("Initialize opentracing tracer class failure.", ex);
-        }
+        doInit();
     }
     
     /**
@@ -63,5 +61,25 @@ public final class ShardingTracer {
      */
     public static Tracer get() {
         return GlobalTracer.get();
+    }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
+    
+    @Override
+    public Class<OpenTracingConfiguration> getTypeClass() {
+        return OpenTracingConfiguration.class;
+    }
+    
+    private static void doInit() {
+        String tracerClassName = System.getProperty(OPENTRACING_TRACER_CLASS_NAME);
+        Preconditions.checkNotNull(tracerClassName, "Can not find opentracing tracer implementation class via system property `%s`", OPENTRACING_TRACER_CLASS_NAME);
+        try {
+            init((Tracer) Class.forName(tracerClassName).newInstance());
+        } catch (final ReflectiveOperationException ex) {
+            throw new ShardingSphereException("Initialize opentracing tracer class failure.", ex);
+        }
     }
 }

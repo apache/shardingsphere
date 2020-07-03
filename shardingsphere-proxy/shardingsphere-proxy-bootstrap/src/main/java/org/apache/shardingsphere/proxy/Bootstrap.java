@@ -30,6 +30,7 @@ import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfigura
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
@@ -49,7 +50,6 @@ import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
-import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
@@ -158,7 +158,6 @@ public final class Bootstrap {
         initProxySchemaContexts(schemaDataSources, schemaRules, authentication, properties, isOrchestration);
         log(authentication, properties);
         initControlPanelFacade(metricsConfiguration);
-        initOpenTracing();
         initCluster(cluster);
     }
     
@@ -167,6 +166,10 @@ public final class Bootstrap {
         if (null != metricsConfiguration && metricsConfiguration.getEnable()) {
             facadeConfigurations.add(metricsConfiguration);
         }
+        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
+            facadeConfigurations.add(new OpenTracingConfiguration());
+        }
+        // TODO add cluster configuration
         new ControlPanelFacadeEngine().init(facadeConfigurations);
     }
     
@@ -192,8 +195,8 @@ public final class Bootstrap {
     private static void disableDataSources(final SchemaContextsAware schemaContexts) {
         Collection<String> disabledDataSources = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadDisabledDataSources();
         if (!disabledDataSources.isEmpty()) {
-            schemaContexts.getSchemaContexts().entrySet().forEach(entry -> entry.getValue().getSchema().getRules()
-                    .stream().filter(each -> each instanceof MasterSlaveRule).forEach(e -> disableDataSources((MasterSlaveRule) e, disabledDataSources, entry.getKey())));
+            schemaContexts.getSchemaContexts().forEach((key, value) -> value.getSchema().getRules()
+                    .stream().filter(each -> each instanceof MasterSlaveRule).forEach(e -> disableDataSources((MasterSlaveRule) e, disabledDataSources, key)));
         }
     }
     
@@ -247,12 +250,6 @@ public final class Bootstrap {
         }
         shardingOrchestrationFacade.initMetricsConfiguration(Optional.ofNullable(serverConfig.getMetrics()).map(new MetricsConfigurationYamlSwapper()::swapToObject).orElse(null));
         shardingOrchestrationFacade.initClusterConfiguration(Optional.ofNullable(serverConfig.getCluster()).map(new ClusterConfigurationYamlSwapper()::swapToObject).orElse(null));
-    }
-    
-    private static void initOpenTracing() {
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
-            ShardingTracer.init();
-        }
     }
     
     private static void initCluster(final ClusterConfiguration clusterConfiguration) {
