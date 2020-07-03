@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy;
 
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
+import java.util.LinkedList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,6 +28,8 @@ import org.apache.shardingsphere.cluster.configuration.config.ClusterConfigurati
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
+import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
+import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
@@ -45,7 +49,6 @@ import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
-import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
@@ -154,9 +157,17 @@ public final class Bootstrap {
                                    final ClusterConfiguration cluster, final boolean isOrchestration) throws SQLException {
         initProxySchemaContexts(schemaDataSources, schemaRules, authentication, properties, isOrchestration);
         log(authentication, properties);
-        initMetrics(metricsConfiguration);
+        initControlPanelFacade(metricsConfiguration);
         initOpenTracing();
         initCluster(cluster);
+    }
+    
+    private static void initControlPanelFacade(final MetricsConfiguration metricsConfiguration) {
+        List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
+        if (null != metricsConfiguration && metricsConfiguration.getEnable()) {
+            facadeConfigurations.add(metricsConfiguration);
+        }
+        new ControlPanelFacadeEngine().init(facadeConfigurations);
     }
     
     private static void initProxySchemaContexts(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, Collection<RuleConfiguration>> schemaRules,
@@ -241,12 +252,6 @@ public final class Bootstrap {
     private static void initOpenTracing() {
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
             ShardingTracer.init();
-        }
-    }
-    
-    private static void initMetrics(final MetricsConfiguration metricsConfiguration) {
-        if (null != metricsConfiguration && metricsConfiguration.getEnable()) {
-            MetricsTrackerFacade.getInstance().init(metricsConfiguration);
         }
     }
     

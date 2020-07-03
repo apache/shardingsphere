@@ -19,55 +19,58 @@ package org.apache.shardingsphere.metrics.facade;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Supplier;
 import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
 import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
+import org.apache.shardingsphere.metrics.facade.fixture.SecondMetricsTrackerManagerFixture;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MetricsTrackerFacadeTest {
+public final class MetricsInitFacadeTest {
     
-    private final MetricsTrackerFacade metricsTrackerFacade = new MetricsTrackerFacade();
-    
-    @Test
-    public void assertCounterInc() {
-        metricsTrackerFacade.counterInc("request_total");
-    }
-    
-    @Test
-    public void assertGaugeInc() {
-        metricsTrackerFacade.gaugeInc("request_total");
-    }
-    
-    @Test
-    public void assertGaugeDec() {
-        metricsTrackerFacade.gaugeDec("request_total");
-    }
-    
-    @Test
-    public void assertHistogramAndSummary() {
-        Supplier<Boolean> histogramDelegate = metricsTrackerFacade.histogramStartTimer("request");
-        assertThat(histogramDelegate.get(), is(false));
-        Supplier<Boolean> summaryDelegate = metricsTrackerFacade.summaryStartTimer("request");
-        assertThat(summaryDelegate.get(), is(false));
-        init();
-        Supplier<Boolean> emptyHistogram = metricsTrackerFacade.histogramStartTimer("request");
-        assertThat(emptyHistogram.get(), is(true));
-        Supplier<Boolean> empty = metricsTrackerFacade.summaryStartTimer("request");
-        assertThat(empty.get(), is(true));
-    }
-    
-    private void init() {
+    @Before
+    public void setUp() {
         MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, true, 8, null);
         List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
         facadeConfigurations.add(metricsConfiguration);
         new ControlPanelFacadeEngine().init(facadeConfigurations);
+    }
+    
+    @Test
+    public void assertInit() {
+        assertThat(MetricsInitFacade.getEnabled(), is(true));
+    }
+    
+    @Test
+    public void assertFindMetricsTrackerManager() {
+        assertNotNull(MetricsInitFacade.getMetricsTrackerManager());
+        assertThat(MetricsInitFacade.getMetricsTrackerManager().getClass().getName(), is(SecondMetricsTrackerManagerFixture.class.getName()));
+    }
+    
+    @Test
+    public void testClose() {
+        MetricsInitFacade.close();
+        assertThat(MetricsInitFacade.getEnabled(), is(false));
+    }
+    
+    @Test
+    public void restart() {
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, true, 8, null);
+        MetricsInitFacade.restart(metricsConfiguration);
+        assertThat(MetricsInitFacade.getEnabled(), is(true));
+    }
+    
+    @After
+    public void clean() {
+        MetricsInitFacade.close();
     }
 }
 

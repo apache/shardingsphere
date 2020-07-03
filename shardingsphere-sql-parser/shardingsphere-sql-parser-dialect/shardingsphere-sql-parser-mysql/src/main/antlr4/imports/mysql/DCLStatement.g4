@@ -80,32 +80,7 @@ privilegeType_
     | TRIGGER
     | UPDATE
     | USAGE
-    | APPLICATION_PASSWORD_ADMIN
-    | AUDIT_ADMIN
-    | BACKUP_ADMIN
-    | BINLOG_ADMIN
-    | BINLOG_ENCRYPTION_ADMIN
-    | CLONE_ADMIN
-    | CONNECTION_ADMIN
-    | ENCRYPTION_KEY_ADMIN
-    | FIREWALL_ADMIN
-    | FIREWALL_USER
-    | GROUP_REPLICATION_ADMIN
-    | INNODB_REDO_LOG_ARCHIVE
-    | NDB_STOPED_USER
-    | PERSIST_RO_VARIABLES_ADMIN
-    | REPLICATION_APPLIER
-    | REPLICATION_SLAVE_ADMIN
-    | RESOURCE_GROUP_ADMIN
-    | RESOURCE_GROUP_USER
-    | ROLE_ADMIN
-    | SET_USER_ID
-    | SHOW_ROUTINE
-    | SYSTEM_USER
-    | SYSTEM_VARIABLES_ADMIN
-    | TABLE_ENCRYPTION_ADMIN
-    | VERSION_TOKEN_ADMIN
-    | XA_RECOVER_ADMIN
+    | identifier
     ;
 
 onObjectClause
@@ -117,7 +92,7 @@ objectType_
     ;
 
 privilegeLevel
-    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableName  | schemaName DOT tableName | schemaName DOT routineName
+    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableName  | schemaName DOT_ routineName
     ;
 
 createUser

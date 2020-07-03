@@ -15,35 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.configuration.config;
+package org.apache.shardingsphere.control.panel.spi;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Properties;
-import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
 
 /**
- * Metrics configuration.
+ * Interface Control panel facade.
  */
-@Getter
-@Setter
-@AllArgsConstructor
-public final class MetricsConfiguration implements FacadeConfiguration {
+public interface ControlPanelFacade<T extends FacadeConfiguration> extends OrderedSPI<T> {
     
-    private String metricsName;
+    /**
+     * Init.
+     *
+     * @param configuration configuration
+     */
+    void init(T configuration);
     
-    private String host;
-    
-    private Integer port;
-    
-    private Boolean async;
-    
-    private Boolean enable;
-    
-    private Integer threadCount;
-    
-    private Properties props;
 }
-

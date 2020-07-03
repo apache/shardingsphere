@@ -385,5 +385,5 @@ explainableStatement
     ;
 
 formatName
-    : 'TRADITIONAL' | JSON | 'TREE'
+    : TRADITIONAL | JSON | TREE
     ;
