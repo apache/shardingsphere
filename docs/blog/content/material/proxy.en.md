@@ -1,5 +1,5 @@
 +++
-title = "7.Revealing Sharding-Proxy —— Database Middleware oriented DBA "
+title = "7.Revealing Sharding-Proxy —— Database Middleware Oriented DBA"
 weight = 8
 chapter = true
 +++
@@ -25,16 +25,16 @@ It was first released with Sharding-Sphere 3.0.0.M1 last month. I hope you can h
 
 Sharding-Proxy is aimed at transparent database agent, it has supported server-side version which is packaged binary protocol. Sharding-Proxy provides MySQL version currenctly, it could manipulate data based on any client compatible with MySQL protocol(e.g. MySQLCommandClient, MySQLWorkbench)
 
-*   It's completely transparent to application, treat it as MySQL directly.；
+*   It's completely transparent to application, treat it as MySQL directly；
     
 *   It's available for any client compatible with MySQL protocol.
     
 
-![](https://shardingsphere.apache.org/blog/img/proxy_architecture1_en.png)
+![](https://shardingsphere.apache.org/blog/img/proxy1.jpg)
 
 Comparison with Sharding-JDBC Sharding-Sidecar: 
 
-![](https://shardingsphere.apache.org/blog/img/comparsion_en.png)
+![](https://shardingsphere.apache.org/blog/img/comparsion_en.jpg)
 
 They can work individually and cooperate each other, which achieve same purpose through different architecture and point of penetration.
 
@@ -42,7 +42,7 @@ For instance, Sharding-JDBC highly supports many kinds of ORM framework for Java
 
 #### 2\. Sharding-Proxy Architecture
 
-![](https://shardingsphere.apache.org/blog/img/proxy_architecture2_en.png)
+![](https://shardingsphere.apache.org/blog/img/proxy_architecture1_en.jpg)
 
 The whole architecture can be divided into three components: Frontend, Core-module and Backend: 
 
@@ -53,7 +53,7 @@ The whole architecture can be divided into three components: Frontend, Core-modu
 *   Backend:  it's interacted with real database by Hikari pool of BIO. BIO has large scale to database cluser or its performance declines on condition of one master more slaves, so we will provide way of NIO to connect real database in the future.
   
 
-![](https://shardingsphere.apache.org/blog/img/proxy4.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy_architecture1_en.jpg)
 
 The throughput of proxy will be greatly improved, which can effectively cope with large-scale database cluser in this way.
 
@@ -292,6 +292,4 @@ Do you want to know more about Sharding-Sphere？
 **Come to "2018 DAMSChina Data Asset Management Summit"**
 
 **Attend the analysis of lecturer Zhang Liang who is responsible for database development of JD Finance**
-
-![](https://shardingsphere.apache.org/blog/img/proxy15.jpg)
 
