@@ -29,9 +29,9 @@ ShardingSphere社区遵循[Apache Community’s process](http://community.apache
 
 ## 日常工作
 
-- committer需要每天查看社区待处理的Pull Request和issue列表，指定给合适的committer，即assignee。
+1. committer需要每天查看社区待处理的Pull Request和issue列表，指定给合适的committer，即assignee。
 
-- assignee在被分配issue后，需要进行如下判断：
+2. assignee在被分配issue后，需要进行如下判断：
 
  - 判断是否是长期issue，如是，则标记为pending。
  - 判断issue类型，如：bug，enhancement，discussion等。
