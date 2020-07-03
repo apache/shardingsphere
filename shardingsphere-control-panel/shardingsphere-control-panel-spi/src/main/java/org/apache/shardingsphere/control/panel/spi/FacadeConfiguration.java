@@ -15,35 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.configuration.config;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Properties;
-import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+package org.apache.shardingsphere.control.panel.spi;
 
 /**
- * Metrics configuration.
+ * Interface Facade configuration.
  */
-@Getter
-@Setter
-@AllArgsConstructor
-public final class MetricsConfiguration implements FacadeConfiguration {
-    
-    private String metricsName;
-    
-    private String host;
-    
-    private Integer port;
-    
-    private Boolean async;
-    
-    private Boolean enable;
-    
-    private Integer threadCount;
-    
-    private Properties props;
+public interface FacadeConfiguration {
 }
-

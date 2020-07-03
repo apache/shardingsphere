@@ -22,10 +22,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.control.panel.spi.engine.MetricsHandlerFacadeEngine;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
-import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
@@ -55,7 +55,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     public void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
         databaseProtocolFrontendEngine.getAuthEngine().handshake(context, backendConnection);
-        MetricsTrackerFacade.getInstance().gaugeInc(MetricsLabelEnum.CHANNEL_COUNT.getName());
+        MetricsHandlerFacadeEngine.build().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.gaugeInc(MetricsLabelEnum.CHANNEL_COUNT.getName()));
     }
     
     @Override
@@ -64,7 +64,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             authorized = auth(context, (ByteBuf) message);
             return;
         }
-        MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.REQUEST_TOTAL.getName());
+        MetricsHandlerFacadeEngine.build().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.REQUEST_TOTAL.getName()));
         CommandExecutorSelector.getExecutor(databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection(), backendConnection.isSupportHint(),
                 backendConnection.getTransactionType(), context.channel().id()).execute(new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message));
     }
@@ -87,7 +87,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         databaseProtocolFrontendEngine.release(backendConnection);
         backendConnection.close(true);
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
-        MetricsTrackerFacade.getInstance().gaugeDec(MetricsLabelEnum.CHANNEL_COUNT.getName());
+        MetricsHandlerFacadeEngine.build().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.gaugeDec(MetricsLabelEnum.CHANNEL_COUNT.getName()));
     }
     
     @Override

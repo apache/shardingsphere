@@ -19,22 +19,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
+        <artifactId>shardingsphere-control-panel</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-control-panel</artifactId>
-    <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
-    
-    <modules>
-        <module>shardingsphere-control-panel-core</module>
-        <module>shardingsphere-cluster</module>
-        <module>shardingsphere-orchestration</module>
-        <module>shardingsphere-opentracing</module>
-        <module>shardingsphere-metrics</module>
-        <module>shardingsphere-control-panel-spi</module>
-    </modules>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>shardingsphere-control-panel-spi</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
