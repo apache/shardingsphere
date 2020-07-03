@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.schema;
 
+import com.google.common.base.Joiner;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
@@ -36,11 +37,12 @@ import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
-import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
+import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.facade.MetricsInitFacade;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
@@ -51,6 +53,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurati
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
+import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
@@ -76,6 +79,38 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     public OrchestrationSchemaContexts(final SchemaContexts schemaContexts) {
         ShardingOrchestrationEventBus.getInstance().register(this);
         this.schemaContexts = schemaContexts;
+        persistMetaData();
+        disableMasterSlaveRules();
+    }
+    
+    private void persistMetaData() {
+        schemaContexts.getSchemaContexts().forEach((key, value) -> ShardingOrchestrationFacade.getInstance()
+                .getMetaDataCenter().persistMetaDataCenterNode(key, value.getSchema().getMetaData().getSchema()));
+    }
+    
+    private void disableMasterSlaveRules() {
+        Map<String, Collection<MasterSlaveRule>> masterSlaveRules = schemaContexts.getRules(MasterSlaveRule.class);
+        if (masterSlaveRules.isEmpty()) {
+            return;
+        }
+        Collection<String> disabledDataSources = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadDisabledDataSources();
+        if (disabledDataSources.isEmpty()) {
+            return;
+        }
+        for (Entry<String, Collection<MasterSlaveRule>> entry : masterSlaveRules.entrySet()) {
+            for (MasterSlaveRule each : entry.getValue()) {
+                disableMasterSlaveRules(each, disabledDataSources, entry.getKey());
+            }
+        }
+    }
+    
+    private static void disableMasterSlaveRules(final MasterSlaveRule masterSlaveRule,
+                                           final Collection<String> disabledDataSources, final String schemaName) {
+        masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames().forEach(each -> {
+            if (disabledDataSources.contains(Joiner.on(".").join(schemaName, each))) {
+                masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true));
+            }
+        });
     }
     
     @Override
