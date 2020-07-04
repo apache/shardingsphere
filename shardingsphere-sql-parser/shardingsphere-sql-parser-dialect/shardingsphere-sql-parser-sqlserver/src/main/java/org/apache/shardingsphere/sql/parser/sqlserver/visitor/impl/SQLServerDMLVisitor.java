@@ -65,7 +65,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumns
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
@@ -94,10 +93,11 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.NumberLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.SQLServerVisitor;
 
 import java.util.Collection;
@@ -327,15 +327,13 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     
     @Override
     public ASTNode visitTop(final TopContext ctx) {
-        int startIndex = ctx.expr().getStart().getStartIndex();
-        int stopIndex = ctx.expr().getStop().getStopIndex();
-        ASTNode top = visit(ctx.expr());
-        if (top instanceof LiteralExpressionSegment) {
-            Number topNum = SQLUtil.getExactlyNumber(String.valueOf(((LiteralExpressionSegment) top).getLiterals()), 10);
-            return new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, topNum.longValue(), false);
+        int startIndex = ctx.topNum().getStart().getStartIndex();
+        int stopIndex = ctx.topNum().getStop().getStopIndex();
+        ASTNode topNum = visit(ctx.topNum());
+        if (topNum instanceof NumberLiteralValue) {
+            return new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, ((NumberLiteralValue) topNum).getValue().longValue(), false);
         }
-        int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) top).getParameterMarkerIndex();
-        return new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, parameterMarkerIndex, false);
+        return new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerValue) topNum).getValue(), false);
     }
     
     @Override
