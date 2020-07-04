@@ -20,13 +20,13 @@ package org.apache.shardingsphere.orchestration.core.configcenter;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.orchestration.core.common.utils.IpUtils;
 
 /**
  * Configuration node.
@@ -174,6 +174,6 @@ public final class ConfigCenterNode {
      * @return metrics node path
      */
     public String getMetricsPath() {
-        return getFullPath(METRICS_NODE);
+        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, METRICS_NODE, IpUtils.getIp());
     }
 }

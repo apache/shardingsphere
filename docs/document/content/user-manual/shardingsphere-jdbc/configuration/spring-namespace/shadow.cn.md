@@ -5,7 +5,7 @@ weight = 4
 
 ## 配置项说明
 
-命名空间：http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow-5.0.0.xsd)
 
 \<shadow:rule />
 

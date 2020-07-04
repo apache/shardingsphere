@@ -15,25 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.heartbeat.eventbus;
-
-import com.google.common.eventbus.EventBus;
+package org.apache.shardingsphere.control.panel.spi;
 
 /**
- * Heartbeat event bus.
+ * Interface Facade configuration.
  */
-public final class HeartbeatEventBus {
-    
-    /**
-     * Get heartbeat event bus instance.
-     *
-     * @return event bus
-     */
-    public static EventBus getInstance() {
-        return HeartbeatEventBusHolder.INSTANCE;
-    }
-    
-    private static final class HeartbeatEventBusHolder {
-        private static final EventBus INSTANCE = new EventBus();
-    }
+public interface FacadeConfiguration {
 }

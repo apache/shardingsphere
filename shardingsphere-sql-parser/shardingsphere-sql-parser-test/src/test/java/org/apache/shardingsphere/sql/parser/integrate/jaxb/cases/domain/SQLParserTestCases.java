@@ -22,6 +22,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dal.DescribeStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dal.SetVariableStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dal.ShowColumnsStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dal.ShowCreateTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dal.ShowDatabasesStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dal.ShowIndexStatementTestCase;
@@ -29,8 +31,6 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statemen
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dal.ShowTablesStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dal.UseStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dal.ShowColumnsStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dal.SetVariableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dcl.AlterLoginStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dcl.AlterRoleStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dcl.AlterUserStatementTestCase;
@@ -56,7 +56,6 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statemen
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.ReplaceStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.tcl.BeginTransactionStatementTestCase;
@@ -93,9 +92,6 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "insert")
     private final List<InsertStatementTestCase> insertTestCases = new LinkedList<>();
-
-    @XmlElement(name = "replace")
-    private final List<ReplaceStatementTestCase> replaceTestCases = new LinkedList<>();
 
     @XmlElement(name = "create-table")
     private final List<CreateTableStatementTestCase> createTableTestCases = new LinkedList<>();
@@ -228,7 +224,6 @@ public final class SQLParserTestCases {
         putAll(updateTestCases, result);
         putAll(deleteTestCases, result);
         putAll(insertTestCases, result);
-        putAll(replaceTestCases, result);
         putAll(createTableTestCases, result);
         putAll(alterTableTestCases, result);
         putAll(dropTableTestCases, result);

@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.metrics.configuration.yaml;
 
+import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-
-import java.util.Properties;
 
 /**
  * Metrics configuration for YAML.
@@ -37,6 +36,8 @@ public final class YamlMetricsConfiguration implements YamlConfiguration {
     private Integer port;
     
     private Boolean async;
+    
+    private Boolean enable;
     
     private Integer threadCount;
     

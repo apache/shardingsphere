@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.heartbeat.eventbus;
+package org.apache.shardingsphere.control.panel.spi.opentracing;
 
-import org.junit.Test;
+import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
 
-import static org.junit.Assert.assertNotNull;
-
-public final class HeartbeatEventBusTest {
-    
-    @Test
-    public void assertGetInstance() {
-        assertNotNull(HeartbeatEventBus.getInstance());
-    }
+/**
+ * Open tracing configuration.
+ */
+public class OpenTracingConfiguration implements FacadeConfiguration {
 }

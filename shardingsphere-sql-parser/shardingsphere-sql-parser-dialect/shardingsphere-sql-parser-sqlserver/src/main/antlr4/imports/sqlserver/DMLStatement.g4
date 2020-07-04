@@ -93,7 +93,11 @@ projection
     ;
 
 top
-    : TOP LP_? expr RP_? ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_ 
+    : TOP LP_? topNum RP_? PERCENT? (WITH TIES)? (ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_)?
+    ;
+
+topNum
+    : numberLiterals | parameterMarker
     ;
 
 alias

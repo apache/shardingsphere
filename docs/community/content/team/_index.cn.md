@@ -25,6 +25,7 @@ chapter = true
 | 马晓光          | maxiaoguang64           |
 | 杨翊            | KomachiSion             |
 | 张永伦          | tuohai666, zhangyonglun |
+| 秦金卫          | kimmking                |
 
 ### 提交者
 
@@ -40,7 +41,8 @@ chapter = true
 | 董宗磊 | dongzl      |
 | 蒋晓峰 | SteNicholas |
 | 岳令   | yue530tom   |
-| 秦金卫 | kimmking    |
+| 肖宇   | yu199195    |
+| 孟浩然 | menghaoranss|
 
 ## 贡献者
 

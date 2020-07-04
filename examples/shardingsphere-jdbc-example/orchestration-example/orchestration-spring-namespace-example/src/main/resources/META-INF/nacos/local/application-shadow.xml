@@ -61,7 +61,7 @@
     
     <shardingsphere:data-source id="realShadowDataSource" data-source-names="demo_ds,shadow_demo_ds" rule-refs="shadowRule" />
 
-    <orchestration:data-source id="shadowDataSource" data-source-ref="realShadowDataSource" instance-ref="regCenter,confCenter" overwrite="true" />
+    <orchestration:data-source id="shadowDataSource" data-source-ref="realShadowDataSource" instance-ref="regCenter,confCenter" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shadowDataSource" />

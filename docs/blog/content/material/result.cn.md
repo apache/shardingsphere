@@ -1,6 +1,6 @@
 +++
-title = "剖析Sharding-Sphere系列——结果归并 "
-weight = 14
+title = "12.剖析Sharding-Sphere系列——结果归并 "
+weight = 13
 chapter = true
 +++
 

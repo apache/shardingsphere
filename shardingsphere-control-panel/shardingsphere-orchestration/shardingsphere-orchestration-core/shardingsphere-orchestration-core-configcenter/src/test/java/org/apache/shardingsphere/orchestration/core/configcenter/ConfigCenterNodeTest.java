@@ -78,6 +78,6 @@ public final class ConfigCenterNodeTest {
     
     @Test
     public void assertGetMetricsPath() {
-        assertThat(configurationNode.getMetricsPath(), is("/test/config/metrics"));
+        assertThat(configurationNode.getMetricsPath().contains("/test/config/metrics"), is(true));
     }
 }

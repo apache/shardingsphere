@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.dml.column;
+package org.apache.shardingsphere.control.panel.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
 
 /**
- * Replace columns segment.
+ * Interface Control panel facade.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ReplaceColumnsSegment implements SQLSegment {
+public interface ControlPanelFacade<T extends FacadeConfiguration> extends OrderedSPI<T> {
     
-    private final int startIndex;
+    /**
+     * Init.
+     *
+     * @param configuration configuration
+     */
+    void init(T configuration);
     
-    private final int stopIndex;
-    
-    private final Collection<ColumnSegment> columns;
 }

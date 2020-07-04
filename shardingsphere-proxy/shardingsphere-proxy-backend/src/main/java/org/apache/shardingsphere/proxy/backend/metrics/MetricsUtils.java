@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.metrics;
 
+import org.apache.shardingsphere.control.panel.spi.engine.MetricsHandlerFacadeEngine;
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
-import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -42,9 +42,9 @@ public final class MetricsUtils {
             for (RouteUnit each : routeUnits) {
                 Collection<RouteMapper> tableMappers = each.getTableMappers();
                 RouteMapper dataSourceMapper = each.getDataSourceMapper();
-                MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SHARDING_DATASOURCE.getName(), dataSourceMapper.getActualName());
+                MetricsHandlerFacadeEngine.build().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.SHARDING_DATASOURCE.getName(), dataSourceMapper.getActualName()));
                 for (RouteMapper table : tableMappers) {
-                    MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SHARDING_TABLE.getName(), table.getActualName());
+                    MetricsHandlerFacadeEngine.build().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.SHARDING_TABLE.getName(), table.getActualName()));
                 }
             }
         }
@@ -56,7 +56,7 @@ public final class MetricsUtils {
      * @param labelValue label value
      */
     public static void buriedTransactionMetric(final String labelValue) {
-        MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.TRANSACTION.getName(), labelValue);
+        MetricsHandlerFacadeEngine.build().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.TRANSACTION.getName(), labelValue));
     }
     
     /**
@@ -68,7 +68,7 @@ public final class MetricsUtils {
     public static void buriedShardingRuleMetrics(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
         routeContext.getRouteResult().getActualDataSourceNames().forEach(dataSourceName -> rules.forEach(each -> {
             if (each instanceof ShadowRule && ((ShadowRule) each).getShadowMappings().containsValue(dataSourceName)) {
-                MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SHADOW_HIT_TOTAL.getName());
+                MetricsHandlerFacadeEngine.build().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.SHADOW_HIT_TOTAL.getName()));
             }
         }));
     }

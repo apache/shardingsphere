@@ -47,7 +47,7 @@ ShardingSphere-JDBC provides official Spring namespace to make convenient for de
 
 ### Configuration Item Explanation
 
-Namespace: http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.0.0.xsd)
 
 \<shardingsphere:data-source />
 

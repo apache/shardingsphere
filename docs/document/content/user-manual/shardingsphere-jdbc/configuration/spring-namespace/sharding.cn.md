@@ -5,7 +5,7 @@ weight = 1
 
 ## 配置项说明
 
-命名空间：http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.0.0.xsd)
 
 \<sharding:rule />
 

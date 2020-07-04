@@ -22,19 +22,16 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.impl.DeleteStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.impl.InsertStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.impl.ReplaceStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.impl.UpdateStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.ReplaceStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.ReplaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 
@@ -46,7 +43,7 @@ public final class DMLStatementAssert {
     
     /**
      * Assert DML statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual DML statement
      * @param expected expected parser result
@@ -60,8 +57,6 @@ public final class DMLStatementAssert {
             DeleteStatementAssert.assertIs(assertContext, (DeleteStatement) actual, (DeleteStatementTestCase) expected);
         } else if (actual instanceof InsertStatement) {
             InsertStatementAssert.assertIs(assertContext, (InsertStatement) actual, (InsertStatementTestCase) expected);
-        } else if (actual instanceof ReplaceStatement) {
-            ReplaceStatementAssert.assertIs(assertContext, (ReplaceStatement) actual, (ReplaceStatementTestCase) expected);
         }
     }
 }

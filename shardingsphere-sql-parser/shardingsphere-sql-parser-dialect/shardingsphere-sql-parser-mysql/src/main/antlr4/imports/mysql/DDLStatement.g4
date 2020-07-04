@@ -109,7 +109,7 @@ instanceAction
     ;
 
 channel
-    : 'mysql_admin' | 'mysql_main'
+    : MYSQL_ADMIN
     ;
 
 createEvent
@@ -397,7 +397,7 @@ alterSpecification
     | DEFAULT? characterSet_ collateClause_?
     | CONVERT TO characterSet_ collateClause_?
     | (DISABLE | ENABLE) KEYS
-    | (DISCARD | IMPORT_) TABLESPACE
+    | (DISCARD | IMPORT) TABLESPACE
     | dropColumnSpecification
     | dropIndexSpecification
     | dropPrimaryKeySpecification
@@ -413,7 +413,7 @@ alterSpecification
     | ADD PARTITION LP_ partitionDefinition_ RP_
     | DROP PARTITION ignoredIdentifiers_
     | DISCARD PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
-    | IMPORT_ PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
+    | IMPORT PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
     | TRUNCATE PARTITION (ignoredIdentifiers_ | ALL)
     | COALESCE PARTITION NUMBER_
     | REORGANIZE PARTITION ignoredIdentifiers_ INTO partitionDefinitions_

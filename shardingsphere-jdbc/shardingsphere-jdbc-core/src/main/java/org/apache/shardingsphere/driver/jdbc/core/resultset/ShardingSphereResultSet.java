@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
+import java.sql.SQLFeatureNotSupportedException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -371,5 +375,22 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     public Object getObject(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return mergeResultSet.getValue(columnIndex, Object.class);
+    }
+
+    @Override
+    public <T> T getObject(final int columnIndex, final Class<T> type) throws SQLException {
+        if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type)) {
+            return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type);
+        }
+        throw new SQLFeatureNotSupportedException("getObject with type");
+    }
+
+    @Override
+    public <T> T getObject(final String columnLabel, final Class<T> type) throws SQLException {
+        Integer columnIndex = columnLabelAndIndexMap.get(columnLabel);
+        if (columnIndex == null) {
+            throw new SQLFeatureNotSupportedException("getObject with type");
+        }
+        return getObject(columnIndex, type);
     }
 }
