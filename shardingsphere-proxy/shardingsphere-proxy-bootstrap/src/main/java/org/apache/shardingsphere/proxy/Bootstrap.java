@@ -216,7 +216,7 @@ public final class Bootstrap {
     
     private static void initShardingOrchestrationFacade(
             final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final ShardingOrchestrationFacade shardingOrchestrationFacade) {
-        if (IsEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
+        if (isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
             shardingOrchestrationFacade.init();
         } else {
             shardingOrchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs),
@@ -226,7 +226,7 @@ public final class Bootstrap {
         shardingOrchestrationFacade.initClusterConfiguration(Optional.ofNullable(serverConfig.getCluster()).map(new ClusterConfigurationYamlSwapper()::swapToObject).orElse(null));
     }
     
-    private static boolean IsEmptyLocalConfiguration(final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
+    private static boolean isEmptyLocalConfiguration(final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
         return ruleConfigs.isEmpty() && null == serverConfig.getAuthentication() && serverConfig.getProps().isEmpty();
     }
     
