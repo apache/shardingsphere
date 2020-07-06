@@ -44,11 +44,11 @@ public final class MySQLServerInfo {
     /**
      * Set server version.
      *
-     * @param version server version
+     * @param serverVersion server version
      */
-    public static void setServerVersion(final String version) {
-        if (null != version) {
-            serverVersion = String.format("%s-ShardingSphere-Proxy 5.0.0-RC1", version);
+    public static void setServerVersion(final String serverVersion) {
+        if (null != serverVersion) {
+            MySQLServerInfo.serverVersion = String.format("%s-ShardingSphere-Proxy 5.0.0-RC1", serverVersion);
         }
     }
     
