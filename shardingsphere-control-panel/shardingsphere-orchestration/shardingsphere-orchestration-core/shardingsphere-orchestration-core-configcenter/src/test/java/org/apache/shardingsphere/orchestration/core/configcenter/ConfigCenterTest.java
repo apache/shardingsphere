@@ -240,15 +240,13 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertMoreShardingSchema() {
-        when(configCenterRepository.get("/test/config/schema")).thenReturn("myTest1,myTest2");
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(configCenterRepository, times(1)).persist("/test/config/schema", "myTest1,myTest2,sharding_db");
+        verify(configCenterRepository, times(0)).persist("/test/config/schema", "myTest1,myTest2,sharding_db");
     }
     
     @Test
     public void assertMoreAndContainsShardingSchema() {
-        when(configCenterRepository.get("/test/config/schema")).thenReturn("myTest1,sharding_db");
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
         verify(configCenterRepository, times(0)).persist("/test/config/schema", "myTest1,sharding_db");
