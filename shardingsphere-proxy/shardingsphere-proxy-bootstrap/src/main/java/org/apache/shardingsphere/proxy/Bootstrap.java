@@ -81,8 +81,8 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere-Proxy Bootstrap.
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class Bootstrap {
     
     private static final int DEFAULT_PORT = 3307;
@@ -174,12 +174,12 @@ public final class Bootstrap {
         DataSource singleDataSource = dataSources.values().iterator().next();
         try (Connection connection = singleDataSource.getConnection()) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            String name = databaseMetaData.getDatabaseProductName();
-            String version = databaseMetaData.getDatabaseProductVersion();
-            log.info("server name {} , server version {}", name, version);
-            MySQLServerInfo.setServerVersion(version);
-        } catch (final SQLException e) {
-            throw new ShardingSphereException("Get database server info failed", e);
+            String databaseName = databaseMetaData.getDatabaseProductName();
+            String databaseVersion = databaseMetaData.getDatabaseProductVersion();
+            log.info("database name {} , database version {}", databaseName, databaseVersion);
+            MySQLServerInfo.setServerVersion(databaseVersion);
+        } catch (final SQLException ex) {
+            throw new ShardingSphereException("Get database server info failed", ex);
         }
     }
     
