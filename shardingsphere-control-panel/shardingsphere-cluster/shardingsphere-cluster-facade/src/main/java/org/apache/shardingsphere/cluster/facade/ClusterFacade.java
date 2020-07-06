@@ -45,7 +45,7 @@ public final class ClusterFacade {
     private ClusterStateInstance clusterStateInstance;
     
     /**
-     * Init cluster handler.
+     * Init cluster.
      *
      * @param clusterConfiguration cluster configuration
      */
@@ -81,7 +81,7 @@ public final class ClusterFacade {
     /**
      * Get cluster instance.
      *
-     * @return cluster handler instance
+     * @return cluster instance
      */
     public static ClusterFacade getInstance() {
         return ClusterFacadeHolder.INSTANCE;
