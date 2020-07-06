@@ -31,22 +31,33 @@ public final class MySQLServerInfo {
      */
     public static final int PROTOCOL_VERSION = 0x0A;
     
-    private static final String DEFAULT_SERVER_VERSION = "8.0.20-ShardingSphere-Proxy 5.0.0-RC1";
-    
-    /**
-     * Server version.
-     */
-    public static String SERVER_VERSION = DEFAULT_SERVER_VERSION;
-    
     /**
      * Charset code 0x21 is utf8_general_ci.
      */
     public static final int CHARSET = 0x21;
     
+    private static final String DEFAULT_SERVER_VERSION = "8.0.20-ShardingSphere-Proxy 5.0.0-RC1";
     
-    public static void setServerVersion(String version) {
+    /**
+     * Server version.
+     */
+    private static String serverVersion = DEFAULT_SERVER_VERSION;
+    
+    /**
+     *  set server version.
+     * @param version version
+     */
+    public static void setServerVersion(final String version) {
         if (version != null) {
-            SERVER_VERSION = String.format("%s-ShardingSphere-Proxy 5.0.0-RC1", version);
+            serverVersion = String.format("%s-ShardingSphere-Proxy 5.0.0-RC1", version);
         }
+    }
+    
+    /**
+     * get current server version.
+     * @return server version
+     */
+    public static String getServerVersion() {
+        return serverVersion;
     }
 }

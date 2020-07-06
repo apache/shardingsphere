@@ -172,14 +172,14 @@ public final class Bootstrap {
         }
         Map<String, DataSource> dataSources = ProxySchemaContexts.getInstance().getSchema(schemaNames.get(0)).getSchema().getDataSources();
         DataSource singleDataSource = dataSources.values().iterator().next();
-        try(Connection connection = singleDataSource.getConnection()) {
+        try (Connection connection = singleDataSource.getConnection()) {
             DatabaseMetaData meta = connection.getMetaData();
             String name = meta.getDatabaseProductName();
             String version = meta.getDatabaseProductVersion();
             log.info("server name {} , server version {}", name, version);
             MySQLServerInfo.setServerVersion(version);
         } catch (SQLException e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
         }
     
     }

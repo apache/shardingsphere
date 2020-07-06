@@ -70,7 +70,7 @@ public final class ShardingConfigurationLoader {
         return new ShardingConfiguration(serverConfig, ruleConfigurationMap);
     }
     
-    private File getResourceFile(String path) {
+    private File getResourceFile(final String path) {
         URL url = ShardingConfigurationLoader.class.getResource(path);
         if (url != null) {
             return new File(url.getFile());
