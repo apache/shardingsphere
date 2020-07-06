@@ -27,12 +27,12 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
@@ -60,6 +60,7 @@ import org.apache.shardingsphere.orchestration.core.registrycenter.event.Disable
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -231,14 +232,16 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
      * Renew rule configurations.
      *
      * @param ruleConfigurationsChangedEvent rule configurations changed event.
+     *  @throws Exception exception
      */
     @Subscribe
-    public synchronized void renew(final RuleConfigurationsChangedEvent ruleConfigurationsChangedEvent) {
+    public synchronized void renew(final RuleConfigurationsChangedEvent ruleConfigurationsChangedEvent) throws Exception {
         Map<String, SchemaContext> schemaContexts = new HashMap<>(this.schemaContexts.getSchemaContexts());
         String schemaName = ruleConfigurationsChangedEvent.getShardingSchemaName();
         schemaContexts.remove(schemaName);
         schemaContexts.put(schemaName, getChangedSchemaContext(this.schemaContexts.getSchemaContexts().get(schemaName), ruleConfigurationsChangedEvent.getRuleConfigurations()));
         this.schemaContexts = new SchemaContexts(schemaContexts, this.schemaContexts.getProps(), this.schemaContexts.getAuthentication());
+        ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.get(schemaName).getSchema().getMetaData().getSchema());
     }
     
     /**
@@ -296,11 +299,18 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
         String schemaName = schemaAddedEvent.getShardingSchemaName();
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
         Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap = createDataSourceParametersMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
-        DatabaseType databaseType = schemaContexts.getSchemaContexts().values().iterator().next().getSchema().getDatabaseType();
+        DatabaseType databaseType = getDatabaseType(dataSourceParametersMap.values().iterator().next().values().iterator().next());
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(dataSourcesMap, dataSourceParametersMap,
                 schemaContexts.getAuthentication(), databaseType, Collections.singletonMap(schemaName, schemaAddedEvent.getRuleConfigurations()),
                 schemaContexts.getProps().getProps());
         return schemaContextsBuilder.build().getSchemaContexts().get(schemaName);
+    }
+    
+    private DatabaseType getDatabaseType(final DataSourceParameter parameter) {
+        if (!schemaContexts.getSchemaContexts().isEmpty()) {
+            schemaContexts.getSchemaContexts().values().iterator().next().getSchema().getDatabaseType();
+        }
+        return DatabaseTypes.getDatabaseTypeByURL(parameter.getUrl());
     }
     
     private Map<String, SchemaContext> getChangedSchemaContexts(final ConfigurationProperties props) {
@@ -319,11 +329,11 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
                 oldShardingSphereSchema.getRules(), oldShardingSphereSchema.getDataSources(), metaData);
     }
     
-    private SchemaContext getChangedSchemaContext(final SchemaContext schemaContext, final Collection<RuleConfiguration> configurations) {
-        ShardingSphereSchema oldSchema = schemaContext.getSchema();
-        ShardingSphereSchema newSchema = new ShardingSphereSchema(oldSchema.getDatabaseType(), configurations,
-                ShardingSphereRulesBuilder.build(configurations, oldSchema.getDataSources().keySet()), oldSchema.getDataSources(), oldSchema.getDataSourceParameters(), oldSchema.getMetaData());
-        return new SchemaContext(schemaContext.getName(), newSchema, schemaContext.getRuntimeContext());
+    private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Collection<RuleConfiguration> configurations) throws SQLException {
+        ShardingSphereSchema oldSchema = oldSchemaContext.getSchema();
+        SchemaContextsBuilder builder = new SchemaContextsBuilder(Collections.singletonMap(oldSchemaContext.getName(), oldSchema.getDataSources()), Collections.singletonMap(oldSchemaContext.getName(), oldSchema.getDataSourceParameters()),
+                schemaContexts.getAuthentication(), oldSchema.getDatabaseType(), Collections.singletonMap(oldSchemaContext.getName(), configurations), schemaContexts.getProps().getProps());
+        return builder.build().getSchemaContexts().values().iterator().next();
     }
     
     private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
