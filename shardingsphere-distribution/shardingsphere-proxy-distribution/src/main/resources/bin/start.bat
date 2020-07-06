@@ -30,7 +30,7 @@ set CONFIG=%2
 if "%PORT%"=="-h" (
     goto print_usage
 )
-if "%PORT%"=="-help" (
+if "%PORT%"=="--help" (
     goto print_usage
 )
 
