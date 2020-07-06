@@ -151,9 +151,11 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
      */
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent schemaAddedEvent) throws Exception {
+        String schemaName = schemaAddedEvent.getShardingSchemaName();
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContexts());
-        schemas.put(schemaAddedEvent.getShardingSchemaName(), getAddedSchemaContext(schemaAddedEvent));
+        schemas.put(schemaName, getAddedSchemaContext(schemaAddedEvent));
         schemaContexts = new SchemaContexts(schemas, schemaContexts.getProps(), schemaContexts.getAuthentication());
+        ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.getSchemaContexts().get(schemaName).getSchema().getMetaData().getSchema());
     }
     
     /**

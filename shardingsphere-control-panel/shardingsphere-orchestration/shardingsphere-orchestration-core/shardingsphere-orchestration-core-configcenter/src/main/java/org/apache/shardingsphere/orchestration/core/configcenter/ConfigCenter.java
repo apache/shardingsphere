@@ -107,12 +107,10 @@ public final class ConfigCenter {
     }
     
     private void persistRuleConfigurations(final String shardingSchemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
-        if (ruleConfigurations.isEmpty()) {
+        if (ruleConfigurations.isEmpty() || !isOverwrite) {
             return;
         }
-        if (isOverwrite) {
-            persistRuleConfigurations(shardingSchemaName, ruleConfigurations);
-        }
+        persistRuleConfigurations(shardingSchemaName, ruleConfigurations);
     }
     
     private void persistRuleConfigurations(final String shardingSchemaName, final Collection<RuleConfiguration> ruleConfigurations) {
