@@ -331,7 +331,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     
     private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Collection<RuleConfiguration> configurations) throws SQLException {
         ShardingSphereSchema oldSchema = oldSchemaContext.getSchema();
-        SchemaContextsBuilder builder = new SchemaContextsBuilder(Collections.singletonMap(oldSchemaContext.getName(), oldSchema.getDataSources()), Collections.singletonMap(oldSchemaContext.getName(), oldSchema.getDataSourceParameters()),
+        SchemaContextsBuilder builder = new SchemaContextsBuilder(Collections.singletonMap(oldSchemaContext.getName(), oldSchema.getDataSources()),
+                Collections.singletonMap(oldSchemaContext.getName(), oldSchema.getDataSourceParameters()),
                 schemaContexts.getAuthentication(), oldSchema.getDatabaseType(), Collections.singletonMap(oldSchemaContext.getName(), configurations), schemaContexts.getProps().getProps());
         return builder.build().getSchemaContexts().values().iterator().next();
     }
