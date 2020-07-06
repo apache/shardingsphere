@@ -118,8 +118,10 @@ public final class SchemaChangedListener extends PostShardingCenterRepositoryEve
     }
     
     private ShardingOrchestrationEvent createRuleChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
+        YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(event.getValue(), YamlRootRuleConfigurations.class);
+        Preconditions.checkState(null != configurations, "No available rule to load for orchestration.");
         return new RuleConfigurationsChangedEvent(
-                shardingSchemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(event.getValue(), YamlRootRuleConfigurations.class).getRules()));
+                shardingSchemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()));
     }
     
     private ShardingOrchestrationEvent createUpdatedEventForNewSchema(final String shardingSchemaName) {

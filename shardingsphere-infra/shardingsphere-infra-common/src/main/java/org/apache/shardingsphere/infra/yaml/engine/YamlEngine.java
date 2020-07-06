@@ -83,7 +83,7 @@ public final class YamlEngine {
      * @return object from YAML
      */
     public static <T> T unmarshal(final String yamlContent, final Class<T> classType) {
-        return Strings.isNullOrEmpty(yamlContent) ? null : new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(yamlContent, classType);
+        return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(yamlContent, classType);
     }
     
     /**

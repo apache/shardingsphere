@@ -82,7 +82,7 @@ public final class ConfigCenter {
                                       final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
         persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigs, isOverwrite);
         persistRuleConfigurations(shardingSchemaName, ruleConfigurations, isOverwrite);
-        persistShardingSchemaName(shardingSchemaName);
+        persistShardingSchemaName(shardingSchemaName, isOverwrite);
     }
     
     /**
@@ -107,12 +107,10 @@ public final class ConfigCenter {
     }
     
     private void persistRuleConfigurations(final String shardingSchemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
-        if (ruleConfigurations.isEmpty()) {
+        if (ruleConfigurations.isEmpty() || !isOverwrite) {
             return;
         }
-        if (isOverwrite) {
-            persistRuleConfigurations(shardingSchemaName, ruleConfigurations);
-        }
+        persistRuleConfigurations(shardingSchemaName, ruleConfigurations);
     }
     
     private void persistRuleConfigurations(final String shardingSchemaName, final Collection<RuleConfiguration> ruleConfigurations) {
@@ -193,7 +191,10 @@ public final class ConfigCenter {
         }
     }
     
-    private void persistShardingSchemaName(final String shardingSchemaName) {
+    private void persistShardingSchemaName(final String shardingSchemaName, final boolean isOverwrite) {
+        if (!isOverwrite) {
+            return;
+        }
         String shardingSchemaNames = repository.get(node.getSchemaPath());
         if (Strings.isNullOrEmpty(shardingSchemaNames)) {
             repository.persist(node.getSchemaPath(), shardingSchemaName);
