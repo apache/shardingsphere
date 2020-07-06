@@ -36,7 +36,7 @@ Processes are:
 
  - Determine whether it is a long-term issue. if it is, mark as pending.
  - Determine the type of issue, such as: bug, enhancement, discussion, etc.
- - Judge Milestone and mark.
+ - Determine Milestone and mark.
 
 **Notice**
 
