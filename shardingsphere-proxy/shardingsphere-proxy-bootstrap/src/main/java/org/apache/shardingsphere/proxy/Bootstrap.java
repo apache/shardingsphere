@@ -18,10 +18,14 @@
 package org.apache.shardingsphere.proxy;
 
 import com.google.common.primitives.Ints;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.util.LinkedList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
@@ -30,6 +34,7 @@ import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
 import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
@@ -76,6 +81,7 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere-Proxy Bootstrap.
  */
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Bootstrap {
     
@@ -156,6 +162,26 @@ public final class Bootstrap {
         log(authentication, properties);
         initControlPanelFacade(metricsConfiguration);
         initCluster(cluster);
+        updateServerInfo();
+    }
+    
+    private static void updateServerInfo() {
+        List<String> schemaNames = ProxySchemaContexts.getInstance().getSchemaNames();
+        if (CollectionUtils.isEmpty(schemaNames)) {
+            return;
+        }
+        Map<String, DataSource> dataSources = ProxySchemaContexts.getInstance().getSchema(schemaNames.get(0)).getSchema().getDataSources();
+        DataSource singleDataSource = dataSources.values().iterator().next();
+        try(Connection connection = singleDataSource.getConnection()) {
+            DatabaseMetaData meta = connection.getMetaData();
+            String name = meta.getDatabaseProductName();
+            String version = meta.getDatabaseProductVersion();
+            log.info("server name {} , server version {}", name, version);
+            MySQLServerInfo.setServerVersion(version);
+        } catch (SQLException e) {
+            log.error(e.getMessage(),e);
+        }
+    
     }
     
     private static void initControlPanelFacade(final MetricsConfiguration metricsConfiguration) {

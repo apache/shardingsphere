@@ -106,9 +106,7 @@ public final class CommandExecutorTask implements Runnable {
         if (responsePackets.isEmpty()) {
             return false;
         }
-        for (DatabasePacket each : responsePackets) {
-            context.write(each);
-        }
+        responsePackets.forEach(context::write);
         if (commandExecutor instanceof QueryCommandExecutor) {
             commandExecuteEngine.writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
             return true;
