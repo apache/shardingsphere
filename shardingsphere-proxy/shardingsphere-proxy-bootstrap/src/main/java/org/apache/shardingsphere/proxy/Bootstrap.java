@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.proxy;
 
 import com.google.common.primitives.Ints;
-import java.util.LinkedList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -27,8 +25,8 @@ import org.apache.shardingsphere.cluster.configuration.config.ClusterConfigurati
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
-import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
@@ -38,6 +36,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -67,6 +66,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -172,7 +173,9 @@ public final class Bootstrap {
     
     private static void initProxySchemaContexts(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, Collection<RuleConfiguration>> schemaRules,
                                                 final Authentication authentication, final Properties properties, final boolean isOrchestration) throws SQLException {
-        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType(
+        // TODO Consider loading from configuration.
+        DatabaseType databaseType = schemaDataSources.isEmpty() ? new MySQLDatabaseType() 
+                : DatabaseTypes.getActualDatabaseType(
                 JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType());
         SchemaContextsBuilder schemaContextsBuilder =
                 new SchemaContextsBuilder(createDataSourcesMap(schemaDataSources), schemaDataSources, authentication, databaseType, schemaRules, properties);
@@ -213,7 +216,7 @@ public final class Bootstrap {
     
     private static void initShardingOrchestrationFacade(
             final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final ShardingOrchestrationFacade shardingOrchestrationFacade) {
-        if (ruleConfigs.isEmpty()) {
+        if (isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
             shardingOrchestrationFacade.init();
         } else {
             shardingOrchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs),
@@ -221,6 +224,10 @@ public final class Bootstrap {
         }
         shardingOrchestrationFacade.initMetricsConfiguration(Optional.ofNullable(serverConfig.getMetrics()).map(new MetricsConfigurationYamlSwapper()::swapToObject).orElse(null));
         shardingOrchestrationFacade.initClusterConfiguration(Optional.ofNullable(serverConfig.getCluster()).map(new ClusterConfigurationYamlSwapper()::swapToObject).orElse(null));
+    }
+    
+    private static boolean isEmptyLocalConfiguration(final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
+        return ruleConfigs.isEmpty() && null == serverConfig.getAuthentication() && serverConfig.getProps().isEmpty();
     }
     
     private static void initCluster(final ClusterConfiguration clusterConfiguration) {
