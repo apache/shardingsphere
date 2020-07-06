@@ -53,7 +53,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     private String authPluginName;
     
     public MySQLHandshakePacket(final int connectionId, final MySQLAuthPluginData authPluginData) {
-        this.serverVersion = MySQLServerInfo.SERVER_VERSION;
+        this.serverVersion = MySQLServerInfo.getServerVersion();
         this.connectionId = connectionId;
         this.capabilityFlagsLower = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower();
         this.characterSet = MySQLServerInfo.CHARSET;

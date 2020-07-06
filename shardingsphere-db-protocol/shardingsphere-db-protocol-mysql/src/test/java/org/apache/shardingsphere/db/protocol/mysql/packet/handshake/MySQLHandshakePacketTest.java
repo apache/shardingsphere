@@ -45,14 +45,14 @@ public final class MySQLHandshakePacketTest {
     @Test
     public void assertNewWithPayload() {
         when(payload.readInt1()).thenReturn(0, MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.CHARSET, 0);
-        when(payload.readStringNul()).thenReturn(MySQLServerInfo.SERVER_VERSION);
+        when(payload.readStringNul()).thenReturn(MySQLServerInfo.getServerVersion());
         when(payload.readStringNulByBytes()).thenReturn(part1, part2);
         when(payload.readInt4()).thenReturn(1000);
         when(payload.readInt2()).thenReturn(
                 MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
         MySQLHandshakePacket actual = new MySQLHandshakePacket(payload);
         assertThat(actual.getSequenceId(), is(0));
-        assertThat(actual.getServerVersion(), is(MySQLServerInfo.SERVER_VERSION));
+        assertThat(actual.getServerVersion(), is(MySQLServerInfo.getServerVersion()));
         assertThat(actual.getCapabilityFlagsLower(), is(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower()));
         assertThat(actual.getConnectionId(), is(1000));
         assertThat(actual.getCharacterSet(), is(MySQLServerInfo.CHARSET));
@@ -66,14 +66,14 @@ public final class MySQLHandshakePacketTest {
     @Test
     public void assertNewWithClientPluginAuthPayload() {
         when(payload.readInt1()).thenReturn(0, MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.CHARSET, 0);
-        when(payload.readStringNul()).thenReturn(MySQLServerInfo.SERVER_VERSION, MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName());
+        when(payload.readStringNul()).thenReturn(MySQLServerInfo.getServerVersion(), MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName());
         when(payload.readStringNulByBytes()).thenReturn(part1, part2);
         when(payload.readInt4()).thenReturn(1000);
         when(payload.readInt2()).thenReturn(
             MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16);
         MySQLHandshakePacket actual = new MySQLHandshakePacket(payload);
         assertThat(actual.getSequenceId(), is(0));
-        assertThat(actual.getServerVersion(), is(MySQLServerInfo.SERVER_VERSION));
+        assertThat(actual.getServerVersion(), is(MySQLServerInfo.getServerVersion()));
         assertThat(actual.getCapabilityFlagsLower(), is(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower()));
         assertThat(actual.getConnectionId(), is(1000));
         assertThat(actual.getCharacterSet(), is(MySQLServerInfo.CHARSET));
@@ -90,7 +90,7 @@ public final class MySQLHandshakePacketTest {
         MySQLAuthPluginData authPluginData = new MySQLAuthPluginData(part1, part2);
         new MySQLHandshakePacket(1000, authPluginData).write(payload);
         verify(payload).writeInt1(MySQLServerInfo.PROTOCOL_VERSION);
-        verify(payload).writeStringNul(MySQLServerInfo.SERVER_VERSION);
+        verify(payload).writeStringNul(MySQLServerInfo.getServerVersion());
         verify(payload).writeInt4(1000);
         verify(payload).writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower());
@@ -109,7 +109,7 @@ public final class MySQLHandshakePacketTest {
         actual.setAuthPluginName(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION);
         actual.write(payload);
         verify(payload).writeInt1(MySQLServerInfo.PROTOCOL_VERSION);
-        verify(payload).writeStringNul(MySQLServerInfo.SERVER_VERSION);
+        verify(payload).writeStringNul(MySQLServerInfo.getServerVersion());
         verify(payload).writeInt4(1000);
         verify(payload).writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower());
