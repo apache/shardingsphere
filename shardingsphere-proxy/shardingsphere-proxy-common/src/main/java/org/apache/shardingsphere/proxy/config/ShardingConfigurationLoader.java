@@ -53,7 +53,6 @@ public final class ShardingConfigurationLoader {
      * @throws IOException IO exception
      */
     public ShardingConfiguration load(final String path) throws IOException {
-        //this is just check for schemaName duplication
         Collection<String> schemaNames = new HashSet<>();
         YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(path + "/" + SERVER_CONFIG_FILE));
         File configPath = getResourceFile(path);
@@ -72,10 +71,9 @@ public final class ShardingConfigurationLoader {
     
     private File getResourceFile(final String path) {
         URL url = ShardingConfigurationLoader.class.getResource(path);
-        if (url != null) {
+        if (null != url) {
             return new File(url.getFile());
         }
-        //try absolute path
         return new File(path);
     }
     
