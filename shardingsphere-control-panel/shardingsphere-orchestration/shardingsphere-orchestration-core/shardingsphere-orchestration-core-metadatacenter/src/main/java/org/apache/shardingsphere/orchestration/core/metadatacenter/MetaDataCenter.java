@@ -63,5 +63,4 @@ public final class MetaDataCenter {
         }
         return Optional.of(new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(path, YamlRuleSchemaMetaData.class)));
     }
-    
 }

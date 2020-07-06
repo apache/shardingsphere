@@ -32,12 +32,32 @@ public final class MySQLServerInfo {
     public static final int PROTOCOL_VERSION = 0x0A;
     
     /**
-     * Server version.
-     */
-    public static final String SERVER_VERSION = "8.0.20-ShardingSphere-Proxy 5.0.0-RC1";
-    
-    /**
      * Charset code 0x21 is utf8_general_ci.
      */
     public static final int CHARSET = 0x21;
+    
+    /**
+     * Server version.
+     */
+    private static String serverVersion = "8.0.20-ShardingSphere-Proxy 5.0.0-RC1";
+    
+    /**
+     * Set server version.
+     *
+     * @param serverVersion server version
+     */
+    public static void setServerVersion(final String serverVersion) {
+        if (null != serverVersion) {
+            MySQLServerInfo.serverVersion = String.format("%s-ShardingSphere-Proxy 5.0.0-RC1", serverVersion);
+        }
+    }
+    
+    /**
+     * Get current server version.
+     *
+     * @return server version
+     */
+    public static String getServerVersion() {
+        return serverVersion;
+    }
 }

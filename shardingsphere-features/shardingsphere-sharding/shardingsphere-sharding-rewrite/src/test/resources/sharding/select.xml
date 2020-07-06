@@ -26,6 +26,11 @@
         <input sql="SELECT * FROM t_account WHERE account_id = 100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id = 100" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_subquery" db-type="MySQL">
+        <input sql="SELECT * FROM (select * from t_account where account_id=?) a WHERE account_id = 100" />
+        <output sql="SELECT * FROM (select * from t_account_0 where account_id=?) a WHERE account_id = 100" />
+    </rewrite-assertion>
     
     <rewrite-assertion id="select_without_sharding_value_for_parameters">
         <input sql="SELECT * FROM db.t_account WHERE amount = ?" parameters="1000" />

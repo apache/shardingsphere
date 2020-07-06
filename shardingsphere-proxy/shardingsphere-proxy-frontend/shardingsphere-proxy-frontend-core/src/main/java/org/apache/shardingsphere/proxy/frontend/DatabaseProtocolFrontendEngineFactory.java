@@ -42,7 +42,7 @@ public final class DatabaseProtocolFrontendEngineFactory {
      */
     public static DatabaseProtocolFrontendEngine newInstance(final DatabaseType databaseType) {
         for (DatabaseProtocolFrontendEngine each : ShardingSphereServiceLoader.newServiceInstances(DatabaseProtocolFrontendEngine.class)) {
-            if (DatabaseTypes.getActualDatabaseType(each.getDatabaseType()) == databaseType) {
+            if (DatabaseTypes.getActualDatabaseType(each.getDatabaseType()).getName().equals(databaseType.getName())) {
                 return each;
             }
         }
