@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.orchestration.core.metadatacenter;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.hook.MetaDataHook;
 import org.apache.shardingsphere.orchestration.center.CenterRepository;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.yaml.RuleSchemaMetaDataYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.yaml.YamlRuleSchemaMetaData;
@@ -38,6 +39,7 @@ public final class MetaDataCenter {
     public MetaDataCenter(final String name, final CenterRepository centerRepository) {
         this.node = new MetaDataCenterNode(name);
         this.repository = centerRepository;
+        MetaDataHook.INSTANCE.register(this::persistMetaDataCenterNode);
     }
     
     /**

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
+import org.apache.shardingsphere.infra.hook.MetaDataHook;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyF
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatus;
@@ -120,9 +120,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (refreshStrategy.isPresent()) {
             refreshStrategy.get().refreshMetaData(schema.getSchema().getMetaData(),
                     schema.getSchema().getDatabaseType(), schema.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
-            if (null != ShardingOrchestrationFacade.getInstance()) {
-                ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schema.getName(), schema.getSchema().getMetaData().getSchema());
-            }
+            MetaDataHook.INSTANCE.run(schema.getName(), schema.getSchema().getMetaData().getSchema());
         }
     }
     
