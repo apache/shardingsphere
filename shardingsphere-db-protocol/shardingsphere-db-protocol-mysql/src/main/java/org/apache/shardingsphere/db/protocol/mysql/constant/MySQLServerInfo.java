@@ -36,25 +36,25 @@ public final class MySQLServerInfo {
      */
     public static final int CHARSET = 0x21;
     
-    private static final String DEFAULT_SERVER_VERSION = "8.0.20-ShardingSphere-Proxy 5.0.0-RC1";
-    
     /**
      * Server version.
      */
-    private static String serverVersion = DEFAULT_SERVER_VERSION;
+    private static String serverVersion = "8.0.20-ShardingSphere-Proxy 5.0.0-RC1";
     
     /**
-     *  set server version.
-     * @param version version
+     * Set server version.
+     *
+     * @param version server version
      */
     public static void setServerVersion(final String version) {
-        if (version != null) {
+        if (null != version) {
             serverVersion = String.format("%s-ShardingSphere-Proxy 5.0.0-RC1", version);
         }
     }
     
     /**
-     * get current server version.
+     * Get current server version.
+     *
      * @return server version
      */
     public static String getServerVersion() {

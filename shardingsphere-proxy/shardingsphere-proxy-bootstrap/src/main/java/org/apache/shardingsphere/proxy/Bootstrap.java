@@ -173,15 +173,14 @@ public final class Bootstrap {
         Map<String, DataSource> dataSources = ProxySchemaContexts.getInstance().getSchema(schemaNames.get(0)).getSchema().getDataSources();
         DataSource singleDataSource = dataSources.values().iterator().next();
         try (Connection connection = singleDataSource.getConnection()) {
-            DatabaseMetaData meta = connection.getMetaData();
-            String name = meta.getDatabaseProductName();
-            String version = meta.getDatabaseProductVersion();
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            String name = databaseMetaData.getDatabaseProductName();
+            String version = databaseMetaData.getDatabaseProductVersion();
             log.info("server name {} , server version {}", name, version);
             MySQLServerInfo.setServerVersion(version);
-        } catch (SQLException e) {
-            log.error(e.getMessage(), e);
+        } catch (final SQLException e) {
+            throw new ShardingSphereException("Get database server info failed", e);
         }
-    
     }
     
     private static void initControlPanelFacade(final MetricsConfiguration metricsConfiguration) {
