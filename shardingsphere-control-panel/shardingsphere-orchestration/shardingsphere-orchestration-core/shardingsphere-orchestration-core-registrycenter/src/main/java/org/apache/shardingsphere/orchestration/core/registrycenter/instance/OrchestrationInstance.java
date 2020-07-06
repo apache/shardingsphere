@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.orchestration.core.registrycenter.instance;
 
-import lombok.Getter;
 import java.util.UUID;
 import org.apache.shardingsphere.orchestration.core.common.utils.IpUtils;
 
 /**
  * Orchestration instance.
  */
-@Getter
 public final class OrchestrationInstance {
     
     private static final String DELIMITER = "@";
@@ -33,25 +31,38 @@ public final class OrchestrationInstance {
     
     private final String instanceId;
 
-    public OrchestrationInstance(final int identifier) {
-        instanceId = IpUtils.getIp() + DELIMITER + identifier + DELIMITER + UUID.randomUUID().toString();
+    private OrchestrationInstance(final String instanceTag) {
+        this.instanceId = IpUtils.getIp() + DELIMITER + instanceTag + DELIMITER + UUID.randomUUID().toString();
     }
 
     /**
-     * Get instance.
+     * initializer method which takes in instance tag and initialises
+     * the singleton object.
      *
-     * @param   identifier  identifier on which the instance is running
-     * @return  instance    the orchestration instance
+     * @param   instanceTag     the orchestration instance tag
+     * @return  instance        singleton instance
      */
-    public static OrchestrationInstance getInstance(final int identifier) {
+    public static OrchestrationInstance init(final String instanceTag) {
         if (null == instance) {
             synchronized (OrchestrationInstance.class) {
                 if (null == instance) {
-                    instance = new OrchestrationInstance(identifier);
+                    instance = new OrchestrationInstance(instanceTag);
                 }
             }
         }
         return instance;
+    }
+
+    /**
+     * getter for instanceId.
+     *
+     * @return  instanceId    instance id of the singleton
+     */
+    public static String getInstanceId() {
+        if (null == instance) {
+            throw new IllegalStateException("OrchestrationInstance not initialized!");
+        }
+        return instance.instanceId;
     }
 
 }
