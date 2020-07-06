@@ -21,26 +21,26 @@
 # 
 ######################################################################################################
 #
-orchestration:
-  orchestration_ds:
-    orchestrationType: registry_center,config_center,metadata_center
-    instanceType: zookeeper
-    serverLists: localhost:2181
-    namespace: orchestration1
-    props:
-      overwrite: false
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
-      maxRetries: 3
-      operationTimeoutMilliseconds: 500
-
-authentication:
-  users:
-    root:
-      password: root
-    sharding:
-      password: sharding
-      authorizedSchemas: sharding_db
+#orchestration:
+#  orchestration_ds:
+#    orchestrationType: registry_center,config_center,metadata_center
+#    instanceType: zookeeper
+#    serverLists: localhost:2181
+#    namespace: orchestration
+#    props:
+#      overwrite: false
+#      retryIntervalMilliseconds: 500
+#      timeToLiveSeconds: 60
+#      maxRetries: 3
+#      operationTimeoutMilliseconds: 500
+#
+#authentication:
+#  users:
+#    root:
+#      password: root
+#    sharding:
+#      password: sharding
+#      authorizedSchemas: sharding_db
 #
 #metrics:
 #   name: prometheus
