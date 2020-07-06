@@ -46,7 +46,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -78,10 +77,10 @@ public final class UnicastBackendHandlerTest {
     @Test
     public void assertExecuteWhileSchemaIsNull() {
         UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", backendConnection);
+        backendConnection.setCurrentSchema("schema_8");
         setDatabaseCommunicationEngine(backendHandler);
         BackendResponse actual = backendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));
-        verify(backendConnection).setCurrentSchema("schema_8");
         backendHandler.execute();
     }
     
