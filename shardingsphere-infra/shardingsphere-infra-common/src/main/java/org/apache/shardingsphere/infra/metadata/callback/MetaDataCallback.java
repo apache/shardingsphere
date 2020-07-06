@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.hook;
+package org.apache.shardingsphere.infra.metadata.callback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 /**
  * Meta data hook enum.
  */
-public enum MetaDataHook {
+public enum MetaDataCallback {
     
     /**
      * Instance meta data hook.

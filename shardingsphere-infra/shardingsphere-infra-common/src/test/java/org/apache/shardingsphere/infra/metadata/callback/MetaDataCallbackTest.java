@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.hook;
+package org.apache.shardingsphere.infra.metadata.callback;
 
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.junit.Test;
@@ -24,16 +24,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-public final class MetaDataHookTest {
+public final class MetaDataCallbackTest {
     
     @Test
     public void assertRegister() {
-        MetaDataHook.INSTANCE.run("test", new RuleSchemaMetaData(null, null));
-        MetaDataHook.INSTANCE.register((schemaName, ruleSchemaMetaData) -> {
+        MetaDataCallback.INSTANCE.run("test", new RuleSchemaMetaData(null, null));
+        MetaDataCallback.INSTANCE.register((schemaName, ruleSchemaMetaData) -> {
             assertEquals(schemaName, "test");
             assertThat(ruleSchemaMetaData.getClass().getName(), is(RuleSchemaMetaData.class.getName()));
         });
-        MetaDataHook.INSTANCE.run("test", new RuleSchemaMetaData(null, null));
+        MetaDataCallback.INSTANCE.run("test", new RuleSchemaMetaData(null, null));
     }
 }
 
