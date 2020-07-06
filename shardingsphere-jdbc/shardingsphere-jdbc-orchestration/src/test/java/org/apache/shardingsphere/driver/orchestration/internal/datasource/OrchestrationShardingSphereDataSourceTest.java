@@ -79,7 +79,9 @@ public final class OrchestrationShardingSphereDataSourceTest {
     }
     
     private static CenterConfiguration getRegistryCenterConfiguration() {
-        CenterConfiguration result = new CenterConfiguration("FourthTestRegistryCenter", new Properties());
+        Properties properties = new Properties();
+        properties.setProperty("overwrite", "true");
+        CenterConfiguration result = new CenterConfiguration("FourthTestRegistryCenter", properties);
         result.setOrchestrationType(CenterType.REGISTRY_CENTER.getValue());
         result.setNamespace("test_sharding_registry");
         result.setServerLists("localhost:3181");
@@ -87,7 +89,9 @@ public final class OrchestrationShardingSphereDataSourceTest {
     }
     
     private static CenterConfiguration getConfigCenterConfiguration() {
-        CenterConfiguration result = new CenterConfiguration("FourthTestConfigCenter", new Properties());
+        Properties properties = new Properties();
+        properties.setProperty("overwrite", "true");
+        CenterConfiguration result = new CenterConfiguration("FourthTestConfigCenter", properties);
         result.setOrchestrationType(CenterType.CONFIG_CENTER.getValue());
         result.setNamespace("test_sharding_config");
         result.setServerLists("localhost:3181");
@@ -95,7 +99,9 @@ public final class OrchestrationShardingSphereDataSourceTest {
     }
     
     private static CenterConfiguration getMetaDataCenterConfiguration() {
-        CenterConfiguration result = new CenterConfiguration("FirstTestMetaDataCenter", new Properties());
+        Properties properties = new Properties();
+        properties.setProperty("overwrite", "true");
+        CenterConfiguration result = new CenterConfiguration("FirstTestMetaDataCenter", properties);
         result.setOrchestrationType(CenterType.METADATA_CENTER.getValue());
         result.setNamespace("test_encrypt_metadata");
         result.setServerLists("localhost:3181");

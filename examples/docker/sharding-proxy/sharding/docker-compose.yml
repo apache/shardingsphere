@@ -35,8 +35,8 @@ services:
       - ../../../src/resources/manual_schema.sql:/docker-entrypoint-initdb.d/manual_schema.sql
 
   proxy:
-    ## get more versions of proxy here : https://hub.docker.com/r/shardingsphere/sharding-proxy/tags
-    image: "shardingsphere/sharding-proxy:4.0.1"
+    ## get more versions of proxy here : https://hub.docker.com/r/apache/sharding-proxy/tags
+    image: "apache/sharding-proxy:4.1.1"
     container_name: sharding-sphere-proxy
     depends_on:
      - mysql
