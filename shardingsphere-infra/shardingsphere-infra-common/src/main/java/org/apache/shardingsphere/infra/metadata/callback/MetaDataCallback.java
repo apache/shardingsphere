@@ -23,12 +23,12 @@ import java.util.function.BiConsumer;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 
 /**
- * Meta data hook enum.
+ * Meta data call back enum.
  */
 public enum MetaDataCallback {
     
     /**
-     * Instance meta data hook.
+     * Instance meta data call back.
      */
     INSTANCE;
     
