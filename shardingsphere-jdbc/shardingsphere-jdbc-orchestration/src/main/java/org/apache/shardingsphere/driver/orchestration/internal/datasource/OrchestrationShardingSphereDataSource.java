@@ -69,7 +69,7 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
 
     private static final String DELIMITER = "@";
 
-    private static final int THREAD_ID = Integer.parseInt(ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0]);
+    private static final String THREAD_ID = ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0];
     
     private ShardingSphereDataSource dataSource;
     
