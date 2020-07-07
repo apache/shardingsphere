@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.metrics.MetricsUtils;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -59,7 +60,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     @SuppressWarnings("unchecked")
     @Override
-    public ExecutionContext route(final String sql) {
+    public ExecutionContext execute(final String sql) {
         SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(sql, true);
         Collection<ShardingSphereRule> rules = schema.getSchema().getRules();
         if (rules.isEmpty()) {
@@ -80,7 +81,12 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     @Override
-    public boolean executeSQL(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    public boolean execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return ((PreparedStatement) statement).execute();
+    }
+    
+    private void routeMetricsCollect(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
+        MetricsUtils.buriedShardingMetrics(routeContext.getRouteResult().getRouteUnits());
+        MetricsUtils.buriedShardingRuleMetrics(routeContext, rules);
     }
 }

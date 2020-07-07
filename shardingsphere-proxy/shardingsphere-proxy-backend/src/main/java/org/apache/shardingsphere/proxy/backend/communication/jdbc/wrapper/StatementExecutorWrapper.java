@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.metrics.MetricsUtils;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -54,7 +55,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     @SuppressWarnings("unchecked")
     @Override
-    public ExecutionContext route(final String sql) {
+    public ExecutionContext execute(final String sql) {
         SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(sql, false);
         Collection<ShardingSphereRule> rules = schema.getSchema().getRules();
         if (rules.isEmpty()) {
@@ -76,7 +77,12 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     @Override
-    public boolean executeSQL(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    public boolean execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
+    }
+    
+    private void routeMetricsCollect(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
+        MetricsUtils.buriedShardingMetrics(routeContext.getRouteResult().getRouteUnits());
+        MetricsUtils.buriedShardingRuleMetrics(routeContext, rules);
     }
 }
