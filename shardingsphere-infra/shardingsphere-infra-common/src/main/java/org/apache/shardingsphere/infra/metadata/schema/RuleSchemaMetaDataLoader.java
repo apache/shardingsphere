@@ -68,7 +68,6 @@ public final class RuleSchemaMetaDataLoader {
     @SuppressWarnings("unchecked")
     public RuleSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ConfigurationProperties props,
                                    final ListeningExecutorService executorService) throws SQLException {
-        //store rule actual table
         Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         SchemaMetaData configuredSchemaMetaData = new SchemaMetaData(new HashMap<>());
         for (Entry<ShardingSphereRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
@@ -80,7 +79,7 @@ public final class RuleSchemaMetaDataLoader {
             configuredSchemaMetaData.merge(schemaMetaData);
         }
         configuredSchemaMetaData = decorate(configuredSchemaMetaData);
-        Map<String, SchemaMetaData> unConfiguredSchemaMetaDataMap = syncLoad(databaseType, dataSourceMap, excludedTableNames);
+        Map<String, SchemaMetaData> unConfiguredSchemaMetaDataMap = load(databaseType, dataSourceMap, excludedTableNames);
         return new RuleSchemaMetaData(configuredSchemaMetaData, unConfiguredSchemaMetaDataMap);
     }
     
@@ -140,7 +139,7 @@ public final class RuleSchemaMetaDataLoader {
         return load(databaseType, dataSourceMap, tableName, props);
     }
     
-    private Map<String, SchemaMetaData> syncLoad(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTableNames) throws SQLException {
+    private Map<String, SchemaMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTableNames) throws SQLException {
         Map<String, SchemaMetaData> result = new HashMap<>(dataSourceMap.size(), 1);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(entry.getValue(), databaseType.getName(), excludedTableNames);

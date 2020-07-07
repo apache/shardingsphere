@@ -121,8 +121,7 @@ public abstract class BaseDQLIT extends SingleIT {
         if ("shadow".equals(getRuleType())) {
             return;
         }
-        // did't load metadata for unConfigured table
-        if (actualMetaData.getColumnCount() == 0) {
+        if (0 == actualMetaData.getColumnCount()) {
             return;
         }
         assertThat(actualMetaData.getColumnCount(), is(expectedColumns.size()));

@@ -38,7 +38,7 @@ public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDat
                                 final Map<String, DataSource> dataSourceMap, final AlterTableStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         SchemaMetaData schemaMetaData = metaData.getSchema().getConfiguredSchemaMetaData();
-        if (schemaMetaData != null && schemaMetaData.containsTable(tableName)) {
+        if (null != schemaMetaData && schemaMetaData.containsTable(tableName)) {
             callback.load(tableName).ifPresent(tableMetaData -> metaData.getSchema().getConfiguredSchemaMetaData().put(tableName, tableMetaData));
         }
     }

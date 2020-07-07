@@ -49,7 +49,7 @@ public final class SchemaMetaDataLoader {
     /**
      * Load schema meta data.
      *
-     * @param dataSource   data source
+     * @param dataSource data source
      * @param databaseType database type
      * @return schema meta data
      * @throws SQLException SQL exception
@@ -61,8 +61,8 @@ public final class SchemaMetaDataLoader {
     /**
      * Load schema meta data.
      *
-     * @param dataSource         data source
-     * @param databaseType       database type
+     * @param dataSource data source
+     * @param databaseType database type
      * @param excludedTableNames excluded table names
      * @return schema meta data
      * @throws SQLException SQL exception

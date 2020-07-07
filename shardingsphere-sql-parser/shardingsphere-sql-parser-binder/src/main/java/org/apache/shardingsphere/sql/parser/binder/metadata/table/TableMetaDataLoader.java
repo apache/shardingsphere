@@ -56,7 +56,7 @@ public final class TableMetaDataLoader {
     }
 
     /**
-     * Load table without column and index meta data, this is for UnConfigured table.
+     * Load table without column and index meta data, this is for unconfigured table.
      *
      * @param dataSource data source
      * @param table table name
