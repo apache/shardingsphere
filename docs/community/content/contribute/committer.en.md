@@ -32,12 +32,12 @@ Processes are:
 
 1. Committer needs to check the list of Pull Requests and issues to be processed in the community every day and assign them to the appropriate committer, namely assignee.
 
-2. After assignee is assigned an issue, the following judgments are required:
+2. After a committer is assigned with an issue, the following work is required:
 
- - Determine whether it is a long-term issue. if it is, mark as pending.
- - Determine the type of issue, such as: bug, enhancement, discussion, etc.
- - Determine Milestone and mark.
+ - Judge whether it is a long-term issue. If it is, please mark it as pending.
+ - Add issue labels, such as bug, enhancement, discussion, etc.
+ - Add Milestone labels.
 
 **Notice**
 
-Whether it is a community issue or not, there must be assignee until the issue is completed.
+At least one committer is expected to be in the assignee list of that issue.
