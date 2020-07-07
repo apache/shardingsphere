@@ -40,15 +40,6 @@ public interface JDBCExecutorWrapper {
     ExecutionContext execute(String sql) throws SQLException;
     
     /**
-     * Get execute group engine.
-     * 
-     * @param backendConnection backend connection
-     * @param option statement option
-     * @return execute group engine
-     */
-    ExecuteGroupEngine getExecuteGroupEngine(BackendConnection backendConnection, StatementOption option);
-    
-    /**
      * Execute SQL.
      * 
      * @param statement statement
@@ -58,4 +49,13 @@ public interface JDBCExecutorWrapper {
      * @throws SQLException SQL exception
      */
     boolean execute(Statement statement, String sql, boolean isReturnGeneratedKeys) throws SQLException;
+    
+    /**
+     * Get execute group engine.
+     *
+     * @param backendConnection backend connection
+     * @param option statement option
+     * @return execute group engine
+     */
+    ExecuteGroupEngine getExecuteGroupEngine(BackendConnection backendConnection, StatementOption option);
 }

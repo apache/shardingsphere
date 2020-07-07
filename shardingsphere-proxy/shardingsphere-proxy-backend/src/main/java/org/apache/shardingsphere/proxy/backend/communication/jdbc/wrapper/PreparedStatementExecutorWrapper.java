@@ -75,14 +75,14 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     @Override
-    public ExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, final StatementOption option) {
-        int maxConnectionsSizePerQuery = PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
+    public boolean execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+        return ((PreparedStatement) statement).execute();
     }
     
     @Override
-    public boolean execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
-        return ((PreparedStatement) statement).execute();
+    public ExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, final StatementOption option) {
+        int maxConnectionsSizePerQuery = PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
     }
     
     private void routeMetricsCollect(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
