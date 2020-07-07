@@ -123,6 +123,7 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 | SELECT * FROM ds.tbl_name1                                                                 | 包含schema                 |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | 详见DISTINCT支持情况详细说明 |
 | SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | 会导致全路由                |
+| (SELECT * FROM tbl_name)                                                                   | 暂不支持加括号的查询          |
 
 ## DISTINCT支持情况详细说明
 
