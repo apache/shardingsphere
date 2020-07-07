@@ -40,4 +40,4 @@ Processes are:
 
 **Notice**
 
-At least one committer is expected to be in the assignee list of that issue.
+At least one committer is expected to be in the assignee list of that issue before the issue is completed..
