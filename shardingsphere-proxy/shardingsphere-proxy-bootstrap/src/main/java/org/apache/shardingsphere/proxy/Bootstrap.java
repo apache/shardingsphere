@@ -79,14 +79,14 @@ public final class Bootstrap {
      * Main entrance.
      *
      * @param args startup arguments
-     * @throws SQLException SQL exception
+     * @throws Exception exception
      */
     public static void main(final String[] args) throws Exception {
         int port = getPort(args);
         ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load(getConfigPath(args));
         logRuleConfigurationMap(getRuleConfigurations(shardingConfig.getRuleConfigurationMap()).values());
         boolean isOrchestration = null != shardingConfig.getServerConfiguration().getOrchestration();
-        try (ProxyConfigurationConverter converter = ProxyConfigurationConverterFactory.newInstances(isOrchestration)){
+        try (ProxyConfigurationConverter converter = ProxyConfigurationConverterFactory.newInstances(isOrchestration)) {
             ProxyConfiguration proxyConfiguration = converter.convert(shardingConfig);
             initialize(proxyConfiguration, port, converter);
         }
