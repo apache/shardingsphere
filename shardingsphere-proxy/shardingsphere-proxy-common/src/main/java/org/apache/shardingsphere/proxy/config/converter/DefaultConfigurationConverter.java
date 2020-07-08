@@ -36,7 +36,7 @@ import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
 /**
  * Default configuration converter.
  */
-public class DefaultConfigurationConverter extends AbstractConfigurationConverter {
+public final class DefaultConfigurationConverter extends AbstractConfigurationConverter {
     
     @Override
     public ProxyConfiguration convert(final ShardingConfiguration shardingConfiguration) {

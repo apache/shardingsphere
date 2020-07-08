@@ -34,13 +34,17 @@ public final class ProxyConfigurationConverterFactory {
      */
     public static ProxyConfigurationConverter newInstances(final boolean isOrchestration) {
         if (isOrchestration) {
-            Optional<ProxyConfigurationConverter> configurationConverter = SingletonServiceLoader.getServiceLoader(ProxyConfigurationConverter.class).newServiceInstances();
-            if (!configurationConverter.isPresent()) {
-                throw new ServiceProviderNotFoundException(ProxyConfigurationConverter.class);
-            }
-            return configurationConverter.get();
+            return loadConverter();
         } else {
             return new DefaultConfigurationConverter();
         }
+    }
+    
+    private static ProxyConfigurationConverter loadConverter() {
+        Optional<ProxyConfigurationConverter> configurationConverter = SingletonServiceLoader.getServiceLoader(ProxyConfigurationConverter.class).newServiceInstances();
+        if (!configurationConverter.isPresent()) {
+            throw new ServiceProviderNotFoundException(ProxyConfigurationConverter.class);
+        }
+        return configurationConverter.get();
     }
 }

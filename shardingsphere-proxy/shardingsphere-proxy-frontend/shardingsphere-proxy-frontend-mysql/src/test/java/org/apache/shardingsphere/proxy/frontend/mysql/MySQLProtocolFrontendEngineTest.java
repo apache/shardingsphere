@@ -61,6 +61,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLProtocolFrontendEngineTest {
     
+    private static final String SCHEMA = "schema_";
+    
     private MySQLProtocolFrontendEngine mysqlProtocolFrontendEngine;
     
     @Mock
@@ -155,9 +157,9 @@ public final class MySQLProtocolFrontendEngineTest {
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
-        Map<String, SchemaContext> result = new HashMap<>(10);
+        Map<String, SchemaContext> result = new HashMap<>();
         for (int i = 0; i < 10; i++) {
-            String name = "schema_" + i;
+            String name = SCHEMA + i;
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
             RuntimeContext runtimeContext = mock(RuntimeContext.class);
             result.put(name, new SchemaContext(name, schema, runtimeContext));
