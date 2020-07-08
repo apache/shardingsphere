@@ -22,7 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.control.panel.spi.engine.MetricsHandlerFacadeEngine;
+import org.apache.shardingsphere.control.panel.spi.engine.SingletonFacadeEngine;
 import org.apache.shardingsphere.control.panel.spi.metrics.MetricsHandlerFacade;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
@@ -67,7 +67,7 @@ public final class CommandExecutorTask implements Runnable {
         RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
         rootInvokeHook.start();
         Supplier<Boolean> histogramSupplier = null;
-        Optional<MetricsHandlerFacade> handlerFacade = MetricsHandlerFacadeEngine.build();
+        Optional<MetricsHandlerFacade> handlerFacade = SingletonFacadeEngine.buildMetrics();
         if (handlerFacade.isPresent()) {
             histogramSupplier = handlerFacade.get().histogramStartTimer(MetricsLabelEnum.REQUEST_LATENCY.getName());
         }
