@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.MySQLErrPacketFactory;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -52,8 +51,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     public MySQLComFieldListPacketExecutor(final MySQLComFieldListPacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
         schemaName = backendConnection.getSchema().getName();
-        SQLStatement sqlStatement = backendConnection.getSchema().getRuntimeContext().getSqlParserEngine().parse(getShowColumnsSQL(), false);
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(backendConnection.getSchema(), getShowColumnsSQL(), sqlStatement, backendConnection);
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(backendConnection.getSchema(), getShowColumnsSQL(), backendConnection);
     }
     
     @Override

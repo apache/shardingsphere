@@ -26,7 +26,6 @@ import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.sql.SQLException;
 
@@ -50,8 +49,7 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
         if (null == backendConnection.getSchema()) {
             return new ErrorResponse(new NoDatabaseSelectedException());
         }
-        SQLStatement sqlStatement = backendConnection.getSchema().getRuntimeContext().getSqlParserEngine().parse(sql, false);
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getSchema(), sql, sqlStatement, backendConnection);
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getSchema(), sql, backendConnection);
         return databaseCommunicationEngine.execute();
     }
     

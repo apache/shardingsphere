@@ -25,7 +25,6 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.StatementExecutorWrapper;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.util.List;
 
@@ -54,7 +53,7 @@ public final class DatabaseCommunicationEngineFactory {
      * @param backendConnection backend connection
      * @return instance of text protocol backend handler
      */
-    public DatabaseCommunicationEngine newTextProtocolInstance(final SchemaContext schema, final String sql, final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+    public DatabaseCommunicationEngine newTextProtocolInstance(final SchemaContext schema, final String sql, final BackendConnection backendConnection) {
         return new JDBCDatabaseCommunicationEngine(schema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(schema)));
     }
     
