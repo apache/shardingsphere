@@ -75,6 +75,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         rawExecutor = new RawProxyExecutor(BackendExecutorContext.getInstance().getExecutorKernel(), backendConnection.isSerialExecute());
     }
     
+    @Override
+    public ExecutionContext execute(final String sql) throws SQLException {
+        return jdbcExecutorWrapper.execute(sql);
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
