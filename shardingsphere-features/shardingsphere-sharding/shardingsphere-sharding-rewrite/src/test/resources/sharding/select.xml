@@ -27,6 +27,28 @@
         <output sql="SELECT * FROM t_account_0 WHERE account_id = 100" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="select_with_sum_fun">
+        <input sql="SELECT SUM(DISTINCT account_id), SUM(account_id) FROM t_account WHERE account_id = 100" />
+        <output sql="SELECT SUM(DISTINCT account_id), SUM(account_id) FROM t_account_0 WHERE account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_avg_fun">
+        <input sql="SELECT AVG(DISTINCT t.account_id), account_id FROM t_account t WHERE account_id = 100" />
+        <output sql="SELECT AVG(DISTINCT t.account_id), account_id FROM t_account_0 t WHERE account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_having">
+        <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ?" parameters="1"/>
+        <output sql="SELECT COUNT(account_id) as count_alias , amount AS GROUP_BY_DERIVED_0 FROM t_account_0 GROUP BY amount ORDER BY amount ASC  HAVING count_alias > ?" parameters="1"/>
+        <output sql="SELECT COUNT(account_id) as count_alias , amount AS GROUP_BY_DERIVED_0 FROM t_account_1 GROUP BY amount ORDER BY amount ASC  HAVING count_alias > ?" parameters="1"/>
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_schema">
+        <input sql="SELECT * FROM db.t_account" />
+        <output sql="SELECT * FROM db.t_account_0"/>
+        <output sql="SELECT * FROM db.t_account_1"/>
+    </rewrite-assertion>
+
     <rewrite-assertion id="select_with_subquery" db-type="MySQL">
         <input sql="SELECT * FROM (select * from t_account where account_id=?) a WHERE account_id = 100" parameters="100" />
         <output sql="SELECT * FROM (select * from t_account_0 where account_id=?) a WHERE account_id = 100" parameters="100" />

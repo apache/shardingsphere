@@ -110,6 +110,7 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 | DROP INDEX idx_name                                                                         |                          |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                          |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                          |
+| SELECT subquery_alias.col1 FROM (select tbl_alias.col1 from tbl_name tbl_alias where tbl_alias.col2=?) subquery_alias                                                   |                                         |
 
 ### 不支持的SQL
 
@@ -117,13 +118,12 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 | ------------------------------------------------------------------------------------------ | -------------------------- |
 | INSERT INTO tbl_name (col1, col2, ...) VALUES(1+2, ?, ...)                                 | VALUES语句不支持运算表达式   |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ? | INSERT .. SELECT           |
-| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?       | HAVING                     |
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                      | UNION                      |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                  | UNION ALL                  |
-| SELECT * FROM ds.tbl_name1                                                                 | 包含schema                 |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | 详见DISTINCT支持情况详细说明 |
 | SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | 会导致全路由                |
-| (SELECT * FROM tbl_name)                                                                   | 暂不支持加括号的查询          |
+| (SELECT * FROM tbl_name)                                                                   | 暂不支持加括号的查询                              |
+| SELECT subquery_alias.col1 FROM (select tbl_name.col1 from tbl_name where tbl_name.col2=?) subquery_alias| 子查询中projection, where 中column 包含table,没有使用table别名                                         |
 
 ## DISTINCT支持情况详细说明
 
@@ -150,5 +150,4 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 
 | SQL                                                                                         | 不支持原因                          |
 | ------------------------------------------------------------------------------------------- |----------------------------------- |
-| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | 同时使用普通聚合函数和DISTINCT聚合函数 |
-
+| SELECT SUM(DISTINCT tbl_name.col1), SUM(tbl_name.col1) FROM tbl_name | Use column owner that is not table alias |
