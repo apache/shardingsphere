@@ -108,8 +108,9 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 
 * 分布式治理
 * 弹性伸缩
-* 可视化链路追踪
-* 数据加密
+* 可观测性（分布式跟踪、指标度量）
+* 数据加解密
+* 影子表压测
 
 ## 如何构建
 
@@ -117,7 +118,7 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 
 ```bash
 ./mvnw clean install -Prelease
-``` 
+```
 
 构建产物：
 
@@ -130,6 +131,7 @@ shardingsphere-distribution/shardingsphere-proxy-distribution/target/apache-shar
 ### 构建ShardingSphere UI
 
 ```bash
+git clone https://github.com/apache/shardingsphere-ui
 cd shardingsphere-ui
 ./mvnw clean install -Prelease
 ```
