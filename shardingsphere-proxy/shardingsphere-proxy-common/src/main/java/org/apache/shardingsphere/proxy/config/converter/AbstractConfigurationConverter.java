@@ -39,7 +39,7 @@ public abstract class AbstractConfigurationConverter implements ProxyConfigurati
     /**
      * Get rule configurations.
      *
-     * @param localRuleConfigs rule configs for YAML.
+     * @param localRuleConfigs rule configs for YAML
      * @return rule configurations
      */
     protected Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
@@ -48,9 +48,9 @@ public abstract class AbstractConfigurationConverter implements ProxyConfigurati
     }
     
     /**
-     * Gets data source parameters map.
+     * Get data source parameters map.
      *
-     * @param localRuleConfigs rule configs for YAML.
+     * @param localRuleConfigs rule configs for YAML
      * @return data source parameters map
      */
     protected Map<String, Map<String, DataSourceParameter>> getDataSourceParametersMap(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
@@ -58,9 +58,9 @@ public abstract class AbstractConfigurationConverter implements ProxyConfigurati
     }
     
     /**
-     * Gets data source parameters.
+     * Get data source parameters.
      *
-     * @param dataSourceParameters data source parameters for YAML.
+     * @param dataSourceParameters data source parameters for YAML
      * @return data source parameters
      */
     protected Map<String, DataSourceParameter> getDataSourceParameters(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
@@ -69,9 +69,9 @@ public abstract class AbstractConfigurationConverter implements ProxyConfigurati
     }
     
     /**
-     * Create data source parameter data source parameter.
+     * Create data source parameter.
      *
-     * @param yamlDataSourceParameter data source parameter for YAML.
+     * @param yamlDataSourceParameter data source parameter for YAML
      * @return data source parameter
      */
     protected DataSourceParameter createDataSourceParameter(final YamlDataSourceParameter yamlDataSourceParameter) {
@@ -92,7 +92,7 @@ public abstract class AbstractConfigurationConverter implements ProxyConfigurati
     /**
      * Get metrics configuration.
      *
-     * @param yamlMetricsConfiguration metrics configuration for YAML.
+     * @param yamlMetricsConfiguration metrics configuration for YAML
      * @return metrics configuration
      */
     protected MetricsConfiguration getMetricsConfiguration(final YamlMetricsConfiguration yamlMetricsConfiguration) {
