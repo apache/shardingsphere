@@ -26,6 +26,7 @@ import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.sql.SQLException;
 
@@ -39,6 +40,8 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     
     private final String sql;
     
+    private final SQLStatement sqlStatement;
+    
     private final BackendConnection backendConnection;
     
     private DatabaseCommunicationEngine databaseCommunicationEngine;
@@ -48,7 +51,8 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
         if (null == backendConnection.getSchema()) {
             return new ErrorResponse(new NoDatabaseSelectedException());
         }
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getSchema(), sql, backendConnection);
+        SQLStatement sqlStatement = backendConnection.getSchema().getRuntimeContext().getSqlParserEngine().parse(sql, false);
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getSchema(), sql, sqlStatement, backendConnection);
         return databaseCommunicationEngine.execute();
     }
     

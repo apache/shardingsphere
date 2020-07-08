@@ -26,6 +26,7 @@ import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -48,7 +49,8 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
         String originalSchema = backendConnection.getSchema().getName();
         for (String each : ProxySchemaContexts.getInstance().getSchemaNames()) {
             backendConnection.setCurrentSchema(each);
-            responses.add(databaseCommunicationEngineFactory.newTextProtocolInstance(ProxySchemaContexts.getInstance().getSchema(each), sql, backendConnection).execute());
+            SQLStatement sqlStatement = backendConnection.getSchema().getRuntimeContext().getSqlParserEngine().parse(sql, false);
+            responses.add(databaseCommunicationEngineFactory.newTextProtocolInstance(ProxySchemaContexts.getInstance().getSchema(each), sql, sqlStatement, backendConnection).execute());
         }
         backendConnection.setCurrentSchema(originalSchema);
         for (BackendResponse each : responses) {
