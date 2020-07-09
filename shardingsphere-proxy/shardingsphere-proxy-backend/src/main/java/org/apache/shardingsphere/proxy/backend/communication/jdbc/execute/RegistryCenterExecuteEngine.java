@@ -20,9 +20,13 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDataSourceStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
-import java.sql.SQLException;
+import java.util.LinkedList;
 
 /**
  * Registry center execute engine.
@@ -33,12 +37,27 @@ public class RegistryCenterExecuteEngine implements SQLExecuteEngine {
     private final SQLStatement sqlStatement;
     
     @Override
-    public ExecutionContext execute(final String sql) throws SQLException {
-        return null;
+    public final ExecutionContext execute(final String sql) {
+        return new ExecutionContext(new CommonSQLStatementContext(sqlStatement), new LinkedList<>());
     }
     
     @Override
-    public BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
-        return null;
+    public final BackendResponse execute(final ExecutionContext executionContext) {
+        if (executionContext.getSqlStatementContext() instanceof CreateDataSourceStatementContext) {
+            return execute((CreateDataSourceStatementContext) executionContext.getSqlStatementContext());
+        }
+        return execute((CreateShardingRuleStatementContext) executionContext.getSqlStatementContext());
+    }
+    
+    private BackendResponse execute(final CreateDataSourceStatementContext context) {
+        UpdateResponse result = new UpdateResponse();
+        result.setType("CREATE");
+        return result;
+    }
+    
+    private BackendResponse execute(final CreateShardingRuleStatementContext context) {
+        UpdateResponse result = new UpdateResponse();
+        result.setType("CREATE");
+        return result;
     }
 }

@@ -15,38 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.yaml;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.generator;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 /**
- * Data source parameters for YAML.
+ * Yaml configuration generator.
  */
-@Getter
-@Setter
-@EqualsAndHashCode
-public final class YamlDataSourceParameter implements YamlConfiguration {
+public interface YamlConfigurationGenerator<I extends SQLStatementContext, O extends YamlConfiguration> {
     
-    private String url;
-    
-    private String username;
-    
-    private String password;
-    
-    private long connectionTimeoutMilliseconds;
-    
-    private long idleTimeoutMilliseconds;
-    
-    private long maxLifetimeMilliseconds;
-    
-    private int maxPoolSize;
-    
-    private int minPoolSize;
-    
-    private long maintenanceIntervalMilliseconds;
-
-    private boolean readOnly;
+    /**
+     * Generate yaml configuration.
+     *
+     * @param sqlStatement sql statement
+     * @return yaml configuration
+     */
+    O generate(I sqlStatement);
 }
