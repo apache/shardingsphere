@@ -20,5 +20,5 @@ package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 /**
  * Create dataSource statement.
  */
-public class CreateDataSourceStatement extends DDLStatement {
+public final class CreateDataSourcesStatement extends DDLStatement {
 }

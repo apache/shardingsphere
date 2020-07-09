@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDataSourceStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDataSourcesStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
@@ -34,6 +34,8 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public class RegistryCenterExecuteEngine implements SQLExecuteEngine {
     
+    private final String schemaName;
+    
     private final SQLStatement sqlStatement;
     
     @Override
@@ -43,13 +45,13 @@ public class RegistryCenterExecuteEngine implements SQLExecuteEngine {
     
     @Override
     public final BackendResponse execute(final ExecutionContext executionContext) {
-        if (executionContext.getSqlStatementContext() instanceof CreateDataSourceStatementContext) {
-            return execute((CreateDataSourceStatementContext) executionContext.getSqlStatementContext());
+        if (executionContext.getSqlStatementContext() instanceof CreateDataSourcesStatementContext) {
+            return execute((CreateDataSourcesStatementContext) executionContext.getSqlStatementContext());
         }
         return execute((CreateShardingRuleStatementContext) executionContext.getSqlStatementContext());
     }
     
-    private BackendResponse execute(final CreateDataSourceStatementContext context) {
+    private BackendResponse execute(final CreateDataSourcesStatementContext context) {
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;

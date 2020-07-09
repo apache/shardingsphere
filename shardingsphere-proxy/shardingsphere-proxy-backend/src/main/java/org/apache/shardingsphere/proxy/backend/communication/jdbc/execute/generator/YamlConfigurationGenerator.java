@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.generator;
 
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 /**
  * Yaml configuration generator.
  */
-public interface YamlConfigurationGenerator<I extends SQLStatementContext, O extends YamlConfiguration> {
+public interface YamlConfigurationGenerator<I extends SQLStatementContext, O> {
     
     /**
      * Generate yaml configuration.
      *
      * @param sqlStatement sql statement
-     * @return yaml configuration
+     * @return yaml configurations
      */
     O generate(I sqlStatement);
 }

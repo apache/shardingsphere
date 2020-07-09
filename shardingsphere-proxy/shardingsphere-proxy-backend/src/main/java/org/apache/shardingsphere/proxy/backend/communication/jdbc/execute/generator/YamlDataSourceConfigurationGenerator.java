@@ -18,19 +18,26 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.generator;
 
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDataSourceStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDataSourcesStatementContext;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Yaml dataSource configuration generator.
  */
-public class YamlDataSourceConfigurationGenerator implements YamlConfigurationGenerator<CreateDataSourceStatementContext, YamlDataSourceParameter> {
+public class YamlDataSourceConfigurationGenerator implements YamlConfigurationGenerator<CreateDataSourcesStatementContext, Collection<YamlDataSourceParameter>> {
     
     @Override
-    public YamlDataSourceParameter generate(final CreateDataSourceStatementContext sqlStatement) {
-        YamlDataSourceParameter result = new YamlDataSourceParameter();
-        result.setUrl(sqlStatement.getUrl());
-        result.setUsername(sqlStatement.getUsername());
-        result.setPassword(sqlStatement.getPassword());
+    public Collection<YamlDataSourceParameter> generate(final CreateDataSourcesStatementContext sqlStatement) {
+        Collection<YamlDataSourceParameter> result = new LinkedList<>();
+        for (CreateDataSourcesStatementContext.DataSourceContext each : sqlStatement.getDataSourceContexts()) {
+            YamlDataSourceParameter dataSource = new YamlDataSourceParameter();
+            dataSource.setUrl(each.getUrl());
+            dataSource.setUsername(each.getUserName());
+            dataSource.setPassword(each.getPassword());
+            result.add(dataSource);
+        }
         return result;
     }
 }

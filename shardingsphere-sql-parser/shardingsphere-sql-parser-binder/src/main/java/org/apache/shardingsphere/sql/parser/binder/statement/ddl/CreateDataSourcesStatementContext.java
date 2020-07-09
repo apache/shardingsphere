@@ -17,42 +17,40 @@
 
 package org.apache.shardingsphere.sql.parser.binder.statement.ddl;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDataSourceStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDataSourcesStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Create dataSource statement context.
  */
-public class CreateDataSourceStatementContext extends CommonSQLStatementContext<CreateDataSourceStatement> {
+public final class CreateDataSourcesStatementContext extends CommonSQLStatementContext<CreateDataSourcesStatement> {
     
-    public CreateDataSourceStatementContext(final CreateDataSourceStatement sqlStatement) {
+    public CreateDataSourcesStatementContext(final CreateDataSourcesStatement sqlStatement) {
         super(sqlStatement);
     }
     
     /**
-     * Get url.
+     * Get dataSource contexts.
      *
-     * @return datasource url
+     * @return dataSource contexts
      */
-    public String getUrl() {
-        return "";
+    public Collection<DataSourceContext> getDataSourceContexts() {
+        return new LinkedList<>();
     }
     
-    /**
-     * Get username.
-     *
-     * @return username
-     */
-    public String getUsername() {
-        return "";
-    }
-    
-    /**
-     * Get password.
-     *
-     * @return password
-     */
-    public String getPassword() {
-        return "";
+    @RequiredArgsConstructor
+    @Getter
+    public final class DataSourceContext {
+        
+        private final String url;
+        
+        private final String userName;
+        
+        private final String password;
     }
 }

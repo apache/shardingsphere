@@ -27,7 +27,7 @@ import java.util.Properties;
 /**
  * Create sharding rule statement context.
  */
-public class CreateShardingRuleStatementContext extends CommonSQLStatementContext<CreateShardingRuleStatement> {
+public final class CreateShardingRuleStatementContext extends CommonSQLStatementContext<CreateShardingRuleStatement> {
     
     public CreateShardingRuleStatementContext(final CreateShardingRuleStatement sqlStatement) {
         super(sqlStatement);

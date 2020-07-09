@@ -20,5 +20,5 @@ package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 /**
  * Create sharding rule statement.
  */
-public class CreateShardingRuleStatement extends DDLStatement {
+public final class CreateShardingRuleStatement extends DDLStatement {
 }
