@@ -46,7 +46,7 @@ import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.facade.MetricsInitFacade;
+import org.apache.shardingsphere.metrics.facade.MetricsTrackerManagerFacade;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ClusterConfigurationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
@@ -205,9 +205,9 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     public synchronized void renew(final MetricsConfigurationChangedEvent event) {
         MetricsConfiguration metricsConfiguration = event.getMetricsConfiguration();
         if (metricsConfiguration.getEnable()) {
-            MetricsInitFacade.restart(metricsConfiguration);
+            MetricsTrackerManagerFacade.restart(metricsConfiguration);
         } else {
-            MetricsInitFacade.close();
+            MetricsTrackerManagerFacade.close();
         }
     }
     

@@ -31,7 +31,7 @@ import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
  * Metrics tracker facade.
  */
 @Slf4j
-public final class MetricsInitFacade implements ControlPanelFacade<MetricsConfiguration> {
+public final class MetricsTrackerManagerFacade implements ControlPanelFacade<MetricsConfiguration> {
     
     private static MetricsTrackerManager metricsTrackerManager;
     
@@ -62,10 +62,9 @@ public final class MetricsInitFacade implements ControlPanelFacade<MetricsConfig
      */
     @Override
     public void init(final MetricsConfiguration metricsConfiguration) {
-        if (enabled) {
-            return;
+        if (!enabled) {
+            doInit(metricsConfiguration);
         }
-        doInit(metricsConfiguration);
     }
     
     private static void doInit(final MetricsConfiguration metricsConfiguration) {

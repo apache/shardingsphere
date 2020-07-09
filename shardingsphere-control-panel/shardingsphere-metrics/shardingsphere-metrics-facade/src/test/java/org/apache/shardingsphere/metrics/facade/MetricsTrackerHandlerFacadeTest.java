@@ -31,35 +31,35 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MetricsTrackerFacadeTest {
+public final class MetricsTrackerHandlerFacadeTest {
     
-    private final MetricsTrackerFacade metricsTrackerFacade = new MetricsTrackerFacade();
+    private final MetricsTrackerHandlerFacade metricsTrackerHandlerFacade = new MetricsTrackerHandlerFacade();
     
     @Test
     public void assertCounterInc() {
-        metricsTrackerFacade.counterInc("request_total");
+        metricsTrackerHandlerFacade.counterInc("request_total");
     }
     
     @Test
     public void assertGaugeInc() {
-        metricsTrackerFacade.gaugeInc("request_total");
+        metricsTrackerHandlerFacade.gaugeInc("request_total");
     }
     
     @Test
     public void assertGaugeDec() {
-        metricsTrackerFacade.gaugeDec("request_total");
+        metricsTrackerHandlerFacade.gaugeDec("request_total");
     }
     
     @Test
     public void assertHistogramAndSummary() {
-        Supplier<Boolean> histogramDelegate = metricsTrackerFacade.histogramStartTimer("request");
+        Supplier<Boolean> histogramDelegate = metricsTrackerHandlerFacade.histogramStartTimer("request");
         assertThat(histogramDelegate.get(), is(false));
-        Supplier<Boolean> summaryDelegate = metricsTrackerFacade.summaryStartTimer("request");
+        Supplier<Boolean> summaryDelegate = metricsTrackerHandlerFacade.summaryStartTimer("request");
         assertThat(summaryDelegate.get(), is(false));
         init();
-        Supplier<Boolean> emptyHistogram = metricsTrackerFacade.histogramStartTimer("request");
+        Supplier<Boolean> emptyHistogram = metricsTrackerHandlerFacade.histogramStartTimer("request");
         assertThat(emptyHistogram.get(), is(true));
-        Supplier<Boolean> empty = metricsTrackerFacade.summaryStartTimer("request");
+        Supplier<Boolean> empty = metricsTrackerHandlerFacade.summaryStartTimer("request");
         assertThat(empty.get(), is(true));
     }
     

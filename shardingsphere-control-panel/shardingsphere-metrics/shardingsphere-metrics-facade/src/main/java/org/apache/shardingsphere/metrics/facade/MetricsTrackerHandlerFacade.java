@@ -29,32 +29,32 @@ import org.apache.shardingsphere.metrics.facade.handler.MetricsTrackerHandler;
  * Metrics tracker facade.
  */
 @Slf4j
-public final class MetricsTrackerFacade implements MetricsHandlerFacade {
+public final class MetricsTrackerHandlerFacade implements MetricsHandlerFacade {
     
     @Override
     public void counterInc(final String metricsLabel, final String... labelValues) {
-        if (MetricsInitFacade.getEnabled()) {
+        if (MetricsTrackerManagerFacade.getEnabled()) {
             MetricsTrackerHandler.getInstance().counterInc(metricsLabel, labelValues);
         }
     }
     
     @Override
     public void gaugeInc(final String metricsLabel, final String... labelValues) {
-        if (MetricsInitFacade.getEnabled()) {
+        if (MetricsTrackerManagerFacade.getEnabled()) {
             MetricsTrackerHandler.getInstance().gaugeInc(metricsLabel, labelValues);
         }
     }
     
     @Override
     public void gaugeDec(final String metricsLabel, final String... labelValues) {
-        if (MetricsInitFacade.getEnabled()) {
+        if (MetricsTrackerManagerFacade.getEnabled()) {
             MetricsTrackerHandler.getInstance().gaugeDec(metricsLabel, labelValues);
         }
     }
     
     @Override
     public Supplier<Boolean> histogramStartTimer(final String metricsLabel, final String... labelValues) {
-        if (!MetricsInitFacade.getEnabled()) {
+        if (!MetricsTrackerManagerFacade.getEnabled()) {
             return () -> false;
         }
         Optional<HistogramMetricsTrackerDelegate> histogramMetricsTrackerDelegate = MetricsTrackerHandler.getInstance().histogramStartTimer(metricsLabel, labelValues);
@@ -65,14 +65,14 @@ public final class MetricsTrackerFacade implements MetricsHandlerFacade {
     }
     
     private void histogramObserveDuration(final HistogramMetricsTrackerDelegate delegate) {
-        if (MetricsInitFacade.getEnabled()) {
+        if (MetricsTrackerManagerFacade.getEnabled()) {
             MetricsTrackerHandler.getInstance().histogramObserveDuration(delegate);
         }
     }
     
     @Override
     public Supplier<Boolean> summaryStartTimer(final String metricsLabel, final String... labelValues) {
-        if (!MetricsInitFacade.getEnabled()) {
+        if (!MetricsTrackerManagerFacade.getEnabled()) {
             return () -> false;
         }
         Optional<SummaryMetricsTrackerDelegate> optionalSummaryMetricsTrackerDelegate = MetricsTrackerHandler.getInstance().summaryStartTimer(metricsLabel, labelValues);
@@ -83,7 +83,7 @@ public final class MetricsTrackerFacade implements MetricsHandlerFacade {
     }
     
     private void summaryObserveDuration(final SummaryMetricsTrackerDelegate delegate) {
-        if (MetricsInitFacade.getEnabled()) {
+        if (MetricsTrackerManagerFacade.getEnabled()) {
             MetricsTrackerHandler.getInstance().summaryObserveDuration(delegate);
         }
     }
