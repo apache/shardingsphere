@@ -55,4 +55,5 @@
     <sql-case id="select_with_date_format_function" value="SELECT * FROM t_order WHERE DATE_FORMAT(current_date, '%Y-%m-%d') = '2019-12-18'" db-types="MySQL" />
     <sql-case id="select_with_spatial_function" value="SELECT * FROM t_order WHERE ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id)) != 0" db-types="MySQL" />
     <sql-case id="select_current_user" value="SELECT CURRENT_USER" db-types="PostgreSQL"/>
+    <sql-case id="select_with_match_against" value="SELECT * FROM t_order_item WHERE MATCH(t_order_item.description) AGAINST (? IN NATURAL LANGUAGE MODE) AND user_id = ?" db-types="MySQL" />
 </sql-cases>
