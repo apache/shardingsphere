@@ -39,7 +39,7 @@ import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
 public final class DefaultConfigurationConverter extends AbstractConfigurationConverter {
     
     @Override
-    public ProxyConfiguration convert(final ShardingConfiguration shardingConfiguration) {
+    public ProxyConfiguration convert(final ShardingConfiguration shardingConfiguration, final String instanceTag) {
         ProxyConfiguration proxyConfiguration = new ProxyConfiguration();
         Authentication authentication = new AuthenticationYamlSwapper().swapToObject(shardingConfiguration.getServerConfiguration().getAuthentication());
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(shardingConfiguration.getRuleConfigurationMap());

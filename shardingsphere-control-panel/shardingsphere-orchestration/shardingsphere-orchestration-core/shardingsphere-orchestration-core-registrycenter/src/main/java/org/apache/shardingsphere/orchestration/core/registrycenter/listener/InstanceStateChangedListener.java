@@ -36,7 +36,7 @@ import java.util.Collections;
 public final class InstanceStateChangedListener extends PostShardingCenterRepositoryEventListener {
     
     public InstanceStateChangedListener(final String name, final RegistryCenterRepository registryCenterRepository) {
-        super(registryCenterRepository, Collections.singleton(new RegistryCenterNode(name).getInstancesNodeFullPath(OrchestrationInstance.getInstanceId())));
+        super(registryCenterRepository, Collections.singleton(new RegistryCenterNode(name).getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId())));
     }
     
     @Override

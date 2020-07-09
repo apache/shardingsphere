@@ -27,42 +27,43 @@ public final class OrchestrationInstance {
     
     private static final String DELIMITER = "@";
 
-    private static OrchestrationInstance instance;
+    private static final OrchestrationInstance INSTANCE = new OrchestrationInstance();
     
-    private final String instanceId;
+    private String instanceId;
 
-    private OrchestrationInstance(final String instanceTag) {
-        this.instanceId = IpUtils.getIp() + DELIMITER + instanceTag + DELIMITER + UUID.randomUUID().toString();
+    private OrchestrationInstance() {
+
     }
 
     /**
-     * initializer method which takes in instance tag and initialises
-     * the singleton object.
+     * Getter for instanceId.
      *
-     * @param   instanceTag     the orchestration instance tag
-     * @return  instance        singleton instance
+     * @return  instanceId
+     */
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    /**
+     * This method initialises the instance with the instance id.
+     *
+     * @param instanceTag   instance tag of the instance (port/ip)
+     * @return  singleton instance
      */
     public static OrchestrationInstance init(final String instanceTag) {
-        if (null == instance) {
-            synchronized (OrchestrationInstance.class) {
-                if (null == instance) {
-                    instance = new OrchestrationInstance(instanceTag);
-                }
-            }
+        if (null == INSTANCE.instanceId) {
+            INSTANCE.instanceId = IpUtils.getIp() + DELIMITER + instanceTag + DELIMITER + UUID.randomUUID().toString();
         }
-        return instance;
+        return INSTANCE;
     }
 
     /**
-     * getter for instanceId.
+     * Get instance.
      *
-     * @return  instanceId    instance id of the singleton
+     * @return  singleton instance
      */
-    public static String getInstanceId() {
-        if (null == instance) {
-            throw new IllegalStateException("OrchestrationInstance not initialized!");
-        }
-        return instance.instanceId;
+    public static OrchestrationInstance getInstance() {
+        return INSTANCE;
     }
 
 }
