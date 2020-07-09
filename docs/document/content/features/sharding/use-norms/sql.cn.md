@@ -150,4 +150,4 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 
 | SQL                                                                                         | 不支持原因                          |
 | ------------------------------------------------------------------------------------------- |----------------------------------- |
-| SELECT SUM(DISTINCT tbl_name.col1), SUM(tbl_name.col1) FROM tbl_name | Use column owner that is not table alias |
+| SELECT SUM(DISTINCT tbl_name.col1), SUM(tbl_name.col1) FROM tbl_name | 使用tbl_name.col1, tbl_name 是表的真实名,请使用表的别名 |
