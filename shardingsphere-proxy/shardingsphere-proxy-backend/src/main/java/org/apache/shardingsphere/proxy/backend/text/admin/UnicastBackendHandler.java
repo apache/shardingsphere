@@ -21,9 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 import java.sql.SQLException;
@@ -46,7 +47,7 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     public BackendResponse execute() {
         // TODO we should remove set default ShardingSphere schema after parser can recognize all DAL broadcast SQL.
         if (null == backendConnection.getSchema()) {
-            backendConnection.setCurrentSchema(ProxySchemaContexts.getInstance().getSchemaContexts().getSchemaContexts().keySet().iterator().next());
+            return new ErrorResponse(new NoDatabaseSelectedException());
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getSchema(), sql, backendConnection);
         return databaseCommunicationEngine.execute();

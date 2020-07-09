@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.util;
+package org.apache.shardingsphere.proxy.config.util;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;

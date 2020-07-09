@@ -38,6 +38,17 @@ JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss256k -XX:+DisableExplicitGC -XX
 
 MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 
+print_usage() {
+    echo "usage: start.sh [port] [config_dir]"
+    echo "  port: proxy listen port, default is 3307"
+    echo "  config_dir: proxy config directory, default is conf"
+    exit 0
+}
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
+    print_usage
+fi
+
 echo "Starting the $SERVER_NAME ..."
 
 if [ $# == 1 ]; then

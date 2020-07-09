@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.cluster.facade;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
+import org.apache.shardingsphere.cluster.facade.init.ClusterInitFacade;
 import org.apache.shardingsphere.cluster.heartbeat.ClusterHeartbeatInstance;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
@@ -29,13 +28,7 @@ import org.apache.shardingsphere.cluster.state.ClusterStateInstance;
 import org.apache.shardingsphere.cluster.state.DataSourceState;
 import org.apache.shardingsphere.cluster.state.InstanceState;
 import org.apache.shardingsphere.cluster.state.enums.NodeState;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.orchestration.core.common.event.ClusterConfigurationChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
-import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,34 +44,22 @@ public final class ClusterFacade {
     
     private ClusterStateInstance clusterStateInstance;
     
-    private volatile boolean enabled;
-    
-    private ClusterFacade() {
-        ShardingOrchestrationEventBus.getInstance().register(this);
-    }
-    
     /**
      * Init cluster facade.
      *
      * @param clusterConfiguration cluster configuration
      */
     public void init(final ClusterConfiguration clusterConfiguration) {
-        if (!enabled) {
-            Preconditions.checkNotNull(clusterConfiguration, "cluster configuration can not be null.");
-            clusterHeartbeatInstance = ClusterHeartbeatInstance.getInstance();
-            clusterHeartbeatInstance.init(clusterConfiguration.getHeartbeat());
-            clusterStateInstance = ClusterStateInstance.getInstance();
-            enabled = true;
-        }
+        clusterHeartbeatInstance = ClusterHeartbeatInstance.getInstance();
+        clusterHeartbeatInstance.init(clusterConfiguration.getHeartbeat());
+        clusterStateInstance = ClusterStateInstance.getInstance();
     }
     
     /**
-     * Report heartbeat.
-     *
-     * @param heartBeatResponse heartbeat response
+     * Close cluster heartbeat instance.
      */
-    public void reportHeartbeat(final HeartbeatResponse heartBeatResponse) {
-        clusterStateInstance.persistInstanceState(buildInstanceState(heartBeatResponse));
+    public void close() {
+        clusterHeartbeatInstance.close();
     }
     
     /**
@@ -87,44 +68,23 @@ public final class ClusterFacade {
      * @param schemaContexts schema contexts
      */
     public void detectHeartbeat(final Map<String, SchemaContext> schemaContexts) {
-        HeartbeatResponse heartbeatResponse = clusterHeartbeatInstance.detect(schemaContexts);
-        reportHeartbeat(heartbeatResponse);
-    }
-    
-    /**
-     * Renew cluster facade.
-     *
-     * @param event cluster configuration changed event
-     */
-    @Subscribe
-    public void renew(final ClusterConfigurationChangedEvent event) {
-        stop();
-        init(event.getClusterConfiguration());
-    }
-    
-    /**
-     *  Renew cluster facade after properties changed.
-     *
-     * @param event properties changed event
-     */
-    @Subscribe
-    public void renew(final PropertiesChangedEvent event) {
-        boolean clusterEnabled = new ConfigurationProperties(event.getProps()).<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED);
-        if (enabled != clusterEnabled) {
-            if (clusterEnabled) {
-                init(ShardingOrchestrationFacade.getInstance().getConfigCenter().loadClusterConfiguration());
-            } else {
-                stop();
-            }
+        if (ClusterInitFacade.isEnabled()) {
+            HeartbeatResponse heartbeatResponse = clusterHeartbeatInstance.detect(schemaContexts);
+            reportHeartbeat(heartbeatResponse);
         }
     }
     
-    private void stop() {
-        if (enabled) {
-            clusterHeartbeatInstance.close();
-            enabled = false;
-            log.info("heart beat detect stopped");
-        }
+    private void reportHeartbeat(final HeartbeatResponse heartBeatResponse) {
+        clusterStateInstance.persistInstanceState(buildInstanceState(heartBeatResponse));
+    }
+    
+    /**
+     * Get cluster facade instance.
+     *
+     * @return cluster facade instance
+     */
+    public static ClusterFacade getInstance() {
+        return ClusterFacadeHolder.INSTANCE;
     }
     
     private InstanceState buildInstanceState(final HeartbeatResponse heartbeatResponse) {
@@ -139,7 +99,7 @@ public final class ClusterFacade {
     }
     
     private void buildDataSourceState(final String schemaName, final Collection<HeartbeatResult> heartbeatResults,
-                       final Map<String, DataSourceState> dataSourceStateMap, final InstanceState instanceState) {
+                                      final Map<String, DataSourceState> dataSourceStateMap, final InstanceState instanceState) {
         heartbeatResults.forEach(each -> {
             String dataSourceName = Joiner.on(".").join(schemaName, each.getDataSourceName());
             DataSourceState dataSourceState = null == instanceState.getDataSources()
@@ -149,15 +109,6 @@ public final class ClusterFacade {
             dataSourceState.setLastConnect(each.getDetectTimeStamp());
             dataSourceStateMap.put(dataSourceName, dataSourceState);
         });
-    }
-    
-    /**
-     * Get instance.
-     *
-     * @return cluster facade instance
-     */
-    public static ClusterFacade getInstance() {
-        return ClusterFacadeHolder.INSTANCE;
     }
     
     private static final class ClusterFacadeHolder {

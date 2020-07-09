@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.schema;
+package org.apache.shardingsphere.proxy.orchestration.schema;
 
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
@@ -25,7 +25,7 @@ import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.orchestration.core.schema.OrchestrationSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCRawBackendDataSourceFactory;
-import org.apache.shardingsphere.proxy.backend.util.DataSourceConverter;
+import org.apache.shardingsphere.proxy.config.util.DataSourceConverter;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;

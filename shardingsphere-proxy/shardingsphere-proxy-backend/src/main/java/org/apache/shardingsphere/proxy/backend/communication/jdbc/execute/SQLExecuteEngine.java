@@ -30,6 +30,15 @@ public interface SQLExecuteEngine {
     /**
      * Execute SQL.
      *
+     * @param sql SQL to be routed
+     * @return execution context
+     * @throws SQLException SQL exception
+     */
+    ExecutionContext execute(String sql) throws SQLException;
+    
+    /**
+     * Execute SQL.
+     *
      * @param executionContext execution context
      * @return execute response
      * @throws SQLException SQL exception

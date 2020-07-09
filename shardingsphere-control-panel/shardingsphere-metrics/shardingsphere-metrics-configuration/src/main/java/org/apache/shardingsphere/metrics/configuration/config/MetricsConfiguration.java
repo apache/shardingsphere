@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Properties;
+import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
 
 /**
  * Metrics configuration.
@@ -29,7 +30,7 @@ import java.util.Properties;
 @Getter
 @Setter
 @AllArgsConstructor
-public final class MetricsConfiguration {
+public final class MetricsConfiguration implements FacadeConfiguration {
     
     private String metricsName;
     

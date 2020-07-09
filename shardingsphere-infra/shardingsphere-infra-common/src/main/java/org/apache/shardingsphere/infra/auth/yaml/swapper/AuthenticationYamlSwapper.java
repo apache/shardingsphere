@@ -39,6 +39,9 @@ public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenti
     @Override
     public Authentication swapToObject(final YamlAuthenticationConfiguration yamlConfiguration) {
         Authentication result = new Authentication();
+        if (null == yamlConfiguration) {
+            return result;
+        }
         result.getUsers().putAll(Maps.transformValues(yamlConfiguration.getUsers(), proxyUserYamlSwapper::swapToObject));
         return result;
     }

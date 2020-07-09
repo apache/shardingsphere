@@ -32,7 +32,7 @@ weight = 6
     <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" instance-ref="regCenter" />
 </beans>
 ```
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd](http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration-5.0.0.xsd)
 
 <orchestration:instance />
 
@@ -65,7 +65,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/orchestration
     <cluster:heartbeat id="cluster" sql="select 1" threadCount="1" interval="60" retryEnable="false" retryMaximum="3" retryInterval="3"/>
 </beans>
 ```
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/cluster/cluster.xsd](http://shardingsphere.apache.org/schema/shardingsphere/cluster/cluster.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/orchestration/cluster-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/orchestration/cluster-5.0.0.xsd)
 
 <cluster:heartbeat />
 

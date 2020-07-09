@@ -56,6 +56,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.util.SQLUtil;
 
@@ -107,13 +108,12 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private boolean containsSubquery() {
-        // FIXME process subquery
-//        Collection<SubqueryPredicateSegment> subqueryPredicateSegments = getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class);
-//        for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
-//            if (!each.getAndPredicates().isEmpty()) {
-//                return true;
-//            }
-//        }
+        Collection<WhereSegment> subqueryPredicateSegments = getSqlStatement().getSubqueryWhereSegments();
+        for (WhereSegment each : subqueryPredicateSegments) {
+            if (!each.getAndPredicates().isEmpty()) {
+                return true;
+            }
+        }
         return false;
     }
     
@@ -310,6 +310,13 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         Collection<SimpleTableSegment> result = new LinkedList<>();
         if (null != tableFactorSegment.getTable() && tableFactorSegment.getTable() instanceof SimpleTableSegment) {
             result.add((SimpleTableSegment) tableFactorSegment.getTable());
+        }
+        // TODO subquery in from support not use alias
+        if (null != tableFactorSegment.getTable() && tableFactorSegment.getTable() instanceof SubqueryTableSegment) {
+            SelectStatement subselect = ((SubqueryTableSegment) tableFactorSegment.getTable()).getSubquery().getSelect();
+            for (TableReferenceSegment each : subselect.getTableReferences()) {
+                result.addAll(getTablesFromTableReference(each));
+            }
         }
         if (null != tableFactorSegment.getTableReferences() && !tableFactorSegment.getTableReferences().isEmpty()) {
             for (TableReferenceSegment each: tableFactorSegment.getTableReferences()) {

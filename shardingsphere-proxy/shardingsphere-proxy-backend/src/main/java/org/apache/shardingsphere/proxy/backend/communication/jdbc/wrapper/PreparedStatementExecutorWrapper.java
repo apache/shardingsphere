@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.metrics.MetricsUtils;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -55,12 +56,13 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     private final SchemaContext schema;
     
+    private final SQLStatement sqlStatement;
+    
     private final List<Object> parameters;
     
     @SuppressWarnings("unchecked")
     @Override
-    public ExecutionContext route(final String sql) {
-        SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(sql, true);
+    public ExecutionContext execute(final String sql) {
         Collection<ShardingSphereRule> rules = schema.getSchema().getRules();
         if (rules.isEmpty()) {
             return new ExecutionContext(
@@ -74,13 +76,18 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     @Override
+    public boolean execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+        return ((PreparedStatement) statement).execute();
+    }
+    
+    @Override
     public ExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, final StatementOption option) {
         int maxConnectionsSizePerQuery = PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
     }
     
-    @Override
-    public boolean executeSQL(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
-        return ((PreparedStatement) statement).execute();
+    private void routeMetricsCollect(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
+        MetricsUtils.buriedShardingMetrics(routeContext.getRouteResult().getRouteUnits());
+        MetricsUtils.buriedShardingRuleMetrics(routeContext, rules);
     }
 }

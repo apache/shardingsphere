@@ -571,3 +571,11 @@ TEXT
 VARCHAR
     : V A R C H A R
     ;
+
+PERCENT
+    : P E R C E N T
+    ;
+
+TIES
+    : T I E S
+    ;
