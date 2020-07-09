@@ -23,9 +23,14 @@ import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.RegistryCenterExecuteEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.StatementExecutorWrapper;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDataSourceStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateShardingRuleStatement;
 
 import java.util.List;
 
@@ -56,7 +61,7 @@ public final class DatabaseCommunicationEngineFactory {
      */
     public DatabaseCommunicationEngine newTextProtocolInstance(final SchemaContext schema, final String sql, final BackendConnection backendConnection) {
         SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(sql, false);
-        return new JDBCDatabaseCommunicationEngine(schema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(schema, sqlStatement)));
+        return new JDBCDatabaseCommunicationEngine(sql, backendConnection, createSQLExecuteEngine(sqlStatement, backendConnection, new StatementExecutorWrapper(schema, sqlStatement)));
     }
     
     /**
@@ -70,6 +75,12 @@ public final class DatabaseCommunicationEngineFactory {
      */
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SchemaContext schema, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
         SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(sql, true);
-        return new JDBCDatabaseCommunicationEngine(schema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(schema, sqlStatement, parameters)));
+        return new JDBCDatabaseCommunicationEngine(sql,
+                backendConnection, createSQLExecuteEngine(sqlStatement, backendConnection, new PreparedStatementExecutorWrapper(schema, sqlStatement, parameters)));
+    }
+    
+    private SQLExecuteEngine createSQLExecuteEngine(final SQLStatement sqlStatement, final BackendConnection backendConnection, final JDBCExecutorWrapper executorWrapper) {
+        return sqlStatement instanceof CreateDataSourceStatement || sqlStatement instanceof CreateShardingRuleStatement
+                ? new RegistryCenterExecuteEngine(sqlStatement) : new JDBCExecuteEngine(backendConnection, executorWrapper);
     }
 }
