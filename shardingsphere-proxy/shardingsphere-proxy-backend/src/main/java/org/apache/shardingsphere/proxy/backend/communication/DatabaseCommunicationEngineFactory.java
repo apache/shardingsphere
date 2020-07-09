@@ -25,6 +25,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.StatementExecutorWrapper;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.util.List;
 
@@ -54,7 +55,8 @@ public final class DatabaseCommunicationEngineFactory {
      * @return instance of text protocol backend handler
      */
     public DatabaseCommunicationEngine newTextProtocolInstance(final SchemaContext schema, final String sql, final BackendConnection backendConnection) {
-        return new JDBCDatabaseCommunicationEngine(schema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(schema)));
+        SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(sql, false);
+        return new JDBCDatabaseCommunicationEngine(schema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(schema, sqlStatement)));
     }
     
     /**
@@ -67,6 +69,7 @@ public final class DatabaseCommunicationEngineFactory {
      * @return instance of text protocol backend handler
      */
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SchemaContext schema, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
-        return new JDBCDatabaseCommunicationEngine(schema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(schema, parameters)));
+        SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(sql, true);
+        return new JDBCDatabaseCommunicationEngine(schema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(schema, sqlStatement, parameters)));
     }
 }
