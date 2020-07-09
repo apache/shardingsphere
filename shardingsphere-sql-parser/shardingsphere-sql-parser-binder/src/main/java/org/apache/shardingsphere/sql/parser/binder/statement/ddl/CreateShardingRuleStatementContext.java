@@ -52,11 +52,20 @@ public class CreateShardingRuleStatementContext extends CommonSQLStatementContex
     }
     
     /**
-     * Get sharding algorithm.
+     * Get sharding column.
      *
-     * @return sharding algorithm
+     * @return sharding column
      */
-    public String getShardingAlgorithm() {
+    public String getShardingColumn() {
+        return "";
+    }
+    
+    /**
+     * Get sharding algorithm type.
+     *
+     * @return sharding algorithm type
+     */
+    public String getAlgorithmType() {
         return "";
     }
     
