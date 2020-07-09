@@ -7,9 +7,10 @@ chapter = true
 
 ## Latest releases
 
-ShardingSphere is released as source code tarballs with corresponding binary tarballs for convenience. The downloads are distributed via mirror sites and should be checked for tampering using GPG or SHA-512.
+Apache ShardingSphere is released as source code tarballs with corresponding binary tarballs for convenience.
+The downloads are distributed via mirror sites and should be checked for tampering using GPG or SHA-512.
 
-**ShardingSphere**
+**Apache ShardingSphere**
 
 | Version | Release date | Description | Downloads |
 | - | - | - | - |
@@ -35,7 +36,10 @@ Find all incubator releases in the [Archive incubator repository](https://archiv
 
 [PGP signatures KEYS](https://downloads.apache.org/shardingsphere/KEYS)
 
-It is essential that you verify the integrity of the downloaded files using the PGP or SHA signatures. The PGP signatures can be verified using GPG or PGP. Please download the KEYS as well as the asc signature files for relevant distribution. It is recommended to get these files from the main distribution directory and not from the mirrors.
+It is essential that you verify the integrity of the downloaded files using the PGP or SHA signatures.
+The PGP signatures can be verified using GPG or PGP.
+Please download the KEYS as well as the asc signature files for relevant distribution.
+It is recommended to get these files from the main distribution directory and not from the mirrors.
 
 ```shell
 gpg -i KEYS
