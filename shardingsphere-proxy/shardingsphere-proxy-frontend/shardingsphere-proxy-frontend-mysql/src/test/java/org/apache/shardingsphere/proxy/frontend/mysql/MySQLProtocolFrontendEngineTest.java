@@ -32,10 +32,7 @@ import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.schema.ProxyOrchestrationSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.mysql.auth.MySQLAuthenticationEngine;
@@ -64,6 +61,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLProtocolFrontendEngineTest {
     
+    private static final String SCHEMA = "schema_";
+    
     private MySQLProtocolFrontendEngine mysqlProtocolFrontendEngine;
     
     @Mock
@@ -77,7 +76,6 @@ public final class MySQLProtocolFrontendEngineTest {
     
     @Before
     public void setUp() {
-        initProxySchemaContexts();
         resetConnectionIdGenerator();
     }
     
@@ -87,31 +85,6 @@ public final class MySQLProtocolFrontendEngineTest {
         field.setAccessible(true);
         field.set(ConnectionIdGenerator.getInstance(), 0);
         mysqlProtocolFrontendEngine = new MySQLProtocolFrontendEngine();
-    }
-    
-    @SneakyThrows
-    private void initProxySchemaContexts() {
-        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
-        field.setAccessible(true);
-        field.set(ProxySchemaContexts.getInstance(), getProxyOrchestrationSchemaContexts());
-    }
-    
-    private ProxyOrchestrationSchemaContexts getProxyOrchestrationSchemaContexts() {
-        ProxyOrchestrationSchemaContexts result = new ProxyOrchestrationSchemaContexts(new SchemaContexts());
-        SchemaContexts schemaContexts = new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication());
-        result.getSchemaContexts().putAll(schemaContexts.getSchemaContexts());
-        return result;
-    }
-    
-    private Map<String, SchemaContext> getSchemaContextMap() {
-        Map<String, SchemaContext> result = new HashMap<>(10);
-        for (int i = 0; i < 10; i++) {
-            String name = "schema_" + i;
-            ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-            RuntimeContext runtimeContext = mock(RuntimeContext.class);
-            result.put(name, new SchemaContext(name, schema, runtimeContext));
-        }
-        return result;
     }
     
     @Test
@@ -162,7 +135,7 @@ public final class MySQLProtocolFrontendEngineTest {
     private void setAuthentication(final ProxyUser proxyUser) {
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
-        ShardingOrchestrationEventBus.getInstance().post(new AuthenticationChangedEvent(authentication));
+        initProxySchemaContexts(authentication);
     }
     
     @SneakyThrows
@@ -170,5 +143,27 @@ public final class MySQLProtocolFrontendEngineTest {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
         field.setAccessible(true);
         field.set(mysqlProtocolFrontendEngine.getAuthEngine(), connectionPhase);
+    }
+    
+    @SneakyThrows
+    private void initProxySchemaContexts(final Authentication authentication) {
+        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        field.setAccessible(true);
+        field.set(ProxySchemaContexts.getInstance(), getSchemaContexts(authentication));
+    }
+    
+    private SchemaContexts getSchemaContexts(final Authentication authentication) {
+        return new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), authentication);
+    }
+    
+    private Map<String, SchemaContext> getSchemaContextMap() {
+        Map<String, SchemaContext> result = new HashMap<>();
+        for (int i = 0; i < 10; i++) {
+            String name = SCHEMA + i;
+            ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+            RuntimeContext runtimeContext = mock(RuntimeContext.class);
+            result.put(name, new SchemaContext(name, schema, runtimeContext));
+        }
+        return result;
     }
 }

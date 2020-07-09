@@ -18,6 +18,11 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.auth;
 
 import com.google.common.primitives.Bytes;
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
@@ -28,18 +33,9 @@ import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
-import org.apache.shardingsphere.proxy.backend.schema.ProxyOrchestrationSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -57,7 +53,6 @@ public final class MySQLAuthenticationHandlerTest {
     @Before
     public void setUp() {
         initAuthPluginDataForAuthenticationHandler();
-        initProxySchemaContexts();
     }
     
     @SneakyThrows
@@ -66,31 +61,6 @@ public final class MySQLAuthenticationHandlerTest {
         Field field = MySQLAuthenticationHandler.class.getDeclaredField("authPluginData");
         field.setAccessible(true);
         field.set(authenticationHandler, authPluginData);
-    }
-    
-    @SneakyThrows
-    private void initProxySchemaContexts() {
-        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
-        field.setAccessible(true);
-        field.set(ProxySchemaContexts.getInstance(), getProxyOrchestrationSchemaContexts());
-    }
-    
-    private ProxyOrchestrationSchemaContexts getProxyOrchestrationSchemaContexts() {
-        ProxyOrchestrationSchemaContexts result = new ProxyOrchestrationSchemaContexts(new SchemaContexts());
-        SchemaContexts schemaContexts = new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication());
-        result.getSchemaContexts().putAll(schemaContexts.getSchemaContexts());
-        return result;
-    }
-    
-    private Map<String, SchemaContext> getSchemaContextMap() {
-        Map<String, SchemaContext> result = new HashMap<>(10);
-        for (int i = 0; i < 10; i++) {
-            String name = "schema_" + i;
-            ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-            RuntimeContext runtimeContext = mock(RuntimeContext.class);
-            result.put(name, new SchemaContext(name, schema, runtimeContext));
-        }
-        return result;
     }
     
     @Test
@@ -128,15 +98,37 @@ public final class MySQLAuthenticationHandlerTest {
         assertThat(authenticationHandler.login("root", authResponse, "db2").orElse(null), is(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR));
     }
     
+    @Test
+    public void assertGetAuthPluginData() {
+        assertThat(authenticationHandler.getAuthPluginData().getAuthPluginData(), is(Bytes.concat(part1, part2)));
+    }
+    
     @SneakyThrows
     private void setAuthentication(final ProxyUser proxyUser) {
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
-        ShardingOrchestrationEventBus.getInstance().post(new AuthenticationChangedEvent(authentication));
+        initProxySchemaContexts(authentication);
     }
     
-    @Test
-    public void assertGetAuthPluginData() {
-        assertThat(authenticationHandler.getAuthPluginData().getAuthPluginData(), is(Bytes.concat(part1, part2)));
+    @SneakyThrows
+    private void initProxySchemaContexts(final Authentication authentication) {
+        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        field.setAccessible(true);
+        field.set(ProxySchemaContexts.getInstance(), getSchemaContexts(authentication));
+    }
+    
+    private SchemaContexts getSchemaContexts(final Authentication authentication) {
+        return new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), authentication);
+    }
+    
+    private Map<String, SchemaContext> getSchemaContextMap() {
+        Map<String, SchemaContext> result = new HashMap<>(10);
+        for (int i = 0; i < 10; i++) {
+            String name = "schema_" + i;
+            ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+            RuntimeContext runtimeContext = mock(RuntimeContext.class);
+            result.put(name, new SchemaContext(name, schema, runtimeContext));
+        }
+        return result;
     }
 }
