@@ -26,3 +26,18 @@ Processes are:
  - Update documentation and example;
  - Improve processes and tools;
  - Guide new contributors join community.
+
+
+##  Committer Routine
+
+1. Committer needs to check the list of Pull Requests and issues to be processed in the community every day and assign them to the appropriate committer, namely assignee.
+
+2. After a committer is assigned with an issue, the following work is required:
+
+ - Judge whether it is a long-term issue. If it is, please mark it as pending.
+ - Add issue labels, such as bug, enhancement, discussion, etc.
+ - Add Milestone labels.
+
+**Notice**
+
+At least one committer is expected to be in the assignee list of that issue before it is completed.

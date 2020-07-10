@@ -1864,4 +1864,26 @@
             <expression-projection start-index="7" stop-index="18" />
         </projections>
     </select>
+    <select sql-case-id="select_with_match_against" parameters="hello, 10">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" start-index="14" stop-index="25" />
+            </table-factor>
+        </table-reference>
+        <where start-index="27" stop-index="116" literal-stop-index="121">
+            <and-predicate>
+                <predicate start-index="106" stop-index="116" literal-start-index="110" literal-stop-index="121">
+                    <column-left-value name="user_id" start-index="106" stop-index="112" literal-start-index="110" literal-stop-index="116" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression start-index="120" stop-index="121" value="10" />
+                        <parameter-marker-expression value="1" start-index="116" stop-index="116" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
 </sql-parser-test-cases>

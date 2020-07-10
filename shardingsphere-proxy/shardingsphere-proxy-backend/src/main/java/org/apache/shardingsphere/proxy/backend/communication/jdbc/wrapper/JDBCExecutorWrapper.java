@@ -18,16 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper;
 
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.metrics.MetricsUtils;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 
 /**
  * JDBC executor wrapper.
@@ -35,22 +31,13 @@ import java.util.Collection;
 public interface JDBCExecutorWrapper {
     
     /**
-     * Route SQL.
+     * Execute SQL.
      * 
      * @param sql SQL to be routed
      * @return execution context
      * @throws SQLException SQL exception
      */
-    ExecutionContext route(String sql) throws SQLException;
-    
-    /**
-     * Get execute group engine.
-     * 
-     * @param backendConnection backend connection
-     * @param option statement option
-     * @return execute group engine
-     */
-    ExecuteGroupEngine getExecuteGroupEngine(BackendConnection backendConnection, StatementOption option);
+    ExecutionContext execute(String sql) throws SQLException;
     
     /**
      * Execute SQL.
@@ -61,16 +48,14 @@ public interface JDBCExecutorWrapper {
      * @return {@code true} is for query, {@code false} is for update
      * @throws SQLException SQL exception
      */
-    boolean executeSQL(Statement statement, String sql, boolean isReturnGeneratedKeys) throws SQLException;
+    boolean execute(Statement statement, String sql, boolean isReturnGeneratedKeys) throws SQLException;
     
     /**
-     * Route metrics collect.
+     * Get execute group engine.
      *
-     * @param routeContext route context
-     * @param rules rules
+     * @param backendConnection backend connection
+     * @param option statement option
+     * @return execute group engine
      */
-    default void routeMetricsCollect(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
-        MetricsUtils.buriedShardingMetrics(routeContext.getRouteResult().getRouteUnits());
-        MetricsUtils.buriedShardingRuleMetrics(routeContext, rules);
-    }
+    ExecuteGroupEngine getExecuteGroupEngine(BackendConnection backendConnection, StatementOption option);
 }

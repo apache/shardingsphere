@@ -82,7 +82,8 @@ public final class ConfigCenter {
                                       final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
         persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigs, isOverwrite);
         persistRuleConfigurations(shardingSchemaName, ruleConfigurations, isOverwrite);
-        persistShardingSchemaName(shardingSchemaName);
+        // TODO Consider removing the following one.
+        persistShardingSchemaName(shardingSchemaName, isOverwrite);
     }
     
     /**
@@ -191,7 +192,10 @@ public final class ConfigCenter {
         }
     }
     
-    private void persistShardingSchemaName(final String shardingSchemaName) {
+    private void persistShardingSchemaName(final String shardingSchemaName, final boolean isOverwrite) {
+        if (!isOverwrite) {
+            return;
+        }
         String shardingSchemaNames = repository.get(node.getSchemaPath());
         if (Strings.isNullOrEmpty(shardingSchemaNames)) {
             repository.persist(node.getSchemaPath(), shardingSchemaName);

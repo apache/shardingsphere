@@ -108,13 +108,12 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private boolean containsSubquery() {
-        // FIXME process subquery
-//        Collection<SubqueryPredicateSegment> subqueryPredicateSegments = getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class);
-//        for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
-//            if (!each.getAndPredicates().isEmpty()) {
-//                return true;
-//            }
-//        }
+        Collection<WhereSegment> subqueryPredicateSegments = getSqlStatement().getSubqueryWhereSegments();
+        for (WhereSegment each : subqueryPredicateSegments) {
+            if (!each.getAndPredicates().isEmpty()) {
+                return true;
+            }
+        }
         return false;
     }
     

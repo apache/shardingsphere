@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.control.panel.spi.engine.MetricsHandlerFacadeEngine;
+import org.apache.shardingsphere.control.panel.spi.engine.SingletonFacadeEngine;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ExecutorConstant;
@@ -75,6 +75,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         rawExecutor = new RawProxyExecutor(BackendExecutorContext.getInstance().getExecutorKernel(), backendConnection.isSerialExecute());
     }
     
+    @Override
+    public ExecutionContext execute(final String sql) throws SQLException {
+        return jdbcExecutorWrapper.execute(sql);
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
@@ -97,7 +102,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
         ExecuteResult executeResult = executeResults.iterator().next();
         if (executeResult instanceof ExecuteQueryResult) {
-            MetricsHandlerFacadeEngine.build().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), "SELECT"));
+            SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), "SELECT"));
             return getExecuteQueryResponse(((ExecuteQueryResult) executeResult).getQueryHeaders(), executeResults);
         } else {
             UpdateResponse updateResponse = new UpdateResponse(executeResults);
@@ -109,7 +114,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
                 updateResponse.setType("UPDATE");
             }
             if (!Strings.isNullOrEmpty(updateResponse.getType())) {
-                MetricsHandlerFacadeEngine.build().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), updateResponse.getType()));
+                SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), updateResponse.getType()));
             }
             return updateResponse;
         }

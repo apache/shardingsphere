@@ -20,6 +20,7 @@ package org.apache.shardingsphere.orchestration.core.schema;
 import com.google.common.base.Joiner;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
+import org.apache.shardingsphere.cluster.facade.init.ClusterInitFacade;
 import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
@@ -27,12 +28,13 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.callback.MetaDataCallback;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
@@ -44,8 +46,9 @@ import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.facade.MetricsInitFacade;
+import org.apache.shardingsphere.metrics.facade.MetricsTrackerManagerFacade;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.ClusterConfigurationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.MetricsConfigurationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
@@ -60,6 +63,7 @@ import org.apache.shardingsphere.orchestration.core.registrycenter.event.Disable
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -84,8 +88,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     }
     
     private void persistMetaData() {
-        schemaContexts.getSchemaContexts().forEach((key, value) -> ShardingOrchestrationFacade.getInstance()
-                .getMetaDataCenter().persistMetaDataCenterNode(key, value.getSchema().getMetaData().getSchema()));
+        schemaContexts.getSchemaContexts().forEach((key, value) -> MetaDataCallback.INSTANCE.run(key, value.getSchema().getMetaData().getSchema()));
     }
     
     private void disableMasterSlaveRules() {
@@ -202,9 +205,9 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     public synchronized void renew(final MetricsConfigurationChangedEvent event) {
         MetricsConfiguration metricsConfiguration = event.getMetricsConfiguration();
         if (metricsConfiguration.getEnable()) {
-            MetricsInitFacade.restart(metricsConfiguration);
+            MetricsTrackerManagerFacade.restart(metricsConfiguration);
         } else {
-            MetricsInitFacade.close();
+            MetricsTrackerManagerFacade.close();
         }
     }
     
@@ -231,14 +234,16 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
      * Renew rule configurations.
      *
      * @param ruleConfigurationsChangedEvent rule configurations changed event.
+     *  @throws Exception exception
      */
     @Subscribe
-    public synchronized void renew(final RuleConfigurationsChangedEvent ruleConfigurationsChangedEvent) {
+    public synchronized void renew(final RuleConfigurationsChangedEvent ruleConfigurationsChangedEvent) throws Exception {
         Map<String, SchemaContext> schemaContexts = new HashMap<>(this.schemaContexts.getSchemaContexts());
         String schemaName = ruleConfigurationsChangedEvent.getShardingSchemaName();
         schemaContexts.remove(schemaName);
         schemaContexts.put(schemaName, getChangedSchemaContext(this.schemaContexts.getSchemaContexts().get(schemaName), ruleConfigurationsChangedEvent.getRuleConfigurations()));
         this.schemaContexts = new SchemaContexts(schemaContexts, this.schemaContexts.getProps(), this.schemaContexts.getAuthentication());
+        ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.get(schemaName).getSchema().getMetaData().getSchema());
     }
     
     /**
@@ -283,24 +288,56 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     }
     
     /**
+     * Renew cluster facade.
+     *
+     * @param event cluster configuration changed event
+     */
+    @Subscribe
+    public void renew(final ClusterConfigurationChangedEvent event) {
+        if (ClusterInitFacade.isEnabled()) {
+            ClusterInitFacade.restart(event.getClusterConfiguration());
+        }
+    }
+    
+    /**
      * Heart beat detect.
      *
      * @param event heart beat detect notice event
      */
     @Subscribe
     public synchronized void heartbeat(final HeartbeatDetectNoticeEvent event) {
-        ClusterFacade.getInstance().detectHeartbeat(schemaContexts.getSchemaContexts());
+        if (ClusterInitFacade.isEnabled()) {
+            ClusterFacade.getInstance().detectHeartbeat(schemaContexts.getSchemaContexts());
+        }
+    }
+    
+    /**
+     *  Enable cluster facade after properties changed.
+     *
+     * @param event properties changed event
+     */
+    @Subscribe
+    public void enable(final PropertiesChangedEvent event) {
+        boolean clusterEnabled = new ConfigurationProperties(event.getProps()).<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED);
+        ClusterInitFacade.enable(clusterEnabled);
     }
     
     private SchemaContext getAddedSchemaContext(final SchemaAddedEvent schemaAddedEvent) throws Exception {
         String schemaName = schemaAddedEvent.getShardingSchemaName();
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
         Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap = createDataSourceParametersMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
-        DatabaseType databaseType = schemaContexts.getSchemaContexts().values().iterator().next().getSchema().getDatabaseType();
+        DatabaseType databaseType = getDatabaseType(dataSourceParametersMap.values().iterator().next().values().iterator().next());
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(dataSourcesMap, dataSourceParametersMap,
                 schemaContexts.getAuthentication(), databaseType, Collections.singletonMap(schemaName, schemaAddedEvent.getRuleConfigurations()),
                 schemaContexts.getProps().getProps());
         return schemaContextsBuilder.build().getSchemaContexts().get(schemaName);
+    }
+    
+    private DatabaseType getDatabaseType(final DataSourceParameter parameter) {
+        if (!schemaContexts.getSchemaContexts().isEmpty()) {
+            schemaContexts.getSchemaContexts().values().iterator().next().getSchema().getDatabaseType();
+        }
+        return DatabaseTypes.getDatabaseTypeByURL(parameter.getUrl());
     }
     
     private Map<String, SchemaContext> getChangedSchemaContexts(final ConfigurationProperties props) {
@@ -319,11 +356,12 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
                 oldShardingSphereSchema.getRules(), oldShardingSphereSchema.getDataSources(), metaData);
     }
     
-    private SchemaContext getChangedSchemaContext(final SchemaContext schemaContext, final Collection<RuleConfiguration> configurations) {
-        ShardingSphereSchema oldSchema = schemaContext.getSchema();
-        ShardingSphereSchema newSchema = new ShardingSphereSchema(oldSchema.getDatabaseType(), configurations,
-                ShardingSphereRulesBuilder.build(configurations, oldSchema.getDataSources().keySet()), oldSchema.getDataSources(), oldSchema.getDataSourceParameters(), oldSchema.getMetaData());
-        return new SchemaContext(schemaContext.getName(), newSchema, schemaContext.getRuntimeContext());
+    private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Collection<RuleConfiguration> configurations) throws SQLException {
+        ShardingSphereSchema oldSchema = oldSchemaContext.getSchema();
+        SchemaContextsBuilder builder = new SchemaContextsBuilder(Collections.singletonMap(oldSchemaContext.getName(), oldSchema.getDataSources()),
+                Collections.singletonMap(oldSchemaContext.getName(), oldSchema.getDataSourceParameters()),
+                schemaContexts.getAuthentication(), oldSchema.getDatabaseType(), Collections.singletonMap(oldSchemaContext.getName(), configurations), schemaContexts.getProps().getProps());
+        return builder.build().getSchemaContexts().values().iterator().next();
     }
     
     private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {

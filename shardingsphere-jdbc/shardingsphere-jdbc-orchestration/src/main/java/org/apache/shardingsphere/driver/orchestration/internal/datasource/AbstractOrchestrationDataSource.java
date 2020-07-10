@@ -22,7 +22,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
-import org.apache.shardingsphere.cluster.facade.ClusterFacade;
+import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.util.DataSourceConverter;
@@ -146,7 +147,9 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     protected final void initCluster() {
         ClusterConfiguration clusterConfiguration = shardingOrchestrationFacade.getConfigCenter().loadClusterConfiguration();
         if (null != clusterConfiguration && null != clusterConfiguration.getHeartbeat()) {
-            ClusterFacade.getInstance().init(clusterConfiguration);
+            List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
+            facadeConfigurations.add(clusterConfiguration);
+            new ControlPanelFacadeEngine().init(facadeConfigurations);
         }
     }
 }

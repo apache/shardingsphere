@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -53,8 +54,8 @@ public final class ShardingConfigurationLoader {
      */
     public ShardingConfiguration load(final String path) throws IOException {
         Collection<String> schemaNames = new HashSet<>();
-        YamlProxyServerConfiguration serverConfig = loadServerConfiguration(new File(ShardingConfigurationLoader.class.getResource(path + "/" + SERVER_CONFIG_FILE).getFile()));
-        File configPath = new File(ShardingConfigurationLoader.class.getResource(path).getFile());
+        YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(path + "/" + SERVER_CONFIG_FILE));
+        File configPath = getResourceFile(path);
         Collection<YamlProxyRuleConfiguration> ruleConfigurations = new LinkedList<>();
         for (File each : findRuleConfigurationFiles(configPath)) {
             loadRuleConfiguration(each).ifPresent(yamlProxyRuleConfiguration -> {
@@ -66,6 +67,14 @@ public final class ShardingConfigurationLoader {
         Preconditions.checkState(!ruleConfigurations.isEmpty() || null != serverConfig.getOrchestration(), "Can not find any sharding rule configuration file in path `%s`.", configPath.getPath());
         Map<String, YamlProxyRuleConfiguration> ruleConfigurationMap = ruleConfigurations.stream().collect(Collectors.toMap(YamlProxyRuleConfiguration::getSchemaName, each -> each));
         return new ShardingConfiguration(serverConfig, ruleConfigurationMap);
+    }
+    
+    private File getResourceFile(final String path) {
+        URL url = ShardingConfigurationLoader.class.getResource(path);
+        if (null != url) {
+            return new File(url.getFile());
+        }
+        return new File(path);
     }
     
     private YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {

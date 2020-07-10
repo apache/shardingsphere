@@ -510,7 +510,7 @@ regularFunctionName_
     ;
 
 matchExpression_
-    : MATCH columnNames AGAINST (expr matchSearchModifier_?)
+    : MATCH columnNames AGAINST LP_ expr matchSearchModifier_? RP_
     ;
 
 matchSearchModifier_
