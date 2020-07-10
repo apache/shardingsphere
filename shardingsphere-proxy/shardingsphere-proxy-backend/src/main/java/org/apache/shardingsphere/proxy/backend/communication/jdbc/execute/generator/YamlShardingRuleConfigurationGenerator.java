@@ -56,7 +56,7 @@ public class YamlShardingRuleConfigurationGenerator implements YamlConfiguration
     private YamlShardingStrategyConfiguration createYamlShardingStrategyConfiguration(final CreateShardingRuleStatementContext sqlStatement) {
         YamlShardingStrategyConfiguration strategy = new YamlShardingStrategyConfiguration();
         YamlStandardShardingStrategyConfiguration standard = new YamlStandardShardingStrategyConfiguration();
-        standard.setShardingAlgorithmName(sqlStatement.getShardingColumn());
+        standard.setShardingColumn(sqlStatement.getShardingColumn());
         standard.setShardingAlgorithmName(getAlgorithmName(sqlStatement.getLogicTable(), sqlStatement.getAlgorithmType()));
         strategy.setStandard(standard);
         return strategy;
