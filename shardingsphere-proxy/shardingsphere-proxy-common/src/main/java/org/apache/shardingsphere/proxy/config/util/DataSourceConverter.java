@@ -47,6 +47,17 @@ public final class DataSourceConverter {
                 .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
     }
     
+    /**
+     * Get data source parameter map.
+     *
+     * @param dataSourceParameters yaml data source parameters
+     * @return data source parameter map
+     */
+    public static Map<String, DataSourceParameter> getDataSourceParameterMap2(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
+        return dataSourceParameters.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
+    }
+    
     private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
         bindAlias(dataSourceConfiguration);
         DataSourceParameter result = new DataSourceParameter();
@@ -59,6 +70,21 @@ public final class DataSourceConverter {
             } catch (final ReflectiveOperationException ignored) {
             }
         }
+        return result;
+    }
+    
+    private static DataSourceParameter createDataSourceParameter(final YamlDataSourceParameter yamlDataSourceParameter) {
+        DataSourceParameter result = new DataSourceParameter();
+        result.setConnectionTimeoutMilliseconds(yamlDataSourceParameter.getConnectionTimeoutMilliseconds());
+        result.setIdleTimeoutMilliseconds(yamlDataSourceParameter.getIdleTimeoutMilliseconds());
+        result.setMaintenanceIntervalMilliseconds(yamlDataSourceParameter.getMaintenanceIntervalMilliseconds());
+        result.setMaxLifetimeMilliseconds(yamlDataSourceParameter.getMaxLifetimeMilliseconds());
+        result.setMaxPoolSize(yamlDataSourceParameter.getMaxPoolSize());
+        result.setMinPoolSize(yamlDataSourceParameter.getMinPoolSize());
+        result.setUsername(yamlDataSourceParameter.getUsername());
+        result.setPassword(yamlDataSourceParameter.getPassword());
+        result.setReadOnly(yamlDataSourceParameter.isReadOnly());
+        result.setUrl(yamlDataSourceParameter.getUrl());
         return result;
     }
 
@@ -93,32 +119,6 @@ public final class DataSourceConverter {
         result.getProps().put("minPoolSize", dataSourceParameter.getMinPoolSize());
         result.getProps().put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
         result.getProps().put("readOnly", dataSourceParameter.isReadOnly());
-        return result;
-    }
-    
-    /**
-     * Get data source parameter map.
-     *
-     * @param dataSourceParameters yaml data source parameters
-     * @return data source parameter map
-     */
-    public static Map<String, DataSourceParameter> getDataSourceParameterMap2(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
-        return dataSourceParameters.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
-    }
-    
-    private static DataSourceParameter createDataSourceParameter(final YamlDataSourceParameter yamlDataSourceParameter) {
-        DataSourceParameter result = new DataSourceParameter();
-        result.setConnectionTimeoutMilliseconds(yamlDataSourceParameter.getConnectionTimeoutMilliseconds());
-        result.setIdleTimeoutMilliseconds(yamlDataSourceParameter.getIdleTimeoutMilliseconds());
-        result.setMaintenanceIntervalMilliseconds(yamlDataSourceParameter.getMaintenanceIntervalMilliseconds());
-        result.setMaxLifetimeMilliseconds(yamlDataSourceParameter.getMaxLifetimeMilliseconds());
-        result.setMaxPoolSize(yamlDataSourceParameter.getMaxPoolSize());
-        result.setMinPoolSize(yamlDataSourceParameter.getMinPoolSize());
-        result.setUsername(yamlDataSourceParameter.getUsername());
-        result.setPassword(yamlDataSourceParameter.getPassword());
-        result.setReadOnly(yamlDataSourceParameter.isReadOnly());
-        result.setUrl(yamlDataSourceParameter.getUrl());
         return result;
     }
 }
