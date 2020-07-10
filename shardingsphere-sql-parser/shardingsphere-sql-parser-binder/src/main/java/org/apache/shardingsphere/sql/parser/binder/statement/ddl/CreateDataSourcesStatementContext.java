@@ -45,7 +45,7 @@ public final class CreateDataSourcesStatementContext extends CommonSQLStatementC
     
     @RequiredArgsConstructor
     @Getter
-    public final class DataSourceContext {
+    public static final class DataSourceContext {
         
         private final String name;
         

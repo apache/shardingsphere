@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.gener
 
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDataSourcesStatementContext;
-
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDataSourcesStatementContext.DataSourceContext;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -31,7 +31,7 @@ public class YamlDataSourceConfigurationGenerator implements YamlConfigurationGe
     @Override
     public Map<String, YamlDataSourceParameter> generate(final CreateDataSourcesStatementContext sqlStatement) {
         Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>();
-        for (CreateDataSourcesStatementContext.DataSourceContext each : sqlStatement.getDataSourceContexts()) {
+        for (DataSourceContext each : sqlStatement.getDataSourceContexts()) {
             YamlDataSourceParameter dataSource = new YamlDataSourceParameter();
             dataSource.setUrl(each.getUrl());
             dataSource.setUsername(each.getUserName());
