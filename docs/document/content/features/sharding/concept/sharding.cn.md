@@ -52,7 +52,7 @@ ComplexShardingStrategy 支持多分片键，由于多分片键之间的关系�
 - 行表达式分片策略
 
 对应 InlineShardingStrategy。使用 Groovy 的表达式，提供对 SQL 语句中的 `=` 和 `IN` 的分片操作支持，只支持单分片键。
-对于简单的分片算法，可以通过简单的配置使用，从而避免繁琐的Java代码开发，如: `t_user_$->{u_id % 8}` 表示 `t_user` 表根据 `u_id` 模 8，而分成 8 张表，表名称为 `t_user_0` 到 `t_user_7`。
+对于简单的分片算法，可以通过简单的配置使用，从而避免繁琐的 Java 代码开发，如: `t_user_$->{u_id % 8}` 表示 `t_user` 表根据 `u_id` 模 8，而分成 8 张表，表名称为 `t_user_0` 到 `t_user_7`。
 详情请参见[行表达式](/cn/features/sharding/concept/inline-expression/)。
 
 - Hint分片策略
@@ -65,6 +65,6 @@ ComplexShardingStrategy 支持多分片键，由于多分片键之间的关系�
 
 ## SQL Hint
 
-对于分片字段非 SQL 决定，而由其他外置条件决定的场景，可使用SQL Hint灵活的注入分片字段。
-例：内部系统，按照员工登录主键分库，而数据库中并无此字段。SQL Hint支持通过Java API和SQL注释(待实现)两种方式使用。
+对于分片字段非 SQL 决定，而由其他外置条件决定的场景，可使用 SQL Hint 灵活的注入分片字段。
+例：内部系统，按照员工登录主键分库，而数据库中并无此字段。SQL Hint 支持通过 Java API 和 SQL 注释（待实现）两种方式使用。
 详情请参见[强制分片路由](/cn/features/sharding/concept/hint/)。
