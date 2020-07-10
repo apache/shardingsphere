@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
@@ -36,13 +37,24 @@ import java.util.stream.Collectors;
 public final class DataSourceConverter {
     
     /**
-     * Get data source map.
+     * Get data source parameter map.
      *
      * @param dataSourceConfigurationMap data source configuration map
      * @return data source parameter map
      */
     public static Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
         return dataSourceConfigurationMap.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
+    }
+    
+    /**
+     * Get data source parameter map.
+     *
+     * @param dataSourceParameters yaml data source parameters
+     * @return data source parameter map
+     */
+    public static Map<String, DataSourceParameter> getDataSourceParameterMap2(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
+        return dataSourceParameters.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
     }
     
@@ -58,6 +70,21 @@ public final class DataSourceConverter {
             } catch (final ReflectiveOperationException ignored) {
             }
         }
+        return result;
+    }
+    
+    private static DataSourceParameter createDataSourceParameter(final YamlDataSourceParameter yamlDataSourceParameter) {
+        DataSourceParameter result = new DataSourceParameter();
+        result.setConnectionTimeoutMilliseconds(yamlDataSourceParameter.getConnectionTimeoutMilliseconds());
+        result.setIdleTimeoutMilliseconds(yamlDataSourceParameter.getIdleTimeoutMilliseconds());
+        result.setMaintenanceIntervalMilliseconds(yamlDataSourceParameter.getMaintenanceIntervalMilliseconds());
+        result.setMaxLifetimeMilliseconds(yamlDataSourceParameter.getMaxLifetimeMilliseconds());
+        result.setMaxPoolSize(yamlDataSourceParameter.getMaxPoolSize());
+        result.setMinPoolSize(yamlDataSourceParameter.getMinPoolSize());
+        result.setUsername(yamlDataSourceParameter.getUsername());
+        result.setPassword(yamlDataSourceParameter.getPassword());
+        result.setReadOnly(yamlDataSourceParameter.isReadOnly());
+        result.setUrl(yamlDataSourceParameter.getUrl());
         return result;
     }
 

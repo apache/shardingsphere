@@ -17,13 +17,6 @@
 
 package org.apache.shardingsphere.proxy.orchestration;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -45,6 +38,14 @@ import org.apache.shardingsphere.proxy.config.util.DataSourceConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.orchestration.schema.ProxyOrchestrationSchemaContexts;
+
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Orchestration configuration converter.
@@ -100,7 +101,7 @@ public class OrchestrationConfigurationConverter extends AbstractConfigurationCo
     private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
         Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>();
         for (Map.Entry<String, YamlProxyRuleConfiguration> entry : ruleConfigs.entrySet()) {
-            result.put(entry.getKey(), DataSourceConverter.getDataSourceConfigurationMap(getDataSourceParameters(entry.getValue().getDataSources())));
+            result.put(entry.getKey(), DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(entry.getValue().getDataSources())));
         }
         return result;
     }

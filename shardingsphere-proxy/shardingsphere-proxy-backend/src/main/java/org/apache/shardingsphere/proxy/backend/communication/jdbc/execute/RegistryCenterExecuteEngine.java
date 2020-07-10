@@ -18,15 +18,21 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.generator.YamlDataSourceConfigurationGenerator;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.config.util.DataSourceConverter;
+import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDataSourcesStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Registry center execute engine.
@@ -52,6 +58,7 @@ public class RegistryCenterExecuteEngine implements SQLExecuteEngine {
     }
     
     private BackendResponse execute(final CreateDataSourcesStatementContext context) {
+        Map<String, YamlDataSourceParameter> parameters = new YamlDataSourceConfigurationGenerator().generate(context);
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
@@ -60,6 +67,12 @@ public class RegistryCenterExecuteEngine implements SQLExecuteEngine {
     private BackendResponse execute(final CreateShardingRuleStatementContext context) {
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
+        return result;
+    }
+    
+    private Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, YamlDataSourceParameter> parameters) {
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
+        DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(parameters));
         return result;
     }
 }

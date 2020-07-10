@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.proxy.config.converter;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.proxy.config.util.DataSourceConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Abstract configuration converter.
@@ -54,39 +54,7 @@ public abstract class AbstractConfigurationConverter implements ProxyConfigurati
      * @return data source parameters map
      */
     protected Map<String, Map<String, DataSourceParameter>> getDataSourceParametersMap(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
-        return localRuleConfigs.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> getDataSourceParameters(entry.getValue().getDataSources())));
-    }
-    
-    /**
-     * Get data source parameters.
-     *
-     * @param dataSourceParameters data source parameters for YAML
-     * @return data source parameters
-     */
-    protected Map<String, DataSourceParameter> getDataSourceParameters(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
-        return dataSourceParameters.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
-    }
-    
-    /**
-     * Create data source parameter.
-     *
-     * @param yamlDataSourceParameter data source parameter for YAML
-     * @return data source parameter
-     */
-    protected DataSourceParameter createDataSourceParameter(final YamlDataSourceParameter yamlDataSourceParameter) {
-        DataSourceParameter result = new DataSourceParameter();
-        result.setConnectionTimeoutMilliseconds(yamlDataSourceParameter.getConnectionTimeoutMilliseconds());
-        result.setIdleTimeoutMilliseconds(yamlDataSourceParameter.getIdleTimeoutMilliseconds());
-        result.setMaintenanceIntervalMilliseconds(yamlDataSourceParameter.getMaintenanceIntervalMilliseconds());
-        result.setMaxLifetimeMilliseconds(yamlDataSourceParameter.getMaxLifetimeMilliseconds());
-        result.setMaxPoolSize(yamlDataSourceParameter.getMaxPoolSize());
-        result.setMinPoolSize(yamlDataSourceParameter.getMinPoolSize());
-        result.setUsername(yamlDataSourceParameter.getUsername());
-        result.setPassword(yamlDataSourceParameter.getPassword());
-        result.setReadOnly(yamlDataSourceParameter.isReadOnly());
-        result.setUrl(yamlDataSourceParameter.getUrl());
-        return result;
+        return localRuleConfigs.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> DataSourceConverter.getDataSourceParameterMap2(entry.getValue().getDataSources())));
     }
     
     /**

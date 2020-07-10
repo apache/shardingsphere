@@ -47,6 +47,8 @@ public final class CreateDataSourcesStatementContext extends CommonSQLStatementC
     @Getter
     public final class DataSourceContext {
         
+        private final String name;
+        
         private final String url;
         
         private final String userName;
