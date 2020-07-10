@@ -32,6 +32,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.Placeholde
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
+import org.apache.shardingsphere.scaling.mysql.client.ConnectInfo;
 import org.apache.shardingsphere.scaling.mysql.client.MySQLClient;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractRowsEvent;
@@ -83,7 +84,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
     public void dump(final Channel channel) {
         JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration();
         final JdbcUri uri = new JdbcUri(jdbcDataSourceConfiguration.getJdbcUrl());
-        MySQLClient client = new MySQLClient(random.nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfiguration.getUsername(), jdbcDataSourceConfiguration.getPassword());
+        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfiguration.getUsername(), jdbcDataSourceConfiguration.getPassword()));
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         while (isRunning()) {
