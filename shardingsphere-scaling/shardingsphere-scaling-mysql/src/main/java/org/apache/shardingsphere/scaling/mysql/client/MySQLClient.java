@@ -17,18 +17,6 @@
 
 package org.apache.shardingsphere.scaling.mysql.client;
 
-import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
-import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.scaling.mysql.client.netty.MySQLNegotiateHandler;
-import org.apache.shardingsphere.scaling.mysql.client.netty.MySQLBinlogEventPacketDecoder;
-import org.apache.shardingsphere.scaling.mysql.client.netty.MySQLCommandPacketDecoder;
-import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractBinlogEvent;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -43,6 +31,17 @@ import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
+import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractBinlogEvent;
+import org.apache.shardingsphere.scaling.mysql.client.netty.MySQLBinlogEventPacketDecoder;
+import org.apache.shardingsphere.scaling.mysql.client.netty.MySQLCommandPacketDecoder;
+import org.apache.shardingsphere.scaling.mysql.client.netty.MySQLNegotiateHandler;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -56,17 +55,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class MySQLClient {
     
-    private final int serverId;
+    private final ConnectInfo connectInfo;
     
-    private final String host;
-    
-    private final int port;
-    
-    private final String username;
-    
-    private final String password;
-    
-    private final EventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
+    private EventLoopGroup eventLoopGroup;
     
     private Channel channel;
     
@@ -80,21 +71,21 @@ public final class MySQLClient {
      * Connect to MySQL.
      */
     public synchronized void connect() {
+        eventLoopGroup = new NioEventLoopGroup(1);
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         channel = new Bootstrap()
                 .group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
+                .option(ChannelOption.AUTO_READ, true)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(final SocketChannel socketChannel) {
                         socketChannel.pipeline().addLast(new PacketCodec(new MySQLPacketCodecEngine()));
                         socketChannel.pipeline().addLast(new MySQLCommandPacketDecoder());
-                        socketChannel.pipeline().addLast(new MySQLNegotiateHandler(username, password, responseCallback));
+                        socketChannel.pipeline().addLast(new MySQLNegotiateHandler(connectInfo.getUsername(), connectInfo.getPassword(), responseCallback));
                         socketChannel.pipeline().addLast(new MySQLCommandResponseHandler());
                     }
-                })
-                .option(ChannelOption.AUTO_READ, true)
-                .connect(host, port).channel();
+                }).connect(connectInfo.getHost(), connectInfo.getPort()).channel();
         serverInfo = waitExpectedResponse(ServerInfo.class);
     }
     
@@ -158,7 +149,8 @@ public final class MySQLClient {
     private void registerSlave() {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         InetSocketAddress localAddress = (InetSocketAddress) channel.localAddress();
-        MySQLComRegisterSlaveCommandPacket registerSlaveCommandPacket = new MySQLComRegisterSlaveCommandPacket(serverId, localAddress.getHostName(), username, password, localAddress.getPort());
+        MySQLComRegisterSlaveCommandPacket registerSlaveCommandPacket = new MySQLComRegisterSlaveCommandPacket(
+                connectInfo.getServerId(), localAddress.getHostName(), connectInfo.getUsername(), connectInfo.getPassword(), localAddress.getPort());
         channel.writeAndFlush(registerSlaveCommandPacket);
         waitExpectedResponse(MySQLOKPacket.class);
     }
@@ -185,9 +177,9 @@ public final class MySQLClient {
         channel.pipeline().remove(MySQLCommandResponseHandler.class);
         channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder(checksumLength));
         channel.pipeline().addLast(new MySQLBinlogEventHandler());
-        channel.writeAndFlush(new MySQLComBinlogDumpCommandPacket((int) binlogPosition, serverId, binlogFileName));
+        channel.writeAndFlush(new MySQLComBinlogDumpCommandPacket((int) binlogPosition, connectInfo.getServerId(), binlogFileName));
     }
-
+    
     /**
      * Poll binlog event.
      *
@@ -220,7 +212,7 @@ public final class MySQLClient {
         }
     }
     
-    class MySQLCommandResponseHandler extends ChannelInboundHandlerAdapter {
+    private class MySQLCommandResponseHandler extends ChannelInboundHandlerAdapter {
         
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
@@ -238,18 +230,42 @@ public final class MySQLClient {
         }
     }
     
-    class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
+    private class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
+        
+        private AbstractBinlogEvent lastBinlogEvent;
         
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
             if (msg instanceof AbstractBinlogEvent) {
-                blockingEventQueue.put((AbstractBinlogEvent) msg);
+                lastBinlogEvent = (AbstractBinlogEvent) msg;
+                blockingEventQueue.put(lastBinlogEvent);
             }
+        }
+        
+        @Override
+        public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
+            log.warn("channel inactive");
+            reconnect();
         }
         
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
             log.error("protocol resolution error", cause);
+            reconnect();
+        }
+        
+        private void reconnect() {
+            log.info("reconnect mysql client.");
+            closeOldChannel();
+            connect();
+            subscribe(lastBinlogEvent.getFileName(), lastBinlogEvent.getPosition());
+        }
+        
+        private void closeOldChannel() {
+            try {
+                channel.closeFuture().sync();
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 }
