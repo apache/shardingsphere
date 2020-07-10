@@ -27,12 +27,14 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredica
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Delete statement context.
@@ -61,7 +63,7 @@ public final class DeleteStatementContext extends CommonSQLStatementContext<Dele
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (AndPredicate each : where.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
-                result.addAll(new PredicateExtractor(getSqlStatement().getTables(), predicate).extractTables());
+                result.addAll(new PredicateExtractor(getSqlStatement().getTables().stream().map(t -> (TableSegment) t).collect(Collectors.toList()), predicate).extractTables());
             }
         }
         return result;

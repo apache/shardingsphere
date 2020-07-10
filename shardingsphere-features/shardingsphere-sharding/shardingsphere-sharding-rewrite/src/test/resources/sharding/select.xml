@@ -28,8 +28,8 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_subquery" db-type="MySQL">
-        <input sql="SELECT * FROM (select * from t_account where account_id=?) a WHERE account_id = 100" parameters="100" />
-        <output sql="SELECT * FROM (select * from t_account_0 where account_id=?) a WHERE account_id = 100" parameters="100" />
+        <input sql="SELECT * FROM (select t_account.account_id from t_account where t_account.account_id=?) a WHERE account_id = 100" parameters="100" />
+        <output sql="SELECT * FROM (select t_account_0.account_id from t_account_0 where t_account_0.account_id=?) a WHERE account_id = 100" parameters="100" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_without_sharding_value_for_parameters">

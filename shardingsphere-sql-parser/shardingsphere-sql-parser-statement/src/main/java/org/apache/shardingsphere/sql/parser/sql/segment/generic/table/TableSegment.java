@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.generic.table;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 
 /**
  * Table segment.
  */
-public interface TableSegment extends SQLSegment {
+public interface TableSegment extends AliasAvailable {
 }
