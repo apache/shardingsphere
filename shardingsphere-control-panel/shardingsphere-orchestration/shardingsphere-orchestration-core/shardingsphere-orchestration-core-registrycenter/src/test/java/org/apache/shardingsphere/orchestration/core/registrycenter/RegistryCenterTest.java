@@ -42,7 +42,7 @@ public final class RegistryCenterTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        registryCenter = new RegistryCenter("test", registryCenterRepository);
+        registryCenter = new RegistryCenter("test", "3307", registryCenterRepository);
         Field field = registryCenter.getClass().getDeclaredField("repository");
         field.setAccessible(true);
         field.set(registryCenter, registryCenterRepository);

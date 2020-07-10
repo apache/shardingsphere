@@ -87,7 +87,7 @@ public final class Bootstrap {
         logRuleConfigurationMap(getRuleConfigurations(shardingConfig.getRuleConfigurationMap()).values());
         boolean isOrchestration = null != shardingConfig.getServerConfiguration().getOrchestration();
         try (ProxyConfigurationConverter converter = ProxyConfigurationConverterFactory.newInstances(isOrchestration)) {
-            ProxyConfiguration proxyConfiguration = converter.convert(shardingConfig);
+            ProxyConfiguration proxyConfiguration = converter.convert(shardingConfig, String.valueOf(port));
             initialize(proxyConfiguration, port, converter);
         }
     }
@@ -121,7 +121,7 @@ public final class Bootstrap {
         updateServerInfo();
         ShardingSphereProxy.getInstance().start(port);
     }
-    
+
     private static void updateServerInfo() {
         List<String> schemaNames = ProxySchemaContexts.getInstance().getSchemaNames();
         if (CollectionUtils.isEmpty(schemaNames)) {

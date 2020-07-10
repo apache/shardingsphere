@@ -24,6 +24,7 @@ import org.apache.shardingsphere.orchestration.core.configcenter.listener.Config
 import org.apache.shardingsphere.orchestration.core.facade.listener.ShardingOrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.listener.MetaDataListenerManager;
+import org.apache.shardingsphere.orchestration.core.registrycenter.instance.OrchestrationInstance;
 import org.apache.shardingsphere.orchestration.core.registrycenter.listener.RegistryListenerManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,6 +55,7 @@ public final class ShardingOrchestrationListenerManagerTest {
     
     @Test
     public void assertInitListeners() {
+        OrchestrationInstance.init("3307");
         ShardingOrchestrationListenerManager actual = new ShardingOrchestrationListenerManager("testRegCenter", registryCenterRepository,
                                                      "FirstTestConfigCenter", configCenterRepository,
                                                      "FirstTestConfigCenter", configCenterRepository, Collections.emptyList());
