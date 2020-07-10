@@ -19,18 +19,23 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.generator.YamlDataSourceConfigurationGenerator;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.generator.YamlShardingRuleConfigurationGenerator;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.config.util.DataSourceConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDataSourcesStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
-import java.util.LinkedHashMap;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -59,20 +64,21 @@ public class RegistryCenterExecuteEngine implements SQLExecuteEngine {
     
     private BackendResponse execute(final CreateDataSourcesStatementContext context) {
         Map<String, YamlDataSourceParameter> parameters = new YamlDataSourceConfigurationGenerator().generate(context);
+        Map<String, DataSourceConfiguration> dataSources = DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(parameters));
+        // TODO Check whether registry center exists.
+        // TODO Load dataSources from registry center, merge them and persist them.
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
     }
     
     private BackendResponse execute(final CreateShardingRuleStatementContext context) {
+        YamlShardingRuleConfiguration configurations = new YamlShardingRuleConfigurationGenerator().generate(context);
+        Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(configurations));
+        // TODO Check whether registry center exists.
+        // TODO Persist it.
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
-        return result;
-    }
-    
-    private Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, YamlDataSourceParameter> parameters) {
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
-        DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(parameters));
         return result;
     }
 }
