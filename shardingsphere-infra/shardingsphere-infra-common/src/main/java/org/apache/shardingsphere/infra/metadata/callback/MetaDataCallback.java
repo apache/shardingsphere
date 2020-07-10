@@ -25,5 +25,5 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
  */
 public final class MetaDataCallback<T> {
     
-   public static final Callback<RuleSchemaMetaData> INSTANCE = new Callback<>();
+    public static final Callback<RuleSchemaMetaData> INSTANCE = new Callback<>();
 }
