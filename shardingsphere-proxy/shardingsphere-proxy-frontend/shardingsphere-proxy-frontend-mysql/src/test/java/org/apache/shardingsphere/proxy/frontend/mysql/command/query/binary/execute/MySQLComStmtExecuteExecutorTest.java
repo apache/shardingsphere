@@ -21,11 +21,13 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,6 +56,10 @@ public class MySQLComStmtExecuteExecutorTest {
     public void assertIsErrorResponse() {
         BackendConnection backendConnection = mock(BackendConnection.class);
         SchemaContext schema = mock(SchemaContext.class);
+        RuntimeContext runtimeContext = mock(RuntimeContext.class);
+        SQLParserEngine sqlParserEngine = mock(SQLParserEngine.class);
+        when(runtimeContext.getSqlParserEngine()).thenReturn(sqlParserEngine);
+        when(schema.getRuntimeContext()).thenReturn(runtimeContext);
         when(backendConnection.getSchema()).thenReturn(schema);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
@@ -68,6 +74,10 @@ public class MySQLComStmtExecuteExecutorTest {
     public void assertIsUpdateResponse() {
         BackendConnection backendConnection = mock(BackendConnection.class);
         SchemaContext schema = mock(SchemaContext.class);
+        RuntimeContext runtimeContext = mock(RuntimeContext.class);
+        SQLParserEngine sqlParserEngine = mock(SQLParserEngine.class);
+        when(runtimeContext.getSqlParserEngine()).thenReturn(sqlParserEngine);
+        when(schema.getRuntimeContext()).thenReturn(runtimeContext);
         when(backendConnection.getSchema()).thenReturn(schema);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
@@ -81,6 +91,10 @@ public class MySQLComStmtExecuteExecutorTest {
     public void assertIsQuery() {
         BackendConnection backendConnection = mock(BackendConnection.class);
         SchemaContext schema = mock(SchemaContext.class);
+        RuntimeContext runtimeContext = mock(RuntimeContext.class);
+        SQLParserEngine sqlParserEngine = mock(SQLParserEngine.class);
+        when(runtimeContext.getSqlParserEngine()).thenReturn(sqlParserEngine);
+        when(schema.getRuntimeContext()).thenReturn(runtimeContext);
         when(backendConnection.getSchema()).thenReturn(schema);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);

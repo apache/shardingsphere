@@ -34,7 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MetricsInitFacadeTest {
+public final class MetricsTrackerManagerFacadeTest {
     
     @Before
     public void setUp() {
@@ -46,31 +46,31 @@ public final class MetricsInitFacadeTest {
     
     @Test
     public void assertInit() {
-        assertThat(MetricsInitFacade.getEnabled(), is(true));
+        assertThat(MetricsTrackerManagerFacade.getEnabled(), is(true));
     }
     
     @Test
     public void assertFindMetricsTrackerManager() {
-        assertNotNull(MetricsInitFacade.getMetricsTrackerManager());
-        assertThat(MetricsInitFacade.getMetricsTrackerManager().getClass().getName(), is(SecondMetricsTrackerManagerFixture.class.getName()));
+        assertNotNull(MetricsTrackerManagerFacade.getMetricsTrackerManager());
+        assertThat(MetricsTrackerManagerFacade.getMetricsTrackerManager().getClass().getName(), is(SecondMetricsTrackerManagerFixture.class.getName()));
     }
     
     @Test
     public void testClose() {
-        MetricsInitFacade.close();
-        assertThat(MetricsInitFacade.getEnabled(), is(false));
+        MetricsTrackerManagerFacade.close();
+        assertThat(MetricsTrackerManagerFacade.getEnabled(), is(false));
     }
     
     @Test
     public void restart() {
         MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, true, 8, null);
-        MetricsInitFacade.restart(metricsConfiguration);
-        assertThat(MetricsInitFacade.getEnabled(), is(true));
+        MetricsTrackerManagerFacade.restart(metricsConfiguration);
+        assertThat(MetricsTrackerManagerFacade.getEnabled(), is(true));
     }
     
     @After
     public void clean() {
-        MetricsInitFacade.close();
+        MetricsTrackerManagerFacade.close();
     }
 }
 

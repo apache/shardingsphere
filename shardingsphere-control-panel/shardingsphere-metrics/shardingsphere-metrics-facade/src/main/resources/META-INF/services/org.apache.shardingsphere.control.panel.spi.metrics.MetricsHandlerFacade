@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade
+org.apache.shardingsphere.metrics.facade.MetricsTrackerHandlerFacade

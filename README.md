@@ -115,8 +115,9 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 * Distributed Governance
 * Data migration & Scale out
-* Tracing & Observability Supported
-* Data Encryption
+* Observability(Tracing/Metrics) Supported
+* Data Encryption&Decryption
+* Shadow Table for Performance Testing
 
 ## How to Build
 
@@ -137,6 +138,7 @@ shardingsphere-distribution/shardingsphere-proxy-distribution/target/apache-shar
 ### Build ShardingSphere-UI
 
 ```bash
+git clone https://github.com/apache/shardingsphere-ui
 cd shardingsphere-ui
 ./mvnw clean install -Prelease
 ```

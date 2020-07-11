@@ -56,12 +56,13 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     private final SchemaContext schema;
     
+    private final SQLStatement sqlStatement;
+    
     private final List<Object> parameters;
     
     @SuppressWarnings("unchecked")
     @Override
     public ExecutionContext execute(final String sql) {
-        SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(sql, true);
         Collection<ShardingSphereRule> rules = schema.getSchema().getRules();
         if (rules.isEmpty()) {
             return new ExecutionContext(

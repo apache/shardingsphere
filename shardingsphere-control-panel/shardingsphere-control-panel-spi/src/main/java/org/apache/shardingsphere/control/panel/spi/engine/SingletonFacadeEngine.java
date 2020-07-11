@@ -17,42 +17,21 @@
 
 package org.apache.shardingsphere.control.panel.spi.engine;
 
-import java.util.Iterator;
 import java.util.Optional;
-import java.util.ServiceLoader;
 import org.apache.shardingsphere.control.panel.spi.metrics.MetricsHandlerFacade;
+import org.apache.shardingsphere.infra.spi.singleton.SingletonServiceLoader;
 
 /**
- * Metrics handler facade engine.
+ * Singleton facade engine.
  */
-public final class MetricsHandlerFacadeEngine {
-    
-    private static MetricsHandlerFacade handlerFacade;
-    
-    static {
-        handlerFacade = loadFirst();
-    }
+public final class SingletonFacadeEngine {
     
     /**
-     * Build Metrics handler facade.
+     * Build metrics handler facade.
      *
      * @return Metrics handler facade.
      */
-    public static Optional<MetricsHandlerFacade> build() {
-        return Optional.ofNullable(handlerFacade);
-    }
-    
-    private static MetricsHandlerFacade loadFirst() {
-        final ServiceLoader<MetricsHandlerFacade> loader = loadAll();
-        final Iterator<MetricsHandlerFacade> iterator = loader.iterator();
-        if (!iterator.hasNext()) {
-            return null;
-        }
-        return iterator.next();
-    }
-    
-    private static ServiceLoader<MetricsHandlerFacade> loadAll() {
-        return ServiceLoader.load(MetricsHandlerFacade.class);
+    public static Optional<MetricsHandlerFacade> buildMetrics() {
+        return SingletonServiceLoader.getServiceLoader(MetricsHandlerFacade.class).newServiceInstances();
     }
 }
-

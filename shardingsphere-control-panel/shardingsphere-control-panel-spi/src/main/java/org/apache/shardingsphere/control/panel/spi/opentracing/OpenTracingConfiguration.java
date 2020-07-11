@@ -22,5 +22,5 @@ import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
 /**
  * Open tracing configuration.
  */
-public class OpenTracingConfiguration implements FacadeConfiguration {
+public final class OpenTracingConfiguration implements FacadeConfiguration {
 }
