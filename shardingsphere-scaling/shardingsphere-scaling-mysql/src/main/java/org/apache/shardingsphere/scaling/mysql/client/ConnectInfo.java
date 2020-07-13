@@ -15,15 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.callback;
+package org.apache.shardingsphere.scaling.mysql.client;
 
-import org.apache.shardingsphere.infra.callback.Callback;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-/**
- * Meta data call back enum.
- */
-public final class MetaDataCallback<T> {
-    
-    public static final Callback<RuleSchemaMetaData> INSTANCE = new Callback<>();
+@RequiredArgsConstructor
+@Getter
+public class ConnectInfo {
+
+    private final int serverId;
+
+    private final String host;
+
+    private final int port;
+
+    private final String username;
+
+    private final String password;
 }
