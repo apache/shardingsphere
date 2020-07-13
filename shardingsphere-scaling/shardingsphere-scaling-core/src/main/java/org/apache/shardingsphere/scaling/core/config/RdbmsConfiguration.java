@@ -45,6 +45,8 @@ public final class RdbmsConfiguration implements Cloneable {
     
     private Map<String, String> tableNameMap;
     
+    private int retryTimes;
+    
     /**
      * Clone to new rdbms configuration.
      *

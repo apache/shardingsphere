@@ -60,6 +60,7 @@ public final class SyncConfigurationUtil {
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDatasource.keySet());
         for (String each : dataSourceTableNameMap.keySet()) {
             RdbmsConfiguration dumperConfiguration = createDumperConfiguration(sourceDatasource.get(each));
+            dumperConfiguration.setRetryTimes(scalingConfiguration.getJobConfiguration().getRetryTimes());
             RdbmsConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration, sourceRule);
             Map<String, String> tableNameMap = dataSourceTableNameMap.get(each);
             result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), tableNameMap, dumperConfiguration, importerConfiguration));
