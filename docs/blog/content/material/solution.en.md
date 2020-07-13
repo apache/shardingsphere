@@ -8,14 +8,14 @@ chapter = true
 
 ### Author
 
-Liang Zhang，Leader of Data R&D of JD.com, Founder & PPMC of Apache ShardingSphere. 
+Liang Zhang，Leader of Data R&D of JD.com, initiator & PPMC of Apache ShardingSphere. 
 
-Love open source, currently leading open source projects ShardingSphere (formerly known as Sharding-JDBC) and Elastic-Job. Good at using Java as the popular distributed architecture and Kubernetes and Mesos as the popular cloud platforms, admiring elegant codes, and having more research on how to write expressive codes.
+Love open source, currently leading open source project ShardingSphere (formerly known as Sharding-JDBC) and Elastic-Job. Good at using Java as the popular distributed architecture and Kubernetes and Mesos as the popular cloud platform, admiring elegant codes, and having more research on how to write expressive codes.
 
 At present, focus on improving ShardingSphere to be the industry's first-class financial data solution. ShardingSphere has entered the Apache Incubator, is the first open source project of the Jingdong Group to enter the Apache Software Foundation, and is also the first distributed database middleware of the Apache Software Foundation.
 
 ---
-Ning Jiang，Technical expert of Huawei Open Source Competency Center, project leader of Apache ServiceComb, former chief software engineer of Red Hat Software. He has more than ten years of experience in enterprise-level open source middleware development, rich experience in Java development, and also is the enthusiast of functional programming. Since 2006, he has been engaged in the development of the Apache open source middleware projects, and has participated in the development of Apache CXF, Apache Camel, and Apache ServiceMix. He has in-depth research in the microservice architecture, such as WebServices, Enterprise Integration Pattern, SOA and OSGi.
+Ning Jiang，Technical expert of Huawei Open Source Competency Center, project leader of Apache ServiceComb. Former chief software engineer of Red Hat Software. He has more than ten years of experience in enterprise-level open source middleware development, rich experience in Java development, and also is the enthusiast of functional programming. Since 2006, he has been engaged in the development of the Apache open source middleware projects, and has participated in the development of Apache CXF, Apache Camel, and Apache ServiceMix. He has in-depth research in the microservice architecture, such as WebServices, Enterprise Integration Pattern, SOA and OSGi.
 
 Blog site：https://willemjiang.github.io/
 
@@ -25,7 +25,7 @@ Zheng Feng is a software engineer at Red Hat, joined Red Hat Software in 2009, m
 
 ### Guide
 
-Compared with the gradual maturity of data sharding, distributed transaction that combine performance, transparency, automation, strong consistency, and can be applied to various application scenarios, the solutions those are applicable to all of them are very rare. Based on the performance bottlenecks of distributed transactions submitted in two (three) phases and the business transformation of flexible transactions, distributed transactions are still a headache for architects.
+Compared with the gradual maturity of data sharding, distributed transaction that combine performance, transparency, automation, strong consistency, and can be applied to various application scenarios, the solutions are applicable to all of them are very rare. Based on the performance bottlenecks of distributed transactions submitted in two (three) phases and the business transformation of flexible transactions, distributed transactions are still a headache for architects.
 
 At the beginning of 2019, Apache ShardingSphere (Incubating) provided a rigid and flexible integrated distributed transaction solution. If your application system is being troubled by this aspect, why not pour a cup of coffee and spend ten minutes reading this article, maybe you will gain something?
 
