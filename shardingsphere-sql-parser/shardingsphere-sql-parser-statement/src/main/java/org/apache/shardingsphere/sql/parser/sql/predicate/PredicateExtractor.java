@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,7 +34,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class PredicateExtractor {
     
-    private final Collection<SimpleTableSegment> tables;
+    private final Collection<TableSegment> tables;
     
     private final PredicateSegment predicate;
     
@@ -67,7 +68,7 @@ public final class PredicateExtractor {
     }
     
     private boolean isTable(final OwnerSegment owner) {
-        for (SimpleTableSegment each : tables) {
+        for (TableSegment each : tables) {
             if (owner.getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
                 return false;
             }
