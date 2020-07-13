@@ -193,8 +193,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        Collection<SimpleTableSegment> result = getTableFromSelect(getSqlStatement());
-        return result;
+        return getTableFromSelect(getSqlStatement());
     }
     
     private Collection<SimpleTableSegment> getAllTablesFromWhere(final WhereSegment where, final Collection<TableSegment> tableSegments) {

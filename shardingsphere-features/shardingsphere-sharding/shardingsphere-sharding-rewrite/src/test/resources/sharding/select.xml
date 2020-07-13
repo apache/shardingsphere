@@ -31,6 +31,11 @@
         <input sql="SELECT * FROM (select t_account.account_id from t_account where t_account.account_id=?) a WHERE account_id = 100" parameters="100" />
         <output sql="SELECT * FROM (select t_account_0.account_id from t_account_0 where t_account_0.account_id=?) a WHERE account_id = 100" parameters="100" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_subquery_with_subquery" db-type="MySQL">
+        <input sql="SELECT * FROM (select b.account_id from (select t_account.account_id from t_account) b where b.account_id=?) a WHERE account_id = 100" parameters="100" />
+        <output sql="SELECT * FROM (select b.account_id from (select t_account_0.account_id from t_account_0) b where b.account_id=?) a WHERE account_id = 100" parameters="100" />
+    </rewrite-assertion>
     
     <rewrite-assertion id="select_without_sharding_value_for_parameters">
         <input sql="SELECT * FROM db.t_account WHERE amount = ?" parameters="1000" />
