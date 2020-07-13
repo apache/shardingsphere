@@ -79,7 +79,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     
     private ExecuteResult executeSQL(final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean withMetadata) throws SQLException {
         backendConnection.add(statement);
-        if (jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
+        if (jdbcExecutorWrapper.execute(statement, sql, isReturnGeneratedKeys)) {
             ResultSet resultSet = statement.getResultSet();
             backendConnection.add(resultSet);
             return new ExecuteQueryResult(withMetadata ? getQueryHeaders(sqlStatementContext, resultSet.getMetaData()) : null, createQueryResult(resultSet, connectionMode));

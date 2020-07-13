@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 
 import java.util.Optional;
@@ -33,7 +32,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class SubqueryTableSegment implements TableSegment, AliasAvailable {
+public final class SubqueryTableSegment implements TableSegment {
     
     private final SubquerySegment subquery;
     

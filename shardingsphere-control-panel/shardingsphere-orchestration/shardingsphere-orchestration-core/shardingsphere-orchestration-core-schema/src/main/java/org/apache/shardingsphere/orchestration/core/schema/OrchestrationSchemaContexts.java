@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.callback.MetaDataCallback;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
@@ -45,7 +46,7 @@ import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.facade.MetricsInitFacade;
+import org.apache.shardingsphere.metrics.facade.MetricsTrackerManagerFacade;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ClusterConfigurationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
@@ -87,8 +88,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     }
     
     private void persistMetaData() {
-        schemaContexts.getSchemaContexts().forEach((key, value) -> ShardingOrchestrationFacade.getInstance()
-                .getMetaDataCenter().persistMetaDataCenterNode(key, value.getSchema().getMetaData().getSchema()));
+        schemaContexts.getSchemaContexts().forEach((key, value) -> MetaDataCallback.INSTANCE.run(key, value.getSchema().getMetaData().getSchema()));
     }
     
     private void disableMasterSlaveRules() {
@@ -205,9 +205,9 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     public synchronized void renew(final MetricsConfigurationChangedEvent event) {
         MetricsConfiguration metricsConfiguration = event.getMetricsConfiguration();
         if (metricsConfiguration.getEnable()) {
-            MetricsInitFacade.restart(metricsConfiguration);
+            MetricsTrackerManagerFacade.restart(metricsConfiguration);
         } else {
-            MetricsInitFacade.close();
+            MetricsTrackerManagerFacade.close();
         }
     }
     

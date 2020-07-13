@@ -36,9 +36,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 
@@ -47,8 +45,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public final class HeartbeatHandler {
-    
-    private static final int FUTURE_GET_TIME_OUT_MILLISECONDS = 5000;
     
     private HeartbeatConfiguration configuration;
     
@@ -104,9 +100,10 @@ public final class HeartbeatHandler {
     private HeartbeatResponse buildHeartbeatResponse(final List<Future<Map<String, HeartbeatResult>>> futureTasks) {
         Map<String, Collection<HeartbeatResult>> heartbeatResultMap = futureTasks.stream().map(e -> {
             try {
-                return e.get(FUTURE_GET_TIME_OUT_MILLISECONDS, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+                return e.get();
+            } catch (InterruptedException | ExecutionException ex) {
                 log.error("Heartbeat report error", ex);
+                e.cancel(true);
                 return new HashMap<String, HeartbeatResult>();
             }
         }).flatMap(map -> map.entrySet().stream()).collect(Collectors.groupingBy(Map.Entry::getKey, HashMap::new, Collectors.mapping(Map.Entry::getValue, Collectors.toCollection(ArrayList::new))));

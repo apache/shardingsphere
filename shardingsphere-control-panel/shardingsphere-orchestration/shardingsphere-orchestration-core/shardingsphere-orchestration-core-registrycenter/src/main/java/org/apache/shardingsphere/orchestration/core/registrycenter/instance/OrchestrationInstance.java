@@ -17,33 +17,53 @@
 
 package org.apache.shardingsphere.orchestration.core.registrycenter.instance;
 
-import lombok.Getter;
-import java.lang.management.ManagementFactory;
 import java.util.UUID;
 import org.apache.shardingsphere.orchestration.core.common.utils.IpUtils;
 
 /**
  * Orchestration instance.
  */
-@Getter
 public final class OrchestrationInstance {
     
     private static final String DELIMITER = "@";
-    
+
     private static final OrchestrationInstance INSTANCE = new OrchestrationInstance();
     
-    private final String instanceId;
-    
+    private String instanceId;
+
     private OrchestrationInstance() {
-        instanceId = IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] + DELIMITER + UUID.randomUUID().toString();
+
     }
-    
+
+    /**
+     * Getter for instanceId.
+     *
+     * @return  instanceId
+     */
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    /**
+     * This method initialises the instance with the instance id.
+     *
+     * @param instanceTag   instance tag of the instance (port/ip)
+     * @return  singleton instance
+     */
+    public static OrchestrationInstance init(final String instanceTag) {
+        if (null == INSTANCE.instanceId) {
+            INSTANCE.instanceId = IpUtils.getIp() + DELIMITER + instanceTag + DELIMITER + UUID.randomUUID().toString();
+        }
+        return INSTANCE;
+    }
+
     /**
      * Get instance.
-     * 
-     * @return instance
+     *
+     * @return  singleton instance
      */
     public static OrchestrationInstance getInstance() {
         return INSTANCE;
     }
+
 }

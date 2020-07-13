@@ -82,6 +82,7 @@ public final class ConfigCenter {
                                       final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
         persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigs, isOverwrite);
         persistRuleConfigurations(shardingSchemaName, ruleConfigurations, isOverwrite);
+        // TODO Consider removing the following one.
         persistShardingSchemaName(shardingSchemaName, isOverwrite);
     }
     

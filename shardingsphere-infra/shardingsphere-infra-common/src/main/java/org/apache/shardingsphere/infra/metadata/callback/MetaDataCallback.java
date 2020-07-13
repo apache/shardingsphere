@@ -17,41 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.callback;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiConsumer;
+import org.apache.shardingsphere.infra.callback.Callback;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 
 /**
  * Meta data call back enum.
  */
-public enum MetaDataCallback {
+public final class MetaDataCallback<T> {
     
-    /**
-     * Instance meta data call back.
-     */
-    INSTANCE;
-    
-    private final List<BiConsumer<String, RuleSchemaMetaData>> consumers = new ArrayList<>();
-    
-    /**
-     * Register rule schema metaData consumer.
-     *
-     * @param consumer consumer
-     */
-    public void register(final BiConsumer<String, RuleSchemaMetaData> consumer) {
-        consumers.add(consumer);
-    }
-    
-    /**
-     * Run rule schema metaData persist to metaData center.
-     *
-     * @param schemaName schemaName
-     * @param ruleSchemaMetaData rule schema metaData
-     */
-    public void run(final String schemaName, final RuleSchemaMetaData ruleSchemaMetaData) {
-        for (BiConsumer<String, RuleSchemaMetaData> each : consumers) {
-            each.accept(schemaName, ruleSchemaMetaData);
-        }
-    }
+    public static final Callback<RuleSchemaMetaData> INSTANCE = new Callback<>();
 }

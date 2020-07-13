@@ -46,8 +46,7 @@ metrics:
    name: prometheus # 指定类型为prometheus.
    host:  127.0.0.1 # 指定host,如果为空，则获取默认
    port:  9190  # 指定prometheus服务端抓取metrics端口
-props:
-  proxy.metrics.enabled: ture  # 设置为true代表开启，设置为false 代表关闭
+   enable : true # 配置为true代表开启,设置为false代表关闭 ,此字段不配置时候，默认开启.
 ```
 
 用户自己搭建`Prometheus` 服务，在 prometheus.yml 文件中新增如下配置:

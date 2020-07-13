@@ -53,6 +53,7 @@ import org.apache.shardingsphere.orchestration.core.registrycenter.event.Circuit
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 
+import java.lang.management.ManagementFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -66,11 +67,15 @@ import java.util.Map;
  */
 @Getter(AccessLevel.PROTECTED)
 public class OrchestrationShardingSphereDataSource extends AbstractOrchestrationDataSource {
+
+    private static final String DELIMITER = "@";
+
+    private static final String THREAD_ID = ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0];
     
     private ShardingSphereDataSource dataSource;
     
     public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
+        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME), THREAD_ID));
         ConfigCenter configService = getShardingOrchestrationFacade().getConfigCenter();
         Collection<RuleConfiguration> configurations = configService.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
         Preconditions.checkState(!configurations.isEmpty(), "Missing the sharding rule configuration on registry center");
@@ -83,7 +88,7 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
     }
     
     public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource shardingSphereDataSource, final OrchestrationConfiguration orchestrationConfig) {
-        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
+        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME), THREAD_ID));
         dataSource = shardingSphereDataSource;
         initShardingOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
                 getRuleConfigurationMap(), dataSource.getSchemaContexts().getProps().getProps());
@@ -93,7 +98,7 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
     }
     
     public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) throws SQLException {
-        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
+        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME), THREAD_ID));
         ConfigCenter configService = getShardingOrchestrationFacade().getConfigCenter();
         Collection<RuleConfiguration> configurations = configService.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
         Preconditions.checkState(!configurations.isEmpty(), "Missing the sharding rule configuration on registry center");
@@ -107,7 +112,7 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
     
     public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource shardingSphereDataSource,
                                                  final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) {
-        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
+        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME), THREAD_ID));
         dataSource = shardingSphereDataSource;
         initShardingOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
                 getRuleConfigurationMap(), dataSource.getSchemaContexts().getProps().getProps(), clusterConfiguration);

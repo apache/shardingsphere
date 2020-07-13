@@ -47,11 +47,10 @@ Four types of metrics are currently defined.
  
  ```yaml
  metrics:
-    name: prometheus # The specified type is Prometheus..
-    host:  127.0.0.1 # Specify host and, if empty, get the default of ShardingSphere-Proxy
-    port:  9190  # Specify the Prometheus server fetching metrics port
- props:
-   proxy.metrics.enabled: ture  # true for on and false for off
+    name: prometheus # The specified type is Prometheus.
+    host:  127.0.0.1 # Specify host and, if empty, get the default of ShardingSphere-Proxy.
+    port:  9190  # Specify the Prometheus server fetching metrics port.
+    enable : true # true for on and false for off ,if not config this, default value is true.
  ```
  
 Users set up the Prometheus service by themselves, adding the following configuration in the prometheus.yml file:
