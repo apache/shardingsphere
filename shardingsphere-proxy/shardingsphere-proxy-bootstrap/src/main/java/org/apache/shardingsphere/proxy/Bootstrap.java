@@ -83,11 +83,12 @@ public final class Bootstrap {
      */
     public static void main(final String[] args) throws Exception {
         int port = getPort(args);
+        System.setProperty("port", String.valueOf(port));
         ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load(getConfigPath(args));
         logRuleConfigurationMap(getRuleConfigurations(shardingConfig.getRuleConfigurationMap()).values());
         boolean isOrchestration = null != shardingConfig.getServerConfiguration().getOrchestration();
         try (ProxyConfigurationConverter converter = ProxyConfigurationConverterFactory.newInstances(isOrchestration)) {
-            ProxyConfiguration proxyConfiguration = converter.convert(shardingConfig, String.valueOf(port));
+            ProxyConfiguration proxyConfiguration = converter.convert(shardingConfig);
             initialize(proxyConfiguration, port, converter);
         }
     }

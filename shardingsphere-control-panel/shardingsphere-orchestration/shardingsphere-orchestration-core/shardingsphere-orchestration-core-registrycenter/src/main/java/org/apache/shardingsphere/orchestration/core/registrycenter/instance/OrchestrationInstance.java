@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.orchestration.core.registrycenter.instance;
 
+import java.lang.management.ManagementFactory;
 import java.util.UUID;
+
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.orchestration.core.common.utils.IpUtils;
 
 /**
@@ -32,7 +35,9 @@ public final class OrchestrationInstance {
     private String instanceId;
 
     private OrchestrationInstance() {
-
+        String tag = Strings.isNullOrEmpty(System.getProperty("port"))
+                ? ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] : System.getProperty("port");
+        instanceId = IpUtils.getIp() + DELIMITER + tag + DELIMITER + UUID.randomUUID().toString();
     }
 
     /**
@@ -42,19 +47,6 @@ public final class OrchestrationInstance {
      */
     public String getInstanceId() {
         return instanceId;
-    }
-
-    /**
-     * This method initialises the instance with the instance id.
-     *
-     * @param instanceTag   instance tag of the instance (port/ip)
-     * @return  singleton instance
-     */
-    public static OrchestrationInstance init(final String instanceTag) {
-        if (null == INSTANCE.instanceId) {
-            INSTANCE.instanceId = IpUtils.getIp() + DELIMITER + instanceTag + DELIMITER + UUID.randomUUID().toString();
-        }
-        return INSTANCE;
     }
 
     /**
