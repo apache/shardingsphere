@@ -17,18 +17,18 @@ weight = 1
 config
     ├──authentication                            # 权限配置
     ├──props                                     # 属性配置
-    ├──schema                                    # Schema配置
-    ├      ├──schema_1                           # Schema名称1
+    ├──schema                                    # Schema 配置
+    ├      ├──schema_1                           # Schema 名称1
     ├      ├      ├──datasource                  # 数据源配置
     ├      ├      ├──rule                        # 规则配置
-    ├      ├──schema_2                           # Schema名称2
+    ├      ├──schema_2                           # Schema 名称2
     ├      ├      ├──datasource                  # 数据源配置
     ├      ├      ├──rule                        # 规则配置
 ```
 
 ### config/authentication
 
-权限配置，可配置访问ShardingSphere-Proxy的用户名和密码。
+权限配置，可配置访问 ShardingSphere-Proxy 的用户名和密码。
 
 ```yaml
 username: root
