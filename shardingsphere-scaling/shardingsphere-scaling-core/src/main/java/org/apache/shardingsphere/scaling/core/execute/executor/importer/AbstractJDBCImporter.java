@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
 
 import javax.sql.DataSource;
@@ -36,6 +36,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -74,46 +75,65 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     
     @Override
     public final void write() {
-        try {
-            while (isRunning()) {
-                List<Record> records = channel.fetchRecords(100, 3);
-                if (null != records && records.size() > 0) {
-                    flush(dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()), records);
-                    if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
-                        channel.ack();
-                        break;
-                    }
+        while (isRunning()) {
+            List<Record> records = channel.fetchRecords(100, 3);
+            if (null != records && records.size() > 0) {
+                flush(dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()), records);
+                if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
+                    channel.ack();
+                    break;
                 }
-                channel.ack();
             }
-        } catch (SQLException ex) {
-            throw new SyncTaskExecuteException(ex);
+            channel.ack();
         }
     }
     
-    private void flush(final DataSource dataSource, final List<Record> buffer) throws SQLException {
+    private void flush(final DataSource dataSource, final List<Record> buffer) {
+        List<Record> unflushed = tryFlush(dataSource, buffer);
+        if (isRunning() && unflushed.size() > 0) {
+            throw new SyncTaskExecuteException("write failed.");
+        }
+    }
+    
+    private List<Record> tryFlush(final DataSource dataSource, final List<Record> buffer) {
+        int retryTimes = rdbmsConfiguration.getRetryTimes();
+        List<Record> unflushed = buffer;
+        do {
+            unflushed = doFlush(dataSource, unflushed);
+        } while (isRunning() && unflushed.size() > 0 && retryTimes-- > 0);
+        return unflushed;
+    }
+    
+    private List<Record> doFlush(final DataSource dataSource, final List<Record> buffer) {
+        int i = 0;
         try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-            for (Record record : buffer) {
-                if (DataRecord.class.equals(record.getClass())) {
-                    DataRecord dataRecord = (DataRecord) record;
-                    switch (dataRecord.getType()) {
-                        case "BOOTSTRAP-INSERT":
-                        case "INSERT":
-                            executeInsert(connection, dataRecord);
-                            break;
-                        case "UPDATE":
-                            executeUpdate(connection, dataRecord);
-                            break;
-                        case "DELETE":
-                            executeDelete(connection, dataRecord);
-                            break;
-                        default:
-                            break;
-                    }
-                }
+            for (; i < buffer.size(); i++) {
+                execute(connection, buffer.get(i));
             }
-            connection.commit();
+        } catch (SQLException ex) {
+            log.error("flush failed: {}", buffer.get(i), ex);
+            return buffer.subList(i, buffer.size());
+        }
+        return Collections.emptyList();
+    }
+    
+    private void execute(final Connection connection, final Record record) throws SQLException {
+        if (DataRecord.class.equals(record.getClass())) {
+            DataRecord dataRecord = (DataRecord) record;
+            switch (dataRecord.getType()) {
+                case "BOOTSTRAP-INSERT":
+                case "INSERT":
+                    executeInsert(connection, dataRecord);
+                    break;
+                case "UPDATE":
+                    executeUpdate(connection, dataRecord);
+                    break;
+                case "DELETE":
+                    executeDelete(connection, dataRecord);
+                    break;
+                default:
+                    break;
+            }
         }
     }
     
