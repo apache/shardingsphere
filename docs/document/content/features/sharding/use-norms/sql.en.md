@@ -110,7 +110,7 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 | DROP INDEX idx_name                                                                         |                                         |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                         |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                         |
-| SELECT subquery_alias.col1 FROM (select tbl_alias.col1 from tbl_name tbl_alias where tbl_alias.col2=?) subquery_alias                                                   |                                         |
+| SELECT subquery_alias.col1 FROM (select tbl_name.col1 from tbl_name where tbl_name.col2=?) subquery_alias                                                   |                                         |
 
 ### Unsupported SQL
 
@@ -123,7 +123,7 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | See DISTINCT availability detail                    |
 | SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | Lead to full routing                                |
 | (SELECT * FROM tbl_name)                                                                   | Contain brackets                              |
-| SELECT subquery_alias.col1 FROM (select tbl_name.col1 from tbl_name where tbl_name.col2=?) subquery_alias                                                   |                                         |
+| SELECT MAX(tbl_name.col1) FROM tbl_name                                                    | Please use table alias to refer to columns in function     |
 
 ## DISTINCT Availability Explanation
 
@@ -150,4 +150,4 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 
 | SQL                                                | Reason                                                                             |
 | -------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| SELECT SUM(DISTINCT tbl_name.col1), SUM(tbl_name.col1) FROM tbl_name | Use column owner that is not table alias |
+| SELECT SUM(DISTINCT tbl_name.col1), SUM(tbl_name.col1) FROM tbl_name | Please use table alias to refer to columns in function |
