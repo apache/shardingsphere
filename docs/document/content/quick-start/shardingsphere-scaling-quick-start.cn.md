@@ -13,7 +13,7 @@ weight = 3
 如果后端连接 PostgreSQL 数据库，不需要引入额外依赖。
 
 如果后端连接 MySQL 数据库，需要下载 [MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
-解压缩后，将 `mysql-connector-java-5.1.47.jar` 拷贝到 `%SHARDINGSPHERE_SCALING_HOME%\lib` 目录。
+解压缩后，将 `mysql-connector-java-5.1.47.jar` 拷贝到 `%SHARDINGSPHERE_SCALING_HOME%/lib` 目录。
 
 ## 3. 启动服务
 
