@@ -10,9 +10,9 @@ Apache ShardingSphere 旨在打造一款分布式数据库解决方案，而对�
 
 ## 方案
 
-Apache ShardingSphere 遵循`Metrics`标准，定义了一套可插拔的`SPI` 标准，它并不存储,收集,展现 `Metrics`信息，
-只是负责在程序中对`Metrics` 进行埋点，目前默认的实现方案为:`Prometheus` 客户端API埋点，服务端通过
-`http` 协议来定时抓取`Metrics`数据。
+Apache ShardingSphere 遵循 `Metrics` 标准，定义了一套可插拔的 `SPI` 标准，它并不存储,收集,展现 `Metrics` 信息，
+只是负责在程序中对 `Metrics` 进行埋点，目前默认的实现方案为: `Prometheus` 客户端API埋点，服务端通过 
+`http` 协议来定时抓取 `Metrics` 数据。
 
 ![流程图](https://shardingsphere.apache.org/document/current/img/control-panel/metrics/metrics.png)
 
@@ -30,26 +30,26 @@ Apache ShardingSphere 遵循`Metrics`标准，定义了一套可插拔的`SPI` �
  
  |名称                       | 类型                  |标签名称       | 说明                  |
  |:------------------------ |:--------------------- |:-------------|:-------------------- |
- |request_total             |Counter                | 无           |收集ShardingSphere所有的请求 |
- |sql_statement_count       |Counter                | sql_type     |收集执行的SQL类型,比如 (SELECT,UPDATE,INSERT...)| 
- |channel_count             |Gauge                  | 无           |收集ShardingSphere-Proxy的连接数               | 
+ |request_total             |Counter                | 无           |收集 ShardingSphere 所有的请求 |
+ |sql_statement_count       |Counter                | sql_type     |收集执行的 SQL 类型,比如 (SELECT,UPDATE,INSERT...)| 
+ |channel_count             |Gauge                  | 无           |收集 ShardingSphere-Proxy 的连接数               | 
  |requests_latency_histogram_millis |Histogram      | 无            |收集执行所有请求的迟延时间(单位:ms)              | 
- |sharding_datasource       |Counter                | datasource   |收集执行SQL语句命中的分库                       | 
- |sharding_table            |Counter                | table        |收集执行SQL语句命中的分表                       | 
+ |sharding_datasource       |Counter                | datasource   |收集执行 SQL 语句命中的分库                       | 
+ |sharding_table            |Counter                | table        |收集执行 SQL 语句命中的分表                       | 
  |transaction               |Counter                | status       |收集所有的事务数量                              | 
 
 ## 使用
-在ShardingSphere-Proxy 的server.yaml文件中新增以下配置:
+在 ShardingSphere-Proxy 的 server.yaml 文件中新增以下配置:
 
 ```yaml
 metrics:
-   name: prometheus # 指定类型为prometheus.
-   host:  127.0.0.1 # 指定host,如果为空，则获取默认
-   port:  9190  # 指定prometheus服务端抓取metrics端口
-   enable : true # 配置为true代表开启,设置为false代表关闭 ,此字段不配置时候，默认开启.
+   name: prometheus # 指定类型为 prometheus.
+   host:  127.0.0.1 # 指定 host,如果为空，则获取默认
+   port:  9190  # 指定 prometheus 服务端抓取 metrics 端口
+   enable : true # 配置为 true 代表开启,设置为 false 代表关闭 ,此字段不配置时候，默认开启.
 ```
 
-用户自己搭建`Prometheus` 服务，在 prometheus.yml 文件中新增如下配置:
+用户自己搭建 `Prometheus` 服务，在 prometheus.yml 文件中新增如下配置:
 
 ```yaml
 scrape_configs:
