@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.callback;
+package org.apache.shardingsphere.infra.callback.orchestration;
 
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
-import org.junit.Test;
+import java.util.Map;
+import org.apache.shardingsphere.infra.callback.Callback;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
-public final class MetaDataCallbackTest {
+/**
+ * Data source callback.
+ */
+public final class DataSourceCallback extends Callback<Map<String, DataSourceConfiguration>> {
     
-    @Test
-    public void assertRegister() {
-        MetaDataCallback.INSTANCE.run("test", new RuleSchemaMetaData(null, null));
-        MetaDataCallback.INSTANCE.register((schemaName, ruleSchemaMetaData) -> {
-            assertEquals(schemaName, "test");
-            assertThat(ruleSchemaMetaData.getClass().getName(), is(RuleSchemaMetaData.class.getName()));
-        });
-        MetaDataCallback.INSTANCE.run("test", new RuleSchemaMetaData(null, null));
+    private static final DataSourceCallback INSTANCE = new DataSourceCallback();
+    
+    private DataSourceCallback() {
+    }
+    
+    /**
+     * Get instance.
+     *
+     * @return data source callback
+     */
+    public static DataSourceCallback getInstance() {
+        return INSTANCE;
     }
 }
-
