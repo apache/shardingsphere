@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.infra.callback;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 
 /**
- * Meta data call back enum.
+ * Call back.
  */
-public final class Callback<T> {
+public abstract class Callback<T> {
 
-    private final List<BiConsumer<String, T>> consumers = new ArrayList<>();
+    private final List<BiConsumer<String, T>> consumers = new CopyOnWriteArrayList<>();
 
     /**
-     * Register rule schema metaData consumer.
+     * Register big consumer.
      *
      * @param consumer consumer
      */
@@ -38,14 +38,14 @@ public final class Callback<T> {
     }
 
     /**
-     * Run rule schema metaData persist to metaData center.
+     * Run of biConsumer.
      *
      * @param schemaName schemaName
-     * @param ruleSchemaMetaData rule schema metaData
+     * @param args args
      */
-    public void run(final String schemaName, final T ruleSchemaMetaData) {
+    public void run(final String schemaName, final T args) {
         for (BiConsumer<String, T> each : consumers) {
-            each.accept(schemaName, ruleSchemaMetaData);
+            each.accept(schemaName, args);
         }
     }
 }

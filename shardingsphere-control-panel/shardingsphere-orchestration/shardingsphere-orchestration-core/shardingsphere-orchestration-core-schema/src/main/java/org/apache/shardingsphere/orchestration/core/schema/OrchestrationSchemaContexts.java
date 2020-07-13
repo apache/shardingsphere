@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.callback.MetaDataCallback;
+import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
@@ -88,7 +88,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     }
     
     private void persistMetaData() {
-        schemaContexts.getSchemaContexts().forEach((key, value) -> MetaDataCallback.INSTANCE.run(key, value.getSchema().getMetaData().getSchema()));
+        schemaContexts.getSchemaContexts().forEach((key, value) -> MetaDataCallback.getInstance().run(key, value.getSchema().getMetaData().getSchema()));
     }
     
     private void disableMasterSlaveRules() {

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.callback.MetaDataCallback;
+import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
@@ -128,7 +128,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (refreshStrategy.isPresent()) {
             refreshStrategy.get().refreshMetaData(schema.getSchema().getMetaData(),
                     schema.getSchema().getDatabaseType(), schema.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
-            MetaDataCallback.INSTANCE.run(schema.getName(), schema.getSchema().getMetaData().getSchema());
+            MetaDataCallback.getInstance().run(schema.getName(), schema.getSchema().getMetaData().getSchema());
         }
     }
     

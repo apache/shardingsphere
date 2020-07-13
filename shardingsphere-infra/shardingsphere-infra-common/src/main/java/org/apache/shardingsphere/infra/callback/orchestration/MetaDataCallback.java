@@ -15,15 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.callback;
+package org.apache.shardingsphere.infra.callback.orchestration;
 
 import org.apache.shardingsphere.infra.callback.Callback;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 
 /**
- * Meta data call back enum.
+ * Meta data call back.
  */
-public final class MetaDataCallback<T> {
+public final class MetaDataCallback extends Callback<RuleSchemaMetaData> {
     
-    public static final Callback<RuleSchemaMetaData> INSTANCE = new Callback<>();
+    private static final MetaDataCallback INSTANCE = new MetaDataCallback();
+
+    private MetaDataCallback() {
+    }
+    
+    /**
+     * Get instance.
+     *
+     * @return meta data call back
+     */
+    public static MetaDataCallback getInstance() {
+        return INSTANCE;
+    }
 }
