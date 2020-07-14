@@ -31,6 +31,7 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.constant.Constants;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -71,11 +72,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class Bootstrap {
     
-    private static final int DEFAULT_PORT = 3307;
-    
     private static final String DEFAULT_CONFIG_PATH = "/conf/";
-    
-    private static final String PORT_KEY = "shardingsphere.port";
     
     /**
      * Main entrance.
@@ -85,7 +82,7 @@ public final class Bootstrap {
      */
     public static void main(final String[] args) throws Exception {
         int port = getPort(args);
-        System.setProperty(PORT_KEY, String.valueOf(port));
+        System.setProperty(Constants.PORT_KEY, String.valueOf(port));
         ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load(getConfigPath(args));
         logRuleConfigurationMap(getRuleConfigurations(shardingConfig.getRuleConfigurationMap()).values());
         boolean isOrchestration = null != shardingConfig.getServerConfiguration().getOrchestration();
@@ -97,10 +94,10 @@ public final class Bootstrap {
     
     private static int getPort(final String[] args) {
         if (0 == args.length) {
-            return DEFAULT_PORT;
+            return Constants.DEFAULT_PORT;
         }
         Integer port = Ints.tryParse(args[0]);
-        return port == null ? DEFAULT_PORT : port;
+        return port == null ? Constants.DEFAULT_PORT : port;
     }
     
     private static String getConfigPath(final String[] args) {

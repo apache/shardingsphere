@@ -21,6 +21,7 @@ import java.lang.management.ManagementFactory;
 import java.util.UUID;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.constant.Constants;
 import org.apache.shardingsphere.orchestration.core.common.utils.IpUtils;
 
 /**
@@ -32,13 +33,11 @@ public final class OrchestrationInstance {
 
     private static final OrchestrationInstance INSTANCE = new OrchestrationInstance();
     
-    private static final String PORT_KEY = "shardingsphere.port";
-    
     private String instanceId;
 
     private OrchestrationInstance() {
-        String tag = Strings.isNullOrEmpty(System.getProperty(PORT_KEY))
-                ? ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] : System.getProperty(PORT_KEY);
+        String tag = Strings.isNullOrEmpty(System.getProperty(Constants.PORT_KEY))
+                ? ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] : System.getProperty(Constants.PORT_KEY);
         instanceId = IpUtils.getIp() + DELIMITER + tag + DELIMITER + UUID.randomUUID().toString();
     }
 

@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.constant.Constants;
 import org.apache.shardingsphere.orchestration.core.common.utils.IpUtils;
 
 /**
@@ -174,6 +175,7 @@ public final class ConfigCenterNode {
      * @return metrics node path
      */
     public String getMetricsPath() {
-        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, METRICS_NODE, IpUtils.getIp());
+        String path = String.join(":", IpUtils.getIp(), System.getProperty(Constants.PORT_KEY, String.valueOf(Constants.DEFAULT_PORT)));
+        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, METRICS_NODE, path);
     }
 }
