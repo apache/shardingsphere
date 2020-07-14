@@ -123,7 +123,7 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | See DISTINCT availability detail                    |
 | SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | Lead to full routing                                |
 | (SELECT * FROM tbl_name)                                                                   | Contain brackets                              |
-| SELECT MAX(tbl_name.col1) FROM tbl_name                                                    | When the select item is a function expression, the real table name cannot be used before the column; if refer a column with table name,please set an alias for the table and use alias to refer a column with the alias |
+| SELECT MAX(tbl_name.col1) FROM tbl_name                                                    | The select function item contains TableName. Otherwise, If this query table had an alias, then TableAlias could work well in select function items. |
 
 ## DISTINCT Availability Explanation
 
@@ -150,4 +150,4 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 
 | SQL                                                | Reason                                                                             |
 | -------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| SELECT SUM(DISTINCT tbl_name.col1), SUM(tbl_name.col1) FROM tbl_name | When the select item is a function expression, the real table name cannot be used before the column; if refer a column with table name,please set an alias for the table and use alias to refer a column with the alias |
+| SELECT SUM(DISTINCT tbl_name.col1), SUM(tbl_name.col1) FROM tbl_name | The select function item contains TableName. Otherwise, If this query table had an alias, then TableAlias could work well in select function items. |
