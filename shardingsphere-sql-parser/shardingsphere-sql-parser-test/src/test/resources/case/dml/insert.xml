@@ -1176,7 +1176,7 @@
         </select>
     </insert>
 
-    <insert sql-case-id="insert_select_with_generate_key_column">
+    <insert sql-case-id="insert_select_with_generate_key_column" parameters="100">
         <table name="t_order_item" start-index="12" stop-index="23" />
         <columns start-index="24" stop-index="74">
             <column name="item_id" start-index="25" stop-index="31" />
@@ -1186,6 +1186,11 @@
             <column name="creation_date" start-index="61" stop-index="73" />
         </columns>
         <select>
+            <table-reference>
+                <table-factor>
+                    <table name="t_order_item" start-index="139" stop-index="150" />
+                </table-factor>
+            </table-reference>
             <projections start-index="83" stop-index="132">
                 <column-projection name="item_id" start-index="83" stop-index="89" />
                 <column-projection name="order_id" start-index="92" stop-index="99" />
@@ -1193,10 +1198,22 @@
                 <expression-projection start-index="111" stop-index="118" />
                 <expression-projection start-index="121" stop-index="132" />
             </projections>
+            <where start-index="152" stop-index="168">
+                <and-predicate>
+                    <predicate start-index="158" stop-index="168" literal-stop-index="170">
+                        <column-left-value name="item_id" start-index="158" stop-index="164" />
+                        <operator type="=" />
+                        <compare-right-value>
+                            <parameter-marker-expression value="0" start-index="168" stop-index="168" />
+                            <literal-expression value="100" start-index="168" stop-index="170" />
+                        </compare-right-value>
+                    </predicate>
+                </and-predicate>
+            </where>
         </select>
     </insert>
 
-    <insert sql-case-id="insert_select_without_generate_key_column">
+    <insert sql-case-id="insert_select_without_generate_key_column" parameters="100">
         <table name="t_order_item" start-index="12" stop-index="23" />
         <columns start-index="24" stop-index="65">
             <column name="order_id" start-index="25" stop-index="32" />
@@ -1205,16 +1222,33 @@
             <column name="creation_date" start-index="52" stop-index="64" />
         </columns>
         <select>
+            <table-reference>
+                <table-factor>
+                    <table name="t_order_item" start-index="121" stop-index="132" />
+                </table-factor>
+            </table-reference>
             <projections start-index="74" stop-index="114">
                 <column-projection name="order_id" start-index="74" stop-index="81" />
                 <column-projection name="user_id" start-index="84" stop-index="90" />
                 <expression-projection start-index="93" stop-index="100" />
                 <expression-projection start-index="103" stop-index="114" />
             </projections>
+            <where start-index="134" stop-index="151">
+                <and-predicate>
+                    <predicate start-index="140" stop-index="151" literal-stop-index="153">
+                        <column-left-value name="order_id" start-index="140" stop-index="147" />
+                        <operator type="=" />
+                        <compare-right-value>
+                            <parameter-marker-expression value="0" start-index="151" stop-index="151" />
+                            <literal-expression value="100" start-index="151" stop-index="153" />
+                        </compare-right-value>
+                    </predicate>
+                </and-predicate>
+            </where>
         </select>
     </insert>
 
-    <insert sql-case-id="insert_select_on_duplicate_key_update">
+    <insert sql-case-id="insert_select_on_duplicate_key_update" parameters="100">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="19" stop-index="45">
             <column name="order_id" start-index="20" stop-index="27" />
@@ -1222,17 +1256,34 @@
             <column name="status" start-index="39" stop-index="44" />
         </columns>
         <select>
+            <table-reference>
+                <table-factor>
+                    <table name="t_order" start-index="85" stop-index="91" />
+                </table-factor>
+            </table-reference>
             <projections start-index="54" stop-index="78">
                 <column-projection name="order_id" start-index="54" stop-index="61" />
                 <column-projection name="user_id" start-index="64" stop-index="70" />
                 <column-projection name="status" start-index="73" stop-index="78" />
             </projections>
+            <where start-index="93" stop-index="110">
+                <and-predicate>
+                    <predicate start-index="99" stop-index="110" literal-stop-index="112">
+                        <column-left-value name="order_id" start-index="99" stop-index="106" />
+                        <operator type="=" />
+                        <compare-right-value>
+                            <parameter-marker-expression value="0" start-index="110" stop-index="110" literal-stop-index="112" />
+                            <literal-expression value="100" start-index="110" stop-index="112" />
+                        </compare-right-value>
+                    </predicate>
+                </and-predicate>
+            </where>
         </select>
-        <on-duplicate-key-columns start-index="80" stop-index="126">
-            <assignment start-index="104" stop-index="126">
-                <column name="status" start-index="104" stop-index="109" />
+        <on-duplicate-key-columns start-index="112" stop-index="158" literal-start-index="114" literal-stop-index="160">
+            <assignment start-index="136" stop-index="158" literal-start-index="138" literal-stop-index="160">
+                <column name="status" start-index="136" stop-index="141" literal-start-index="138" literal-stop-index="143" />
                 <assignment-value>
-                    <common-expression text="VALUES(status)" start-index="113" stop-index="126" />
+                    <common-expression text="VALUES(status)" start-index="145" stop-index="158" literal-start-index="147" literal-stop-index="160" />
                 </assignment-value>
             </assignment>
         </on-duplicate-key-columns>
