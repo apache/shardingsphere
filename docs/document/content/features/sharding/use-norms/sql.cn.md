@@ -123,7 +123,7 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | 详见DISTINCT支持情况详细说明 |
 | SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | 会导致全路由                |
 | (SELECT * FROM tbl_name)                                                                   | 暂不支持加括号的查询                              |
-| SELECT MAX(tbl_name.col1) FROM tbl_name                                                    | projection中在函数中需要使用表别名引用查询列                                         |
+| SELECT MAX(tbl_name.col1) FROM tbl_name                                                    | 查询列是函数表达式时,查询列前不能使用表名;若查询表存在别名,则可使用表的别名|
 
 ## DISTINCT支持情况详细说明
 
@@ -150,4 +150,4 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 
 | SQL                                                                                         | 不支持原因                          |
 | ------------------------------------------------------------------------------------------- |----------------------------------- |
-| SELECT SUM(DISTINCT tbl_name.col1), SUM(tbl_name.col1) FROM tbl_name                        | projection中在函数中需要使用表别名来引用查询列 |
+| SELECT SUM(DISTINCT tbl_name.col1), SUM(tbl_name.col1) FROM tbl_name                        | 查询列是函数表达式时,查询列前不能使用表名;若查询表存在别名,则可使用表的别名 |
