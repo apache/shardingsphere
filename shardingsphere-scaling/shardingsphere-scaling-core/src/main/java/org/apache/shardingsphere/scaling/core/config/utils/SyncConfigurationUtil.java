@@ -23,9 +23,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
@@ -37,6 +39,7 @@ import org.apache.shardingsphere.sharding.rule.TableRule;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -58,12 +61,47 @@ public final class SyncConfigurationUtil {
         Map<String, DataSourceConfiguration> sourceDatasource = ConfigurationYamlConverter.loadDataSourceConfigurations(scalingConfiguration.getRuleConfiguration().getSourceDatasource());
         ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(scalingConfiguration.getRuleConfiguration().getSourceRule());
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDatasource.keySet());
+        filterByShardingDataSourceTables(dataSourceTableNameMap, scalingConfiguration.getJobConfiguration());
         for (String each : dataSourceTableNameMap.keySet()) {
             RdbmsConfiguration dumperConfiguration = createDumperConfiguration(sourceDatasource.get(each));
             dumperConfiguration.setRetryTimes(scalingConfiguration.getJobConfiguration().getRetryTimes());
             RdbmsConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration, sourceRule);
             Map<String, String> tableNameMap = dataSourceTableNameMap.get(each);
             result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), tableNameMap, dumperConfiguration, importerConfiguration));
+        }
+        return result;
+    }
+    
+    private static void filterByShardingDataSourceTables(final Map<String, Map<String, String>> dataSourceTableNameMap, final JobConfiguration jobConfiguration) {
+        if (null == jobConfiguration.getShardingTables()) {
+            return;
+        }
+        Map<String, Set<String>> shardingDataSourceTableMap = toDataSourceTableNameMap(getShardingDataSourceTables(jobConfiguration));
+        dataSourceTableNameMap.entrySet().removeIf(entry -> !shardingDataSourceTableMap.containsKey(entry.getKey()));
+        for (Map.Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
+            filterByShardingTables(entry.getValue(), shardingDataSourceTableMap.get(entry.getKey()));
+        }
+    }
+    
+    private static String getShardingDataSourceTables(final JobConfiguration jobConfiguration) {
+        if (jobConfiguration.getShardingItem() >= jobConfiguration.getShardingTables().length) {
+            return "";
+        }
+        return jobConfiguration.getShardingTables()[jobConfiguration.getShardingItem()];
+    }
+    
+    private static void filterByShardingTables(final Map<String, String> fullTables, final Set<String> shardingTables) {
+        fullTables.entrySet().removeIf(entry -> !shardingTables.contains(entry.getKey()));
+    }
+    
+    private static Map<String, Set<String>> toDataSourceTableNameMap(final String shardingDataSourceTables) {
+        Map<String, Set<String>> result = new HashMap<>();
+        for (String each : new InlineExpressionParser(shardingDataSourceTables).splitAndEvaluate()) {
+            String[] table = each.split("\\.");
+            if (!result.containsKey(table[0])) {
+                result.put(table[0], new HashSet<>());
+            }
+            result.get(table[0]).add(table[1]);
         }
         return result;
     }
@@ -141,6 +179,7 @@ public final class SyncConfigurationUtil {
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     private static Set<String> extractShardingColumns(final ShardingStrategyConfiguration shardingStrategy) {
         if (shardingStrategy instanceof StandardShardingStrategyConfiguration) {
             return Sets.newHashSet(((StandardShardingStrategyConfiguration) shardingStrategy).getShardingColumn());
