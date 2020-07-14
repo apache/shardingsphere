@@ -38,7 +38,7 @@ public final class OrchestrationInstance {
 
     private OrchestrationInstance() {
         String tag = Strings.isNullOrEmpty(System.getProperty(PORT_KEY))
-                ? ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] : System.getProperty("port");
+                ? ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] : System.getProperty(PORT_KEY);
         instanceId = IpUtils.getIp() + DELIMITER + tag + DELIMITER + UUID.randomUUID().toString();
     }
 
