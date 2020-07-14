@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertSelectSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -47,6 +48,8 @@ public final class InsertStatement extends DMLStatement {
     private InsertColumnsSegment insertColumns;
     
     private SetAssignmentSegment setAssignment;
+    
+    private InsertSelectSegment insertSelect;
     
     private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
     
@@ -77,6 +80,15 @@ public final class InsertStatement extends DMLStatement {
      */
     public Optional<SetAssignmentSegment> getSetAssignment() {
         return Optional.ofNullable(setAssignment);
+    }
+    
+    /**
+     * Get insert select segment.
+     *
+     * @return insert select segment
+     */
+    public Optional<InsertSelectSegment> getInsertSelect() {
+        return Optional.ofNullable(insertSelect);
     }
     
     /**
