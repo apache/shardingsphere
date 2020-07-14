@@ -42,9 +42,12 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinedTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableFactorSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
@@ -53,18 +56,25 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.TextOrder
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.util.SQLUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Select SQL statement context.
@@ -108,13 +118,122 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private boolean containsSubquery() {
-        Collection<WhereSegment> subqueryPredicateSegments = getSqlStatement().getSubqueryWhereSegments();
+        Collection<WhereSegment> subqueryPredicateSegments = getSubqueryWhereSegments(getSqlStatement());
         for (WhereSegment each : subqueryPredicateSegments) {
             if (!each.getAndPredicates().isEmpty()) {
                 return true;
             }
         }
         return false;
+    }
+    
+    /**
+     * Get subquery where segment from SelectStatement.
+     *
+     * @param selectStatement SelectStatement.
+     * @return subquery where segment collection.
+     */
+    public Collection<WhereSegment> getSubqueryWhereSegments(final SelectStatement selectStatement) {
+        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
+        subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromProjections(selectStatement.getProjections()));
+        subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromTableReferences(selectStatement.getTableReferences()));
+        subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromWhere(selectStatement.getWhere().orElse(null)));
+        return subqueryWhereSegments;
+    }
+    
+    private Collection<WhereSegment> getSubqueryWhereSegmentsFromProjections(final ProjectionsSegment projections) {
+        if (null == projections || projections.getProjections().isEmpty()) {
+            return Collections.emptyList();
+        }
+        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
+        
+        for (ProjectionSegment each : projections.getProjections()) {
+            if (!(each instanceof SubqueryProjectionSegment)) {
+                continue;
+            }
+            SelectStatement subquerySelect = ((SubqueryProjectionSegment) each).getSubquery().getSelect();
+            subquerySelect.getWhere().ifPresent(subqueryWhereSegments::add);
+            subqueryWhereSegments.addAll(getSubqueryWhereSegments(subquerySelect));
+        }
+        return subqueryWhereSegments;
+    }
+    
+    private Collection<WhereSegment> getSubqueryWhereSegmentsFromTableReferences(final Collection<TableReferenceSegment> tableReferences) {
+        if (tableReferences.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
+        for (TableReferenceSegment each : tableReferences) {
+            subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromTableFactor(each.getTableFactor()));
+            subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromJoinedTable(each.getJoinedTables()));
+        }
+        return subqueryWhereSegments;
+    }
+    
+    private Collection<WhereSegment> getSubqueryWhereSegmentsFromWhere(final WhereSegment where) {
+        if (null == where || where.getAndPredicates().isEmpty()) {
+            return Collections.emptyList();
+        }
+        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
+        List<PredicateSegment> predicateSegments = where.getAndPredicates().stream().flatMap(andPredicate -> andPredicate.getPredicates().stream()).collect(Collectors.toList());
+        for (PredicateSegment each : predicateSegments) {
+            if (each.getRightValue() instanceof PredicateBetweenRightValue) {
+                subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromExpression(((PredicateBetweenRightValue) each.getRightValue()).getBetweenExpression()));
+                subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromExpression(((PredicateBetweenRightValue) each.getRightValue()).getAndExpression()));
+            }
+            if (each.getRightValue() instanceof PredicateCompareRightValue) {
+                subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromExpression(((PredicateCompareRightValue) each.getRightValue()).getExpression()));
+            }
+            if (each.getRightValue() instanceof PredicateInRightValue) {
+                for (ExpressionSegment sqlExpression : ((PredicateInRightValue) each.getRightValue()).getSqlExpressions()) {
+                    subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromExpression(sqlExpression));
+                }
+            }
+        }
+        return subqueryWhereSegments;
+    }
+    
+    private Collection<WhereSegment> getSubqueryWhereSegmentsFromTableFactor(final TableFactorSegment tableFactor) {
+        if (null == tableFactor) {
+            return Collections.emptyList();
+        }
+        return getSubqueryWhereSegmentsFromTableSegment(tableFactor.getTable());
+    }
+    
+    private Collection<WhereSegment> getSubqueryWhereSegmentsFromJoinedTable(final Collection<JoinedTableSegment> joinedTables) {
+        if (joinedTables.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
+        for (JoinedTableSegment joinedTable : joinedTables) {
+            if (null == joinedTable.getTableFactor()) {
+                continue;
+            }
+            subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromTableSegment(joinedTable.getTableFactor().getTable()));
+        }
+        return subqueryWhereSegments;
+    }
+    
+    private Collection<WhereSegment> getSubqueryWhereSegmentsFromTableSegment(final TableSegment tableSegment) {
+        if (!(tableSegment instanceof SubqueryTableSegment)) {
+            return Collections.emptyList();
+        }
+        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
+        SelectStatement subquerySelect = ((SubqueryTableSegment) tableSegment).getSubquery().getSelect();
+        subquerySelect.getWhere().ifPresent(subqueryWhereSegments::add);
+        subqueryWhereSegments.addAll(getSubqueryWhereSegments(subquerySelect));
+        return subqueryWhereSegments;
+    }
+    
+    private Collection<WhereSegment> getSubqueryWhereSegmentsFromExpression(final ExpressionSegment expressionSegment) {
+        if (!(expressionSegment instanceof SubqueryExpressionSegment)) {
+            return Collections.emptyList();
+        }
+        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
+        SelectStatement subquerySelect = ((SubqueryExpressionSegment) expressionSegment).getSubquery().getSelect();
+        subquerySelect.getWhere().ifPresent(subqueryWhereSegments::add);
+        subqueryWhereSegments.addAll(getSubqueryWhereSegments(subquerySelect));
+        return subqueryWhereSegments;
     }
     
     /**
@@ -237,7 +356,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         if (each instanceof OwnerAvailable) {
             return ((OwnerAvailable) each).getOwner();
         }
-        if (each instanceof ColumnProjectionSegment) { 
+        if (each instanceof ColumnProjectionSegment) {
             return ((ColumnProjectionSegment) each).getColumn().getOwner();
         }
         return Optional.empty();

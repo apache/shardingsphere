@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.util.SubqueryUtils;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -98,14 +97,5 @@ public final class SelectStatement extends DMLStatement {
      */
     public Optional<LockSegment> getLock() {
         return Optional.ofNullable(lock);
-    }
-    
-    /**
-     * Get subquery where segment.
-     *
-     * @return subquery where segment collection.
-     */
-    public Collection<WhereSegment> getSubqueryWhereSegments() {
-        return SubqueryUtils.getSubqueryWhereSegmentsFromSelectStatement(this);
     }
 }
