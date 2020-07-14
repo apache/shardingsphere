@@ -67,7 +67,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableSegme
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.util.SQLUtil;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -134,7 +133,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
      * @return subquery where segment collection.
      */
     public Collection<WhereSegment> getSubqueryWhereSegments(final SelectStatement selectStatement) {
-        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
+        Collection<WhereSegment> subqueryWhereSegments = new LinkedList<>();
         subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromProjections(selectStatement.getProjections()));
         subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromTableReferences(selectStatement.getTableReferences()));
         subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromWhere(selectStatement.getWhere().orElse(null)));
@@ -145,7 +144,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         if (null == projections || projections.getProjections().isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
+        Collection<WhereSegment> subqueryWhereSegments = new LinkedList<>();
         
         for (ProjectionSegment each : projections.getProjections()) {
             if (!(each instanceof SubqueryProjectionSegment)) {
@@ -162,7 +161,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         if (tableReferences.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
+        Collection<WhereSegment> subqueryWhereSegments = new LinkedList<>();
         for (TableReferenceSegment each : tableReferences) {
             subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromTableFactor(each.getTableFactor()));
             subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromJoinedTable(each.getJoinedTables()));
@@ -174,7 +173,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         if (null == where || where.getAndPredicates().isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
+        Collection<WhereSegment> subqueryWhereSegments = new LinkedList<>();
         List<PredicateSegment> predicateSegments = where.getAndPredicates().stream().flatMap(andPredicate -> andPredicate.getPredicates().stream()).collect(Collectors.toList());
         for (PredicateSegment each : predicateSegments) {
             if (each.getRightValue() instanceof PredicateBetweenRightValue) {
@@ -204,7 +203,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         if (joinedTables.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
+        Collection<WhereSegment> subqueryWhereSegments = new LinkedList<>();
         for (JoinedTableSegment joinedTable : joinedTables) {
             if (null == joinedTable.getTableFactor()) {
                 continue;
@@ -218,7 +217,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         if (!(tableSegment instanceof SubqueryTableSegment)) {
             return Collections.emptyList();
         }
-        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
+        Collection<WhereSegment> subqueryWhereSegments = new LinkedList<>();
         SelectStatement subquerySelect = ((SubqueryTableSegment) tableSegment).getSubquery().getSelect();
         subquerySelect.getWhere().ifPresent(subqueryWhereSegments::add);
         subqueryWhereSegments.addAll(getSubqueryWhereSegments(subquerySelect));
@@ -229,7 +228,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         if (!(expressionSegment instanceof SubqueryExpressionSegment)) {
             return Collections.emptyList();
         }
-        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
+        Collection<WhereSegment> subqueryWhereSegments = new LinkedList<>();
         SelectStatement subquerySelect = ((SubqueryExpressionSegment) expressionSegment).getSubquery().getSelect();
         subquerySelect.getWhere().ifPresent(subqueryWhereSegments::add);
         subqueryWhereSegments.addAll(getSubqueryWhereSegments(subquerySelect));
