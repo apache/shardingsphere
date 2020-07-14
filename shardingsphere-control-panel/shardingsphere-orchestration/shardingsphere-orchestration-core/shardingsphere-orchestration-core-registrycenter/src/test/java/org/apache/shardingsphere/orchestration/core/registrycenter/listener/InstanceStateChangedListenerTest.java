@@ -21,7 +21,6 @@ import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNodeStatus;
-import org.apache.shardingsphere.orchestration.core.registrycenter.instance.OrchestrationInstance;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +40,6 @@ public final class InstanceStateChangedListenerTest {
     
     @Before
     public void setUp() {
-        OrchestrationInstance.init("3307");
         instanceStateChangedListener = new InstanceStateChangedListener("test", registryCenterRepository);
     }
     

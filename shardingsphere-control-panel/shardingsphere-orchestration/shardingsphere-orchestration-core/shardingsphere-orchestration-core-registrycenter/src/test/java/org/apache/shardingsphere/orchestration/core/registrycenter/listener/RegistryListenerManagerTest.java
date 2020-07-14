@@ -19,7 +19,6 @@ package org.apache.shardingsphere.orchestration.core.registrycenter.listener;
 
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
-import org.apache.shardingsphere.orchestration.core.registrycenter.instance.OrchestrationInstance;
 import org.apache.shardingsphere.orchestration.core.registrycenter.util.FieldUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +41,6 @@ public final class RegistryListenerManagerTest {
     
     @Test
     public void assertInitListeners() {
-        OrchestrationInstance.init("3307");
         RegistryListenerManager actual = new RegistryListenerManager("test", registryCenterRepository);
         FieldUtil.setField(actual, "instanceStateChangedListener", instanceStateChangedListener);
         FieldUtil.setField(actual, "dataSourceStateChangedListener", dataSourceStateChangedListener);

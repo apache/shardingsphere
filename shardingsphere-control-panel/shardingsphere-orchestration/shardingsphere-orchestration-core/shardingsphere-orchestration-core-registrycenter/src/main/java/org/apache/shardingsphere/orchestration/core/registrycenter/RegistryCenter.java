@@ -35,10 +35,10 @@ public final class RegistryCenter {
     
     private final OrchestrationInstance instance;
 
-    public RegistryCenter(final String name, final String instanceTag, final RegistryCenterRepository registryCenterRepository) {
+    public RegistryCenter(final String name, final RegistryCenterRepository registryCenterRepository) {
         this.node = new RegistryCenterNode(name);
         this.repository = registryCenterRepository;
-        this.instance = OrchestrationInstance.init(instanceTag);
+        this.instance = OrchestrationInstance.getInstance();
     }
     
     /**

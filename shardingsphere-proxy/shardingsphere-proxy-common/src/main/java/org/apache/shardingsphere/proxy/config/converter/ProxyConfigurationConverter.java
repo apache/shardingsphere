@@ -32,10 +32,9 @@ public interface ProxyConfigurationConverter extends AutoCloseable {
      * Convert proxy configuration.
      *
      * @param shardingConfiguration sharding configuration
-     * @param instanceTag instance tag
      * @return proxy configuration
      */
-    ProxyConfiguration convert(ShardingConfiguration shardingConfiguration, String instanceTag);
+    ProxyConfiguration convert(ShardingConfiguration shardingConfiguration);
     
     /**
      * Build contexts aware.
