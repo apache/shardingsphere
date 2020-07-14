@@ -76,7 +76,7 @@ public final class RegistryCenterExecuteEngineTest {
         RegistryCenterExecuteEngine executeEngine = new RegistryCenterExecuteEngine("sharding_db", mock(CreateDataSourcesStatement.class));
         BackendResponse response = executeEngine.execute(new ExecutionContext(dataSourcesContext, new LinkedList<>()));
         assertThat(response, instanceOf(ErrorResponse.class));
-        setSchemaContexts(true);
+        setOrchestrationSchemaContexts(true);
         response = executeEngine.execute(new ExecutionContext(dataSourcesContext, new LinkedList<>()));
         assertThat(response, instanceOf(UpdateResponse.class));
     }
@@ -86,13 +86,13 @@ public final class RegistryCenterExecuteEngineTest {
         RegistryCenterExecuteEngine executeEngine = new RegistryCenterExecuteEngine("sharding_db", mock(CreateShardingRuleStatement.class));
         BackendResponse response = executeEngine.execute(new ExecutionContext(ruleContext, new LinkedList<>()));
         assertThat(response, instanceOf(ErrorResponse.class));
-        setSchemaContexts(true);
+        setOrchestrationSchemaContexts(true);
         response = executeEngine.execute(new ExecutionContext(ruleContext, new LinkedList<>()));
         assertThat(response, instanceOf(UpdateResponse.class));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setSchemaContexts(final boolean isOrchestration) {
+    private void setOrchestrationSchemaContexts(final boolean isOrchestration) {
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
         if (isOrchestration) {
@@ -104,6 +104,6 @@ public final class RegistryCenterExecuteEngineTest {
     
     @After
     public void setDown() {
-        setSchemaContexts(false);
+        setOrchestrationSchemaContexts(false);
     }
 }
