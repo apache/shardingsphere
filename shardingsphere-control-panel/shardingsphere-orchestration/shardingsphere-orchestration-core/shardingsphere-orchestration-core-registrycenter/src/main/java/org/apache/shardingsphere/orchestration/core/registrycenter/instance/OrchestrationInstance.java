@@ -32,10 +32,12 @@ public final class OrchestrationInstance {
 
     private static final OrchestrationInstance INSTANCE = new OrchestrationInstance();
     
+    private static final String PORT_KEY = "shardingsphere.port";
+    
     private String instanceId;
 
     private OrchestrationInstance() {
-        String tag = Strings.isNullOrEmpty(System.getProperty("port"))
+        String tag = Strings.isNullOrEmpty(System.getProperty(PORT_KEY))
                 ? ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] : System.getProperty("port");
         instanceId = IpUtils.getIp() + DELIMITER + tag + DELIMITER + UUID.randomUUID().toString();
     }

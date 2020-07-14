@@ -75,6 +75,8 @@ public final class Bootstrap {
     
     private static final String DEFAULT_CONFIG_PATH = "/conf/";
     
+    private static final String PORT_KEY = "shardingsphere.port";
+    
     /**
      * Main entrance.
      *
@@ -83,7 +85,7 @@ public final class Bootstrap {
      */
     public static void main(final String[] args) throws Exception {
         int port = getPort(args);
-        System.setProperty("port", String.valueOf(port));
+        System.setProperty(PORT_KEY, String.valueOf(port));
         ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load(getConfigPath(args));
         logRuleConfigurationMap(getRuleConfigurations(shardingConfig.getRuleConfigurationMap()).values());
         boolean isOrchestration = null != shardingConfig.getServerConfiguration().getOrchestration();
