@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDataSourc
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateShardingRuleStatement;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -74,7 +76,7 @@ public final class RegistryCenterExecuteEngineTest {
         RegistryCenterExecuteEngine executeEngine = new RegistryCenterExecuteEngine("sharding_db", mock(CreateDataSourcesStatement.class));
         BackendResponse response = executeEngine.execute(new ExecutionContext(dataSourcesContext, new LinkedList<>()));
         assertThat(response, instanceOf(ErrorResponse.class));
-        setSchemaContexts();
+        setSchemaContexts(true);
         response = executeEngine.execute(new ExecutionContext(dataSourcesContext, new LinkedList<>()));
         assertThat(response, instanceOf(UpdateResponse.class));
     }
@@ -84,15 +86,24 @@ public final class RegistryCenterExecuteEngineTest {
         RegistryCenterExecuteEngine executeEngine = new RegistryCenterExecuteEngine("sharding_db", mock(CreateShardingRuleStatement.class));
         BackendResponse response = executeEngine.execute(new ExecutionContext(ruleContext, new LinkedList<>()));
         assertThat(response, instanceOf(ErrorResponse.class));
-        setSchemaContexts();
+        setSchemaContexts(true);
         response = executeEngine.execute(new ExecutionContext(ruleContext, new LinkedList<>()));
         assertThat(response, instanceOf(UpdateResponse.class));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setSchemaContexts() {
+    private void setSchemaContexts(final boolean isOrchestration) {
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(), mock(OrchestrationSchemaContextsFixture.class));
+        if (isOrchestration) {
+            schemaContexts.set(ProxySchemaContexts.getInstance(), mock(OrchestrationSchemaContextsFixture.class));
+        } else {
+            schemaContexts.set(ProxySchemaContexts.getInstance(), mock(SchemaContexts.class));
+        }
+    }
+    
+    @After
+    public void setDown() {
+        setSchemaContexts(false);
     }
 }
