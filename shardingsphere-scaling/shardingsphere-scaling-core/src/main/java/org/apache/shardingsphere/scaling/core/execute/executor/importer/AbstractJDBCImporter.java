@@ -89,19 +89,19 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     }
     
     private void flush(final DataSource dataSource, final List<Record> buffer) {
-        List<Record> unflushed = tryFlush(dataSource, buffer);
-        if (isRunning() && unflushed.size() > 0) {
+        boolean success = tryFlush(dataSource, buffer);
+        if (isRunning() && !success) {
             throw new SyncTaskExecuteException("write failed.");
         }
     }
     
-    private List<Record> tryFlush(final DataSource dataSource, final List<Record> buffer) {
+    private boolean tryFlush(final DataSource dataSource, final List<Record> buffer) {
         int retryTimes = rdbmsConfiguration.getRetryTimes();
         List<Record> unflushed = buffer;
         do {
             unflushed = doFlush(dataSource, unflushed);
         } while (isRunning() && unflushed.size() > 0 && retryTimes-- > 0);
-        return unflushed;
+        return unflushed.isEmpty();
     }
     
     private List<Record> doFlush(final DataSource dataSource, final List<Record> buffer) {

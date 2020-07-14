@@ -34,4 +34,9 @@ public final class JobConfiguration {
     private int concurrency = 3;
     
     private int retryTimes = 3;
+    
+    private String[] shardingTables;
+    
+    private int shardingItem;
+    
 }

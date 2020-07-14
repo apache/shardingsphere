@@ -27,6 +27,8 @@
       }
   },
   "jobConfiguration": {
-    "concurrency": 3
+    "concurrency": 3,
+    "shardingTables": ["ds_0.t1", "ds_0.t2"],
+    "shardingIndex": 0
   }
 }

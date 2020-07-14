@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class ConnectInfo {
+public final class ConnectInfo {
 
     private final int serverId;
 
