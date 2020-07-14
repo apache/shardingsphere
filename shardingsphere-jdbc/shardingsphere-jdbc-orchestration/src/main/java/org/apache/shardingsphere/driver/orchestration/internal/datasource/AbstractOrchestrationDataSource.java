@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 
@@ -39,6 +40,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,13 +60,13 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     @Getter(AccessLevel.PROTECTED)
-    private final ShardingOrchestrationFacade shardingOrchestrationFacade;
+    private final ShardingOrchestrationFacade shardingOrchestrationFacade = ShardingOrchestrationFacade.getInstance();
     
     @Getter(AccessLevel.PROTECTED)
     private final Map<String, DataSourceConfiguration> dataSourceConfigurations = new LinkedHashMap<>();
     
-    public AbstractOrchestrationDataSource(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
-        this.shardingOrchestrationFacade = shardingOrchestrationFacade;
+    public AbstractOrchestrationDataSource(final OrchestrationConfiguration orchestrationConfig) {
+        this.shardingOrchestrationFacade.init(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME));
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
@@ -87,12 +89,12 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     }
     
     protected final void initShardingOrchestrationFacade() {
-        shardingOrchestrationFacade.init();
+        shardingOrchestrationFacade.initConfigurations();
         dataSourceConfigurations.putAll(shardingOrchestrationFacade.getConfigCenter().loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME));
     }
     
     protected final void initShardingOrchestrationFacade(final ClusterConfiguration clusterConfiguration) {
-        shardingOrchestrationFacade.init();
+        shardingOrchestrationFacade.initConfigurations();
         shardingOrchestrationFacade.initClusterConfiguration(clusterConfiguration);
         dataSourceConfigurations.putAll(shardingOrchestrationFacade.getConfigCenter().loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME));
     }
@@ -100,14 +102,14 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     protected final void initShardingOrchestrationFacade(
             final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurations,
             final Map<String, Collection<RuleConfiguration>> schemaRules, final Properties props) {
-        shardingOrchestrationFacade.init(dataSourceConfigurations, schemaRules, null, props);
+        shardingOrchestrationFacade.initConfigurations(dataSourceConfigurations, schemaRules, null, props);
         this.dataSourceConfigurations.putAll(dataSourceConfigurations.get(DefaultSchema.LOGIC_NAME));
     }
     
     protected final void initShardingOrchestrationFacade(
             final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurations,
             final Map<String, Collection<RuleConfiguration>> schemaRules, final Properties props, final ClusterConfiguration clusterConfiguration) {
-        shardingOrchestrationFacade.init(dataSourceConfigurations, schemaRules, null, props);
+        shardingOrchestrationFacade.initConfigurations(dataSourceConfigurations, schemaRules, null, props);
         shardingOrchestrationFacade.initClusterConfiguration(clusterConfiguration);
         this.dataSourceConfigurations.putAll(dataSourceConfigurations.get(DefaultSchema.LOGIC_NAME));
     }
