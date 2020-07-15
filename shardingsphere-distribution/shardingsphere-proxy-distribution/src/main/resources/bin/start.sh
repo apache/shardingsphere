@@ -23,20 +23,23 @@ cd ..
 DEPLOY_DIR=`pwd`
 
 LOGS_DIR=${DEPLOY_DIR}/logs
-if [ ! -d ${LOGS_DIR} ]; then
+if [[ ! -d ${LOGS_DIR} ]]; then
     mkdir ${LOGS_DIR}
 fi
 
 STDOUT_FILE=${LOGS_DIR}/stdout.log
 EXT_LIB=${DEPLOY_DIR}/ext-lib
 
-CLASS_PATH=.:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
+CLASS_PATH=${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
 
 JAVA_OPTS=" -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true "
 
 JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss256k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 "
 
 MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
+
+PORT=3307
+CONF_DIR=${DEPLOY_DIR}/conf/
 
 print_usage() {
     echo "usage: start.sh [port] [config_dir]"
@@ -45,25 +48,30 @@ print_usage() {
     exit 0
 }
 
-if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]] ; then
     print_usage
 fi
 
 echo "Starting the $SERVER_NAME ..."
 
-if [ $# == 1 ]; then
-    MAIN_CLASS=${MAIN_CLASS}" "$1
-    echo "The port is $1"
-    set CLASS_PATH=../conf;%CLASS_PATH%
+if [[ $# == 1 ]]; then
+    PORT=$1
 fi
 
-if [ $# == 2 ]; then
-    MAIN_CLASS=${MAIN_CLASS}" "$1" "$2
-    echo "The port is $1"
-    echo "The configuration path is $DEPLOY_DIR/$2"
-    CLASS_PATH=${DEPLOY_DIR}/$2:${CLASS_PATH}
+if [[ $# == 2 ]]; then
+    PORT=$1
+    if [[ $2 == /* ]]; then
+        CONF_DIR=$2
+    else
+        CONF_DIR=${DEPLOY_DIR}/$2
+    fi
 fi
 
+MAIN_CLASS=${MAIN_CLASS}" "${PORT}" "`basename ${CONF_DIR}`
+CLASS_PATH=${CONF_DIR}:`dirname ${CONF_DIR}`:${CLASS_PATH}
+
+echo "The port is ${PORT}"
+echo "The conf dir is ${CONF_DIR}"
 echo "The classpath is ${CLASS_PATH}"
 
 nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
