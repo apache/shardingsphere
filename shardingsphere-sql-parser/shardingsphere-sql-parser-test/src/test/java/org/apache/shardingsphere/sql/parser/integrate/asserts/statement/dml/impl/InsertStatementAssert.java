@@ -87,7 +87,7 @@ public final class InsertStatementAssert {
     private static void assertInsertSelectClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         if (null != expected.getSelectTestCase()) {
             assertTrue(assertContext.getText("Actual insert select segment should exist."), actual.getInsertSelect().isPresent());
-            SelectStatementAssert.assertIs(assertContext, actual.getInsertSelect().get().getSelect().getSelectStatement(), expected.getSelectTestCase());
+            SelectStatementAssert.assertIs(assertContext, actual.getInsertSelect().get().getSelect(), expected.getSelectTestCase());
         } else {
             assertFalse(assertContext.getText("Actual insert select segment should not exist."), actual.getInsertSelect().isPresent());
         }

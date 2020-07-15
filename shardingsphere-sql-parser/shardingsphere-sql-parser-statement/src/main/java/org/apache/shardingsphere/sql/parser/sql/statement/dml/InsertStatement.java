@@ -20,13 +20,13 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertSelectSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public final class InsertStatement extends DMLStatement {
     
     private SetAssignmentSegment setAssignment;
     
-    private InsertSelectSegment insertSelect;
+    private SubquerySegment insertSelect;
     
     private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
     
@@ -87,7 +87,7 @@ public final class InsertStatement extends DMLStatement {
      *
      * @return insert select segment
      */
-    public Optional<InsertSelectSegment> getInsertSelect() {
+    public Optional<SubquerySegment> getInsertSelect() {
         return Optional.ofNullable(insertSelect);
     }
     
