@@ -20,17 +20,23 @@ package org.apache.shardingsphere.infra.hint;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class HintManagerTest {
-    
-    @Test(expected = IllegalStateException.class)
+
+    @Test
     public void assertGetInstanceTwice() {
         try {
-            HintManager.getInstance();
-            HintManager.getInstance();
+            final HintManager instance = HintManager.getInstance();
+            final HintManager instance1 = HintManager.getInstance();
+            assertEquals(instance, instance1);
+            HintManager.clear();
+            final HintManager instance2 = HintManager.getInstance();
+            assertNotEquals(instance, instance2);
         } finally {
             HintManager.clear();
         }

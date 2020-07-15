@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.hint;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
@@ -31,7 +30,7 @@ import java.util.Collections;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManager implements AutoCloseable {
-    
+
     private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
     private final Multimap<String, Comparable<?>> databaseShardingValues = HashMultimap.create();
@@ -43,15 +42,20 @@ public final class HintManager implements AutoCloseable {
     private boolean masterRouteOnly;
     
     /**
-     * Get a new instance for {@code HintManager}.
+     * Get a  instance for {@code HintManager}.
      *
-     * @return  {@code HintManager} instance
+     * @return  {@code HintManager}  current thread hold or new instance
      */
     public static HintManager getInstance() {
-        Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "Hint has previous value, please clear first.");
-        HintManager result = new HintManager();
-        HINT_MANAGER_HOLDER.set(result);
-        return result;
+
+        final HintManager hintManager = HINT_MANAGER_HOLDER.get();
+        if (hintManager != null) {
+            return hintManager;
+        } else {
+            final HintManager newHintManager = new HintManager();
+            HINT_MANAGER_HOLDER.set(newHintManager);
+            return newHintManager;
+        }
     }
     
     /**
