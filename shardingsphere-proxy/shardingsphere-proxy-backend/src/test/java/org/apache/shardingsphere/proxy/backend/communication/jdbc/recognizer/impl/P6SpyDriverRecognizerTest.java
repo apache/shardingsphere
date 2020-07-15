@@ -17,31 +17,25 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl;
 
-import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
+import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 
-/**
- * JDBC URL recognizer for Oracle.
- */
-public final class OracleRecognizer implements JDBCDriverURLRecognizer {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public class P6SpyDriverRecognizerTest {
     
-    private OracleDatabaseType databaseType = new OracleDatabaseType();
+    private final P6SpyDriverRecognizer recognizer = new P6SpyDriverRecognizer();
     
-    @Override
-    public String getDatabaseType() {
-        return databaseType.getName();
+    @Test
+    public void getURLPrefixes() throws Exception {
+        assertThat(recognizer.getURLPrefixes(), is(Collections.singletonList("jdbc:p6spy:")));
     }
     
-    @Override
-    public Collection<String> getURLPrefixes() {
-        return Collections.singletonList("jdbc:oracle:");
+    @Test
+    public void getDriverClassName() throws Exception {
+        assertThat(recognizer.getDriverClassName(), is(P6SpyDriverRecognizer.DRIVER_CLASS_NAME));
     }
     
-    @Override
-    public String getDriverClassName() {
-        return "oracle.jdbc.driver.OracleDriver";
-    }
 }

@@ -20,3 +20,4 @@ org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.Postg
 org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.OracleRecognizer
 org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.SQLServerRecognizer
 org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.H2Recognizer
+org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.P6SpyDriverRecognizer
