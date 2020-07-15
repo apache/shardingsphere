@@ -31,13 +31,13 @@ import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
 import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.util.SafeRangeOperationUtils;
+import org.apache.shardingsphere.sql.parser.sql.util.WhereSegmentExtractUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,8 +75,8 @@ public final class WhereClauseShardingConditionEngine {
         if (whereSegment.isPresent()) {
             result.addAll(createShardingConditions(sqlStatementContext, whereSegment.get().getAndPredicates(), parameters));
         }
-        Collection<WhereSegment> subqueryWhereSegments = sqlStatementContext instanceof SelectStatementContext
-                ? ((SelectStatementContext) sqlStatementContext).getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
+        Collection<WhereSegment> subqueryWhereSegments = sqlStatementContext.getSqlStatement() instanceof SelectStatement
+                ? WhereSegmentExtractUtils.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
         for (WhereSegment each : subqueryWhereSegments) {
             Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(sqlStatementContext, each.getAndPredicates(), parameters);
             if (!result.containsAll(subqueryShardingConditions)) {
