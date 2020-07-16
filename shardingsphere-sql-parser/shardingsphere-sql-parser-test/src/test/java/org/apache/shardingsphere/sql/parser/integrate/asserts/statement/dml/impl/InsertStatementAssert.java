@@ -49,6 +49,7 @@ public final class InsertStatementAssert {
         assertInsertColumnsClause(assertContext, actual, expected);
         assertInsertValuesClause(assertContext, actual, expected);
         assertSetClause(assertContext, actual, expected);
+        assertInsertSelectClause(assertContext, actual, expected);
         assertOnDuplicateKeyColumns(assertContext, actual, expected);
     }
     
@@ -80,6 +81,15 @@ public final class InsertStatementAssert {
             SetClauseAssert.assertIs(assertContext, actual.getSetAssignment().get(), expected.getSetClause());
         } else {
             assertFalse(assertContext.getText("Actual set assignment segment should not exist."), actual.getSetAssignment().isPresent());
+        }
+    }
+    
+    private static void assertInsertSelectClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        if (null != expected.getSelectTestCase()) {
+            assertTrue(assertContext.getText("Actual insert select segment should exist."), actual.getInsertSelect().isPresent());
+            SelectStatementAssert.assertIs(assertContext, actual.getInsertSelect().get().getSelect(), expected.getSelectTestCase());
+        } else {
+            assertFalse(assertContext.getText("Actual insert select segment should not exist."), actual.getInsertSelect().isPresent());
         }
     }
     

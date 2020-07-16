@@ -19,7 +19,7 @@ Database Mesh的关注重点在于如何将分布式的数据访问应用与数�
 
 |          | *ShardingSphere-JDBC* | *ShardingSphere-Proxy* | *ShardingSphere-Sidecar* |
 | -------- | --------------------- | ---------------------- | ------------------------ |
-| 数据库    | 任意                  | MySQL                  | `MySQL`                   |
+| 数据库    | 任意                  | MySQL/PostgreSQL       | `MySQL/PostgreSQL`        |
 | 连接消耗数 | 高                   | 低                     | `高`                       |
 | 异构语言   | 仅Java               | 任意                    | `任意`                    |
 | 性能      | 损耗低                | 损耗略高                | `损耗低`                   |
