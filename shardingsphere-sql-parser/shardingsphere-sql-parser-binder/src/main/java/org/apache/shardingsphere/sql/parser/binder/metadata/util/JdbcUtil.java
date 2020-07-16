@@ -36,7 +36,7 @@ public class JdbcUtil {
         String result = null;
         try {
             if ("Oracle".equals(databaseType)) {
-                return null;
+                return connection.getMetaData().getUserName().toUpperCase();
             }
             result = connection.getSchema();
         } catch (final SQLException ignore) {
