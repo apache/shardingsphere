@@ -26,8 +26,8 @@ public final class SchemaMetaDataLoaderTest {
     }
 
     class LiteDatasource implements DataSource{
-        private String url = "jdbc:oracle:thin:@192.168.1.225:1521/devdb";
-        private String user = "wuhumember";
+        private String url = "jdbc:oracle:thin:@192.168.1.1:1521/orcl";
+        private String user = "test";
         private String password = "111111";
         public LiteDatasource(){
             try {
