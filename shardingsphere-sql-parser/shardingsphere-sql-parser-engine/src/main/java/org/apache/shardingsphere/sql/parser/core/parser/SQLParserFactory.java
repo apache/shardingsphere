@@ -38,9 +38,9 @@ import java.nio.CharBuffer;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserFactory {
     
-    /**
+    /** 
      * New instance of SQL parser.
-     *
+     * 
      * @param databaseTypeName name of database type
      * @param sql SQL
      * @return SQL parser
