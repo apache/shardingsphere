@@ -55,4 +55,9 @@
     <sql-case id="insert_on_duplicate_key_update_with_base64_aes_encrypt" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = convert(to_base64(aes_encrypt(?, 'key')) USING utf8) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
     <sql-case id="insert_all_with_all_placeholders" value="INSERT ALL INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) SELECT * FROM dual" db-types="Oracle"/>
     <sql-case id="insert_with_str_date_add" value="INSERT INTO t_order(present_date, order_id, user_id) VALUES (date_add(now(),interval ? second), ?, ?)" db-types="MySQL" />
+    <sql-case id="insert_select_with_all_columns" value="INSERT INTO t_order (order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = ?" db-types="MySQL" />
+    <sql-case id="insert_select_without_columns" value="INSERT INTO t_order SELECT order_id, user_id, status FROM t_order WHERE order_id = ?" db-types="MySQL" />
+    <sql-case id="insert_select_with_generate_key_column" value="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) SELECT item_id, order_id, user_id, 'insert', '2017-08-08' FROM t_order_item WHERE item_id = ?" db-types="MySQL" />
+    <sql-case id="insert_select_without_generate_key_column" value="INSERT INTO t_order_item(order_id, user_id, status, creation_date) SELECT order_id, user_id, 'insert', '2017-08-08' FROM t_order_item WHERE order_id = ?" db-types="MySQL" />
+    <sql-case id="insert_select_on_duplicate_key_update" value="INSERT INTO t_order(order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = ? ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
 </sql-cases>

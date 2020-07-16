@@ -1113,4 +1113,179 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_select_with_all_columns" parameters="100">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
+        <select>
+            <table-reference>
+                <table-factor>
+                    <table name="t_order" start-index="86" stop-index="92" />
+                </table-factor>
+            </table-reference>
+            <projections start-index="55" stop-index="79">
+                <column-projection name="order_id" start-index="55" stop-index="62" />
+                <column-projection name="user_id" start-index="65" stop-index="71" />
+                <column-projection name="status" start-index="74" stop-index="79" />
+            </projections>
+            <where start-index="94" stop-index="111">
+                <and-predicate>
+                    <predicate start-index="100" stop-index="111" literal-stop-index="113">
+                        <column-left-value name="order_id" start-index="100" stop-index="107" />
+                        <operator type="=" />
+                        <compare-right-value>
+                            <parameter-marker-expression value="0" start-index="111" stop-index="111" />
+                            <literal-expression value="100" start-index="111" stop-index="113" />
+                        </compare-right-value>
+                    </predicate>
+                </and-predicate>
+            </where>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_select_without_columns" parameters="100">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="19" />
+        <select>
+            <table-reference>
+                <table-factor>
+                    <table name="t_order" start-index="58" stop-index="64" />
+                </table-factor>
+            </table-reference>
+            <projections start-index="27" stop-index="51">
+                <column-projection name="order_id" start-index="27" stop-index="34" />
+                <column-projection name="user_id" start-index="37" stop-index="43" />
+                <column-projection name="status" start-index="46" stop-index="51" />
+            </projections>
+            <where start-index="66" stop-index="83">
+                <and-predicate>
+                    <predicate start-index="72" stop-index="83" literal-stop-index="85">
+                        <column-left-value name="order_id" start-index="72" stop-index="79" />
+                        <operator type="=" />
+                        <compare-right-value>
+                            <parameter-marker-expression value="0" start-index="83" stop-index="83" />
+                            <literal-expression value="100" start-index="83" stop-index="85" />
+                        </compare-right-value>
+                    </predicate>
+                </and-predicate>
+            </where>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_select_with_generate_key_column" parameters="100">
+        <table name="t_order_item" start-index="12" stop-index="23" />
+        <columns start-index="24" stop-index="74">
+            <column name="item_id" start-index="25" stop-index="31" />
+            <column name="order_id" start-index="34" stop-index="41" />
+            <column name="user_id" start-index="44" stop-index="50" />
+            <column name="status" start-index="53" stop-index="58" />
+            <column name="creation_date" start-index="61" stop-index="73" />
+        </columns>
+        <select>
+            <table-reference>
+                <table-factor>
+                    <table name="t_order_item" start-index="139" stop-index="150" />
+                </table-factor>
+            </table-reference>
+            <projections start-index="83" stop-index="132">
+                <column-projection name="item_id" start-index="83" stop-index="89" />
+                <column-projection name="order_id" start-index="92" stop-index="99" />
+                <column-projection name="user_id" start-index="102" stop-index="108" />
+                <expression-projection start-index="111" stop-index="118" />
+                <expression-projection start-index="121" stop-index="132" />
+            </projections>
+            <where start-index="152" stop-index="168">
+                <and-predicate>
+                    <predicate start-index="158" stop-index="168" literal-stop-index="170">
+                        <column-left-value name="item_id" start-index="158" stop-index="164" />
+                        <operator type="=" />
+                        <compare-right-value>
+                            <parameter-marker-expression value="0" start-index="168" stop-index="168" />
+                            <literal-expression value="100" start-index="168" stop-index="170" />
+                        </compare-right-value>
+                    </predicate>
+                </and-predicate>
+            </where>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_select_without_generate_key_column" parameters="100">
+        <table name="t_order_item" start-index="12" stop-index="23" />
+        <columns start-index="24" stop-index="65">
+            <column name="order_id" start-index="25" stop-index="32" />
+            <column name="user_id" start-index="35" stop-index="41" />
+            <column name="status" start-index="44" stop-index="49" />
+            <column name="creation_date" start-index="52" stop-index="64" />
+        </columns>
+        <select>
+            <table-reference>
+                <table-factor>
+                    <table name="t_order_item" start-index="121" stop-index="132" />
+                </table-factor>
+            </table-reference>
+            <projections start-index="74" stop-index="114">
+                <column-projection name="order_id" start-index="74" stop-index="81" />
+                <column-projection name="user_id" start-index="84" stop-index="90" />
+                <expression-projection start-index="93" stop-index="100" />
+                <expression-projection start-index="103" stop-index="114" />
+            </projections>
+            <where start-index="134" stop-index="151">
+                <and-predicate>
+                    <predicate start-index="140" stop-index="151" literal-stop-index="153">
+                        <column-left-value name="order_id" start-index="140" stop-index="147" />
+                        <operator type="=" />
+                        <compare-right-value>
+                            <parameter-marker-expression value="0" start-index="151" stop-index="151" />
+                            <literal-expression value="100" start-index="151" stop-index="153" />
+                        </compare-right-value>
+                    </predicate>
+                </and-predicate>
+            </where>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_select_on_duplicate_key_update" parameters="100">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="45">
+            <column name="order_id" start-index="20" stop-index="27" />
+            <column name="user_id" start-index="30" stop-index="36" />
+            <column name="status" start-index="39" stop-index="44" />
+        </columns>
+        <select>
+            <table-reference>
+                <table-factor>
+                    <table name="t_order" start-index="85" stop-index="91" />
+                </table-factor>
+            </table-reference>
+            <projections start-index="54" stop-index="78">
+                <column-projection name="order_id" start-index="54" stop-index="61" />
+                <column-projection name="user_id" start-index="64" stop-index="70" />
+                <column-projection name="status" start-index="73" stop-index="78" />
+            </projections>
+            <where start-index="93" stop-index="110">
+                <and-predicate>
+                    <predicate start-index="99" stop-index="110" literal-stop-index="112">
+                        <column-left-value name="order_id" start-index="99" stop-index="106" />
+                        <operator type="=" />
+                        <compare-right-value>
+                            <parameter-marker-expression value="0" start-index="110" stop-index="110" literal-stop-index="112" />
+                            <literal-expression value="100" start-index="110" stop-index="112" />
+                        </compare-right-value>
+                    </predicate>
+                </and-predicate>
+            </where>
+        </select>
+        <on-duplicate-key-columns start-index="112" stop-index="158" literal-start-index="114" literal-stop-index="160">
+            <assignment start-index="136" stop-index="158" literal-start-index="138" literal-stop-index="160">
+                <column name="status" start-index="136" stop-index="141" literal-start-index="138" literal-stop-index="143" />
+                <assignment-value>
+                    <common-expression text="VALUES(status)" start-index="145" stop-index="158" literal-start-index="147" literal-stop-index="160" />
+                </assignment-value>
+            </assignment>
+        </on-duplicate-key-columns>
+    </insert>
 </sql-parser-test-cases>

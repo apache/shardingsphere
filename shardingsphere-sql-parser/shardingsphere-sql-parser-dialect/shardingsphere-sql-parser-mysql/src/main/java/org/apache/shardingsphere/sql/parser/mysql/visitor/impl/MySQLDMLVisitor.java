@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprCon
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinedTableContext;
@@ -142,6 +143,8 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         InsertStatement result;
         if (null != ctx.insertValuesClause()) {
             result = (InsertStatement) visit(ctx.insertValuesClause());
+        } else if (null != ctx.insertSelectClause()) {
+            result = (InsertStatement) visit(ctx.insertSelectClause());
         } else {
             result = new InsertStatement();
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
@@ -152,6 +155,19 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setParameterCount(getCurrentParameterIndex());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
+        InsertStatement result = new InsertStatement();
+        result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
+        result.setInsertSelect(createInsertSelectSegment(ctx));
+        return result;
+    }
+    
+    private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
+        SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
+        return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement);
     }
     
     @Override
