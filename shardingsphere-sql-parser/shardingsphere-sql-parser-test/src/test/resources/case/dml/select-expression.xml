@@ -18,15 +18,17 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_with_expression">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="38" stop-index="44" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="38" stop-index="49" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="31">
             <!-- TODO check expression-projection's stop-index whether include alias -->
-            <expression-projection alias="exp" start-index="7" stop-index="24" />
+            <expression-projection alias="exp" start-index="7" stop-index="31" />
         </projections>
         <order-by>
-            <column-item name="order_id">
+            <column-item name="order_id" start-index="60" stop-index="69" >
                 <owner name="o" start-index="60" stop-index="60" />
             </column-item>
         </order-by>
@@ -86,7 +88,7 @@
             <column-projection start-index="11" stop-index="19" name="item_id" alias="itemid">
                 <owner start-index="11" stop-index="11" name="o"/>
             </column-projection>
-            <expression-projection start-index="32" stop-index="109" alias="stateName" />
+            <expression-projection start-index="32" stop-index="123" alias="stateName" />
         </projections>
 
         <table-reference>
