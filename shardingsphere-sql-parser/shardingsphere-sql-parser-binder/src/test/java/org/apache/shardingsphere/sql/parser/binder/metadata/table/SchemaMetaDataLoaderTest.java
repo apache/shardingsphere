@@ -20,7 +20,6 @@ public final class SchemaMetaDataLoaderTest {
 
     @Test
     public void assertloadAllTableNamesForOracle() throws SQLException {
-        System.out.println("Start...");
         LiteDatasource dataSource = new LiteDatasource();
         SchemaMetaDataLoader.load(dataSource,5,"Oracle");
     }
