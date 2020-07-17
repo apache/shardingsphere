@@ -110,6 +110,7 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 | DROP INDEX idx_name                                                                         |                                         |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                         |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                         |
+| SELECT subquery_alias.col1 FROM (select tbl_name.col1 from tbl_name where tbl_name.col2=?) subquery_alias                                                   |                                         |
 
 ### Unsupported SQL
 
@@ -117,12 +118,12 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 | ------------------------------------------------------------------------------------------ | --------------------------------------------------- |
 | INSERT INTO tbl_name (col1, col2, ...) VALUES(1+2, ?, ...)                                 | VALUES clause does not support operation expression |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ? | INSERT .. SELECT                                    |
-| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?       | HAVING                                              |
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                      | UNION                                               |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                  | UNION ALL                                           |
-| SELECT * FROM ds.tbl_name1                                                                 | Contain schema                                      |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | See DISTINCT availability detail                    |
 | SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | Lead to full routing                                |
+| (SELECT * FROM tbl_name)                                                                   | Contain brackets                              |
+| SELECT MAX(tbl_name.col1) FROM tbl_name                                                    | The select function item contains TableName. Otherwise, If this query table had an alias, then TableAlias could work well in select function items. |
 
 ## DISTINCT Availability Explanation
 
@@ -149,4 +150,4 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 
 | SQL                                                | Reason                                                                             |
 | -------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name | Use normal aggregation function and DISTINCT aggregation function in the same time |
+| SELECT SUM(DISTINCT tbl_name.col1), SUM(tbl_name.col1) FROM tbl_name | The select function item contains TableName. Otherwise, If this query table had an alias, then TableAlias could work well in select function items. |

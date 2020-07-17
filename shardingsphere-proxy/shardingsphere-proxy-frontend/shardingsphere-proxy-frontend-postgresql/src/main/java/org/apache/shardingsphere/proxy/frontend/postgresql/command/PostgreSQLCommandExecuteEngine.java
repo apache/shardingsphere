@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
 import io.netty.channel.ChannelHandlerContext;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
@@ -73,6 +74,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     }
     
     @Override
+    @SneakyThrows
     public void writeQueryData(final ChannelHandlerContext context,
                                final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
         if (queryCommandExecutor.isQuery() && !context.channel().isActive()) {
@@ -90,7 +92,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
-                backendConnection.getResourceSynchronizer().doAwait();
+                backendConnection.getResourceSynchronizer().doAwaitUntil();
             }
             DatabasePacket resultValue = queryCommandExecutor.getQueryData();
             context.write(resultValue);

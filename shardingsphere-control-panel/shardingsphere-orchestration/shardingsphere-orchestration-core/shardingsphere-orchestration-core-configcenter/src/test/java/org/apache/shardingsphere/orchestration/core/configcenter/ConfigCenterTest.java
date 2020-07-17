@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.constant.Constants;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -516,7 +517,8 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertLoadMetricsConfiguration() {
-        when(configCenterRepository.get("/test/config/metrics/" + IpUtils.getIp())).thenReturn(METRICS_YAML);
+        String metricsPath = "/test/config/metrics/" + IpUtils.getIp() + ":" + System.getProperty(Constants.PORT_KEY, String.valueOf(Constants.DEFAULT_PORT));
+        when(configCenterRepository.get(metricsPath)).thenReturn(METRICS_YAML);
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         MetricsConfiguration actual = configurationService.loadMetricsConfiguration();
         assertNotNull(actual);

@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingOrchestrationFacadeTest {
     
-    private ShardingOrchestrationFacade shardingOrchestrationFacade;
+    private ShardingOrchestrationFacade shardingOrchestrationFacade = ShardingOrchestrationFacade.getInstance();
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;
@@ -83,7 +83,7 @@ public final class ShardingOrchestrationFacadeTest {
         configuration3.setNamespace("namespace_3");
         instanceConfigurationMap.put("test_name_3", configuration3);
         OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration(instanceConfigurationMap);
-        shardingOrchestrationFacade = new ShardingOrchestrationFacade(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
+        shardingOrchestrationFacade.init(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
         FieldUtil.setField(shardingOrchestrationFacade, "registryCenterRepository", registryCenterRepository);
         FieldUtil.setField(shardingOrchestrationFacade, "configCenter", configCenter);
         FieldUtil.setField(shardingOrchestrationFacade, "registryCenter", registryCenter);
@@ -99,7 +99,7 @@ public final class ShardingOrchestrationFacadeTest {
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
         Properties props = new Properties();
-        shardingOrchestrationFacade.init(Collections.singletonMap("sharding_db", dataSourceConfigurationMap), ruleConfigurationMap, authentication, props);
+        shardingOrchestrationFacade.initConfigurations(Collections.singletonMap("sharding_db", dataSourceConfigurationMap), ruleConfigurationMap, authentication, props);
         verify(configCenter).persistConfigurations("sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), false);
         verify(configCenter).persistGlobalConfiguration(authentication, props, false);
         verify(registryCenter).persistInstanceOnline();
@@ -116,7 +116,7 @@ public final class ShardingOrchestrationFacadeTest {
     
     @Test
     public void assertInitWithoutParameters() {
-        shardingOrchestrationFacade.init();
+        shardingOrchestrationFacade.initConfigurations();
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataSourcesNode();
         verify(listenerManager).initListeners();

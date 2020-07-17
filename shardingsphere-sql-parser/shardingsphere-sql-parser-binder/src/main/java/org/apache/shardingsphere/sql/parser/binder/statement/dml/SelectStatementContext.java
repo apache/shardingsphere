@@ -60,6 +60,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SubqueryTa
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.util.WhereSegmentExtractUtils;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -109,7 +110,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private boolean containsSubquery() {
-        Collection<WhereSegment> subqueryPredicateSegments = getSqlStatement().getSubqueryWhereSegments();
+        Collection<WhereSegment> subqueryPredicateSegments = WhereSegmentExtractUtils.getSubqueryWhereSegments(getSqlStatement());
         for (WhereSegment each : subqueryPredicateSegments) {
             if (!each.getAndPredicates().isEmpty()) {
                 return true;
@@ -227,7 +228,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         if (each instanceof OwnerAvailable) {
             return ((OwnerAvailable) each).getOwner();
         }
-        if (each instanceof ColumnProjectionSegment) { 
+        if (each instanceof ColumnProjectionSegment) {
             return ((ColumnProjectionSegment) each).getColumn().getOwner();
         }
         return Optional.empty();
