@@ -28,7 +28,7 @@ import java.util.Collections;
  */
 public final class MySQLRecognizer implements JDBCDriverURLRecognizer {
     
-    private MySQLDatabaseType databaseType = new MySQLDatabaseType();
+    private final MySQLDatabaseType databaseType = new MySQLDatabaseType();
     
     @Override
     public String getDatabaseType() {

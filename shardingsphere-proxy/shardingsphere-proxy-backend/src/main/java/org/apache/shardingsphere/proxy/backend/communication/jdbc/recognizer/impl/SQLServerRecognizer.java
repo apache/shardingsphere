@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 public final class SQLServerRecognizer implements JDBCDriverURLRecognizer {
     
-    private SQLServerDatabaseType databaseType = new SQLServerDatabaseType();
+    private final SQLServerDatabaseType databaseType = new SQLServerDatabaseType();
     
     @Override
     public String getDatabaseType() {

@@ -28,7 +28,7 @@ import java.util.Collections;
  */
 public final class OracleRecognizer implements JDBCDriverURLRecognizer {
     
-    private OracleDatabaseType databaseType = new OracleDatabaseType();
+    private final OracleDatabaseType databaseType = new OracleDatabaseType();
     
     @Override
     public String getDatabaseType() {

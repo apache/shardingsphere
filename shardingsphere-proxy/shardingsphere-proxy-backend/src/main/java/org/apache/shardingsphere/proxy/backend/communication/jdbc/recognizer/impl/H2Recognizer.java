@@ -28,7 +28,7 @@ import java.util.Collections;
  */
 public final class H2Recognizer implements JDBCDriverURLRecognizer {
     
-    private H2DatabaseType databaseType = new H2DatabaseType();
+    private final H2DatabaseType databaseType = new H2DatabaseType();
     
     @Override
     public String getDatabaseType() {

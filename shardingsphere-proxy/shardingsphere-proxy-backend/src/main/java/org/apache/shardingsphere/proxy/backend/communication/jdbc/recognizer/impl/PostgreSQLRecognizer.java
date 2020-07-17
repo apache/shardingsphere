@@ -28,7 +28,7 @@ import java.util.Collections;
  */
 public final class PostgreSQLRecognizer implements JDBCDriverURLRecognizer {
     
-    private PostgreSQLDatabaseType databaseType = new PostgreSQLDatabaseType();
+    private final PostgreSQLDatabaseType databaseType = new PostgreSQLDatabaseType();
     
     @Override
     public String getDatabaseType() {

@@ -29,12 +29,12 @@ public class P6SpyDriverRecognizerTest {
     private final P6SpyDriverRecognizer recognizer = new P6SpyDriverRecognizer();
     
     @Test
-    public void getURLPrefixes() throws Exception {
+    public void getURLPrefixes() {
         assertThat(recognizer.getURLPrefixes(), is(Collections.singletonList("jdbc:p6spy:")));
     }
     
     @Test
-    public void getDriverClassName() throws Exception {
+    public void getDriverClassName() {
         assertThat(recognizer.getDriverClassName(), is(P6SpyDriverRecognizer.DRIVER_CLASS_NAME));
     }
     
