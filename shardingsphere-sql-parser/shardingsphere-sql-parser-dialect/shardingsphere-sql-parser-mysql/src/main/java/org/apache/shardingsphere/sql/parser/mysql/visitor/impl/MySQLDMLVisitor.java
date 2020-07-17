@@ -470,7 +470,8 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         }
         if (projection instanceof CommonExpressionSegment) {
             CommonExpressionSegment segment = (CommonExpressionSegment) projection;
-            ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), alias.getStopIndex(), segment.getText());
+            ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText())
+                    : new ExpressionProjectionSegment(segment.getStartIndex(), alias.getStopIndex(), segment.getText());
             result.setAlias(alias);
             return result;
         }
