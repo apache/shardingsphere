@@ -60,6 +60,11 @@
         <input sql="INSERT INTO t_account_bak(password, amount, status) VALUES ('aaa', 1000, 'OK'), ('bbb', 2000, 'OK'), ('ccc', 3000, 'OK'), ('ddd', 4000, 'OK')" />
         <output sql="INSERT INTO t_account_bak_1(cipher_password, assisted_query_password, plain_password, cipher_amount, plain_amount, status, account_id) VALUES ('encrypt_aaa', 'assisted_query_aaa', 'aaa', 'encrypt_1000', 1000, 'OK', 1), ('encrypt_bbb', 'assisted_query_bbb', 'bbb', 'encrypt_2000', 2000, 'OK', 1), ('encrypt_ccc', 'assisted_query_ccc', 'ccc', 'encrypt_3000', 3000, 'OK', 1), ('encrypt_ddd', 'assisted_query_ddd', 'ddd', 'encrypt_4000', 4000, 'OK', 1)" />
     </rewrite-assertion>
+
+     <rewrite-assertion id="insert_values_with_columns_with_plain_without_id_for_emojis">
+        <input sql="INSERT INTO t_account_bak(password, amount, status) VALUES ('aaa', 1000, 'test🍎😀'), ('bbb', 2000, 'test🍎😀'), ('ccc', 3000, 'test🍎😀'), ('ddd', 4000, 'test🍎😀')" />
+        <output sql="INSERT INTO t_account_bak_1(cipher_password, assisted_query_password, plain_password, cipher_amount, plain_amount, status, account_id) VALUES ('encrypt_aaa', 'assisted_query_aaa', 'aaa', 'encrypt_1000', 1000, 'test🍎😀', 1), ('encrypt_bbb', 'assisted_query_bbb', 'bbb', 'encrypt_2000', 2000, 'test🍎😀', 1), ('encrypt_ccc', 'assisted_query_ccc', 'ccc', 'encrypt_3000', 3000, 'test🍎😀', 1), ('encrypt_ddd', 'assisted_query_ddd', 'ddd', 'encrypt_4000', 4000, 'test🍎😀', 1)" />
+    </rewrite-assertion>
     
     <rewrite-assertion id="insert_values_without_columns_with_id_for_parameters">
         <input sql="INSERT INTO t_account(account_id, password, amount, status) VALUES (?, ?, ?, ?), (2, 'bbb', 2000, 'OK'), (?, ?, ?, ?), (4, 'ddd', 4000, 'OK')" parameters="1, aaa, 1000, OK, 3, ccc, 3000, OK" />
