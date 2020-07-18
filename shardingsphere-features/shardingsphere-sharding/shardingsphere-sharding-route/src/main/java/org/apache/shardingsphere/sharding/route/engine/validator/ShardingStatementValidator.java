@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator;
 
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.util.List;
 
@@ -34,7 +35,8 @@ public interface ShardingStatementValidator<T extends SQLStatement> {
      * 
      * @param shardingRule sharding rule
      * @param sqlStatement SQL statement
+     * @param tablesContext table context
      * @param parameters SQL  parameters
      */
-    void validate(ShardingRule shardingRule, T sqlStatement, List<Object> parameters);
+    void validate(ShardingRule shardingRule, T sqlStatement, TablesContext tablesContext, List<Object> parameters);
 }
