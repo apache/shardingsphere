@@ -109,7 +109,7 @@ public final class SQLStatementContextFactory {
             return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(schemaMetaData, parameters, (InsertStatement) sqlStatement);
+            return new InsertStatementContext(schemaMetaData, sql, parameters, (InsertStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }

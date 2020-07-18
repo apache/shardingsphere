@@ -48,7 +48,7 @@ public class PreparedShadowDataSourceRouterTest {
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0,
                 Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("shadow"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
-        InsertStatementContext insertStatementContext = new InsertStatementContext(schemaMetaData, Arrays.asList(1, "Tom", 2, "Jerry", 3, true), insertStatement);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(schemaMetaData, "", Arrays.asList(1, "Tom", 2, "Jerry", 3, true), insertStatement);
         PreparedShadowDataSourceRouter preparedShadowDataSourceRouter = new PreparedShadowDataSourceRouter(shadowRule, insertStatementContext, Arrays.asList(1, "Tom", true));
         Assert.assertTrue("should be shadow", preparedShadowDataSourceRouter.isShadowSQL());
     }

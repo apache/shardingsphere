@@ -22,6 +22,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.engine.GeneratedKeyContextEngine;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementC
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
@@ -54,16 +56,19 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private final List<InsertValueContext> insertValueContexts;
     
+    private final InsertSelectContext insertSelectContext;
+    
     private final OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext;
     
     private final GeneratedKeyContext generatedKeyContext;
     
-    public InsertStatementContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement sqlStatement) {
+    public InsertStatementContext(final SchemaMetaData schemaMetaData, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
         columnNames = sqlStatement.useDefaultColumns() ? schemaMetaData.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : sqlStatement.getColumnNames();
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(parameters, parametersOffset);
+        insertSelectContext = getInsertSelectContext(schemaMetaData, sql, parameters, parametersOffset).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
         generatedKeyContext = new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(parameters, sqlStatement).orElse(null);
     }
@@ -76,6 +81,19 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
             parametersOffset.addAndGet(insertValueContext.getParametersCount());
         }
         return result;
+    }
+    
+    private Optional<InsertSelectContext> getInsertSelectContext(final SchemaMetaData schemaMetaData, final String sql,
+                                                                 final List<Object> parameters, final AtomicInteger parametersOffset) {
+        if (!getSqlStatement().getInsertSelect().isPresent()) {
+            return Optional.empty();
+        }
+        SubquerySegment insertSelectSegment = getSqlStatement().getInsertSelect().get();
+        String selectSql = sql.substring(insertSelectSegment.getStartIndex(), insertSelectSegment.getStopIndex() + 1);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(schemaMetaData, selectSql, parameters, insertSelectSegment.getSelect());
+        InsertSelectContext insertSelectContext = new InsertSelectContext(selectStatementContext, parameters, parametersOffset.get());
+        parametersOffset.addAndGet(insertSelectContext.getParametersCount());
+        return Optional.of(insertSelectContext);
     }
     
     private Optional<OnDuplicateUpdateContext> getOnDuplicateKeyUpdateValueContext(final List<Object> parameters, final AtomicInteger parametersOffset) {
@@ -106,6 +124,9 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         List<List<Object>> result = new LinkedList<>();
         for (InsertValueContext each : insertValueContexts) {
             result.add(each.getParameters());
+        }
+        if (null != insertSelectContext) {
+            result.add(insertSelectContext.getParameters());
         }
         return result;
     }

@@ -49,7 +49,7 @@ public final class InsertStatementContextTest {
                 new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("status"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
         setUpInsertValues(insertStatement);
-        InsertStatementContext actual = new InsertStatementContext(mock(SchemaMetaData.class), Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
+        InsertStatementContext actual = new InsertStatementContext(mock(SchemaMetaData.class), "", Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertInsertStatementContext(actual);
     }
     
@@ -60,7 +60,7 @@ public final class InsertStatementContextTest {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         setUpInsertValues(insertStatement);
-        InsertStatementContext actual = new InsertStatementContext(schemaMetaData, Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
+        InsertStatementContext actual = new InsertStatementContext(schemaMetaData, "", Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertInsertStatementContext(actual);
     }
     
@@ -71,7 +71,7 @@ public final class InsertStatementContextTest {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         setUpInsertValues(insertStatement);
-        InsertStatementContext actual = new InsertStatementContext(schemaMetaData, Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
+        InsertStatementContext actual = new InsertStatementContext(schemaMetaData, "", Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertThat(actual.getGroupedParameters().size(), is(2));
         assertNull(actual.getOnDuplicateKeyUpdateValueContext());
         assertThat(actual.getOnDuplicateKeyUpdateParameters().size(), is(0));
@@ -85,7 +85,7 @@ public final class InsertStatementContextTest {
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         setUpInsertValues(insertStatement);
         setUpOnDuplicateValues(insertStatement);
-        InsertStatementContext actual = new InsertStatementContext(schemaMetaData, Arrays.asList(1, "Tom", 2, "Jerry", "onDuplicateKeyUpdateColumnValue"), insertStatement);
+        InsertStatementContext actual = new InsertStatementContext(schemaMetaData, "", Arrays.asList(1, "Tom", 2, "Jerry", "onDuplicateKeyUpdateColumnValue"), insertStatement);
         assertThat(actual.getGroupedParameters().size(), is(2));
         assertThat(actual.getOnDuplicateKeyUpdateValueContext().getColumns().size(), is(2));
         assertThat(actual.getOnDuplicateKeyUpdateParameters().size(), is(1));

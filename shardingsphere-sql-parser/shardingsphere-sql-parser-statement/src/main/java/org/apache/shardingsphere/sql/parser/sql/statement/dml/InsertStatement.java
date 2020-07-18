@@ -155,6 +155,9 @@ public final class InsertStatement extends DMLStatement {
         if (null != setAssignment) {
             return setAssignment.getAssignments().size();
         }
+        if (null != insertSelect) {
+            return insertSelect.getSelect().getProjections().getProjections().size();
+        }
         return 0;
     }
     

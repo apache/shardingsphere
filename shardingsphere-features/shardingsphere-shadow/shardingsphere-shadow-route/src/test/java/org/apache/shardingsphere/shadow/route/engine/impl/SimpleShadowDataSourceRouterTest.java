@@ -69,13 +69,13 @@ public class SimpleShadowDataSourceRouterTest {
         insertStatement.setInsertColumns(insertColumnsSegment);
         insertStatement.getValues().addAll(Collections.singletonList(new InsertValuesSegment(
                 0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "name"), new LiteralExpressionSegment(0, 0, true)))));
-        InsertStatementContext insertStatementContext = new InsertStatementContext(schemaMetaData, Collections.emptyList(), insertStatement);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(schemaMetaData, "", Collections.emptyList(), insertStatement);
         SimpleShadowDataSourceRouter simpleShadowDataSourceRouter = new SimpleShadowDataSourceRouter(shadowRule, insertStatementContext);
         Assert.assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadowSQL());
         insertStatement.getValues().clear();
         insertStatement.getValues().addAll(Collections.singletonList(
                 new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "name"), new LiteralExpressionSegment(0, 0, false)))));
-        insertStatementContext = new InsertStatementContext(schemaMetaData, Collections.emptyList(), insertStatement);
+        insertStatementContext = new InsertStatementContext(schemaMetaData, "", Collections.emptyList(), insertStatement);
         simpleShadowDataSourceRouter = new SimpleShadowDataSourceRouter(shadowRule, insertStatementContext);
         Assert.assertFalse("should not be shadow", simpleShadowDataSourceRouter.isShadowSQL());
     }

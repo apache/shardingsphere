@@ -80,5 +80,8 @@ public final class SQLRewriteContext {
      */
     public void generateSQLTokens() {
         sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, schemaMetaData));
+        if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
+            sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext(), parameters, schemaMetaData));
+        }
     }
 }
