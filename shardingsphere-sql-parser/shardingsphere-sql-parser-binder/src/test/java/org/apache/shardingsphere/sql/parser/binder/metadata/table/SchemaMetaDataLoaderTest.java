@@ -21,9 +21,9 @@ public final class SchemaMetaDataLoaderTest {
 
     private static final String TABLE_TYPE = "TABLE";
 
-    private static final int maxConnectionCount = 5;
+    private static final int MAX_CONNECTION_COUNT = 5;
 
-    private static final String databaseType = "Oracle";
+    private static final String DATABASE_TYPE = "Oracle";
 
     @Mock
     private DataSource dataSource;
@@ -47,7 +47,7 @@ public final class SchemaMetaDataLoaderTest {
 
     @Test
     public void assertLoadAllTableNamesForOracle() throws SQLException {
-        SchemaMetaDataLoader.load(dataSource, maxConnectionCount, databaseType);
+        SchemaMetaDataLoader.load(dataSource, MAX_CONNECTION_COUNT, DATABASE_TYPE);
     }
 
 }
