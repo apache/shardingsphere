@@ -72,5 +72,4 @@ public final class SchemaMetaDataLoaderTest {
         Collection<String> allTableNames = schemaMetaData.getAllTableNames();
         assertThat(allTableNames.size(), is(0));
     }
-
 }
