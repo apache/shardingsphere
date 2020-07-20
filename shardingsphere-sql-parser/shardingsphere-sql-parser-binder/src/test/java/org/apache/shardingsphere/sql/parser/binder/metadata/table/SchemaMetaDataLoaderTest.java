@@ -21,8 +21,6 @@ public final class SchemaMetaDataLoaderTest {
 
     private static final String TABLE_TYPE = "TABLE";
 
-    private static final String ULR = "jdbc:oracle:thin:@127.0.0.1:1521/orcl";
-
     private static final int maxConnectionCount = 5;
 
     private static final String databaseType = "Oracle";
@@ -44,8 +42,6 @@ public final class SchemaMetaDataLoaderTest {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getCatalog()).thenReturn(TEST_CATALOG);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getURL()).thenReturn(ULR);
-        when(databaseMetaData.getUserName()).thenReturn(null);
         when(databaseMetaData.getTables(TEST_CATALOG, null, null, new String[]{TABLE_TYPE})).thenReturn(tableExistResultSet);
     }
 
