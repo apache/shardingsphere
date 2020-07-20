@@ -41,7 +41,7 @@ public final class SchemaMetaDataLoaderTest {
         when(databaseMetaData.getUserName()).thenReturn(null);
         when(databaseMetaData.getTables(TEST_CATALOG, null, null, new String[]{TABLE_TYPE})).thenReturn(tableExistResultSet);
         when(tableExistResultSet.next()).thenReturn(false);
-        SchemaMetaDataLoader.load(dataSource,5,"Oracle");
+        SchemaMetaDataLoader.load(dataSource, 5, "Oracle");
     }
 
 }
