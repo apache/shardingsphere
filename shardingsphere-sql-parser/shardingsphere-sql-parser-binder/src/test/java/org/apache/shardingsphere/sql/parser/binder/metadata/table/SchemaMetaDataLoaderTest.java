@@ -1,24 +1,17 @@
 package org.apache.shardingsphere.sql.parser.binder.metadata.table;
 
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.util.LinkedList;
-import java.util.logging.Logger;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
