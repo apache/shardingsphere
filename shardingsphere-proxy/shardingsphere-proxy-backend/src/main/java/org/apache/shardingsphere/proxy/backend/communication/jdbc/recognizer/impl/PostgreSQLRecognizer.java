@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl;
 
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
 
 import java.util.Collection;
@@ -28,11 +27,9 @@ import java.util.Collections;
  */
 public final class PostgreSQLRecognizer implements JDBCDriverURLRecognizer {
     
-    private final PostgreSQLDatabaseType databaseType = new PostgreSQLDatabaseType();
-    
     @Override
     public String getDatabaseType() {
-        return databaseType.getName();
+        return "PostgreSQL";
     }
     
     @Override

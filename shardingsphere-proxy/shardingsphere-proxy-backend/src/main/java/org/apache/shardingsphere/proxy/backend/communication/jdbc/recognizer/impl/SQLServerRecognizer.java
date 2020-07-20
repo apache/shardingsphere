@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl;
 
-import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
 
 import java.util.Arrays;
@@ -28,11 +27,9 @@ import java.util.Collection;
  */
 public final class SQLServerRecognizer implements JDBCDriverURLRecognizer {
     
-    private final SQLServerDatabaseType databaseType = new SQLServerDatabaseType();
-    
     @Override
     public String getDatabaseType() {
-        return databaseType.getName();
+        return "SQLServer";
     }
     
     @Override

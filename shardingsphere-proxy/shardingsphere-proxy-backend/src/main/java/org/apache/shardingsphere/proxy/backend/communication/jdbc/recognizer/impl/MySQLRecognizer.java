@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl;
 
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
 
 import java.util.Collection;
@@ -28,11 +27,9 @@ import java.util.Collections;
  */
 public final class MySQLRecognizer implements JDBCDriverURLRecognizer {
     
-    private final MySQLDatabaseType databaseType = new MySQLDatabaseType();
-    
     @Override
     public String getDatabaseType() {
-        return databaseType.getName();
+        return "MySQL";
     }
     
     @Override
