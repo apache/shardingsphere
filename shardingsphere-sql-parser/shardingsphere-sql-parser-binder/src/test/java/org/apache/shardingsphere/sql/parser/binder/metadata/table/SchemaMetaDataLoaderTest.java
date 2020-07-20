@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata.table;
 
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +30,10 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -64,7 +68,9 @@ public final class SchemaMetaDataLoaderTest {
 
     @Test
     public void assertLoadAllTableNamesForOracle() throws SQLException {
-        SchemaMetaDataLoader.load(dataSource, MAX_CONNECTION_COUNT, DATABASE_TYPE_ORACLE);
+        SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(dataSource, MAX_CONNECTION_COUNT, DATABASE_TYPE_ORACLE);
+        Collection<String> allTableNames = schemaMetaData.getAllTableNames();
+        assertThat(allTableNames.size(), is(0));
     }
 
 }
