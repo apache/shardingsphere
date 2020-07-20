@@ -36,7 +36,6 @@ public final class SchemaMetaDataLoaderTest {
         when(connection.getCatalog()).thenReturn(TEST_CATALOG);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getURL()).thenReturn("jdbc:oracle:thin:@127.0.0.1:1521/orcl");
-        when(databaseMetaData.getUserName()).thenReturn(null);
         when(databaseMetaData.getTables(TEST_CATALOG, null, null, new String[]{TABLE_TYPE})).thenReturn(tableExistResultSet);
         SchemaMetaData actual = SchemaMetaDataLoader.load(dataSource, 5, "Oracle");
         TableMetaData tableMetaData = mock(TableMetaData.class);
