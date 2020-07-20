@@ -38,9 +38,9 @@ public class JdbcUtil {
         try {
             if ("Oracle".equals(databaseType)) {
                 DatabaseMetaData metaData = connection.getMetaData();
-                if(null!=metaData){
-                    return metaData.getUserName()==null?null:metaData.getUserName().toUpperCase();
-                }else{
+                if (null != metaData) {
+                    return metaData.getUserName() == null ? null : metaData.getUserName().toUpperCase();
+                } else {
                     return null;
                 }
             }
