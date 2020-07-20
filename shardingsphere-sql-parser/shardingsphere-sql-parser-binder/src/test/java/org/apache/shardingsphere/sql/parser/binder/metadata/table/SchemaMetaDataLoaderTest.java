@@ -25,19 +25,13 @@ public final class SchemaMetaDataLoaderTest {
     private static final String TABLE_TYPE = "TABLE";
 
     @Mock
-    private DataSource dataSource;
-
-    @Mock
-    private Connection connection;
-
-    @Mock
-    private DatabaseMetaData databaseMetaData;
-
-    @Mock
     private ResultSet tableExistResultSet;
 
     @Test
     public void assertloadAllTableNamesForOracle() throws SQLException {
+        DataSource dataSource = mock(DataSource.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getCatalog()).thenReturn(TEST_CATALOG);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
