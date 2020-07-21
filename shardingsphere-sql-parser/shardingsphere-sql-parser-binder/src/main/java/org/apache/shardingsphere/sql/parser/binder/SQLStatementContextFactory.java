@@ -76,15 +76,14 @@ public final class SQLStatementContextFactory {
      * Create SQL statement context.
      *
      * @param schemaMetaData table meta data
-     * @param sql SQL
      * @param parameters SQL parameters
      * @param sqlStatement SQL statement
      * @return SQL statement context
      */
     @SuppressWarnings("unchecked")
-    public static SQLStatementContext newInstance(final SchemaMetaData schemaMetaData, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static SQLStatementContext newInstance(final SchemaMetaData schemaMetaData, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(schemaMetaData, sql, parameters, (DMLStatement) sqlStatement);
+            return getDMLStatementContext(schemaMetaData, parameters, (DMLStatement) sqlStatement);
         }
         if (sqlStatement instanceof DDLStatement) {
             return getDDLStatementContext((DDLStatement) sqlStatement);
@@ -98,9 +97,9 @@ public final class SQLStatementContextFactory {
         return new CommonSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDMLStatementContext(final SchemaMetaData schemaMetaData, final String sql, final List<Object> parameters, final DMLStatement sqlStatement) {
+    private static SQLStatementContext getDMLStatementContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final DMLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(schemaMetaData, sql, parameters, (SelectStatement) sqlStatement);
+            return new SelectStatementContext(schemaMetaData, parameters, (SelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);

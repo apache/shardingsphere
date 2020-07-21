@@ -24,7 +24,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="33">
-            <aggregation-projection type="SUM" inner-expression-start-index="10" alias="user_id_sum" start-index="7" stop-index="18" />
+            <aggregation-projection type="SUM" inner-expression="(user_id)" alias="user_id_sum" start-index="7" stop-index="18" />
         </projections>
     </select>
 
@@ -35,7 +35,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(*)" start-index="7" stop-index="14" />
         </projections>
     </select>
 
@@ -46,7 +46,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(*)" start-index="7" stop-index="14" />
         </projections>
         <where start-index="45" stop-index="64">
             <and-predicate>
@@ -68,7 +68,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(*)" start-index="7" stop-index="14" />
         </projections>
         <where start-index="45" stop-index="66">
             <and-predicate>
@@ -90,7 +90,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="33">
-            <aggregation-projection type="MAX" inner-expression-start-index="10" alias="max_user_id" start-index="7" stop-index="18" />
+            <aggregation-projection type="MAX" inner-expression="(user_id)" alias="max_user_id" start-index="7" stop-index="18" />
         </projections>
     </select>
 
@@ -101,7 +101,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="33">
-            <aggregation-projection type="MIN" inner-expression-start-index="10" alias="min_user_id" start-index="7" stop-index="18" />
+            <aggregation-projection type="MIN" inner-expression="(user_id)" alias="min_user_id" start-index="7" stop-index="18" />
         </projections>
     </select>
 
@@ -112,7 +112,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="33">
-            <aggregation-projection type="AVG" inner-expression-start-index="10" alias="user_id_avg" start-index="7" stop-index="18" />
+            <aggregation-projection type="AVG" inner-expression="(user_id)" alias="user_id_avg" start-index="7" stop-index="18" />
         </projections>
     </select>
 
@@ -128,7 +128,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="29">
-            <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="items_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" inner-expression="(*)" alias="items_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="62" stop-index="171" literal-stop-index="172">
             <and-predicate>
@@ -206,7 +206,7 @@
             </join-table>
         </table-reference>
         <projections start-index="7" stop-index="29">
-            <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="items_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" inner-expression="(*)" alias="items_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="119" stop-index="174" literal-stop-index="175">
             <and-predicate>
@@ -243,7 +243,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="39">
-            <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="orders_count" start-index="7" stop-index="23" />
+            <aggregation-projection type="COUNT" inner-expression="(`order_id`)" alias="orders_count" start-index="7" stop-index="23" />
         </projections>
     </select>
 </sql-parser-test-cases>

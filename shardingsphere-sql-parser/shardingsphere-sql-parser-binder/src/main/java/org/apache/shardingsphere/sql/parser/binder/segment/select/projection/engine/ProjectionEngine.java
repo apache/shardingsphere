@@ -56,12 +56,11 @@ public final class ProjectionEngine {
     /**
      * Create projection.
      * 
-     * @param sql SQL
      * @param tableSegments table segments
      * @param projectionSegment projection segment
      * @return projection
      */
-    public Optional<Projection> createProjection(final String sql, final Collection<SimpleTableSegment> tableSegments, final ProjectionSegment projectionSegment) {
+    public Optional<Projection> createProjection(final Collection<SimpleTableSegment> tableSegments, final ProjectionSegment projectionSegment) {
         if (projectionSegment instanceof ShorthandProjectionSegment) {
             return Optional.of(createProjection(tableSegments, (ShorthandProjectionSegment) projectionSegment));
         }
@@ -72,10 +71,10 @@ public final class ProjectionEngine {
             return Optional.of(createProjection((ExpressionProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof AggregationDistinctProjectionSegment) {
-            return Optional.of(createProjection(sql, (AggregationDistinctProjectionSegment) projectionSegment));
+            return Optional.of(createProjection((AggregationDistinctProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof AggregationProjectionSegment) {
-            return Optional.of(createProjection(sql, (AggregationProjectionSegment) projectionSegment));
+            return Optional.of(createProjection((AggregationProjectionSegment) projectionSegment));
         }
         // TODO subquery
         return Optional.empty();
@@ -96,8 +95,8 @@ public final class ProjectionEngine {
         return new ExpressionProjection(projectionSegment.getText(), projectionSegment.getAlias().orElse(null));
     }
     
-    private AggregationDistinctProjection createProjection(final String sql, final AggregationDistinctProjectionSegment projectionSegment) {
-        String innerExpression = sql.substring(projectionSegment.getInnerExpressionStartIndex(), projectionSegment.getStopIndex() + 1);
+    private AggregationDistinctProjection createProjection(final AggregationDistinctProjectionSegment projectionSegment) {
+        String innerExpression = projectionSegment.getInnerExpression();
         String alias = projectionSegment.getAlias().orElse(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
                 projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), innerExpression, alias, projectionSegment.getDistinctExpression());
@@ -107,8 +106,8 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private AggregationProjection createProjection(final String sql, final AggregationProjectionSegment projectionSegment) {
-        String innerExpression = sql.substring(projectionSegment.getInnerExpressionStartIndex(), projectionSegment.getStopIndex() + 1);
+    private AggregationProjection createProjection(final AggregationProjectionSegment projectionSegment) {
+        String innerExpression = projectionSegment.getInnerExpression();
         AggregationProjection result = new AggregationProjection(projectionSegment.getType(), innerExpression, projectionSegment.getAlias().orElse(null));
         if (AggregationType.AVG == result.getType()) {
             appendAverageDerivedProjection(result);
