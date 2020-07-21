@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-###出行与物流
+### 出行与物流
 <ul>
     <li><a href="https://www.ctrip.com/" rel="nofollow">携程旅游</a></li>
     <li><a href="https://www.tujia.com/" rel="nofollow">途家民宿</a></li>
