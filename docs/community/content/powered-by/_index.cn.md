@@ -77,7 +77,7 @@ chapter = true
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">中国电信翼支付（甜橙金融）</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
-    <li>中移动金融科技
+    <li><a href="https://jf.10086.cn/" rel="nofollow">中移动金融科技</a></li>             
     <li><a href="https://www.xiaoniu88.com/" rel="nofollow">小牛在线</a></li>
     <li><a href="https://www.huaxiafinance.com/" rel="nofollow">华夏信财</a></li>
     <li><a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a></li>
@@ -94,7 +94,7 @@ chapter = true
 ### 互联网教育
 <ul>
     <li><a href="http://www.100tal.com/" rel="nofollow">好未来</a></li>
-<li><a href="http://www.hqwx.com/" rel="nofollow">北京环球网校</a></li>
+    <li><a href="http://www.hqwx.com/" rel="nofollow">北京环球网校</a></li>
     <li><a href="https://www.kaike.la/" rel="nofollow">开课啦</a></li>
     <li><a href="https://www.okayzhihui.com/" rel="nofollow">点石经纬</a></li>
     <li><a href="http://edu.dongao.com/" rel="nofollow">东奥教育集团</a></li>
@@ -121,9 +121,9 @@ chapter = true
 ### 数字化与云服务
 <ul>
     <li><a href="https://www.jddglobal.com/" rel="nofollow">京东数科</a></li>
-    <li>京东大数据与智能供应链
+    <li>京东大数据与智能供应链</li>
     <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">京东云</a></li>
-<li><a href="https://www.9fgroup.com/" rel="nofollow">玖富数科</a></li>
+    <li><a href="https://www.9fgroup.com/" rel="nofollow">玖富数科</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">真信认知科技</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">云庐科技</a></li>
     <li><a href="http://www.compasshz.com/" rel="nofollow">康帕斯科技</a></li>
