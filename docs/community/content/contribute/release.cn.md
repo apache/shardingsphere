@@ -1,5 +1,5 @@
 +++
-title = "发布指南"
+title = "ShardingSphere发布指南"
 weight = 6
 chapter = true
 +++
@@ -256,6 +256,7 @@ shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling
 svn add *
 svn --username=${APACHE LDAP 用户名} commit -m "release ${RELEASE.VERSION}"
 ```
+
 ## 检查发布结果
 
 ### 检查sha512哈希
