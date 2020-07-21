@@ -14,8 +14,8 @@ In the contributor guide, we have mentioned how to submit Issues and pull reques
 - Familiar with [Markdown](https://www.markdownguide.org/getting-started)
 - Familiar with [Hugo](https://gohugo.io/)
 
-## Fock document
-Fock the master branch of [ShardingSphere](https://github.com/apache/shardingsphere).
+## Fork document
+Fork the master branch of [ShardingSphere](https://github.com/apache/shardingsphere).
 
 
 ## Directory structure description

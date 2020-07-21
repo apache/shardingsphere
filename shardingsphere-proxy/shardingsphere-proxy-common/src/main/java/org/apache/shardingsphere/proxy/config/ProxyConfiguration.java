@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.proxy.config;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
@@ -29,12 +25,19 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Properties;
+
 /**
  * Proxy configuration.
  */
 @Getter
 @Setter
 public final class ProxyConfiguration implements Serializable {
+    
+    private static final long serialVersionUID = 2258701685899056191L;
     
     private Authentication authentication;
     

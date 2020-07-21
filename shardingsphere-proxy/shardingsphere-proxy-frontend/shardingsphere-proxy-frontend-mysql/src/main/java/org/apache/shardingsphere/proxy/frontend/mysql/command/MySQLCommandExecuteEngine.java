@@ -73,7 +73,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     @Override
     @SneakyThrows
     public void writeQueryData(final ChannelHandlerContext context,
-                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
+                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) {
         if (!queryCommandExecutor.isQuery() || !context.channel().isActive()) {
             return;
         }

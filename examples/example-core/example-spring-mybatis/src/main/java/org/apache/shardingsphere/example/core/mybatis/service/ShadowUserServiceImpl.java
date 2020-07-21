@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.example.core.mybatis.service;
 
 import org.apache.shardingsphere.example.core.api.entity.ShadowUser;
-import org.apache.shardingsphere.example.core.api.entity.User;
 import org.apache.shardingsphere.example.core.api.repository.ShadowUserRepository;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.springframework.stereotype.Service;

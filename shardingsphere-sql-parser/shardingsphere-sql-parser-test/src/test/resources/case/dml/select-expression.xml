@@ -83,7 +83,7 @@
             <shorthand-projection start-index="7" stop-index="9">
                 <owner start-index="7" stop-index="7" name="t"/>
             </shorthand-projection>
-            <column-projection start-index="11" stop-index="19" name="item_id" alias="itemid">
+            <column-projection start-index="11" stop-index="19" name="item_id" alias="item_id">
                 <owner start-index="11" stop-index="11" name="o"/>
             </column-projection>
             <expression-projection start-index="32" stop-index="109" alias="stateName" />

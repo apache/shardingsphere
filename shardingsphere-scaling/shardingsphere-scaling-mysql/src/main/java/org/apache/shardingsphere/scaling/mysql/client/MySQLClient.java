@@ -243,7 +243,7 @@ public final class MySQLClient {
         }
         
         @Override
-        public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
+        public void channelInactive(final ChannelHandlerContext ctx) {
             log.warn("channel inactive");
             reconnect();
         }
