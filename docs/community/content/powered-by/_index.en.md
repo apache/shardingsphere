@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 ## Who are using ShardingSphere?
 
-### Transportation
+### Travel and Logistics
 <ul>
     <li><a href="https://www.ctrip.com/" rel="nofollow">CTrip</a></li>
     <li><a href="https://www.tujia.com/" rel="nofollow">TuJia</a></li>
