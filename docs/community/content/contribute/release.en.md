@@ -1,5 +1,5 @@
 +++
-title = "Release Guide"
+title = "ShardingSphere Release Guide"
 weight = 6
 chapter = true
 +++
