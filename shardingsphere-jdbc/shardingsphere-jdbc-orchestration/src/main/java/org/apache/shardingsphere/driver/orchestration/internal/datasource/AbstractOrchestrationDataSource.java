@@ -66,7 +66,7 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     private final Map<String, DataSourceConfiguration> dataSourceConfigurations = new LinkedHashMap<>();
     
     public AbstractOrchestrationDataSource(final OrchestrationConfiguration orchestrationConfig) {
-        this.shardingOrchestrationFacade.init(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME));
+        shardingOrchestrationFacade.init(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME));
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
@@ -83,7 +83,7 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     }
     
     @Override
-    public final void close() throws Exception {
+    public final void close() {
         ((ShardingSphereDataSource) getDataSource()).close();
         shardingOrchestrationFacade.close();
     }
