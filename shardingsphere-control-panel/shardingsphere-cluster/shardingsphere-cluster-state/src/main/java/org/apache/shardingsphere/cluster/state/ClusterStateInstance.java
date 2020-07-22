@@ -67,18 +67,6 @@ public final class ClusterStateInstance {
     }
     
     /**
-     * Load instance state by instance id.
-     *
-     * @param instanceId instance id
-     * @return instance state
-     */
-    private InstanceState loadInstanceState(final String instanceId) {
-        String instanceData = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadInstanceData(instanceId);
-        Preconditions.checkState(!Strings.isNullOrEmpty(instanceData), "Can not load instance state of '%s' from registry center", instanceId);
-        return YamlEngine.unmarshal(instanceData, InstanceState.class);
-    }
-    
-    /**
      * Disabled data source after state changed.
      *
      * @param event disabled state changed event
