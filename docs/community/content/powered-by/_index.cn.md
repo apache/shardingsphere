@@ -13,9 +13,9 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计140家公司。
+共计 140 家公司。
 
-### 互联网金融
+### 金融行业
 <ul>
     <li><a href="https://www.jdfcloud.com/" rel="nofollow">京东金融云</a></li>
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">中国电信翼支付（甜橙金融）</a></li>
