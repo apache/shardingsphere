@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.orchestration.internal.datasource;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
@@ -42,6 +43,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -117,8 +119,7 @@ public final class OrchestrationShardingSphereDataSourceTest {
     @Test
     public void assertRenewRules() {
         orchestrationDataSource.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getMasterSlaveRuleConfiguration())));
-        assertThat(((ShardingRule) 
-                orchestrationDataSource.getDataSource().getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().iterator().next()).getTableRules().size(), is(1));
+        assertThat(((ShardingRule) getDataSource().getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().iterator().next()).getTableRules().size(), is(1));
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
@@ -136,7 +137,7 @@ public final class OrchestrationShardingSphereDataSourceTest {
     @Test
     public void assertRenewDataSource() {
         orchestrationDataSource.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
-        assertThat(orchestrationDataSource.getDataSource().getDataSourceMap().size(), is(3));
+        assertThat(getDataSource().getDataSourceMap().size(), is(3));
         
     }
     
@@ -156,7 +157,7 @@ public final class OrchestrationShardingSphereDataSourceTest {
     @Test
     public void assertRenewProperties() {
         orchestrationDataSource.renew(getPropertiesChangedEvent());
-        assertThat(orchestrationDataSource.getDataSource().getSchemaContexts().getProps().getProps().getProperty("sql.show"), is("true"));
+        assertThat(getDataSource().getSchemaContexts().getProps().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {
@@ -168,5 +169,12 @@ public final class OrchestrationShardingSphereDataSourceTest {
     @Test
     public void assertRenewDisabledState() {
         orchestrationDataSource.renew(new DisabledStateChangedEvent(new OrchestrationSchema("logic_db.ds_s"), true));
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private ShardingSphereDataSource getDataSource() {
+        Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("dataSource");
+        field.setAccessible(true);
+        return (ShardingSphereDataSource) field.get(orchestrationDataSource);
     }
 }
