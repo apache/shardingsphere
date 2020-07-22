@@ -124,6 +124,7 @@ chapter = true
     <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
     <li><a href="http://www.yaduo.com/" rel="nofollow">亚朵</a></li>
     <li><a href="http://read.zhulang.com/" rel="nofollow">连尚文学</a></li>
+    <li><a href="https://www.yy.com/" rel="nofollow">欢聚时代(YY)</a></li>
 </ul>
 
 ### 新闻资讯
@@ -188,7 +189,6 @@ chapter = true
     <li><a href="https://www.cloudm.com/" rel="nofollow">聚励云机械</a></li>
     <li><a href="http://tigosoft.com/" rel="nofollow">泰古信息</a></li>
     <li><a href="https://www.can-dao.com/" rel="nofollow">餐道</a></li>
-    <li><a href="https://www.yy.com/" rel="nofollow">欢聚时代(YY)</a></li>
     <li><a href="https://www.idengyun.com/" rel="nofollow">登云</a></li>
     <li><a href="http://www.aicmonitor.com/" rel="nofollow">航天智控</a></li>
     <li><a href="http://www.dzzd.com" rel="nofollow">玺信阳光</a></li>
