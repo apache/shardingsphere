@@ -125,6 +125,7 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
     <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
     <li><a href="http://www.yaduo.com/" rel="nofollow">YaDuo</a></li>
     <li><a href="http://read.zhulang.com/" rel="nofollow">LianShang Literature</a></li>
+    <li><a href="https://www.yy.com/" rel="nofollow">YY</a></li>
 </ul>
 
 ### News
@@ -189,7 +190,6 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
     <li><a href="https://www.cloudm.com/" rel="nofollow">CloudM</a></li>
     <li><a href="http://tigosoft.com/" rel="nofollow">TIGO</a></li>
     <li><a href="https://www.can-dao.com/" rel="nofollow">can-dao</a></li>
-    <li><a href="https://www.yy.com/" rel="nofollow">YY</a></li>
     <li><a href="https://www.idengyun.com/" rel="nofollow">DengYun</a></li>
     <li><a href="http://www.aicmonitor.com/" rel="nofollow">AIC Monitor</a></li>
     <li><a href="http://www.dzzd.com" rel="nofollow">dzzd</a></li>
