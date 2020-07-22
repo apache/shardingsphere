@@ -13,6 +13,29 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 ## Who are using ShardingSphere?
 
+Total:140 companies.
+
+### E-finance
+<ul>
+    <li><a href="https://www.jdfcloud.com/" rel="nofollow">JDFCloud</a></li>
+    <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
+    <li><a href="http://www.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
+    <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
+    <li><a href="https://jf.10086.cn/" rel="nofollow">China Mobile Financial Technology</a></li>   
+    <li><a href="https://www.haiercash.com/" rel="nofollow">Haier Cash</a></li>
+    <li><a href="https://www.xiaoniu88.com/" rel="nofollow">XiaoNiu88</a></li>
+    <li><a href="https://www.huaxiafinance.com/" rel="nofollow">HuaXia Finance</a></li>
+    <li><a href="https://www.niiwoo.com/" rel="nofollow">Niiwoo</a></li>
+    <li><a href="https://www.51credit.com/" rel="nofollow">51credit</a></li>
+    <li><a href="https://www.mljr.com/" rel="nofollow">MLJR</a></li>
+    <li><a href="https://www.tuandai.com/" rel="nofollow">TuanDai</a></li>
+    <li><a href="https://www.cypfintech.com/" rel="nofollow">Cypfintech</a></li>
+    <li><a href="https://www.ppdai.com/" rel="nofollow">PPDai</a></li>
+    <li><a href="https://www.kjtpay.com/" rel="nofollow">KJT pay</a></li>
+    <li><a href="https://www.ktjr.com/" rel="nofollow">KTJR</a></li>
+    <li><a href="https://www.tansun.com/" rel="nofollow">TANSUN</a></li>
+</ul>
+
 ### E-commerce
 <ul>
     <li><a href="https://www.joybuy.com/" rel="nofollow">JoyBuy</a></li>
@@ -33,27 +56,6 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
     <li><a href="https://www.miaomaifang.com/" rel="nofollow">MiaoMaiFang</a></li>
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://zowiesunglasses.com/" rel="nofollow">Zowie</a></li>
-</ul>
-
-### E-finance
-<ul>
-    <li><a href="https://www.haiercash.com/" rel="nofollow">Haier Cash</a></li>
-    <li><a href="https://www.jdfcloud.com/" rel="nofollow">JDFCloud</a></li>
-    <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
-    <li><a href="http://www.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
-    <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
-    <li><a href="https://jf.10086.cn/" rel="nofollow">China Mobile Financial Technology</a></li>   
-    <li><a href="https://www.xiaoniu88.com/" rel="nofollow">XiaoNiu88</a></li>
-    <li><a href="https://www.huaxiafinance.com/" rel="nofollow">HuaXia Finance</a></li>
-    <li><a href="https://www.niiwoo.com/" rel="nofollow">Niiwoo</a></li>
-    <li><a href="https://www.51credit.com/" rel="nofollow">51credit</a></li>
-    <li><a href="https://www.mljr.com/" rel="nofollow">MLJR</a></li>
-    <li><a href="https://www.tuandai.com/" rel="nofollow">TuanDai</a></li>
-    <li><a href="https://www.cypfintech.com/" rel="nofollow">Cypfintech</a></li>
-    <li><a href="https://www.ppdai.com/" rel="nofollow">PPDai</a></li>
-    <li><a href="https://www.kjtpay.com/" rel="nofollow">KJT pay</a></li>
-    <li><a href="https://www.ktjr.com/" rel="nofollow">KTJR</a></li>
-    <li><a href="https://www.tansun.com/" rel="nofollow">TANSUN</a></li>
 </ul>
 
 ### Digitalization and Cloud Services

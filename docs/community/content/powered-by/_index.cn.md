@@ -13,6 +13,29 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
+共计140家公司。
+
+### 互联网金融
+<ul>
+    <li><a href="https://www.jdfcloud.com/" rel="nofollow">京东金融云</a></li>
+    <li><a href="https://www.bestpay.com.cn/" rel="nofollow">中国电信翼支付（甜橙金融）</a></li>
+    <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
+    <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
+    <li><a href="https://jf.10086.cn/" rel="nofollow">中移动金融科技</a></li>    
+    <li><a href="https://www.haiercash.com/" rel="nofollow">海尔消费金融</a></li>         
+    <li><a href="https://www.xiaoniu88.com/" rel="nofollow">小牛在线</a></li>
+    <li><a href="https://www.huaxiafinance.com/" rel="nofollow">华夏信财</a></li>
+    <li><a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a></li>
+    <li><a href="https://www.51credit.com/" rel="nofollow">我爱卡</a></li>
+    <li><a href="https://www.mljr.com/" rel="nofollow">美利车金融</a></li>
+    <li><a href="https://www.tuandai.com/" rel="nofollow">团贷网</a></li>
+    <li><a href="https://www.cypfintech.com/" rel="nofollow">策赢平台</a></li>
+    <li><a href="https://www.ppdai.com/" rel="nofollow">拍拍贷</a></li>
+    <li><a href="https://www.kjtpay.com/" rel="nofollow">快捷通支付服务有限公司</a></li>
+    <li><a href="https://www.ktjr.com/" rel="nofollow">开通金融</a></li>
+    <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
+</ul>
+
 ### 电子商务
 <ul>
     <li><a href="https://www.joybuy.com/" rel="nofollow">京东商城海外站</a></li>
@@ -33,27 +56,6 @@ chapter = true
     <li><a href="https://www.miaomaifang.com/" rel="nofollow">秒卖房</a></li>
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://zowiesunglasses.com/" rel="nofollow">卓唯眼镜</a></li>
-</ul>
-
-### 互联网金融
-<ul>
-    <li><a href="https://www.haiercash.com/" rel="nofollow">海尔消费金融</a></li>
-    <li><a href="https://www.jdfcloud.com/" rel="nofollow">京东金融云</a></li>
-    <li><a href="https://www.bestpay.com.cn/" rel="nofollow">中国电信翼支付（甜橙金融）</a></li>
-    <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
-    <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
-    <li><a href="https://jf.10086.cn/" rel="nofollow">中移动金融科技</a></li>             
-    <li><a href="https://www.xiaoniu88.com/" rel="nofollow">小牛在线</a></li>
-    <li><a href="https://www.huaxiafinance.com/" rel="nofollow">华夏信财</a></li>
-    <li><a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a></li>
-    <li><a href="https://www.51credit.com/" rel="nofollow">我爱卡</a></li>
-    <li><a href="https://www.mljr.com/" rel="nofollow">美利车金融</a></li>
-    <li><a href="https://www.tuandai.com/" rel="nofollow">团贷网</a></li>
-    <li><a href="https://www.cypfintech.com/" rel="nofollow">策赢平台</a></li>
-    <li><a href="https://www.ppdai.com/" rel="nofollow">拍拍贷</a></li>
-    <li><a href="https://www.kjtpay.com/" rel="nofollow">快捷通支付服务有限公司</a></li>
-    <li><a href="https://www.ktjr.com/" rel="nofollow">开通金融</a></li>
-    <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
 </ul>
 
 ### 数字化与云服务
