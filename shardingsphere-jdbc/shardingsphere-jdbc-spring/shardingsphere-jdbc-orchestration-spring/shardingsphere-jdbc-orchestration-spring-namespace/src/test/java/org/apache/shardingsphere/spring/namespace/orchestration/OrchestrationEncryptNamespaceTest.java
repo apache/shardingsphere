@@ -57,7 +57,7 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     
     private AlgorithmProvidedEncryptRuleConfiguration getEncryptRuleConfiguration() {
         OrchestrationShardingSphereDataSource orchestrationDataSource = (OrchestrationShardingSphereDataSource) applicationContext.getBean("encryptDataSourceOrchestration");
-        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(orchestrationDataSource, "dataSource", false);
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(orchestrationDataSource, "dataSource");
         return (AlgorithmProvidedEncryptRuleConfiguration) dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations().iterator().next();
     }
     
@@ -87,7 +87,7 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     
     private ConfigurationProperties getProperties(final String encryptDatasourceName) {
         OrchestrationShardingSphereDataSource orchestrationDataSource = applicationContext.getBean(encryptDatasourceName, OrchestrationShardingSphereDataSource.class);
-        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(orchestrationDataSource, "dataSource", false);
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(orchestrationDataSource, "dataSource");
         return dataSource.getSchemaContexts().getProps();
     }
 }
