@@ -21,7 +21,7 @@ Blog site：https://willemjiang.github.io/
 
 ---
 
-Zheng Feng is a software engineer at Red Hat, joined Red Hat Software in 2009, mainly engaged in the work of the transaction manager. As a core developer, he participated in the Narayan and Blacktie projects. He had contributed to the integration of transaction processing of multiple application servers (Wildfly, Karaf, Tomcat) and frameworks (Common DBCP, Spring Boot ). Since 2017, he has participated in the Apache ServiceComb project and is currently a member of PMC. He has in-depth research on distributed transaction processing and transaction processing in a microservice environment.
+Zheng Feng is a software engineer at Red Hat, joined Red Hat Software in 2009, mainly engaged in the work of the transaction manager. As a core developer, he participated in the Narayana and BlackTie projects. He had contributed to the integration of transaction processing of multiple application servers (Wildfly, Karaf, Tomcat) and frameworks (Common DBCP, Spring Boot ). Since 2017, he has participated in the Apache ServiceComb project and is currently a member of PMC. He has in-depth research on distributed transaction processing and transaction processing in a microservice environment.
 
 ### Guide
 
@@ -133,7 +133,7 @@ There are many mature XA transaction managers. Apache ShardingSphere (Incubating
 
 The Sharding-transaction-xa module further defines the SPI for XA transaction manager developers. Developers only need to implement the SPI-defined interface to automatically join the Apache ShardingSphere (Incubating) ecosystem as their XA transaction manager.
 
-Apache ShardingSphere (Incubating) officially implements SPI based on Atomikos and Bitronix, and invited the Radhat JBoss XA transaction engine Narayana [https://github.com/jbosstm/narayana] development team to implement JBoss SPI. Users can choose their favorite XA transaction manager among Atomikos, Bitronix and Narayana.
+Apache ShardingSphere (Incubating) officially implements SPI based on Atomikos and Bitronix, and invited the Redhat JBoss XA transaction engine Narayana [https://github.com/jbosstm/narayana] development team to implement JBoss SPI. Users can choose their favorite XA transaction manager among Atomikos, Bitronix and Narayana.
 
 
 

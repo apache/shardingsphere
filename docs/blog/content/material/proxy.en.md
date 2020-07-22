@@ -104,7 +104,7 @@ We get the expected message flow. The speed is much faster then normal query aft
 
 At the beginning of fifth message, it's enough to transfers value of param for each query. We reach the goal of one precompilation and more performation in the final, MySQL efficiency improves a lot. Due to shorter length of message, network IO efficiency is much better.
 
-That is how "cachePrepStmts=true" works: JDBC cache needs prepared SQL. Here is an example of "SELECT*FROMt_orderWHEREuser_id=?", after running once, it skips PreparedStatement next time and make use of ExecuteStatement to set param value.
+That is how "cachePrepStmts=true" works: JDBC cache needs prepared SQL. Here is an example of "SELECT * FROM t_order WHERE user_id=?", after running once, it skips PreparedStatement next time and make use of ExecuteStatement to set param value.
 
 when making it clear, you will know how to optimize Proxy. Proxy adops Hikari as database connecting pool. In time of initialization, it will set two params above. 
 

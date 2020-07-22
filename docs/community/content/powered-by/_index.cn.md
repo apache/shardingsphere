@@ -13,6 +13,65 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
+### 电子商务
+<ul>
+    <li><a href="https://www.joybuy.com/" rel="nofollow">京东商城海外站</a></li>
+    <li><a href="https://www.jd.ru/" rel="nofollow">京东商城俄文站</a></li>
+    <li><a href="http://www.dangdang.com/" rel="nofollow">当当</a></li>
+    <li><a href="https://www.vip.com/" rel="nofollow">唯品会</a></li>
+    <li><a href="https://www.missfresh.cn/" rel="nofollow">每日优鲜便利购</a></li>
+    <li><a href="http://www.pagoda.com.cn/" rel="nofollow">百果园</a></li>
+    <li><a href="http://www.3songshu.com/" rel="nofollow">三只松鼠</a></li>
+    <li><a href="https://poizon.com/" rel="nofollow">得物app</a></li>
+    <li><a href="https://www.dayi35.com/" rel="nofollow">大易有塑</a></li>
+    <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">转转</a></li>
+    <li><a href="https://www.nanyiku.com/" rel="nofollow">男衣库</a></li>
+    <li><a href="https://www.yiwugou.com/" rel="nofollow">义乌购</a></li>
+    <li><a href="http://www.eeka.cn/" rel="nofollow">赢家服饰</a></li>
+    <li><a href="https://www.chuchujie.com/" rel="nofollow">楚楚街</a></li>
+    <li><a href="https://www.zmn.cn/" rel="nofollow">啄木鸟网络科技</a></li>
+    <li><a href="https://www.miaomaifang.com/" rel="nofollow">秒卖房</a></li>
+    <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
+    <li><a href="https://zowiesunglasses.com/" rel="nofollow">卓唯眼镜</a></li>
+</ul>
+
+### 互联网金融
+<ul>
+    <li><a href="https://www.haiercash.com/" rel="nofollow">海尔消费金融</a></li>
+    <li><a href="https://www.jdfcloud.com/" rel="nofollow">京东金融云</a></li>
+    <li><a href="https://www.bestpay.com.cn/" rel="nofollow">中国电信翼支付（甜橙金融）</a></li>
+    <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
+    <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
+    <li><a href="https://jf.10086.cn/" rel="nofollow">中移动金融科技</a></li>             
+    <li><a href="https://www.xiaoniu88.com/" rel="nofollow">小牛在线</a></li>
+    <li><a href="https://www.huaxiafinance.com/" rel="nofollow">华夏信财</a></li>
+    <li><a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a></li>
+    <li><a href="https://www.51credit.com/" rel="nofollow">我爱卡</a></li>
+    <li><a href="https://www.mljr.com/" rel="nofollow">美利车金融</a></li>
+    <li><a href="https://www.tuandai.com/" rel="nofollow">团贷网</a></li>
+    <li><a href="https://www.cypfintech.com/" rel="nofollow">策赢平台</a></li>
+    <li><a href="https://www.ppdai.com/" rel="nofollow">拍拍贷</a></li>
+    <li><a href="https://www.kjtpay.com/" rel="nofollow">快捷通支付服务有限公司</a></li>
+    <li><a href="https://www.ktjr.com/" rel="nofollow">开通金融</a></li>
+    <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
+</ul>
+
+### 数字化与云服务
+<ul>
+    <li><a href="https://www.jddglobal.com/" rel="nofollow">京东数科</a></li>
+    <li>京东大数据与智能供应链</li>
+    <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">京东云</a></li>
+    <li><a href="https://www.9fgroup.com/" rel="nofollow">玖富数科</a></li>
+    <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">真信认知科技</a></li>
+    <li><a href="http://www.cloudansys.com/" rel="nofollow">云庐科技</a></li>
+    <li><a href="http://www.compasshz.com/" rel="nofollow">康帕斯科技</a></li>
+    <li><a href="http://www.cyberplus.com.cn/" rel="nofollow">新脉远望</a></li>
+    <li><a href="http://caas.com.cn/" rel="nofollow">北京千丁互联科技有限公司</a></li>
+    <li><a href="https://www.shebaotong.com/" rel="nofollow">上海社宝信息科技有限公司</a></li>
+    <li><a href="https://www.itrus.com.cn/" rel="nofollow">天威诚信</a></li>
+    <li><a href="http://www.dtchuxing.com/" rel="nofollow">公交云</a></li>
+</ul>
+
 ### 出行与物流
 <ul>
     <li><a href="https://www.ctrip.com/" rel="nofollow">携程旅游</a></li>
@@ -41,56 +100,6 @@ chapter = true
     <li><a href="https://www.keking.com" rel="nofollow">凯京科技</a></li>
 </ul>
 
-### 电子商务
-<ul>
-    <li><a href="https://www.joybuy.com/" rel="nofollow">京东商城海外站</a></li>
-    <li><a href="https://www.jd.ru/" rel="nofollow">京东商城俄文站</a></li>
-    <li><a href="http://www.dangdang.com/" rel="nofollow">当当</a></li>
-    <li><a href="https://www.vip.com/" rel="nofollow">唯品会</a></li>
-    <li><a href="https://www.missfresh.cn/" rel="nofollow">每日优鲜便利购</a></li>
-    <li><a href="http://www.pagoda.com.cn/" rel="nofollow">百果园</a></li>
-    <li><a href="http://www.3songshu.com/" rel="nofollow">三只松鼠</a></li>
-     <li><a href="https://poizon.com/" rel="nofollow">得物app</a></li>
-    <li><a href="https://www.dayi35.com/" rel="nofollow">大易有塑</a></li>
-    <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">转转</a></li>
-    <li><a href="https://www.nanyiku.com/" rel="nofollow">男衣库</a></li>
-    <li><a href="https://www.yiwugou.com/" rel="nofollow">义乌购</a></li>
-    <li><a href="http://www.eeka.cn/" rel="nofollow">赢家服饰</a></li>
-    <li><a href="https://www.chuchujie.com/" rel="nofollow">楚楚街</a></li>
-    <li><a href="https://www.zmn.cn/" rel="nofollow">啄木鸟网络科技</a></li>
-    <li><a href="https://www.miaomaifang.com/" rel="nofollow">秒卖房</a></li>
-    <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
-    <li><a href="https://zowiesunglasses.com/" rel="nofollow">卓唯眼镜</a></li>
-</ul>
-
-### 公共事业
-<ul>
-    <li><a href="http://dnr.gxzf.gov.cn/" rel="nofollow">广西壮族自治区自然资源信息中心</a></li>
-    <li><a href="http://www.ascf.com.cn/" rel="nofollow">航天长峰</a></li>
-    <li><a href="http://www.chiscdc.com/" rel="nofollow">中卫信</a></li>
-</ul>
-
-### 互联网金融
-<ul>
-    <li><a href="https://www.haiercash.com/" rel="nofollow">海尔消费金融</a></li>
-    <li><a href="https://www.jdfcloud.com/" rel="nofollow">京东金融云</a></li>
-    <li><a href="https://www.bestpay.com.cn/" rel="nofollow">中国电信翼支付（甜橙金融）</a></li>
-    <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
-    <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
-    <li><a href="https://jf.10086.cn/" rel="nofollow">中移动金融科技</a></li>             
-    <li><a href="https://www.xiaoniu88.com/" rel="nofollow">小牛在线</a></li>
-    <li><a href="https://www.huaxiafinance.com/" rel="nofollow">华夏信财</a></li>
-    <li><a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a></li>
-    <li><a href="https://www.51credit.com/" rel="nofollow">我爱卡</a></li>
-    <li><a href="https://www.mljr.com/" rel="nofollow">美利车金融</a></li>
-    <li><a href="https://www.tuandai.com/" rel="nofollow">团贷网</a></li>
-    <li><a href="https://www.cypfintech.com/" rel="nofollow">策赢平台</a></li>
-    <li><a href="https://www.ppdai.com/" rel="nofollow">拍拍贷</a></li>
-    <li><a href="https://www.kjtpay.com/" rel="nofollow">快捷通支付服务有限公司</a></li>
-    <li><a href="https://www.ktjr.com/" rel="nofollow">开通金融</a></li>
-    <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
-</ul>
-
 ### 互联网教育
 <ul>
     <li><a href="http://www.100tal.com/" rel="nofollow">好未来</a></li>
@@ -105,7 +114,6 @@ chapter = true
     <li><a href="https://kada.hhdd.com/" rel="nofollow">KaDa故事</a></li>
 </ul>
 
-
 ### 互联网文娱
 <ul>
     <li><a href="https://www.bilibili.com/" rel="nofollow">哔哩哔哩弹幕网</a></li>
@@ -118,20 +126,25 @@ chapter = true
     <li><a href="http://read.zhulang.com/" rel="nofollow">连尚文学</a></li>
 </ul>
 
-### 数字化与云服务
+### 新闻资讯
 <ul>
-    <li><a href="https://www.jddglobal.com/" rel="nofollow">京东数科</a></li>
-    <li>京东大数据与智能供应链</li>
-    <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">京东云</a></li>
-    <li><a href="https://www.9fgroup.com/" rel="nofollow">玖富数科</a></li>
-    <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">真信认知科技</a></li>
-    <li><a href="http://www.cloudansys.com/" rel="nofollow">云庐科技</a></li>
-    <li><a href="http://www.compasshz.com/" rel="nofollow">康帕斯科技</a></li>
-    <li><a href="http://www.cyberplus.com.cn/" rel="nofollow">新脉远望</a></li>
-    <li><a href="http://caas.com.cn/" rel="nofollow">北京千丁互联科技有限公司</a></li>
-    <li><a href="https://www.shebaotong.com/" rel="nofollow">上海社宝信息科技有限公司</a></li>
-    <li><a href="https://www.itrus.com.cn/" rel="nofollow">天威诚信</a></li>
-    <li><a href="http://www.dtchuxing.com/" rel="nofollow">公交云</a></li>
+    <li><a href="https://ss.sohu.com/" rel="nofollow">搜狐资讯</a></li>
+    <li><a href="https://www.tianya.cn/" rel="nofollow">天涯社区</a></li>
+    <li><a href="https://bj.58.com/" rel="nofollow">58同城</a></li> 
+    <li><a href="https://500px.me/" rel="nofollow">视觉中国</a></li>
+    <li><a href="https://www.xiaohongchun.com/" rel="nofollow">小红唇</a></li>
+    <li><a href="https://www.fotoplace.cc/" rel="nofollow">足记</a></li>
+    <li><a href="https://www.xiachufang.com/" rel="nofollow">下厨房</a></li>
+    <li><a href="https://www.baixing.com/" rel="nofollow">百姓网</a></li>
+    <li><a href="https://www.yidianzixun.com/" rel="nofollow">一点资讯</a></li>
+    <li><a href="https://www.huobiinfo.com/" rel="nofollow">火币资讯</a></li>
+</ul>
+
+### 公共事业
+<ul>
+    <li><a href="http://dnr.gxzf.gov.cn/" rel="nofollow">广西壮族自治区自然资源信息中心</a></li>
+    <li><a href="http://www.ascf.com.cn/" rel="nofollow">航天长峰</a></li>
+    <li><a href="http://www.chiscdc.com/" rel="nofollow">中卫信</a></li>
 </ul>
 
 ### 通信科技
@@ -149,19 +162,6 @@ chapter = true
     <li><a href="http://www.iotlead.com/" rel="nofollow">广州理德物联网科技有限公司</a></li>
 </ul>
 
-### 新闻资讯
-<ul>
-    <li><a href="https://ss.sohu.com/" rel="nofollow">搜狐资讯</a></li>
-    <li><a href="https://www.tianya.cn/" rel="nofollow">天涯社区</a></li>
-    <li><a href="https://bj.58.com/" rel="nofollow">58同城</a></li> 
-    <li><a href="https://500px.me/" rel="nofollow">视觉中国</a></li>
-    <li><a href="https://www.xiaohongchun.com/" rel="nofollow">小红唇</a></li>
-    <li><a href="https://www.fotoplace.cc/" rel="nofollow">足记</a></li>
-        <li><a href="https://www.xiachufang.com/" rel="nofollow">下厨房</a></li>
-    <li><a href="https://www.baixing.com/" rel="nofollow">百姓网</a></li>
-    <li><a href="https://www.yidianzixun.com/" rel="nofollow">一点资讯</a></li>
-    <li><a href="https://www.huobiinfo.com/" rel="nofollow">火币资讯</a></li>
-</ul>
 
 ### 软件开发及服务
 <ul>
