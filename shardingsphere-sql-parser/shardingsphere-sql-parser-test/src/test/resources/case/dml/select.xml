@@ -1736,7 +1736,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="38">
-            <expression-projection alias="func_status" start-index="7" stop-index="26" />
+            <expression-projection alias="func_status" start-index="7" stop-index="38" />
         </projections>
         <where start-index="53" stop-index="86" literal-stop-index="90">
             <and-predicate>

@@ -41,7 +41,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="44">
-            <expression-projection alias="creation_date" start-index="7" stop-index="27" />
+            <expression-projection alias="creation_date" start-index="7" stop-index="44" />
         </projections>
         <order-by>
             <expression-item expression="DATE(i.creation_date)" order-direction="DESC" start-index="80" stop-index="100" />
