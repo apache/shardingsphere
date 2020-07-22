@@ -25,7 +25,7 @@ import org.apache.shardingsphere.cluster.state.enums.NodeState;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registry.event.DisabledStateChangedEvent;
 
 /**
  * Cluster state instance.

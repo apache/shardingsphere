@@ -134,17 +134,17 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-orchestration-center-zookeeper-curator</artifactId>
+                <artifactId>shardingsphere-orchestration-repository-zookeeper-curator</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-orchestration-center-nacos</artifactId>
+                <artifactId>shardingsphere-orchestration-repository-nacos</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-orchestration-center-etcd</artifactId>
+                <artifactId>shardingsphere-orchestration-repository-etcd</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>

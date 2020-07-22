@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.driver.orchestration.internal.util;
 
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlCenterRepositoryConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;

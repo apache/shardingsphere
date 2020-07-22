@@ -40,11 +40,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-center-zookeeper-curator</artifactId>
+            <artifactId>shardingsphere-orchestration-repository-zookeeper-curator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-center-nacos</artifactId>
+            <artifactId>shardingsphere-orchestration-repository-nacos</artifactId>
         </dependency>
         <dependency>
             <groupId>com.alibaba.nacos</groupId>

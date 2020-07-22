@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spring.namespace.orchestration.parser;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.spring.namespace.orchestration.constants.InstanceBeanDefinitionTag;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;

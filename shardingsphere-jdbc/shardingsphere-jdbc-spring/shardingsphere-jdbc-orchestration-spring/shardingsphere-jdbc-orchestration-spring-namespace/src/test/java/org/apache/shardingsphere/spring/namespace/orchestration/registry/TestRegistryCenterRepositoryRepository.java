@@ -19,10 +19,10 @@ package org.apache.shardingsphere.spring.namespace.orchestration.registry;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 
 import java.util.Collections;
 import java.util.List;

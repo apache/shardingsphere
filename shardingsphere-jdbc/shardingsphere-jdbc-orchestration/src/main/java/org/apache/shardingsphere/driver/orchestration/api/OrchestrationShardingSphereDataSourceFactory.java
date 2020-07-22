@@ -24,7 +24,7 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
