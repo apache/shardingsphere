@@ -13,6 +13,65 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 ## Who are using ShardingSphere?
 
+### E-commerce
+<ul>
+    <li><a href="https://www.joybuy.com/" rel="nofollow">JoyBuy</a></li>
+    <li><a href="https://www.jd.ru/" rel="nofollow">JD.ru</a></li>
+    <li><a href="http://www.dangdang.com/" rel="nofollow">DangDang</a></li>
+    <li><a href="https://www.vip.com/" rel="nofollow">VipShop</a></li>
+    <li><a href="https://www.missfresh.cn/" rel="nofollow">MissFresh</a></li>
+    <li><a href="http://www.pagoda.com.cn/" rel="nofollow">Pagoda</a></li>
+    <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
+    <li><a href="https://poizon.com/" rel="nofollow">Poizon</a></li>
+    <li><a href="https://www.dayi35.com/" rel="nofollow">Dayi35</a></li>
+    <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">ZhuanZhuan</a></li>
+    <li><a href="https://www.nanyiku.com/" rel="nofollow">NanYiKu</a></li>
+    <li><a href="https://www.yiwugou.com/" rel="nofollow">YiWuGou</a></li>
+    <li><a href="http://www.eeka.cn/" rel="nofollow">Eeka Fashion</a></li>
+    <li><a href="https://www.chuchujie.com/" rel="nofollow">ChuChuJie</a></li>
+    <li><a href="https://www.zmn.cn/" rel="nofollow">ZMN</a></li>
+    <li><a href="https://www.miaomaifang.com/" rel="nofollow">MiaoMaiFang</a></li>
+    <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
+    <li><a href="https://zowiesunglasses.com/" rel="nofollow">Zowie</a></li>
+</ul>
+
+### E-finance
+<ul>
+    <li><a href="https://www.haiercash.com/" rel="nofollow">Haier Cash</a></li>
+    <li><a href="https://www.jdfcloud.com/" rel="nofollow">JDFCloud</a></li>
+    <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
+    <li><a href="http://www.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
+    <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
+    <li><a href="https://jf.10086.cn/" rel="nofollow">China Mobile Financial Technology</a></li>   
+    <li><a href="https://www.xiaoniu88.com/" rel="nofollow">XiaoNiu88</a></li>
+    <li><a href="https://www.huaxiafinance.com/" rel="nofollow">HuaXia Finance</a></li>
+    <li><a href="https://www.niiwoo.com/" rel="nofollow">Niiwoo</a></li>
+    <li><a href="https://www.51credit.com/" rel="nofollow">51credit</a></li>
+    <li><a href="https://www.mljr.com/" rel="nofollow">MLJR</a></li>
+    <li><a href="https://www.tuandai.com/" rel="nofollow">TuanDai</a></li>
+    <li><a href="https://www.cypfintech.com/" rel="nofollow">Cypfintech</a></li>
+    <li><a href="https://www.ppdai.com/" rel="nofollow">PPDai</a></li>
+    <li><a href="https://www.kjtpay.com/" rel="nofollow">KJT pay</a></li>
+    <li><a href="https://www.ktjr.com/" rel="nofollow">KTJR</a></li>
+    <li><a href="https://www.tansun.com/" rel="nofollow">TANSUN</a></li>
+</ul>
+
+### Digitalization and Cloud Services
+<ul>
+    <li><a href="https://www.jddglobal.com/" rel="nofollow">JD Digits</a></li>
+    <li>JD’s Big Data and Intelligent Supply Chain Department</li>
+    <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">JDCloud</a></li>
+    <li><a href="https://www.9fgroup.com/" rel="nofollow">9fgroup</a></li>
+    <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">ZhenXin Safe</a></li>
+    <li><a href="http://www.cloudansys.com/" rel="nofollow">Cloudansys</a></li>
+    <li><a href="http://www.compasshz.com/" rel="nofollow">Compasshz</a></li>
+    <li><a href="http://www.cyberplus.com.cn/" rel="nofollow">CyberPlus</a></li>
+    <li><a href="http://caas.com.cn/" rel="nofollow">CAAS</a></li>
+    <li><a href="https://www.shebaotong.com/" rel="nofollow">SheBaoTong</a></li>
+    <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
+    <li><a href="http://www.dtchuxing.com/" rel="nofollow">Bus Cloud</a></li>
+</ul>
+
 ### Travel and Logistics
 <ul>
     <li><a href="https://www.ctrip.com/" rel="nofollow">CTrip</a></li>
@@ -42,56 +101,6 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 </ul>
 
-### E-commerce
-<ul>
-    <li><a href="https://www.joybuy.com/" rel="nofollow">JoyBuy</a></li>
-    <li><a href="https://www.jd.ru/" rel="nofollow">JD.ru</a></li>
-    <li><a href="http://www.dangdang.com/" rel="nofollow">DangDang</a></li>
-    <li><a href="https://www.vip.com/" rel="nofollow">VipShop</a></li>
-    <li><a href="https://www.missfresh.cn/" rel="nofollow">MissFresh</a></li>
-    <li><a href="http://www.pagoda.com.cn/" rel="nofollow">Pagoda</a></li>
-    <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
-    <li><a href="https://poizon.com/" rel="nofollow">Poizon</a></li>
-    <li><a href="https://www.dayi35.com/" rel="nofollow">Dayi35</a></li>
-    <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">ZhuanZhuan</a></li>
-    <li><a href="https://www.nanyiku.com/" rel="nofollow">NanYiKu</a></li>
-    <li><a href="https://www.yiwugou.com/" rel="nofollow">YiWuGou</a></li>
-    <li><a href="http://www.eeka.cn/" rel="nofollow">Eeka Fashion</a></li>
-    <li><a href="https://www.chuchujie.com/" rel="nofollow">ChuChuJie</a></li>
-    <li><a href="https://www.zmn.cn/" rel="nofollow">ZMN</a></li>
-    <li><a href="https://www.miaomaifang.com/" rel="nofollow">MiaoMaiFang</a></li>
-    <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
-    <li><a href="https://zowiesunglasses.com/" rel="nofollow">Zowie</a></li>
-</ul>
-
-### Public Utilities
-<ul>
-    <li><a href="http://dnr.gxzf.gov.cn/" rel="nofollow">Guangxi Province Natural Resources Information Center</a></li>
-    <li><a href="http://www.ascf.com.cn/" rel="nofollow">AreoSpace</a></li>
-    <li><a href="http://www.chiscdc.com/" rel="nofollow">CHISCDC</a></li>
-</ul>
-
-### E-finance
-<ul>
-    <li><a href="https://www.haiercash.com/" rel="nofollow">Haier Cash</a></li>
-    <li><a href="https://www.jdfcloud.com/" rel="nofollow">JDFCloud</a></li>
-    <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
-    <li><a href="http://www.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
-    <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
-    <li><a href="https://jf.10086.cn/" rel="nofollow">China Mobile Financial Technology</a></li>   
-    <li><a href="https://www.xiaoniu88.com/" rel="nofollow">XiaoNiu88</a></li>
-    <li><a href="https://www.huaxiafinance.com/" rel="nofollow">HuaXia Finance</a></li>
-    <li><a href="https://www.niiwoo.com/" rel="nofollow">Niiwoo</a></li>
-    <li><a href="https://www.51credit.com/" rel="nofollow">51credit</a></li>
-    <li><a href="https://www.mljr.com/" rel="nofollow">MLJR</a></li>
-    <li><a href="https://www.tuandai.com/" rel="nofollow">TuanDai</a></li>
-    <li><a href="https://www.cypfintech.com/" rel="nofollow">Cypfintech</a></li>
-    <li><a href="https://www.ppdai.com/" rel="nofollow">PPDai</a></li>
-    <li><a href="https://www.kjtpay.com/" rel="nofollow">KJT pay</a></li>
-    <li><a href="https://www.ktjr.com/" rel="nofollow">KTJR</a></li>
-    <li><a href="https://www.tansun.com/" rel="nofollow">TANSUN</a></li>
-</ul>
-
 ### E-education
 <ul>
     <li><a href="http://www.100tal.com/" rel="nofollow">TAL</a></li>
@@ -106,7 +115,6 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
     <li><a href="https://kada.hhdd.com/" rel="nofollow">KaDa Story</a></li>
 </ul>
 
-
 ### E-entertainment
 <ul>
     <li><a href="https://www.bilibili.com/" rel="nofollow">Bilibili</a></li>
@@ -117,22 +125,28 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
     <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
     <li><a href="http://www.yaduo.com/" rel="nofollow">YaDuo</a></li>
     <li><a href="http://read.zhulang.com/" rel="nofollow">LianShang Literature</a></li>
+    <li><a href="https://www.yy.com/" rel="nofollow">YY</a></li>
 </ul>
 
-### Digitalization and Cloud Services
+### News
 <ul>
-    <li><a href="https://www.jddglobal.com/" rel="nofollow">JD Digits</a></li>
-    <li>JD’s Big Data and Intelligent Supply Chain Department</li>
-    <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">JDCloud</a></li>
-    <li><a href="https://www.9fgroup.com/" rel="nofollow">9fgroup</a></li>
-    <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">ZhenXin Safe</a></li>
-    <li><a href="http://www.cloudansys.com/" rel="nofollow">Cloudansys</a></li>
-    <li><a href="http://www.compasshz.com/" rel="nofollow">Compasshz</a></li>
-    <li><a href="http://www.cyberplus.com.cn/" rel="nofollow">CyberPlus</a></li>
-    <li><a href="http://caas.com.cn/" rel="nofollow">CAAS</a></li>
-    <li><a href="https://www.shebaotong.com/" rel="nofollow">SheBaoTong</a></li>
-    <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
-    <li><a href="http://www.dtchuxing.com/" rel="nofollow">Bus Cloud</a></li>
+    <li><a href="https://ss.sohu.com/" rel="nofollow">Sohu News</a></li>
+    <li><a href="https://www.tianya.cn/" rel="nofollow">TianYa</a></li>
+    <li><a href="https://bj.58.com/" rel="nofollow">58</a></li>
+    <li><a href="https://500px.me/" rel="nofollow">500px</a></li>
+    <li><a href="https://www.xiaohongchun.com/" rel="nofollow">XiaoHongChun</a></li>
+    <li><a href="https://www.fotoplace.cc/" rel="nofollow">Fotoplace</a></li>
+    <li><a href="https://www.xiachufang.com/" rel="nofollow">XiaChuFang</a></li>
+    <li><a href="https://www.baixing.com/" rel="nofollow">BaiXing</a></li>
+    <li><a href="https://www.yidianzixun.com/" rel="nofollow">YiDianZiXun</a></li>
+    <li><a href="https://www.huobiinfo.com/" rel="nofollow">HuoBi Info</a></li>
+</ul>
+
+### Public Utilities
+<ul>
+    <li><a href="http://dnr.gxzf.gov.cn/" rel="nofollow">Guangxi Province Natural Resources Information Center</a></li>
+    <li><a href="http://www.ascf.com.cn/" rel="nofollow">AreoSpace</a></li>
+    <li><a href="http://www.chiscdc.com/" rel="nofollow">CHISCDC</a></li>
 </ul>
 
 ### Communication
@@ -150,19 +164,6 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
     <li><a href="http://www.iotlead.com/" rel="nofollow">Century Lead</a></li>
 </ul>
 
-### News
-<ul>
-    <li><a href="https://ss.sohu.com/" rel="nofollow">Sohu News</a></li>
-    <li><a href="https://www.tianya.cn/" rel="nofollow">TianYa</a></li>
-    <li><a href="https://bj.58.com/" rel="nofollow">58</a></li>
-    <li><a href="https://500px.me/" rel="nofollow">500px</a></li>
-    <li><a href="https://www.xiaohongchun.com/" rel="nofollow">XiaoHongChun</a></li>
-    <li><a href="https://www.fotoplace.cc/" rel="nofollow">Fotoplace</a></li>
-    <li><a href="https://www.xiachufang.com/" rel="nofollow">XiaChuFang</a></li>
-    <li><a href="https://www.baixing.com/" rel="nofollow">BaiXing</a></li>
-    <li><a href="https://www.yidianzixun.com/" rel="nofollow">YiDianZiXun</a></li>
-    <li><a href="https://www.huobiinfo.com/" rel="nofollow">HuoBi Info</a></li>
-</ul>
 
 ### Software Development Services
 <ul>
@@ -189,7 +190,6 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
     <li><a href="https://www.cloudm.com/" rel="nofollow">CloudM</a></li>
     <li><a href="http://tigosoft.com/" rel="nofollow">TIGO</a></li>
     <li><a href="https://www.can-dao.com/" rel="nofollow">can-dao</a></li>
-    <li><a href="https://www.yy.com/" rel="nofollow">YY</a></li>
     <li><a href="https://www.idengyun.com/" rel="nofollow">DengYun</a></li>
     <li><a href="http://www.aicmonitor.com/" rel="nofollow">AIC Monitor</a></li>
     <li><a href="http://www.dzzd.com" rel="nofollow">dzzd</a></li>
