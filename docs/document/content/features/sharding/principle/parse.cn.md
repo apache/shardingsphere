@@ -26,7 +26,7 @@ SELECT id, name FROM t_user WHERE status = 'ACTIVE' AND age > 18
 
 最后，通过对抽象语法树的遍历去提炼分片所需的上下文，并标记有可能需要改写的位置。
 供分片使用的解析上下文包含查询选择项（Select Items）、表信息（Table）、分片条件（Sharding Condition）、自增主键信息（Auto increment Primary Key）、排序信息（Order By）、分组信息（Group By）以及分页信息（Limit、Rownum、Top）。
-SQL 的一次解析过程是不可逆的，一个个Token的按SQL原本的顺序依次进行解析，性能很高。
+SQL 的一次解析过程是不可逆的，一个个 Token 按 SQL 原本的顺序依次进行解析，性能很高。
 考虑到各种数据库 SQL 方言的异同，在解析模块提供了各类数据库的 SQL 方言字典。
 
 ## SQL 解析引擎
