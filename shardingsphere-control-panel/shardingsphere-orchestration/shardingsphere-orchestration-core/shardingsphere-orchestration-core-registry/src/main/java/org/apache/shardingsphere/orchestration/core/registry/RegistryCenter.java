@@ -72,25 +72,6 @@ public final class RegistryCenter {
     }
     
     /**
-     * Load instance data.
-     *
-     * @param instanceId instance id
-     * @return instance data
-     */
-    public String loadInstanceData(final String instanceId) {
-        return repository.get(node.getInstancesNodeFullPath(instanceId));
-    }
-    
-    /**
-     * Load all instances.
-     *
-     * @return Collection of all instances
-     */
-    public Collection<String> loadAllInstances() {
-        return repository.getChildrenKeys(node.getInstanceNodeRootPath());
-    }
-    
-    /**
      * Load all data sources nodes.
      *
      * @return Collection of all data sources nodes
