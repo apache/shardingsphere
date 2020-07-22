@@ -27,7 +27,7 @@ public final class SQLCasesRegistry {
     private static final SQLCasesRegistry INSTANCE = new SQLCasesRegistry();
     
     @Getter
-    private SQLCasesLoader sqlCasesLoader;
+    private final SQLCasesLoader sqlCasesLoader;
     
     private SQLCasesRegistry() {
         sqlCasesLoader = new SQLCasesLoader("sql/supported");

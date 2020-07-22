@@ -36,15 +36,15 @@ import java.util.Objects;
 @Slf4j
 public final class HeartbeatDetect extends AbstractHeartbeatDetect {
     
-    private String sql;
+    private final String sql;
     
-    private String schemaName;
+    private final String schemaName;
     
-    private String dataSourceName;
+    private final String dataSourceName;
     
-    private DataSource dataSource;
+    private final DataSource dataSource;
     
-    private Boolean dataSourceDisabled;
+    private final Boolean dataSourceDisabled;
     
     public HeartbeatDetect(final String schemaName, final String dataSourceName, final DataSource dataSource,
                            final HeartbeatConfiguration configuration, final Boolean dataSourceDisabled) {

@@ -49,7 +49,7 @@ public abstract class AbstractShardingSphereDataSourceForMasterSlaveTest extends
     }
     
     private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), MASTER_SLAVE_DB_NAMES::contains);
+        return Maps.filterKeys(getDATABASE_TYPE_MAP().values().iterator().next(), MASTER_SLAVE_DB_NAMES::contains);
     }
     
     private static File getFile(final String fileName) {

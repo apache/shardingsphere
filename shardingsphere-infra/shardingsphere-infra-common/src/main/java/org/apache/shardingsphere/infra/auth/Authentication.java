@@ -30,5 +30,5 @@ import java.util.Map;
 @Getter
 public final class Authentication {
     
-    private Map<String, ProxyUser> users = new LinkedHashMap<>();
+    private final Map<String, ProxyUser> users = new LinkedHashMap<>();
 }

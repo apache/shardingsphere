@@ -29,7 +29,7 @@ public final class ResourceDataSource {
     
     private final String originalName;
     
-    private String uniqueResourceName;
+    private final String uniqueResourceName;
     
     private final DataSource dataSource;
     

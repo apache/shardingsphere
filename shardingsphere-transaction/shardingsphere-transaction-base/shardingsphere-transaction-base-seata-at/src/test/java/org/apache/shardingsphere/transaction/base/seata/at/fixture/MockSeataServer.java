@@ -49,7 +49,7 @@ public final class MockSeataServer {
     private final int port;
     
     @Getter
-    private MockMessageHandler messageHandler = new MockMessageHandler();
+    private final MockMessageHandler messageHandler = new MockMessageHandler();
     
     @Getter
     private final AtomicBoolean initialized = new AtomicBoolean(false);

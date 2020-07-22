@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.cluster.heartbeat.detect;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 
@@ -26,24 +27,17 @@ import java.util.concurrent.Callable;
 /**
  * Abstract heart beat detect.
  */
+@RequiredArgsConstructor
 @Slf4j
 public abstract class AbstractHeartbeatDetect implements Callable<Map<String, HeartbeatResult>> {
     
-    private Boolean retryEnable;
+    private final Boolean retryEnable;
     
-    private Integer retryMaximum;
+    private final Integer retryMaximum;
     
-    private Integer retryInterval;
+    private final Integer retryInterval;
     
-    private Boolean needDetect;
-    
-    public AbstractHeartbeatDetect(final Boolean retryEnable, final Integer retryMaximum,
-                                   final Integer retryInterval, final Boolean needDetect) {
-        this.retryEnable = retryEnable;
-        this.retryMaximum = retryMaximum;
-        this.retryInterval = retryInterval;
-        this.needDetect = needDetect;
-    }
+    private final Boolean needDetect;
     
     /**
      * Detect heart beat.

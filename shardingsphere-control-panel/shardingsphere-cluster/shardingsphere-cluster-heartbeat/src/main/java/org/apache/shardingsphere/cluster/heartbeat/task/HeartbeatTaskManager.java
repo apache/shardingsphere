@@ -27,9 +27,9 @@ import java.util.concurrent.TimeUnit;
  */
 public final class HeartbeatTaskManager {
     
-    private Integer interval;
+    private final Integer interval;
     
-    private ScheduledExecutorService executorService;
+    private final ScheduledExecutorService executorService;
     
     public HeartbeatTaskManager(final Integer interval) {
         this.interval = interval;

@@ -36,7 +36,7 @@ public final class ClusterHeartbeatInstance {
     
     private HeartbeatTaskManager heartbeatTaskManager;
     
-    private HeartbeatHandler heartbeatHandler = HeartbeatHandler.getInstance();
+    private final HeartbeatHandler heartbeatHandler = HeartbeatHandler.getInstance();
     
     /**
      * Get cluster heartbeat instance.

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.orchestration.core.registry.instance;
 
-import java.lang.management.ManagementFactory;
-import java.util.UUID;
-
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.constant.Constants;
 import org.apache.shardingsphere.orchestration.core.common.utils.IpUtils;
+
+import java.lang.management.ManagementFactory;
+import java.util.UUID;
 
 /**
  * Orchestration instance.
@@ -33,7 +33,7 @@ public final class OrchestrationInstance {
 
     private static final OrchestrationInstance INSTANCE = new OrchestrationInstance();
     
-    private String instanceId;
+    private final String instanceId;
 
     private OrchestrationInstance() {
         String tag = Strings.isNullOrEmpty(System.getProperty(Constants.PORT_KEY))

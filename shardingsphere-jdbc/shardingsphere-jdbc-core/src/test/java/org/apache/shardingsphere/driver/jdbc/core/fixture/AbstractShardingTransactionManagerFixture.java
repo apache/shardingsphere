@@ -34,7 +34,7 @@ import java.util.Map;
 public abstract class AbstractShardingTransactionManagerFixture implements ShardingTransactionManager {
     
     @Getter
-    private static Collection<TransactionOperationType> invocations = new LinkedList<>();
+    private static final Collection<TransactionOperationType> INVOCATIONS = new LinkedList<>();
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     
@@ -47,7 +47,7 @@ public abstract class AbstractShardingTransactionManagerFixture implements Shard
     
     @Override
     public final boolean isInTransaction() {
-        return invocations.contains(TransactionOperationType.BEGIN);
+        return INVOCATIONS.contains(TransactionOperationType.BEGIN);
     }
     
     @Override
@@ -57,17 +57,17 @@ public abstract class AbstractShardingTransactionManagerFixture implements Shard
     
     @Override
     public final void begin() {
-        invocations.add(TransactionOperationType.BEGIN);
+        INVOCATIONS.add(TransactionOperationType.BEGIN);
     }
     
     @Override
     public final void commit() {
-        invocations.add(TransactionOperationType.COMMIT);
+        INVOCATIONS.add(TransactionOperationType.COMMIT);
     }
     
     @Override
     public final void rollback() {
-        invocations.add(TransactionOperationType.ROLLBACK);
+        INVOCATIONS.add(TransactionOperationType.ROLLBACK);
     }
     
     @Override
