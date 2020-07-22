@@ -104,7 +104,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     }
     
     @Override
-    public void close() throws Exception {
+    public void close() {
         close(getDataSourceMap().keySet());
     }
     

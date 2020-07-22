@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverComposeURLRecognizer;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
 
 import java.util.Collection;
@@ -47,8 +48,12 @@ public final class JDBCDriverURLRecognizerEngine {
      * @return JDBC driver URL recognizer
      */
     public static JDBCDriverURLRecognizer getJDBCDriverURLRecognizer(final String url) {
-        return JDBC_DRIVER_URL_RECOGNIZERS.stream().filter(each -> isMatchURL(url, each)).findAny()
+        JDBCDriverURLRecognizer driverURLRecognizer = JDBC_DRIVER_URL_RECOGNIZERS.stream().filter(each -> isMatchURL(url, each)).findAny()
                 .orElseThrow(() -> new ShardingSphereException("Cannot resolve JDBC url `%s`. Please implements `%s` and add to SPI.", url, JDBCDriverURLRecognizer.class.getName()));
+        if (driverURLRecognizer instanceof JDBCDriverComposeURLRecognizer) {
+            return ((JDBCDriverComposeURLRecognizer) driverURLRecognizer).getDriverURLRecognizer(url);
+        }
+        return driverURLRecognizer;
     }
     
     private static boolean isMatchURL(final String url, final JDBCDriverURLRecognizer jdbcDriverURLRecognizer) {

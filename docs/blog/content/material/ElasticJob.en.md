@@ -18,9 +18,9 @@ chapter = true
 
 ElasticJob can fully meet enterprise user's requirements on scheduling and processing ability for task management and batch jobs.
 
-ElasticJob began to open it's source code at end of 2014. Since richness functions, quite completed documents and easy to use, it earns a lot of loyal users and good word of mouth in the past five years. ElasticJob is one of the most popular distributed scheduling framwork and gains more than 5.8K star on github.
+ElasticJob began to open it's source code at end of 2014. Since richness functions, quite completed documents and easy to use, it earns a lot of loyal users and good word of mouth in the past five years. ElasticJob is one of the most popular distributed scheduling framework and gains more than 5.8K star on github.
 
-In the last two years, the core developer spent much time maintaining and contributing to Apache ShardingSphere, which caused ElasticJob to develop slowly. But with the developement of Apache ShardingSphere on distributed domain, we need a distributed scheduling component to support distributed management of multi cluster, data migration and scaling. So Apache ShardingSphere community put forward a proposal to make ElasticJob as a subproject, that makes sure ElasticJob could be maintained and updated continuously in the future.
+In the last two years, the core developer spent much time maintaining and contributing to Apache ShardingSphere, which caused ElasticJob to develop slowly. But with the development of Apache ShardingSphere on distributed domain, we need a distributed scheduling component to support distributed management of multi cluster, data migration and scaling. So Apache ShardingSphere community put forward a proposal to make ElasticJob as a sub-project, that makes sure ElasticJob could be maintained and updated continuously in the future.
 
 We are pleased to announce the good news at the first time, and there would be more news about ElasticJob in the future.
 

@@ -21,3 +21,8 @@ languageName = "Chinese"
   themeVariant = "black"
   # Disable search function. It will hide search bar
   disableSearch = true
+
+[markup]
+[markup.goldmark]
+[markup.goldmark.renderer]
+unsafe = true

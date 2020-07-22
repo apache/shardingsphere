@@ -55,63 +55,62 @@ public final class WhereSegmentExtractUtils {
      * @return subquery where segment collection.
      */
     public static Collection<WhereSegment> getSubqueryWhereSegments(final SelectStatement selectStatement) {
-        Collection<WhereSegment> subqueryWhereSegments = new LinkedList<>();
-        subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromProjections(selectStatement.getProjections()));
-        subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromTableReferences(selectStatement.getTableReferences()));
-        subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromWhere(selectStatement.getWhere().orElse(null)));
-        return subqueryWhereSegments;
+        Collection<WhereSegment> result = new LinkedList<>();
+        result.addAll(getSubqueryWhereSegmentsFromProjections(selectStatement.getProjections()));
+        result.addAll(getSubqueryWhereSegmentsFromTableReferences(selectStatement.getTableReferences()));
+        result.addAll(getSubqueryWhereSegmentsFromWhere(selectStatement.getWhere().orElse(null)));
+        return result;
     }
     
     private static Collection<WhereSegment> getSubqueryWhereSegmentsFromProjections(final ProjectionsSegment projections) {
         if (null == projections || projections.getProjections().isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<WhereSegment> subqueryWhereSegments = new LinkedList<>();
-        
+        Collection<WhereSegment> result = new LinkedList<>();
         for (ProjectionSegment each : projections.getProjections()) {
             if (!(each instanceof SubqueryProjectionSegment)) {
                 continue;
             }
             SelectStatement subquerySelect = ((SubqueryProjectionSegment) each).getSubquery().getSelect();
-            subquerySelect.getWhere().ifPresent(subqueryWhereSegments::add);
-            subqueryWhereSegments.addAll(getSubqueryWhereSegments(subquerySelect));
+            subquerySelect.getWhere().ifPresent(result::add);
+            result.addAll(getSubqueryWhereSegments(subquerySelect));
         }
-        return subqueryWhereSegments;
+        return result;
     }
     
     private static Collection<WhereSegment> getSubqueryWhereSegmentsFromTableReferences(final Collection<TableReferenceSegment> tableReferences) {
         if (tableReferences.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<WhereSegment> subqueryWhereSegments = new LinkedList<>();
+        Collection<WhereSegment> result = new LinkedList<>();
         for (TableReferenceSegment each : tableReferences) {
-            subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromTableFactor(each.getTableFactor()));
-            subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromJoinedTable(each.getJoinedTables()));
+            result.addAll(getSubqueryWhereSegmentsFromTableFactor(each.getTableFactor()));
+            result.addAll(getSubqueryWhereSegmentsFromJoinedTable(each.getJoinedTables()));
         }
-        return subqueryWhereSegments;
+        return result;
     }
     
     private static Collection<WhereSegment> getSubqueryWhereSegmentsFromWhere(final WhereSegment where) {
         if (null == where || where.getAndPredicates().isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<WhereSegment> subqueryWhereSegments = new LinkedList<>();
+        Collection<WhereSegment> result = new LinkedList<>();
         List<PredicateSegment> predicateSegments = where.getAndPredicates().stream().flatMap(andPredicate -> andPredicate.getPredicates().stream()).collect(Collectors.toList());
         for (PredicateSegment each : predicateSegments) {
             if (each.getRightValue() instanceof PredicateBetweenRightValue) {
-                subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromExpression(((PredicateBetweenRightValue) each.getRightValue()).getBetweenExpression()));
-                subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromExpression(((PredicateBetweenRightValue) each.getRightValue()).getAndExpression()));
+                result.addAll(getSubqueryWhereSegmentsFromExpression(((PredicateBetweenRightValue) each.getRightValue()).getBetweenExpression()));
+                result.addAll(getSubqueryWhereSegmentsFromExpression(((PredicateBetweenRightValue) each.getRightValue()).getAndExpression()));
             }
             if (each.getRightValue() instanceof PredicateCompareRightValue) {
-                subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromExpression(((PredicateCompareRightValue) each.getRightValue()).getExpression()));
+                result.addAll(getSubqueryWhereSegmentsFromExpression(((PredicateCompareRightValue) each.getRightValue()).getExpression()));
             }
             if (each.getRightValue() instanceof PredicateInRightValue) {
                 for (ExpressionSegment sqlExpression : ((PredicateInRightValue) each.getRightValue()).getSqlExpressions()) {
-                    subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromExpression(sqlExpression));
+                    result.addAll(getSubqueryWhereSegmentsFromExpression(sqlExpression));
                 }
             }
         }
-        return subqueryWhereSegments;
+        return result;
     }
     
     private static Collection<WhereSegment> getSubqueryWhereSegmentsFromTableFactor(final TableFactorSegment tableFactor) {
@@ -125,35 +124,35 @@ public final class WhereSegmentExtractUtils {
         if (joinedTables.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<WhereSegment> subqueryWhereSegments = new LinkedList<>();
+        Collection<WhereSegment> result = new LinkedList<>();
         for (JoinedTableSegment joinedTable : joinedTables) {
             if (null == joinedTable.getTableFactor()) {
                 continue;
             }
-            subqueryWhereSegments.addAll(getSubqueryWhereSegmentsFromTableSegment(joinedTable.getTableFactor().getTable()));
+            result.addAll(getSubqueryWhereSegmentsFromTableSegment(joinedTable.getTableFactor().getTable()));
         }
-        return subqueryWhereSegments;
+        return result;
     }
     
     private static Collection<WhereSegment> getSubqueryWhereSegmentsFromTableSegment(final TableSegment tableSegment) {
         if (!(tableSegment instanceof SubqueryTableSegment)) {
             return Collections.emptyList();
         }
-        Collection<WhereSegment> subqueryWhereSegments = new LinkedList<>();
+        Collection<WhereSegment> result = new LinkedList<>();
         SelectStatement subquerySelect = ((SubqueryTableSegment) tableSegment).getSubquery().getSelect();
-        subquerySelect.getWhere().ifPresent(subqueryWhereSegments::add);
-        subqueryWhereSegments.addAll(getSubqueryWhereSegments(subquerySelect));
-        return subqueryWhereSegments;
+        subquerySelect.getWhere().ifPresent(result::add);
+        result.addAll(getSubqueryWhereSegments(subquerySelect));
+        return result;
     }
     
     private static Collection<WhereSegment> getSubqueryWhereSegmentsFromExpression(final ExpressionSegment expressionSegment) {
         if (!(expressionSegment instanceof SubqueryExpressionSegment)) {
             return Collections.emptyList();
         }
-        Collection<WhereSegment> subqueryWhereSegments = new LinkedList<>();
+        Collection<WhereSegment> result = new LinkedList<>();
         SelectStatement subquerySelect = ((SubqueryExpressionSegment) expressionSegment).getSubquery().getSelect();
-        subquerySelect.getWhere().ifPresent(subqueryWhereSegments::add);
-        subqueryWhereSegments.addAll(getSubqueryWhereSegments(subquerySelect));
-        return subqueryWhereSegments;
+        subquerySelect.getWhere().ifPresent(result::add);
+        result.addAll(getSubqueryWhereSegments(subquerySelect));
+        return result;
     }
 }

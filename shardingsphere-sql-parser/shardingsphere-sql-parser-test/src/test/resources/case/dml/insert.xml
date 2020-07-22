@@ -1288,4 +1288,20 @@
             </assignment>
         </on-duplicate-key-columns>
     </insert>
+
+    <insert sql-case-id="insert_with_emoji_value" >
+        <table name="t_emoji_test" start-index="12" stop-index="23" />
+        <columns start-index="24" stop-index="29">
+            <column name="col1" start-index="25" stop-index="28" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="99" stop-index="99" />
+                    <literal-expression value="test😀" start-index="38" stop-index="45" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
 </sql-parser-test-cases>

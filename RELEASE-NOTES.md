@@ -36,7 +36,7 @@
 1. Support `allow.range.query.with.inline.sharding` option
 1. The docker of ShardingSphere-Proxy supports loading external lib packages
 1. Support integration with Spring using @ShardingTransactionType
-1. Enhance ShardingDataSource to compatiable with Seata in micro-sevice distribution transaction
+1. Enhance ShardingDataSource to compatible with Seata in micro-service distribution transaction
 
 ### Refactor
 

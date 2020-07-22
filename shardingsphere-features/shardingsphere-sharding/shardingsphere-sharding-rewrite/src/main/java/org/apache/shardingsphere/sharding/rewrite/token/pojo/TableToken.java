@@ -41,7 +41,7 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
     @Getter
     private final int stopIndex;
     
-    private final IdentifierValue tablename;
+    private final IdentifierValue tableName;
     
     private final IdentifierValue owner;
     
@@ -52,7 +52,7 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
     public TableToken(final int startIndex, final int stopIndex, final SimpleTableSegment tableSegment, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.tablename = tableSegment.getTableName().getIdentifier();
+        this.tableName = tableSegment.getTableName().getIdentifier();
         this.sqlStatementContext = sqlStatementContext;
         this.owner = tableSegment.getOwner().isPresent() ? tableSegment.getOwner().get().getIdentifier() : null;
         this.shardingRule = shardingRule;
@@ -60,13 +60,13 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
     
     @Override
     public String toString(final RouteUnit routeUnit) {
-        String actualTableName = getLogicAndActualTables(routeUnit).get(tablename.getValue().toLowerCase());
-        actualTableName = null == actualTableName ? tablename.getValue().toLowerCase() : actualTableName;
+        String actualTableName = getLogicAndActualTables(routeUnit).get(tableName.getValue().toLowerCase());
+        actualTableName = null == actualTableName ? tableName.getValue().toLowerCase() : actualTableName;
         String owner = "";
         if (null != this.owner && routeUnit.getDataSourceMapper().getLogicName().equals(this.owner.getValue())) {
             owner = this.owner.getQuoteCharacter().getStartDelimiter() + routeUnit.getDataSourceMapper().getActualName() + this.owner.getQuoteCharacter().getEndDelimiter() + ".";
         }
-        return Joiner.on("").join(owner, tablename.getQuoteCharacter().getStartDelimiter(), actualTableName, tablename.getQuoteCharacter().getEndDelimiter());
+        return Joiner.on("").join(owner, tableName.getQuoteCharacter().getStartDelimiter(), actualTableName, tableName.getQuoteCharacter().getEndDelimiter());
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {

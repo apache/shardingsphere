@@ -67,4 +67,3 @@ public abstract class SingleIT extends BaseIT {
             .replace("%%", "%").replace("'%'", "'%%'");
     }
 }
-

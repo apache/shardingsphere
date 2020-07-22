@@ -35,5 +35,5 @@ public enum RegistryCenterNodeStatus {
     /**
      *  Offline state.
      */
-    OFFLINE;
+    OFFLINE
 }

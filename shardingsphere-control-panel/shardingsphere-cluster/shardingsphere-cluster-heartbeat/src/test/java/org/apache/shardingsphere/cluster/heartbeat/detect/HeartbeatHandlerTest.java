@@ -137,7 +137,7 @@ public final class HeartbeatHandlerTest {
         Assert.assertNotNull(response.getHeartbeatResultMap());
         assertTrue(response.getHeartbeatResultMap().keySet().contains(SCHEMA_NAME));
         assertThat(response.getHeartbeatResultMap().get(SCHEMA_NAME).size(), is(2));
-        assertTrue(response.getHeartbeatResultMap().get(SCHEMA_NAME).stream().map(each -> each.getDataSourceName())
+        assertTrue(response.getHeartbeatResultMap().get(SCHEMA_NAME).stream().map(HeartbeatResult::getDataSourceName)
                 .collect(Collectors.toList()).containsAll(Arrays.asList(DATA_SOURCE_0, DATA_SOURCE_1)));
         response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().forEachRemaining(each -> assertTrue(each.getEnable()));
     }

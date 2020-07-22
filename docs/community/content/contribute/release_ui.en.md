@@ -1,5 +1,5 @@
 +++
-title = "Release Guide For UI"
+title = "ShardingSphere-UI Release Guide"
 weight = 7
 chapter = true
 +++
@@ -40,7 +40,7 @@ https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
 
 ### Create Release Branch
 
-Suppose ShardingSphere source codes downloaded from github is under `~/shardingsphere-ui/` directory and the version to be released is `4.0.0-RC`. 
+Suppose ShardingSphere source codes downloaded from github is under `~/shardingsphere-ui/` directory and the version to be released is `${RELEASE.VERSION}`. 
 Create `${RELEASE.VERSION}-release-ui` branch, where all the following operations are performed.
 
 ```shell

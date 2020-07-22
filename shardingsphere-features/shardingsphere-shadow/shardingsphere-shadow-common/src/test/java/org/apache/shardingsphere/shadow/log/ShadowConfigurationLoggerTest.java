@@ -58,7 +58,7 @@ public final class ShadowConfigurationLoggerTest {
     }
     
     @Test
-    public void assertLogShadowuleConfiguration() {
+    public void assertLogShadowRuleConfiguration() {
         String yaml = "rules:\n"
                 + "- !SHADOW\n"
                 + "  column: shadow\n"
