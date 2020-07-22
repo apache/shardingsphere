@@ -21,7 +21,7 @@ Blog site：https://willemjiang.github.io/
 
 ---
 
-Zheng Feng is a software engineer at Red Hat, joined Red Hat Software in 2009, mainly engaged in the work of the transaction manager. As a core developer, he participated in the Narayan and Blacktie projects. He had contributed to the integration of transaction processing of multiple application servers (Wildfly, Karaf, Tomcat) and frameworks (Common DBCP, Spring Boot ). Since 2017, he has participated in the Apache ServiceComb project and is currently a member of PMC. He has in-depth research on distributed transaction processing and transaction processing in a micro-service environment.
+Zheng Feng is a software engineer at Red Hat, joined Red Hat Software in 2009, mainly engaged in the work of the transaction manager. As a core developer, he participated in the Narayana and BlackTie projects. He had contributed to the integration of transaction processing of multiple application servers (Wildfly, Karaf, Tomcat) and frameworks (Common DBCP, Spring Boot ). Since 2017, he has participated in the Apache ServiceComb project and is currently a member of PMC. He has in-depth research on distributed transaction processing and transaction processing in a micro-service environment.
 
 ### Guide
 
