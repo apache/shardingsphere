@@ -378,8 +378,8 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitKeyParts_(final KeyParts_Context ctx) {
         CollectionValue<ColumnSegment> result = new CollectionValue<>();
-        List<KeyPart_Context> keyparts = ctx.keyPart_();
-        for (KeyPart_Context each : keyparts) {
+        List<KeyPart_Context> keyParts = ctx.keyPart_();
+        for (KeyPart_Context each : keyParts) {
             if (null != each.columnName()) {
                 result.getValue().add((ColumnSegment) visit(each.columnName()));
             }

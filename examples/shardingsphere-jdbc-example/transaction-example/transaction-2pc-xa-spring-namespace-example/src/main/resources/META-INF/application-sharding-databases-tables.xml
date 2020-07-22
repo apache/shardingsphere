@@ -56,13 +56,13 @@
         <prop key="algorithm.expression">demo_ds_${user_id % 2}</prop>
     </bean:properties>
     
-    <sharding:sharding-algorithm id="databaseIineStrategyShardingAlgorithm" type="INLINE">
+    <sharding:sharding-algorithm id="databaseInlineStrategyShardingAlgorithm" type="INLINE">
         <props>
             <prop key="algorithm.expression">demo_ds_${user_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
     
-    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseIineStrategyShardingAlgorithm"/>
+    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseInlineStrategyShardingAlgorithm"/>
     
     <sharding:sharding-algorithm id="orderInlineStrategyShardingAlgorithm" type="INLINE">
         <props>

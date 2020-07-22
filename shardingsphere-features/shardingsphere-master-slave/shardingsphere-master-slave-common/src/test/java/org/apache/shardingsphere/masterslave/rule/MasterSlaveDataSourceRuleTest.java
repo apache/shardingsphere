@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 public final class MasterSlaveDataSourceRuleTest {
     
     private final MasterSlaveDataSourceRule masterSlaveDataSourceRule = new MasterSlaveDataSourceRule(
-            new MasterSlaveDataSourceRuleConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), "ramdon"), new RandomMasterSlaveLoadBalanceAlgorithm());
+            new MasterSlaveDataSourceRuleConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), "random"), new RandomMasterSlaveLoadBalanceAlgorithm());
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewMasterSlaveDataSourceRuleWithoutName() {

@@ -43,9 +43,7 @@ public final class FirstTestMetaDataCenterRepository implements ConfigCenterRepo
     
     @Override
     public String get(final String key) {
-        final String s = REGISTRY_DATA.get(key);
-        System.out.println("get=>\nkey=" + key + "\nvalue=" + s);
-        return s;
+        return REGISTRY_DATA.get(key);
     }
     
     @Override
@@ -55,7 +53,6 @@ public final class FirstTestMetaDataCenterRepository implements ConfigCenterRepo
     
     @Override
     public void persist(final String key, final String value) {
-        System.out.println("put=>\nkey=" + key + "\nvalue=" + value);
         REGISTRY_DATA.put(key, value);
     }
     

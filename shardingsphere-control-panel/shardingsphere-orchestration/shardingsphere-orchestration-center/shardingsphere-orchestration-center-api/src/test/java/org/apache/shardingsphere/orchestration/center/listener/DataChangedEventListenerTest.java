@@ -28,13 +28,7 @@ public class DataChangedEventListenerTest {
     @Test
     public void assertFixture() {
         FirstTestCenterRepository centerRepository = new FirstTestCenterRepository();
-        DataChangedEventListener listener = new DataChangedEventListener() {
-
-            @Override
-            public void onChange(final DataChangedEvent dataChangedEvent) {
-                assertThat(dataChangedEvent.getChangedType().name(), is(dataChangedEvent.getValue()));
-            }
-        };
+        DataChangedEventListener listener = dataChangedEvent -> assertThat(dataChangedEvent.getChangedType().name(), is(dataChangedEvent.getValue()));
         centerRepository.watch("UPDATED", listener);
         centerRepository.watch("DELETED", listener);
         centerRepository.watch("IGNORED", listener);

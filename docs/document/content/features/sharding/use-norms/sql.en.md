@@ -3,7 +3,7 @@ title = "SQL"
 weight = 1
 +++
 
-Since the SQL syntax is flexible and complex and distributed databases and stand-alone databases do not have identical query sceanrios, SQLs incompatible with stand-alone databases are hard to avoid.
+Since the SQL syntax is flexible and complex and distributed databases and stand-alone databases do not have identical query scenarios, SQLs incompatible with stand-alone databases are hard to avoid.
 
 This document has listed identified supported SQL types and unsupported SQL types, trying to avoid traps for users.
 

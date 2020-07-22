@@ -24,7 +24,7 @@ Author | Liang Zhang
     
 - Elastic scaling: You can dynamically expand and shrink data storage nodes anytime, anywhere without affecting existing applications;
     
-- Multiple replica: Automatically copy the data to multiple copies across datacenters in a strong and consistent manner to ensure the absolute security of the data;
+- Multiple replica: Automatically copy the data to multiple copies across data centers in a strong and consistent manner to ensure the absolute security of the data;
     
 - HTAP: The same set of products is used to mix transactional operations of OLTP and analytical operations of OLAP.
     
@@ -296,4 +296,4 @@ Zhang Liang, head of data research and development at JD.com, initiator of Apach
   
 Love open source, leading open source projects ShardingSphere (formerly known as Sharding-JDBC) and Elastic-Job. Good at using java as the main distributed architecture, admiring elegant code, and having more research on how to write expressive code. 
   
-At present, the main energy is invested in making ShardingSphere and JDTX into the industry's first-class financial data solutions. ShardingSphere has entered the Apache incubator. It is the first open source project of the Jingdong Group to enter the Apache Foundation and the first distributed database middleware of the Apache Foundation.
+At present, the main energy is invested in making ShardingSphere and JDTX into the industry's first-class financial data solutions. ShardingSphere has entered the Apache incubator. It is the first open source project of the JingDong Group to enter the Apache Foundation and the first distributed database middleware of the Apache Foundation.

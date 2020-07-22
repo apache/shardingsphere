@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.example.core.api.entity;
 
-public class Address {
+import java.io.Serializable;
+
+public class Address implements Serializable {
     
     private static final long serialVersionUID = 661434701950670670L;
     

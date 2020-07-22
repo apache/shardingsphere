@@ -42,7 +42,7 @@ public class ExampleMain {
         exampleService.cleanEnvironment();
     }
     
-    private static DataSource getDataSource() throws IOException, SQLException {
+    private static DataSource getDataSource() throws IOException {
         switch (TYPE) {
             case DATABASE_TABLES:
                 return YamlDataSourceFactory.createDataSource(getFile("/META-INF/hint-databases-tables.yaml"));

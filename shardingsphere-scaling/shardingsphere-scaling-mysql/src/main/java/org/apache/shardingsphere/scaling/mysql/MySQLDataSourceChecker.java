@@ -41,7 +41,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     
     private static final String SHOW_VARIABLES_SQL = "SHOW VARIABLES LIKE '%s'";
     
-    private static final Map<String, String> REQUIRED_VARIABLES = new HashMap(2);
+    private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(2);
     
     static {
         REQUIRED_VARIABLES.put("LOG_BIN", "ON");
@@ -72,8 +72,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     }
     
     private boolean matchPrivileges(final String privilege) {
-        return Arrays.stream(REQUIRED_PRIVILEGES)
-                .anyMatch(requiredPrivileges -> Arrays.stream(requiredPrivileges).allMatch(required -> privilege.contains(required)));
+        return Arrays.stream(REQUIRED_PRIVILEGES).anyMatch(each -> Arrays.stream(each).allMatch(privilege::contains));
     }
     
     @Override

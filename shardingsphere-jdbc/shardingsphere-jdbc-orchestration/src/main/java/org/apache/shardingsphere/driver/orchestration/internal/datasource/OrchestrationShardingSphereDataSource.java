@@ -241,8 +241,8 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
     private void disableDataSources() {
         Collection<String> disabledDataSources = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadDisabledDataSources();
         if (!disabledDataSources.isEmpty()) {
-            dataSource.getSchemaContexts().getSchemaContexts().entrySet().forEach(entry -> entry.getValue().getSchema().getRules()
-                    .stream().filter(each -> each instanceof MasterSlaveRule).forEach(e -> disableDataSources((MasterSlaveRule) e, disabledDataSources, entry.getKey())));
+            dataSource.getSchemaContexts().getSchemaContexts().forEach((key, value)
+                -> value.getSchema().getRules().stream().filter(each -> each instanceof MasterSlaveRule).forEach(e -> disableDataSources((MasterSlaveRule) e, disabledDataSources, key)));
         }
     }
     
