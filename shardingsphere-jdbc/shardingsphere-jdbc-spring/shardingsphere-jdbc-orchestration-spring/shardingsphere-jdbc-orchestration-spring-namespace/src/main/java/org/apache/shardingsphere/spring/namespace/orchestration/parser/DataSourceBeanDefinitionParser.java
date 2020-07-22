@@ -20,7 +20,7 @@ package org.apache.shardingsphere.spring.namespace.orchestration.parser;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.spring.namespace.orchestration.constants.DataSourceBeanDefinitionTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;

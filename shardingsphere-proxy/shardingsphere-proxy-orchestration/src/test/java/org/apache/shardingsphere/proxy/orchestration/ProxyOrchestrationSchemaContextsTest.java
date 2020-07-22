@@ -34,7 +34,7 @@ import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
-import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.orchestration.schema.ProxyOrchestrationSchemaContexts;
 import org.junit.Before;

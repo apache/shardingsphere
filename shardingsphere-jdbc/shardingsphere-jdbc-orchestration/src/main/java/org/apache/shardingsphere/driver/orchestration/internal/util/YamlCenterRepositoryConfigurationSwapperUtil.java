@@ -19,9 +19,9 @@ package org.apache.shardingsphere.driver.orchestration.internal.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlCenterRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.swapper.CenterRepositoryConfigurationYamlSwapper;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

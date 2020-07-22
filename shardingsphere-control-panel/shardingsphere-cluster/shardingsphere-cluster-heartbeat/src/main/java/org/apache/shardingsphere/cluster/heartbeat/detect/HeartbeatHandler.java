@@ -25,7 +25,7 @@ import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNodeStatus;
+import org.apache.shardingsphere.orchestration.core.registry.RegistryCenterNodeStatus;
 
 import java.util.Collection;
 import java.util.Collections;
