@@ -49,7 +49,7 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
         hostName = matcher.group(1);
-        port = Strings.isNullOrEmpty(matcher.group(2)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(2));
+        port = Strings.isNullOrEmpty(matcher.group(2)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(2));
         catalog = matcher.group(3);
         schema = null;
     }

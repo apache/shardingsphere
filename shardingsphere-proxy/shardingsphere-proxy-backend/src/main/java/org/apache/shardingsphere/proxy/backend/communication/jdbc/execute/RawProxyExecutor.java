@@ -59,7 +59,6 @@ public final class RawProxyExecutor {
         // CHECKSTYLE:OFF
         if (results.get(0) instanceof ExecuteUpdateResult) {
             // TODO refresh metadata
-            
         }
         // CHECKSTYLE:ON
         return results;

@@ -283,6 +283,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private Collection<SimpleTableSegment> getTableFromSelect(final SelectStatement selectStatement) {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         Collection<TableSegment> realTables = new LinkedList<>();
+        // TODO rename variable name, avoid name as tmp
         Collection<TableSegment> tmp = new LinkedList<>();
         for (TableReferenceSegment each : selectStatement.getTableReferences()) {
             tmp.addAll(getTablesFromTableReference(each));

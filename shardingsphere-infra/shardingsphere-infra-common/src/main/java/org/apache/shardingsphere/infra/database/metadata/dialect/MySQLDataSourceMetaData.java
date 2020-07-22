@@ -49,7 +49,7 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
         hostName = matcher.group(4);
-        port = Strings.isNullOrEmpty(matcher.group(5)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(5));
+        port = Strings.isNullOrEmpty(matcher.group(5)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(5));
         catalog = matcher.group(6);
         schema = null;
     }

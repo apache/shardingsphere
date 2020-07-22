@@ -76,7 +76,7 @@ public final class HeartbeatHandlerTest {
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
-        assertTrue(response.getHeartbeatResultMap().keySet().contains(SCHEMA_NAME));
+        assertTrue(response.getHeartbeatResultMap().containsKey(SCHEMA_NAME));
         assertThat(response.getHeartbeatResultMap().get(SCHEMA_NAME).size(), is(1));
         HeartbeatResult heartbeatResult = response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().next();
         assertNotNull(heartbeatResult);
@@ -91,7 +91,7 @@ public final class HeartbeatHandlerTest {
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
-        assertTrue(response.getHeartbeatResultMap().keySet().contains(SCHEMA_NAME));
+        assertTrue(response.getHeartbeatResultMap().containsKey(SCHEMA_NAME));
         assertThat(response.getHeartbeatResultMap().get(SCHEMA_NAME).size(), is(1));
         HeartbeatResult heartbeatResult = response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().next();
         assertNotNull(heartbeatResult);
@@ -105,7 +105,7 @@ public final class HeartbeatHandlerTest {
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
-        assertTrue(response.getHeartbeatResultMap().keySet().contains(SCHEMA_NAME));
+        assertTrue(response.getHeartbeatResultMap().containsKey(SCHEMA_NAME));
         assertThat(response.getHeartbeatResultMap().get(SCHEMA_NAME).size(), is(1));
         HeartbeatResult heartbeatResult = response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().next();
         assertNotNull(heartbeatResult);
@@ -120,7 +120,7 @@ public final class HeartbeatHandlerTest {
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
-        assertTrue(response.getHeartbeatResultMap().keySet().contains(SCHEMA_NAME));
+        assertTrue(response.getHeartbeatResultMap().containsKey(SCHEMA_NAME));
         assertThat(response.getHeartbeatResultMap().get(SCHEMA_NAME).size(), is(1));
         HeartbeatResult heartbeatResult = response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().next();
         assertNotNull(heartbeatResult);
@@ -135,7 +135,7 @@ public final class HeartbeatHandlerTest {
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
-        assertTrue(response.getHeartbeatResultMap().keySet().contains(SCHEMA_NAME));
+        assertTrue(response.getHeartbeatResultMap().containsKey(SCHEMA_NAME));
         assertThat(response.getHeartbeatResultMap().get(SCHEMA_NAME).size(), is(2));
         assertTrue(response.getHeartbeatResultMap().get(SCHEMA_NAME).stream().map(HeartbeatResult::getDataSourceName)
                 .collect(Collectors.toList()).containsAll(Arrays.asList(DATA_SOURCE_0, DATA_SOURCE_1)));

@@ -37,7 +37,7 @@ public final class HeartbeatResponseTest {
         heartbeatResultMap.put("sharding_db", Collections.singleton(new HeartbeatResult("ds_1", true, 123L, false)));
         HeartbeatResponse heartbeatResponse = new HeartbeatResponse(heartbeatResultMap);
         assertThat(heartbeatResponse.getHeartbeatResultMap(), is(heartbeatResultMap));
-        assertTrue(heartbeatResponse.getHeartbeatResultMap().keySet().contains("sharding_db"));
+        assertTrue(heartbeatResponse.getHeartbeatResultMap().containsKey("sharding_db"));
         assertThat(heartbeatResponse.getHeartbeatResultMap().get("sharding_db").size(), is(1));
         HeartbeatResult heartbeatResult = heartbeatResultMap.values().iterator().next().stream().findFirst().get();
         assertNotNull(heartbeatResult);

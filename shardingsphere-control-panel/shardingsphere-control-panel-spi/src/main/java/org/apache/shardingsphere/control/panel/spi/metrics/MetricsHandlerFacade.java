@@ -28,7 +28,7 @@ public interface MetricsHandlerFacade {
      * Increment of counter metrics tracker.
      *
      * @param metricsLabel metrics label
-     * @param labelValues  label values
+     * @param labelValues label values
      */
     void counterInc(String metricsLabel, String... labelValues);
     
@@ -36,7 +36,7 @@ public interface MetricsHandlerFacade {
      * Increment of gauge metrics tracker.
      *
      * @param metricsLabel metrics label
-     * @param labelValues  label values
+     * @param labelValues label values
      */
     void gaugeInc(String metricsLabel, String... labelValues);
     
@@ -44,7 +44,7 @@ public interface MetricsHandlerFacade {
      * Decrement of gauge metrics tracker.
      *
      * @param metricsLabel metrics label
-     * @param labelValues  label values
+     * @param labelValues label values
      */
     void gaugeDec(String metricsLabel, String... labelValues);
     
@@ -52,7 +52,7 @@ public interface MetricsHandlerFacade {
      * Start timer of histogram metrics tracker.
      *
      * @param metricsLabel metrics label
-     * @param labelValues  label values
+     * @param labelValues label values
      * @return histogram metrics tracker delegate
      */
     Supplier<Boolean> histogramStartTimer(String metricsLabel, String... labelValues);
@@ -61,7 +61,7 @@ public interface MetricsHandlerFacade {
      * Start timer of summary metrics tracker.
      *
      * @param metricsLabel metrics label
-     * @param labelValues  label values
+     * @param labelValues label values
      * @return summary metrics tracker delegate
      */
     Supplier<Boolean> summaryStartTimer(String metricsLabel, String... labelValues);

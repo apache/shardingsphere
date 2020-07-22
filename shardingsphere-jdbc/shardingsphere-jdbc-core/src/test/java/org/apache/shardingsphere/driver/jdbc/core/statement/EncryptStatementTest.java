@@ -117,7 +117,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     public void assertSelectWithExecuteWithProperties() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             int[] columnIndexes = {1, 2};
-            Boolean result = statement.execute(SELECT_SQL, columnIndexes);
+            boolean result = statement.execute(SELECT_SQL, columnIndexes);
             assertTrue(result);
             assertThat(statement.getResultSetType(), is(ResultSet.TYPE_FORWARD_ONLY));
             assertThat(statement.getResultSetConcurrency(), is(ResultSet.CONCUR_READ_ONLY));

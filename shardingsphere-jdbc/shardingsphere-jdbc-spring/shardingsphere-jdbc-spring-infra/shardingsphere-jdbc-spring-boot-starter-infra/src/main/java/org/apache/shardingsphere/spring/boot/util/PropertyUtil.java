@@ -72,12 +72,7 @@ public final class PropertyUtil {
      */
     @SuppressWarnings("unchecked")
     public static <T> T handle(final Environment environment, final String prefix, final Class<T> targetClass) {
-        switch (springBootVersion) {
-            case 1:
-                return (T) v1(environment, prefix, true);
-            default:
-                return (T) v2(environment, prefix, targetClass);
-        }
+        return 1 == springBootVersion ? (T) v1(environment, prefix, true) : (T) v2(environment, prefix, targetClass);
     }
     
     @SuppressWarnings("unchecked")

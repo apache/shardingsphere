@@ -17,7 +17,6 @@
   -->
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns:beans="http://www.springframework.org/schema/beans"
             xmlns="http://shardingsphere.apache.org/schema/shardingsphere/cluster"
             targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/cluster"
             elementFormDefault="qualified">
@@ -31,7 +30,7 @@
             <xsd:attribute name="interval" type="xsd:string" use="required"/>
             <xsd:attribute name="retryMaximum" type="xsd:string"/>
             <xsd:attribute name="retryInterval" type="xsd:string"/>
-            <xsd:attribute name="retryEnable" type="xsd:string" use="optional" default="false" />
+            <xsd:attribute name="retryEnable" type="xsd:string" default="false" />
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

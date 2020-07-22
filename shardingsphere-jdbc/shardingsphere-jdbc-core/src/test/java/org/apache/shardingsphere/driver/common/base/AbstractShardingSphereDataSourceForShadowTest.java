@@ -62,7 +62,7 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
     }
     
     @AfterClass
-    public static void close() throws Exception {
+    public static void close() {
         if (null == shadowDataSource) {
             return;
         }

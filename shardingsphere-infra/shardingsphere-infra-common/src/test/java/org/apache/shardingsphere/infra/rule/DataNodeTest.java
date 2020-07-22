@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class DataNodeTest {
     
@@ -53,10 +53,10 @@ public final class DataNodeTest {
     @Test
     public void assertEquals() {
         DataNode dataNode = new DataNode("ds_0.tbl_0");
-        assertTrue(dataNode.equals(new DataNode("ds_0.tbl_0")));
-        assertTrue(dataNode.equals(dataNode));
-        assertFalse(dataNode.equals(new DataNode("ds_0.tbl_1")));
-        assertFalse(dataNode.equals(null));
+        assertThat(dataNode, is(new DataNode("ds_0.tbl_0")));
+        assertThat(dataNode, is(dataNode));
+        assertThat(dataNode, not(new DataNode("ds_0.tbl_1")));
+        assertNotNull(dataNode);
     }
     
     @Test

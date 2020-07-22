@@ -20,9 +20,6 @@ package org.apache.shardingsphere.sharding.spring.boot.fixture;
 import com.google.common.base.Preconditions;
 import groovy.lang.Closure;
 import groovy.util.Expando;
-import java.util.Collection;
-import java.util.Properties;
-import javax.annotation.Resource;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
@@ -30,6 +27,10 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.springframework.core.env.Environment;
+
+import javax.annotation.Resource;
+import java.util.Collection;
+import java.util.Properties;
 
 public final class ExtendInlineShardingAlgorithmFixture implements StandardShardingAlgorithm<Comparable<?>> {
     
@@ -65,7 +66,7 @@ public final class ExtendInlineShardingAlgorithmFixture implements StandardShard
     }
     
     private boolean isAllowRangeQuery() {
-        return Boolean.valueOf(props.getOrDefault(ALLOW_RANGE_QUERY_KEY, Boolean.FALSE.toString()).toString());
+        return Boolean.parseBoolean(props.getOrDefault(ALLOW_RANGE_QUERY_KEY, Boolean.FALSE.toString()).toString());
     }
     
     @Override

@@ -62,7 +62,7 @@ public abstract class AbstractShardingSphereDataSourceForMasterSlaveTest extends
     }
     
     @AfterClass
-    public static void clear() throws Exception {
+    public static void clear() {
         if (null == masterSlaveDataSource) {
             return;
         }

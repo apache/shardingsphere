@@ -88,16 +88,6 @@ public final class ConfigCenterTest {
             + "    username: root\n"
             + "    password: root\n";
     
-    private static final String DATA_SOURCE_PARAMETER_YAML = ""
-            + "ds_0: !!org.apache.shardingsphere.core.rule.DataSourceParameter\n"
-            + "  url: jdbc:mysql://localhost:3306/ds_0\n"
-            + "  username: root\n"
-            + "  password: root\n"
-            + "ds_1: !!org.apache.shardingsphere.core.rule.DataSourceParameter\n"
-            + "  url: jdbc:mysql://localhost:3306/ds_1\n"
-            + "  username: root\n"
-            + "  password: root\n";
-    
     private static final String SHARDING_RULE_YAML = ""
             + "rules:\n"
             + "- !SHARDING\n"
@@ -576,7 +566,7 @@ public final class ConfigCenterTest {
         assertThat(clusterConfiguration.getHeartbeat().getSql(), is("select 1"));
         assertThat(clusterConfiguration.getHeartbeat().getThreadCount(), is(1));
         assertThat(clusterConfiguration.getHeartbeat().getInterval(), is(60));
-        assertFalse(clusterConfiguration.getHeartbeat().getRetryEnable());
+        assertFalse(clusterConfiguration.getHeartbeat().isRetryEnable());
         assertThat(clusterConfiguration.getHeartbeat().getRetryMaximum(), is(3));
         assertThat(clusterConfiguration.getHeartbeat().getRetryInterval(), is(3));
     }

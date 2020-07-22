@@ -374,7 +374,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     }
     
     @EqualsAndHashCode
-    private final class DatabaseMetaDataObject {
+    private static final class DatabaseMetaDataObject {
         
         private final ArrayList<Object> objects;
         
