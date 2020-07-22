@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc;
 
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
@@ -32,8 +33,7 @@ import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.Loc
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.LocalShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
