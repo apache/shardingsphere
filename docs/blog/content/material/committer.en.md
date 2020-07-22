@@ -7,9 +7,9 @@ chapter = true
 
 ### What is the Apache Software Foundation？
 
-The Apache Software Foundation (Apache Software Foundation) is today's most influential non-profit open source software project organization. It was formally established in 1999 and is mainly composed of groups of developers and users. Under the leadership of the Apache Software Foundation, more than 350 top open source projects have graduated, including Apache HTTP Server, the world's most famous web server software. Adhering to the spirit of "openness, innovation and community", many Apache projects have established a strong and successful ecosystem, and the community is full of vitality.
+The Apache Software Foundation (Apache Software Foundation) is the most influential non-profit open source software project organization today. It was formally established in 1999 and is mainly composed of groups of developers and users. Under the leadership of the Apache Software Foundation, more than 350 top open source projects have graduated, including Apache HTTP Server, the world's most famous web server software. Adhering to the spirit of "openness, innovation and community", many Apache projects have established a strong and successful ecosystem, and the community is full of vitality.
 
-In addition to many projects that are very influential in the field of information technology, the Apache License (Apache License), Apache Contributor Agreement License (CLAs) and the open cooperation model (Apache Way) also have outstanding contributions in the industry and their influence far beyond the Apache Software Foundation.
+In addition to many projects that are very influential in the field of information technology, the Apache License (Apache License), Apache Contributor Agreement License (CLAs), and the open cooperation model (Apache Way) also have outstanding contributions in the industry and their influence far beyond the Apache Software Foundation.
 
 The Apache Software Foundation is now the cornerstone of the modern open source software ecosystem.
 
@@ -17,7 +17,7 @@ The Apache Software Foundation is now the cornerstone of the modern open source 
 
 Having said that, no matter how much you have learned about the Apache Software Foundation before, you can see that this is an extremely influential organization and widely recognized in the industry.
 
-If you can become an officially recognized commuter, it is not only a great recognition of yourself, which you have the ability to participate in Apache-level project development and make a tangible contribution; but also it can also be widely respected in the industry, whether it is for job search It's helpful to get promoted or raise a salary.
+If you can become an officially recognized committer, it is not only a great recognition of yourself, which you have the ability to participate in Apache-level project development and make a tangible contribution; but it can also be widely respected in the industry, whether it is for job search It's helpful to get promoted or raise a salary.
 
 To put it simply, whether it is showing off with other friends or writing on your resume, it can gain your face.
 
@@ -26,7 +26,7 @@ In addition, officially recognized committer will also get mailboxes with @apach
 （http://people.apache.org/committer-index.html）
 
 
-Of the millions of engineers in the world, only a very small number of people can become committer with these privileges, is it tempting?
+Of the millions of engineers in the world, only a very small number of people can become a committer with these privileges, is it tempting?
 
 Imagine if your friends see your name when they browse the Apache website, or when you send emails to the interviewer, they will have a feeling of unconsciousness, and the image will immediately become tall and woody!
 
@@ -52,7 +52,7 @@ How about starting with a task and training hands? The tasks currently announced
   https://github.com/sharding-sphere/sharding-sphere/issues/1687
 
 
-We will also regularly publish some development function tasks in the form of issue on GitHub in the future. Welcome to follow us by subscribing to our mailing list. For details, please refer to the official website：
+We will also regularly publish some development function tasks in the form of issue on GitHub in the future. Welcome to follow us by subscribing to our mailing list. For details, please refer to the official website:
 
 http://shardingsphere.io/community/cn/contribute/subscribe/
 
