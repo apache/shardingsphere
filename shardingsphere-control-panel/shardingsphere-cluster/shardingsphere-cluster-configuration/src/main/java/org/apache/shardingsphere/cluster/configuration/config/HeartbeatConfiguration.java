@@ -31,7 +31,7 @@ public final class HeartbeatConfiguration {
     
     private Integer interval;
     
-    private Boolean retryEnable;
+    private boolean retryEnable;
     
     private Integer retryMaximum;
     

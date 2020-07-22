@@ -29,9 +29,9 @@ public final class HeartbeatResult {
     
     private final String dataSourceName;
     
-    private final Boolean enable;
+    private final boolean enable;
     
     private final Long detectTimeStamp;
     
-    private final Boolean disabled;
+    private final boolean disabled;
 }

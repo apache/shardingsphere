@@ -32,7 +32,7 @@ public final class YamlHeartbeatConfiguration implements YamlConfiguration {
     
     private Integer interval;
     
-    private Boolean retryEnable;
+    private boolean retryEnable;
     
     private Integer retryMaximum;
     

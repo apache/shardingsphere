@@ -57,22 +57,22 @@ public final class HeartbeatHandlerTest {
     
     private static final String DATA_SOURCE_1 = "ds_1";
     
-    private static Boolean enableExecuteQuery;
+    private static boolean enableExecuteQuery;
     
-    private static Boolean multipleDataSource;
+    private static boolean multipleDataSource;
     
     private HeartbeatHandler handler;
     
     @Before
     public void init() {
         handler = HeartbeatHandler.getInstance();
-        enableExecuteQuery = Boolean.TRUE;
-        multipleDataSource = Boolean.FALSE;
+        enableExecuteQuery = true;
+        multipleDataSource = false;
     }
     
     @Test
     public void assertHandleWithoutRetry() {
-        handler.init(getHeartbeatConfiguration(Boolean.FALSE));
+        handler.init(getHeartbeatConfiguration(false));
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
@@ -81,13 +81,13 @@ public final class HeartbeatHandlerTest {
         HeartbeatResult heartbeatResult = response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().next();
         assertNotNull(heartbeatResult);
         assertThat(heartbeatResult.getDataSourceName(), is(DATA_SOURCE_0));
-        assertTrue(heartbeatResult.getEnable());
+        assertTrue(heartbeatResult.isEnable());
     }
     
     @Test
     public void assertHandleWhenDetectExceptionWithoutRetry() {
-        enableExecuteQuery = Boolean.FALSE;
-        handler.init(getHeartbeatConfiguration(Boolean.FALSE));
+        enableExecuteQuery = false;
+        handler.init(getHeartbeatConfiguration(false));
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
@@ -96,12 +96,12 @@ public final class HeartbeatHandlerTest {
         HeartbeatResult heartbeatResult = response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().next();
         assertNotNull(heartbeatResult);
         assertThat(heartbeatResult.getDataSourceName(), is(DATA_SOURCE_0));
-        assertFalse(heartbeatResult.getEnable());
+        assertFalse(heartbeatResult.isEnable());
     }
     
     @Test
     public void assertHandleWithRetry() {
-        handler.init(getHeartbeatConfiguration(Boolean.TRUE));
+        handler.init(getHeartbeatConfiguration(true));
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
@@ -110,13 +110,13 @@ public final class HeartbeatHandlerTest {
         HeartbeatResult heartbeatResult = response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().next();
         assertNotNull(heartbeatResult);
         assertThat(heartbeatResult.getDataSourceName(), is(DATA_SOURCE_0));
-        assertTrue(heartbeatResult.getEnable());
+        assertTrue(heartbeatResult.isEnable());
     }
     
     @Test
     public void assertHandleWhenDetectExceptionWithRetry() {
-        enableExecuteQuery = Boolean.FALSE;
-        handler.init(getHeartbeatConfiguration(Boolean.TRUE));
+        enableExecuteQuery = false;
+        handler.init(getHeartbeatConfiguration(true));
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
@@ -125,13 +125,13 @@ public final class HeartbeatHandlerTest {
         HeartbeatResult heartbeatResult = response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().next();
         assertNotNull(heartbeatResult);
         assertThat(heartbeatResult.getDataSourceName(), is(DATA_SOURCE_0));
-        assertFalse(heartbeatResult.getEnable());
+        assertFalse(heartbeatResult.isEnable());
     }
     
     @Test
     public void assertMultipleDataSource() {
-        multipleDataSource = Boolean.TRUE;
-        handler.init(getHeartbeatConfiguration(Boolean.FALSE));
+        multipleDataSource = true;
+        handler.init(getHeartbeatConfiguration(false));
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
@@ -139,10 +139,10 @@ public final class HeartbeatHandlerTest {
         assertThat(response.getHeartbeatResultMap().get(SCHEMA_NAME).size(), is(2));
         assertTrue(response.getHeartbeatResultMap().get(SCHEMA_NAME).stream().map(HeartbeatResult::getDataSourceName)
                 .collect(Collectors.toList()).containsAll(Arrays.asList(DATA_SOURCE_0, DATA_SOURCE_1)));
-        response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().forEachRemaining(each -> assertTrue(each.getEnable()));
+        response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().forEachRemaining(each -> assertTrue(each.isEnable()));
     }
     
-    private HeartbeatConfiguration getHeartbeatConfiguration(final Boolean retry) {
+    private HeartbeatConfiguration getHeartbeatConfiguration(final boolean retry) {
         HeartbeatConfiguration configuration = new HeartbeatConfiguration();
         configuration.setSql(DETECT_SQL);
         configuration.setThreadCount(50);
