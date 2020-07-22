@@ -84,7 +84,6 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
         return Arrays.asList("schema/dbtbl_0.sql", "schema/dbtbl_1.sql");
     }
     
-    @SuppressWarnings("unchecked")
     @SneakyThrows(SQLException.class)
     private void reInitMetaData() {
         SchemaContextsBuilder schemaContextsBuilder = createSchemaContextsBuilder();

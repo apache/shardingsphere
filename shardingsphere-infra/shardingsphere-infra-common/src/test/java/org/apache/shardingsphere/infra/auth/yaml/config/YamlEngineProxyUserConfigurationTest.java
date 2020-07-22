@@ -43,7 +43,6 @@ public final class YamlEngineProxyUserConfigurationTest {
         assertThat(actual.get("authorizedSchemas").toString(), is("db1"));
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     public void assertUnmarshalProperties() {
         Properties actual = YamlEngine.unmarshalProperties("password: pwd\nauthorizedSchemas: db1");

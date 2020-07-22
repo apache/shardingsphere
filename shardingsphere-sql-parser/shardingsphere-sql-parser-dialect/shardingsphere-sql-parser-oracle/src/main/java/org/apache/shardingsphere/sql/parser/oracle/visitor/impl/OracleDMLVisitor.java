@@ -365,7 +365,6 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         return visit(ctx.tableReferences());
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
         CollectionValue<TableReferenceSegment> result = new CollectionValue<>();
@@ -417,7 +416,6 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
         JoinedTableSegment result = new JoinedTableSegment();

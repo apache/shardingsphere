@@ -233,7 +233,6 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
         return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columns);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
@@ -241,7 +240,6 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();
