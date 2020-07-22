@@ -263,15 +263,6 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     private Collection<ExpressionSegment> getExpressionSegments(final AExprContext ctx) {
         Collection<ExpressionSegment> result = new LinkedList<>();
 //        TODO deal with sqlExpressions in PredicateInRightValue
-//        if (null != ctx.cExpr() && null != ctx.cExpr().selectWithParens()) {
-//            PostgreSQLStatementParser.SelectWithParensContext subquery = ctx.cExpr().selectWithParens();
-//            result.add(new SubqueryExpressionSegment(new SubquerySegment(subquery.getStart().getStartIndex(), subquery.getStop().getStopIndex(),
-//                    (SelectStatement) visit(ctx.cExpr().selectWithParens()))));
-//            return result;
-//        }
-//        for (AExprContext each : ctx.aExpr()) {
-//            result.add((ExpressionSegment) visit(each));
-//        }
         return result;
     }
     
