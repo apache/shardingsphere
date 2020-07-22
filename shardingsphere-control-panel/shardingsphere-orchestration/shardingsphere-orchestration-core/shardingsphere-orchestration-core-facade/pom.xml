@@ -29,22 +29,22 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-core-configcenter</artifactId>
+            <artifactId>shardingsphere-orchestration-core-config</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-core-registrycenter</artifactId>
+            <artifactId>shardingsphere-orchestration-core-registry</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-core-metadatacenter</artifactId>
+            <artifactId>shardingsphere-orchestration-core-metadata</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-center-api</artifactId>
+            <artifactId>shardingsphere-orchestration-repository-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         

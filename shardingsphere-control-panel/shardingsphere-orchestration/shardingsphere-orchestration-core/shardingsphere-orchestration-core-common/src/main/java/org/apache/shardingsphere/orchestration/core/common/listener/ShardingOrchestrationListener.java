@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.common.listener;
 
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 
 /**
  * Sharding orchestration listener.

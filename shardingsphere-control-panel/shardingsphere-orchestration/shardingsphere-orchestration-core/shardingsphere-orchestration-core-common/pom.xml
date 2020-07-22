@@ -49,12 +49,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-core-configuration</artifactId>
+            <artifactId>shardingsphere-orchestration-repository-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-center-api</artifactId>
+            <artifactId>shardingsphere-metrics-configuration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-cluster-configuration</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

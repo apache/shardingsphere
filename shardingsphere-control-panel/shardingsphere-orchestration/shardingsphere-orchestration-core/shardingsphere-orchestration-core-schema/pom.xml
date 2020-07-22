@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-center-zookeeper-curator</artifactId>
+            <artifactId>shardingsphere-orchestration-repository-zookeeper-curator</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

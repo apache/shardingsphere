@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.common;
 
-import org.apache.shardingsphere.orchestration.center.exception.OrchestrationException;
+import org.apache.shardingsphere.orchestration.repository.api.exception.OrchestrationException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

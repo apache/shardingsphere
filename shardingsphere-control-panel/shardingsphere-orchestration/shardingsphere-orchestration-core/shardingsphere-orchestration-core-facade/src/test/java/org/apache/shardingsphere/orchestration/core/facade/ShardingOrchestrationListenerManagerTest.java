@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.orchestration.core.facade;
 
-import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.core.metadata.listener.MetaDataListenerManager;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.RegistryCenterRepository;
 
-import org.apache.shardingsphere.orchestration.core.configcenter.listener.ConfigurationChangedListenerManager;
+import org.apache.shardingsphere.orchestration.core.config.listener.ConfigurationChangedListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.listener.ShardingOrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
-import org.apache.shardingsphere.orchestration.core.metadatacenter.listener.MetaDataListenerManager;
-import org.apache.shardingsphere.orchestration.core.registrycenter.listener.RegistryListenerManager;
+import org.apache.shardingsphere.orchestration.core.registry.listener.RegistryListenerManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
