@@ -15,7 +15,7 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 Total: 140 companies.
 
-### Financial Sector
+### Financial Industry
 <ul>
     <li><a href="https://www.jdfcloud.com/" rel="nofollow">JDFCloud</a></li>
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
