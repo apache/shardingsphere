@@ -57,7 +57,6 @@ public final class OracleXAConnectionWrapperTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @Before
     @Ignore("oracle jdbc driver is not import because of the limitations of license")
-    @SuppressWarnings("unchecked")
     public void setUp() throws SQLException {
         Connection connection = (Connection) mock(Class.forName("oracle.jdbc.internal.OracleConnection"));
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypes.getActualDatabaseType("Oracle"), "ds1");

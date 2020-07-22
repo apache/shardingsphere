@@ -28,7 +28,7 @@ import java.util.Map;
 @Getter
 public final class HeartbeatResponse {
     
-    private Map<String, Collection<HeartbeatResult>> heartbeatResultMap;
+    private final Map<String, Collection<HeartbeatResult>> heartbeatResultMap;
     
     public HeartbeatResponse(final Map<String, Collection<HeartbeatResult>> heartbeatResultMap) {
         this.heartbeatResultMap = heartbeatResultMap;

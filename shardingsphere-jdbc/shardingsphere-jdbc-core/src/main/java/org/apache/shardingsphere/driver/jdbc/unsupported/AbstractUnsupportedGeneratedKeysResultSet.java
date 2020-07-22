@@ -116,13 +116,11 @@ public abstract class AbstractUnsupportedGeneratedKeysResultSet extends Abstract
         throw new SQLFeatureNotSupportedException("getAsciiStream");
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public final InputStream getUnicodeStream(final int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException("getUnicodeStream");
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public final InputStream getUnicodeStream(final String columnLabel) throws SQLException {
         throw new SQLFeatureNotSupportedException("getUnicodeStream");

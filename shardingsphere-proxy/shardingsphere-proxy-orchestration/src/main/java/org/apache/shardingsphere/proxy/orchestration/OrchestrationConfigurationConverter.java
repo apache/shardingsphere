@@ -52,7 +52,7 @@ import java.util.Set;
  */
 public class OrchestrationConfigurationConverter extends AbstractConfigurationConverter {
     
-    private ShardingOrchestrationFacade shardingOrchestrationFacade = ShardingOrchestrationFacade.getInstance();
+    private final ShardingOrchestrationFacade shardingOrchestrationFacade = ShardingOrchestrationFacade.getInstance();
     
     @Override
     public ProxyConfiguration convert(final ShardingConfiguration shardingConfiguration) {

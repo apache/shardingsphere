@@ -196,7 +196,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         return new OnDuplicateKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columns);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitReplace(final ReplaceContext ctx) {
         // TODO :FIXME, since there is no segment for replaceValuesClause, ReplaceStatement is created by sub rule.
@@ -497,7 +496,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         return visit(ctx.tableReferences());
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
         CollectionValue<TableReferenceSegment> result = new CollectionValue<>();
@@ -554,7 +552,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
         JoinedTableSegment result = new JoinedTableSegment();

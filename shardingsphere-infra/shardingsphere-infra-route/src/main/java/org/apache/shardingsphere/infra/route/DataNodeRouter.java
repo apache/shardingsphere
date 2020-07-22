@@ -51,7 +51,7 @@ public final class DataNodeRouter {
     
     private final Map<ShardingSphereRule, RouteDecorator> decorators;
     
-    private SPIRoutingHook routingHook;
+    private final SPIRoutingHook routingHook;
     
     public DataNodeRouter(final ShardingSphereMetaData metaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.metaData = metaData;

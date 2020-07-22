@@ -56,7 +56,6 @@ public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
     }
     
-    @SuppressWarnings("unchecked")
     private Map<String, DataSource> getDataSourceMap(final String shardingSphereDataSourceName) {
         OrchestrationShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(shardingSphereDataSourceName, OrchestrationShardingSphereDataSource.class);
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(shardingSphereDataSource, "dataSource");

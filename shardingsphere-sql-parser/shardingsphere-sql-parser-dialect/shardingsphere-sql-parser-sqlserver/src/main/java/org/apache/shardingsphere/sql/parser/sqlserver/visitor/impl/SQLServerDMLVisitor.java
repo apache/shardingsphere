@@ -383,7 +383,6 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         return visit(ctx.tableReferences());
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
         CollectionValue<TableReferenceSegment> result = new CollectionValue<>();
@@ -435,7 +434,6 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
         JoinedTableSegment result = new JoinedTableSegment();

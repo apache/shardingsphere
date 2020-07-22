@@ -29,9 +29,9 @@ import java.util.Map;
 @Getter
 public final class ShadowRule implements ShardingSphereRule {
     
-    private Map<String, String> shadowMappings;
+    private final Map<String, String> shadowMappings;
     
-    private String column;
+    private final String column;
     
     public ShadowRule(final ShadowRuleConfiguration shadowRuleConfiguration) {
         column = shadowRuleConfiguration.getColumn();

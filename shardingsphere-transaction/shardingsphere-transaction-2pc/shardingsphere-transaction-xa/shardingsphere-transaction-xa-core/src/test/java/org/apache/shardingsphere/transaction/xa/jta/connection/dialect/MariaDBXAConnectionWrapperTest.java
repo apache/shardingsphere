@@ -49,7 +49,6 @@ public final class MariaDBXAConnectionWrapperTest {
     private Connection connection;
     
     @Before
-    @SuppressWarnings("unchecked")
     public void setUp() throws SQLException, ClassNotFoundException {
         Connection connection = (Connection) mock(Class.forName("org.mariadb.jdbc.MariaDbConnection"));
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypes.getActualDatabaseType("MariaDB"), "ds1");

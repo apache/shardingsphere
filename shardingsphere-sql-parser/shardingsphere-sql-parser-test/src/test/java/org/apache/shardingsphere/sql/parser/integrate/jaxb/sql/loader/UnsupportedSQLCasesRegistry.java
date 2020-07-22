@@ -27,7 +27,7 @@ public final class UnsupportedSQLCasesRegistry {
     private static final UnsupportedSQLCasesRegistry INSTANCE = new UnsupportedSQLCasesRegistry();
     
     @Getter
-    private SQLCasesLoader sqlCasesLoader;
+    private final SQLCasesLoader sqlCasesLoader;
     
     private UnsupportedSQLCasesRegistry() {
         sqlCasesLoader = new SQLCasesLoader("sql/unsupported");

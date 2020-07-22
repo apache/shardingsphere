@@ -38,7 +38,7 @@ public final class SQLParserEngine {
     
     private final SQLParseResultCache cache = new SQLParseResultCache();
     
-    private ParsingHookRegistry parsingHookRegistry = ParsingHookRegistry.getInstance();
+    private final ParsingHookRegistry parsingHookRegistry = ParsingHookRegistry.getInstance();
     
     // TODO check skywalking plugin
     /*

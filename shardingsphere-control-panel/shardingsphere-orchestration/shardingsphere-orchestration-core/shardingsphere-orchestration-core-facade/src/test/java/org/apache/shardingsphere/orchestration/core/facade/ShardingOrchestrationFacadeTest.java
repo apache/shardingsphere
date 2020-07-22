@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingOrchestrationFacadeTest {
     
-    private ShardingOrchestrationFacade shardingOrchestrationFacade = ShardingOrchestrationFacade.getInstance();
+    private final ShardingOrchestrationFacade shardingOrchestrationFacade = ShardingOrchestrationFacade.getInstance();
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;

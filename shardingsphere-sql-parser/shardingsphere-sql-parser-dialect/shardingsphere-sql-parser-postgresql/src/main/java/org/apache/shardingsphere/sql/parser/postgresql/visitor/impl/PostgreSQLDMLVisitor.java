@@ -268,7 +268,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
@@ -293,7 +292,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         return super.visitSetTargetList(ctx);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement result = new DeleteStatement();

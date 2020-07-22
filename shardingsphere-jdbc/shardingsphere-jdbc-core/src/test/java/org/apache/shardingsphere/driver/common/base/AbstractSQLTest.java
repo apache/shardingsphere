@@ -45,7 +45,7 @@ public abstract class AbstractSQLTest {
     private static final Set<DatabaseType> DATABASE_TYPES = Sets.newHashSet(DatabaseTypes.getActualDatabaseType("H2"));
     
     @Getter(AccessLevel.PROTECTED)
-    private static Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
+    private static final Map<DatabaseType, Map<String, DataSource>> DATABASE_TYPE_MAP = new HashMap<>();
     
     @BeforeClass
     public static synchronized void initDataSource() {
@@ -61,7 +61,7 @@ public abstract class AbstractSQLTest {
     }
     
     private static void createDataSources(final String dbName, final DatabaseType databaseType) {
-        databaseTypeMap.computeIfAbsent(databaseType, k -> new LinkedHashMap<>()).put(dbName, buildDataSource(dbName, databaseType));
+        DATABASE_TYPE_MAP.computeIfAbsent(databaseType, k -> new LinkedHashMap<>()).put(dbName, buildDataSource(dbName, databaseType));
         createSchema(dbName, databaseType);
     }
     
@@ -78,7 +78,7 @@ public abstract class AbstractSQLTest {
     
     private static void createSchema(final String dbName, final DatabaseType databaseType) {
         try {
-            Connection conn = databaseTypeMap.get(databaseType).get(dbName).getConnection();
+            Connection conn = DATABASE_TYPE_MAP.get(databaseType).get(dbName).getConnection();
             RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_init.sql")));
             conn.close();
         } catch (final SQLException ex) {
