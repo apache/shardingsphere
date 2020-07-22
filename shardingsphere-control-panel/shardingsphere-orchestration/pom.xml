@@ -28,7 +28,7 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>shardingsphere-orchestration-center</module>
         <module>shardingsphere-orchestration-core</module>
+        <module>shardingsphere-orchestration-repository</module>
     </modules>
 </project>

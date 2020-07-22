@@ -19,9 +19,9 @@ package org.apache.shardingsphere.orchestration.core.common.listener;
 
 import com.google.common.eventbus.EventBus;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.orchestration.center.CenterRepository;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.orchestration.repository.api.CenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 

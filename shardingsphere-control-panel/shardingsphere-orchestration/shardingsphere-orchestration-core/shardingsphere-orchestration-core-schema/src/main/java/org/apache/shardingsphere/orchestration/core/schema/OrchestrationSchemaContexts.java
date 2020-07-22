@@ -57,10 +57,10 @@ import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEven
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
-import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
+import org.apache.shardingsphere.orchestration.core.metadata.event.MetaDataChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registry.event.CircuitStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registry.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registry.schema.OrchestrationSchema;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

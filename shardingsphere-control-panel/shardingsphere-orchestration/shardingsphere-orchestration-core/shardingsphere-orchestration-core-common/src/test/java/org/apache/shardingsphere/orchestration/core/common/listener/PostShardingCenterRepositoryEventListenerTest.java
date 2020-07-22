@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.orchestration.core.common.listener;
 
-import org.apache.shardingsphere.orchestration.center.CenterRepository;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
+import org.apache.shardingsphere.orchestration.repository.api.CenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;

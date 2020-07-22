@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.core.common;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.orchestration.center.exception.OrchestrationException;
+import org.apache.shardingsphere.orchestration.repository.api.exception.OrchestrationException;
 
 import java.util.Arrays;
 
