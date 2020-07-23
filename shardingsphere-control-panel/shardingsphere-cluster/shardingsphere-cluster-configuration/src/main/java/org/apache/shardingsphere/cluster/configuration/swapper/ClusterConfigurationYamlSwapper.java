@@ -53,7 +53,7 @@ public final class ClusterConfigurationYamlSwapper implements YamlSwapper<YamlCl
         heartBeatConfiguration.setRetryEnable(heartbeat.isRetryEnable());
         heartBeatConfiguration.setRetryMaximum(heartbeat.getRetryMaximum());
         heartBeatConfiguration.setRetryInterval(heartbeat.getRetryInterval());
-        heartBeatConfiguration.setThreadCount(null == heartbeat.getThreadCount() ? Runtime.getRuntime().availableProcessors() << 1 : heartbeat.getThreadCount());
+        heartBeatConfiguration.setThreadCount(0 == heartbeat.getThreadCount() ? Runtime.getRuntime().availableProcessors() << 1 : heartbeat.getThreadCount());
         clusterConfiguration.setHeartbeat(heartBeatConfiguration);
         return clusterConfiguration;
     }
