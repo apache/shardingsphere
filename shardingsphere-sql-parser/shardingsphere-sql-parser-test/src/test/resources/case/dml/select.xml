@@ -1886,4 +1886,29 @@
             </and-predicate>
         </where>
     </select>
+
+    <select sql-case-id="select_with_json_separator">
+        <projections start-index="7" stop-index="75">
+            <expression-projection start-index="7" stop-index="41" alias="nation" />
+            <expression-projection start-index="43" stop-index="75" alias="title" />
+        </projections>
+        <table-reference>
+            <table-factor>
+                <table name="tb_content_json" start-index="82" stop-index="98" alias="b" />
+            </table-factor>
+        </table-reference>
+        <where start-index="100" stop-index="119" literal-stop-index="121">
+            <and-predicate>
+                <predicate start-index="106" stop-index="119">
+                    <column-left-value name="content_id" start-index="106" stop-index="117">
+                        <owner stop-index="106" start-index="106" name="b"/>
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression start-index="119" stop-index="119" value="1" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
 </sql-parser-test-cases>
