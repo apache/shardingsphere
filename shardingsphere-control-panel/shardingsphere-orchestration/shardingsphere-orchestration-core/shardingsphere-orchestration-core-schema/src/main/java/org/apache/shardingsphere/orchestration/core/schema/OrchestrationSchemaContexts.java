@@ -55,7 +55,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChang
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.OrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.metadata.event.MetaDataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.event.CircuitStateChangedEvent;
@@ -81,7 +81,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     private volatile SchemaContexts schemaContexts;
     
     public OrchestrationSchemaContexts(final SchemaContexts schemaContexts) {
-        ShardingOrchestrationEventBus.getInstance().register(this);
+        OrchestrationEventBus.getInstance().register(this);
         this.schemaContexts = schemaContexts;
         persistMetaData();
         disableMasterSlaveRules();

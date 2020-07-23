@@ -22,21 +22,21 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding orchestration event bus.
+ * Orchestration event bus.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingOrchestrationEventBus {
+public final class OrchestrationEventBus {
     
     /**
-     * Get instance of sharding orchestration event bus.
+     * Get instance of orchestration event bus.
      * 
-     * @return instance of sharding orchestration event bus
+     * @return instance of orchestration event bus
      */
     public static EventBus getInstance() {
-        return ShardingOrchestrationEventBusHolder.INSTANCE;
+        return OrchestrationEventBusHolder.INSTANCE;
     }
-
-    private static final class ShardingOrchestrationEventBusHolder {
+    
+    private static final class OrchestrationEventBusHolder {
         private static final EventBus INSTANCE = new EventBus();
     }
 }

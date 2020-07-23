@@ -23,7 +23,7 @@ import org.apache.shardingsphere.orchestration.repository.api.CenterRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
-import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.OrchestrationEventBus;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,7 +34,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public abstract class PostShardingCenterRepositoryEventListener implements ShardingOrchestrationListener {
     
-    private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
+    private final EventBus eventBus = OrchestrationEventBus.getInstance();
     
     private final CenterRepository centerRepository;
     

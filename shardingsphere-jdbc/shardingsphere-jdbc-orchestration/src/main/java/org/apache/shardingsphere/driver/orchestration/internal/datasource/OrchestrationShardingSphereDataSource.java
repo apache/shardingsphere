@@ -50,7 +50,7 @@ import org.apache.shardingsphere.orchestration.repository.api.config.Orchestrati
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.OrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.metadata.event.MetaDataChangedEvent;
@@ -130,7 +130,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     
     private void initOrchestration(final OrchestrationConfiguration orchestrationConfig) {
         orchestrationFacade.init(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME));
-        ShardingOrchestrationEventBus.getInstance().register(this);
+        OrchestrationEventBus.getInstance().register(this);
     }
     
     private ShardingSphereDataSource createDataSource() throws SQLException {

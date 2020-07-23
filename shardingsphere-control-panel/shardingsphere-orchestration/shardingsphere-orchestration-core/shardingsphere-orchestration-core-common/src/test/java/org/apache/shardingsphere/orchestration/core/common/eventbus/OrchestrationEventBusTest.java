@@ -22,10 +22,10 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingOrchestrationEventBusTest {
+public final class OrchestrationEventBusTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(ShardingOrchestrationEventBus.getInstance(), is(ShardingOrchestrationEventBus.getInstance()));
+        assertThat(OrchestrationEventBus.getInstance(), is(OrchestrationEventBus.getInstance()));
     }
 }
