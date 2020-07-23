@@ -38,7 +38,7 @@ public final class ClusterConfigurationChangedListener extends PostShardingCente
     }
     
     @Override
-    protected ClusterConfigurationChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+    protected ClusterConfigurationChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
         return new ClusterConfigurationChangedEvent(new ClusterConfigurationYamlSwapper()
                 .swapToObject(YamlEngine.unmarshal(event.getValue(), YamlClusterConfiguration.class)));
     }

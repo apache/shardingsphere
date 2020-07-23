@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.orchestration.repository.api.CenterRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
-import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.OrchestrationEventBus;
 
 import java.util.Arrays;
@@ -51,10 +51,10 @@ public abstract class PostShardingCenterRepositoryEventListener implements Shard
     private void watch(final String watchKey, final Collection<ChangedType> watchedChangedTypeList) {
         centerRepository.watch(watchKey, dataChangedEvent -> {
             if (watchedChangedTypeList.contains(dataChangedEvent.getChangedType())) {
-                eventBus.post(createShardingOrchestrationEvent(dataChangedEvent));
+                eventBus.post(createOrchestrationEvent(dataChangedEvent));
             }
         });
     }
     
-    protected abstract ShardingOrchestrationEvent createShardingOrchestrationEvent(DataChangedEvent event);
+    protected abstract OrchestrationEvent createOrchestrationEvent(DataChangedEvent event);
 }

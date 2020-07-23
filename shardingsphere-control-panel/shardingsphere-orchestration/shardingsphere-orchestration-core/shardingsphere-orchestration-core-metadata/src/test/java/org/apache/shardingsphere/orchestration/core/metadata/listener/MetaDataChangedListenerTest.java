@@ -44,9 +44,9 @@ public final class MetaDataChangedListenerTest {
     }
     
     @Test
-    public void createShardingOrchestrationEvent() {
+    public void createOrchestrationEvent() {
         DataChangedEvent event = new DataChangedEvent("/test/metadata/schema", MetaDataTest.META_DATA, DataChangedEvent.ChangedType.UPDATED);
-        MetaDataChangedEvent metaDataChangedEvent = (MetaDataChangedEvent) metaDataChangedListener.createShardingOrchestrationEvent(event);
+        MetaDataChangedEvent metaDataChangedEvent = (MetaDataChangedEvent) metaDataChangedListener.createOrchestrationEvent(event);
         assertNotNull(metaDataChangedEvent);
         assertThat(metaDataChangedEvent.getSchemaNames(), is(Collections.singleton("schema")));
     }

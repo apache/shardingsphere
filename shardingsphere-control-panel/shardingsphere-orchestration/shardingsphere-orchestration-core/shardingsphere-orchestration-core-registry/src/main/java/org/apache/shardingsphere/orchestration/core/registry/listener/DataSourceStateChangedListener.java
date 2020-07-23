@@ -41,7 +41,7 @@ public final class DataSourceStateChangedListener extends PostShardingCenterRepo
     }
     
     @Override
-    protected DisabledStateChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+    protected DisabledStateChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
         return new DisabledStateChangedEvent(getShardingSchema(event.getKey()), isDataSourceDisabled(event));
     }
     

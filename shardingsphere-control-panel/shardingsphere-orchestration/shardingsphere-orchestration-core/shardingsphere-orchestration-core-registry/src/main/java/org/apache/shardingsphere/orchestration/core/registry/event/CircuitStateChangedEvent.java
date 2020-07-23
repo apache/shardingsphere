@@ -19,14 +19,14 @@ package org.apache.shardingsphere.orchestration.core.registry.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 
 /**
  * Circuit state event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CircuitStateChangedEvent implements ShardingOrchestrationEvent {
+public final class CircuitStateChangedEvent implements OrchestrationEvent {
     
     private final boolean isCircuitBreak;
 }

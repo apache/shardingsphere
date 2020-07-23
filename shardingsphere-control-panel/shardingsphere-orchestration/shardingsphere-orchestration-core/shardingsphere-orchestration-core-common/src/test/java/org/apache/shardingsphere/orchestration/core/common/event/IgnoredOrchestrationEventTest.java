@@ -22,11 +22,11 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class IgnoredShardingOrchestrationEventTest {
+public final class IgnoredOrchestrationEventTest {
     
     @Test
     public void assertInstants() {
-        IgnoredShardingOrchestrationEvent ignored = new IgnoredShardingOrchestrationEvent();
-        assertThat(ignored.getClass().getName(), is(IgnoredShardingOrchestrationEvent.class.getName()));
+        IgnoredOrchestrationEvent ignored = new IgnoredOrchestrationEvent();
+        assertThat(ignored.getClass().getName(), is(IgnoredOrchestrationEvent.class.getName()));
     }
 }

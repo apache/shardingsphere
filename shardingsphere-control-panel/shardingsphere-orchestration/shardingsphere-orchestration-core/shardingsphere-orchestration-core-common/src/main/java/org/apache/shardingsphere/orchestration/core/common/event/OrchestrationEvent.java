@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.core.common.event;
 
 /**
- * Sharding orchestration event.
+ * Orchestration event.
  */
-public interface ShardingOrchestrationEvent {
+public interface OrchestrationEvent {
 }

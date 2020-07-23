@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.core.common.event;
 
 /**
- * Ignored sharding orchestration event.
+ * Ignored orchestration event.
  */
-public final class IgnoredShardingOrchestrationEvent implements ShardingOrchestrationEvent {
+public final class IgnoredOrchestrationEvent implements OrchestrationEvent {
 }
