@@ -24,7 +24,7 @@ import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfigura
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenterNodeStatus;
 
 import java.util.Collection;
@@ -122,7 +122,7 @@ public final class HeartbeatHandler {
     
     private boolean isDisabled(final String schemaDataSourceName) {
         return disabledDataSources.contains(schemaDataSourceName) && RegistryCenterNodeStatus.DISABLED.toString()
-                .equals(ShardingOrchestrationFacade.getInstance().getRegistryCenter().getDataSourcesNodeData(schemaDataSourceName));
+                .equals(OrchestrationFacade.getInstance().getRegistryCenter().getDataSourcesNodeData(schemaDataSourceName));
     }
     
     private static final class HeartbeatHandlerHolder {

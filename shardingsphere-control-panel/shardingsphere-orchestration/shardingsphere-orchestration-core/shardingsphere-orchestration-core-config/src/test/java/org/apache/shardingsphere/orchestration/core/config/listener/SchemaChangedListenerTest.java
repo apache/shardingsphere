@@ -26,11 +26,11 @@ import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterReposi
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.IgnoredShardingOrchestrationEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.IgnoredOrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,17 +72,17 @@ public final class SchemaChangedListenerTest {
     
     @Test
     public void assertCreateIgnoredEvent() {
-        assertThat(schemaChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("/test/config/schema/logic_db", "test", ChangedType.UPDATED)), 
-                instanceOf(IgnoredShardingOrchestrationEvent.class));
-        assertThat(schemaChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("/test/config/schema/logic_db/rule", "test", ChangedType.IGNORED)), 
-                instanceOf(IgnoredShardingOrchestrationEvent.class));
+        assertThat(schemaChangedListener.createOrchestrationEvent(new DataChangedEvent("/test/config/schema/logic_db", "test", ChangedType.UPDATED)), 
+                instanceOf(IgnoredOrchestrationEvent.class));
+        assertThat(schemaChangedListener.createOrchestrationEvent(new DataChangedEvent("/test/config/schema/logic_db/rule", "test", ChangedType.IGNORED)), 
+                instanceOf(IgnoredOrchestrationEvent.class));
     }
     
     @Test
     public void assertCreateDataSourceChangedEventForExistedSchema() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/sharding_db/datasource", dataSource, ChangedType.UPDATED);
-        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(DataSourceChangedEvent.class));
         assertThat(((DataSourceChangedEvent) actual).getShardingSchemaName(), is("sharding_db"));
     }
@@ -91,7 +91,7 @@ public final class SchemaChangedListenerTest {
     public void assertCreateRuleConfigurationsChangedEventForExistedSchema() {
         String shardingRule = readYAML(SHARDING_RULE_FILE);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/sharding_db/rule", shardingRule, ChangedType.UPDATED);
-        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(RuleConfigurationsChangedEvent.class));
         assertThat(((RuleConfigurationsChangedEvent) actual).getShardingSchemaName(), is("sharding_db"));
         Collection<RuleConfiguration> ruleConfigurations = ((RuleConfigurationsChangedEvent) actual).getRuleConfigurations();
@@ -103,7 +103,7 @@ public final class SchemaChangedListenerTest {
     public void assertCreateMasterSlaveRuleChangedEventForExistedSchema() {
         String masterSlaveRule = readYAML(MASTER_SLAVE_RULE_FILE);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/masterslave_db/rule", masterSlaveRule, ChangedType.UPDATED);
-        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(RuleConfigurationsChangedEvent.class));
         RuleConfigurationsChangedEvent event = (RuleConfigurationsChangedEvent) actual;
         assertThat(event.getShardingSchemaName(), is("masterslave_db"));
@@ -116,7 +116,7 @@ public final class SchemaChangedListenerTest {
     public void assertCreateEncryptRuleChangedEventForExistedSchema() {
         String encryptRule = readYAML(ENCRYPT_RULE_FILE);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/encrypt_db/rule", encryptRule, ChangedType.UPDATED);
-        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(RuleConfigurationsChangedEvent.class));
         RuleConfigurationsChangedEvent event = (RuleConfigurationsChangedEvent) actual;
         assertThat(event.getShardingSchemaName(), is("encrypt_db"));
@@ -129,11 +129,11 @@ public final class SchemaChangedListenerTest {
     }
     
     @Test
-    public void assertCreateIgnoredShardingOrchestrationEventForNewSchema() {
+    public void assertCreateIgnoredOrchestrationEventForNewSchema() {
         when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn("");
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/rule", "rule", ChangedType.UPDATED);
-        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
-        assertThat(actual, instanceOf(IgnoredShardingOrchestrationEvent.class));
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(IgnoredOrchestrationEvent.class));
     }
     
     @Test
@@ -145,7 +145,7 @@ public final class SchemaChangedListenerTest {
         when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(shardingRule);
         when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", dataSource, ChangedType.UPDATED);
-        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
         assertThat(((SchemaAddedEvent) actual).getRuleConfigurations().iterator().next(), instanceOf(ShardingRuleConfiguration.class));
     }
@@ -159,7 +159,7 @@ public final class SchemaChangedListenerTest {
         when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(masterSlaveRule);
         when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", dataSource, ChangedType.UPDATED);
-        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
         assertThat(((SchemaAddedEvent) actual).getRuleConfigurations().iterator().next(), instanceOf(MasterSlaveRuleConfiguration.class));
     }
@@ -173,7 +173,7 @@ public final class SchemaChangedListenerTest {
         when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(encryptRule);
         when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", dataSource, ChangedType.UPDATED);
-        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
         assertThat(((SchemaAddedEvent) actual).getRuleConfigurations().iterator().next(), instanceOf(EncryptRuleConfiguration.class));
     }
@@ -182,7 +182,7 @@ public final class SchemaChangedListenerTest {
     public void assertCreateSchemaDeletedEventForNewSchema() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", dataSource, ChangedType.DELETED);
-        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaDeletedEvent.class));
         assertThat(((SchemaDeletedEvent) actual).getShardingSchemaName(), is("logic_db"));
     }
@@ -191,16 +191,16 @@ public final class SchemaChangedListenerTest {
     public void assertCreateWithInvalidNodeChangedEvent() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db", dataSource, ChangedType.DELETED);
-        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
-        assertThat(actual, instanceOf(IgnoredShardingOrchestrationEvent.class));
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(IgnoredOrchestrationEvent.class));
     }
     
     @Test
     public void assertCreateWithNullShardingSchemaName() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/datasource", dataSource, ChangedType.DELETED);
-        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
-        assertThat(actual, instanceOf(IgnoredShardingOrchestrationEvent.class));
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(IgnoredOrchestrationEvent.class));
     }
     
     @Test
@@ -210,7 +210,7 @@ public final class SchemaChangedListenerTest {
         when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(encryptRule);
         when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/rule", encryptRule, ChangedType.UPDATED);
-        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
         assertThat(((SchemaAddedEvent) actual).getRuleConfigurations().iterator().next(), instanceOf(EncryptRuleConfiguration.class));
     }
@@ -222,7 +222,7 @@ public final class SchemaChangedListenerTest {
         when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(shardingRule);
         when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/rule", shardingRule, ChangedType.UPDATED);
-        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
         assertThat(((SchemaAddedEvent) actual).getRuleConfigurations().iterator().next(), instanceOf(ShardingRuleConfiguration.class));
     }
@@ -234,7 +234,7 @@ public final class SchemaChangedListenerTest {
         when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(masterSlaveRule);
         when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/rule", masterSlaveRule, ChangedType.UPDATED);
-        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
         assertThat(((SchemaAddedEvent) actual).getRuleConfigurations().iterator().next(), instanceOf(MasterSlaveRuleConfiguration.class));
     }

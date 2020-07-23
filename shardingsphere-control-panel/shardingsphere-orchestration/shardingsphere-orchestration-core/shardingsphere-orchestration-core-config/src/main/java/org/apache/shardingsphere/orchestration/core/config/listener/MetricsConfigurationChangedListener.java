@@ -38,7 +38,7 @@ public final class MetricsConfigurationChangedListener extends PostShardingCente
     }
     
     @Override
-    protected MetricsConfigurationChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+    protected MetricsConfigurationChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
         return new MetricsConfigurationChangedEvent(new MetricsConfigurationYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlMetricsConfiguration.class)));
     }
 }

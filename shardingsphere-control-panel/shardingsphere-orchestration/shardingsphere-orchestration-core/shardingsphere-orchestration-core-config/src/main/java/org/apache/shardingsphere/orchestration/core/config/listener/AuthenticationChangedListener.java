@@ -38,7 +38,7 @@ public final class AuthenticationChangedListener extends PostShardingCenterRepos
     }
     
     @Override
-    protected AuthenticationChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+    protected AuthenticationChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
         return new AuthenticationChangedEvent(new AuthenticationYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlAuthenticationConfiguration.class)));
     }
 }

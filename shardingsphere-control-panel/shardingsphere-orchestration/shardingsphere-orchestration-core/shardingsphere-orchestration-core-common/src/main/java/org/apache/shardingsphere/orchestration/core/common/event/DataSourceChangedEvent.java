@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceChangedEvent implements ShardingOrchestrationEvent {
+public final class DataSourceChangedEvent implements OrchestrationEvent {
     
     private final String shardingSchemaName;
     

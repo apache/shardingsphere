@@ -17,16 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.core.common.event;
 
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class IgnoredShardingOrchestrationEventTest {
-    
-    @Test
-    public void assertInstants() {
-        IgnoredShardingOrchestrationEvent ignored = new IgnoredShardingOrchestrationEvent();
-        assertThat(ignored.getClass().getName(), is(IgnoredShardingOrchestrationEvent.class.getName()));
-    }
+/**
+ * Ignored orchestration event.
+ */
+public final class IgnoredOrchestrationEvent implements OrchestrationEvent {
 }

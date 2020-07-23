@@ -15,10 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.common.event;
+package org.apache.shardingsphere.orchestration.core.common.eventbus;
+
+import com.google.common.eventbus.EventBus;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Ignored sharding orchestration event.
+ * Orchestration event bus.
  */
-public final class IgnoredShardingOrchestrationEvent implements ShardingOrchestrationEvent {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class OrchestrationEventBus {
+    
+    /**
+     * Get instance of orchestration event bus.
+     * 
+     * @return instance of orchestration event bus
+     */
+    public static EventBus getInstance() {
+        return OrchestrationEventBusHolder.INSTANCE;
+    }
+    
+    private static final class OrchestrationEventBusHolder {
+        private static final EventBus INSTANCE = new EventBus();
+    }
 }

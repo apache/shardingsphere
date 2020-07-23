@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.control.panel.spi.ControlPanelFacade;
-import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 
 /**
  * Cluster init facade.
@@ -81,7 +81,7 @@ public final class ClusterInitFacade implements ControlPanelFacade<ClusterConfig
     public static void enable(final boolean clusterEnabled) {
         if (enabled != clusterEnabled) {
             if (clusterEnabled) {
-                doInit(ShardingOrchestrationFacade.getInstance().getConfigCenter().loadClusterConfiguration());
+                doInit(OrchestrationFacade.getInstance().getConfigCenter().loadClusterConfiguration());
             } else {
                 stop();
             }

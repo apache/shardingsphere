@@ -27,9 +27,9 @@ import org.apache.shardingsphere.orchestration.core.registry.listener.RegistryLi
 import java.util.Collection;
 
 /**
- * Sharding orchestration listener manager.
+ * Orchestration listener manager.
  */
-public final class ShardingOrchestrationListenerManager {
+public final class OrchestrationListenerManager {
     
     private final ConfigurationChangedListenerManager configurationChangedListenerManager;
     
@@ -37,10 +37,10 @@ public final class ShardingOrchestrationListenerManager {
     
     private final MetaDataListenerManager metaDataListenerManager;
     
-    public ShardingOrchestrationListenerManager(final String registryCenterRepositoryName, final RegistryCenterRepository registryCenterRepository,
-                                                final String configCenterRepositoryName, final ConfigCenterRepository configCenterRepository,
-                                                final String metadataCenterRepositoryName, final CenterRepository centerRepository,
-                                                final Collection<String> shardingSchemaNames) {
+    public OrchestrationListenerManager(final String registryCenterRepositoryName, final RegistryCenterRepository registryCenterRepository,
+                                        final String configCenterRepositoryName, final ConfigCenterRepository configCenterRepository,
+                                        final String metadataCenterRepositoryName, final CenterRepository centerRepository,
+                                        final Collection<String> shardingSchemaNames) {
         configurationChangedListenerManager = new ConfigurationChangedListenerManager(configCenterRepositoryName, configCenterRepository, shardingSchemaNames);
         registryListenerManager = new RegistryListenerManager(registryCenterRepositoryName, registryCenterRepository);
         metaDataListenerManager = new MetaDataListenerManager(metadataCenterRepositoryName, centerRepository, shardingSchemaNames);
