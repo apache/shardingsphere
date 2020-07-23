@@ -32,19 +32,19 @@ import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
 @AllArgsConstructor
 public final class MetricsConfiguration implements FacadeConfiguration {
     
-    public static final Integer DEFAULT_PORT = 9190;
+    public static final int DEFAULT_PORT = 9190;
     
     private String metricsName;
     
     private String host;
     
-    private Integer port;
+    private int port;
     
     private Boolean async;
     
     private Boolean enable;
     
-    private Integer threadCount;
+    private int threadCount;
     
     private Properties props;
 }
