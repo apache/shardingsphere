@@ -102,7 +102,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
         ExecuteResult executeResult = executeResults.iterator().next();
         if (executeResult instanceof ExecuteQueryResult) {
-            SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), "SELECT"));
+            SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), "SELECT"));
             return getExecuteQueryResponse(((ExecuteQueryResult) executeResult).getQueryHeaders(), executeResults);
         } else {
             UpdateResponse updateResponse = new UpdateResponse(executeResults);
@@ -114,7 +114,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
                 updateResponse.setType("UPDATE");
             }
             if (!Strings.isNullOrEmpty(updateResponse.getType())) {
-                SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), updateResponse.getType()));
+                SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), updateResponse.getType()));
             }
             return updateResponse;
         }
