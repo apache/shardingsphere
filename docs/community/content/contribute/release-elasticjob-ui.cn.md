@@ -1,5 +1,5 @@
 +++
-title = "ShardingSphere-UI发布指南"
+title = "ElasticJob-UI发布指南"
 weight = 9
 chapter = true
 +++
@@ -35,18 +35,18 @@ chapter = true
 ### 更新版本说明
 
 ```
-https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
+https://github.com/apache/shardingsphere-elasticjob-ui/blob/master/RELEASE-NOTES.md
 ```
 
 ### 创建发布分支
 
-假设从github下载的ShardingSphere源代码在`~/shardingsphere-ui/`目录；假设即将发布的版本为`${RELEASE.VERSION}`。
+假设从github下载的ElasticJob-UI源代码在`~/elasticjob-ui/`目录；假设即将发布的版本为`${RELEASE.VERSION}`。
 创建`${RELEASE.VERSION}-release-ui`分支，接下来的操作都在该分支进行。
 
 ```shell
 ## ${name}为源码所在分支，如：master，dev-4.x
-git clone --branch ${name} https://github.com/apache/shardingsphere-ui.git ~/shardingsphere-ui
-cd ~/shardingsphere-ui/
+git clone --branch ${name} https://github.com/apache/shardingsphere-elasticjob-ui.git ~/elasticjob-ui
+cd ~/elasticjob-ui/
 git pull
 git checkout -b ${RELEASE.VERSION}-release-ui
 git push origin ${RELEASE.VERSION}-release-ui
@@ -55,11 +55,11 @@ git push origin ${RELEASE.VERSION}-release-ui
 ### 发布预校验
 
 ```shell
-cd ~/shardingsphere-ui
+cd ~/elasticjob-ui
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
 ```
 
--Prelease: 选择release的profile，这个profile会打包所有源码、jar文件以及ShardingSphere-UI的可执行二进制包。
+-Prelease: 选择release的profile，这个profile会打包所有源码、jar文件以及ElasticJob-UI的可执行二进制包。
 
 -DautoVersionSubmodules=true：作用是发布过程中版本号只需要输入一次，不必为每个子模块都输入一次。
 
@@ -70,14 +70,14 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 首先清理发布预校验本地信息。
 
 ```shell
-cd ~/shardingsphere-ui
+cd ~/elasticjob-ui
 mvn release:clean
 ```
 
 然后准备执行发布。
 
 ```shell
-cd ~/shardingsphere-ui
+cd ~/elasticjob-ui
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github用户名}
 ```
 
@@ -95,7 +95,7 @@ git push origin --tags
 ### 部署发布
 
 ```shell
-cd ~/shardingsphere-ui
+cd ~/elasticjob-ui
 mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github用户名}
 ```
 
@@ -130,40 +130,44 @@ gpg -a --export ${GPG用户名} >> KEYS
 创建版本号目录。
 
 ```shell
-mkdir -p ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
-cd ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
+mkdir -p ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
+cd ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
 ```
 
 将源码包和二进制包添加至SVN工作目录。
 
 ```shell
-cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
-cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
-cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
-cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
+cp -f ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-ui-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
+cp -f ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-ui-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
+cp -f ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-lite-ui-bin-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
+cp -f ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-lite-ui-bin-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
+cp -f ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-cloud-ui-bin-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
+cp -f ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-cloud-ui-bin-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
 ```
 
 ### 生成文件签名
 
 ```shell
-shasum -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip >> apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz.sha512
+shasum -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip.sha512
+shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz.sha512
 ```
 
 ### 提交Apache SVN
 
 ```shell
 cd ~/ss_svn/dev/shardingsphere/
-svn add shardingsphere-ui-${RELEASE.VERSION}
-svn --username=${APACHE LDAP 用户名} commit -m "release shardingsphere-ui-${RELEASE.VERSION}"
+svn add elasticjob-ui-${RELEASE.VERSION}
+svn --username=${APACHE LDAP 用户名} commit -m "release elasticjob-ui-${RELEASE.VERSION}"
 ```
 ## 检查发布结果
 
 ### 检查sha512哈希
 
 ```shell
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip.sha512
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip.sha512
+shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz.sha512
 ```
 
 ### 检查gpg签名
@@ -194,8 +198,9 @@ Your decision? 5
 然后进行gpg签名检查。
 
 ```shell
-gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip
-gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz
+gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip
+gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz
+gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz
 ```
 
 ### 检查发布文件内容
@@ -203,10 +208,10 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.
 #### 对比源码包与Github上tag的内容差异
 
 ```
-curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-ui/archive/shardingsphere-ui-${RELEASE.VERSION}.zip
-unzip tag-shardingsphere-ui-${RELEASE.VERSION}.zip
-unzip apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip
-diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ shardingsphere-shardingsphere-ui-${RELEASE.VERSION}/
+curl -Lo tag-elasticjob-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-elasticjob-ui/archive/shardingsphere-elasticjob-ui-${RELEASE.VERSION}.zip
+unzip tag-elasticjob-ui-${RELEASE.VERSION}.zip
+unzip apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip
+diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src/ shardingsphere-elasticjob-ui-${RELEASE.VERSION}/
 ```
 
 #### 检查源码包的文件内容
@@ -221,7 +226,7 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ sharding
 
 #### 检查二进制包的文件内容
 
-解压缩`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz`
+解压缩`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz`和`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz`
 进行如下检查:
 
 - 存在`LICENSE`和`NOTICE`文件
@@ -249,7 +254,7 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ sharding
 标题：
 
 ```
-[VOTE] Release Apache ShardingSphere UI ${RELEASE.VERSION}
+[VOTE] Release Apache ElasticJob UI ${RELEASE.VERSION}
 ```
 
 正文：
@@ -257,25 +262,25 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ sharding
 ```
 Hello ShardingSphere Community,
 
-This is a call for vote to release Apache ShardingSphere UI version ${RELEASE.VERSION}
+This is a call for vote to release Apache ShardingSphere ElasticJob UI version ${RELEASE.VERSION}
 
 Release notes:
-https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
+https://github.com/apache/shardingsphere-elasticjob-ui/blob/master/RELEASE-NOTES.md
 
 The release candidates:
-https://dist.apache.org/repos/dist/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}/
+https://dist.apache.org/repos/dist/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}/
 
 Git tag for the release:
-https://github.com/apache/shardingsphere-ui/tree/shardingsphere-ui-${RELEASE.VERSION}/
+https://github.com/apache/shardingsphere-elasticjob-ui/tree/elasticjob-ui-${RELEASE.VERSION}/
 
 Release Commit ID:
-https://github.com/apache/shardingsphere-ui/commit/xxxxxxxxxxxxxxxxxxxxxxx
+https://github.com/apache/shardingsphere-elasticjob-ui/commit/xxxxxxxxxxxxxxxxxxxxxxx
 
 Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 
 Look at here for how to verify this release candidate:
-https://shardingsphere.apache.org/community/en/contribute/release_ui/
+https://shardingsphere.apache.org/community/en/contribute/release-elasticjob-ui/
 
 GPG user ID:
 ${YOUR.GPG.USER.ID}
@@ -312,7 +317,7 @@ Checklist for reference:
 正文：
 
 ```
-The vote to release Apache ShardingSphere UI ${RELEASE.VERSION} has passed.
+The vote to release Apache ShardingSphere ElasticJob UI ${RELEASE.VERSION} has passed.
 
 7 PMC member +1 binding votes:
 
@@ -335,7 +340,7 @@ Thank you everyone for taking the time to review the release and help us.
 标题：
 
 ```
-[RESULT][VOTE] Release Apache ShardingSphere UI ${RELEASE.VERSION}
+[RESULT][VOTE] Release Apache ShardingSphere ElasticJob UI ${RELEASE.VERSION}
 ```
 
 正文：
@@ -358,9 +363,9 @@ I will process to publish the release and send ANNOUNCE.
 ### 将源码、二进制包以及KEYS从svn的dev目录移动到release目录
 
 ```shell
-svn mv https://dist.apache.org/repos/dist/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer packages for shardingsphere-ui-${RELEASE.VERSION}"
+svn mv https://dist.apache.org/repos/dist/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer packages for elasticjob-ui-${RELEASE.VERSION}"
 svn delete https://dist.apache.org/repos/dist/release/shardingsphere/KEYS -m "delete KEYS"
-svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer KEYS for shardingsphere-ui-${RELEASE.VERSION}"
+svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer KEYS for elasticjob-ui-${RELEASE.VERSION}"
 ```
 
 ### 合并Github的release分支到`master`, 合并完成后删除release分支
@@ -374,17 +379,17 @@ git push --delete origin ${RELEASE.VERSION}-release-ui
 
 ### 更新下载页面
 
-https://shardingsphere.apache.org/document/current/en/downloads/
+https://shardingsphere.apache.org/elasticjob/current/en/downloads/
 
-https://shardingsphere.apache.org/document/current/cn/downloads/
+https://shardingsphere.apache.org/elasticjob/current/cn/downloads/
 
 GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `https://downloads.apache.org/shardingsphere/`
 
-`最新版本`中保留一个最新的版本。Incubator阶段历史版本会自动归档到[Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
+`最新版本`中保留一个最新的版本。
 
 ### GitHub版本发布
 
-在[GitHub Releases](https://github.com/apache/shardingsphere-ui/releases)页面的`shardingsphere-ui-${RELEASE_VERSION}`版本上点击`Edit`
+在[GitHub Releases](https://github.com/apache/shardingsphere-elasticjob-ui/releases)页面的`shardingsphere-elasticjob-ui-${RELEASE_VERSION}`版本上点击`Edit`
 
 编辑版本号及版本说明，并点击`Publish release`
 
@@ -395,7 +400,7 @@ GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `
 标题：
 
 ```
-[ANNOUNCE] Apache ShardingSphere UI ${RELEASE.VERSION} available
+[ANNOUNCE] Apache ShardingSphere ElasticJob UI ${RELEASE.VERSION} available
 ```
 
 正文：
@@ -403,24 +408,22 @@ GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `
 ```
 Hi all,
 
-Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere UI ${RELEASE.VERSION}.
+Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere ElasticJob UI ${RELEASE.VERSION}.
 
-ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, ShardingSphere-JDBC & ShardingSphere-Proxy. 
-They both provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language. 
-Aiming at reasonably making full use of the computation and storage capacity of the database in a distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
-As the cornerstone of many enterprises, relational database still takes a huge market share. 
-Therefore, at the current stage, we prefer to focus on its increment instead of a total overturn.
+ElasticJob is a distributed scheduling solution consisting of two separate projects, ElasticJob-Lite and ElasticJob-Cloud.
+Through the functions of flexible scheduling, resource management and job management, it creates a distributed scheduling solution suitable for Internet scenarios, and provides diversified job ecosystem through open architecture design. It uses a unified job API for each project. Developers only need code one time and can deploy at will.
+ElasticJob became an Apache ShardingSphere Sub project on May 28 2020.
 
-Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
+Download Links: https://shardingsphere.apache.org/elasticjob/current/en/downloads/
 
-Release Notes: https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
+Release Notes: https://github.com/apache/shardingsphere-elasticjob-ui/blob/master/RELEASE-NOTES.md
 
-Website: https://shardingsphere.apache.org/
+Website: http://shardingsphere.apache.org/elasticjob/
 
 ShardingSphere Resources:
-- Issue: https://github.com/apache/shardingsphere-ui/issues/
+- Issue: https://github.com/apache/shardingsphere-elasticjob-ui/issues/
 - Mailing list: dev@shardingsphere.apache.org
-- Documents: https://shardingsphere.apache.org/document/current/
+- Documents: https://shardingsphere.apache.org/elasticjob/current/en/overview/
 
 
 

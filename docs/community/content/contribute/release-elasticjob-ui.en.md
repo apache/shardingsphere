@@ -1,5 +1,5 @@
 +++
-title = "ShardingSphere-UI Release Guide"
+title = "ElasticJob-UI Release Guide"
 weight = 9
 chapter = true
 +++
@@ -35,18 +35,18 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 ### Update Release Notes
 
 ```
-https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
+https://github.com/apache/shardingsphere-elasticjob-ui/blob/master/RELEASE-NOTES.md
 ```
 
 ### Create Release Branch
 
-Suppose ShardingSphere source codes downloaded from github is under `~/shardingsphere-ui/` directory and the version to be released is `${RELEASE.VERSION}`. 
+Suppose ElasticJob-UI source codes downloaded from github is under `~/elasticjob-ui/` directory and the version to be released is `${RELEASE.VERSION}`. 
 Create `${RELEASE.VERSION}-release-ui` branch, where all the following operations are performed.
 
 ```shell
 ## ${name} is the properly branch, e.g. master, dev-4.x
-git clone --branch ${name} https://github.com/apache/shardingsphere-ui.git ~/shardingsphere-ui
-cd ~/shardingsphere-ui/
+git clone --branch ${name} https://github.com/apache/shardingsphere-elasticjob-ui.git ~/elasticjob-ui
+cd ~/elasticjob-ui/
 git pull
 git checkout -b ${RELEASE.VERSION}-release-ui
 git push origin ${RELEASE.VERSION}-release-ui
@@ -55,11 +55,11 @@ git push origin ${RELEASE.VERSION}-release-ui
 ### Pre-Release Check
 
 ```shell
-cd ~/shardingsphere-ui
+cd ~/elasticjob-ui
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github username}
 ```
 
--Prelease: choose release profile, which will pack all the source codes, jar files and executable binary packages of ShardingSphere-UI.
+-Prelease: choose release profile, which will pack all the source codes, jar files and executable binary packages of ElasticJob-UI.
 
 -DautoVersionSubmodules=true: it can make the version number is inputted only once and not for each sub-module.
 
@@ -70,14 +70,14 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 First, clean local pre-release check information.
 
 ```shell
-cd ~/shardingsphere-ui
+cd ~/elasticjob-ui
 mvn release:clean
 ```
 
 Then, prepare to execute the release.
 
 ```shell
-cd ~/shardingsphere-ui
+cd ~/elasticjob-ui
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github username}
 ```
 
@@ -95,7 +95,7 @@ git push origin --tags
 ### Deploy the Release
 
 ```shell
-cd ~/shardingsphere-ui
+cd ~/elasticjob-ui
 mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github username}
 ```
 
@@ -131,32 +131,35 @@ gpg -a --export ${GPG username} >> KEYS
 Create folder by version number.
 
 ```shell
-mkdir -p ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
-cd ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
+mkdir -p ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
+cd ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
 ```
 
 Add source code packages, binary packages and executable binary packages of ShardingSphere-Proxy to SVN working directory.
 
 ```shell
-cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
-cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
-cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
-cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
+cp -f ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-ui-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
+cp -f ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-ui-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
+cp -f ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-lite-ui-bin-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
+cp -f ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-lite-ui-bin-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
+cp -f ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-cloud-ui-bin-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
+cp -f ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-cloud-ui-bin-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
 ```
 
 ### Generate sign files
 
 ```shell
-shasum -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip >> apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz.sha512
+shasum -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip.sha512
+shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz.sha512
 ```
 
 ### Commit to Apache SVN
 
 ```shell
 cd ~/ss_svn/dev/shardingsphere/
-svn add shardingsphere-ui-${RELEASE.VERSION}
-svn --username=${APACHE LDAP 用户名} commit -m "release shardingsphere-ui-${RELEASE.VERSION}"
+svn add elasticjob-ui-${RELEASE.VERSION}
+svn --username=${APACHE LDAP 用户名} commit -m "release elasticjob-ui-${RELEASE.VERSION}"
 ```
 
 ## Check Release
@@ -164,8 +167,9 @@ svn --username=${APACHE LDAP 用户名} commit -m "release shardingsphere-ui-${R
 ### Check sha512 hash
 
 ```shell
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip.sha512
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip.sha512
+shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz.sha512
 ```
 
 ### Check gpg Signature
@@ -197,8 +201,9 @@ Your decision? 5
 Then, check the gpg signature.
 
 ```shell
-gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip
-gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz
+gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip
+gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz
+gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz
 ```
 
 ### Check Released Files
@@ -206,10 +211,10 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.
 #### compare release source with github tag
 
 ```
-curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-ui/archive/shardingsphere-ui-${RELEASE.VERSION}.zip
-unzip tag-shardingsphere-ui-${RELEASE.VERSION}.zip
-unzip apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip
-diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ shardingsphere-shardingsphere-ui-${RELEASE.VERSION}/
+curl -Lo tag-elasticjob-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-elasticjob-ui/archive/shardingsphere-elasticjob-ui-${RELEASE.VERSION}.zip
+unzip tag-elasticjob-ui-${RELEASE.VERSION}.zip
+unzip apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip
+diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src/ shardingsphere-elasticjob-ui-${RELEASE.VERSION}/
 ```
 
 #### Check source package
@@ -224,7 +229,7 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ sharding
 
 #### Check binary packages
 
-Decompress `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz`
+Decompress `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz` and `apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz`
 to check the following items:
 
 *   `LICENSE` and `NOTICE` files exist
@@ -253,7 +258,7 @@ After at least 72 hours and with at least 3 `+1 PMC member` votes, it can come t
 Title:
 
 ```
-[VOTE] Release Apache ShardingSphere UI ${RELEASE.VERSION}
+[VOTE] Release Apache ElasticJob UI ${RELEASE.VERSION}
 
 ```
 
@@ -262,25 +267,25 @@ Body:
 ```
 Hello ShardingSphere Community,
 
-This is a call for vote to release Apache ShardingSphere UI version ${RELEASE.VERSION}
+This is a call for vote to release Apache ShardingSphere ElasticJob UI version ${RELEASE.VERSION}
 
 Release notes:
-https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
+https://github.com/apache/shardingsphere-elasticjob-ui/blob/master/RELEASE-NOTES.md
 
 The release candidates:
-https://dist.apache.org/repos/dist/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}/
+https://dist.apache.org/repos/dist/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}/
 
 Git tag for the release:
-https://github.com/apache/shardingsphere-ui/tree/shardingsphere-ui-${RELEASE.VERSION}/
+https://github.com/apache/shardingsphere-elasticjob-ui/tree/elasticjob-ui-${RELEASE.VERSION}/
 
 Release Commit ID:
-https://github.com/apache/shardingsphere-ui/commit/xxxxxxxxxxxxxxxxxxxxxxx
+https://github.com/apache/shardingsphere-elasticjob-ui/commit/xxxxxxxxxxxxxxxxxxxxxxx
 
 Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 
 Look at here for how to verify this release candidate:
-https://shardingsphere.apache.org/community/en/contribute/release_ui/
+https://shardingsphere.apache.org/community/en/contribute/release-elasticjob-ui/
 
 GPG user ID:
 ${YOUR.GPG.USER.ID}
@@ -317,7 +322,7 @@ Checklist for reference:
 Body:
 
 ```
-The vote to release Apache ShardingSphere UI ${RELEASE.VERSION} has passed.
+The vote to release Apache ShardingSphere ElasticJob UI ${RELEASE.VERSION} has passed.
 
 7 PMC member +1 binding votes:
 
@@ -342,7 +347,7 @@ Thank you everyone for taking the time to review the release and help us.
 Title：
 
 ```
-[RESULT][VOTE] Release Apache ShardingSphere UI ${RELEASE.VERSION}
+[RESULT][VOTE] Release Apache ShardingSphere ElasticJob UI ${RELEASE.VERSION}
 ```
 
 Body:
@@ -366,9 +371,9 @@ I will process to publish the release and send ANNOUNCE.
 ### Move source packages, binary packages and KEYS from the `dev` directory to `release` directory
 
 ```shell
-svn mv https://dist.apache.org/repos/dist/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer packages for shardingsphere-ui-${RELEASE.VERSION}"
+svn mv https://dist.apache.org/repos/dist/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer packages for elasticjob-ui-${RELEASE.VERSION}"
 svn delete https://dist.apache.org/repos/dist/release/shardingsphere/KEYS -m "delete KEYS"
-svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer KEYS for shardingsphere-ui-${RELEASE.VERSION}"
+svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer KEYS for elasticjob-ui-${RELEASE.VERSION}"
 ```
 
 ### Merge release branch to `master` and delete release branch on Github
@@ -382,17 +387,17 @@ git push --delete origin ${RELEASE.VERSION}-release-ui
 
 ### Update the download page
 
-https://shardingsphere.apache.org/document/current/en/downloads/
+https://shardingsphere.apache.org/elasticjob/current/en/downloads/
 
-https://shardingsphere.apache.org/document/current/cn/downloads/
+https://shardingsphere.apache.org/elasticjob/current/cn/downloads/
 
 GPG signatures and hashes (SHA* etc) should use URL start with `https://downloads.apache.org/shardingsphere/`
 
-Keep one latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
+Keep one latest versions in `Latest releases`.
 
 ### Publish release in GitHub
 
-Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere-ui/releases)'s `shardingsphere-ui-${RELEASE_VERSION}` version
+Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere-elasticjob-ui/releases)'s `shardingsphere-elasticjob-ui-${RELEASE_VERSION}` version
 
 Edit version number and release notes, click `Publish release`
 
@@ -403,7 +408,7 @@ Announcement e-mail template:
 Title:
 
 ```
-[ANNOUNCE] Apache ShardingSphere UI ${RELEASE.VERSION} available
+[ANNOUNCE] Apache ShardingSphere ElasticJob UI ${RELEASE.VERSION} available
 ```
 
 Body:
@@ -411,24 +416,22 @@ Body:
 ```
 Hi all,
 
-Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere UI ${RELEASE.VERSION}.
+Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere ElasticJob UI ${RELEASE.VERSION}.
 
-ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, ShardingSphere-JDBC & ShardingSphere-Proxy. 
-They both provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language. 
-Aiming at reasonably making full use of the computation and storage capacity of the database in a distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
-As the cornerstone of many enterprises, relational database still takes a huge market share. 
-Therefore, at the current stage, we prefer to focus on its increment instead of a total overturn.
+ElasticJob is a distributed scheduling solution consisting of two separate projects, ElasticJob-Lite and ElasticJob-Cloud.
+Through the functions of flexible scheduling, resource management and job management, it creates a distributed scheduling solution suitable for Internet scenarios, and provides diversified job ecosystem through open architecture design. It uses a unified job API for each project. Developers only need code one time and can deploy at will.
+ElasticJob became an Apache ShardingSphere Sub project on May 28 2020.
 
-Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
+Download Links: https://shardingsphere.apache.org/elasticjob/current/en/downloads/
 
-Release Notes: https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
+Release Notes: https://github.com/apache/shardingsphere-elasticjob-ui/blob/master/RELEASE-NOTES.md
 
-Website: https://shardingsphere.apache.org/
+Website: http://shardingsphere.apache.org/elasticjob/
 
 ShardingSphere Resources:
-- Issue: https://github.com/apache/shardingsphere-ui/issues/
+- Issue: https://github.com/apache/shardingsphere-elasticjob-ui/issues/
 - Mailing list: dev@shardingsphere.apache.org
-- Documents: https://shardingsphere.apache.org/document/current/
+- Documents: https://shardingsphere.apache.org/elasticjob/current/en/overview/
 
 
 
