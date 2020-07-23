@@ -33,9 +33,9 @@ public abstract class AbstractHeartbeatDetect implements Callable<Map<String, He
     
     private final boolean retryEnable;
     
-    private final Integer retryMaximum;
+    private final int retryMaximum;
     
-    private final Integer retryInterval;
+    private final int retryInterval;
     
     private final boolean needDetect;
 

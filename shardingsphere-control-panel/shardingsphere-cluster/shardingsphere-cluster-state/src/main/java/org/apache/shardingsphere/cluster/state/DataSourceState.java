@@ -32,5 +32,5 @@ public final class DataSourceState {
     
     private Long lastConnect;
     
-    private Integer retryCount;
+    private int retryCount;
 }
