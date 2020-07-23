@@ -30,7 +30,7 @@ public interface MetricsHandlerFacade {
      * @param metricsLabel metrics label
      * @param labelValues label values
      */
-    void counterInc(String metricsLabel, String... labelValues);
+    void counterIncrement(String metricsLabel, String... labelValues);
     
     /**
      * Increment of gauge metrics tracker.
@@ -38,7 +38,7 @@ public interface MetricsHandlerFacade {
      * @param metricsLabel metrics label
      * @param labelValues label values
      */
-    void gaugeInc(String metricsLabel, String... labelValues);
+    void gaugeIncrement(String metricsLabel, String... labelValues);
     
     /**
      * Decrement of gauge metrics tracker.
@@ -46,7 +46,7 @@ public interface MetricsHandlerFacade {
      * @param metricsLabel metrics label
      * @param labelValues label values
      */
-    void gaugeDec(String metricsLabel, String... labelValues);
+    void gaugeDecrement(String metricsLabel, String... labelValues);
     
     /**
      * Start timer of histogram metrics tracker.

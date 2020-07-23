@@ -55,7 +55,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     public void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
         databaseProtocolFrontendEngine.getAuthEngine().handshake(context, backendConnection);
-        SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.gaugeInc(MetricsLabelEnum.CHANNEL_COUNT.getName()));
+        SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.gaugeIncrement(MetricsLabelEnum.CHANNEL_COUNT.getName()));
     }
     
     @Override
@@ -64,7 +64,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             authorized = auth(context, (ByteBuf) message);
             return;
         }
-        SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.REQUEST_TOTAL.getName()));
+        SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.REQUEST_TOTAL.getName()));
         CommandExecutorSelector.getExecutor(databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection(), backendConnection.isSupportHint(),
                 backendConnection.getTransactionType(), context.channel().id()).execute(new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message));
     }
@@ -87,7 +87,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         databaseProtocolFrontendEngine.release(backendConnection);
         backendConnection.close(true);
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
-        SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.gaugeDec(MetricsLabelEnum.CHANNEL_COUNT.getName()));
+        SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.gaugeDecrement(MetricsLabelEnum.CHANNEL_COUNT.getName()));
     }
     
     @Override

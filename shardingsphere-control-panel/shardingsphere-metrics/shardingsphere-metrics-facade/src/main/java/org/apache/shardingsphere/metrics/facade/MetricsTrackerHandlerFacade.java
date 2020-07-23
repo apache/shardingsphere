@@ -32,21 +32,21 @@ import org.apache.shardingsphere.metrics.facade.handler.MetricsTrackerHandler;
 public final class MetricsTrackerHandlerFacade implements MetricsHandlerFacade {
     
     @Override
-    public void counterInc(final String metricsLabel, final String... labelValues) {
+    public void counterIncrement(final String metricsLabel, final String... labelValues) {
         if (MetricsTrackerManagerFacade.getEnabled()) {
             MetricsTrackerHandler.getInstance().counterInc(metricsLabel, labelValues);
         }
     }
     
     @Override
-    public void gaugeInc(final String metricsLabel, final String... labelValues) {
+    public void gaugeIncrement(final String metricsLabel, final String... labelValues) {
         if (MetricsTrackerManagerFacade.getEnabled()) {
             MetricsTrackerHandler.getInstance().gaugeInc(metricsLabel, labelValues);
         }
     }
     
     @Override
-    public void gaugeDec(final String metricsLabel, final String... labelValues) {
+    public void gaugeDecrement(final String metricsLabel, final String... labelValues) {
         if (MetricsTrackerManagerFacade.getEnabled()) {
             MetricsTrackerHandler.getInstance().gaugeDec(metricsLabel, labelValues);
         }
