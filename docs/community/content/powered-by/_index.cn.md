@@ -38,9 +38,9 @@ chapter = true
 
 ### 电子商务
 <ul>
+    <li><a href="http://www.dangdang.com/" rel="nofollow">当当</a></li>
     <li><a href="https://www.joybuy.com/" rel="nofollow">京东商城海外站</a></li>
     <li><a href="https://www.jd.ru/" rel="nofollow">京东商城俄文站</a></li>
-    <li><a href="http://www.dangdang.com/" rel="nofollow">当当</a></li>
     <li><a href="https://www.vip.com/" rel="nofollow">唯品会</a></li>
     <li><a href="https://www.missfresh.cn/" rel="nofollow">每日优鲜便利购</a></li>
     <li><a href="http://www.pagoda.com.cn/" rel="nofollow">百果园</a></li>
