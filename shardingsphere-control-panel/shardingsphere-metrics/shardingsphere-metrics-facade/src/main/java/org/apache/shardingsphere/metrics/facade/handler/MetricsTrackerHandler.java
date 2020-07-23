@@ -206,7 +206,7 @@ public final class MetricsTrackerHandler {
     
     private void handlerGaugeInc(final String metricsLabel, final String... labelValues) {
         metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.GAUGE.name(), metricsLabel)
-                .ifPresent(metricsTracker -> ((GaugeMetricsTracker) metricsTracker).inc(1.0, labelValues));
+                .ifPresent(metricsTracker -> ((GaugeMetricsTracker) metricsTracker).increment(1.0, labelValues));
     }
     
     /**
@@ -217,7 +217,7 @@ public final class MetricsTrackerHandler {
      */
     public void handlerGaugeDec(final String metricsLabel, final String... labelValues) {
         metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.GAUGE.name(), metricsLabel)
-                .ifPresent(metricsTracker -> ((GaugeMetricsTracker) metricsTracker).dec(1.0, labelValues));
+                .ifPresent(metricsTracker -> ((GaugeMetricsTracker) metricsTracker).decrement(1.0, labelValues));
     }
     
     private Optional<HistogramMetricsTrackerDelegate> handlerHistogramStartTimer(final String metricsLabel, final String... labelValues) {
