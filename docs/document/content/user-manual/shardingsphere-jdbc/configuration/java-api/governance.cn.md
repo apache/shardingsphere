@@ -9,7 +9,7 @@ weight = 6
 
 *配置入口*
 
-类名称：org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration
+类名称：org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration
 
 可配置属性：
 
@@ -19,7 +19,7 @@ weight = 6
 
 *治理实例配置*
 
-类名称：org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
+类名称：org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration
 
 可配置属性：
 
@@ -87,7 +87,7 @@ Nacos 属性配置
 
 *心跳检测配置*
 
-类名称：org.apache.shardingsphere.orchestration.center.config.HeartbeatConfiguration
+类名称：org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration
 
 可配置属性：
 
