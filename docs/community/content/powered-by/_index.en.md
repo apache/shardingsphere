@@ -38,9 +38,9 @@ Total: 140 companies.
 
 ### E-commerce
 <ul>
+    <li><a href="http://www.dangdang.com/" rel="nofollow">DangDang</a></li>
     <li><a href="https://www.joybuy.com/" rel="nofollow">JoyBuy</a></li>
     <li><a href="https://www.jd.ru/" rel="nofollow">JD.ru</a></li>
-    <li><a href="http://www.dangdang.com/" rel="nofollow">DangDang</a></li>
     <li><a href="https://www.vip.com/" rel="nofollow">VipShop</a></li>
     <li><a href="https://www.missfresh.cn/" rel="nofollow">MissFresh</a></li>
     <li><a href="http://www.pagoda.com.cn/" rel="nofollow">Pagoda</a></li>
