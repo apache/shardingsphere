@@ -33,10 +33,10 @@ public final class ChannelCountGaugeMetricsTrackerTest extends AbstractPrometheu
         ChannelCountGaugeMetricsTracker tracker = new ChannelCountGaugeMetricsTracker();
         assertThat(tracker.metricsLabel(), is(MetricsLabelEnum.CHANNEL_COUNT.getName()));
         assertThat(tracker.metricsType(), is(MetricsTypeEnum.GAUGE.name()));
-        tracker.inc(2.0);
+        tracker.increment(2.0);
         Double inc = getCollectorRegistry().getSampleValue(name);
         assertThat(inc, is(2.0));
-        tracker.dec(1.0);
+        tracker.decrement(1.0);
         Double dec = getCollectorRegistry().getSampleValue(name);
         assertThat(dec, is(1.0));
     }

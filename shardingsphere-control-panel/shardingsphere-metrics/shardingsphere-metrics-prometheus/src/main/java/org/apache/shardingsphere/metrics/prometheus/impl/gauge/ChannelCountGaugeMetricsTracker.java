@@ -29,12 +29,12 @@ public final class ChannelCountGaugeMetricsTracker implements GaugeMetricsTracke
     private static final Gauge CHANNEL_COUNT = Gauge.build().name("channel_count").help("proxy channel count").register();
     
     @Override
-    public void inc(final double amount, final String... labelValues) {
+    public void increment(final double amount, final String... labelValues) {
         CHANNEL_COUNT.inc(amount);
     }
     
     @Override
-    public void dec(final double amount, final String... labelValues) {
+    public void decrement(final double amount, final String... labelValues) {
         CHANNEL_COUNT.dec(amount);
     }
     

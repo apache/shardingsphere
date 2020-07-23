@@ -42,7 +42,7 @@ public abstract class PostShardingCenterRepositoryEventListener implements Orche
     
     @Override
     public final void watch(final ChangedType... watchedChangedTypes) {
-        final Collection<ChangedType> watchedChangedTypeList = Arrays.asList(watchedChangedTypes);
+        Collection<ChangedType> watchedChangedTypeList = Arrays.asList(watchedChangedTypes);
         for (String watchKey : watchKeys) {
             watch(watchKey, watchedChangedTypeList);
         }
