@@ -263,7 +263,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="84">
-            <expression-projection alias="creation_date" start-index="7" stop-index="45" />
+            <expression-projection alias="creation_date" start-index="7" stop-index="62" />
             <aggregation-projection type="COUNT" inner-expression="(*)" alias="c_number" start-index="65" stop-index="72" />
         </projections>
         <where start-index="106" stop-index="130" literal-stop-index="135">

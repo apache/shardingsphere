@@ -36,18 +36,18 @@ public final class MetricsTrackerHandlerFacadeTest {
     private final MetricsTrackerHandlerFacade metricsTrackerHandlerFacade = new MetricsTrackerHandlerFacade();
     
     @Test
-    public void assertCounterInc() {
-        metricsTrackerHandlerFacade.counterInc("request_total");
+    public void assertCounterIncrement() {
+        metricsTrackerHandlerFacade.counterIncrement("request_total");
     }
     
     @Test
-    public void assertGaugeInc() {
-        metricsTrackerHandlerFacade.gaugeInc("request_total");
+    public void assertGaugeIncrement() {
+        metricsTrackerHandlerFacade.gaugeIncrement("request_total");
     }
     
     @Test
-    public void assertGaugeDec() {
-        metricsTrackerHandlerFacade.gaugeDec("request_total");
+    public void assertGaugeDecrement() {
+        metricsTrackerHandlerFacade.gaugeDecrement("request_total");
     }
     
     @Test

@@ -98,10 +98,6 @@ public final class SQLParserParameterizedTest {
         sqlCases.add("show_index_with_indexes_with_table_and_database");
         sqlCases.add("show_index_with_database_back_quotes");
         sqlCases.add("show_index_with_table_back_quotes");
-        // TODO Sub query is necessary
-        sqlCases.add("select_pagination_with_offset_fetch");
-        // TODO Stop index is wrong
-        sqlCases.add("select_with_expression");
         // TODO Alter statement needs new segment
         sqlCases.add("alter_table_add_foreign_key");
         sqlCases.add("alter_table_add_primary_foreign_key");

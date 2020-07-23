@@ -1454,14 +1454,16 @@
     </select>
 
     <select sql-case-id="select_pagination_with_offset_fetch" parameters="20">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20"/>
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <order-by>
-            <column-item name="order_id" />
+            <column-item name="order_id" start-index="31" stop-index="38" />
         </order-by>
         <row-count value="20" parameter-index="0" />
     </select>
