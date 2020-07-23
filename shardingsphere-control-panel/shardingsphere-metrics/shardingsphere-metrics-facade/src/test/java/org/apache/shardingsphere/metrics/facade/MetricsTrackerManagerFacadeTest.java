@@ -38,7 +38,7 @@ public final class MetricsTrackerManagerFacadeTest {
     
     @Before
     public void setUp() {
-        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, true, 8, null);
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, 0, false, true, 8, null);
         List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
         facadeConfigurations.add(metricsConfiguration);
         new ControlPanelFacadeEngine().init(facadeConfigurations);
@@ -63,7 +63,7 @@ public final class MetricsTrackerManagerFacadeTest {
     
     @Test
     public void restart() {
-        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, true, 8, null);
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, 0, false, true, 8, null);
         MetricsTrackerManagerFacade.restart(metricsConfiguration);
         assertThat(MetricsTrackerManagerFacade.getEnabled(), is(true));
     }
