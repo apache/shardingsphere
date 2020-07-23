@@ -309,17 +309,17 @@ public final class DatabaseMetaDataResultSetTest {
     @Test
     public void assertGetObjectWithIndex() throws Exception {
         databaseMetaDataResultSet.next();
-        assertTrue(databaseMetaDataResultSet.getObject(1).equals(LOGIC_TABLE_NAME));
-        assertTrue(databaseMetaDataResultSet.getObject(2).equals(NON_TABLE_NAME));
-        assertTrue(databaseMetaDataResultSet.getObject(3).equals(NUMBER));
+        assertThat(databaseMetaDataResultSet.getObject(1), is(LOGIC_TABLE_NAME));
+        assertThat(databaseMetaDataResultSet.getObject(2), is(NON_TABLE_NAME));
+        assertThat(databaseMetaDataResultSet.getObject(3), is(NUMBER));
     }
     
     @Test
     public void assertGetObjectWithLabel() throws Exception {
         databaseMetaDataResultSet.next();
-        assertTrue(databaseMetaDataResultSet.getObject(TABLE_NAME_COLUMN_LABEL).equals(LOGIC_TABLE_NAME));
-        assertTrue(databaseMetaDataResultSet.getObject(NON_TABLE_NAME_COLUMN_LABEL).equals(NON_TABLE_NAME));
-        assertTrue(databaseMetaDataResultSet.getObject(NUMBER_COLUMN_LABEL).equals(NUMBER));
+        assertThat(databaseMetaDataResultSet.getObject(TABLE_NAME_COLUMN_LABEL), is(LOGIC_TABLE_NAME));
+        assertThat(databaseMetaDataResultSet.getObject(NON_TABLE_NAME_COLUMN_LABEL), is(NON_TABLE_NAME));
+        assertThat(databaseMetaDataResultSet.getObject(NUMBER_COLUMN_LABEL), is(NUMBER));
     }
     
     @Test

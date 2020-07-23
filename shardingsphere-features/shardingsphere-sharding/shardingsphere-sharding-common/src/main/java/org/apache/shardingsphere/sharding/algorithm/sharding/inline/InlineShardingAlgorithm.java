@@ -62,7 +62,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     }
     
     private boolean isAllowRangeQuery() {
-        return Boolean.valueOf(props.getOrDefault(ALLOW_RANGE_QUERY_KEY, Boolean.FALSE.toString()).toString());
+        return Boolean.parseBoolean(props.getOrDefault(ALLOW_RANGE_QUERY_KEY, Boolean.FALSE.toString()).toString());
     }
     
     @Override

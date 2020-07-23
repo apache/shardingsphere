@@ -237,7 +237,7 @@ public final class MySQLJsonValueDecoder {
         out.append('"');
     }
     
-    class JsonValueTypes {
+    static class JsonValueTypes {
         
         public static final byte SMALL_JSON_OBJECT = 0x00;
         

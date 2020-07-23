@@ -38,7 +38,7 @@ public final class OrderByItem {
     
     @Override
     public boolean equals(final Object obj) {
-        if (null == obj || !(obj instanceof OrderByItem)) {
+        if (!(obj instanceof OrderByItem)) {
             return false;
         }
         OrderByItem orderByItem = (OrderByItem) obj;

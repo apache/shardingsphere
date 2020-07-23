@@ -58,7 +58,7 @@ public final class ClusterConfigurationChangedListenerTest {
         assertThat(event.getClusterConfiguration().getHeartbeat().getSql(), is("select 1"));
         assertThat(event.getClusterConfiguration().getHeartbeat().getThreadCount(), is(1));
         assertThat(event.getClusterConfiguration().getHeartbeat().getInterval(), is(60));
-        assertFalse(event.getClusterConfiguration().getHeartbeat().getRetryEnable());
+        assertFalse(event.getClusterConfiguration().getHeartbeat().isRetryEnable());
         assertThat(event.getClusterConfiguration().getHeartbeat().getRetryMaximum(), is(3));
         assertThat(event.getClusterConfiguration().getHeartbeat().getRetryInterval(), is(3));
     }

@@ -51,7 +51,7 @@ public final class BatchExecutionUnitTest {
     public void assertEquals() {
         BatchExecutionUnit actual = new BatchExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.newArrayList(1))));
         BatchExecutionUnit expected = new BatchExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.newArrayList(2))));
-        assertTrue(expected.equals(actual));
+        assertThat(actual, is(expected));
     }
     
     @Test

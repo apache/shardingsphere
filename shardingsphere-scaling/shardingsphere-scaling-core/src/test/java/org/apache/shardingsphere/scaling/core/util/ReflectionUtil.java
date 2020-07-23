@@ -35,16 +35,14 @@ public final class ReflectionUtil {
      * @throws NoSuchFieldException no such field exception
      */
     public static Field getFieldFromClass(final Class<?> targetClass, final String fieldName, final boolean isDeclared) throws NoSuchFieldException {
-        Field targetField;
+        Field result;
         if (isDeclared) {
-            targetField = targetClass.getDeclaredField(fieldName);
+            result = targetClass.getDeclaredField(fieldName);
         } else {
-            targetField = targetClass.getField(fieldName);
+            result = targetClass.getField(fieldName);
         }
-        if (null != targetField) {
-            targetField.setAccessible(true);
-        }
-        return targetField;
+        result.setAccessible(true);
+        return result;
     }
     
     /**
@@ -69,19 +67,5 @@ public final class ReflectionUtil {
             return (T) value;
         }
         throw new ClassCastException("field " + fieldName + " is " + target.getClass().getName() + " can cast to " + valueClass.getName());
-    }
-    
-    /**
-     * Set value to target object field.
-     *
-     * @param target target object
-     * @param fieldName field name
-     * @param value new value
-     * @throws NoSuchFieldException no such field exception
-     * @throws IllegalAccessException illegal access exception
-     */
-    public static void setFieldValueToClass(final Object target, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
-        Field field = getFieldFromClass(target.getClass(), fieldName, true);
-        field.set(target, value);
     }
 }

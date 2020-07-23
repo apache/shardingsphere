@@ -96,11 +96,11 @@ public abstract class AbstractBaseExecutorTest {
     }
 
     protected final SQLStatementContext getSQLStatementContext() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        SQLStatementContext result = mock(SQLStatementContext.class);
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getTableNames()).thenReturn(Collections.singleton("table_x"));
-        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        return sqlStatementContext;
+        when(result.getTablesContext()).thenReturn(tablesContext);
+        return result;
     }
     
     private ConfigurationProperties getProperties() {

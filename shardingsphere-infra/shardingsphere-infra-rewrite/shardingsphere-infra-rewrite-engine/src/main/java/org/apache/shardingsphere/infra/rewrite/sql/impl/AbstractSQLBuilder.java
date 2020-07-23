@@ -42,7 +42,7 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
         }
         Collections.sort(context.getSqlTokens());
         StringBuilder result = new StringBuilder();
-        result.append(context.getSql().substring(0, context.getSqlTokens().get(0).getStartIndex()));
+        result.append(context.getSql(), 0, context.getSqlTokens().get(0).getStartIndex());
         for (SQLToken each : context.getSqlTokens()) {
             result.append(getSQLTokenText(each));
             result.append(getConjunctionText(each));

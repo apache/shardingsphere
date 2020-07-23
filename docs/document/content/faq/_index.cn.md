@@ -109,7 +109,7 @@ com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues()�
 ```
 
 使用了resultSet.getObject(int index)方法，针对TimeStamp oracle会根据oracle.jdbc.J2EE13Compliant属性判断返回java.sql.TimeStamp还是自定义oralce.sql.TIMESTAMP
-详见ojdbc源码oracle.jdbc.driver.TimestampAccessor#getObject(int var1)方法：
+详见 ojdbc 源码 oracle.jdbc.driver.TimestampAccessor#getObject(int var1) 方法:
 
 ```java
     Object getObject(int var1) throws SQLException {

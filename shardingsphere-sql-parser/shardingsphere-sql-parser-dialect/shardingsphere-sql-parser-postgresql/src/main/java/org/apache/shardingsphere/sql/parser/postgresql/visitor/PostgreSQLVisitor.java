@@ -367,7 +367,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         }
         if (astNode instanceof LiteralExpressionSegment) {
             LiteralExpressionSegment index = (LiteralExpressionSegment) astNode;
-            return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(), Integer.valueOf(index.getLiterals().toString()), orderDirection);
+            return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(), Integer.parseInt(index.getLiterals().toString()), orderDirection);
         }
         return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), ctx.aExpr().getText(), orderDirection);
     }

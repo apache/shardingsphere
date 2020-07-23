@@ -85,10 +85,9 @@ public class YamlConfigurationExampleMain {
         return new OrderServiceImpl(dataSource);
     }
     
-    private static void closeDataSource(final DataSource dataSource) throws Exception {
+    private static void closeDataSource(final DataSource dataSource) {
         if (dataSource instanceof ShardingSphereDataSource) {
             ((ShardingSphereDataSource) dataSource).close();
         }
     }
-    
 }

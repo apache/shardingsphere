@@ -392,7 +392,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             if (astNode instanceof LiteralExpressionSegment) {
                 LiteralExpressionSegment index = (LiteralExpressionSegment) astNode;
                 return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(),
-                        Integer.valueOf(index.getLiterals().toString()), OrderDirection.ASC);
+                        Integer.parseInt(index.getLiterals().toString()), OrderDirection.ASC);
             }
             return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.start.getStopIndex(), ctx.getText(), OrderDirection.ASC);
         }
@@ -617,7 +617,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
-        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.valueOf(((LiteralExpressionSegment) astNode).getLiterals().toString()));
+        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
     }
     
     @Override
@@ -626,7 +626,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
-        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.valueOf(((LiteralExpressionSegment) astNode).getLiterals().toString()));
+        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
     }
     
     private LimitSegment createLimitSegmentWhenLimitAndOffset(final SelectLimitContext ctx) {
