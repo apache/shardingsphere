@@ -1,6 +1,6 @@
 # ShardingSphere Documents
 
-
+ ‍
 
 #### HOW to build ShardingSphere website ?
 
@@ -14,17 +14,17 @@ Follow the steps below to deploy ShardingSphere website,
 3. Overwrite `document/current` with `docs/target/document/current`, `community` with `docs/target/community` and `blog` with `docs/target/blog`.
 4. Commit changes and raise a PR for [shardingsphere-doc](https://github.com/apache/shardingsphere-doc.git).
 
-
+ ‍
 
 #### Note :
 
 1. If you modify `docs/build.sh`, please test it locally.
 
-
+ ‍
 
 #### HOW to insert a video of Bilibili or YouTube ?
 
-1. First plz make sure you get the corret url of the video you wanna add.
+1. First please make sure you get the corret url of the video you wanna add.
 
 2. - DO REMEMBER use the `bvid argument` of bilibili url :
 
