@@ -25,7 +25,7 @@ import org.apache.shardingsphere.orchestration.repository.api.RegistryCenterRepo
 import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenter;
-import org.apache.shardingsphere.orchestration.core.facade.listener.ShardingOrchestrationListenerManager;
+import org.apache.shardingsphere.orchestration.core.facade.listener.OrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.orchestration.core.metadata.MetaDataCenter;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
@@ -48,9 +48,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShardingOrchestrationFacadeTest {
+public final class OrchestrationFacadeTest {
     
-    private final ShardingOrchestrationFacade shardingOrchestrationFacade = ShardingOrchestrationFacade.getInstance();
+    private final OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance();
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;
@@ -65,7 +65,7 @@ public final class ShardingOrchestrationFacadeTest {
     private MetaDataCenter metaDataCenter;
     
     @Mock
-    private ShardingOrchestrationListenerManager listenerManager;
+    private OrchestrationListenerManager listenerManager;
     
     @Before
     public void setUp() {
@@ -83,12 +83,12 @@ public final class ShardingOrchestrationFacadeTest {
         configuration3.setNamespace("namespace_3");
         instanceConfigurationMap.put("test_name_3", configuration3);
         OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration(instanceConfigurationMap);
-        shardingOrchestrationFacade.init(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
-        FieldUtil.setField(shardingOrchestrationFacade, "registryCenterRepository", registryCenterRepository);
-        FieldUtil.setField(shardingOrchestrationFacade, "configCenter", configCenter);
-        FieldUtil.setField(shardingOrchestrationFacade, "registryCenter", registryCenter);
-        FieldUtil.setField(shardingOrchestrationFacade, "metaDataCenter", metaDataCenter);
-        FieldUtil.setField(shardingOrchestrationFacade, "listenerManager", listenerManager);
+        orchestrationFacade.init(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
+        FieldUtil.setField(orchestrationFacade, "registryCenterRepository", registryCenterRepository);
+        FieldUtil.setField(orchestrationFacade, "configCenter", configCenter);
+        FieldUtil.setField(orchestrationFacade, "registryCenter", registryCenter);
+        FieldUtil.setField(orchestrationFacade, "metaDataCenter", metaDataCenter);
+        FieldUtil.setField(orchestrationFacade, "listenerManager", listenerManager);
     }
     
     @Test
@@ -99,7 +99,7 @@ public final class ShardingOrchestrationFacadeTest {
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
         Properties props = new Properties();
-        shardingOrchestrationFacade.initConfigurations(Collections.singletonMap("sharding_db", dataSourceConfigurationMap), ruleConfigurationMap, authentication, props);
+        orchestrationFacade.initConfigurations(Collections.singletonMap("sharding_db", dataSourceConfigurationMap), ruleConfigurationMap, authentication, props);
         verify(configCenter).persistConfigurations("sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), false);
         verify(configCenter).persistGlobalConfiguration(authentication, props, false);
         verify(registryCenter).persistInstanceOnline();
@@ -110,13 +110,13 @@ public final class ShardingOrchestrationFacadeTest {
     @Test
     public void assertInitMetricsConfiguration() {
         MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, true, 8, null);
-        shardingOrchestrationFacade.initMetricsConfiguration(metricsConfiguration);
+        orchestrationFacade.initMetricsConfiguration(metricsConfiguration);
         verify(configCenter).persistMetricsConfiguration(metricsConfiguration, false);
     }
     
     @Test
     public void assertInitWithoutParameters() {
-        shardingOrchestrationFacade.initConfigurations();
+        orchestrationFacade.initConfigurations();
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataSourcesNode();
         verify(listenerManager).initListeners();
@@ -124,14 +124,14 @@ public final class ShardingOrchestrationFacadeTest {
     
     @Test
     public void assertCloseSuccess() {
-        shardingOrchestrationFacade.close();
+        orchestrationFacade.close();
         verify(registryCenterRepository).close();
     }
     
     @Test
     public void assertCloseFailure() {
         doThrow(new RuntimeException()).when(registryCenterRepository).close();
-        shardingOrchestrationFacade.close();
+        orchestrationFacade.close();
         verify(registryCenterRepository).close();
     }
 }
