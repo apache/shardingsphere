@@ -490,6 +490,11 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         for (OrderByItemContext each : ctx.orderByItem()) {
             items.add((OrderByItemSegment) visit(each));
         }
+        if (null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                visit(each);
+            }
+        }
         return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
     
