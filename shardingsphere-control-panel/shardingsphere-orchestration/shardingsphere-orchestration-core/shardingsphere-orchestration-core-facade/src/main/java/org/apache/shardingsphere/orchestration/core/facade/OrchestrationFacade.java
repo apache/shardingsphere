@@ -61,7 +61,7 @@ public final class OrchestrationFacade implements AutoCloseable {
     private ConfigCenterRepository configCenterRepository;
     
     private RegistryCenterRepository registryCenterRepository;
-
+    
     private ConfigCenterRepository centerRepository;
     
     @Getter
@@ -72,7 +72,7 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     @Getter
     private RegistryCenter registryCenter;
-
+    
     @Getter
     private MetaDataCenter metaDataCenter;
     
