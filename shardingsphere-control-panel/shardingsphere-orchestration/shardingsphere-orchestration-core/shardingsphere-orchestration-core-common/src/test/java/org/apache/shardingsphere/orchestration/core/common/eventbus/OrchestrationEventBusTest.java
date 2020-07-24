@@ -15,10 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.common.event;
+package org.apache.shardingsphere.orchestration.core.common.eventbus;
 
-/**
- * Sharding orchestration event.
- */
-public interface ShardingOrchestrationEvent {
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class OrchestrationEventBusTest {
+    
+    @Test
+    public void assertGetInstance() {
+        assertThat(OrchestrationEventBus.getInstance(), is(OrchestrationEventBus.getInstance()));
+    }
 }

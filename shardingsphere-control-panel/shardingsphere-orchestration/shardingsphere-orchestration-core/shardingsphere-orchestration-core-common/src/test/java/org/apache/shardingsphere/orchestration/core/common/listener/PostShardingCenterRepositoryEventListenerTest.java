@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.core.common.listener;
 import org.apache.shardingsphere.orchestration.repository.api.CenterRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -48,8 +48,8 @@ public final class PostShardingCenterRepositoryEventListenerTest {
         PostShardingCenterRepositoryEventListener postShardingCenterRepositoryEventListener = new PostShardingCenterRepositoryEventListener(centerRepository, Collections.singletonList("test")) {
             
             @Override
-            protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-                return mock(ShardingOrchestrationEvent.class);
+            protected OrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
+                return mock(OrchestrationEvent.class);
             }
         };
         doAnswer(invocationOnMock -> {
@@ -66,8 +66,8 @@ public final class PostShardingCenterRepositoryEventListenerTest {
         PostShardingCenterRepositoryEventListener postShardingCenterRepositoryEventListener = new PostShardingCenterRepositoryEventListener(centerRepository, Arrays.asList("test", "dev")) {
             
             @Override
-            protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-                return mock(ShardingOrchestrationEvent.class);
+            protected OrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
+                return mock(OrchestrationEvent.class);
             }
         };
         doAnswer(invocationOnMock -> {

@@ -22,19 +22,19 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.orchestration.repository.api.CenterRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
-import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
-import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.OrchestrationEventBus;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Post sharding orchestration event listener.
+ * Post orchestration event listener.
  */
 @RequiredArgsConstructor
-public abstract class PostShardingCenterRepositoryEventListener implements ShardingOrchestrationListener {
+public abstract class PostShardingCenterRepositoryEventListener implements OrchestrationListener {
     
-    private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
+    private final EventBus eventBus = OrchestrationEventBus.getInstance();
     
     private final CenterRepository centerRepository;
     
@@ -42,7 +42,7 @@ public abstract class PostShardingCenterRepositoryEventListener implements Shard
     
     @Override
     public final void watch(final ChangedType... watchedChangedTypes) {
-        final Collection<ChangedType> watchedChangedTypeList = Arrays.asList(watchedChangedTypes);
+        Collection<ChangedType> watchedChangedTypeList = Arrays.asList(watchedChangedTypes);
         for (String watchKey : watchKeys) {
             watch(watchKey, watchedChangedTypeList);
         }
@@ -51,10 +51,10 @@ public abstract class PostShardingCenterRepositoryEventListener implements Shard
     private void watch(final String watchKey, final Collection<ChangedType> watchedChangedTypeList) {
         centerRepository.watch(watchKey, dataChangedEvent -> {
             if (watchedChangedTypeList.contains(dataChangedEvent.getChangedType())) {
-                eventBus.post(createShardingOrchestrationEvent(dataChangedEvent));
+                eventBus.post(createOrchestrationEvent(dataChangedEvent));
             }
         });
     }
     
-    protected abstract ShardingOrchestrationEvent createShardingOrchestrationEvent(DataChangedEvent event);
+    protected abstract OrchestrationEvent createOrchestrationEvent(DataChangedEvent event);
 }

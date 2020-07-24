@@ -31,7 +31,7 @@ import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfi
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenter;
-import org.apache.shardingsphere.orchestration.core.facade.listener.ShardingOrchestrationListenerManager;
+import org.apache.shardingsphere.orchestration.core.facade.listener.OrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.properties.OrchestrationProperties;
 import org.apache.shardingsphere.orchestration.core.facade.properties.OrchestrationPropertyKey;
 import org.apache.shardingsphere.orchestration.core.metadata.MetaDataCenter;
@@ -47,10 +47,10 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Sharding orchestration facade.
+ * Orchestration facade.
  */
 @Slf4j
-public final class ShardingOrchestrationFacade implements AutoCloseable {
+public final class OrchestrationFacade implements AutoCloseable {
     
     static {
         // TODO avoid multiple loading
@@ -76,7 +76,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     @Getter
     private MetaDataCenter metaDataCenter;
     
-    private ShardingOrchestrationListenerManager listenerManager;
+    private OrchestrationListenerManager listenerManager;
     
     private String configCenterName;
     
@@ -133,7 +133,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     }
     
     private void initListenerManager(final Collection<String> shardingSchemaNames) {
-        listenerManager = new ShardingOrchestrationListenerManager(
+        listenerManager = new OrchestrationListenerManager(
                 registryCenterName, registryCenterRepository, configCenterName,
                 configCenterRepository, metaDataCenterName, centerRepository,
                 shardingSchemaNames.isEmpty() ? configCenter.getAllShardingSchemaNames() : shardingSchemaNames);
@@ -210,12 +210,12 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
      *
      * @return orchestration facade instance
      */
-    public static ShardingOrchestrationFacade getInstance() {
-        return ShardingOrchestrationFacadeHolder.INSTANCE;
+    public static OrchestrationFacade getInstance() {
+        return OrchestrationFacadeHolder.INSTANCE;
     }
     
-    private static final class ShardingOrchestrationFacadeHolder {
+    private static final class OrchestrationFacadeHolder {
         
-        public static final ShardingOrchestrationFacade INSTANCE = new ShardingOrchestrationFacade();
+        public static final OrchestrationFacade INSTANCE = new OrchestrationFacade();
     }
 }

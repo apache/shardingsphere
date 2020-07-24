@@ -36,7 +36,7 @@ public final class PropertiesChangedListener extends PostShardingCenterRepositor
     }
     
     @Override
-    protected PropertiesChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+    protected PropertiesChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
         return new PropertiesChangedEvent(YamlEngine.unmarshalProperties(event.getValue()));
     }
 }

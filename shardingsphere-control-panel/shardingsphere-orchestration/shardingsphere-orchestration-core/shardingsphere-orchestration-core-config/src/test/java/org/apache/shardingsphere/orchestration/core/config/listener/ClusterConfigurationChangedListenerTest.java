@@ -49,9 +49,9 @@ public final class ClusterConfigurationChangedListenerTest {
     }
     
     @Test
-    public void assertCreateShardingOrchestrationEvent() {
+    public void assertCreateOrchestrationEvent() {
         ClusterConfigurationChangedEvent event = clusterConfigurationChangedListener
-                .createShardingOrchestrationEvent(new DataChangedEvent("test", readYAML(DATA_CLUSTER_YAML), DataChangedEvent.ChangedType.UPDATED));
+                .createOrchestrationEvent(new DataChangedEvent("test", readYAML(DATA_CLUSTER_YAML), DataChangedEvent.ChangedType.UPDATED));
         assertNotNull(event);
         assertNotNull(event.getClusterConfiguration());
         assertNotNull(event.getClusterConfiguration().getHeartbeat());

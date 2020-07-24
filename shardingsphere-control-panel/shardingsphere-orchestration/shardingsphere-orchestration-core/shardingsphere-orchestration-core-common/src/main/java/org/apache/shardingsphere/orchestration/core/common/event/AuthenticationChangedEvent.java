@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.auth.Authentication;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AuthenticationChangedEvent implements ShardingOrchestrationEvent {
+public final class AuthenticationChangedEvent implements OrchestrationEvent {
     
     private final Authentication authentication;
 }

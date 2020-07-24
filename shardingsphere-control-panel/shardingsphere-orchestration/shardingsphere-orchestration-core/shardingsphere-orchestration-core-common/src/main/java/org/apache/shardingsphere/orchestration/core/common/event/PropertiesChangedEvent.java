@@ -27,7 +27,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public final class PropertiesChangedEvent implements ShardingOrchestrationEvent {
+public final class PropertiesChangedEvent implements OrchestrationEvent {
     
     private final Properties props;
 }

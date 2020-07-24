@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.core.metadata.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 
 import java.util.Collection;
@@ -29,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataChangedEvent implements ShardingOrchestrationEvent {
+public final class MetaDataChangedEvent implements OrchestrationEvent {
 
     private final Collection<String> schemaNames;
 

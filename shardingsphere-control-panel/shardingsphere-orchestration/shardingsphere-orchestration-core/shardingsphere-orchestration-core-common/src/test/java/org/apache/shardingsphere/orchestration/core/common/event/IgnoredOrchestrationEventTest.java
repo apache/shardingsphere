@@ -15,28 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.common.eventbus;
+package org.apache.shardingsphere.orchestration.core.common.event;
 
-import com.google.common.eventbus.EventBus;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.Test;
 
-/**
- * Sharding orchestration event bus.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingOrchestrationEventBus {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class IgnoredOrchestrationEventTest {
     
-    /**
-     * Get instance of sharding orchestration event bus.
-     * 
-     * @return instance of sharding orchestration event bus
-     */
-    public static EventBus getInstance() {
-        return ShardingOrchestrationEventBusHolder.INSTANCE;
-    }
-
-    private static final class ShardingOrchestrationEventBusHolder {
-        private static final EventBus INSTANCE = new EventBus();
+    @Test
+    public void assertInstants() {
+        IgnoredOrchestrationEvent ignored = new IgnoredOrchestrationEvent();
+        assertThat(ignored.getClass().getName(), is(IgnoredOrchestrationEvent.class.getName()));
     }
 }

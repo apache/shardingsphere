@@ -22,7 +22,7 @@ import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterReposi
 import org.apache.shardingsphere.orchestration.repository.api.RegistryCenterRepository;
 
 import org.apache.shardingsphere.orchestration.core.config.listener.ConfigurationChangedListenerManager;
-import org.apache.shardingsphere.orchestration.core.facade.listener.ShardingOrchestrationListenerManager;
+import org.apache.shardingsphere.orchestration.core.facade.listener.OrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.orchestration.core.registry.listener.RegistryListenerManager;
 import org.junit.Test;
@@ -35,28 +35,27 @@ import java.util.Collections;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShardingOrchestrationListenerManagerTest {
+public final class OrchestrationListenerManagerTest {
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;
-
+    
     @Mock
     private ConfigCenterRepository configCenterRepository;
     
     @Mock
     private ConfigurationChangedListenerManager configurationChangedListenerManager;
-
+    
     @Mock
     private MetaDataListenerManager metaDataListenerManager;
-
+    
     @Mock
     private RegistryListenerManager registryListenerManager;
     
     @Test
     public void assertInitListeners() {
-        ShardingOrchestrationListenerManager actual = new ShardingOrchestrationListenerManager("testRegCenter", registryCenterRepository,
-                                                     "FirstTestConfigCenter", configCenterRepository,
-                                                     "FirstTestConfigCenter", configCenterRepository, Collections.emptyList());
+        OrchestrationListenerManager actual = new OrchestrationListenerManager("testRegCenter", registryCenterRepository, 
+                "FirstTestConfigCenter", configCenterRepository, "FirstTestConfigCenter", configCenterRepository, Collections.emptyList());
         FieldUtil.setField(actual, "configurationChangedListenerManager", configurationChangedListenerManager);
         FieldUtil.setField(actual, "registryListenerManager", registryListenerManager);
         FieldUtil.setField(actual, "metaDataListenerManager", metaDataListenerManager);

@@ -20,9 +20,9 @@ package org.apache.shardingsphere.orchestration.core.common.listener;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 
 /**
- * Sharding orchestration listener.
+ * Orchestration listener.
  */
-public interface ShardingOrchestrationListener {
+public interface OrchestrationListener {
     
     /**
      * Start to watch.

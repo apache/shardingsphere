@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.core.registry.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.registry.schema.OrchestrationSchema;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.orchestration.core.registry.schema.Orchestratio
  */
 @RequiredArgsConstructor
 @Getter
-public final class DisabledStateChangedEvent implements ShardingOrchestrationEvent {
+public final class DisabledStateChangedEvent implements OrchestrationEvent {
     
     private final OrchestrationSchema orchestrationSchema;
     

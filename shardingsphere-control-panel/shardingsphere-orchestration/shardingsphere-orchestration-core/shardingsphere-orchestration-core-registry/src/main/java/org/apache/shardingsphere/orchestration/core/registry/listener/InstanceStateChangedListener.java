@@ -40,7 +40,7 @@ public final class InstanceStateChangedListener extends PostShardingCenterReposi
     }
     
     @Override
-    protected CircuitStateChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+    protected CircuitStateChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
         return new CircuitStateChangedEvent(isCircuitBreak(event.getValue()));
     }
     

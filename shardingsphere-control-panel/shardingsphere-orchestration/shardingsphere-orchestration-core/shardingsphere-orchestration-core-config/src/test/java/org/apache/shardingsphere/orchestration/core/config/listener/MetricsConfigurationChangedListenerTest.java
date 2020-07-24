@@ -50,8 +50,8 @@ public final class MetricsConfigurationChangedListenerTest {
     }
     
     @Test
-    public void assertCreateShardingOrchestrationEvent() {
-        MetricsConfigurationChangedEvent event = metricsConfigurationChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test", METRICS_YAML, DataChangedEvent.ChangedType.UPDATED));
+    public void assertCreateOrchestrationEvent() {
+        MetricsConfigurationChangedEvent event = metricsConfigurationChangedListener.createOrchestrationEvent(new DataChangedEvent("test", METRICS_YAML, DataChangedEvent.ChangedType.UPDATED));
         MetricsConfiguration actual = event.getMetricsConfiguration();
         assertThat(actual, notNullValue());
         assertThat(actual.getMetricsName(), is("prometheus"));

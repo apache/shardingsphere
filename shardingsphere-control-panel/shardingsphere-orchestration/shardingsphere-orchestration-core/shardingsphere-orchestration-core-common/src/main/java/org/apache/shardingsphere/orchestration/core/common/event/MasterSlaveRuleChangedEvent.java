@@ -26,7 +26,7 @@ import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfigura
  */
 @RequiredArgsConstructor
 @Getter
-public final class MasterSlaveRuleChangedEvent implements ShardingOrchestrationEvent {
+public final class MasterSlaveRuleChangedEvent implements OrchestrationEvent {
     
     private final String shardingSchemaName;
     
