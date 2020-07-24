@@ -36,48 +36,48 @@ import static org.mockito.Mockito.when;
 public final class RegistryCenterTest {
     
     @Mock
-    private RegistryRepository registryCenterRepository;
+    private RegistryRepository registryRepository;
     
     private RegistryCenter registryCenter;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        registryCenter = new RegistryCenter("test", registryCenterRepository);
+        registryCenter = new RegistryCenter("test", registryRepository);
         Field field = registryCenter.getClass().getDeclaredField("repository");
         field.setAccessible(true);
-        field.set(registryCenter, registryCenterRepository);
+        field.set(registryCenter, registryRepository);
     }
     
     @Test
     public void assertPersistInstanceOnline() {
         registryCenter.persistInstanceOnline();
-        verify(registryCenterRepository).persistEphemeral(anyString(), anyString());
+        verify(registryRepository).persistEphemeral(anyString(), anyString());
     }
     
     @Test
     public void assertPersistDataSourcesNode() {
         registryCenter.persistDataSourcesNode();
-        verify(registryCenterRepository).persist("/test/registry/datasources", "");
+        verify(registryRepository).persist("/test/registry/datasources", "");
     }
     
     @Test
     public void assertPersistInstanceData() {
         registryCenter.persistInstanceData("test");
-        verify(registryCenterRepository).persist(anyString(), anyString());
+        verify(registryRepository).persist(anyString(), anyString());
     }
     
     @Test
     public void assertLoadInstanceData() {
         registryCenter.loadInstanceData();
-        verify(registryCenterRepository).get(anyString());
+        verify(registryRepository).get(anyString());
     }
     
     @Test
     public void assertLoadDisabledDataSources() {
         List<String> disabledDataSources = Collections.singletonList("slave_ds_0");
-        when(registryCenterRepository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
+        when(registryRepository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
         registryCenter.loadDisabledDataSources();
-        verify(registryCenterRepository).getChildrenKeys(anyString());
-        verify(registryCenterRepository).get(anyString());
+        verify(registryRepository).getChildrenKeys(anyString());
+        verify(registryRepository).get(anyString());
     }
 }

@@ -24,12 +24,12 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class YamlCenterRepositoryConfigurationTest {
+public final class YamlOrchestrationRepositoryConfigurationTest {
     
     @Test
     public void assertCenterType() {
         String orchestrationType = "config_center";
-        YamlCenterRepositoryConfiguration yamlInstanceConfiguration = new YamlCenterRepositoryConfiguration();
+        YamlOrchestrationRepositoryConfiguration yamlInstanceConfiguration = new YamlOrchestrationRepositoryConfiguration();
         yamlInstanceConfiguration.setOrchestrationType(orchestrationType);
         assertThat(yamlInstanceConfiguration.getOrchestrationType(), is(orchestrationType));
     }
@@ -37,7 +37,7 @@ public class YamlCenterRepositoryConfigurationTest {
     @Test
     public void assertInstanceType() {
         String instanceType = "zookeeper";
-        YamlCenterRepositoryConfiguration yamlInstanceConfiguration = new YamlCenterRepositoryConfiguration();
+        YamlOrchestrationRepositoryConfiguration yamlInstanceConfiguration = new YamlOrchestrationRepositoryConfiguration();
         yamlInstanceConfiguration.setInstanceType(instanceType);
         assertThat(yamlInstanceConfiguration.getInstanceType(), is(instanceType));
     }
@@ -45,7 +45,7 @@ public class YamlCenterRepositoryConfigurationTest {
     @Test
     public void assertServerLists() {
         String serverLists = "127.0.0.1:2181,127.0.0.1:2182";
-        YamlCenterRepositoryConfiguration yamlInstanceConfiguration = new YamlCenterRepositoryConfiguration();
+        YamlOrchestrationRepositoryConfiguration yamlInstanceConfiguration = new YamlOrchestrationRepositoryConfiguration();
         yamlInstanceConfiguration.setServerLists(serverLists);
         assertThat(yamlInstanceConfiguration.getServerLists(), is(serverLists));
     }
@@ -53,7 +53,7 @@ public class YamlCenterRepositoryConfigurationTest {
     @Test
     public void assertNamespace() {
         String namespace = "orchestration";
-        YamlCenterRepositoryConfiguration yamlInstanceConfiguration = new YamlCenterRepositoryConfiguration();
+        YamlOrchestrationRepositoryConfiguration yamlInstanceConfiguration = new YamlOrchestrationRepositoryConfiguration();
         yamlInstanceConfiguration.setNamespace(namespace);
         assertThat(yamlInstanceConfiguration.getNamespace(), is(namespace));
     }
@@ -61,7 +61,7 @@ public class YamlCenterRepositoryConfigurationTest {
     @Test
     public void assertGetProps() {
         Properties props = new Properties();
-        YamlCenterRepositoryConfiguration yamlInstanceConfiguration = new YamlCenterRepositoryConfiguration();
+        YamlOrchestrationRepositoryConfiguration yamlInstanceConfiguration = new YamlOrchestrationRepositoryConfiguration();
         yamlInstanceConfiguration.setProps(props);
         assertThat(yamlInstanceConfiguration.getProps(), is(props));
     }

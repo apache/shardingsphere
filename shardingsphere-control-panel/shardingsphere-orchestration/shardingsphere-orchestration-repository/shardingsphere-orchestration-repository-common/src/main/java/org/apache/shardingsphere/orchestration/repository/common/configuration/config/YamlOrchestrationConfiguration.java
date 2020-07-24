@@ -28,11 +28,11 @@ import java.util.Map;
 /**
  * Config center configuration.
  */
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public final class YamlOrchestrationConfiguration implements YamlConfiguration {
     
-    private Map<String, YamlCenterRepositoryConfiguration> centerRepositoryConfigurationMap;
+    private Map<String, YamlOrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurationMap;
 }

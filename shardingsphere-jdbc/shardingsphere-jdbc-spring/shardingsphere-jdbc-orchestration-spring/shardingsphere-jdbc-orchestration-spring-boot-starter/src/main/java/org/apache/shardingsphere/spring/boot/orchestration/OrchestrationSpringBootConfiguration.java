@@ -18,19 +18,18 @@
 package org.apache.shardingsphere.spring.boot.orchestration;
 
 import com.google.common.base.Preconditions;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlCenterRepositoryConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.swapper.CenterRepositoryConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.swapper.OrchestrationRepositoryConfigurationYamlSwapper;
+import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.orchestration.common.OrchestrationSpringBootRootConfiguration;
 import org.apache.shardingsphere.spring.boot.orchestration.rule.LocalRulesCondition;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -51,6 +50,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -70,7 +70,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final OrchestrationSpringBootRootConfiguration root;
     
-    private final CenterRepositoryConfigurationYamlSwapper centerRepositorySwapper = new CenterRepositoryConfigurationYamlSwapper();
+    private final OrchestrationRepositoryConfigurationYamlSwapper swapper = new OrchestrationRepositoryConfigurationYamlSwapper();
     
     /**
      * Get orchestration configuration.
@@ -81,8 +81,8 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     public OrchestrationConfiguration orchestrationConfiguration() {
         Preconditions.checkState(isValidOrchestrationConfiguration(), "The orchestration configuration is invalid, please configure orchestration");
         Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<>(root.getOrchestration().size(), 1);
-        for (Entry<String, YamlCenterRepositoryConfiguration> entry : root.getOrchestration().entrySet()) {
-            instanceConfigurationMap.put(entry.getKey(), centerRepositorySwapper.swapToObject(entry.getValue()));
+        for (Entry<String, YamlOrchestrationRepositoryConfiguration> entry : root.getOrchestration().entrySet()) {
+            instanceConfigurationMap.put(entry.getKey(), swapper.swapToObject(entry.getValue()));
         }
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }

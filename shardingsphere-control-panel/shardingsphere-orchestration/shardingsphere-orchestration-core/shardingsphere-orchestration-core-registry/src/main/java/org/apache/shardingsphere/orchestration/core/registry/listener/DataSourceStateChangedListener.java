@@ -24,19 +24,19 @@ import org.apache.shardingsphere.orchestration.core.registry.schema.Orchestratio
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
-import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
+import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 
 import java.util.Collections;
 
 /**
  * Data source state changed listener.
  */
-public final class DataSourceStateChangedListener extends PostShardingCenterRepositoryEventListener {
+public final class DataSourceStateChangedListener extends PostOrchestrationRepositoryEventListener {
     
     private final RegistryCenterNode registryCenterNode;
     
-    public DataSourceStateChangedListener(final String name, final RegistryRepository registryCenterRepository) {
-        super(registryCenterRepository, Collections.singleton(new RegistryCenterNode(name).getDataSourcesNodeFullRootPath()));
+    public DataSourceStateChangedListener(final String name, final RegistryRepository registryRepository) {
+        super(registryRepository, Collections.singleton(new RegistryCenterNode(name).getDataSourcesNodeFullRootPath()));
         registryCenterNode = new RegistryCenterNode(name);
     }
     

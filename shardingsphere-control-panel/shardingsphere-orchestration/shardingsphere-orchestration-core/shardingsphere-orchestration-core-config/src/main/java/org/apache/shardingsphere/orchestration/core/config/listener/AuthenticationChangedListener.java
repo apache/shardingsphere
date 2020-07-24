@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.core.config.listener;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
+import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
@@ -31,7 +31,7 @@ import java.util.Collections;
 /**
  * Authentication changed listener.
  */
-public final class AuthenticationChangedListener extends PostShardingCenterRepositoryEventListener {
+public final class AuthenticationChangedListener extends PostOrchestrationRepositoryEventListener {
     
     public AuthenticationChangedListener(final String name, final ConfigurationRepository configurationRepository) {
         super(configurationRepository, Collections.singletonList(new ConfigCenterNode(name).getAuthenticationPath()));

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.orchestration.core.metadata.event.MetaDataChang
 import org.apache.shardingsphere.orchestration.repository.api.OrchestrationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
-import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
+import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.metadata.yaml.RuleSchemaMetaDataYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.metadata.MetaDataCenterNode;
 import org.apache.shardingsphere.orchestration.core.metadata.yaml.YamlRuleSchemaMetaData;
@@ -33,7 +33,7 @@ import java.util.Collection;
 /**
  * Meta data changed listener.
  */
-public final class MetaDataChangedListener extends PostShardingCenterRepositoryEventListener {
+public final class MetaDataChangedListener extends PostOrchestrationRepositoryEventListener {
     
     private final Collection<String> schemaNames;
     

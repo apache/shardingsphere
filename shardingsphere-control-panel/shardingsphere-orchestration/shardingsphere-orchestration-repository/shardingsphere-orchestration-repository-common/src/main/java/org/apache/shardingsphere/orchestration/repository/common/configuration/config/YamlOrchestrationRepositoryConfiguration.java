@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import java.util.Properties;
 
 /**
- * Orchestration instance configuration for YAML.
+ * Orchestration repository configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlCenterRepositoryConfiguration implements YamlConfiguration {
+public final class YamlOrchestrationRepositoryConfiguration implements YamlConfiguration {
     
     private String orchestrationType;
     

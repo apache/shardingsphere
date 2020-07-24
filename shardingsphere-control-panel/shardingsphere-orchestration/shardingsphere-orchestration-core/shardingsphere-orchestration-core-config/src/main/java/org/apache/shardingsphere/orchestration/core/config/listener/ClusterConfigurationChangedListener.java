@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ClusterConfigurationChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
+import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenterNode;
 
 import java.util.Collections;
@@ -31,7 +31,7 @@ import java.util.Collections;
 /**
  * Cluster configuration changed listener.
  */
-public final class ClusterConfigurationChangedListener extends PostShardingCenterRepositoryEventListener {
+public final class ClusterConfigurationChangedListener extends PostOrchestrationRepositoryEventListener {
     
     public ClusterConfigurationChangedListener(final String name, final ConfigurationRepository configurationRepository) {
         super(configurationRepository, Collections.singletonList(new ConfigCenterNode(name).getClusterPath()));

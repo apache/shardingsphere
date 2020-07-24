@@ -25,12 +25,12 @@ import java.util.Collection;
 /**
  * Meta data listener manager.
  */
-public class MetaDataListenerManager {
+public final class MetaDataListenerManager {
     
     private final MetaDataChangedListener metaDataChangedListener;
     
-    public MetaDataListenerManager(final String name, final OrchestrationRepository centerRepository, final Collection<String> shardingSchemaNames) {
-        metaDataChangedListener = new MetaDataChangedListener(name, centerRepository, shardingSchemaNames);
+    public MetaDataListenerManager(final String name, final OrchestrationRepository orchestrationRepository, final Collection<String> shardingSchemaNames) {
+        metaDataChangedListener = new MetaDataChangedListener(name, orchestrationRepository, shardingSchemaNames);
     }
     
     /**

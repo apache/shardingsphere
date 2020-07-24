@@ -130,64 +130,64 @@ public final class CuratorZookeeperRepositoryTest {
     
     @Test
     public void assertBuildCuratorClientWithCustomConfig() {
-        final CuratorZookeeperRepository customCenterRepository = new CuratorZookeeperRepository();
+        final CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000");
         props.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1");
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000");
-        CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
+        CenterConfiguration configuration = new CenterConfiguration(repository.getType(), new Properties());
         configuration.setServerLists(serverLists);
-        customCenterRepository.setProps(props);
-        customCenterRepository.init(configuration);
-        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
-        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey()), is("1"));
-        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("1000"));
-        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("2000"));
-        customCenterRepository.persist("/test/children/build/1", "value1");
-        assertThat(customCenterRepository.get("/test/children/build/1"), is("value1"));
+        repository.setProps(props);
+        repository.init(configuration);
+        assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
+        assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey()), is("1"));
+        assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("1000"));
+        assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("2000"));
+        repository.persist("/test/children/build/1", "value1");
+        assertThat(repository.get("/test/children/build/1"), is("value1"));
     }
     
     @Test
     public void assertBuildCuratorClientWithTimeToLiveSecondsEqualsZero() {
-        final CuratorZookeeperRepository customCenterRepository = new CuratorZookeeperRepository();
+        final CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
-        CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
+        CenterConfiguration configuration = new CenterConfiguration(repository.getType(), new Properties());
         configuration.setServerLists(serverLists);
-        customCenterRepository.setProps(props);
-        customCenterRepository.init(configuration);
-        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("0"));
-        customCenterRepository.persist("/test/children/build/2", "value1");
-        assertThat(customCenterRepository.get("/test/children/build/2"), is("value1"));
+        repository.setProps(props);
+        repository.init(configuration);
+        assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("0"));
+        repository.persist("/test/children/build/2", "value1");
+        assertThat(repository.get("/test/children/build/2"), is("value1"));
     }
     
     @Test
     public void assertBuildCuratorClientWithOperationTimeoutMillisecondsEqualsZero() {
-        final CuratorZookeeperRepository customCenterRepository = new CuratorZookeeperRepository();
+        final CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
-        CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
+        CenterConfiguration configuration = new CenterConfiguration(repository.getType(), new Properties());
         configuration.setServerLists(serverLists);
-        customCenterRepository.setProps(props);
-        customCenterRepository.init(configuration);
-        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
-        customCenterRepository.persist("/test/children/build/3", "value1");
-        assertThat(customCenterRepository.get("/test/children/build/3"), is("value1"));
+        repository.setProps(props);
+        repository.init(configuration);
+        assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
+        repository.persist("/test/children/build/3", "value1");
+        assertThat(repository.get("/test/children/build/3"), is("value1"));
     }
     
     @Test
     public void assertBuildCuratorClientWithDigest() {
-        final CuratorZookeeperRepository customCenterRepository = new CuratorZookeeperRepository();
+        final CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
-        CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
+        CenterConfiguration configuration = new CenterConfiguration(repository.getType(), new Properties());
         configuration.setServerLists(serverLists);
-        customCenterRepository.setProps(props);
-        customCenterRepository.init(configuration);
-        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.DIGEST.getKey()), is("any"));
-        customCenterRepository.persist("/test/children/build/4", "value1");
-        assertThat(customCenterRepository.get("/test/children/build/4"), is("value1"));
+        repository.setProps(props);
+        repository.init(configuration);
+        assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.DIGEST.getKey()), is("any"));
+        repository.persist("/test/children/build/4", "value1");
+        assertThat(repository.get("/test/children/build/4"), is("value1"));
     }
     
     @Test
@@ -203,53 +203,48 @@ public final class CuratorZookeeperRepositoryTest {
     
     @Test
     public void assertZKCloseAndException() {
-        final CuratorZookeeperRepository customCenterRepository = new CuratorZookeeperRepository();
-        CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
+        CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
+        CenterConfiguration configuration = new CenterConfiguration(repository.getType(), new Properties());
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "digest");
         configuration.setServerLists(serverLists);
-        customCenterRepository.setProps(props);
-        customCenterRepository.init(configuration);
-        customCenterRepository.close();
-        
+        repository.setProps(props);
+        repository.init(configuration);
+        repository.close();
         try {
-            customCenterRepository.get("/test/children/1");
+            repository.get("/test/children/1");
             fail("must be failed after close.");
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             Assert.assertTrue(ex instanceof OrchestrationException);
         }
-        
         try {
-            customCenterRepository.persist("/test/children/01", "value1");
+            repository.persist("/test/children/01", "value1");
             fail("must be failed after close.");
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             Assert.assertTrue(ex instanceof OrchestrationException);
         }
-        
         try {
-            customCenterRepository.delete("/test/children/02");
+            repository.delete("/test/children/02");
             fail("must be failed after close.");
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             Assert.assertTrue(ex instanceof OrchestrationException);
         }
-        
         try {
-            customCenterRepository.persistEphemeral("/test/children/03", "value1");
+            repository.persistEphemeral("/test/children/03", "value1");
             fail("must be failed after close.");
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             Assert.assertTrue(ex instanceof OrchestrationException);
         }
-        
         try {
-            customCenterRepository.getChildrenKeys("/test/children");
+            repository.getChildrenKeys("/test/children");
             fail("must be failed after close.");
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

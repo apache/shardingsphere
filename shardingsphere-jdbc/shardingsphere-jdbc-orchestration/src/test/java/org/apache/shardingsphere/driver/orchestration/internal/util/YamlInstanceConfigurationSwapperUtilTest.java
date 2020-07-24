@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.orchestration.internal.util;
 
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlCenterRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -32,19 +32,19 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
     
     @Test
     public void marshal() {
-        YamlCenterRepositoryConfiguration yamlCenterRepositoryConfiguration = getYamlInstanceConfiguration();
-        Map<String, YamlCenterRepositoryConfiguration> yamlConfigurationMap = Collections.singletonMap("test", yamlCenterRepositoryConfiguration);
-        Map<String, CenterConfiguration> configurationMap = YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlConfigurationMap);
+        YamlOrchestrationRepositoryConfiguration yamlOrchestrationRepositoryConfiguration = getYamlOrchestrationRepositoryConfiguration();
+        Map<String, YamlOrchestrationRepositoryConfiguration> yamlConfigurationMap = Collections.singletonMap("test", yamlOrchestrationRepositoryConfiguration);
+        Map<String, CenterConfiguration> configurationMap = YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(yamlConfigurationMap);
         CenterConfiguration configuration = configurationMap.get("test");
-        assertEquals(configuration.getType(), yamlCenterRepositoryConfiguration.getInstanceType());
-        assertEquals(configuration.getOrchestrationType(), yamlCenterRepositoryConfiguration.getOrchestrationType());
-        assertEquals(configuration.getNamespace(), yamlCenterRepositoryConfiguration.getNamespace());
-        assertEquals(configuration.getServerLists(), yamlCenterRepositoryConfiguration.getServerLists());
-        assertEquals(configuration.getProps(), yamlCenterRepositoryConfiguration.getProps());
+        assertEquals(configuration.getType(), yamlOrchestrationRepositoryConfiguration.getInstanceType());
+        assertEquals(configuration.getOrchestrationType(), yamlOrchestrationRepositoryConfiguration.getOrchestrationType());
+        assertEquals(configuration.getNamespace(), yamlOrchestrationRepositoryConfiguration.getNamespace());
+        assertEquals(configuration.getServerLists(), yamlOrchestrationRepositoryConfiguration.getServerLists());
+        assertEquals(configuration.getProps(), yamlOrchestrationRepositoryConfiguration.getProps());
     }
     
-    private YamlCenterRepositoryConfiguration getYamlInstanceConfiguration() {
-        YamlCenterRepositoryConfiguration yamlConfiguration = new YamlCenterRepositoryConfiguration();
+    private YamlOrchestrationRepositoryConfiguration getYamlOrchestrationRepositoryConfiguration() {
+        YamlOrchestrationRepositoryConfiguration yamlConfiguration = new YamlOrchestrationRepositoryConfiguration();
         yamlConfiguration.setOrchestrationType(CenterType.REGISTRY_CENTER.getValue());
         yamlConfiguration.setInstanceType("zookeeper");
         yamlConfiguration.setNamespace("test");

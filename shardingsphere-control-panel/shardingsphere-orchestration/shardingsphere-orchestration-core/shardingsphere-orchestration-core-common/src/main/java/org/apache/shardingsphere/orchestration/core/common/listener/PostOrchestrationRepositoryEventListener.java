@@ -29,10 +29,10 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Post orchestration event listener.
+ * Post orchestration repository event listener.
  */
 @RequiredArgsConstructor
-public abstract class PostShardingCenterRepositoryEventListener implements OrchestrationListener {
+public abstract class PostOrchestrationRepositoryEventListener implements OrchestrationListener {
     
     private final EventBus eventBus = OrchestrationEventBus.getInstance();
     

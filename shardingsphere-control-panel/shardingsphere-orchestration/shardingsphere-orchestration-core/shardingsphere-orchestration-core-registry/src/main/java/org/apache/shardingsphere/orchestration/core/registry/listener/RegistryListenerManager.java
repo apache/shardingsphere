@@ -29,9 +29,9 @@ public final class RegistryListenerManager {
     
     private final DataSourceStateChangedListener dataSourceStateChangedListener;
     
-    public RegistryListenerManager(final String name, final RegistryRepository registryCenterRepository) {
-        instanceStateChangedListener = new InstanceStateChangedListener(name, registryCenterRepository);
-        dataSourceStateChangedListener = new DataSourceStateChangedListener(name, registryCenterRepository);
+    public RegistryListenerManager(final String name, final RegistryRepository registryRepository) {
+        instanceStateChangedListener = new InstanceStateChangedListener(name, registryRepository);
+        dataSourceStateChangedListener = new DataSourceStateChangedListener(name, registryRepository);
     }
     
     /**

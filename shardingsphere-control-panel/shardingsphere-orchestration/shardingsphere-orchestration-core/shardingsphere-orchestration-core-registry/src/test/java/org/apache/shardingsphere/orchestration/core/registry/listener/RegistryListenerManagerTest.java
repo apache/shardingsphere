@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verify;
 public final class RegistryListenerManagerTest {
     
     @Mock
-    private RegistryRepository registryCenterRepository;
+    private RegistryRepository registryRepository;
     
     @Mock
     private InstanceStateChangedListener instanceStateChangedListener;
@@ -41,7 +41,7 @@ public final class RegistryListenerManagerTest {
     
     @Test
     public void assertInitListeners() {
-        RegistryListenerManager actual = new RegistryListenerManager("test", registryCenterRepository);
+        RegistryListenerManager actual = new RegistryListenerManager("test", registryRepository);
         FieldUtil.setField(actual, "instanceStateChangedListener", instanceStateChangedListener);
         FieldUtil.setField(actual, "dataSourceStateChangedListener", dataSourceStateChangedListener);
         actual.initListeners();

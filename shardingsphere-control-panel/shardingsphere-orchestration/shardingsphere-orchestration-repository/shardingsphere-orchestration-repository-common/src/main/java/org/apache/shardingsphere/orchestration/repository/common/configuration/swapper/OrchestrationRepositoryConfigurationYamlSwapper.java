@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.orchestration.repository.common.configuration.swapper;
 
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlCenterRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
- * Orchestration instance configuration YAML swapper.
+ * Orchestration repository configuration YAML swapper.
  */
-public final class CenterRepositoryConfigurationYamlSwapper implements YamlSwapper<YamlCenterRepositoryConfiguration, CenterConfiguration> {
+public final class OrchestrationRepositoryConfigurationYamlSwapper implements YamlSwapper<YamlOrchestrationRepositoryConfiguration, CenterConfiguration> {
     
     @Override
-    public YamlCenterRepositoryConfiguration swapToYamlConfiguration(final CenterConfiguration configuration) {
-        YamlCenterRepositoryConfiguration result = new YamlCenterRepositoryConfiguration();
+    public YamlOrchestrationRepositoryConfiguration swapToYamlConfiguration(final CenterConfiguration configuration) {
+        YamlOrchestrationRepositoryConfiguration result = new YamlOrchestrationRepositoryConfiguration();
         result.setOrchestrationType(configuration.getOrchestrationType());
         result.setInstanceType(configuration.getType());
         result.setServerLists(configuration.getServerLists());
@@ -38,7 +38,7 @@ public final class CenterRepositoryConfigurationYamlSwapper implements YamlSwapp
     }
     
     @Override
-    public CenterConfiguration swapToObject(final YamlCenterRepositoryConfiguration yamlConfiguration) {
+    public CenterConfiguration swapToObject(final YamlOrchestrationRepositoryConfiguration yamlConfiguration) {
         CenterConfiguration result = new CenterConfiguration(yamlConfiguration.getInstanceType(), yamlConfiguration.getProps());
         result.setOrchestrationType(yamlConfiguration.getOrchestrationType());
         result.setServerLists(yamlConfiguration.getServerLists());

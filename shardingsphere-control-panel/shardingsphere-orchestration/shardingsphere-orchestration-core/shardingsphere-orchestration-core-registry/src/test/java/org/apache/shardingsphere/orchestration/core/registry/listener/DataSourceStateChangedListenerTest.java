@@ -36,11 +36,11 @@ public final class DataSourceStateChangedListenerTest {
     private DataSourceStateChangedListener dataSourceStateChangedListener;
     
     @Mock
-    private RegistryRepository registryCenterRepository;
+    private RegistryRepository registryRepository;
     
     @Before
     public void setUp() {
-        dataSourceStateChangedListener = new DataSourceStateChangedListener("test", registryCenterRepository);
+        dataSourceStateChangedListener = new DataSourceStateChangedListener("test", registryRepository);
     }
     
     @Test

@@ -33,7 +33,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurati
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
-import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
+import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.orchestration.core.common.configuration.DataSourceConfigurationYamlSwapper;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 /**
  * Schema changed listener.
  */
-public final class SchemaChangedListener extends PostShardingCenterRepositoryEventListener {
+public final class SchemaChangedListener extends PostOrchestrationRepositoryEventListener {
     
     private final ConfigCenter configurationService;
     
