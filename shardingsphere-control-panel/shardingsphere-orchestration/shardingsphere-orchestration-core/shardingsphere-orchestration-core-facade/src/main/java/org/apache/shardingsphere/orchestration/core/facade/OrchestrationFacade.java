@@ -64,7 +64,6 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private ConfigCenterRepository centerRepository;
     
-    @Getter
     private boolean isOverwrite;
     
     @Getter
