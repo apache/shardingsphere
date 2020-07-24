@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.core.config.listener;
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ClusterConfigurationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
@@ -33,8 +33,8 @@ import java.util.Collections;
  */
 public final class ClusterConfigurationChangedListener extends PostShardingCenterRepositoryEventListener {
     
-    public ClusterConfigurationChangedListener(final String name, final ConfigCenterRepository configCenterRepository) {
-        super(configCenterRepository, Collections.singletonList(new ConfigCenterNode(name).getClusterPath()));
+    public ClusterConfigurationChangedListener(final String name, final ConfigurationRepository configurationRepository) {
+        super(configurationRepository, Collections.singletonList(new ConfigCenterNode(name).getClusterPath()));
     }
     
     @Override

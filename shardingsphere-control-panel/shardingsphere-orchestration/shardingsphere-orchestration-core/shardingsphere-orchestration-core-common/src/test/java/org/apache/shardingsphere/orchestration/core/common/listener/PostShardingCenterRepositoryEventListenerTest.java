@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.common.listener;
 
-import org.apache.shardingsphere.orchestration.repository.api.CenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.OrchestrationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
@@ -41,11 +41,11 @@ import static org.mockito.Mockito.verify;
 public final class PostShardingCenterRepositoryEventListenerTest {
     
     @Mock
-    private CenterRepository centerRepository;
+    private OrchestrationRepository orchestrationRepository;
     
     @Test
     public void assertWatch() {
-        PostShardingCenterRepositoryEventListener postShardingCenterRepositoryEventListener = new PostShardingCenterRepositoryEventListener(centerRepository, Collections.singletonList("test")) {
+        PostShardingCenterRepositoryEventListener postShardingEventListener = new PostShardingCenterRepositoryEventListener(orchestrationRepository, Collections.singletonList("test")) {
             
             @Override
             protected OrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
@@ -56,14 +56,14 @@ public final class PostShardingCenterRepositoryEventListenerTest {
             DataChangedEventListener listener = (DataChangedEventListener) invocationOnMock.getArguments()[1];
             listener.onChange(new DataChangedEvent("test", "value", DataChangedEvent.ChangedType.UPDATED));
             return mock(DataChangedEventListener.class);
-        }).when(centerRepository).watch(anyString(), any(DataChangedEventListener.class));
-        postShardingCenterRepositoryEventListener.watch(DataChangedEvent.ChangedType.UPDATED);
-        verify(centerRepository).watch(eq("test"), ArgumentMatchers.any());
+        }).when(orchestrationRepository).watch(anyString(), any(DataChangedEventListener.class));
+        postShardingEventListener.watch(DataChangedEvent.ChangedType.UPDATED);
+        verify(orchestrationRepository).watch(eq("test"), ArgumentMatchers.any());
     }
     
     @Test
     public void assertWatchMultipleKey() {
-        PostShardingCenterRepositoryEventListener postShardingCenterRepositoryEventListener = new PostShardingCenterRepositoryEventListener(centerRepository, Arrays.asList("test", "dev")) {
+        PostShardingCenterRepositoryEventListener postShardingCenterRepositoryEventListener = new PostShardingCenterRepositoryEventListener(orchestrationRepository, Arrays.asList("test", "dev")) {
             
             @Override
             protected OrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
@@ -74,9 +74,9 @@ public final class PostShardingCenterRepositoryEventListenerTest {
             DataChangedEventListener listener = (DataChangedEventListener) invocationOnMock.getArguments()[1];
             listener.onChange(new DataChangedEvent("test", "value", DataChangedEvent.ChangedType.UPDATED));
             return mock(DataChangedEventListener.class);
-        }).when(centerRepository).watch(anyString(), any(DataChangedEventListener.class));
+        }).when(orchestrationRepository).watch(anyString(), any(DataChangedEventListener.class));
         postShardingCenterRepositoryEventListener.watch(DataChangedEvent.ChangedType.UPDATED, DataChangedEvent.ChangedType.DELETED);
-        verify(centerRepository).watch(eq("test"), ArgumentMatchers.any());
-        verify(centerRepository).watch(eq("dev"), ArgumentMatchers.any());
+        verify(orchestrationRepository).watch(eq("test"), ArgumentMatchers.any());
+        verify(orchestrationRepository).watch(eq("dev"), ArgumentMatchers.any());
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.core.metadata.listener;
 
 import org.apache.shardingsphere.orchestration.core.metadata.util.FieldUtil;
-import org.apache.shardingsphere.orchestration.repository.api.CenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.OrchestrationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +36,7 @@ public final class MetaDataListenerManagerTest {
     private MetaDataChangedListener metaDataChangedListener;
     
     @Mock
-    private CenterRepository centerRepository;
+    private OrchestrationRepository centerRepository;
     
     @Test
     public void assertInitListeners() {

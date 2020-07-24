@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.registry.listener;
 
-import org.apache.shardingsphere.orchestration.repository.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 
 /**
@@ -29,7 +29,7 @@ public final class RegistryListenerManager {
     
     private final DataSourceStateChangedListener dataSourceStateChangedListener;
     
-    public RegistryListenerManager(final String name, final RegistryCenterRepository registryCenterRepository) {
+    public RegistryListenerManager(final String name, final RegistryRepository registryCenterRepository) {
         instanceStateChangedListener = new InstanceStateChangedListener(name, registryCenterRepository);
         dataSourceStateChangedListener = new DataSourceStateChangedListener(name, registryCenterRepository);
     }

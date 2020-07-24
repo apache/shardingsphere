@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.registry;
 
-import org.apache.shardingsphere.orchestration.repository.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 public final class RegistryCenterTest {
     
     @Mock
-    private RegistryCenterRepository registryCenterRepository;
+    private RegistryRepository registryCenterRepository;
     
     private RegistryCenter registryCenter;
     

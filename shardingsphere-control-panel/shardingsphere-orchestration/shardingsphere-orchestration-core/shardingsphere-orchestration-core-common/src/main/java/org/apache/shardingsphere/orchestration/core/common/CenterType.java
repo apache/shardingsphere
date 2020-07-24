@@ -31,7 +31,9 @@ import java.util.Arrays;
 public enum CenterType {
     
     REGISTRY_CENTER("registry_center"),
+    
     CONFIG_CENTER("config_center"),
+    
     METADATA_CENTER("metadata_center");
     
     private final String value;

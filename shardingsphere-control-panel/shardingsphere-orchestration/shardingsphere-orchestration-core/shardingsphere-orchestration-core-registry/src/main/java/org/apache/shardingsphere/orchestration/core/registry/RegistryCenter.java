@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.core.registry;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.orchestration.repository.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.core.registry.instance.OrchestrationInstance;
 
 import java.util.Collection;
@@ -31,11 +31,11 @@ public final class RegistryCenter {
     
     private final RegistryCenterNode node;
     
-    private final RegistryCenterRepository repository;
+    private final RegistryRepository repository;
     
     private final OrchestrationInstance instance;
 
-    public RegistryCenter(final String name, final RegistryCenterRepository registryCenterRepository) {
+    public RegistryCenter(final String name, final RegistryRepository registryCenterRepository) {
         this.node = new RegistryCenterNode(name);
         this.repository = registryCenterRepository;
         this.instance = OrchestrationInstance.getInstance();

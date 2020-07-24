@@ -21,7 +21,7 @@ import org.apache.shardingsphere.orchestration.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.orchestration.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.schema.OrchestrationSchema;
-import org.apache.shardingsphere.orchestration.repository.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
@@ -35,7 +35,7 @@ public final class DataSourceStateChangedListener extends PostShardingCenterRepo
     
     private final RegistryCenterNode registryCenterNode;
     
-    public DataSourceStateChangedListener(final String name, final RegistryCenterRepository registryCenterRepository) {
+    public DataSourceStateChangedListener(final String name, final RegistryRepository registryCenterRepository) {
         super(registryCenterRepository, Collections.singleton(new RegistryCenterNode(name).getDataSourcesNodeFullRootPath()));
         registryCenterNode = new RegistryCenterNode(name);
     }

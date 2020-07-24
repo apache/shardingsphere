@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.core.config.listener;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.MetricsConfigurationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
@@ -33,8 +33,8 @@ import java.util.Collections;
  */
 public final class MetricsConfigurationChangedListener extends PostShardingCenterRepositoryEventListener {
     
-    public MetricsConfigurationChangedListener(final String name, final ConfigCenterRepository configCenterRepository) {
-        super(configCenterRepository, Collections.singletonList(new ConfigCenterNode(name).getMetricsPath()));
+    public MetricsConfigurationChangedListener(final String name, final ConfigurationRepository configurationRepository) {
+        super(configurationRepository, Collections.singletonList(new ConfigCenterNode(name).getMetricsPath()));
     }
     
     @Override

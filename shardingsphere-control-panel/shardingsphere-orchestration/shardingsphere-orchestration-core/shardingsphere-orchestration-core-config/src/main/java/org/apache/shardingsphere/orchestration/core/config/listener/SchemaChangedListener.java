@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
@@ -58,9 +58,9 @@ public final class SchemaChangedListener extends PostShardingCenterRepositoryEve
     
     private final Collection<String> existedSchemaNames = new LinkedList<>();
     
-    public SchemaChangedListener(final String name, final ConfigCenterRepository configCenterRepository, final Collection<String> shardingSchemaNames) {
-        super(configCenterRepository, new ConfigCenterNode(name).getAllSchemaConfigPaths(shardingSchemaNames));
-        configurationService = new ConfigCenter(name, configCenterRepository);
+    public SchemaChangedListener(final String name, final ConfigurationRepository configurationRepository, final Collection<String> shardingSchemaNames) {
+        super(configurationRepository, new ConfigCenterNode(name).getAllSchemaConfigPaths(shardingSchemaNames));
+        configurationService = new ConfigCenter(name, configurationRepository);
         configurationNode = new ConfigCenterNode(name);
         existedSchemaNames.addAll(shardingSchemaNames);
     }

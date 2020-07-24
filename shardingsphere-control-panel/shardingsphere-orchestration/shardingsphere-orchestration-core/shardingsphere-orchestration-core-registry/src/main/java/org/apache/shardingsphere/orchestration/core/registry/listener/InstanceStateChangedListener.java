@@ -24,7 +24,7 @@ import org.apache.shardingsphere.orchestration.core.registry.RegistryCenterNodeS
 import org.apache.shardingsphere.orchestration.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.instance.InstanceState;
 import org.apache.shardingsphere.orchestration.core.registry.instance.OrchestrationInstance;
-import org.apache.shardingsphere.orchestration.repository.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
 
@@ -35,7 +35,7 @@ import java.util.Collections;
  */
 public final class InstanceStateChangedListener extends PostShardingCenterRepositoryEventListener {
     
-    public InstanceStateChangedListener(final String name, final RegistryCenterRepository registryCenterRepository) {
+    public InstanceStateChangedListener(final String name, final RegistryRepository registryCenterRepository) {
         super(registryCenterRepository, Collections.singleton(new RegistryCenterNode(name).getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId())));
     }
     

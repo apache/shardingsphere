@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.core.common.listener;
 
 import com.google.common.eventbus.EventBus;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.orchestration.repository.api.CenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.OrchestrationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
@@ -36,7 +36,7 @@ public abstract class PostShardingCenterRepositoryEventListener implements Orche
     
     private final EventBus eventBus = OrchestrationEventBus.getInstance();
     
-    private final CenterRepository centerRepository;
+    private final OrchestrationRepository orchestrationRepository;
     
     private final Collection<String> watchKeys;
     
@@ -49,7 +49,7 @@ public abstract class PostShardingCenterRepositoryEventListener implements Orche
     }
     
     private void watch(final String watchKey, final Collection<ChangedType> watchedChangedTypeList) {
-        centerRepository.watch(watchKey, dataChangedEvent -> {
+        orchestrationRepository.watch(watchKey, dataChangedEvent -> {
             if (watchedChangedTypeList.contains(dataChangedEvent.getChangedType())) {
                 eventBus.post(createOrchestrationEvent(dataChangedEvent));
             }

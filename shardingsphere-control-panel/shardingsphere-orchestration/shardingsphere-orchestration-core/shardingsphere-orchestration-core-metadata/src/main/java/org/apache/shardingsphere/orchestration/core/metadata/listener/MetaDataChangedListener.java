@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.core.metadata.listener;
 
 import org.apache.shardingsphere.orchestration.core.metadata.event.MetaDataChangedEvent;
-import org.apache.shardingsphere.orchestration.repository.api.CenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.OrchestrationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
@@ -34,14 +34,14 @@ import java.util.Collection;
  * Meta data changed listener.
  */
 public final class MetaDataChangedListener extends PostShardingCenterRepositoryEventListener {
-
+    
     private final Collection<String> schemaNames;
-
-    public MetaDataChangedListener(final String name, final CenterRepository centerRepository, final Collection<String> shardingSchemaNames) {
-        super(centerRepository, new MetaDataCenterNode(name).getAllSchemaMetadataPaths(shardingSchemaNames));
+    
+    public MetaDataChangedListener(final String name, final OrchestrationRepository orchestrationRepository, final Collection<String> shardingSchemaNames) {
+        super(orchestrationRepository, new MetaDataCenterNode(name).getAllSchemaMetadataPaths(shardingSchemaNames));
         this.schemaNames = shardingSchemaNames;
     }
-
+    
     @Override
     protected OrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlRuleSchemaMetaData.class));

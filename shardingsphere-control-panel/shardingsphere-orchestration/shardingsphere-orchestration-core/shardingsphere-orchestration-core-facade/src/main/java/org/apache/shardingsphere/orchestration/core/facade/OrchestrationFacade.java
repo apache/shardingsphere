@@ -25,8 +25,8 @@ import org.apache.shardingsphere.cluster.configuration.config.ClusterConfigurati
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenter;
-import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.repository.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
+import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
@@ -54,15 +54,15 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     static {
         // TODO avoid multiple loading
-        ShardingSphereServiceLoader.register(ConfigCenterRepository.class);
-        ShardingSphereServiceLoader.register(RegistryCenterRepository.class);
+        ShardingSphereServiceLoader.register(ConfigurationRepository.class);
+        ShardingSphereServiceLoader.register(RegistryRepository.class);
     }
     
-    private ConfigCenterRepository configCenterRepository;
+    private ConfigurationRepository configurationRepository;
     
-    private RegistryCenterRepository registryCenterRepository;
+    private RegistryRepository registryRepository;
     
-    private ConfigCenterRepository centerRepository;
+    private ConfigurationRepository metaDataRepository;
     
     private boolean isOverwrite;
     
@@ -84,10 +84,10 @@ public final class OrchestrationFacade implements AutoCloseable {
     private String metaDataCenterName;
     
     /**
-     * Init orchestration facade.
+     * Initialize orchestration facade.
      *
      * @param orchestrationConfig orchestration configuration
-     * @param shardingSchemaNames collection of sharding schema names
+     * @param shardingSchemaNames sharding schema names
      */
     public void init(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
         initConfigCenter(orchestrationConfig);
@@ -97,44 +97,46 @@ public final class OrchestrationFacade implements AutoCloseable {
     }
     
     private void initConfigCenter(final OrchestrationConfiguration orchestrationConfig) {
-        Optional<String> optional = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), CenterType.CONFIG_CENTER.getValue());
-        Preconditions.checkArgument(optional.isPresent(), "Can not find instance configuration with config center orchestration type.");
-        configCenterName = optional.get();
+        configCenterName = getInstanceName(orchestrationConfig.getInstanceConfigurationMap(), CenterType.CONFIG_CENTER.getValue());
         CenterConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName);
         Preconditions.checkNotNull(configCenterConfiguration, "Config center configuration cannot be null.");
-        configCenterRepository = TypedSPIRegistry.getRegisteredService(
-                ConfigCenterRepository.class, configCenterConfiguration.getType(), configCenterConfiguration.getProps());
-        configCenterRepository.init(configCenterConfiguration);
+        configurationRepository = TypedSPIRegistry.getRegisteredService(ConfigurationRepository.class, configCenterConfiguration.getType(), configCenterConfiguration.getProps());
+        configurationRepository.init(configCenterConfiguration);
         isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProps()).getValue(OrchestrationPropertyKey.OVERWRITE);
-        configCenter = new ConfigCenter(configCenterName, configCenterRepository);
+        configCenter = new ConfigCenter(configCenterName, configurationRepository);
     }
     
     private void initRegistryCenter(final OrchestrationConfiguration orchestrationConfig) {
-        Optional<String> optional = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), CenterType.REGISTRY_CENTER.getValue());
-        Preconditions.checkArgument(optional.isPresent(), "Can not find instance configuration with registry center orchestration type.");
-        registryCenterName = optional.get();
+        registryCenterName = getInstanceName(orchestrationConfig.getInstanceConfigurationMap(), CenterType.REGISTRY_CENTER.getValue());
         CenterConfiguration registryCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(registryCenterName);
         Preconditions.checkNotNull(registryCenterConfiguration, "Registry center configuration cannot be null.");
-        registryCenterRepository = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfiguration.getType(), registryCenterConfiguration.getProps());
-        registryCenterRepository.init(registryCenterConfiguration);
-        registryCenter = new RegistryCenter(registryCenterName, registryCenterRepository);
+        registryRepository = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfiguration.getType(), registryCenterConfiguration.getProps());
+        registryRepository.init(registryCenterConfiguration);
+        registryCenter = new RegistryCenter(registryCenterName, registryRepository);
     }
     
     private void initMetaDataCenter(final OrchestrationConfiguration orchestrationConfig) {
-        Optional<String> optional = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), CenterType.METADATA_CENTER.getValue());
-        Preconditions.checkArgument(optional.isPresent(), "Can not find instance configuration with metadata center orchestration type.");
-        metaDataCenterName = optional.get();
+        metaDataCenterName = getInstanceName(orchestrationConfig.getInstanceConfigurationMap(), CenterType.METADATA_CENTER.getValue());
         CenterConfiguration metaDataCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(metaDataCenterName);
         Preconditions.checkNotNull(metaDataCenterConfiguration, "MetaData center configuration cannot be null.");
-        centerRepository = TypedSPIRegistry.getRegisteredService(ConfigCenterRepository.class, metaDataCenterConfiguration.getType(), metaDataCenterConfiguration.getProps());
-        centerRepository.init(metaDataCenterConfiguration);
-        metaDataCenter = new MetaDataCenter(metaDataCenterName, centerRepository);
+        metaDataRepository = TypedSPIRegistry.getRegisteredService(ConfigurationRepository.class, metaDataCenterConfiguration.getType(), metaDataCenterConfiguration.getProps());
+        metaDataRepository.init(metaDataCenterConfiguration);
+        metaDataCenter = new MetaDataCenter(metaDataCenterName, metaDataRepository);
+    }
+    
+    private String getInstanceName(final Map<String, CenterConfiguration> centerConfigurations, final String type) {
+        Optional<String> result = centerConfigurations.entrySet().stream().filter(entry -> contains(entry.getValue().getOrchestrationType(), type)).findFirst().map(Entry::getKey);
+        Preconditions.checkArgument(result.isPresent(), "Can not find instance configuration with orchestration type.");
+        return result.get();
+    }
+    
+    private boolean contains(final String collection, final String element) {
+        return Splitter.on(",").omitEmptyStrings().trimResults().splitToList(collection).stream().anyMatch(each -> element.equals(each.trim()));
     }
     
     private void initListenerManager(final Collection<String> shardingSchemaNames) {
         listenerManager = new OrchestrationListenerManager(
-                registryCenterName, registryCenterRepository, configCenterName,
-                configCenterRepository, metaDataCenterName, centerRepository,
+                registryCenterName, registryRepository, configCenterName, configurationRepository, metaDataCenterName, metaDataRepository,
                 shardingSchemaNames.isEmpty() ? configCenter.getAllShardingSchemaNames() : shardingSchemaNames);
     }
     
@@ -185,23 +187,14 @@ public final class OrchestrationFacade implements AutoCloseable {
     @Override
     public void close() {
         try {
-            configCenterRepository.close();
-            registryCenterRepository.close();
-            centerRepository.close();
+            configurationRepository.close();
+            registryRepository.close();
+            metaDataRepository.close();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             log.warn("RegCenter exception for: {}", ex.getMessage());
         }
-    }
-    
-    private Optional<String> getInstanceNameByOrchestrationType(final Map<String, CenterConfiguration> map, final String type) {
-        return (null == map || null == type) ? Optional.empty() : map.entrySet()
-                .stream().filter(entry -> contains(entry.getValue().getOrchestrationType(), type)).findFirst().map(Map.Entry::getKey);
-    }
-    
-    private boolean contains(final String collection, final String element) {
-        return Splitter.on(",").omitEmptyStrings().trimResults().splitToList(collection).stream().anyMatch(each -> element.equals(each.trim()));
     }
     
     /**

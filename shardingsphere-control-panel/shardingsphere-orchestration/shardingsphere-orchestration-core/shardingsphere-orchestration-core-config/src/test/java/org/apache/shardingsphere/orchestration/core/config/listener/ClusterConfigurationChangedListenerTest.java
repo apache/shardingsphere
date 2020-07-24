@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.core.config.listener;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ClusterConfigurationChangedEvent;
 import org.junit.Before;
@@ -41,11 +41,11 @@ public final class ClusterConfigurationChangedListenerTest {
     private ClusterConfigurationChangedListener clusterConfigurationChangedListener;
     
     @Mock
-    private ConfigCenterRepository configCenterRepository;
+    private ConfigurationRepository configurationRepository;
     
     @Before
     public void setUp() {
-        clusterConfigurationChangedListener = new ClusterConfigurationChangedListener("test", configCenterRepository);
+        clusterConfigurationChangedListener = new ClusterConfigurationChangedListener("test", configurationRepository);
     }
     
     @Test
