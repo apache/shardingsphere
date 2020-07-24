@@ -29,13 +29,13 @@ public final class HeartbeatConfiguration {
     
     private String sql;
     
-    private int interval;
+    private Integer interval;
     
     private boolean retryEnable;
     
-    private int retryMaximum;
+    private Integer retryMaximum;
     
-    private int retryInterval;
+    private Integer retryInterval;
     
-    private int threadCount;
+    private Integer threadCount;
 }

@@ -21,7 +21,6 @@ import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
-import org.apache.shardingsphere.orchestration.core.common.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.spring.boot.orchestration.registry.TestCenterRepository;
 import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
 import org.junit.BeforeClass;
@@ -54,21 +53,21 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
         EmbedTestingServer.start();
         TestCenterRepository testCenter = new TestCenterRepository();
         testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", ""
-                + "ds_master: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
+                + "ds_master: !!org.apache.shardingsphere.orchestration.core.common.configuration.YamlDataSourceConfiguration\n"
                 + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
                 + "  props:\n"
                 + "    url: jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
                 + "    maxTotal: 16\n"
                 + "    password: ''\n"
                 + "    username: root\n"
-                + "ds_slave_0: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
+                + "ds_slave_0: !!org.apache.shardingsphere.orchestration.core.common.configuration.YamlDataSourceConfiguration\n"
                 + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
                 + "  props:\n"
                 + "    url: jdbc:h2:mem:demo_ds_slave_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
                 + "    maxTotal: 16\n"
                 + "    password: ''\n"
                 + "    username: root\n"
-                + "ds_slave_1: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
+                + "ds_slave_1: !!org.apache.shardingsphere.orchestration.core.common.configuration.YamlDataSourceConfiguration\n"
                 + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
                 + "  props:\n"
                 + "    url: jdbc:h2:mem:demo_ds_slave_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"

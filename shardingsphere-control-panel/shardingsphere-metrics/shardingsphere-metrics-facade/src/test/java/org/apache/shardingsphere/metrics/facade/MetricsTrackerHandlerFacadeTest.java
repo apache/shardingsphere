@@ -64,7 +64,7 @@ public final class MetricsTrackerHandlerFacadeTest {
     }
     
     private void init() {
-        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, 0, false, true, 8, null);
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, true, 8, null);
         List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
         facadeConfigurations.add(metricsConfiguration);
         new ControlPanelFacadeEngine().init(facadeConfigurations);

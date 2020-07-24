@@ -9,7 +9,7 @@ weight = 6
 
 *Configuration Entrance*
 
-Class name: org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration
+Class name: org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration
 
 Attributes:
 
@@ -19,7 +19,7 @@ Attributes:
 
 *Orchestration Instance Configuration*
 
-Class name: org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration
+Class name: org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
 
 Attributes:
 
@@ -88,7 +88,7 @@ Attributes：
 
 *Heartbeat Detection Configuration*
 
-Class name：org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration
+Class name：org.apache.shardingsphere.orchestration.center.config.HeartbeatConfiguration
 
 Attributes：
 

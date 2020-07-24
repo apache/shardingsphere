@@ -153,8 +153,8 @@ cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-distribution/target/
 
 ```shell
 shasum -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip.sha512
-shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz.sha512
-shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-elasticjob-lite-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-elasticjob-lite-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-elasticjob-cloud-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-elasticjob-cloud-bin.tar.gz.sha512
 ```
 
 ### Commit to Apache SVN
@@ -170,8 +170,8 @@ svn --username=${APACHE LDAP username} commit -m "release elasticjob-${RELEASE.V
 
 ```shell
 shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip.sha512
-shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz.sha512
-shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-elasticjob-lite-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-elasticjob-cloud-bin.tar.gz.sha512
 ```
 
 ### Check gpg Signature
@@ -204,8 +204,8 @@ Then, check the gpg signature.
 
 ```shell
 gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip
-gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz
-gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz
+gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-elasticjob-lite-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-elasticjob-lite-bin.tar.gz
+gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-elasticjob-cloud-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-elasticjob-cloud-bin.tar.gz
 ```
 
 ### Check Released Files
@@ -231,7 +231,7 @@ diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src-release sharding
 
 #### Check binary packages
 
-Decompress `apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz` and `apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz`
+Decompress `apache-shardingsphere-elasticjob-${RELEASE.VERSION}-elasticjob-lite-bin.tar.gz` and `apache-shardingsphere-elasticjob-${RELEASE.VERSION}-elasticjob-cloud-bin.tar.gz`
 to check the following items:
 
 *   `LICENSE` and `NOTICE` files exist

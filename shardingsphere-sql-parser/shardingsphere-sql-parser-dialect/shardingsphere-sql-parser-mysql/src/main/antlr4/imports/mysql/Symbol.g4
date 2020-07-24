@@ -57,4 +57,3 @@ BQ_:                 '`';
 QUESTION_:           '?';
 AT_:                 '@';
 SEMI_:               ';';
-JSON_SEPARATOR:      '->>';

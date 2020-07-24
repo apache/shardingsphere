@@ -31,9 +31,9 @@ public final class ClusterConfigurationYamlSwapperTest {
     
     private static final String SQL = "select 1";
     
-    private static final int INTERVAL = 60;
+    private static final Integer INTERVAL = 60;
     
-    private static final int MAXIMUM = 3;
+    private static final Integer MAXIMUM = 3;
     
     @Test
     public void assertSwapToClusterConfiguration() {

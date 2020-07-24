@@ -33,13 +33,13 @@ public final class YamlMetricsConfiguration implements YamlConfiguration {
     
     private String host;
     
-    private int port;
+    private Integer port;
     
     private Boolean async;
     
     private Boolean enable;
     
-    private int threadCount;
+    private Integer threadCount;
     
     private Properties props = new Properties();
 }

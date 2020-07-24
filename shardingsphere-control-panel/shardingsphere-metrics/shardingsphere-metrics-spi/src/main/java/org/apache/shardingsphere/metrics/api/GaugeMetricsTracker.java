@@ -30,7 +30,7 @@ public interface GaugeMetricsTracker extends MetricsTracker {
      * @param amount amount
      * @param labelValues label values
      */
-    void increment(double amount, String... labelValues);
+    void inc(double amount, String... labelValues);
     
     /**
      *  Decrement the Gauge with label values by the given amount.
@@ -38,7 +38,7 @@ public interface GaugeMetricsTracker extends MetricsTracker {
      * @param amount amount
      * @param labelValues label values
      */
-    void decrement(double amount, String... labelValues);
+    void dec(double amount, String... labelValues);
     
     /**
      * Metrics type.
