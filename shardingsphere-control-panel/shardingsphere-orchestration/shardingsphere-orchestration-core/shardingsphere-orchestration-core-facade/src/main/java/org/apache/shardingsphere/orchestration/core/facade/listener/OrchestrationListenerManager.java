@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.orchestration.core.facade.listener;
 
 import org.apache.shardingsphere.orchestration.core.metadata.listener.MetaDataListenerManager;
-import org.apache.shardingsphere.orchestration.repository.api.CenterRepository;
-import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.repository.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.OrchestrationRepository;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
+import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.core.config.listener.ConfigurationChangedListenerManager;
 import org.apache.shardingsphere.orchestration.core.registry.listener.RegistryListenerManager;
 
@@ -37,13 +37,13 @@ public final class OrchestrationListenerManager {
     
     private final MetaDataListenerManager metaDataListenerManager;
     
-    public OrchestrationListenerManager(final String registryCenterRepositoryName, final RegistryCenterRepository registryCenterRepository,
-                                        final String configCenterRepositoryName, final ConfigCenterRepository configCenterRepository,
-                                        final String metadataCenterRepositoryName, final CenterRepository centerRepository,
+    public OrchestrationListenerManager(final String registryRepositoryName, final RegistryRepository registryRepository,
+                                        final String configurationRepositoryName, final ConfigurationRepository configurationRepository,
+                                        final String metadataRepositoryName, final OrchestrationRepository metaDataRepository,
                                         final Collection<String> shardingSchemaNames) {
-        configurationChangedListenerManager = new ConfigurationChangedListenerManager(configCenterRepositoryName, configCenterRepository, shardingSchemaNames);
-        registryListenerManager = new RegistryListenerManager(registryCenterRepositoryName, registryCenterRepository);
-        metaDataListenerManager = new MetaDataListenerManager(metadataCenterRepositoryName, centerRepository, shardingSchemaNames);
+        configurationChangedListenerManager = new ConfigurationChangedListenerManager(configurationRepositoryName, configurationRepository, shardingSchemaNames);
+        registryListenerManager = new RegistryListenerManager(registryRepositoryName, registryRepository);
+        metaDataListenerManager = new MetaDataListenerManager(metadataRepositoryName, metaDataRepository, shardingSchemaNames);
     }
     
     /**

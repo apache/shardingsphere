@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.orchestration.core.facade;
 
 import org.apache.shardingsphere.orchestration.core.metadata.listener.MetaDataListenerManager;
-import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.repository.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
+import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 
 import org.apache.shardingsphere.orchestration.core.config.listener.ConfigurationChangedListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.listener.OrchestrationListenerManager;
@@ -38,10 +38,10 @@ import static org.mockito.Mockito.verify;
 public final class OrchestrationListenerManagerTest {
     
     @Mock
-    private RegistryCenterRepository registryCenterRepository;
+    private RegistryRepository registryRepository;
     
     @Mock
-    private ConfigCenterRepository configCenterRepository;
+    private ConfigurationRepository configurationRepository;
     
     @Mock
     private ConfigurationChangedListenerManager configurationChangedListenerManager;
@@ -54,8 +54,8 @@ public final class OrchestrationListenerManagerTest {
     
     @Test
     public void assertInitListeners() {
-        OrchestrationListenerManager actual = new OrchestrationListenerManager("testRegCenter", registryCenterRepository, 
-                "FirstTestConfigCenter", configCenterRepository, "FirstTestConfigCenter", configCenterRepository, Collections.emptyList());
+        OrchestrationListenerManager actual = new OrchestrationListenerManager("testRegCenter", registryRepository, 
+                "FirstTestConfigCenter", configurationRepository, "FirstTestConfigCenter", configurationRepository, Collections.emptyList());
         FieldUtil.setField(actual, "configurationChangedListenerManager", configurationChangedListenerManager);
         FieldUtil.setField(actual, "registryListenerManager", registryListenerManager);
         FieldUtil.setField(actual, "metaDataListenerManager", metaDataListenerManager);

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguratio
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.rule.YamlMasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlCenterRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -51,8 +51,8 @@ public final class ShardingConfigurationLoaderTest {
         assertEncryptRuleConfiguration(actual.getRuleConfigurationMap().get("encrypt_db"));
     }
     
-    private void assertOrchestrationConfiguration(final Map<String, YamlCenterRepositoryConfiguration> map) {
-        YamlCenterRepositoryConfiguration actual = map.get("test_name_1");
+    private void assertOrchestrationConfiguration(final Map<String, YamlOrchestrationRepositoryConfiguration> map) {
+        YamlOrchestrationRepositoryConfiguration actual = map.get("test_name_1");
         assertThat(actual.getNamespace(), is("test_namespace_1"));
         assertThat(actual.getOrchestrationType(), is("configuration_center"));
         assertThat(actual.getServerLists(), is("localhost:2181"));

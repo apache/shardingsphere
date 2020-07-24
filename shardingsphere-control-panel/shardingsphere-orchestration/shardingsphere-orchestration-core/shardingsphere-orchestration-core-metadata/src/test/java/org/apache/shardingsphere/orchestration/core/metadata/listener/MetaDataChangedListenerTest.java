@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.core.metadata.listener;
 
 import org.apache.shardingsphere.orchestration.core.metadata.event.MetaDataChangedEvent;
-import org.apache.shardingsphere.orchestration.repository.api.CenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.OrchestrationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.metadata.MetaDataTest;
 import org.junit.Before;
@@ -36,11 +36,11 @@ public final class MetaDataChangedListenerTest {
     private MetaDataChangedListener metaDataChangedListener;
     
     @Mock
-    private CenterRepository centerRepository;
+    private OrchestrationRepository orchestrationRepository;
     
     @Before
     public void setUp() {
-        metaDataChangedListener = new MetaDataChangedListener("test", centerRepository, Collections.singleton("schema"));
+        metaDataChangedListener = new MetaDataChangedListener("test", orchestrationRepository, Collections.singleton("schema"));
     }
     
     @Test

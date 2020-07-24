@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.repository.common.configuration.swapper;
 
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlCenterRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
@@ -38,13 +38,13 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     public void assertSwapToYamlOrchestrationConfiguration() {
         OrchestrationConfiguration data = getOrchestrationConfiguration();
         YamlOrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swapToYamlConfiguration(data);
-        for (String each : result.getCenterRepositoryConfigurationMap().keySet()) {
-            assertNotNull(result.getCenterRepositoryConfigurationMap().get(each));
-            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getOrchestrationType(), is(data.getInstanceConfigurationMap().get(each).getOrchestrationType()));
-            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getInstanceType(), is(data.getInstanceConfigurationMap().get(each).getType()));
-            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getNamespace(), is(data.getInstanceConfigurationMap().get(each).getNamespace()));
-            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getServerLists(), is(data.getInstanceConfigurationMap().get(each).getServerLists()));
-            assertThat(result.getCenterRepositoryConfigurationMap().get(each).getProps(), is(data.getInstanceConfigurationMap().get(each).getProps()));
+        for (String each : result.getOrchestrationRepositoryConfigurationMap().keySet()) {
+            assertNotNull(result.getOrchestrationRepositoryConfigurationMap().get(each));
+            assertThat(result.getOrchestrationRepositoryConfigurationMap().get(each).getOrchestrationType(), is(data.getInstanceConfigurationMap().get(each).getOrchestrationType()));
+            assertThat(result.getOrchestrationRepositoryConfigurationMap().get(each).getInstanceType(), is(data.getInstanceConfigurationMap().get(each).getType()));
+            assertThat(result.getOrchestrationRepositoryConfigurationMap().get(each).getNamespace(), is(data.getInstanceConfigurationMap().get(each).getNamespace()));
+            assertThat(result.getOrchestrationRepositoryConfigurationMap().get(each).getServerLists(), is(data.getInstanceConfigurationMap().get(each).getServerLists()));
+            assertThat(result.getOrchestrationRepositoryConfigurationMap().get(each).getProps(), is(data.getInstanceConfigurationMap().get(each).getProps()));
         }
     }
     
@@ -54,11 +54,11 @@ public final class OrchestrationConfigurationYamlSwapperTest {
         OrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swapToObject(data);
         for (String each : result.getInstanceConfigurationMap().keySet()) {
             assertNotNull(result.getInstanceConfigurationMap().get(each));
-            assertThat(result.getInstanceConfigurationMap().get(each).getOrchestrationType(), is(data.getCenterRepositoryConfigurationMap().get(each).getOrchestrationType()));
-            assertThat(result.getInstanceConfigurationMap().get(each).getType(), is(data.getCenterRepositoryConfigurationMap().get(each).getInstanceType()));
-            assertThat(result.getInstanceConfigurationMap().get(each).getNamespace(), is(data.getCenterRepositoryConfigurationMap().get(each).getNamespace()));
-            assertThat(result.getInstanceConfigurationMap().get(each).getServerLists(), is(data.getCenterRepositoryConfigurationMap().get(each).getServerLists()));
-            assertThat(result.getInstanceConfigurationMap().get(each).getProps(), is(data.getCenterRepositoryConfigurationMap().get(each).getProps()));
+            assertThat(result.getInstanceConfigurationMap().get(each).getOrchestrationType(), is(data.getOrchestrationRepositoryConfigurationMap().get(each).getOrchestrationType()));
+            assertThat(result.getInstanceConfigurationMap().get(each).getType(), is(data.getOrchestrationRepositoryConfigurationMap().get(each).getInstanceType()));
+            assertThat(result.getInstanceConfigurationMap().get(each).getNamespace(), is(data.getOrchestrationRepositoryConfigurationMap().get(each).getNamespace()));
+            assertThat(result.getInstanceConfigurationMap().get(each).getServerLists(), is(data.getOrchestrationRepositoryConfigurationMap().get(each).getServerLists()));
+            assertThat(result.getInstanceConfigurationMap().get(each).getProps(), is(data.getOrchestrationRepositoryConfigurationMap().get(each).getProps()));
         }
     }
     
@@ -73,16 +73,16 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     }
     
     private YamlOrchestrationConfiguration getYamlOrchestrationConfiguration() {
-        YamlCenterRepositoryConfiguration yamlInstanceConfiguration = new YamlCenterRepositoryConfiguration();
+        YamlOrchestrationRepositoryConfiguration yamlInstanceConfiguration = new YamlOrchestrationRepositoryConfiguration();
         yamlInstanceConfiguration.setInstanceType("zookeeper");
         yamlInstanceConfiguration.setProps(new Properties());
         yamlInstanceConfiguration.setOrchestrationType("config_center");
         yamlInstanceConfiguration.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
         yamlInstanceConfiguration.setNamespace("orchestration");
-        Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap = new HashMap<>();
+        Map<String, YamlOrchestrationRepositoryConfiguration> yamlInstanceConfigurationMap = new HashMap<>();
         yamlInstanceConfigurationMap.put(LOGIC_SCHEMA, yamlInstanceConfiguration);
         YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();
-        result.setCenterRepositoryConfigurationMap(yamlInstanceConfigurationMap);
+        result.setOrchestrationRepositoryConfigurationMap(yamlInstanceConfigurationMap);
         return result;
     }
 }

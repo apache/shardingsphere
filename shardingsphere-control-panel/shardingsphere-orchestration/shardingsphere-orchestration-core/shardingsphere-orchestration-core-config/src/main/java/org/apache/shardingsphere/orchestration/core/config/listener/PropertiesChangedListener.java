@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.orchestration.core.config.listener;
 
-import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
+import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
@@ -29,10 +29,10 @@ import java.util.Collections;
 /**
  * Properties changed listener.
  */
-public final class PropertiesChangedListener extends PostShardingCenterRepositoryEventListener {
+public final class PropertiesChangedListener extends PostOrchestrationRepositoryEventListener {
     
-    public PropertiesChangedListener(final String name, final ConfigCenterRepository configCenterRepository) {
-        super(configCenterRepository, Collections.singletonList(new ConfigCenterNode(name).getPropsPath()));
+    public PropertiesChangedListener(final String name, final ConfigurationRepository configurationRepository) {
+        super(configurationRepository, Collections.singletonList(new ConfigCenterNode(name).getPropsPath()));
     }
     
     @Override

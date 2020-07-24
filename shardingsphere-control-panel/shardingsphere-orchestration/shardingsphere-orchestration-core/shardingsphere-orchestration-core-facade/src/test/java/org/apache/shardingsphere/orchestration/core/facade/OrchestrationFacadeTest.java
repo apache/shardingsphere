@@ -27,7 +27,7 @@ import org.apache.shardingsphere.orchestration.core.facade.listener.Orchestratio
 import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.orchestration.core.metadata.MetaDataCenter;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenter;
-import org.apache.shardingsphere.orchestration.repository.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.junit.Before;
@@ -53,7 +53,7 @@ public final class OrchestrationFacadeTest {
     private final OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance();
     
     @Mock
-    private RegistryCenterRepository registryCenterRepository;
+    private RegistryRepository registryRepository;
     
     @Mock
     private ConfigCenter configCenter;
@@ -84,7 +84,7 @@ public final class OrchestrationFacadeTest {
         instanceConfigurationMap.put("test_name_3", configuration3);
         OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration(instanceConfigurationMap);
         orchestrationFacade.init(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
-        FieldUtil.setField(orchestrationFacade, "registryCenterRepository", registryCenterRepository);
+        FieldUtil.setField(orchestrationFacade, "registryRepository", registryRepository);
         FieldUtil.setField(orchestrationFacade, "configCenter", configCenter);
         FieldUtil.setField(orchestrationFacade, "registryCenter", registryCenter);
         FieldUtil.setField(orchestrationFacade, "metaDataCenter", metaDataCenter);
@@ -125,13 +125,13 @@ public final class OrchestrationFacadeTest {
     @Test
     public void assertCloseSuccess() {
         orchestrationFacade.close();
-        verify(registryCenterRepository).close();
+        verify(registryRepository).close();
     }
     
     @Test
     public void assertCloseFailure() {
-        doThrow(new RuntimeException()).when(registryCenterRepository).close();
+        doThrow(new RuntimeException()).when(registryRepository).close();
         orchestrationFacade.close();
-        verify(registryCenterRepository).close();
+        verify(registryRepository).close();
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.config.listener;
 
-import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 
 import java.util.Collection;
@@ -37,12 +37,12 @@ public final class ConfigurationChangedListenerManager {
     
     private final ClusterConfigurationChangedListener clusterConfigurationChangedListener;
     
-    public ConfigurationChangedListenerManager(final String name, final ConfigCenterRepository configCenterRepository, final Collection<String> shardingSchemaNames) {
-        schemaChangedListener = new SchemaChangedListener(name, configCenterRepository, shardingSchemaNames);
-        propertiesChangedListener = new PropertiesChangedListener(name, configCenterRepository);
-        authenticationChangedListener = new AuthenticationChangedListener(name, configCenterRepository);
-        metricsConfigurationChangedListener = new MetricsConfigurationChangedListener(name, configCenterRepository);
-        clusterConfigurationChangedListener = new ClusterConfigurationChangedListener(name, configCenterRepository);
+    public ConfigurationChangedListenerManager(final String name, final ConfigurationRepository configurationRepository, final Collection<String> shardingSchemaNames) {
+        schemaChangedListener = new SchemaChangedListener(name, configurationRepository, shardingSchemaNames);
+        propertiesChangedListener = new PropertiesChangedListener(name, configurationRepository);
+        authenticationChangedListener = new AuthenticationChangedListener(name, configurationRepository);
+        metricsConfigurationChangedListener = new MetricsConfigurationChangedListener(name, configurationRepository);
+        clusterConfigurationChangedListener = new ClusterConfigurationChangedListener(name, configurationRepository);
     }
     
     /**

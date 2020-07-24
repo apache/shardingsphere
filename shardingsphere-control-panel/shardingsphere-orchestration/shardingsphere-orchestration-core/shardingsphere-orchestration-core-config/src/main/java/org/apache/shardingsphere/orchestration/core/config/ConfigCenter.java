@@ -41,7 +41,7 @@ import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.core.common.configuration.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.common.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -65,11 +65,11 @@ public final class ConfigCenter {
     
     private final ConfigCenterNode node;
     
-    private final ConfigCenterRepository repository;
+    private final ConfigurationRepository repository;
     
-    public ConfigCenter(final String name, final ConfigCenterRepository configCenterRepository) {
+    public ConfigCenter(final String name, final ConfigurationRepository configurationRepository) {
         this.node = new ConfigCenterNode(name);
-        this.repository = configCenterRepository;
+        this.repository = configurationRepository;
         DataSourceCallback.getInstance().register(this::persistDataSourceConfiguration);
         RuleCallback.getInstance().register(this::persistRuleConfigurations);
     }

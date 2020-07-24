@@ -23,7 +23,7 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.spring.boot.orchestration.registry.TestCenterRepository;
+import org.apache.shardingsphere.spring.boot.orchestration.registry.TestOrchestrationRepository;
 import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -63,11 +63,11 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         EmbedTestingServer.start();
         String dataSource = readYAML(DATA_SOURCE_FILE);
         String encryptRule = readYAML(ENCRYPT_RULE_FILE);
-        TestCenterRepository testCenter = new TestCenterRepository();
-        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", dataSource);
-        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", encryptRule);
-        testCenter.persist("/demo_spring_boot_ds_center/config/props", "sql.show: 'true'\n");
-        testCenter.persist("/demo_spring_boot_ds_center/registry/datasources", "");
+        TestOrchestrationRepository repository = new TestOrchestrationRepository();
+        repository.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", dataSource);
+        repository.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", encryptRule);
+        repository.persist("/demo_spring_boot_ds_center/config/props", "sql.show: 'true'\n");
+        repository.persist("/demo_spring_boot_ds_center/registry/datasources", "");
     }
     
     @Test

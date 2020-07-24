@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.core.config.listener;
 
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.MetricsConfigurationChangedEvent;
 import org.junit.Before;
@@ -40,13 +40,13 @@ public final class MetricsConfigurationChangedListenerTest {
             + "  port: 9190\n";
     
     @Mock
-    private ConfigCenterRepository configCenterRepository;
+    private ConfigurationRepository configurationRepository;
     
     private MetricsConfigurationChangedListener metricsConfigurationChangedListener;
     
     @Before
     public void setUp() {
-        metricsConfigurationChangedListener = new MetricsConfigurationChangedListener("test", configCenterRepository);
+        metricsConfigurationChangedListener = new MetricsConfigurationChangedListener("test", configurationRepository);
     }
     
     @Test

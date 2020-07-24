@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.core.metadata;
 
 import org.apache.shardingsphere.orchestration.core.metadata.yaml.YamlRuleSchemaMetaData;
-import org.apache.shardingsphere.orchestration.repository.api.CenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.OrchestrationRepository;
 import org.apache.shardingsphere.orchestration.core.metadata.yaml.RuleSchemaMetaDataYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -34,7 +34,6 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -44,7 +43,7 @@ import static org.mockito.Mockito.when;
 public final class MetaDataCenterTest {
     
     @Mock
-    private CenterRepository repository;
+    private OrchestrationRepository repository;
     
     private MetaDataCenter metaDataCenter;
     
@@ -67,7 +66,6 @@ public final class MetaDataCenterTest {
         assertThat(optionalRuleSchemaMetaData.isPresent(), is(true));
         Optional<RuleSchemaMetaData> empty = metaDataCenter.loadRuleSchemaMetaData("test");
         assertThat(empty, is(Optional.empty()));
-        assertTrue(optionalRuleSchemaMetaData.isPresent());
         RuleSchemaMetaData ruleSchemaMetaData = optionalRuleSchemaMetaData.get();
         verify(repository).get(eq("/test/metadata/schema"));
         assertNotNull(ruleSchemaMetaData);
