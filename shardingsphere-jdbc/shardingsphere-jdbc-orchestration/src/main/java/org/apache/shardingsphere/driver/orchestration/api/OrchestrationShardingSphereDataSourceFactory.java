@@ -40,13 +40,13 @@ import java.util.Properties;
 public final class OrchestrationShardingSphereDataSourceFactory {
     
     /**
-     * Create sharding data source.
+     * Create ShardingSphere data source.
      *
      * @param dataSourceMap data source map
      * @param ruleConfigurations rule configurations
      * @param orchestrationConfig orchestration configuration
      * @param props properties for data source
-     * @return sharding data source
+     * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations,
@@ -59,13 +59,13 @@ public final class OrchestrationShardingSphereDataSourceFactory {
     }
     
     /**
-     * Create sharding data source.
+     * Create ShardingSphere data source.
      *
      * @param dataSource data source
      * @param ruleConfigurations rule configurations
      * @param orchestrationConfig orchestration configuration
      * @param props properties for data source
-     * @return sharding data source
+     * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> ruleConfigurations,
@@ -76,10 +76,10 @@ public final class OrchestrationShardingSphereDataSourceFactory {
     }
     
     /**
-     * Create sharding data source.
+     * Create ShardingSphere data source.
      *
      * @param orchestrationConfig orchestration configuration
-     * @return sharding data source
+     * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
@@ -87,14 +87,14 @@ public final class OrchestrationShardingSphereDataSourceFactory {
     }
     
     /**
-     * Create sharding data source.
+     * Create ShardingSphere data source.
      *
      * @param dataSourceMap data source map
      * @param ruleConfigurations rule configurations
      * @param orchestrationConfig orchestration configuration
      * @param props properties for data source
      * @param clusterConfiguration cluster configuration
-     * @return sharding data source
+     * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations,
@@ -107,14 +107,14 @@ public final class OrchestrationShardingSphereDataSourceFactory {
     }
     
     /**
-     * Create sharding data source.
+     * Create ShardingSphere data source.
      *
      * @param dataSource data source
      * @param ruleConfigurations rule configurations
      * @param orchestrationConfig orchestration configuration
      * @param props properties for data source
      * @param clusterConfiguration cluster configuration
-     * @return sharding data source
+     * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> ruleConfigurations,
@@ -125,11 +125,11 @@ public final class OrchestrationShardingSphereDataSourceFactory {
     }
     
     /**
-     * Create sharding data source.
+     * Create ShardingSphere data source.
      *
      * @param orchestrationConfig orchestration configuration
      * @param clusterConfiguration cluster configuration
-     * @return sharding data source
+     * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) throws SQLException {
