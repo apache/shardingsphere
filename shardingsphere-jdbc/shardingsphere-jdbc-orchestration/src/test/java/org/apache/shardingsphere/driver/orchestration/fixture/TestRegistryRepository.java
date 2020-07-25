@@ -32,7 +32,7 @@ import java.util.Properties;
 
 @Getter
 @Setter
-public final class FirstTestRegistryRepository implements RegistryRepository, ConfigurationRepository {
+public final class TestRegistryRepository implements RegistryRepository, ConfigurationRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -77,6 +77,6 @@ public final class FirstTestRegistryRepository implements RegistryRepository, Co
     
     @Override
     public String getType() {
-        return "FirstTestRegistryCenter";
+        return "REG_TEST";
     }
 }

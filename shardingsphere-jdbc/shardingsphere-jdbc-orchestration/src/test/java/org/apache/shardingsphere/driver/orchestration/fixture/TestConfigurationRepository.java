@@ -31,7 +31,7 @@ import java.util.Properties;
 
 @Getter
 @Setter
-public final class FirstTestConfigurationRepository implements ConfigurationRepository {
+public final class TestConfigurationRepository implements ConfigurationRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -71,6 +71,6 @@ public final class FirstTestConfigurationRepository implements ConfigurationRepo
     
     @Override
     public String getType() {
-        return "FirstTestConfigCenter";
+        return "CONFIG_TEST";
     }
 }
