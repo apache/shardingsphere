@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.orchestration.repository.common.configuration.swapper;
 
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.junit.Test;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class OrchestrationConfigurationYamlSwapperTest {
@@ -38,45 +38,37 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     public void assertSwapToYamlOrchestrationConfiguration() {
         OrchestrationConfiguration data = getOrchestrationConfiguration();
         YamlOrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swapToYamlConfiguration(data);
-        for (String each : result.getOrchestrationRepositoryConfigurationMap().keySet()) {
-            assertNotNull(result.getOrchestrationRepositoryConfigurationMap().get(each));
-            assertThat(result.getOrchestrationRepositoryConfigurationMap().get(each).getOrchestrationType(), is(data.getInstanceConfigurationMap().get(each).getOrchestrationType()));
-            assertThat(result.getOrchestrationRepositoryConfigurationMap().get(each).getInstanceType(), is(data.getInstanceConfigurationMap().get(each).getType()));
-            assertThat(result.getOrchestrationRepositoryConfigurationMap().get(each).getNamespace(), is(data.getInstanceConfigurationMap().get(each).getNamespace()));
-            assertThat(result.getOrchestrationRepositoryConfigurationMap().get(each).getServerLists(), is(data.getInstanceConfigurationMap().get(each).getServerLists()));
-            assertThat(result.getOrchestrationRepositoryConfigurationMap().get(each).getProps(), is(data.getInstanceConfigurationMap().get(each).getProps()));
-        }
+        assertThat(result.getOrchestrationRepositoryConfigurationMap().get(LOGIC_SCHEMA).getOrchestrationType(), is(data.getRegistryRepositoryConfiguration().getOrchestrationType()));
+        assertThat(result.getOrchestrationRepositoryConfigurationMap().get(LOGIC_SCHEMA).getInstanceType(), is(data.getRegistryRepositoryConfiguration().getType()));
+        assertThat(result.getOrchestrationRepositoryConfigurationMap().get(LOGIC_SCHEMA).getNamespace(), is(data.getRegistryRepositoryConfiguration().getNamespace()));
+        assertThat(result.getOrchestrationRepositoryConfigurationMap().get(LOGIC_SCHEMA).getServerLists(), is(data.getRegistryRepositoryConfiguration().getServerLists()));
+        assertThat(result.getOrchestrationRepositoryConfigurationMap().get(LOGIC_SCHEMA).getProps(), is(data.getRegistryRepositoryConfiguration().getProps()));
+    }
+    
+    private OrchestrationConfiguration getOrchestrationConfiguration() {
+        OrchestrationRepositoryConfiguration repositoryConfiguration = new OrchestrationRepositoryConfiguration("zookeeper", new Properties());
+        repositoryConfiguration.setOrchestrationType("config_center");
+        repositoryConfiguration.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
+        repositoryConfiguration.setNamespace("orchestration");
+        return new OrchestrationConfiguration(LOGIC_SCHEMA, repositoryConfiguration);
     }
     
     @Test
     public void assertSwapToOrchestrationConfiguration() {
         YamlOrchestrationConfiguration data = getYamlOrchestrationConfiguration();
         OrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swapToObject(data);
-        for (String each : result.getInstanceConfigurationMap().keySet()) {
-            assertNotNull(result.getInstanceConfigurationMap().get(each));
-            assertThat(result.getInstanceConfigurationMap().get(each).getOrchestrationType(), is(data.getOrchestrationRepositoryConfigurationMap().get(each).getOrchestrationType()));
-            assertThat(result.getInstanceConfigurationMap().get(each).getType(), is(data.getOrchestrationRepositoryConfigurationMap().get(each).getInstanceType()));
-            assertThat(result.getInstanceConfigurationMap().get(each).getNamespace(), is(data.getOrchestrationRepositoryConfigurationMap().get(each).getNamespace()));
-            assertThat(result.getInstanceConfigurationMap().get(each).getServerLists(), is(data.getOrchestrationRepositoryConfigurationMap().get(each).getServerLists()));
-            assertThat(result.getInstanceConfigurationMap().get(each).getProps(), is(data.getOrchestrationRepositoryConfigurationMap().get(each).getProps()));
-        }
-    }
-    
-    private OrchestrationConfiguration getOrchestrationConfiguration() {
-        OrchestrationRepositoryConfiguration instanceConfiguration = new OrchestrationRepositoryConfiguration("zookeeper", new Properties());
-        instanceConfiguration.setOrchestrationType("config_center");
-        instanceConfiguration.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
-        instanceConfiguration.setNamespace("orchestration");
-        Map<String, OrchestrationRepositoryConfiguration> instanceConfigurationMap = new HashMap<>();
-        instanceConfigurationMap.put(LOGIC_SCHEMA, instanceConfiguration);
-        return new OrchestrationConfiguration(instanceConfigurationMap);
+        assertThat(result.getRegistryRepositoryConfiguration().getOrchestrationType(), is(data.getOrchestrationRepositoryConfigurationMap().get(LOGIC_SCHEMA).getOrchestrationType()));
+        assertThat(result.getRegistryRepositoryConfiguration().getType(), is(data.getOrchestrationRepositoryConfigurationMap().get(LOGIC_SCHEMA).getInstanceType()));
+        assertThat(result.getRegistryRepositoryConfiguration().getNamespace(), is(data.getOrchestrationRepositoryConfigurationMap().get(LOGIC_SCHEMA).getNamespace()));
+        assertThat(result.getRegistryRepositoryConfiguration().getServerLists(), is(data.getOrchestrationRepositoryConfigurationMap().get(LOGIC_SCHEMA).getServerLists()));
+        assertThat(result.getRegistryRepositoryConfiguration().getProps(), is(data.getOrchestrationRepositoryConfigurationMap().get(LOGIC_SCHEMA).getProps()));
     }
     
     private YamlOrchestrationConfiguration getYamlOrchestrationConfiguration() {
         YamlOrchestrationRepositoryConfiguration yamlInstanceConfiguration = new YamlOrchestrationRepositoryConfiguration();
         yamlInstanceConfiguration.setInstanceType("zookeeper");
         yamlInstanceConfiguration.setProps(new Properties());
-        yamlInstanceConfiguration.setOrchestrationType("config_center");
+        yamlInstanceConfiguration.setOrchestrationType("registry_center");
         yamlInstanceConfiguration.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
         yamlInstanceConfiguration.setNamespace("orchestration");
         Map<String, YamlOrchestrationRepositoryConfiguration> yamlInstanceConfigurationMap = new HashMap<>();

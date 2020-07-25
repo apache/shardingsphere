@@ -19,23 +19,21 @@ package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud;
 
 import org.apache.shardingsphere.driver.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Map;
 
-public class CloudShadowConfiguration implements ExampleConfiguration {
+public final class CloudShadowConfiguration implements ExampleConfiguration {
     
-    private final Map<String, OrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurations;
+    private final OrchestrationConfiguration orchestrationConfiguration;
     
-    public CloudShadowConfiguration(final Map<String, OrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurations) {
-        this.orchestrationRepositoryConfigurations = orchestrationRepositoryConfigurations;
+    public CloudShadowConfiguration(final OrchestrationConfiguration orchestrationConfiguration) {
+        this.orchestrationConfiguration = orchestrationConfiguration;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return OrchestrationShardingSphereDataSourceFactory.createDataSource(new OrchestrationConfiguration(orchestrationRepositoryConfigurations));
+        return OrchestrationShardingSphereDataSourceFactory.createDataSource(orchestrationConfiguration);
     }
 }

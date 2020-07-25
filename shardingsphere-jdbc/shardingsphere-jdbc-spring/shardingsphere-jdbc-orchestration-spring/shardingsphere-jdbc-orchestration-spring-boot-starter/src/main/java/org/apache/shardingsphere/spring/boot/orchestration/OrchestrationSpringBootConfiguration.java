@@ -23,8 +23,8 @@ import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurat
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.swapper.OrchestrationRepositoryConfigurationYamlSwapper;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
@@ -48,7 +48,6 @@ import org.springframework.util.CollectionUtils;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,11 +79,21 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     public OrchestrationConfiguration orchestrationConfiguration() {
         Preconditions.checkState(isValidOrchestrationConfiguration(), "The orchestration configuration is invalid, please configure orchestration");
-        Map<String, OrchestrationRepositoryConfiguration> instanceConfigurationMap = new HashMap<>(root.getOrchestration().size(), 1);
+        String registryCenterName = null;
+        OrchestrationRepositoryConfiguration registryRepositoryConfiguration = null;
+        String additionalConfigCenterName = null;
+        OrchestrationRepositoryConfiguration additionalConfigurationRepositoryConfiguration = null;
         for (Entry<String, YamlOrchestrationRepositoryConfiguration> entry : root.getOrchestration().entrySet()) {
-            instanceConfigurationMap.put(entry.getKey(), swapper.swapToObject(entry.getValue()));
+            OrchestrationRepositoryConfiguration configuration = swapper.swapToObject(entry.getValue());
+            if ("registry_center".equals(configuration.getOrchestrationType())) {
+                registryCenterName = entry.getKey();
+                registryRepositoryConfiguration = configuration;
+            } else if("config_center".equals(configuration.getOrchestrationType())) {
+                additionalConfigCenterName = entry.getKey();
+                additionalConfigurationRepositoryConfiguration = configuration;
+            }
         }
-        return new OrchestrationConfiguration(instanceConfigurationMap);
+        return new OrchestrationConfiguration(registryCenterName, registryRepositoryConfiguration, additionalConfigCenterName, additionalConfigurationRepositoryConfiguration);
     }
     
     private boolean isValidOrchestrationConfiguration() {

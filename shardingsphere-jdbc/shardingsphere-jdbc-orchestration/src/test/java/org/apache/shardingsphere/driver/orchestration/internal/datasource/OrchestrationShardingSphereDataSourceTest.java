@@ -27,14 +27,14 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.schema.OrchestrationSchema;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -49,7 +49,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -73,10 +72,8 @@ public final class OrchestrationShardingSphereDataSourceTest {
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {
-        Map<String, OrchestrationRepositoryConfiguration> instanceConfigurationMap = new HashMap<>();
-        instanceConfigurationMap.put("test_sharding_registry_name", getRegistryOrchestrationRepositoryConfiguration());
-        instanceConfigurationMap.put("test_sharding_config_name", getConfigOrchestrationRepositoryConfiguration());
-        return new OrchestrationConfiguration(instanceConfigurationMap);
+        return new OrchestrationConfiguration(
+                "test_sharding_registry_name", getRegistryOrchestrationRepositoryConfiguration(), "test_sharding_config_name", getConfigOrchestrationRepositoryConfiguration());
     }
     
     private static OrchestrationRepositoryConfiguration getRegistryOrchestrationRepositoryConfiguration() {

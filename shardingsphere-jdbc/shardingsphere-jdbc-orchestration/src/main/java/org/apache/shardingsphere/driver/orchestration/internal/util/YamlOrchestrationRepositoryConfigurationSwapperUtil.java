@@ -19,11 +19,11 @@ package org.apache.shardingsphere.driver.orchestration.internal.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.swapper.OrchestrationRepositoryConfigurationYamlSwapper;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -41,11 +41,21 @@ public final class YamlOrchestrationRepositoryConfigurationSwapperUtil {
      * @param yamlConfigurationMap YAML orchestration repository configuration map
      * @return orchestration repository configuration map
      */
-    public static Map<String, OrchestrationRepositoryConfiguration> marshal(final Map<String, YamlOrchestrationRepositoryConfiguration> yamlConfigurationMap) {
-        Map<String, OrchestrationRepositoryConfiguration> result = new LinkedHashMap<>(yamlConfigurationMap.size(), 1);
-        for (Entry<String, YamlOrchestrationRepositoryConfiguration> each : yamlConfigurationMap.entrySet()) {
-            result.put(each.getKey(), SWAPPER.swapToObject(each.getValue()));
+    public static OrchestrationConfiguration marshal(final Map<String, YamlOrchestrationRepositoryConfiguration> yamlConfigurationMap) {
+        String registryCenterName = null;
+        OrchestrationRepositoryConfiguration registryRepositoryConfiguration = null;
+        String additionalConfigCenterName = null;
+        OrchestrationRepositoryConfiguration additionalConfigurationRepositoryConfiguration = null;
+        for (Entry<String, YamlOrchestrationRepositoryConfiguration> entry : yamlConfigurationMap.entrySet()) {
+            OrchestrationRepositoryConfiguration configuration = SWAPPER.swapToObject(entry.getValue());
+            if ("registry_center".equals(configuration.getOrchestrationType())) {
+                registryCenterName = entry.getKey();
+                registryRepositoryConfiguration = configuration;
+            } else if("config_center".equals(configuration.getOrchestrationType())) {
+                additionalConfigCenterName = entry.getKey();
+                additionalConfigurationRepositoryConfiguration = configuration;
+            }
         }
-        return result;
+        return new OrchestrationConfiguration(registryCenterName, registryRepositoryConfiguration, additionalConfigCenterName, additionalConfigurationRepositoryConfiguration);
     }
 }

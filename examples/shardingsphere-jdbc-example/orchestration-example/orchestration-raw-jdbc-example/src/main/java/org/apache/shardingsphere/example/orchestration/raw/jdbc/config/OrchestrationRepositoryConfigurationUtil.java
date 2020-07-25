@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config;
 
 import org.apache.shardingsphere.example.type.ShardingType;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 public final class OrchestrationRepositoryConfigurationUtil {
@@ -34,8 +33,7 @@ public final class OrchestrationRepositoryConfigurationUtil {
 
     private static final String NACOS_NAMESPACE = "";
     
-    public static Map<String, OrchestrationRepositoryConfiguration> getZooKeeperConfiguration(final String overwrite, final ShardingType shardingType) {
-        Map<String, OrchestrationRepositoryConfiguration> result = new HashMap<>();
+    public static OrchestrationConfiguration getZooKeeperConfiguration(final String overwrite, final ShardingType shardingType) {
         Properties props = new Properties();
         props.setProperty("overwrite", overwrite);
         OrchestrationRepositoryConfiguration orchestrationRepositoryConfiguration = new OrchestrationRepositoryConfiguration("zookeeper", props);
@@ -44,23 +42,19 @@ public final class OrchestrationRepositoryConfigurationUtil {
         orchestrationRepositoryConfiguration.setOrchestrationType("registry_center,config_center,metadata_center");
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
-                result.put("orchestration-sharding-data-source", orchestrationRepositoryConfiguration);
-                break;
+                return new OrchestrationConfiguration("orchestration-sharding-data-source", orchestrationRepositoryConfiguration);
             case MASTER_SLAVE:
-                result.put("orchestration-ms-data-source", orchestrationRepositoryConfiguration);
-                break;
+                return new OrchestrationConfiguration("orchestration-ms-data-source", orchestrationRepositoryConfiguration);
             case ENCRYPT:
-                result.put("orchestration-encrypt-data-source", orchestrationRepositoryConfiguration);
-                break;
+                return new OrchestrationConfiguration("orchestration-encrypt-data-source", orchestrationRepositoryConfiguration);
             case SHADOW:
-                result.put("orchestration-shadow-data-source", orchestrationRepositoryConfiguration);
-                break;
+                return new OrchestrationConfiguration("orchestration-shadow-data-source", orchestrationRepositoryConfiguration);
+            default:
+                throw new UnsupportedOperationException(shardingType.toString());
         }
-        return result;
     }
     
-    public static Map<String, OrchestrationRepositoryConfiguration> getNacosConfiguration(final String overwrite, final ShardingType shardingType) {
-        Map<String, OrchestrationRepositoryConfiguration> result = new HashMap<>();
+    public static OrchestrationConfiguration getNacosConfiguration(final String overwrite, final ShardingType shardingType) {
         Properties nacosProperties = new Properties();
         nacosProperties.setProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
         nacosProperties.setProperty("timeout", "3000");
@@ -77,22 +71,15 @@ public final class OrchestrationRepositoryConfigurationUtil {
         zookeeperResult.setOrchestrationType("registry_center,metadata_center");
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
-                result.put("orchestration-sharding-data-source", nacosResult);
-                result.put("orchestration-zookeeper-sharding-data-source", zookeeperResult);
-                break;
+                return new OrchestrationConfiguration("orchestration-zookeeper-sharding-data-source", zookeeperResult, "orchestration-sharding-data-source", nacosResult);
             case MASTER_SLAVE:
-                result.put("orchestration-ms-data-source", nacosResult);
-                result.put("orchestration-zookeeper-ms-data-source", zookeeperResult);
-                break;
+                return new OrchestrationConfiguration("orchestration-zookeeper-ms-data-source", zookeeperResult, "orchestration-ms-data-source", nacosResult);
             case ENCRYPT:
-                result.put("orchestration-encrypt-data-source", nacosResult);
-                result.put("orchestration-zookeeper-encrypt-data-source", zookeeperResult);
-                break;
+                return new OrchestrationConfiguration("orchestration-zookeeper-encrypt-data-source", zookeeperResult, "orchestration-encrypt-data-source", nacosResult);
             case SHADOW:
-                result.put("orchestration-shadow-data-source", nacosResult);
-                result.put("orchestration-zookeeper-shadow-data-source", zookeeperResult);
-                break;
+                return new OrchestrationConfiguration("orchestration-zookeeper-shadow-data-source", zookeeperResult, "orchestration-shadow-data-source", nacosResult);
+            default:
+                throw new UnsupportedOperationException(shardingType.toString());
         }
-        return result;
     }
 }

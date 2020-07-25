@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -43,19 +42,18 @@ import java.util.Properties;
 
 public final class LocalShardingMasterSlaveConfiguration implements ExampleConfiguration {
     
-    private final Map<String, OrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurations;
+    private final OrchestrationConfiguration orchestrationConfiguration;
     
-    public LocalShardingMasterSlaveConfiguration(final Map<String, OrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurations) {
-        this.orchestrationRepositoryConfigurations = orchestrationRepositoryConfigurations;
+    public LocalShardingMasterSlaveConfiguration(OrchestrationConfiguration orchestrationConfiguration) {
+        this.orchestrationConfiguration = orchestrationConfiguration;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(orchestrationRepositoryConfigurations);
         Collection<RuleConfiguration> configurations = new LinkedList<>();
         configurations.add(getShardingRuleConfiguration());
         configurations.add(getMasterSlaveRuleConfiguration());
-        return OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties(), orchestrationConfig);
+        return OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties(), orchestrationConfiguration);
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {

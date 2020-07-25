@@ -33,11 +33,10 @@ import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.Loc
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.LocalShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Map;
 
 /*
  * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
@@ -67,23 +66,21 @@ public class JavaConfigurationExampleMain {
     }
     
     private static DataSource getDataSource(final ShardingType shardingType, final boolean loadConfigFromRegCenter) throws SQLException {
-        Map<String, OrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurations = getOrchestrationRepositoryConfigurations(registryCenterType, shardingType);
+        OrchestrationConfiguration orchestrationConfiguration = getOrchestrationConfiguration(registryCenterType, shardingType);
         ExampleConfiguration configuration;
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
-                configuration = loadConfigFromRegCenter
-                    ? new CloudShardingDatabasesAndTablesConfiguration(orchestrationRepositoryConfigurations)
-                        : new LocalShardingDatabasesAndTablesConfiguration(orchestrationRepositoryConfigurations);
+                configuration = loadConfigFromRegCenter 
+                        ? new CloudShardingDatabasesAndTablesConfiguration(orchestrationConfiguration) : new LocalShardingDatabasesAndTablesConfiguration(orchestrationConfiguration);
                 break;
             case MASTER_SLAVE:
-                configuration = loadConfigFromRegCenter
-                        ? new CloudMasterSlaveConfiguration(orchestrationRepositoryConfigurations) : new LocalMasterSlaveConfiguration(orchestrationRepositoryConfigurations);
+                configuration = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(orchestrationConfiguration) : new LocalMasterSlaveConfiguration(orchestrationConfiguration);
                 break;
             case ENCRYPT:
-                configuration = loadConfigFromRegCenter ? new CloudEncryptConfiguration(orchestrationRepositoryConfigurations) : new LocalEncryptConfiguration(orchestrationRepositoryConfigurations);
+                configuration = loadConfigFromRegCenter ? new CloudEncryptConfiguration(orchestrationConfiguration) : new LocalEncryptConfiguration(orchestrationConfiguration);
                 break;
             case SHADOW:
-                configuration = loadConfigFromRegCenter ? new CloudShadowConfiguration(orchestrationRepositoryConfigurations) : new LocalShadowConfiguration(orchestrationRepositoryConfigurations);
+                configuration = loadConfigFromRegCenter ? new CloudShadowConfiguration(orchestrationConfiguration) : new LocalShadowConfiguration(orchestrationConfiguration);
                 break;
             default:
                 throw new UnsupportedOperationException(shardingType.name());
@@ -91,8 +88,9 @@ public class JavaConfigurationExampleMain {
         return configuration.getDataSource();
     }
     
-    private static Map<String, OrchestrationRepositoryConfiguration> getOrchestrationRepositoryConfigurations(final RegistryCenterType registryCenterType, final ShardingType shardingType) {
-        return RegistryCenterType.ZOOKEEPER == registryCenterType ? OrchestrationRepositoryConfigurationUtil.getZooKeeperConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType)
+    private static OrchestrationConfiguration getOrchestrationConfiguration(final RegistryCenterType registryCenterType, final ShardingType shardingType) {
+        return RegistryCenterType.ZOOKEEPER == registryCenterType
+                ? OrchestrationRepositoryConfigurationUtil.getZooKeeperConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType)
                 : OrchestrationRepositoryConfigurationUtil.getNacosConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType);
     }
     
