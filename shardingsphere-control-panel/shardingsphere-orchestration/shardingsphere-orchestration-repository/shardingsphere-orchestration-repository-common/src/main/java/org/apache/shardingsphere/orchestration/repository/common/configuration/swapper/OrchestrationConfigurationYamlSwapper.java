@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.repository.common.configuration.
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 
 import java.util.Map;
@@ -43,7 +43,7 @@ public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<
     @Override
     public OrchestrationConfiguration swapToObject(final YamlOrchestrationConfiguration configuration) {
         OrchestrationRepositoryConfigurationYamlSwapper swapper = new OrchestrationRepositoryConfigurationYamlSwapper();
-        Map<String, CenterConfiguration> instanceConfigurationMap =
+        Map<String, OrchestrationRepositoryConfiguration> instanceConfigurationMap =
                 configuration.getOrchestrationRepositoryConfigurationMap().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapper.swapToObject(entry.getValue())));
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }

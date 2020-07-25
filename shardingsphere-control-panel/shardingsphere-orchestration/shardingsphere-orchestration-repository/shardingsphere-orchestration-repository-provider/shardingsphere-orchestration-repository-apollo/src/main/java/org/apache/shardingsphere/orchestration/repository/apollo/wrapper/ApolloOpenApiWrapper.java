@@ -22,7 +22,7 @@ import com.ctrip.framework.apollo.openapi.dto.NamespaceReleaseDTO;
 import com.ctrip.framework.apollo.openapi.dto.OpenItemDTO;
 import org.apache.shardingsphere.orchestration.repository.apollo.ApolloProperties;
 import org.apache.shardingsphere.orchestration.repository.apollo.ApolloPropertyKey;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 
 /**
  * Apollo open api client wrapper.
@@ -41,7 +41,7 @@ public final class ApolloOpenApiWrapper {
     
     private final String administrator;
     
-    public ApolloOpenApiWrapper(final CenterConfiguration config, final ApolloProperties props) {
+    public ApolloOpenApiWrapper(final OrchestrationRepositoryConfiguration config, final ApolloProperties props) {
         namespace = config.getNamespace();
         appId = props.getValue(ApolloPropertyKey.APP_ID);
         env = props.getValue(ApolloPropertyKey.ENV);

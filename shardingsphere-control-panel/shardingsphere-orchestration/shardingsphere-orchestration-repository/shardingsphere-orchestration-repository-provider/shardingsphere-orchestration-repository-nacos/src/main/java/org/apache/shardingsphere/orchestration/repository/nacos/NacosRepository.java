@@ -29,7 +29,7 @@ import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepos
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.repository.api.util.ConfigKeyUtils;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 
 import java.util.List;
 import java.util.Properties;
@@ -55,7 +55,7 @@ public final class NacosRepository implements ConfigurationRepository {
      * @param config config center configuration
      */
     @Override
-    public void init(final CenterConfiguration config) {
+    public void init(final OrchestrationRepositoryConfiguration config) {
         try {
             nacosProperties = new NacosProperties(props);
             Properties props = new Properties();

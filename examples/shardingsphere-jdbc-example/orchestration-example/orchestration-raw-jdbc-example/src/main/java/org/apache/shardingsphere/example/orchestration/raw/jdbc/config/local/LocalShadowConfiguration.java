@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local;
 import org.apache.shardingsphere.driver.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
@@ -33,10 +33,10 @@ import java.util.Properties;
 
 public class LocalShadowConfiguration implements ExampleConfiguration {
     
-    private final Map<String, CenterConfiguration> centerConfigurationMap;
+    private final Map<String, OrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurations;
     
-    public LocalShadowConfiguration(final Map<String, CenterConfiguration> centerConfigurationMap) {
-        this.centerConfigurationMap = centerConfigurationMap;
+    public LocalShadowConfiguration(final Map<String, OrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurations) {
+        this.orchestrationRepositoryConfigurations = orchestrationRepositoryConfigurations;
     }
     
     @Override
@@ -53,7 +53,7 @@ public class LocalShadowConfiguration implements ExampleConfiguration {
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
-        return new OrchestrationConfiguration(centerConfigurationMap);
+        return new OrchestrationConfiguration(orchestrationRepositoryConfigurations);
     }
     
     private ShadowRuleConfiguration getShadowRuleConfiguration() {

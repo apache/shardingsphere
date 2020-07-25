@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
@@ -73,37 +73,37 @@ public final class OrchestrationShardingSphereDataSourceTest {
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {
-        Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<>();
-        instanceConfigurationMap.put("test_sharding_registry_name", getRegistryCenterConfiguration());
-        instanceConfigurationMap.put("test_sharding_config_name", getConfigCenterConfiguration());
-        instanceConfigurationMap.put("test_sharding_metadata_name", getMetaDataCenterConfiguration());
+        Map<String, OrchestrationRepositoryConfiguration> instanceConfigurationMap = new HashMap<>();
+        instanceConfigurationMap.put("test_sharding_registry_name", getRegistryOrchestrationRepositoryConfiguration());
+        instanceConfigurationMap.put("test_sharding_config_name", getConfigOrchestrationRepositoryConfiguration());
+        instanceConfigurationMap.put("test_sharding_metadata_name", getMetaDataOrchestrationRepositoryConfiguration());
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }
     
-    private static CenterConfiguration getRegistryCenterConfiguration() {
+    private static OrchestrationRepositoryConfiguration getRegistryOrchestrationRepositoryConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("overwrite", "true");
-        CenterConfiguration result = new CenterConfiguration("FourthTestRegistryCenter", properties);
+        OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("FourthTestRegistryCenter", properties);
         result.setOrchestrationType(CenterType.REGISTRY_CENTER.getValue());
         result.setNamespace("test_sharding_registry");
         result.setServerLists("localhost:3181");
         return result;
     }
     
-    private static CenterConfiguration getConfigCenterConfiguration() {
+    private static OrchestrationRepositoryConfiguration getConfigOrchestrationRepositoryConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("overwrite", "true");
-        CenterConfiguration result = new CenterConfiguration("FourthTestConfigCenter", properties);
+        OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("FourthTestConfigCenter", properties);
         result.setOrchestrationType(CenterType.CONFIG_CENTER.getValue());
         result.setNamespace("test_sharding_config");
         result.setServerLists("localhost:3181");
         return result;
     }
     
-    private static CenterConfiguration getMetaDataCenterConfiguration() {
+    private static OrchestrationRepositoryConfiguration getMetaDataOrchestrationRepositoryConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("overwrite", "true");
-        CenterConfiguration result = new CenterConfiguration("FirstTestMetaDataCenter", properties);
+        OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("FirstTestMetaDataCenter", properties);
         result.setOrchestrationType(CenterType.METADATA_CENTER.getValue());
         result.setNamespace("test_encrypt_metadata");
         result.setServerLists("localhost:3181");

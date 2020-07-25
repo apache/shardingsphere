@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config;
 
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class RegistryCenterConfigurationUtil {
+public final class OrchestrationRepositoryConfigurationUtil {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
@@ -34,44 +34,44 @@ public class RegistryCenterConfigurationUtil {
 
     private static final String NACOS_NAMESPACE = "";
     
-    public static Map<String, CenterConfiguration> getZooKeeperConfiguration(final String overwrite, final ShardingType shardingType) {
-        Map<String, CenterConfiguration> result = new HashMap<>();
+    public static Map<String, OrchestrationRepositoryConfiguration> getZooKeeperConfiguration(final String overwrite, final ShardingType shardingType) {
+        Map<String, OrchestrationRepositoryConfiguration> result = new HashMap<>();
         Properties props = new Properties();
         props.setProperty("overwrite", overwrite);
-        CenterConfiguration centerConfiguration = new CenterConfiguration("zookeeper", props);
-        centerConfiguration.setServerLists(ZOOKEEPER_CONNECTION_STRING);
-        centerConfiguration.setNamespace(NAMESPACE);
-        centerConfiguration.setOrchestrationType("registry_center,config_center,metadata_center");
+        OrchestrationRepositoryConfiguration orchestrationRepositoryConfiguration = new OrchestrationRepositoryConfiguration("zookeeper", props);
+        orchestrationRepositoryConfiguration.setServerLists(ZOOKEEPER_CONNECTION_STRING);
+        orchestrationRepositoryConfiguration.setNamespace(NAMESPACE);
+        orchestrationRepositoryConfiguration.setOrchestrationType("registry_center,config_center,metadata_center");
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
-                result.put("orchestration-sharding-data-source", centerConfiguration);
+                result.put("orchestration-sharding-data-source", orchestrationRepositoryConfiguration);
                 break;
             case MASTER_SLAVE:
-                result.put("orchestration-ms-data-source", centerConfiguration);
+                result.put("orchestration-ms-data-source", orchestrationRepositoryConfiguration);
                 break;
             case ENCRYPT:
-                result.put("orchestration-encrypt-data-source", centerConfiguration);
+                result.put("orchestration-encrypt-data-source", orchestrationRepositoryConfiguration);
                 break;
             case SHADOW:
-                result.put("orchestration-shadow-data-source", centerConfiguration);
+                result.put("orchestration-shadow-data-source", orchestrationRepositoryConfiguration);
                 break;
         }
         return result;
     }
     
-    public static Map<String, CenterConfiguration> getNacosConfiguration(final String overwrite, final ShardingType shardingType) {
-        Map<String, CenterConfiguration> result = new HashMap<>();
+    public static Map<String, OrchestrationRepositoryConfiguration> getNacosConfiguration(final String overwrite, final ShardingType shardingType) {
+        Map<String, OrchestrationRepositoryConfiguration> result = new HashMap<>();
         Properties nacosProperties = new Properties();
         nacosProperties.setProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
         nacosProperties.setProperty("timeout", "3000");
         nacosProperties.setProperty("overwrite", overwrite);
-        CenterConfiguration nacosResult = new CenterConfiguration("nacos", nacosProperties);
+        OrchestrationRepositoryConfiguration nacosResult = new OrchestrationRepositoryConfiguration("nacos", nacosProperties);
         nacosResult.setServerLists(NACOS_CONNECTION_STRING);
         nacosResult.setNamespace(NACOS_NAMESPACE);
         nacosResult.setOrchestrationType("config_center");
         Properties zookeeperProperties = new Properties();
         zookeeperProperties.setProperty("overwrite", overwrite);
-        CenterConfiguration zookeeperResult = new CenterConfiguration("zookeeper", zookeeperProperties);
+        OrchestrationRepositoryConfiguration zookeeperResult = new OrchestrationRepositoryConfiguration("zookeeper", zookeeperProperties);
         zookeeperResult.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         zookeeperResult.setNamespace(NAMESPACE);
         zookeeperResult.setOrchestrationType("registry_center,metadata_center");

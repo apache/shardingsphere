@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.orchestration.internal.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.swapper.OrchestrationRepositoryConfigurationYamlSwapper;
 
@@ -41,8 +41,8 @@ public final class YamlOrchestrationRepositoryConfigurationSwapperUtil {
      * @param yamlConfigurationMap YAML orchestration repository configuration map
      * @return orchestration repository configuration map
      */
-    public static Map<String, CenterConfiguration> marshal(final Map<String, YamlOrchestrationRepositoryConfiguration> yamlConfigurationMap) {
-        Map<String, CenterConfiguration> result = new LinkedHashMap<>(yamlConfigurationMap.size(), 1);
+    public static Map<String, OrchestrationRepositoryConfiguration> marshal(final Map<String, YamlOrchestrationRepositoryConfiguration> yamlConfigurationMap) {
+        Map<String, OrchestrationRepositoryConfiguration> result = new LinkedHashMap<>(yamlConfigurationMap.size(), 1);
         for (Entry<String, YamlOrchestrationRepositoryConfiguration> each : yamlConfigurationMap.entrySet()) {
             result.put(each.getKey(), SWAPPER.swapToObject(each.getValue()));
         }

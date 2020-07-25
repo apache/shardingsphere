@@ -29,5 +29,5 @@ import java.util.Map;
 @Getter
 public final class OrchestrationConfiguration {
     
-    private final Map<String, CenterConfiguration> instanceConfigurationMap;
+    private final Map<String, OrchestrationRepositoryConfiguration> instanceConfigurationMap;
 }

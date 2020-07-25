@@ -25,7 +25,7 @@ import org.apache.shardingsphere.orchestration.repository.apollo.wrapper.ApolloC
 import org.apache.shardingsphere.orchestration.repository.apollo.wrapper.ApolloOpenApiWrapper;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.util.ConfigKeyUtils;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -64,7 +64,7 @@ public final class ApolloRepositoryTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @BeforeClass
     public static void init() {
-        CenterConfiguration configuration = new CenterConfiguration("apollo", new Properties());
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration("apollo", new Properties());
         configuration.setServerLists("http://config-service-url");
         configuration.setNamespace("orchestration");
         Properties props = new Properties();

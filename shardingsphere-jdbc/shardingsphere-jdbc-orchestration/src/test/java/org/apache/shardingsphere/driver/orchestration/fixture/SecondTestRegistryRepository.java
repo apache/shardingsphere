@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -39,7 +39,7 @@ public final class SecondTestRegistryRepository implements RegistryRepository, C
     private Properties props = new Properties();
     
     @Override
-    public void init(final CenterConfiguration config) {
+    public void init(final OrchestrationRepositoryConfiguration config) {
     }
     
     @Override
