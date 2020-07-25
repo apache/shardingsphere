@@ -51,7 +51,7 @@ public final class YamlOrchestrationRepositoryConfigurationSwapperUtil {
             if ("registry_center".equals(configuration.getOrchestrationType())) {
                 registryCenterName = entry.getKey();
                 registryRepositoryConfiguration = configuration;
-            } else if("config_center".equals(configuration.getOrchestrationType())) {
+            } else if ("config_center".equals(configuration.getOrchestrationType())) {
                 additionalConfigCenterName = entry.getKey();
                 additionalConfigurationRepositoryConfiguration = configuration;
             }
