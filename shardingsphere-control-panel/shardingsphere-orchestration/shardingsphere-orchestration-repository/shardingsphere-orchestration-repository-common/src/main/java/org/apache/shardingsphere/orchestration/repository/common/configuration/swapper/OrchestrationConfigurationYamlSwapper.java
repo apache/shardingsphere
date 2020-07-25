@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.repository.common.configuration.swapper;
 
+import com.google.common.base.Splitter;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.orchestration.repository.common.configuration.c
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -51,10 +53,11 @@ public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<
         String additionalConfigCenterName = null;
         OrchestrationRepositoryConfiguration additionalConfigurationRepositoryConfiguration = null;
         for (Entry<String, YamlOrchestrationRepositoryConfiguration> entry : configuration.getOrchestrationRepositoryConfigurationMap().entrySet()) {
-            if ("registry_center".equals(entry.getValue().getOrchestrationType())) {
+            List<String> orchestrationTypes = Splitter.on(",").omitEmptyStrings().trimResults().splitToList(entry.getValue().getOrchestrationType());
+            if (orchestrationTypes.contains("registry_center")) {
                 registryCenterName = entry.getKey();
                 registryRepositoryConfiguration = swapper.swapToObject(entry.getValue());
-            } else if ("config_center".equals(entry.getValue().getOrchestrationType())) {
+            } else if (orchestrationTypes.contains("config_center")) {
                 additionalConfigCenterName = entry.getKey();
                 additionalConfigurationRepositoryConfiguration = swapper.swapToObject(entry.getValue());
             }

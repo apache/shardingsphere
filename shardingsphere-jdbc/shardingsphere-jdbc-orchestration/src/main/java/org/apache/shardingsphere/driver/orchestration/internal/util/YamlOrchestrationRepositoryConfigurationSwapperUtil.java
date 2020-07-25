@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.orchestration.internal.util;
 
+import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.orchestration.repository.api.config.Orchestrati
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.swapper.OrchestrationRepositoryConfigurationYamlSwapper;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -48,10 +50,11 @@ public final class YamlOrchestrationRepositoryConfigurationSwapperUtil {
         OrchestrationRepositoryConfiguration additionalConfigurationRepositoryConfiguration = null;
         for (Entry<String, YamlOrchestrationRepositoryConfiguration> entry : yamlConfigurationMap.entrySet()) {
             OrchestrationRepositoryConfiguration configuration = SWAPPER.swapToObject(entry.getValue());
-            if ("registry_center".equals(configuration.getOrchestrationType())) {
+            List<String> orchestrationTypes = Splitter.on(",").omitEmptyStrings().trimResults().splitToList(configuration.getOrchestrationType());
+            if (orchestrationTypes.contains("registry_center")) {
                 registryCenterName = entry.getKey();
                 registryRepositoryConfiguration = configuration;
-            } else if ("config_center".equals(configuration.getOrchestrationType())) {
+            } else if (orchestrationTypes.contains("config_center")) {
                 additionalConfigCenterName = entry.getKey();
                 additionalConfigurationRepositoryConfiguration = configuration;
             }

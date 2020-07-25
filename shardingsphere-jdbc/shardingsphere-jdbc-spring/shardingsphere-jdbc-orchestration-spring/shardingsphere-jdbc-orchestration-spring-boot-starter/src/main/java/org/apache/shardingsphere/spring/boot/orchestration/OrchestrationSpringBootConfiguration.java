@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.spring.boot.orchestration;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
@@ -85,10 +86,11 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
         OrchestrationRepositoryConfiguration additionalConfigurationRepositoryConfiguration = null;
         for (Entry<String, YamlOrchestrationRepositoryConfiguration> entry : root.getOrchestration().entrySet()) {
             OrchestrationRepositoryConfiguration configuration = swapper.swapToObject(entry.getValue());
-            if ("registry_center".equals(configuration.getOrchestrationType())) {
+            List<String> orchestrationTypes = Splitter.on(",").omitEmptyStrings().trimResults().splitToList(configuration.getOrchestrationType());
+            if (orchestrationTypes.contains("registry_center")) {
                 registryCenterName = entry.getKey();
                 registryRepositoryConfiguration = configuration;
-            } else if ("config_center".equals(configuration.getOrchestrationType())) {
+            } else if (orchestrationTypes.contains("config_center")) {
                 additionalConfigCenterName = entry.getKey();
                 additionalConfigurationRepositoryConfiguration = configuration;
             }
