@@ -70,15 +70,15 @@ public final class OrchestrationFacadeTest {
     @Before
     public void setUp() {
         Map<String, OrchestrationRepositoryConfiguration> instanceConfigurationMap = new HashMap<>();
-        OrchestrationRepositoryConfiguration configuration1 = new OrchestrationRepositoryConfiguration("SecondTestRegistryCenter", new Properties());
+        OrchestrationRepositoryConfiguration configuration1 = new OrchestrationRepositoryConfiguration("REG_TEST", new Properties());
         configuration1.setOrchestrationType("registry_center");
         configuration1.setNamespace("namespace_1");
         instanceConfigurationMap.put("test_name_1", configuration1);
-        OrchestrationRepositoryConfiguration configuration2 = new OrchestrationRepositoryConfiguration("FirstTestConfigCenter", new Properties());
+        OrchestrationRepositoryConfiguration configuration2 = new OrchestrationRepositoryConfiguration("CONFIG_TEST", new Properties());
         configuration2.setOrchestrationType("config_center");
         configuration2.setNamespace("namespace_2");
         instanceConfigurationMap.put("test_name_2", configuration2);
-        OrchestrationRepositoryConfiguration configuration3 = new OrchestrationRepositoryConfiguration("FirstTestConfigCenter", new Properties());
+        OrchestrationRepositoryConfiguration configuration3 = new OrchestrationRepositoryConfiguration("CONFIG_TEST", new Properties());
         configuration3.setOrchestrationType("metadata_center");
         configuration3.setNamespace("namespace_3");
         instanceConfigurationMap.put("test_name_3", configuration3);

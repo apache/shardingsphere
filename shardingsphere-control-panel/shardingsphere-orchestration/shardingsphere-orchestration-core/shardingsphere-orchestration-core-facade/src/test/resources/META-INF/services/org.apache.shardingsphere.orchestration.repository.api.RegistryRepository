@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.orchestration.core.facade.fixture.SecondTestRegistryRepository
+org.apache.shardingsphere.orchestration.core.facade.fixture.TestRegistryRepository

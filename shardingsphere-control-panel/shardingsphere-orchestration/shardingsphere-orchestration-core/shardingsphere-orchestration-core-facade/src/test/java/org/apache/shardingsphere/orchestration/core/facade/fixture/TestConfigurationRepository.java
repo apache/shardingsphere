@@ -29,7 +29,7 @@ import java.util.Properties;
 
 @Getter
 @Setter
-public final class FirstTestConfigurationRepository implements ConfigurationRepository {
+public final class TestConfigurationRepository implements ConfigurationRepository {
     
     private Properties props = new Properties();
     
@@ -65,6 +65,6 @@ public final class FirstTestConfigurationRepository implements ConfigurationRepo
     
     @Override
     public String getType() {
-        return "FirstTestConfigCenter";
+        return "CONFIG_TEST";
     }
 }

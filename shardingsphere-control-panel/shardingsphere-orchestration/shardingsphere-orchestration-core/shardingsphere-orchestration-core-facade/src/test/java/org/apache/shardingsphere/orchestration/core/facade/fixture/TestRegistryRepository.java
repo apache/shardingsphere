@@ -29,7 +29,7 @@ import java.util.Properties;
 
 @Getter
 @Setter
-public final class SecondTestRegistryRepository implements RegistryRepository {
+public final class TestRegistryRepository implements RegistryRepository {
     
     private Properties props = new Properties();
     
@@ -69,6 +69,6 @@ public final class SecondTestRegistryRepository implements RegistryRepository {
     
     @Override
     public String getType() {
-        return "SecondTestRegistryCenter";
+        return "REG_TEST";
     }
 }
