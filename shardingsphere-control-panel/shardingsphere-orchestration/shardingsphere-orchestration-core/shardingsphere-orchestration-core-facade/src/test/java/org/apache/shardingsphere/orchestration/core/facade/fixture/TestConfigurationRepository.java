@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.orchestration.fixture;
+package org.apache.shardingsphere.orchestration.core.facade.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 @Getter
 @Setter
-public final class FourthTestConfigurationRepository implements ConfigurationRepository {
-    
-    private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
+public final class TestConfigurationRepository implements ConfigurationRepository {
     
     private Properties props = new Properties();
     
@@ -43,7 +39,7 @@ public final class FourthTestConfigurationRepository implements ConfigurationRep
     
     @Override
     public String get(final String key) {
-        return REGISTRY_DATA.get(key);
+        return "";
     }
     
     @Override
@@ -53,7 +49,6 @@ public final class FourthTestConfigurationRepository implements ConfigurationRep
     
     @Override
     public void persist(final String key, final String value) {
-        REGISTRY_DATA.put(key, value);
     }
     
     @Override
@@ -66,11 +61,10 @@ public final class FourthTestConfigurationRepository implements ConfigurationRep
     
     @Override
     public void close() {
-        REGISTRY_DATA.clear();
     }
     
     @Override
     public String getType() {
-        return "FourthTestConfigCenter";
+        return "CONFIG_TEST";
     }
 }

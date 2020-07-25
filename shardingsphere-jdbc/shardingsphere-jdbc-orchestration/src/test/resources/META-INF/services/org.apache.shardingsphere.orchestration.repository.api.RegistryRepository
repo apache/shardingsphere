@@ -15,7 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.driver.orchestration.fixture.FirstTestRegistryRepository
-org.apache.shardingsphere.driver.orchestration.fixture.SecondTestRegistryRepository
-org.apache.shardingsphere.driver.orchestration.fixture.ThirdTestRegistryRepository
-org.apache.shardingsphere.driver.orchestration.fixture.FourthTestRegistryRepository
+org.apache.shardingsphere.driver.orchestration.fixture.TestRegistryRepository

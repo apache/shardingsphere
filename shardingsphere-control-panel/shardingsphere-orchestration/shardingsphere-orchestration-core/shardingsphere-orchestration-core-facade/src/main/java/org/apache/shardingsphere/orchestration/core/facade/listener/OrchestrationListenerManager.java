@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.orchestration.core.facade.listener;
 
+import org.apache.shardingsphere.orchestration.core.config.listener.ConfigurationChangedListenerManager;
 import org.apache.shardingsphere.orchestration.core.metadata.listener.MetaDataListenerManager;
-import org.apache.shardingsphere.orchestration.repository.api.OrchestrationRepository;
+import org.apache.shardingsphere.orchestration.core.registry.listener.RegistryListenerManager;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
-import org.apache.shardingsphere.orchestration.core.config.listener.ConfigurationChangedListenerManager;
-import org.apache.shardingsphere.orchestration.core.registry.listener.RegistryListenerManager;
 
 import java.util.Collection;
 
@@ -39,11 +38,10 @@ public final class OrchestrationListenerManager {
     
     public OrchestrationListenerManager(final String registryRepositoryName, final RegistryRepository registryRepository,
                                         final String configurationRepositoryName, final ConfigurationRepository configurationRepository,
-                                        final String metadataRepositoryName, final OrchestrationRepository metaDataRepository,
                                         final Collection<String> shardingSchemaNames) {
         configurationChangedListenerManager = new ConfigurationChangedListenerManager(configurationRepositoryName, configurationRepository, shardingSchemaNames);
         registryListenerManager = new RegistryListenerManager(registryRepositoryName, registryRepository);
-        metaDataListenerManager = new MetaDataListenerManager(metadataRepositoryName, metaDataRepository, shardingSchemaNames);
+        metaDataListenerManager = new MetaDataListenerManager(configurationRepositoryName, configurationRepository, shardingSchemaNames);
     }
     
     /**

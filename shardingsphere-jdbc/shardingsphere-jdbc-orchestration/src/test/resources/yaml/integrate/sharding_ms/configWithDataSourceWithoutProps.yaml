@@ -123,7 +123,7 @@ rules:
 orchestration:
   test_sharding_ms_registry_name:
     orchestrationType: registry_center
-    instanceType: FirstTestRegistryCenter
+    instanceType: REG_TEST
     serverLists: localhost:3181
     namespace: test_sharding_ms_registry
     props:
@@ -134,7 +134,7 @@ orchestration:
       operationTimeoutMilliseconds: 10
   test_sharding_ms_config_name:
     orchestrationType: config_center
-    instanceType: FirstTestConfigCenter
+    instanceType: CONFIG_TEST
     serverLists: localhost:3181
     namespace: test_sharding_ms_config
     props:
@@ -145,7 +145,7 @@ orchestration:
       operationTimeoutMilliseconds: 10
   test_sharding_ms_metadata_name:
     orchestrationType: metadata_center
-    instanceType: FirstTestMetaDataCenter
+    instanceType: CONFIG_TEST
     serverLists: localhost:3181
     namespace: test_sharding_ms_metadata
     props:

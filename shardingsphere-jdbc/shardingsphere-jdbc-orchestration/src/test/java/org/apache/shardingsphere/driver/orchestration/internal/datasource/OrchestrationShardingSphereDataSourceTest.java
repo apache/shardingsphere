@@ -76,14 +76,13 @@ public final class OrchestrationShardingSphereDataSourceTest {
         Map<String, OrchestrationRepositoryConfiguration> instanceConfigurationMap = new HashMap<>();
         instanceConfigurationMap.put("test_sharding_registry_name", getRegistryOrchestrationRepositoryConfiguration());
         instanceConfigurationMap.put("test_sharding_config_name", getConfigOrchestrationRepositoryConfiguration());
-        instanceConfigurationMap.put("test_sharding_metadata_name", getMetaDataOrchestrationRepositoryConfiguration());
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }
     
     private static OrchestrationRepositoryConfiguration getRegistryOrchestrationRepositoryConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("overwrite", "true");
-        OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("FourthTestRegistryCenter", properties);
+        OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("REG_TEST", properties);
         result.setOrchestrationType(CenterType.REGISTRY_CENTER.getValue());
         result.setNamespace("test_sharding_registry");
         result.setServerLists("localhost:3181");
@@ -93,19 +92,9 @@ public final class OrchestrationShardingSphereDataSourceTest {
     private static OrchestrationRepositoryConfiguration getConfigOrchestrationRepositoryConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("overwrite", "true");
-        OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("FourthTestConfigCenter", properties);
+        OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("CONFIG_TEST", properties);
         result.setOrchestrationType(CenterType.CONFIG_CENTER.getValue());
         result.setNamespace("test_sharding_config");
-        result.setServerLists("localhost:3181");
-        return result;
-    }
-    
-    private static OrchestrationRepositoryConfiguration getMetaDataOrchestrationRepositoryConfiguration() {
-        Properties properties = new Properties();
-        properties.setProperty("overwrite", "true");
-        OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("FirstTestMetaDataCenter", properties);
-        result.setOrchestrationType(CenterType.METADATA_CENTER.getValue());
-        result.setNamespace("test_encrypt_metadata");
         result.setServerLists("localhost:3181");
         return result;
     }
