@@ -15,15 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.transaction.xa.raw.jdbc;
+package org.apache.shardingsphere.example.transaction.xa.spring.boot;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
 
-public class ExampleMain {
+import javax.annotation.PostConstruct;
+
+@SpringBootApplication
+@Import(TransactionConfiguration.class)
+@Profile("sharding-databases-tables")
+public class ExampleMainApplication {
     
-    public static void main(final String[] args) throws Exception {
-        XAOrderService orderService = new XAOrderService("/META-INF/sharding-databases-tables.yaml");
+    @Autowired
+    XAOrderService orderService;
+    
+    public static void main(final String[] args) {
+        SpringApplication.run(ExampleMainApplication.class, args);
+    }
+    
+    @PostConstruct
+    public void executeOrderService() {
         orderService.init();
-        orderService.insert();
+        orderService.selectAll();
         orderService.cleanup();
     }
 }
