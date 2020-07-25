@@ -54,11 +54,6 @@ public interface OrchestrationRepository extends TypedSPI {
     void persist(String key, String value);
     
     /**
-     * Close.
-     */
-    void close();
-
-    /**
      * Get node's sub-nodes list.
      *
      * @param key key of data
@@ -80,4 +75,9 @@ public interface OrchestrationRepository extends TypedSPI {
      * @param key key of data
      */
     void delete(String key);
+    
+    /**
+     * Close.
+     */
+    void close();
 }
