@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 import java.util.Properties;
 
 /**
- * Orchestration instance configuration.
+ * Orchestration repository configuration.
  */
 @Getter
 @Setter
-public final class CenterConfiguration extends TypedSPIConfiguration {
+public final class OrchestrationRepositoryConfiguration extends TypedSPIConfiguration {
     
     /**
      * Type of center, such as config_center, registry_center, metadata_center.
@@ -45,7 +45,7 @@ public final class CenterConfiguration extends TypedSPIConfiguration {
      */
     private String namespace;
     
-    public CenterConfiguration(final String type, final Properties props) {
+    public OrchestrationRepositoryConfiguration(final String type, final Properties props) {
         super(type, props);
     }
 }

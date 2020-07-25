@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.orchestration.internal.util;
 
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.junit.Test;
 
@@ -34,8 +34,8 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
     public void marshal() {
         YamlOrchestrationRepositoryConfiguration yamlOrchestrationRepositoryConfiguration = getYamlOrchestrationRepositoryConfiguration();
         Map<String, YamlOrchestrationRepositoryConfiguration> yamlConfigurationMap = Collections.singletonMap("test", yamlOrchestrationRepositoryConfiguration);
-        Map<String, CenterConfiguration> configurationMap = YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(yamlConfigurationMap);
-        CenterConfiguration configuration = configurationMap.get("test");
+        Map<String, OrchestrationRepositoryConfiguration> configurationMap = YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(yamlConfigurationMap);
+        OrchestrationRepositoryConfiguration configuration = configurationMap.get("test");
         assertEquals(configuration.getType(), yamlOrchestrationRepositoryConfiguration.getInstanceType());
         assertEquals(configuration.getOrchestrationType(), yamlOrchestrationRepositoryConfiguration.getOrchestrationType());
         assertEquals(configuration.getNamespace(), yamlOrchestrationRepositoryConfiguration.getNamespace());

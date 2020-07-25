@@ -24,19 +24,19 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class CenterConfigurationTest {
+public final class OrchestrationRepositoryConfigurationTest {
     
     @Test
     public void assertConstructorWithType() {
         String type = "zookeeper";
-        assertThat(new CenterConfiguration(type, new Properties()).getType(), is(type));
+        assertThat(new OrchestrationRepositoryConfiguration(type, new Properties()).getType(), is(type));
     }
     
     @Test
     public void assertConstructorWithTypeAndProperties() {
         String type = "zookeeper";
         Properties props = new Properties();
-        CenterConfiguration configuration = new CenterConfiguration(type, props);
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(type, props);
         assertThat(configuration.getType(), is(type));
         assertThat(configuration.getProps(), is(props));
     }
@@ -45,7 +45,7 @@ public final class CenterConfigurationTest {
     public void assertCenterType() {
         String type = "zookeeper";
         String orchestrationType = "config_center";
-        CenterConfiguration configuration = new CenterConfiguration(type, new Properties());
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(type, new Properties());
         configuration.setOrchestrationType(orchestrationType);
         assertThat(configuration.getOrchestrationType(), is(orchestrationType));
     }
@@ -54,7 +54,7 @@ public final class CenterConfigurationTest {
     public void assertServerLists() {
         String type = "zookeeper";
         String serverLists = "127.0.0.1:2181,127.0.0.1:2182";
-        CenterConfiguration configuration = new CenterConfiguration(type, new Properties());
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(type, new Properties());
         configuration.setServerLists(serverLists);
         assertThat(configuration.getServerLists(), is(serverLists));
     }
@@ -63,7 +63,7 @@ public final class CenterConfigurationTest {
     public void assertNamespace() {
         String type = "zookeeper";
         String namespace = "orchestration";
-        CenterConfiguration configuration = new CenterConfiguration(type, new Properties());
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(type, new Properties());
         configuration.setNamespace(namespace);
         assertThat(configuration.getNamespace(), is(namespace));
     }

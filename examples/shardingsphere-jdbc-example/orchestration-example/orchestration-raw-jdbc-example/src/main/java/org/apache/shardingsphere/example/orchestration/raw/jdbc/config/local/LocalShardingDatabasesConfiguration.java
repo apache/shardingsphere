@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.orchestration.api.OrchestrationShardingS
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -37,10 +37,10 @@ import java.util.Properties;
 
 public final class LocalShardingDatabasesConfiguration implements ExampleConfiguration {
     
-    private final Map<String, CenterConfiguration> centerConfigurationMap;
+    private final Map<String, OrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurations;
     
-    public LocalShardingDatabasesConfiguration(final Map<String, CenterConfiguration> centerConfigurationMap) {
-        this.centerConfigurationMap = centerConfigurationMap;
+    public LocalShardingDatabasesConfiguration(final Map<String, OrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurations) {
+        this.orchestrationRepositoryConfigurations = orchestrationRepositoryConfigurations;
     }
     
     private static KeyGenerateStrategyConfiguration getKeyGeneratorConfiguration() {
@@ -49,7 +49,7 @@ public final class LocalShardingDatabasesConfiguration implements ExampleConfigu
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(centerConfigurationMap);
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(orchestrationRepositoryConfigurations);
         return OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties(), orchestrationConfig);
     }
     

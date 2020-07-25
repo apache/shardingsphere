@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.repository.common.configuration.swapper;
 
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -30,7 +30,7 @@ public final class OrchestrationRepositoryConfigurationYamlSwapperTest {
     
     @Test
     public void assertToYamlConfiguration() {
-        CenterConfiguration configuration = getConfiguration();
+        OrchestrationRepositoryConfiguration configuration = getConfiguration();
         YamlOrchestrationRepositoryConfiguration yamlConfiguration = new OrchestrationRepositoryConfigurationYamlSwapper().swapToYamlConfiguration(configuration);
         assertThat(yamlConfiguration.getOrchestrationType(), is(configuration.getOrchestrationType()));
         assertThat(yamlConfiguration.getInstanceType(), is(configuration.getType()));
@@ -39,8 +39,8 @@ public final class OrchestrationRepositoryConfigurationYamlSwapperTest {
         assertThat(yamlConfiguration.getProps(), is(configuration.getProps()));
     }
     
-    private CenterConfiguration getConfiguration() {
-        CenterConfiguration result = new CenterConfiguration("zookeeper", new Properties());
+    private OrchestrationRepositoryConfiguration getConfiguration() {
+        OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("zookeeper", new Properties());
         result.setOrchestrationType("config_center");
         result.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
         result.setNamespace("orchestration");
@@ -50,7 +50,7 @@ public final class OrchestrationRepositoryConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToObject() {
         YamlOrchestrationRepositoryConfiguration yamlConfiguration = getYamlInstanceConfiguration();
-        CenterConfiguration instanceConfiguration = new OrchestrationRepositoryConfigurationYamlSwapper().swapToObject(yamlConfiguration);
+        OrchestrationRepositoryConfiguration instanceConfiguration = new OrchestrationRepositoryConfigurationYamlSwapper().swapToObject(yamlConfiguration);
         assertThat(instanceConfiguration.getOrchestrationType(), is(yamlConfiguration.getOrchestrationType()));
         assertThat(instanceConfiguration.getType(), is(yamlConfiguration.getInstanceType()));
         assertThat(instanceConfiguration.getServerLists(), is(yamlConfiguration.getServerLists()));

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.metrics.configuration.config.MetricsConfigurati
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenter;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenter;
@@ -98,34 +98,37 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private void initConfigCenter(final OrchestrationConfiguration orchestrationConfig) {
         configCenterName = getInstanceName(orchestrationConfig.getInstanceConfigurationMap(), CenterType.CONFIG_CENTER.getValue());
-        CenterConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName);
-        Preconditions.checkNotNull(configCenterConfiguration, "Config center configuration cannot be null.");
-        configurationRepository = TypedSPIRegistry.getRegisteredService(ConfigurationRepository.class, configCenterConfiguration.getType(), configCenterConfiguration.getProps());
-        configurationRepository.init(configCenterConfiguration);
-        isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProps()).getValue(OrchestrationPropertyKey.OVERWRITE);
+        OrchestrationRepositoryConfiguration orchestrationRepositoryConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName);
+        Preconditions.checkNotNull(orchestrationRepositoryConfiguration, "Config center configuration cannot be null.");
+        configurationRepository = TypedSPIRegistry.getRegisteredService(
+                ConfigurationRepository.class, orchestrationRepositoryConfiguration.getType(), orchestrationRepositoryConfiguration.getProps());
+        configurationRepository.init(orchestrationRepositoryConfiguration);
+        isOverwrite = new OrchestrationProperties(orchestrationRepositoryConfiguration.getProps()).getValue(OrchestrationPropertyKey.OVERWRITE);
         configCenter = new ConfigCenter(configCenterName, configurationRepository);
     }
     
     private void initRegistryCenter(final OrchestrationConfiguration orchestrationConfig) {
         registryCenterName = getInstanceName(orchestrationConfig.getInstanceConfigurationMap(), CenterType.REGISTRY_CENTER.getValue());
-        CenterConfiguration registryCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(registryCenterName);
-        Preconditions.checkNotNull(registryCenterConfiguration, "Registry center configuration cannot be null.");
-        registryRepository = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfiguration.getType(), registryCenterConfiguration.getProps());
-        registryRepository.init(registryCenterConfiguration);
+        OrchestrationRepositoryConfiguration orchestrationRepositoryConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(registryCenterName);
+        Preconditions.checkNotNull(orchestrationRepositoryConfiguration, "Registry center configuration cannot be null.");
+        registryRepository = TypedSPIRegistry.getRegisteredService(
+                RegistryRepository.class, orchestrationRepositoryConfiguration.getType(), orchestrationRepositoryConfiguration.getProps());
+        registryRepository.init(orchestrationRepositoryConfiguration);
         registryCenter = new RegistryCenter(registryCenterName, registryRepository);
     }
     
     private void initMetaDataCenter(final OrchestrationConfiguration orchestrationConfig) {
         metaDataCenterName = getInstanceName(orchestrationConfig.getInstanceConfigurationMap(), CenterType.METADATA_CENTER.getValue());
-        CenterConfiguration metaDataCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(metaDataCenterName);
-        Preconditions.checkNotNull(metaDataCenterConfiguration, "MetaData center configuration cannot be null.");
-        metaDataRepository = TypedSPIRegistry.getRegisteredService(ConfigurationRepository.class, metaDataCenterConfiguration.getType(), metaDataCenterConfiguration.getProps());
-        metaDataRepository.init(metaDataCenterConfiguration);
+        OrchestrationRepositoryConfiguration orchestrationRepositoryConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(metaDataCenterName);
+        Preconditions.checkNotNull(orchestrationRepositoryConfiguration, "MetaData center configuration cannot be null.");
+        metaDataRepository = TypedSPIRegistry.getRegisteredService(
+                ConfigurationRepository.class, orchestrationRepositoryConfiguration.getType(), orchestrationRepositoryConfiguration.getProps());
+        metaDataRepository.init(orchestrationRepositoryConfiguration);
         metaDataCenter = new MetaDataCenter(metaDataCenterName, metaDataRepository);
     }
     
-    private String getInstanceName(final Map<String, CenterConfiguration> centerConfigurations, final String type) {
-        Optional<String> result = centerConfigurations.entrySet().stream().filter(entry -> contains(entry.getValue().getOrchestrationType(), type)).findFirst().map(Entry::getKey);
+    private String getInstanceName(final Map<String, OrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurations, final String type) {
+        Optional<String> result = orchestrationRepositoryConfigurations.entrySet().stream().filter(entry -> contains(entry.getValue().getOrchestrationType(), type)).findFirst().map(Entry::getKey);
         Preconditions.checkArgument(result.isPresent(), "Can not find instance configuration with orchestration type.");
         return result.get();
     }

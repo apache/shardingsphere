@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.repository.zookeeper;
 
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.exception.OrchestrationException;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.junit.Assert;
@@ -46,7 +46,7 @@ public final class CuratorZookeeperRepositoryTest {
     public static void init() {
         EmbedTestingServer.start();
         serverLists = EmbedTestingServer.getTestingServerConnectionString();
-        CenterConfiguration configuration = new CenterConfiguration(REPOSITORY.getType(), new Properties());
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(REPOSITORY.getType(), new Properties());
         configuration.setServerLists(serverLists);
         REPOSITORY.init(configuration);
     }
@@ -136,7 +136,7 @@ public final class CuratorZookeeperRepositoryTest {
         props.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1");
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000");
-        CenterConfiguration configuration = new CenterConfiguration(repository.getType(), new Properties());
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), new Properties());
         configuration.setServerLists(serverLists);
         repository.setProps(props);
         repository.init(configuration);
@@ -153,7 +153,7 @@ public final class CuratorZookeeperRepositoryTest {
         final CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
-        CenterConfiguration configuration = new CenterConfiguration(repository.getType(), new Properties());
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), new Properties());
         configuration.setServerLists(serverLists);
         repository.setProps(props);
         repository.init(configuration);
@@ -167,7 +167,7 @@ public final class CuratorZookeeperRepositoryTest {
         final CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
-        CenterConfiguration configuration = new CenterConfiguration(repository.getType(), new Properties());
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), new Properties());
         configuration.setServerLists(serverLists);
         repository.setProps(props);
         repository.init(configuration);
@@ -181,7 +181,7 @@ public final class CuratorZookeeperRepositoryTest {
         final CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
-        CenterConfiguration configuration = new CenterConfiguration(repository.getType(), new Properties());
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), new Properties());
         configuration.setServerLists(serverLists);
         repository.setProps(props);
         repository.init(configuration);
@@ -204,7 +204,7 @@ public final class CuratorZookeeperRepositoryTest {
     @Test
     public void assertZKCloseAndException() {
         CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
-        CenterConfiguration configuration = new CenterConfiguration(repository.getType(), new Properties());
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), new Properties());
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "digest");
         configuration.setServerLists(serverLists);

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.repository.common.configuration.
 
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.junit.Test;
 import java.util.HashMap;
@@ -63,11 +63,11 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
-        CenterConfiguration instanceConfiguration = new CenterConfiguration("zookeeper", new Properties());
+        OrchestrationRepositoryConfiguration instanceConfiguration = new OrchestrationRepositoryConfiguration("zookeeper", new Properties());
         instanceConfiguration.setOrchestrationType("config_center");
         instanceConfiguration.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
         instanceConfiguration.setNamespace("orchestration");
-        Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<>();
+        Map<String, OrchestrationRepositoryConfiguration> instanceConfigurationMap = new HashMap<>();
         instanceConfigurationMap.put(LOGIC_SCHEMA, instanceConfiguration);
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }

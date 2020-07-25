@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -43,15 +43,15 @@ import java.util.Properties;
 
 public final class LocalShardingMasterSlaveConfiguration implements ExampleConfiguration {
     
-    private final Map<String, CenterConfiguration> centerConfigurationMap;
+    private final Map<String, OrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurations;
     
-    public LocalShardingMasterSlaveConfiguration(final Map<String, CenterConfiguration> centerConfigurationMap) {
-        this.centerConfigurationMap = centerConfigurationMap;
+    public LocalShardingMasterSlaveConfiguration(final Map<String, OrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurations) {
+        this.orchestrationRepositoryConfigurations = orchestrationRepositoryConfigurations;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(centerConfigurationMap);
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(orchestrationRepositoryConfigurations);
         Collection<RuleConfiguration> configurations = new LinkedList<>();
         configurations.add(getShardingRuleConfiguration());
         configurations.add(getMasterSlaveRuleConfiguration());

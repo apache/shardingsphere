@@ -29,7 +29,7 @@ public final class OrchestrationConfigurationTest {
     
     @Test
     public void assertInstanceConfigurationMap() {
-        Map<String, CenterConfiguration> configurationMap = new HashMap<>();
+        Map<String, OrchestrationRepositoryConfiguration> configurationMap = new HashMap<>();
         assertThat(new OrchestrationConfiguration(configurationMap).getInstanceConfigurationMap(), is(configurationMap));
     }
 }
