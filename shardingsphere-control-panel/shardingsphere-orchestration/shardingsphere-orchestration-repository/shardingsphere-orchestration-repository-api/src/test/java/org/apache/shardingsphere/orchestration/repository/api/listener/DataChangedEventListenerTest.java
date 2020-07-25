@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.repository.api.listener;
 
-import org.apache.shardingsphere.orchestration.repository.api.fixture.FirstTestRepository;
+import org.apache.shardingsphere.orchestration.repository.api.fixture.TestConfigurationRepository;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,11 +26,11 @@ import static org.junit.Assert.assertThat;
 public final class DataChangedEventListenerTest {
     
     @Test
-    public void assertFixture() {
-        FirstTestRepository testRepository = new FirstTestRepository();
+    public void assertOnChange() {
+        TestConfigurationRepository repository = new TestConfigurationRepository();
         DataChangedEventListener listener = dataChangedEvent -> assertThat(dataChangedEvent.getChangedType().name(), is(dataChangedEvent.getValue()));
-        testRepository.watch("UPDATED", listener);
-        testRepository.watch("DELETED", listener);
-        testRepository.watch("IGNORED", listener);
+        repository.watch("UPDATED", listener);
+        repository.watch("DELETED", listener);
+        repository.watch("IGNORED", listener);
     }
 }

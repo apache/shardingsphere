@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.config.fixture;
+package org.apache.shardingsphere.orchestration.repository.api.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.Properties;
 
 @Getter
 @Setter
-public final class FirstTestConfigurationRepository implements ConfigurationRepository {
+public final class TestConfigurationRepository implements ConfigurationRepository {
     
     private Properties props = new Properties();
     
@@ -53,6 +54,9 @@ public final class FirstTestConfigurationRepository implements ConfigurationRepo
     
     @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
+        DataChangedEvent.ChangedType type = DataChangedEvent.ChangedType.valueOf(key);
+        DataChangedEvent event = new DataChangedEvent(type.name(), type.name(), type);
+        dataChangedEventListener.onChange(event);
     }
     
     @Override
