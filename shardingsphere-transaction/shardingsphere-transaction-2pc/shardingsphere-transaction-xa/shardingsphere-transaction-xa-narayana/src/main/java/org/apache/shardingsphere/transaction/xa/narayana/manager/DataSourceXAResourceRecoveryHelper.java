@@ -81,7 +81,7 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     }
     
     private boolean connect() {
-        if (this.delegate == null) {
+        if (null == this.delegate) {
             try {
                 this.xaConnection = getXaConnection();
                 this.delegate = this.xaConnection.getXAResource();
@@ -94,7 +94,7 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     }
     
     private XAConnection getXaConnection() throws SQLException {
-        if (this.user == null && this.password == null) {
+        if (null == this.user && null == this.password) {
             return this.xaDataSource.getXAConnection();
         }
         return this.xaDataSource.getXAConnection(this.user, this.password);
@@ -168,7 +168,7 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     }
     
     private XAResource getDelegate() {
-        if (this.delegate == null) {
+        if (null == this.delegate) {
             throw new IllegalStateException("Connection has not been opened");
         }
         return this.delegate;
