@@ -33,43 +33,43 @@ import javax.transaction.TransactionManager;
  */
 public final class NarayanaXATransactionManager implements XATransactionManager {
     
-    private static final TransactionManager TRANSACTION_MANAGER = jtaPropertyManager.getJTAEnvironmentBean().getTransactionManager();
+    private final TransactionManager transactionManager = jtaPropertyManager.getJTAEnvironmentBean().getTransactionManager();
     
-    private static final XARecoveryModule XA_RECOVERY_MODULE = XARecoveryModule.getRegisteredXARecoveryModule();
+    private final XARecoveryModule xaRecoveryModule = XARecoveryModule.getRegisteredXARecoveryModule();
     
-    private static final RecoveryManagerService RECOVERY_MANAGER_SERVICE = new RecoveryManagerService();
+    private final RecoveryManagerService recoveryManagerService = new RecoveryManagerService();
     
     @Override
     public void init() {
         RecoveryManager.delayRecoveryManagerThread();
-        RECOVERY_MANAGER_SERVICE.create();
-        RECOVERY_MANAGER_SERVICE.start();
+        recoveryManagerService.create();
+        recoveryManagerService.start();
     }
     
     @Override
     public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        XA_RECOVERY_MODULE.addXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
+        xaRecoveryModule.addXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
     }
     
     @Override
     public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        XA_RECOVERY_MODULE.removeXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
+        xaRecoveryModule.removeXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
     }
     
     @SneakyThrows
     @Override
     public void enlistResource(final SingleXAResource singleXAResource) {
-        TRANSACTION_MANAGER.getTransaction().enlistResource(singleXAResource.getDelegate());
+        transactionManager.getTransaction().enlistResource(singleXAResource.getDelegate());
     }
     
     @Override
     public TransactionManager getTransactionManager() {
-        return TRANSACTION_MANAGER;
+        return transactionManager;
     }
     
     @Override
     public void close() throws Exception {
-        RECOVERY_MANAGER_SERVICE.stop();
-        RECOVERY_MANAGER_SERVICE.destroy();
+        recoveryManagerService.stop();
+        recoveryManagerService.destroy();
     }
 }
