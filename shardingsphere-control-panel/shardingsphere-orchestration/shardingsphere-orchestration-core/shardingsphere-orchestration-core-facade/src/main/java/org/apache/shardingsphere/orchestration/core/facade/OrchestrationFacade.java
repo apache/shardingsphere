@@ -62,8 +62,6 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private RegistryRepository registryRepository;
     
-    private ConfigurationRepository metaDataRepository;
-    
     private boolean isOverwrite;
     
     @Getter
@@ -80,8 +78,6 @@ public final class OrchestrationFacade implements AutoCloseable {
     private String configCenterName;
     
     private String registryCenterName;
-    
-    private String metaDataCenterName;
     
     /**
      * Initialize orchestration facade.
@@ -118,13 +114,9 @@ public final class OrchestrationFacade implements AutoCloseable {
     }
     
     private void initMetaDataCenter(final OrchestrationConfiguration orchestrationConfig) {
-        metaDataCenterName = getInstanceName(orchestrationConfig.getInstanceConfigurationMap(), CenterType.METADATA_CENTER.getValue());
-        OrchestrationRepositoryConfiguration orchestrationRepositoryConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(metaDataCenterName);
+        OrchestrationRepositoryConfiguration orchestrationRepositoryConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName);
         Preconditions.checkNotNull(orchestrationRepositoryConfiguration, "MetaData center configuration cannot be null.");
-        metaDataRepository = TypedSPIRegistry.getRegisteredService(
-                ConfigurationRepository.class, orchestrationRepositoryConfiguration.getType(), orchestrationRepositoryConfiguration.getProps());
-        metaDataRepository.init(orchestrationRepositoryConfiguration);
-        metaDataCenter = new MetaDataCenter(metaDataCenterName, metaDataRepository);
+        metaDataCenter = new MetaDataCenter(configCenterName, configurationRepository);
     }
     
     private String getInstanceName(final Map<String, OrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurations, final String type) {
@@ -139,7 +131,7 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private void initListenerManager(final Collection<String> shardingSchemaNames) {
         listenerManager = new OrchestrationListenerManager(
-                registryCenterName, registryRepository, configCenterName, configurationRepository, metaDataCenterName, metaDataRepository,
+                registryCenterName, registryRepository, configCenterName, configurationRepository, 
                 shardingSchemaNames.isEmpty() ? configCenter.getAllShardingSchemaNames() : shardingSchemaNames);
     }
     
@@ -192,7 +184,6 @@ public final class OrchestrationFacade implements AutoCloseable {
         try {
             configurationRepository.close();
             registryRepository.close();
-            metaDataRepository.close();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

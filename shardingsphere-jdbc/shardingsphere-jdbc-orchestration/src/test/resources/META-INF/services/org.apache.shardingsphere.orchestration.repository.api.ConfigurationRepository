@@ -19,4 +19,3 @@ org.apache.shardingsphere.driver.orchestration.fixture.FirstTestConfigurationRep
 org.apache.shardingsphere.driver.orchestration.fixture.SecondTestConfigurationRepository
 org.apache.shardingsphere.driver.orchestration.fixture.ThirdTestConfigurationRepository
 org.apache.shardingsphere.driver.orchestration.fixture.FourthTestConfigurationRepository
-org.apache.shardingsphere.driver.orchestration.fixture.FirstTestMetaDataRepository

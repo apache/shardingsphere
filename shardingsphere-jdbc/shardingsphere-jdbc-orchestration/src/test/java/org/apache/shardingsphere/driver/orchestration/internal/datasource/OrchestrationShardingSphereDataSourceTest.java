@@ -76,7 +76,6 @@ public final class OrchestrationShardingSphereDataSourceTest {
         Map<String, OrchestrationRepositoryConfiguration> instanceConfigurationMap = new HashMap<>();
         instanceConfigurationMap.put("test_sharding_registry_name", getRegistryOrchestrationRepositoryConfiguration());
         instanceConfigurationMap.put("test_sharding_config_name", getConfigOrchestrationRepositoryConfiguration());
-        instanceConfigurationMap.put("test_sharding_metadata_name", getMetaDataOrchestrationRepositoryConfiguration());
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }
     
@@ -96,16 +95,6 @@ public final class OrchestrationShardingSphereDataSourceTest {
         OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("FourthTestConfigCenter", properties);
         result.setOrchestrationType(CenterType.CONFIG_CENTER.getValue());
         result.setNamespace("test_sharding_config");
-        result.setServerLists("localhost:3181");
-        return result;
-    }
-    
-    private static OrchestrationRepositoryConfiguration getMetaDataOrchestrationRepositoryConfiguration() {
-        Properties properties = new Properties();
-        properties.setProperty("overwrite", "true");
-        OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("FirstTestMetaDataCenter", properties);
-        result.setOrchestrationType(CenterType.METADATA_CENTER.getValue());
-        result.setNamespace("test_encrypt_metadata");
         result.setServerLists("localhost:3181");
         return result;
     }

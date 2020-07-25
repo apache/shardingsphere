@@ -31,8 +31,6 @@ public final class CenterTypeTest {
         assertThat(CenterType.CONFIG_CENTER.name(), is("CONFIG_CENTER"));
         assertThat(CenterType.REGISTRY_CENTER.getValue(), is("registry_center"));
         assertThat(CenterType.REGISTRY_CENTER.name(), is("REGISTRY_CENTER"));
-        assertThat(CenterType.METADATA_CENTER.getValue(), is("metadata_center"));
-        assertThat(CenterType.METADATA_CENTER.name(), is("METADATA_CENTER"));
     }
     
     @Test
@@ -41,8 +39,6 @@ public final class CenterTypeTest {
         assertThat(configCenter, is(CenterType.CONFIG_CENTER));
         CenterType registryCenter = CenterType.findByValue("registry_center");
         assertThat(registryCenter, is(CenterType.REGISTRY_CENTER));
-        CenterType metadataCenter = CenterType.findByValue("metadata_center");
-        assertThat(metadataCenter, is(CenterType.METADATA_CENTER));
     }
     
     @Test(expected = OrchestrationException.class)
