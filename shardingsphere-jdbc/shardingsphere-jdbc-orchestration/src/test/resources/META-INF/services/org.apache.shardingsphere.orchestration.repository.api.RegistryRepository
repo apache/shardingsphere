@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.driver.orchestration.fixture.FirstTestRegistryRepository
-org.apache.shardingsphere.driver.orchestration.fixture.FourthTestRegistryRepository
