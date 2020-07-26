@@ -8,7 +8,6 @@ weight = 6
 ### Management
 
 ```properties
-spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type= #Orchestration type, use commas to separate, such as: config_center,registry_center,metadata_center
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type= #Orchestration instance type. Example:zookeeper, etcd, apollo, nacos
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.server-lists= #The list of servers that connect to orchestration instance, including IP and port number; use commas to separate
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace= #Orchestration namespace

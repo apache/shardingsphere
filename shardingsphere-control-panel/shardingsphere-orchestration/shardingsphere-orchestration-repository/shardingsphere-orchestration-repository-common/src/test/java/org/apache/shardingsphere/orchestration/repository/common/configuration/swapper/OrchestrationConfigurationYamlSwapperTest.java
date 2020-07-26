@@ -36,7 +36,6 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     public void assertSwapToYamlOrchestrationConfiguration() {
         OrchestrationConfiguration data = getOrchestrationConfiguration();
         YamlOrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swapToYamlConfiguration(data);
-        assertThat(result.getRegistryRepositoryConfiguration().getOrchestrationType(), is(data.getRegistryRepositoryConfiguration().getOrchestrationType()));
         assertThat(result.getRegistryRepositoryConfiguration().getInstanceType(), is(data.getRegistryRepositoryConfiguration().getType()));
         assertThat(result.getRegistryRepositoryConfiguration().getNamespace(), is(data.getRegistryRepositoryConfiguration().getNamespace()));
         assertThat(result.getRegistryRepositoryConfiguration().getServerLists(), is(data.getRegistryRepositoryConfiguration().getServerLists()));
@@ -45,7 +44,6 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
         OrchestrationRepositoryConfiguration repositoryConfiguration = new OrchestrationRepositoryConfiguration("zookeeper", new Properties());
-        repositoryConfiguration.setOrchestrationType("config_center");
         repositoryConfiguration.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
         repositoryConfiguration.setNamespace("orchestration");
         return new OrchestrationConfiguration(LOGIC_SCHEMA, repositoryConfiguration);
@@ -55,7 +53,6 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     public void assertSwapToOrchestrationConfiguration() {
         YamlOrchestrationConfiguration data = getYamlOrchestrationConfiguration();
         OrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swapToObject(data);
-        assertThat(result.getRegistryRepositoryConfiguration().getOrchestrationType(), is(data.getRegistryRepositoryConfiguration().getOrchestrationType()));
         assertThat(result.getRegistryRepositoryConfiguration().getType(), is(data.getRegistryRepositoryConfiguration().getInstanceType()));
         assertThat(result.getRegistryRepositoryConfiguration().getNamespace(), is(data.getRegistryRepositoryConfiguration().getNamespace()));
         assertThat(result.getRegistryRepositoryConfiguration().getServerLists(), is(data.getRegistryRepositoryConfiguration().getServerLists()));
@@ -66,7 +63,6 @@ public final class OrchestrationConfigurationYamlSwapperTest {
         YamlOrchestrationRepositoryConfiguration registryRepositoryConfiguration = new YamlOrchestrationRepositoryConfiguration();
         registryRepositoryConfiguration.setInstanceType("zookeeper");
         registryRepositoryConfiguration.setProps(new Properties());
-        registryRepositoryConfiguration.setOrchestrationType("registry_center");
         registryRepositoryConfiguration.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
         registryRepositoryConfiguration.setNamespace("orchestration");
         YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();

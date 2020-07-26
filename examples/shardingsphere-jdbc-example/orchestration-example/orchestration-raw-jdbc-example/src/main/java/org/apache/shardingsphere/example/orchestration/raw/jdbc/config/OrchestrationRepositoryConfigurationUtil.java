@@ -39,7 +39,6 @@ public final class OrchestrationRepositoryConfigurationUtil {
         OrchestrationRepositoryConfiguration orchestrationRepositoryConfiguration = new OrchestrationRepositoryConfiguration("zookeeper", props);
         orchestrationRepositoryConfiguration.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         orchestrationRepositoryConfiguration.setNamespace(NAMESPACE);
-        orchestrationRepositoryConfiguration.setOrchestrationType("registry_center,config_center,metadata_center");
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 return new OrchestrationConfiguration("orchestration-sharding-data-source", orchestrationRepositoryConfiguration);
@@ -62,13 +61,11 @@ public final class OrchestrationRepositoryConfigurationUtil {
         OrchestrationRepositoryConfiguration nacosResult = new OrchestrationRepositoryConfiguration("nacos", nacosProperties);
         nacosResult.setServerLists(NACOS_CONNECTION_STRING);
         nacosResult.setNamespace(NACOS_NAMESPACE);
-        nacosResult.setOrchestrationType("config_center");
         Properties zookeeperProperties = new Properties();
         zookeeperProperties.setProperty("overwrite", overwrite);
         OrchestrationRepositoryConfiguration zookeeperResult = new OrchestrationRepositoryConfiguration("zookeeper", zookeeperProperties);
         zookeeperResult.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         zookeeperResult.setNamespace(NAMESPACE);
-        zookeeperResult.setOrchestrationType("registry_center,metadata_center");
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 return new OrchestrationConfiguration("orchestration-zookeeper-sharding-data-source", zookeeperResult, nacosResult);

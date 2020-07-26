@@ -10,7 +10,6 @@ weight = 6
 ```yaml
 orchestration:
   demo_yaml_ds_sharding: #Orchestration instance name
-    orchestrationType: #Orchestration type, use commas to separate, such as: config_center,registry_center,metadata_center
     instanceType: #Orchestration instance type. Example:zookeeper, etcd, apollo, nacos
     serverLists: #The list of servers that connect to orchestration instance, including IP and port number; use commas to separate
     namespace: #Orchestration namespace

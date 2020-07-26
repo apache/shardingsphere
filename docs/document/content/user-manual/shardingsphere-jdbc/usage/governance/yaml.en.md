@@ -33,13 +33,13 @@ Using ZooKeeper as config center and registry center for example.
 
 ```yaml
 orchestration:
-  orchestration_ds:
-      orchestrationType: registry_center,config_center,metadata_center
-      instanceType: zookeeper
-      serverLists: localhost:2181
-      namespace: orchestration
-      props:
-        overwrite: true
+  name: orchestration_ds
+  registryRepositoryConfiguration:
+    instanceType: zookeeper
+    serverLists: localhost:2181
+    namespace: orchestration
+    props:
+      overwrite: true
 ```
 
 ```java

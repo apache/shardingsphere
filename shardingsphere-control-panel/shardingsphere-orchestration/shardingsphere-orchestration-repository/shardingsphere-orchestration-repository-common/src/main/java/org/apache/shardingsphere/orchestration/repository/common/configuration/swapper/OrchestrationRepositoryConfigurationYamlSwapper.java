@@ -29,7 +29,6 @@ public final class OrchestrationRepositoryConfigurationYamlSwapper implements Ya
     @Override
     public YamlOrchestrationRepositoryConfiguration swapToYamlConfiguration(final OrchestrationRepositoryConfiguration configuration) {
         YamlOrchestrationRepositoryConfiguration result = new YamlOrchestrationRepositoryConfiguration();
-        result.setOrchestrationType(configuration.getOrchestrationType());
         result.setInstanceType(configuration.getType());
         result.setServerLists(configuration.getServerLists());
         result.setNamespace(configuration.getNamespace());
@@ -40,7 +39,6 @@ public final class OrchestrationRepositoryConfigurationYamlSwapper implements Ya
     @Override
     public OrchestrationRepositoryConfiguration swapToObject(final YamlOrchestrationRepositoryConfiguration yamlConfiguration) {
         OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration(yamlConfiguration.getInstanceType(), yamlConfiguration.getProps());
-        result.setOrchestrationType(yamlConfiguration.getOrchestrationType());
         result.setServerLists(yamlConfiguration.getServerLists());
         result.setNamespace(yamlConfiguration.getNamespace());
         return result;

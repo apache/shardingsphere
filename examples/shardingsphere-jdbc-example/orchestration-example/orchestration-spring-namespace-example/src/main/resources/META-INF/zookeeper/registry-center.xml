@@ -24,7 +24,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
                            ">
-    <orchestration:instance id="regCenter" orchestration-type="registry_center,config_center,metadata_center" instance-type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo">
+    <orchestration:instance id="regCenter" instance-type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">3000</prop>

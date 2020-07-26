@@ -13,8 +13,8 @@ Class name: org.apache.shardingsphere.orchestration.repository.api.config.Orches
 
 Attributes:
 
-| *Name*                   | *Data Type*                         | *Description*                                                                                                         |
-| ------------------------ | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| *Name*                   | *Data Type*                         | *Description*                                                                                                       |
+| ------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | instanceConfigurationMap | Map\<String, CenterConfiguration\>  | Config map of config-center&registry-center, the key is orchestration name, the value is the orchestration instance |
 
 *Orchestration Instance Configuration*
@@ -23,13 +23,12 @@ Class name: org.apache.shardingsphere.orchestration.repository.api.config.Center
 
 Attributes:
 
-| *Name*            | *Data Type* | *Description*                                                                                                                               |
-| ----------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| orchestrationType | String      | Orchestration type, use commas to separate, such as: config_center,registry_center,metadata_center               |
-| instanceType      | String      | Orchestration instance type, such as: zookeeper, etcd, apollo, nacos                                                                                    |
-| serverLists       | String      | The list of servers that connect to orchestration instance, including IP and port number, use commas to separate, such as: host1:2181,host2:2181 |
-| namespace (?)     | String      | Orchestration namespace                                                                                                               |
-| props        | Properties      | Properties for center instance config, such as options of zookeeper                                                                         |
+| *Name*        | *Data Type* | *Description*                                                                                                                                    |
+| ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| instanceType  | String      | Orchestration instance type, such as: zookeeper, etcd, apollo, nacos                                                                             |
+| serverLists   | String      | The list of servers that connect to orchestration instance, including IP and port number, use commas to separate, such as: host1:2181,host2:2181 |
+| namespace (?) | String      | Orchestration namespace                                                                                                                          |
+| props         | Properties  | Properties for center instance config, such as options of zookeeper                                                                              |
 
 Common Properties Configuration
 
@@ -82,8 +81,8 @@ Class name：org.apache.shardingsphere.cluster.configuration.config.ClusterConfi
 
 Attributes：
 
-| *Name*                    | *Data Type*                           | *Description*                                                            |
-| ------------------------ | ----------------------------------- | ----------------------------------------------------------------- |
+| *Name*    | *Data Type*             | *Description*                     |
+| --------- | ----------------------- | --------------------------------- |
 | heartbeat | HeartbeatConfiguration  | heartbeat detection configuration |
 
 *Heartbeat Detection Configuration*
@@ -92,11 +91,11 @@ Class name：org.apache.shardingsphere.cluster.configuration.config.HeartbeatCon
 
 Attributes：
 
-| *Name*       | *Data Type* | *Description*                 |
-| ----------- | --------- | ---------------------- |
-| sql   | String    | Heartbeat detection SQL       |
-| interval | int      | Heartbeat detection task interval (s) |
-| threadCount   | int    | Thread pool size       |
-| retryEnable | Boolean      | Whether to enable retry, set true or false |
-| retryMaximum(?)   | int    | Maximum number of retry, effective when retryEnable is true      |
-| retryInterval(?) | int      | Retry interval (s), effective when retryEnable is true |
+| *Name*           | *Data Type* | *Description*                                               |
+| ---------------- | ----------- | ----------------------------------------------------------- |
+| sql              | String      | Heartbeat detection SQL                                     |
+| interval         | int         | Heartbeat detection task interval seconds                   |
+| threadCount      | int         | Thread pool size                                            |
+| retryEnable      | Boolean     | Whether to enable retry, set true or false                  |
+| retryMaximum(?)  | int         | Maximum number of retry, effective when retryEnable is true |
+| retryInterval(?) | int         | Retry interval (s), effective when retryEnable is true      |

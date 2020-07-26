@@ -30,8 +30,6 @@ import java.util.Properties;
 @Setter
 public final class YamlOrchestrationRepositoryConfiguration implements YamlConfiguration {
     
-    private String orchestrationType;
-    
     private String instanceType;
     
     private String serverLists;

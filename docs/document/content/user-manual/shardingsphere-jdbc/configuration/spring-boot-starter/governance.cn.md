@@ -8,7 +8,6 @@ weight = 6
 ### 治理
 
 ```properties
-spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type= #治理类型，多个类型用逗号分隔，例如 config_center, registry_center, metadata_center
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type= #治理实例类型。如：zookeeper, etcd, apollo, nacos
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.server-lists= #治理服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace= #治理命名空间

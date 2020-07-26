@@ -42,15 +42,6 @@ public final class OrchestrationRepositoryConfigurationTest {
     }
     
     @Test
-    public void assertCenterType() {
-        String type = "zookeeper";
-        String orchestrationType = "config_center";
-        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(type, new Properties());
-        configuration.setOrchestrationType(orchestrationType);
-        assertThat(configuration.getOrchestrationType(), is(orchestrationType));
-    }
-    
-    @Test
     public void assertServerLists() {
         String type = "zookeeper";
         String serverLists = "127.0.0.1:2181,127.0.0.1:2182";

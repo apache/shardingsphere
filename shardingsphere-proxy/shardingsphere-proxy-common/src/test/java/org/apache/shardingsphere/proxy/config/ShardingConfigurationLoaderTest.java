@@ -54,7 +54,6 @@ public final class ShardingConfigurationLoaderTest {
     private void assertOrchestrationConfiguration(final YamlOrchestrationConfiguration orchestration) {
         YamlOrchestrationRepositoryConfiguration actual = orchestration.getRegistryRepositoryConfiguration();
         assertThat(actual.getNamespace(), is("test_namespace_1"));
-        assertThat(actual.getOrchestrationType(), is("registry_center"));
         assertThat(actual.getServerLists(), is("localhost:2181"));
     }
     

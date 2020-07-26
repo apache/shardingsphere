@@ -26,7 +26,7 @@
                            ">
     <import resource="namespace/masterSlaveDataSourceNamespace.xml" />
     
-    <orchestration:instance id="regCenter" orchestration-type="registry_center,config_center,metadata_center" instance-type="TestRegistry" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test">
+    <orchestration:instance id="regCenter" instance-type="TestRegistry" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>

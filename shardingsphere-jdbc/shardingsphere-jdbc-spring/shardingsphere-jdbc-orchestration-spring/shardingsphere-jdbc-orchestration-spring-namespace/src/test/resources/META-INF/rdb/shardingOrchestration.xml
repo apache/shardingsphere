@@ -34,7 +34,7 @@
         <prop key="operation-timeout-milliseconds">1000</prop>
     </util:properties>
     
-    <orchestration:instance id="centerRepository" orchestration-type="registry_center,config_center,metadata_center" instance-type="TestRegistry" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test">
+    <orchestration:instance id="centerRepository" instance-type="TestRegistry" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>

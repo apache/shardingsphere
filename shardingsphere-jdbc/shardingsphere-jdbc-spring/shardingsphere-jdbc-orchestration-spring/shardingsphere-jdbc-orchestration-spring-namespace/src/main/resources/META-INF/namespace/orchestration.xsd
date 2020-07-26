@@ -38,10 +38,9 @@
                 <xsd:element ref="beans:props" minOccurs="0" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="orchestration-type" type="xsd:string" use="required" />
             <xsd:attribute name="instance-type" type="xsd:string" use="required" />
-            <xsd:attribute name="server-lists" type="xsd:string" use="required"/>
-            <xsd:attribute name="namespace" type="xsd:string"/>
+            <xsd:attribute name="server-lists" type="xsd:string" use="required" />
+            <xsd:attribute name="namespace" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

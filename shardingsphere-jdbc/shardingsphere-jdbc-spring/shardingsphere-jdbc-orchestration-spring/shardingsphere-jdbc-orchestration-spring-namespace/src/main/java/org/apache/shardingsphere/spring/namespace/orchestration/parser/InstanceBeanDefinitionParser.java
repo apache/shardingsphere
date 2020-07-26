@@ -34,8 +34,6 @@ import java.util.Properties;
  */
 public final class InstanceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
-    private static final String PROPERTY_TYPE = "orchestrationType";
-    
     private static final String PROPERTY_SERVER_LIST = "serverLists";
     
     private static final String PROPERTY_NAMESPACE = "namespace";
@@ -45,7 +43,6 @@ public final class InstanceBeanDefinitionParser extends AbstractBeanDefinitionPa
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationRepositoryConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionTag.TYPE_TAG));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
-        addPropertyValueIfNotEmpty(InstanceBeanDefinitionTag.ORCHESTRATION_TYPE_TAG, PROPERTY_TYPE, element, factory);
         addPropertyValueIfNotEmpty(InstanceBeanDefinitionTag.SERVER_LISTS_TAG, PROPERTY_SERVER_LIST, element, factory);
         addPropertyValueIfNotEmpty(InstanceBeanDefinitionTag.NAMESPACE_TAG, PROPERTY_NAMESPACE, element, factory);
         return factory.getBeanDefinition();
