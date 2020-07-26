@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.orchestration.repository.common.configuration.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
-import java.util.Map;
-
 /**
- * Config center configuration.
+ * Orchestration configuration for YAML.
  */
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 public final class YamlOrchestrationConfiguration implements YamlConfiguration {
     
-    private Map<String, YamlOrchestrationRepositoryConfiguration> orchestrationRepositoryConfigurationMap;
+    private String registryCenterName;
+    
+    private YamlOrchestrationRepositoryConfiguration registryRepositoryConfiguration;
+    
+    private String additionalConfigCenterName;
+    
+    private YamlOrchestrationRepositoryConfiguration additionalConfigurationRepositoryConfiguration;
 }

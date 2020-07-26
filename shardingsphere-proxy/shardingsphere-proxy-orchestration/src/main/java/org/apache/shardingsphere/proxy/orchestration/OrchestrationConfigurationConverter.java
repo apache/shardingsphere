@@ -28,7 +28,6 @@ import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
@@ -56,10 +55,10 @@ public class OrchestrationConfigurationConverter extends AbstractConfigurationCo
     
     @Override
     public ProxyConfiguration convert(final ShardingConfiguration shardingConfiguration) {
-        Map<String, YamlOrchestrationRepositoryConfiguration> orchestration = shardingConfiguration.getServerConfiguration().getOrchestration();
+        YamlOrchestrationConfiguration orchestration = shardingConfiguration.getServerConfiguration().getOrchestration();
         Set<String> schemaNames = shardingConfiguration.getRuleConfigurationMap().keySet();
         ProxyConfiguration proxyConfiguration = new ProxyConfiguration();
-        orchestrationFacade.init(new OrchestrationConfigurationYamlSwapper().swapToObject(new YamlOrchestrationConfiguration(orchestration)), schemaNames);
+        orchestrationFacade.init(new OrchestrationConfigurationYamlSwapper().swapToObject(orchestration), schemaNames);
         initOrchestrationConfigurations(shardingConfiguration.getServerConfiguration(), shardingConfiguration.getRuleConfigurationMap(), orchestrationFacade);
         Authentication authentication = orchestrationFacade.getConfigCenter().loadAuthentication();
         Properties properties = orchestrationFacade.getConfigCenter().loadProperties();

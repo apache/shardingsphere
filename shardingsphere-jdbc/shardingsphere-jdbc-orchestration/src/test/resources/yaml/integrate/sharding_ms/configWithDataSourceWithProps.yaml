@@ -119,7 +119,8 @@ rules:
       type: ROUND_ROBIN
 
 orchestration:
-  test_sharding_ms_registry_name:
+  registryCenterName: test_sharding_ms_registry_name
+  registryRepositoryConfiguration:
     orchestrationType: registry_center
     instanceType: REG_TEST
     serverLists: localhost:3181
@@ -130,22 +131,13 @@ orchestration:
       timeToLiveSeconds: 10
       maxRetries: 10
       operationTimeoutMilliseconds: 10
-  test_sharding_ms_config_name:
+  
+  additionalConfigCenterName: test_sharding_ms_config_name
+  additionalConfigurationRepositoryConfiguration:
     orchestrationType: config_center
     instanceType: CONFIG_TEST
     serverLists: localhost:3181
     namespace: test_sharding_ms_config
-    props:
-      overwrite: true
-      retryIntervalMilliseconds: 10
-      timeToLiveSeconds: 10
-      maxRetries: 10
-      operationTimeoutMilliseconds: 10
-  test_sharding_ms_metadata_name:
-    orchestrationType: metadata_center
-    instanceType: CONFIG_TEST
-    serverLists: localhost:3181
-    namespace: test_sharding_ms_metadata
     props:
       overwrite: true
       retryIntervalMilliseconds: 10

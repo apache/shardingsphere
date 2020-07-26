@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.driver.orchestration.internal.util;
 
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
@@ -33,9 +33,11 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
     @Test
     public void marshal() {
         YamlOrchestrationRepositoryConfiguration yamlOrchestrationRepositoryConfiguration = getYamlOrchestrationRepositoryConfiguration();
-        Map<String, YamlOrchestrationRepositoryConfiguration> yamlConfigurationMap = Collections.singletonMap("test", yamlOrchestrationRepositoryConfiguration);
-        Map<String, OrchestrationRepositoryConfiguration> configurationMap = YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(yamlConfigurationMap);
-        OrchestrationRepositoryConfiguration configuration = configurationMap.get("test");
+        YamlOrchestrationConfiguration yamlConfiguration = new YamlOrchestrationConfiguration();
+        yamlConfiguration.setRegistryCenterName("test");
+        yamlConfiguration.setRegistryRepositoryConfiguration(yamlOrchestrationRepositoryConfiguration);
+        OrchestrationConfiguration orchestrationConfiguration = YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(yamlConfiguration);
+        OrchestrationRepositoryConfiguration configuration = orchestrationConfiguration.getRegistryRepositoryConfiguration();
         assertEquals(configuration.getType(), yamlOrchestrationRepositoryConfiguration.getInstanceType());
         assertEquals(configuration.getOrchestrationType(), yamlOrchestrationRepositoryConfiguration.getOrchestrationType());
         assertEquals(configuration.getNamespace(), yamlOrchestrationRepositoryConfiguration.getNamespace());

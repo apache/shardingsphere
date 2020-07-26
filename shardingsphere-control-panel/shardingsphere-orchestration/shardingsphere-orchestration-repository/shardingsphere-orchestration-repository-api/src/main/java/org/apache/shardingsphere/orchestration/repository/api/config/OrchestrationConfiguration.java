@@ -20,14 +20,43 @@ package org.apache.shardingsphere.orchestration.repository.api.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
+import java.util.Optional;
 
 /**
- * Config center configuration.
+ * Orchestration configuration.
  */
 @RequiredArgsConstructor
-@Getter
 public final class OrchestrationConfiguration {
     
-    private final Map<String, OrchestrationRepositoryConfiguration> instanceConfigurationMap;
+    @Getter
+    private final String registryCenterName;
+    
+    @Getter
+    private final OrchestrationRepositoryConfiguration registryRepositoryConfiguration;
+    
+    private final String additionalConfigCenterName;
+    
+    private final OrchestrationRepositoryConfiguration additionalConfigurationRepositoryConfiguration;
+    
+    public OrchestrationConfiguration(final String registryCenterName, final OrchestrationRepositoryConfiguration registryRepositoryConfiguration) {
+        this(registryCenterName, registryRepositoryConfiguration, null, null);
+    }
+    
+    /**
+     * Get additional config center name.
+     *
+     * @return additional config center name
+     */
+    public Optional<String> getAdditionalConfigCenterName() {
+        return Optional.ofNullable(additionalConfigCenterName);
+    }
+    
+    /**
+     * Get additional configuration repository configuration.
+     * 
+     * @return additional configuration repository configuration
+     */
+    public Optional<OrchestrationRepositoryConfiguration> getAdditionalConfigurationRepositoryConfiguration() {
+        return Optional.ofNullable(additionalConfigurationRepositoryConfiguration);
+    }
 }

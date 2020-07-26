@@ -28,8 +28,8 @@ import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.orchestration.core.metadata.MetaDataCenter;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenter;
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +39,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -69,20 +68,13 @@ public final class OrchestrationFacadeTest {
     
     @Before
     public void setUp() {
-        Map<String, OrchestrationRepositoryConfiguration> instanceConfigurationMap = new HashMap<>();
         OrchestrationRepositoryConfiguration configuration1 = new OrchestrationRepositoryConfiguration("REG_TEST", new Properties());
         configuration1.setOrchestrationType("registry_center");
         configuration1.setNamespace("namespace_1");
-        instanceConfigurationMap.put("test_name_1", configuration1);
         OrchestrationRepositoryConfiguration configuration2 = new OrchestrationRepositoryConfiguration("CONFIG_TEST", new Properties());
         configuration2.setOrchestrationType("config_center");
         configuration2.setNamespace("namespace_2");
-        instanceConfigurationMap.put("test_name_2", configuration2);
-        OrchestrationRepositoryConfiguration configuration3 = new OrchestrationRepositoryConfiguration("CONFIG_TEST", new Properties());
-        configuration3.setOrchestrationType("metadata_center");
-        configuration3.setNamespace("namespace_3");
-        instanceConfigurationMap.put("test_name_3", configuration3);
-        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration(instanceConfigurationMap);
+        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration("test_name_1", configuration1, "test_name_2", configuration2);
         orchestrationFacade.init(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
         FieldUtil.setField(orchestrationFacade, "registryRepository", registryRepository);
         FieldUtil.setField(orchestrationFacade, "configCenter", configCenter);

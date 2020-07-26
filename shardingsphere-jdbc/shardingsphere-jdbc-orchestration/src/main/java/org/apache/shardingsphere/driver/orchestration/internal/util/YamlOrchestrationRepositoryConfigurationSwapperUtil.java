@@ -19,13 +19,9 @@ package org.apache.shardingsphere.driver.orchestration.internal.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.swapper.OrchestrationRepositoryConfigurationYamlSwapper;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * YAML orchestration configuration swapper utility.
@@ -38,14 +34,14 @@ public final class YamlOrchestrationRepositoryConfigurationSwapperUtil {
     /**
      * Marshal YAML orchestration repository configuration map to instance configuration map.
      *
-     * @param yamlConfigurationMap YAML orchestration repository configuration map
+     * @param orchestration YAML orchestration configuration
      * @return orchestration repository configuration map
      */
-    public static Map<String, OrchestrationRepositoryConfiguration> marshal(final Map<String, YamlOrchestrationRepositoryConfiguration> yamlConfigurationMap) {
-        Map<String, OrchestrationRepositoryConfiguration> result = new LinkedHashMap<>(yamlConfigurationMap.size(), 1);
-        for (Entry<String, YamlOrchestrationRepositoryConfiguration> each : yamlConfigurationMap.entrySet()) {
-            result.put(each.getKey(), SWAPPER.swapToObject(each.getValue()));
+    public static OrchestrationConfiguration marshal(final YamlOrchestrationConfiguration orchestration) {
+        if (null == orchestration.getAdditionalConfigCenterName() && null == orchestration.getAdditionalConfigurationRepositoryConfiguration()) {
+            return new OrchestrationConfiguration(orchestration.getRegistryCenterName(), SWAPPER.swapToObject(orchestration.getRegistryRepositoryConfiguration()));
         }
-        return result;
+        return new OrchestrationConfiguration(orchestration.getRegistryCenterName(), SWAPPER.swapToObject(orchestration.getRegistryRepositoryConfiguration()),
+                orchestration.getAdditionalConfigCenterName(), SWAPPER.swapToObject(orchestration.getAdditionalConfigurationRepositoryConfiguration()));
     }
 }

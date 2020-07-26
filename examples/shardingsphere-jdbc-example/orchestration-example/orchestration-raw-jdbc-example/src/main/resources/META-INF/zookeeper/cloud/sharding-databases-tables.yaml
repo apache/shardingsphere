@@ -16,7 +16,8 @@
 #
 
 orchestration:
-  demo_yaml_ds_sharding:
+  registryCenterName: demo_yaml_ds_sharding
+  registryRepositoryConfiguration:
     orchestrationType: config_center,registry_center,metadata_center
     instanceType: zookeeper
     serverLists: localhost:2181
