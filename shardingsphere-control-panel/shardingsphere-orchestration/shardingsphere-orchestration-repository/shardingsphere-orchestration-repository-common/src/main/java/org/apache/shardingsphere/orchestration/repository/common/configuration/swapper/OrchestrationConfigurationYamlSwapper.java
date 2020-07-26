@@ -17,17 +17,9 @@
 
 package org.apache.shardingsphere.orchestration.repository.common.configuration.swapper;
 
-import com.google.common.base.Splitter;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Orchestration instance configuration YAML swapper.
@@ -38,30 +30,22 @@ public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<
     
     @Override
     public YamlOrchestrationConfiguration swapToYamlConfiguration(final OrchestrationConfiguration configuration) {
-        Map<String, YamlOrchestrationRepositoryConfiguration> configurations = new HashMap<>(2, 1);
-        configurations.put(configuration.getRegistryCenterName(), swapper.swapToYamlConfiguration(configuration.getRegistryRepositoryConfiguration()));
+        YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();
+        result.setRegistryCenterName(configuration.getRegistryCenterName());
+        result.setRegistryRepositoryConfiguration(swapper.swapToYamlConfiguration(configuration.getRegistryRepositoryConfiguration()));
         if (configuration.getAdditionalConfigCenterName().isPresent() && configuration.getAdditionalConfigurationRepositoryConfiguration().isPresent()) {
-            configurations.put(configuration.getAdditionalConfigCenterName().get(), swapper.swapToYamlConfiguration(configuration.getAdditionalConfigurationRepositoryConfiguration().get()));
+            result.setAdditionalConfigCenterName(configuration.getAdditionalConfigCenterName().get());
+            result.setAdditionalConfigurationRepositoryConfiguration(swapper.swapToYamlConfiguration(configuration.getAdditionalConfigurationRepositoryConfiguration().get()));
         }
-        return new YamlOrchestrationConfiguration(configurations);
+        return result;
     }
     
     @Override
     public OrchestrationConfiguration swapToObject(final YamlOrchestrationConfiguration configuration) {
-        String registryCenterName = null;
-        OrchestrationRepositoryConfiguration registryRepositoryConfiguration = null;
-        String additionalConfigCenterName = null;
-        OrchestrationRepositoryConfiguration additionalConfigurationRepositoryConfiguration = null;
-        for (Entry<String, YamlOrchestrationRepositoryConfiguration> entry : configuration.getOrchestrationRepositoryConfigurationMap().entrySet()) {
-            List<String> orchestrationTypes = Splitter.on(",").omitEmptyStrings().trimResults().splitToList(entry.getValue().getOrchestrationType());
-            if (orchestrationTypes.contains("registry_center")) {
-                registryCenterName = entry.getKey();
-                registryRepositoryConfiguration = swapper.swapToObject(entry.getValue());
-            } else if (orchestrationTypes.contains("config_center")) {
-                additionalConfigCenterName = entry.getKey();
-                additionalConfigurationRepositoryConfiguration = swapper.swapToObject(entry.getValue());
-            }
+        if (null != configuration.getAdditionalConfigCenterName() && null != configuration.getAdditionalConfigurationRepositoryConfiguration()) {
+            return new OrchestrationConfiguration(configuration.getRegistryCenterName(), swapper.swapToObject(configuration.getRegistryRepositoryConfiguration()),
+                    configuration.getAdditionalConfigCenterName(), swapper.swapToObject(configuration.getAdditionalConfigurationRepositoryConfiguration()));
         }
-        return new OrchestrationConfiguration(registryCenterName, registryRepositoryConfiguration, additionalConfigCenterName, additionalConfigurationRepositoryConfiguration);
+        return new OrchestrationConfiguration(configuration.getRegistryCenterName(), swapper.swapToObject(configuration.getRegistryRepositoryConfiguration()));
     }
 }

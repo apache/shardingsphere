@@ -27,7 +27,7 @@ import org.apache.shardingsphere.driver.orchestration.internal.util.YamlOrchestr
 import org.apache.shardingsphere.driver.orchestration.internal.yaml.YamlOrchestrationRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -97,20 +97,20 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
     }
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlOrchestrationRootRuleConfigurations configurations,
-                                               final Properties props, final Map<String, YamlOrchestrationRepositoryConfiguration> yamlConfigurationMap,
+                                               final Properties props, final YamlOrchestrationConfiguration orchestration,
                                                final YamlClusterConfiguration yamlClusterConfiguration) throws SQLException {
         if (configurations.getRules().isEmpty() || dataSourceMap.isEmpty()) {
             return null == yamlClusterConfiguration
-                    ? new OrchestrationShardingSphereDataSource(YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(yamlConfigurationMap))
-                    : new OrchestrationShardingSphereDataSource(YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(yamlConfigurationMap),
+                    ? new OrchestrationShardingSphereDataSource(YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(orchestration))
+                    : new OrchestrationShardingSphereDataSource(YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(orchestration),
                     new ClusterConfigurationYamlSwapper().swapToObject(yamlClusterConfiguration));
         } else {
             ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap,
                     new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()), props);
             return null == yamlClusterConfiguration ? new OrchestrationShardingSphereDataSource(shardingSphereDataSource,
-                    YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(yamlConfigurationMap))
+                    YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(orchestration))
                     : new OrchestrationShardingSphereDataSource(shardingSphereDataSource,
-                    YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(yamlConfigurationMap), new ClusterConfigurationYamlSwapper().swapToObject(yamlClusterConfiguration));
+                    YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(orchestration), new ClusterConfigurationYamlSwapper().swapToObject(yamlClusterConfiguration));
         }
     }
     
