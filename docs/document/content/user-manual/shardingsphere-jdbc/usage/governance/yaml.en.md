@@ -35,7 +35,7 @@ Using ZooKeeper as config center and registry center for example.
 orchestration:
   name: orchestration_ds
   registryRepositoryConfiguration:
-    instanceType: zookeeper
+    type: zookeeper
     serverLists: localhost:2181
     namespace: orchestration
     props:

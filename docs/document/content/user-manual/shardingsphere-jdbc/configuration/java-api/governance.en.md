@@ -25,7 +25,7 @@ Attributes:
 
 | *Name*        | *Data Type* | *Description*                                                                                                                                    |
 | ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| instanceType  | String      | Orchestration instance type, such as: zookeeper, etcd, apollo, nacos                                                                             |
+| type          | String      | Orchestration instance type, such as: zookeeper, etcd, apollo, nacos                                                                             |
 | serverLists   | String      | The list of servers that connect to orchestration instance, including IP and port number, use commas to separate, such as: host1:2181,host2:2181 |
 | namespace (?) | String      | Orchestration namespace                                                                                                                          |
 | props         | Properties  | Properties for center instance config, such as options of zookeeper                                                                              |

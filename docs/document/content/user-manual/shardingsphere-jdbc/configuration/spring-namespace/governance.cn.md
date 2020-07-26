@@ -18,7 +18,7 @@ weight = 6
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 ">
     
-    <orchestration:instance id="regCenter" instance-type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo">
+    <orchestration:instance id="regCenter" type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo">
         <props>
             <prop key="overwrite">true</prop>
         </props>
@@ -33,7 +33,7 @@ weight = 6
 | *名称*         | *类型* | *说明*                                                                      |
 | ------------- | ------ | -------------------------------------------------------------------------- |
 | id            | 属性   | 治理实例名称                                                                 |
-| instance-type | 属性   | 治理实例类型。如：zookeeper, etcd, apollo, nacos                              |
+| type          | 属性   | 治理实例类型。如：zookeeper, etcd, apollo, nacos                              |
 | server-lists  | 属性   | 治理服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
 | namespace (?) | 属性   | 治理命名空间                                                                 |
 | props (?)     | 属性   | 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等                            |

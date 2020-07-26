@@ -44,7 +44,7 @@ dataSources:
 orchestration:
   name: test_sharding_ms_registry_name
   registryRepositoryConfiguration:
-    instanceType: REG_TEST
+    type: REG_TEST
     serverLists: localhost:3181
     namespace: test_sharding_ms_registry
     props:
@@ -54,7 +54,7 @@ orchestration:
       maxRetries: 10
       operationTimeoutMilliseconds: 10
   additionalConfigurationRepositoryConfiguration:
-    instanceType: CONFIG_TEST
+    type: CONFIG_TEST
     serverLists: localhost:3181
     namespace: test_sharding_ms_config
     props:

@@ -25,7 +25,7 @@ weight = 6
 
 | *名称*         | *数据类型* | *说明*                                                                      |
 | ------------- | ---------- | -------------------------------------------------------------------------- |
-| instanceType  | String     | 治理实例类型，如：zookeeper, etcd, apollo, nacos                             |
+| type          | String     | 治理实例类型，如：zookeeper, etcd, apollo, nacos                             |
 | serverLists   | String     | 治理服务列表，包括 IP 地址和端口号，多个地址用逗号分隔，如: host1:2181,host2:2181 |
 | namespace (?) | String     | 治理命名空间                                                                 |
 | props         | Properties | 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等                            |

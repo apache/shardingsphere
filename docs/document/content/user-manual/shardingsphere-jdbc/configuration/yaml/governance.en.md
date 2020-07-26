@@ -10,7 +10,7 @@ weight = 6
 ```yaml
 orchestration:
   demo_yaml_ds_sharding: #Orchestration instance name
-    instanceType: #Orchestration instance type. Example:zookeeper, etcd, apollo, nacos
+    type: #Orchestration instance type. Example:zookeeper, etcd, apollo, nacos
     serverLists: #The list of servers that connect to orchestration instance, including IP and port number; use commas to separate
     namespace: #Orchestration namespace
     props: #Properties for center instance config, such as options of zookeeper
