@@ -77,19 +77,13 @@ public final class OrchestrationShardingSphereDataSourceTest {
     private static OrchestrationRepositoryConfiguration getRegistryOrchestrationRepositoryConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("overwrite", "true");
-        OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("REG_TEST", properties);
-        result.setNamespace("test_sharding_registry");
-        result.setServerLists("localhost:3181");
-        return result;
+        return new OrchestrationRepositoryConfiguration("REG_TEST", "localhost:3181", "test_sharding_registry", properties);
     }
     
     private static OrchestrationRepositoryConfiguration getConfigOrchestrationRepositoryConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("overwrite", "true");
-        OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("CONFIG_TEST", properties);
-        result.setNamespace("test_sharding_config");
-        result.setServerLists("localhost:3181");
-        return result;
+        return new OrchestrationRepositoryConfiguration("CONFIG_TEST", "localhost:3181", "test_sharding_config", properties);
     }
     
     @Test

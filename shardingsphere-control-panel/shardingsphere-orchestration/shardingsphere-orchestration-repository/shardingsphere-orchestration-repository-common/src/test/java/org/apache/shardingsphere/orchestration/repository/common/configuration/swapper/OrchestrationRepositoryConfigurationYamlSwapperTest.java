@@ -39,10 +39,7 @@ public final class OrchestrationRepositoryConfigurationYamlSwapperTest {
     }
     
     private OrchestrationRepositoryConfiguration getConfiguration() {
-        OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("zookeeper", new Properties());
-        result.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
-        result.setNamespace("orchestration");
-        return result;
+        return new OrchestrationRepositoryConfiguration("zookeeper", "127.0.0.1:2181,127.0.0.1:2182", "orchestration", new Properties());
     }
     
     @Test

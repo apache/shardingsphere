@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.orchestration.repository.api.config;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 
 import java.util.Properties;
@@ -27,14 +26,15 @@ import java.util.Properties;
  * Orchestration repository configuration.
  */
 @Getter
-@Setter
 public final class OrchestrationRepositoryConfiguration extends TypedSPIConfiguration {
     
-    private String serverLists;
+    private final String serverLists;
     
-    private String namespace;
+    private final String namespace;
     
-    public OrchestrationRepositoryConfiguration(final String type, final Properties props) {
+    public OrchestrationRepositoryConfiguration(final String type, final String serverLists, final String namespace, final Properties props) {
         super(type, props);
+        this.serverLists = serverLists;
+        this.namespace = namespace;
     }
 }

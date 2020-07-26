@@ -64,12 +64,11 @@ public final class ApolloRepositoryTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @BeforeClass
     public static void init() {
-        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration("apollo", new Properties());
-        configuration.setServerLists("http://config-service-url");
-        configuration.setNamespace("orchestration");
+        
         Properties props = new Properties();
         props.setProperty(ApolloPropertyKey.PORTAL_URL.getKey(), PORTAL_URL);
         props.setProperty(ApolloPropertyKey.TOKEN.getKey(), TOKEN);
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration("apollo", "http://config-service-url", "orchestration", props);
         REPOSITORY.setProps(props);
         REPOSITORY.init(configuration);
         ApolloConfigWrapper configWrapper = new ApolloConfigWrapper(configuration, new ApolloProperties(props));

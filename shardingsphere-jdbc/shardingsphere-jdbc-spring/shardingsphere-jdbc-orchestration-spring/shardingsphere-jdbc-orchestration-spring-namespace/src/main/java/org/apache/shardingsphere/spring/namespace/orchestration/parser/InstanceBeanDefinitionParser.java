@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.spring.namespace.orchestration.parser;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.spring.namespace.orchestration.constants.InstanceBeanDefinitionTag;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.spring.namespace.orchestration.constants.InstanceBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -34,25 +33,14 @@ import java.util.Properties;
  */
 public final class InstanceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
-    private static final String PROPERTY_SERVER_LIST = "serverLists";
-    
-    private static final String PROPERTY_NAMESPACE = "namespace";
-    
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationRepositoryConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionTag.TYPE_TAG));
+        factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionTag.SERVER_LISTS_TAG));
+        factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionTag.NAMESPACE_TAG));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
-        addPropertyValueIfNotEmpty(InstanceBeanDefinitionTag.SERVER_LISTS_TAG, PROPERTY_SERVER_LIST, element, factory);
-        addPropertyValueIfNotEmpty(InstanceBeanDefinitionTag.NAMESPACE_TAG, PROPERTY_NAMESPACE, element, factory);
         return factory.getBeanDefinition();
-    }
-    
-    private void addPropertyValueIfNotEmpty(final String attributeName, final String propertyName, final Element element, final BeanDefinitionBuilder factory) {
-        String attributeValue = element.getAttribute(attributeName);
-        if (!Strings.isNullOrEmpty(attributeValue)) {
-            factory.addPropertyValue(propertyName, attributeValue);
-        }
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
