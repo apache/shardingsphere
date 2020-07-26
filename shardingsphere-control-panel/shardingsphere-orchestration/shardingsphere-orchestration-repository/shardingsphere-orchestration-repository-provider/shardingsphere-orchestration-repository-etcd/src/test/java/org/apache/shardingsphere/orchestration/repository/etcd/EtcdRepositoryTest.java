@@ -33,7 +33,6 @@ import io.etcd.jetcd.watch.WatchEvent;
 import io.etcd.jetcd.watch.WatchResponse;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -223,8 +222,6 @@ public final class EtcdRepositoryTest {
     
     @Test
     public void assertProperties() {
-        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(CENTER_TYPE, new Properties());
-        configuration.setServerLists("127.0.0.1");
         Properties props = new Properties();
         repository.setProps(props);
         assertThat(repository.getProps(), is(props));

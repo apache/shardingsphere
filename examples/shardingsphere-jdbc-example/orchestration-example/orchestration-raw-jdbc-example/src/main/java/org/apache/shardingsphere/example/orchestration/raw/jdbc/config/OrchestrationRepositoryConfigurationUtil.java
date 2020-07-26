@@ -36,9 +36,7 @@ public final class OrchestrationRepositoryConfigurationUtil {
     public static OrchestrationConfiguration getZooKeeperConfiguration(final String overwrite, final ShardingType shardingType) {
         Properties props = new Properties();
         props.setProperty("overwrite", overwrite);
-        OrchestrationRepositoryConfiguration orchestrationRepositoryConfiguration = new OrchestrationRepositoryConfiguration("zookeeper", props);
-        orchestrationRepositoryConfiguration.setServerLists(ZOOKEEPER_CONNECTION_STRING);
-        orchestrationRepositoryConfiguration.setNamespace(NAMESPACE);
+        OrchestrationRepositoryConfiguration orchestrationRepositoryConfiguration = new OrchestrationRepositoryConfiguration("zookeeper", ZOOKEEPER_CONNECTION_STRING, NAMESPACE, props);
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 return new OrchestrationConfiguration("orchestration-sharding-data-source", orchestrationRepositoryConfiguration);
@@ -58,14 +56,10 @@ public final class OrchestrationRepositoryConfigurationUtil {
         nacosProperties.setProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
         nacosProperties.setProperty("timeout", "3000");
         nacosProperties.setProperty("overwrite", overwrite);
-        OrchestrationRepositoryConfiguration nacosResult = new OrchestrationRepositoryConfiguration("nacos", nacosProperties);
-        nacosResult.setServerLists(NACOS_CONNECTION_STRING);
-        nacosResult.setNamespace(NACOS_NAMESPACE);
+        OrchestrationRepositoryConfiguration nacosResult = new OrchestrationRepositoryConfiguration("nacos", NACOS_CONNECTION_STRING, NACOS_NAMESPACE, nacosProperties);
         Properties zookeeperProperties = new Properties();
         zookeeperProperties.setProperty("overwrite", overwrite);
-        OrchestrationRepositoryConfiguration zookeeperResult = new OrchestrationRepositoryConfiguration("zookeeper", zookeeperProperties);
-        zookeeperResult.setServerLists(ZOOKEEPER_CONNECTION_STRING);
-        zookeeperResult.setNamespace(NAMESPACE);
+        OrchestrationRepositoryConfiguration zookeeperResult = new OrchestrationRepositoryConfiguration("zookeeper", ZOOKEEPER_CONNECTION_STRING, NAMESPACE, zookeeperProperties);
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 return new OrchestrationConfiguration("orchestration-zookeeper-sharding-data-source", zookeeperResult, nacosResult);

@@ -46,8 +46,7 @@ public final class CuratorZookeeperRepositoryTest {
     public static void init() {
         EmbedTestingServer.start();
         serverLists = EmbedTestingServer.getTestingServerConnectionString();
-        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(REPOSITORY.getType(), new Properties());
-        configuration.setServerLists(serverLists);
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(REPOSITORY.getType(), serverLists, null, new Properties());
         REPOSITORY.init(configuration);
     }
     
@@ -136,8 +135,7 @@ public final class CuratorZookeeperRepositoryTest {
         props.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1");
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000");
-        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), new Properties());
-        configuration.setServerLists(serverLists);
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), serverLists, null, new Properties());
         repository.setProps(props);
         repository.init(configuration);
         assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
@@ -153,8 +151,7 @@ public final class CuratorZookeeperRepositoryTest {
         final CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
-        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), new Properties());
-        configuration.setServerLists(serverLists);
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), serverLists, null, new Properties());
         repository.setProps(props);
         repository.init(configuration);
         assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("0"));
@@ -167,8 +164,7 @@ public final class CuratorZookeeperRepositoryTest {
         final CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
-        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), new Properties());
-        configuration.setServerLists(serverLists);
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), serverLists, null, new Properties());
         repository.setProps(props);
         repository.init(configuration);
         assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
@@ -181,8 +177,7 @@ public final class CuratorZookeeperRepositoryTest {
         final CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
-        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), new Properties());
-        configuration.setServerLists(serverLists);
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), serverLists, null, new Properties());
         repository.setProps(props);
         repository.init(configuration);
         assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.DIGEST.getKey()), is("any"));
@@ -204,10 +199,9 @@ public final class CuratorZookeeperRepositoryTest {
     @Test
     public void assertZKCloseAndException() {
         CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
-        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), new Properties());
+        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(repository.getType(), serverLists, null, new Properties());
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "digest");
-        configuration.setServerLists(serverLists);
         repository.setProps(props);
         repository.init(configuration);
         repository.close();

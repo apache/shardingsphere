@@ -51,10 +51,8 @@ public final class ApolloConfigWrapperTest {
     
     @Before
     public void setup() {
-        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration("apollo", new Properties());
-        configuration.setServerLists("http://config-service-url");
-        configuration.setNamespace("orchestration");
-        configWrapper = new ApolloConfigWrapper(configuration, new ApolloProperties(new Properties()));
+        configWrapper = new ApolloConfigWrapper(
+                new OrchestrationRepositoryConfiguration("apollo", "http://config-service-url", "orchestration", new Properties()), new ApolloProperties(new Properties()));
     }
     
     @Test
