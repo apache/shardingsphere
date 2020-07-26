@@ -37,7 +37,7 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
         yamlConfiguration.setRegistryRepositoryConfiguration(yamlOrchestrationRepositoryConfiguration);
         OrchestrationConfiguration orchestrationConfiguration = YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(yamlConfiguration);
         OrchestrationRepositoryConfiguration configuration = orchestrationConfiguration.getRegistryRepositoryConfiguration();
-        assertEquals(configuration.getType(), yamlOrchestrationRepositoryConfiguration.getInstanceType());
+        assertEquals(configuration.getType(), yamlOrchestrationRepositoryConfiguration.getType());
         assertEquals(configuration.getNamespace(), yamlOrchestrationRepositoryConfiguration.getNamespace());
         assertEquals(configuration.getServerLists(), yamlOrchestrationRepositoryConfiguration.getServerLists());
         assertEquals(configuration.getProps(), yamlOrchestrationRepositoryConfiguration.getProps());
@@ -45,7 +45,7 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
     
     private YamlOrchestrationRepositoryConfiguration getYamlOrchestrationRepositoryConfiguration() {
         YamlOrchestrationRepositoryConfiguration yamlConfiguration = new YamlOrchestrationRepositoryConfiguration();
-        yamlConfiguration.setInstanceType("zookeeper");
+        yamlConfiguration.setType("zookeeper");
         yamlConfiguration.setNamespace("test");
         yamlConfiguration.setServerLists("localhost:2181");
         yamlConfiguration.setProps(new Properties());

@@ -18,7 +18,7 @@
 orchestration:
   name: demo_yaml_ds_ms
   registryRepositoryConfiguration:
-    instanceType: zookeeper
+    type: zookeeper
     serverLists: localhost:2181
     namespace: orchestration-yaml-demo
     props:

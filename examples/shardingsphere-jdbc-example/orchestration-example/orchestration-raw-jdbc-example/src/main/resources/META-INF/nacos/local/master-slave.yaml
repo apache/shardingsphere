@@ -46,13 +46,13 @@ props:
 orchestration:
   name: demo_zookeeper_yaml_ds_ms
   registryRepositoryConfiguration:
-    instanceType: zookeeper
+    type: zookeeper
     serverLists: localhost:2181
     namespace:
     props:
       overwrite: true
   additionalConfigurationRepositoryConfiguration:
-    instanceType: nacos
+    type: nacos
     serverLists: localhost:8848
     namespace:
     props:

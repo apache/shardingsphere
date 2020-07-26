@@ -18,13 +18,13 @@
 orchestration:
   name: demo_zookeeper_yaml_ds_shadow
   registryRepositoryConfiguration:
-    instanceType: zookeeper
+    type: zookeeper
     serverLists: localhost:2181
     namespace:
     props:
       overwrite: false
   additionalConfigurationRepositoryConfiguration:
-    instanceType: nacos
+    type: nacos
     serverLists: localhost:8848
     namespace:
     props:
