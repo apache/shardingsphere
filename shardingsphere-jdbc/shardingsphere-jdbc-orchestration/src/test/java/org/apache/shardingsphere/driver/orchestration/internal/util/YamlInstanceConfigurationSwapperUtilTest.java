@@ -34,7 +34,7 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
     public void marshal() {
         YamlOrchestrationRepositoryConfiguration yamlOrchestrationRepositoryConfiguration = getYamlOrchestrationRepositoryConfiguration();
         YamlOrchestrationConfiguration yamlConfiguration = new YamlOrchestrationConfiguration();
-        yamlConfiguration.setRegistryCenterName("test");
+        yamlConfiguration.setName("test");
         yamlConfiguration.setRegistryRepositoryConfiguration(yamlOrchestrationRepositoryConfiguration);
         OrchestrationConfiguration orchestrationConfiguration = YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(yamlConfiguration);
         OrchestrationRepositoryConfiguration configuration = orchestrationConfiguration.getRegistryRepositoryConfiguration();

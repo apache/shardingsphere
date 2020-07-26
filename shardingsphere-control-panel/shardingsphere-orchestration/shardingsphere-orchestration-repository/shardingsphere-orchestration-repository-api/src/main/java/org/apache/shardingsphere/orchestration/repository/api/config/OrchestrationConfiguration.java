@@ -26,29 +26,17 @@ import java.util.Optional;
  * Orchestration configuration.
  */
 @RequiredArgsConstructor
+@Getter
 public final class OrchestrationConfiguration {
     
-    @Getter
-    private final String registryCenterName;
+    private final String name;
     
-    @Getter
     private final OrchestrationRepositoryConfiguration registryRepositoryConfiguration;
-    
-    private final String additionalConfigCenterName;
     
     private final OrchestrationRepositoryConfiguration additionalConfigurationRepositoryConfiguration;
     
-    public OrchestrationConfiguration(final String registryCenterName, final OrchestrationRepositoryConfiguration registryRepositoryConfiguration) {
-        this(registryCenterName, registryRepositoryConfiguration, null, null);
-    }
-    
-    /**
-     * Get additional config center name.
-     *
-     * @return additional config center name
-     */
-    public Optional<String> getAdditionalConfigCenterName() {
-        return Optional.ofNullable(additionalConfigCenterName);
+    public OrchestrationConfiguration(final String name, final OrchestrationRepositoryConfiguration registryRepositoryConfiguration) {
+        this(name, registryRepositoryConfiguration, null);
     }
     
     /**

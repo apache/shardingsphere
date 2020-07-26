@@ -16,7 +16,7 @@
 #
 
 orchestration:
-  registryCenterName: test_encrypt_registry_name
+  name: test_encrypt_registry_name
   registryRepositoryConfiguration:
     orchestrationType: registry_center
     instanceType: FirstTestRegistryCenter
@@ -28,8 +28,6 @@ orchestration:
       timeToLiveSeconds: 10
       maxRetries: 10
       operationTimeoutMilliseconds: 10
-
-  additionalConfigCenterName: test_encrypt_config_name
   additionalConfigurationRepositoryConfiguration:
     orchestrationType: config_center
     instanceType: FirstTestConfigCenter

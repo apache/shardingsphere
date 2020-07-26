@@ -18,15 +18,13 @@
 package org.apache.shardingsphere.spring.boot.orchestration;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.swapper.OrchestrationRepositoryConfigurationYamlSwapper;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.orchestration.common.OrchestrationSpringBootRootConfiguration;
@@ -78,28 +76,18 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
      * @return orchestration configuration
      */
     @Bean
+    // TODO only can support one OrchestrationConfiguration, should support multiple
     public OrchestrationConfiguration orchestrationConfiguration() {
-        Preconditions.checkState(isValidOrchestrationConfiguration(), "The orchestration configuration is invalid, please configure orchestration");
-        String registryCenterName = null;
-        OrchestrationRepositoryConfiguration registryRepositoryConfiguration = null;
-        String additionalConfigCenterName = null;
-        OrchestrationRepositoryConfiguration additionalConfigurationRepositoryConfiguration = null;
-        for (Entry<String, YamlOrchestrationRepositoryConfiguration> entry : root.getOrchestration().entrySet()) {
-            OrchestrationRepositoryConfiguration configuration = swapper.swapToObject(entry.getValue());
-            List<String> orchestrationTypes = Splitter.on(",").omitEmptyStrings().trimResults().splitToList(configuration.getOrchestrationType());
-            if (orchestrationTypes.contains("registry_center")) {
-                registryCenterName = entry.getKey();
-                registryRepositoryConfiguration = configuration;
-            } else if (orchestrationTypes.contains("config_center")) {
-                additionalConfigCenterName = entry.getKey();
-                additionalConfigurationRepositoryConfiguration = configuration;
+        Preconditions.checkState(!CollectionUtils.isEmpty(root.getOrchestration()), "The orchestration configuration is invalid, please configure orchestration");
+        for (Entry<String, YamlOrchestrationConfiguration> entry : root.getOrchestration().entrySet()) {
+            if (null == entry.getValue().getAdditionalConfigurationRepositoryConfiguration()) {
+                return new OrchestrationConfiguration(entry.getKey(), swapper.swapToObject(entry.getValue().getRegistryRepositoryConfiguration()));
             }
+            return new OrchestrationConfiguration(entry.getKey(), 
+                    swapper.swapToObject(entry.getValue().getRegistryRepositoryConfiguration()), swapper.swapToObject(entry.getValue().getAdditionalConfigurationRepositoryConfiguration()));
         }
-        return new OrchestrationConfiguration(registryCenterName, registryRepositoryConfiguration, additionalConfigCenterName, additionalConfigurationRepositoryConfiguration);
-    }
-    
-    private boolean isValidOrchestrationConfiguration() {
-        return !CollectionUtils.isEmpty(root.getOrchestration());
+        // TODO should return map when support multiple OrchestrationConfiguration
+        return null;
     }
     
     /**

@@ -28,11 +28,9 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 @Setter
 public final class YamlOrchestrationConfiguration implements YamlConfiguration {
     
-    private String registryCenterName;
+    private String name;
     
     private YamlOrchestrationRepositoryConfiguration registryRepositoryConfiguration;
-    
-    private String additionalConfigCenterName;
     
     private YamlOrchestrationRepositoryConfiguration additionalConfigurationRepositoryConfiguration;
 }

@@ -36,12 +36,11 @@ public final class OrchestrationListenerManager {
     
     private final MetaDataListenerManager metaDataListenerManager;
     
-    public OrchestrationListenerManager(final String registryRepositoryName, final RegistryRepository registryRepository,
-                                        final String configurationRepositoryName, final ConfigurationRepository configurationRepository,
-                                        final Collection<String> shardingSchemaNames) {
-        configurationChangedListenerManager = new ConfigurationChangedListenerManager(configurationRepositoryName, configurationRepository, shardingSchemaNames);
-        registryListenerManager = new RegistryListenerManager(registryRepositoryName, registryRepository);
-        metaDataListenerManager = new MetaDataListenerManager(configurationRepositoryName, configurationRepository, shardingSchemaNames);
+    public OrchestrationListenerManager(final String name, 
+                                        final RegistryRepository registryRepository, final ConfigurationRepository configurationRepository, final Collection<String> shardingSchemaNames) {
+        configurationChangedListenerManager = new ConfigurationChangedListenerManager(name, configurationRepository, shardingSchemaNames);
+        registryListenerManager = new RegistryListenerManager(name, registryRepository);
+        metaDataListenerManager = new MetaDataListenerManager(name, configurationRepository, shardingSchemaNames);
     }
     
     /**

@@ -81,7 +81,7 @@ props:
   sql.show: true
 
 orchestration:
-  registryCenterName: demo_zookeeper_yaml_ds_sharding
+  name: demo_zookeeper_yaml_ds_sharding
   registryRepositoryConfiguration:
     orchestrationType: registry_center,metadata_center
     instanceType: zookeeper
@@ -89,8 +89,6 @@ orchestration:
     namespace:
     props:
       overwrite: true
-
-  additionalConfigCenterName: demo_nacos_yaml_ds_sharding
   additionalConfigurationRepositoryConfiguration:
     orchestrationType: config_center
     instanceType: nacos

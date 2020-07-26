@@ -16,7 +16,7 @@
 #
 
 orchestration:
-  registryCenterName: test_name_1
+  name: test_name_1
   registryRepositoryConfiguration:
     orchestrationType: registry_center
     instanceType: zookeeper

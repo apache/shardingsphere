@@ -70,7 +70,7 @@ public final class OrchestrationConfigurationYamlSwapperTest {
         registryRepositoryConfiguration.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
         registryRepositoryConfiguration.setNamespace("orchestration");
         YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();
-        result.setRegistryCenterName(LOGIC_SCHEMA);
+        result.setName(LOGIC_SCHEMA);
         result.setRegistryRepositoryConfiguration(registryRepositoryConfiguration);
         return result;
     }
