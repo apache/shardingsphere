@@ -15,12 +15,16 @@
  * limitations under the License.
  */
 
-import java.io.File;
-import javax.sql.DataSource;
+package org.apache.shardingsphere.example.transaction.xa.narayana.raw.jdbc;
+
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 
+import javax.sql.DataSource;
+import java.io.File;
+
+//FIXME main class could not terminal after execute.
 public class ExampleMain {
     
     public static void main(final String[] args) throws Exception {
@@ -33,7 +37,7 @@ public class ExampleMain {
         return new File(ExampleMain.class.getResource(fileName).getFile());
     }
     
-    private static ExampleService getExampleService(DataSource dataSource) {
+    private static ExampleService getExampleService(final DataSource dataSource) {
         return new OrderServiceImpl(dataSource);
     }
 }

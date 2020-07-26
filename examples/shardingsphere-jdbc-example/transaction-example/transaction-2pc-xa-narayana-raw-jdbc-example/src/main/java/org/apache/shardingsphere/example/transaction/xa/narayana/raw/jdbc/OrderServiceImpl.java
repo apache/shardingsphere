@@ -15,15 +15,18 @@
  * limitations under the License.
  */
 
+package org.apache.shardingsphere.example.transaction.xa.narayana.raw.jdbc;
+
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import javax.sql.DataSource;
-import org.apache.shardingsphere.example.core.api.service.ExampleService;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 class OrderServiceImpl implements ExampleService {
     
