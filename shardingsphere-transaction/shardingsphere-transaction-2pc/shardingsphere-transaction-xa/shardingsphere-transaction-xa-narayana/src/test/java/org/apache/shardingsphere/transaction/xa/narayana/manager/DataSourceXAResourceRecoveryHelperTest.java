@@ -17,21 +17,22 @@
 
 package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
-import javax.transaction.xa.XAException;
-import javax.transaction.xa.XAResource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.narayana.manager.fixture.ReflectiveUtil;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.XAResource;
+
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,7 +65,7 @@ public class DataSourceXAResourceRecoveryHelperTest {
         recoveryHelper.getXAResources();
         XAResource[] xaResources = recoveryHelper.getXAResources();
         assertEquals(1, xaResources.length);
-        Assert.assertThat(xaResources[0], sameInstance(recoveryHelper));
+        assertThat(xaResources[0], sameInstance(recoveryHelper));
         verify(xaConnection, times(1)).getXAResource();
         verify(xaDataSource, times(1)).getXAConnection();
     }
@@ -76,7 +77,7 @@ public class DataSourceXAResourceRecoveryHelperTest {
         recoveryHelper.getXAResources();
         XAResource[] xaResources = recoveryHelper.getXAResources();
         assertEquals(1, xaResources.length);
-        Assert.assertThat(xaResources[0], sameInstance(recoveryHelper));
+        assertThat(xaResources[0], sameInstance(recoveryHelper));
         verify(xaConnection, times(0)).getXAResource();
         verify(xaDataSource, times(0)).getXAConnection();
     }
