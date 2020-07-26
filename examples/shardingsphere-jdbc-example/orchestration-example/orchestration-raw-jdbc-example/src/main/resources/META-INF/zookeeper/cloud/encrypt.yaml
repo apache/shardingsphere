@@ -16,7 +16,7 @@
 #
 
 orchestration:
-  registryCenterName: demo_yaml_ds_encrypt
+  name: demo_yaml_ds_encrypt
   registryRepositoryConfiguration:
     orchestrationType: config_center,registry_center,metadata_center
     instanceType: zookeeper

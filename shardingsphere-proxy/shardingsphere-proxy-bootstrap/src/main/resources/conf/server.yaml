@@ -22,7 +22,7 @@
 ######################################################################################################
 #
 #orchestration:
-#  registryCenterName: orchestration_ds
+#  name: orchestration_ds
 #  registryRepositoryConfiguration:
 #    orchestrationType: registry_center,config_center,metadata_center
 #    instanceType: zookeeper

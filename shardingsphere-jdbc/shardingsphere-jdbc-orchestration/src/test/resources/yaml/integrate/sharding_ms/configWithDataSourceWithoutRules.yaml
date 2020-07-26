@@ -42,7 +42,7 @@ dataSources:
     maxTotal: 100
 
 orchestration:
-  registryCenterName: test_sharding_ms_registry_name
+  name: test_sharding_ms_registry_name
   registryRepositoryConfiguration:
     orchestrationType: registry_center
     instanceType: REG_TEST
@@ -54,8 +54,6 @@ orchestration:
       timeToLiveSeconds: 10
       maxRetries: 10
       operationTimeoutMilliseconds: 10
-  
-  additionalConfigCenterName: test_sharding_ms_config_name
   additionalConfigurationRepositoryConfiguration:
     orchestrationType: config_center
     instanceType: CONFIG_TEST

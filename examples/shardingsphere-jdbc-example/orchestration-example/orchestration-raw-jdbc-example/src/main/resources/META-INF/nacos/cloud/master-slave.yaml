@@ -16,7 +16,7 @@
 #
 
 orchestration:
-  registryCenterName: demo_zookeeper_yaml_ds_ms
+  name: demo_zookeeper_yaml_ds_ms
   registryRepositoryConfiguration:
     orchestrationType: registry_center,metadata_center
     instanceType: zookeeper
@@ -24,8 +24,6 @@ orchestration:
     namespace:
     props:
       overwrite: false
-
-  additionalConfigCenterName: demo_nacos_yaml_ds_ms
   additionalConfigurationRepositoryConfiguration:
     orchestrationType: config_center
     instanceType: nacos

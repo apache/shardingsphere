@@ -41,7 +41,7 @@ props:
   sql.show: false
 
 orchestration:
-  registryCenterName: demo_zookeeper_yaml_ds_encrypt
+  name: demo_zookeeper_yaml_ds_encrypt
   registryRepositoryConfiguration:
     orchestrationType: registry_center,metadata_center
     instanceType: zookeeper
@@ -49,8 +49,6 @@ orchestration:
     namespace: orchestration-yaml-demo
     props:
       overwrite: true
-
-  additionalConfigCenterName: demo_nacos_yaml_ds_encrypt
   additionalConfigurationRepositoryConfiguration:
     orchestrationType: config_center
     instanceType: nacos

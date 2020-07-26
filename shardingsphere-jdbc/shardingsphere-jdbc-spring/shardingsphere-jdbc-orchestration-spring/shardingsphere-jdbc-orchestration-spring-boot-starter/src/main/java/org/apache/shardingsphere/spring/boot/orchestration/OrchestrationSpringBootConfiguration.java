@@ -80,22 +80,20 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     public OrchestrationConfiguration orchestrationConfiguration() {
         Preconditions.checkState(isValidOrchestrationConfiguration(), "The orchestration configuration is invalid, please configure orchestration");
-        String registryCenterName = null;
+        String name = null;
         OrchestrationRepositoryConfiguration registryRepositoryConfiguration = null;
-        String additionalConfigCenterName = null;
         OrchestrationRepositoryConfiguration additionalConfigurationRepositoryConfiguration = null;
         for (Entry<String, YamlOrchestrationRepositoryConfiguration> entry : root.getOrchestration().entrySet()) {
             OrchestrationRepositoryConfiguration configuration = swapper.swapToObject(entry.getValue());
             List<String> orchestrationTypes = Splitter.on(",").omitEmptyStrings().trimResults().splitToList(configuration.getOrchestrationType());
             if (orchestrationTypes.contains("registry_center")) {
-                registryCenterName = entry.getKey();
+                name = entry.getKey();
                 registryRepositoryConfiguration = configuration;
             } else if (orchestrationTypes.contains("config_center")) {
-                additionalConfigCenterName = entry.getKey();
                 additionalConfigurationRepositoryConfiguration = configuration;
             }
         }
-        return new OrchestrationConfiguration(registryCenterName, registryRepositoryConfiguration, additionalConfigCenterName, additionalConfigurationRepositoryConfiguration);
+        return new OrchestrationConfiguration(name, registryRepositoryConfiguration, additionalConfigurationRepositoryConfiguration);
     }
     
     private boolean isValidOrchestrationConfiguration() {

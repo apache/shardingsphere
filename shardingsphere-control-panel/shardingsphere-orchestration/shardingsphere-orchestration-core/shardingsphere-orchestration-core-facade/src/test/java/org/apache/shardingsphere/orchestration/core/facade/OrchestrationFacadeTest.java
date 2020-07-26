@@ -74,7 +74,7 @@ public final class OrchestrationFacadeTest {
         OrchestrationRepositoryConfiguration configuration2 = new OrchestrationRepositoryConfiguration("CONFIG_TEST", new Properties());
         configuration2.setOrchestrationType("config_center");
         configuration2.setNamespace("namespace_2");
-        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration("test_name_1", configuration1, "test_name_2", configuration2);
+        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration("test_name", configuration1, configuration2);
         orchestrationFacade.init(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
         FieldUtil.setField(orchestrationFacade, "registryRepository", registryRepository);
         FieldUtil.setField(orchestrationFacade, "configCenter", configCenter);
