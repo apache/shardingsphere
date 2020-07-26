@@ -30,14 +30,8 @@ import java.util.Properties;
 @Setter
 public final class OrchestrationRepositoryConfiguration extends TypedSPIConfiguration {
     
-    /**
-     * Server list of center.
-     */
     private String serverLists;
     
-    /**
-     * Namespace of center.
-     */
     private String namespace;
     
     public OrchestrationRepositoryConfiguration(final String type, final Properties props) {
