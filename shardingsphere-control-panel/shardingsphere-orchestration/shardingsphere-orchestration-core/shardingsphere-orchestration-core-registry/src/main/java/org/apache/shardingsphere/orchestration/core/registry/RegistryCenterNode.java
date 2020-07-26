@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.orchestration.core.registry.schema.OrchestrationSchema;
 
 /**
- * RegistryCenter node.
+ * Registry center node.
  */
 @RequiredArgsConstructor
 public final class RegistryCenterNode {
