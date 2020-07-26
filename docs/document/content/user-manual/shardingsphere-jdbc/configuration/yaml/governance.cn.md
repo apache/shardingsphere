@@ -10,7 +10,6 @@ weight = 6
 ```yaml
 orchestration:
   demo_yaml_ds_sharding: #治理实例名称
-    orchestrationType: #治理类型，多个类型用逗号分隔，例如 config_center,registry_center,metadata_center
     instanceType: #治理实例类型。如：zookeeper, etcd, apollo, nacos
     serverLists: #治理服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
     namespace: #治理命名空间

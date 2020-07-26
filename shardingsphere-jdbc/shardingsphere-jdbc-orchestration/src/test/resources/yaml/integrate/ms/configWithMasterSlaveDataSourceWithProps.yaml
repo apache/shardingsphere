@@ -48,7 +48,6 @@ rules:
 orchestration:
   name: test_ms_registry_name
   registryRepositoryConfiguration:
-    orchestrationType: registry_center
     instanceType: REG_TEST
     serverLists: localhost:3181
     namespace: test_ms_registry
@@ -59,7 +58,6 @@ orchestration:
       maxRetries: 10
       operationTimeoutMilliseconds: 10
   additionalConfigurationRepositoryConfiguration:
-    orchestrationType: config_center
     instanceType: CONFIG_TEST
     serverLists: localhost:3181
     namespace: test_ms_config

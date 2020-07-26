@@ -30,8 +30,6 @@ public final class InstanceBeanDefinitionTag {
     
     public static final String TYPE_TAG = "instance-type";
     
-    public static final String ORCHESTRATION_TYPE_TAG = "orchestration-type";
-    
     public static final String SERVER_LISTS_TAG = "server-lists";
     
     public static final String NAMESPACE_TAG = "namespace";

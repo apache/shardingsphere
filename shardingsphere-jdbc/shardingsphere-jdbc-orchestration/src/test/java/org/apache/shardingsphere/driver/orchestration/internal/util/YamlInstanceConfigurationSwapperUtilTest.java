@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.orchestration.internal.util;
 
-import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
@@ -39,7 +38,6 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
         OrchestrationConfiguration orchestrationConfiguration = YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(yamlConfiguration);
         OrchestrationRepositoryConfiguration configuration = orchestrationConfiguration.getRegistryRepositoryConfiguration();
         assertEquals(configuration.getType(), yamlOrchestrationRepositoryConfiguration.getInstanceType());
-        assertEquals(configuration.getOrchestrationType(), yamlOrchestrationRepositoryConfiguration.getOrchestrationType());
         assertEquals(configuration.getNamespace(), yamlOrchestrationRepositoryConfiguration.getNamespace());
         assertEquals(configuration.getServerLists(), yamlOrchestrationRepositoryConfiguration.getServerLists());
         assertEquals(configuration.getProps(), yamlOrchestrationRepositoryConfiguration.getProps());
@@ -47,7 +45,6 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
     
     private YamlOrchestrationRepositoryConfiguration getYamlOrchestrationRepositoryConfiguration() {
         YamlOrchestrationRepositoryConfiguration yamlConfiguration = new YamlOrchestrationRepositoryConfiguration();
-        yamlConfiguration.setOrchestrationType(CenterType.REGISTRY_CENTER.getValue());
         yamlConfiguration.setInstanceType("zookeeper");
         yamlConfiguration.setNamespace("test");
         yamlConfiguration.setServerLists("localhost:2181");

@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
@@ -79,7 +78,6 @@ public final class OrchestrationShardingSphereDataSourceTest {
         Properties properties = new Properties();
         properties.setProperty("overwrite", "true");
         OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("REG_TEST", properties);
-        result.setOrchestrationType(CenterType.REGISTRY_CENTER.getValue());
         result.setNamespace("test_sharding_registry");
         result.setServerLists("localhost:3181");
         return result;
@@ -89,7 +87,6 @@ public final class OrchestrationShardingSphereDataSourceTest {
         Properties properties = new Properties();
         properties.setProperty("overwrite", "true");
         OrchestrationRepositoryConfiguration result = new OrchestrationRepositoryConfiguration("CONFIG_TEST", properties);
-        result.setOrchestrationType(CenterType.CONFIG_CENTER.getValue());
         result.setNamespace("test_sharding_config");
         result.setServerLists("localhost:3181");
         return result;

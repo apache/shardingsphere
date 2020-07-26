@@ -18,7 +18,6 @@
 orchestration:
   name: test_encrypt_registry_name
   registryRepositoryConfiguration:
-    orchestrationType: registry_center
     instanceType: FirstTestRegistryCenter
     serverLists: localhost:3181
     namespace: test_encrypt_registry_no
@@ -29,7 +28,6 @@ orchestration:
       maxRetries: 10
       operationTimeoutMilliseconds: 10
   additionalConfigurationRepositoryConfiguration:
-    orchestrationType: config_center
     instanceType: FirstTestConfigCenter
     serverLists: localhost:3181
     namespace: test_encrypt_config_no

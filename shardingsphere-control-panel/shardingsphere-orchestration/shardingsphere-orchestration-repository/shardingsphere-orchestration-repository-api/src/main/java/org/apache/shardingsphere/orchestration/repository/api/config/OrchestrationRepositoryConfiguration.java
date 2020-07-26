@@ -31,11 +31,6 @@ import java.util.Properties;
 public final class OrchestrationRepositoryConfiguration extends TypedSPIConfiguration {
     
     /**
-     * Type of center, such as config_center, registry_center, metadata_center.
-     */
-    private String orchestrationType;
-    
-    /**
      * Server list of center.
      */
     private String serverLists;

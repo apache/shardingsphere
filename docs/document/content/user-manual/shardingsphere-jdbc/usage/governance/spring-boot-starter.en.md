@@ -30,7 +30,6 @@ weight = 3
 ## Configure Rule
 
 ```properties
-spring.shardingsphere.orchestration.spring_boot_ds.orchestration-type=registry_center,config_center,metadata_center
 spring.shardingsphere.orchestration.spring_boot_ds.instance-type=zookeeper
 spring.shardingsphere.orchestration.spring_boot_ds.server-lists=localhost:2181
 spring.shardingsphere.orchestration.spring_boot_ds.namespace=orchestration-spring-boot-shardingsphere-test
