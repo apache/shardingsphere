@@ -17,11 +17,6 @@
 
 package org.apache.shardingsphere.proxy.orchestration;
 
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
@@ -33,12 +28,18 @@ import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
-import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.OrchestrationEventBus;
+import org.apache.shardingsphere.orchestration.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.orchestration.schema.ProxyOrchestrationSchemaContexts;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -79,7 +80,7 @@ public final class ProxyOrchestrationSchemaContextsTest {
         assertTrue(ProxySchemaContexts.getInstance().getSchemaContexts().getProps().getProps().isEmpty());
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        ShardingOrchestrationEventBus.getInstance().post(new PropertiesChangedEvent(props));
+        OrchestrationEventBus.getInstance().post(new PropertiesChangedEvent(props));
         assertFalse(ProxySchemaContexts.getInstance().getSchemaContexts().getProps().getProps().isEmpty());
     }
     
@@ -88,7 +89,7 @@ public final class ProxyOrchestrationSchemaContextsTest {
         ProxyUser proxyUser = new ProxyUser("root", Collections.singleton("db1"));
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
-        ShardingOrchestrationEventBus.getInstance().post(new AuthenticationChangedEvent(authentication));
+        OrchestrationEventBus.getInstance().post(new AuthenticationChangedEvent(authentication));
         assertThat(ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().keySet().iterator().next(), is("root"));
         assertThat(ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get("root").getPassword(), is("root"));
         assertThat(ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get("root").getAuthorizedSchemas().iterator().next(), is("db1"));
@@ -97,8 +98,8 @@ public final class ProxyOrchestrationSchemaContextsTest {
     @Test
     public void assertRenewCircuitState() {
         assertFalse(ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak());
-        ShardingOrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(true));
+        OrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(true));
         assertTrue(ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak());
-        ShardingOrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(false));
+        OrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(false));
     }
 }

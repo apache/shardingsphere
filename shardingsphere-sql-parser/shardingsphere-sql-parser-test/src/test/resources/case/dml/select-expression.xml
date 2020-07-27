@@ -18,15 +18,17 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_with_expression">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="38" stop-index="44" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="38" stop-index="49" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="31">
             <!-- TODO check expression-projection's stop-index whether include alias -->
-            <expression-projection alias="exp" start-index="7" stop-index="24" />
+            <expression-projection alias="exp" start-index="7" stop-index="31" />
         </projections>
         <order-by>
-            <column-item name="order_id">
+            <column-item name="order_id" start-index="60" stop-index="69" >
                 <owner name="o" start-index="60" stop-index="60" />
             </column-item>
         </order-by>
@@ -39,7 +41,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="44">
-            <expression-projection alias="creation_date" start-index="7" stop-index="27" />
+            <expression-projection alias="creation_date" start-index="7" stop-index="44" />
         </projections>
         <order-by>
             <expression-item expression="DATE(i.creation_date)" order-direction="DESC" start-index="80" stop-index="100" />
@@ -78,54 +80,53 @@
         </where>
     </select>
 
-    <select sql-case-id="select_with_case_expression" >
-        <projections start-index="7" stop-index="123">
+    <select sql-case-id="select_with_case_expression">
+        <projections start-index="7" stop-index="124">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner start-index="7" stop-index="7" name="t"/>
             </shorthand-projection>
-            <column-projection start-index="11" stop-index="19" name="item_id" alias="itemid">
+            <column-projection start-index="11" stop-index="19" name="item_id" alias="item_id">
                 <owner start-index="11" stop-index="11" name="o"/>
             </column-projection>
-            <expression-projection start-index="32" stop-index="109" alias="stateName" />
+            <expression-projection start-index="33" stop-index="124" alias="stateName" />
         </projections>
-
         <table-reference>
             <table-factor>
-                <table start-index="134" stop-index="142" name="t_order" alias="t" />
+                <table start-index="135" stop-index="143" name="t_order" alias="t" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table start-index="154" stop-index="170" name="t_order_item" alias="o" />
+                    <table start-index="155" stop-index="171" name="t_order_item" alias="o" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
-                        <predicate start-index="175" stop-index="196">
-                            <column-left-value name="order_id" start-index="175" stop-index="184">
-                                <owner name="o" start-index="175" stop-index="175" />
+                        <predicate start-index="176" stop-index="197">
+                            <column-left-value name="order_id" start-index="176" stop-index="185">
+                                <owner name="o" start-index="176" stop-index="176" />
                             </column-left-value>
-                            <column-right-value name="order_id" start-index="187" stop-index="196">
-                                <owner name="t" start-index="187" stop-index="187" />
+                            <column-right-value name="order_id" start-index="188" stop-index="197">
+                                <owner name="t" start-index="188" stop-index="188" />
                             </column-right-value>
                         </predicate>
                     </and-predicate>
                 </joinSpecification>
             </join-table>
         </table-reference>
-        <where start-index="198" stop-index="218">
+        <where start-index="198" stop-index="219">
             <and-predicate>
-                <predicate start-index="204" stop-index="218" >
-                    <operator type="="/>
-                    <column-left-value name="order_id" start-index="204" stop-index="213" >
-                        <owner name="t" start-index="204" stop-index="204" />
+                <predicate start-index="205" stop-index="219" >
+                    <operator type="=" />
+                    <column-left-value name="order_id" start-index="205" stop-index="214">
+                        <owner name="t" start-index="205" stop-index="205" />
                     </column-left-value>
                     <compare-right-value operator="=">
-                        <literal-expression value="1000" start-index="215" stop-index="218"/>
+                        <literal-expression value="1000" start-index="216" stop-index="219" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
-        <limit start-index="220" stop-index="226">
-            <row-count value="1" start-index="226" stop-index="226" />
+        <limit start-index="221" stop-index="227">
+            <row-count value="1" start-index="227" stop-index="227" />
         </limit>
     </select>
 </sql-parser-test-cases>

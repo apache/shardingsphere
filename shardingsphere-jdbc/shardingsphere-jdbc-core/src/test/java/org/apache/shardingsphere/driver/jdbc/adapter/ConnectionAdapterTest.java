@@ -47,8 +47,8 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
     @After
     public void tearDown() {
         TransactionTypeHolder.clear();
-        XAShardingTransactionManagerFixture.getInvocations().clear();
-        BASEShardingTransactionManagerFixture.getInvocations().clear();
+        XAShardingTransactionManagerFixture.getINVOCATIONS().clear();
+        BASEShardingTransactionManagerFixture.getINVOCATIONS().clear();
     }
     
     @Test
@@ -97,9 +97,9 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
         try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.setAutoCommit(false);
             assertTrue(actual.getShardingTransactionManager().isInTransaction());
-            assertThat(XAShardingTransactionManagerFixture.getInvocations().size(), is(1));
+            assertThat(XAShardingTransactionManagerFixture.getINVOCATIONS().size(), is(1));
             actual.setAutoCommit(false);
-            assertThat(XAShardingTransactionManagerFixture.getInvocations().size(), is(1));
+            assertThat(XAShardingTransactionManagerFixture.getINVOCATIONS().size(), is(1));
         } finally {
             TransactionTypeHolder.clear();
         }
@@ -119,7 +119,7 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
         TransactionTypeHolder.set(TransactionType.XA);
         try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.commit();
-            assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.COMMIT));
+            assertTrue(XAShardingTransactionManagerFixture.getINVOCATIONS().contains(TransactionOperationType.COMMIT));
         } finally {
             TransactionTypeHolder.clear();
         }
@@ -131,7 +131,7 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
         try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.setAutoCommit(false);
             actual.setAutoCommit(true);
-            assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.COMMIT));
+            assertTrue(XAShardingTransactionManagerFixture.getINVOCATIONS().contains(TransactionOperationType.COMMIT));
         } finally {
             TransactionTypeHolder.clear();
         }
@@ -151,7 +151,7 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
         TransactionTypeHolder.set(TransactionType.XA);
         try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.rollback();
-            assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
+            assertTrue(XAShardingTransactionManagerFixture.getINVOCATIONS().contains(TransactionOperationType.ROLLBACK));
         } finally {
             TransactionTypeHolder.clear();
         }

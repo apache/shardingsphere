@@ -22,5 +22,5 @@ package org.apache.shardingsphere.cluster.heartbeat.event;
  */
 public enum HeartbeatEventType {
     
-    NOTICE_DETECT;
+    NOTICE_DETECT
 }

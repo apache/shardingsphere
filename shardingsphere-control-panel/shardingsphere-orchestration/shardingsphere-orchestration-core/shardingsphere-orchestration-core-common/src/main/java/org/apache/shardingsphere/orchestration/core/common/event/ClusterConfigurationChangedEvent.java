@@ -26,7 +26,7 @@ import org.apache.shardingsphere.cluster.configuration.config.ClusterConfigurati
  */
 @RequiredArgsConstructor
 @Getter
-public final class ClusterConfigurationChangedEvent implements ShardingOrchestrationEvent {
+public final class ClusterConfigurationChangedEvent implements OrchestrationEvent {
     
     private final ClusterConfiguration clusterConfiguration;
 }

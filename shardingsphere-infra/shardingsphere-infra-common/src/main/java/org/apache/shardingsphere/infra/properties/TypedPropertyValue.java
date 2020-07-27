@@ -25,7 +25,7 @@ import lombok.Getter;
 @Getter
 public final class TypedPropertyValue {
     
-    private Object value;
+    private final Object value;
     
     public TypedPropertyValue(final TypedPropertyKey key, final String value) throws TypedPropertyValueException {
         this.value = createTypedValue(key, value);

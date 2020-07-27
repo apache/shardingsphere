@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.binder.segment.table;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
@@ -34,6 +35,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @ToString
+@Getter
 public final class TablesContext {
     
     private final Collection<SimpleTableSegment> tables;

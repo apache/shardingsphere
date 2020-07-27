@@ -27,7 +27,7 @@ import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.strategy.standard.StandardShardingStrategy;
-import org.apache.shardingsphere.spring.boot.orchestration.registry.TestCenterRepository;
+import org.apache.shardingsphere.spring.boot.orchestration.registry.TestOrchestrationRepository;
 import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -67,13 +67,13 @@ public class OrchestrationSpringBootRegistryShardingTest {
         EmbedTestingServer.start();
         String shardingDatabases = readYAML(SHARDING_DATABASES_FILE);
         String shardingRule = readYAML(SHARDING_RULE_FILE);
-        TestCenterRepository testCenter = new TestCenterRepository();
-        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", shardingDatabases);
-        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", shardingRule);
-        testCenter.persist("/demo_spring_boot_ds_center/config/props", ""
+        TestOrchestrationRepository repository = new TestOrchestrationRepository();
+        repository.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", shardingDatabases);
+        repository.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", shardingRule);
+        repository.persist("/demo_spring_boot_ds_center/config/props", ""
                 + "executor.size: '100'\n"
                 + "sql.show: 'true'\n");
-        testCenter.persist("/demo_spring_boot_ds_center/registry/datasources", "");
+        repository.persist("/demo_spring_boot_ds_center/registry/datasources", "");
     }
     
     @Test

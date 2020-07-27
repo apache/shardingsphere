@@ -47,6 +47,9 @@ public final class InsertStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "set")
     private ExpectedSetClause setClause;
     
+    @XmlElement(name = "select")
+    private SelectStatementTestCase selectTestCase;
+    
     @XmlElement(name = "on-duplicate-key-columns")
     private ExpectedOnDuplicateKeyColumns onDuplicateKeyColumns;
 }

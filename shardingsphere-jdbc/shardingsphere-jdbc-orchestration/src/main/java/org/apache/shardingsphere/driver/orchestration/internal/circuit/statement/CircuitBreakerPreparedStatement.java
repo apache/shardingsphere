@@ -130,7 +130,6 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     public void setAsciiStream(final int parameterIndex, final InputStream x, final long length) {
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public void setUnicodeStream(final int parameterIndex, final InputStream x, final int length) {
     }

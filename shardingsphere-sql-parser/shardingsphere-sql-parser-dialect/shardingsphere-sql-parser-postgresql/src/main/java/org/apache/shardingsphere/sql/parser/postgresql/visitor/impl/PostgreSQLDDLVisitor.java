@@ -126,7 +126,6 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
         CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
-        
         if (null != ctx.alterTableActions()) {
             for (AlterTableActionContext each : ctx.alterTableActions().alterTableAction()) {
                 AddColumnSpecificationContext addColumnSpecification = each.addColumnSpecification();
@@ -207,14 +206,12 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     
     @Override
     public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
-        return new DropColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList((ColumnSegment) visit(ctx.columnName())));
+        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList((ColumnSegment) visit(ctx.columnName())));
     }
     
     @Override
     public ASTNode visitRenameColumnSpecification(final RenameColumnSpecificationContext ctx) {
-        return new RenameColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                (ColumnSegment) visit(ctx.columnName(0)), (ColumnSegment) visit(ctx.columnName(1)));
+        return new RenameColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnSegment) visit(ctx.columnName(0)), (ColumnSegment) visit(ctx.columnName(1)));
     }
     
     @SuppressWarnings("unchecked")

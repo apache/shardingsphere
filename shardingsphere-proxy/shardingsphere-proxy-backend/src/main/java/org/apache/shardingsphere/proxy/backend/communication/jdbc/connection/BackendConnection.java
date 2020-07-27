@@ -63,7 +63,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private TransactionType transactionType;
     
-    private boolean supportHint;
+    private final boolean supportHint;
     
     @Setter
     private int connectionId;

@@ -19,13 +19,14 @@ package org.apache.shardingsphere.cluster.heartbeat.event;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class HeartbeatDetectNoticeEventTest {
     
     @Test
     public void assertHeartBeatEventType() {
         HeartbeatDetectNoticeEvent event = new HeartbeatDetectNoticeEvent();
-        assertTrue(event.getEventType() == HeartbeatEventType.NOTICE_DETECT);
+        assertThat(event.getEventType(), is(HeartbeatEventType.NOTICE_DETECT));
     }
 }

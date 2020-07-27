@@ -38,7 +38,7 @@ public final class ClusterNamespaceTest extends AbstractJUnit4SpringContextTests
         assertThat(clusterConfiguration.getHeartbeat().getSql(), is("select 1"));
         assertThat(clusterConfiguration.getHeartbeat().getInterval(), is(60));
         assertThat(clusterConfiguration.getHeartbeat().getThreadCount(), is(1));
-        assertFalse(clusterConfiguration.getHeartbeat().getRetryEnable());
+        assertFalse(clusterConfiguration.getHeartbeat().isRetryEnable());
         assertThat(clusterConfiguration.getHeartbeat().getRetryMaximum(), is(3));
         assertThat(clusterConfiguration.getHeartbeat().getRetryInterval(), is(3));
     }

@@ -1,5 +1,5 @@
 +++
-title = "UI发布指南"
+title = "ShardingSphere-UI发布指南"
 weight = 7
 chapter = true
 +++

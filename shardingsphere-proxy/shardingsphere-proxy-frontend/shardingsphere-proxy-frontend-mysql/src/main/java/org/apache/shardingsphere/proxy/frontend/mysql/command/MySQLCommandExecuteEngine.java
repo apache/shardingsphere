@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command;
 
 import io.netty.channel.ChannelHandlerContext;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketFactory;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
@@ -70,8 +71,9 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     }
     
     @Override
+    @SneakyThrows
     public void writeQueryData(final ChannelHandlerContext context,
-                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
+                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) {
         if (!queryCommandExecutor.isQuery() || !context.channel().isActive()) {
             return;
         }
@@ -82,7 +84,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
-                backendConnection.getResourceSynchronizer().doAwait();
+                backendConnection.getResourceSynchronizer().doAwaitUntil();
             }
             DatabasePacket dataValue = queryCommandExecutor.getQueryData();
             context.write(dataValue);

@@ -68,7 +68,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     }
     
     private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), ENCRYPT_DB_NAMES::contains);
+        return Maps.filterKeys(getDATABASE_TYPE_MAP().values().iterator().next(), ENCRYPT_DB_NAMES::contains);
     }
     
     private static DataSource createDataSourceWithEmptyProps(final DataSource dataSource, final File yamlFile) throws IOException, SQLException {
@@ -94,7 +94,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     }
     
     @AfterClass
-    public static void close() throws Exception {
+    public static void close() {
         if (null == encryptDataSource) {
             return;
         }

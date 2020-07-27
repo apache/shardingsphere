@@ -53,7 +53,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     }
     
     private static Map<String, DataSource> getDataSourceMap() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), SHARDING_DB_NAMES::contains);
+        return Maps.filterKeys(getDATABASE_TYPE_MAP().values().iterator().next(), SHARDING_DB_NAMES::contains);
     }
     
     private static File getFile(final String fileName) {
@@ -77,7 +77,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     }
     
     @AfterClass
-    public static void clear() throws Exception {
+    public static void clear() {
         if (null == shardingSphereDataSource) {
             return;
         }

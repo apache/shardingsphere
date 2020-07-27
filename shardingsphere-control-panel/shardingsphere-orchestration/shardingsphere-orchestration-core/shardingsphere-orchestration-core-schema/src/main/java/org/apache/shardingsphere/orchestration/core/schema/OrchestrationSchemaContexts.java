@@ -55,12 +55,12 @@ import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChang
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
-import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
-import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.OrchestrationEventBus;
+import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.metadata.event.MetaDataChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registry.event.CircuitStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registry.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registry.schema.OrchestrationSchema;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -81,7 +81,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     private volatile SchemaContexts schemaContexts;
     
     public OrchestrationSchemaContexts(final SchemaContexts schemaContexts) {
-        ShardingOrchestrationEventBus.getInstance().register(this);
+        OrchestrationEventBus.getInstance().register(this);
         this.schemaContexts = schemaContexts;
         persistMetaData();
         disableMasterSlaveRules();
@@ -96,7 +96,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
         if (masterSlaveRules.isEmpty()) {
             return;
         }
-        Collection<String> disabledDataSources = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadDisabledDataSources();
+        Collection<String> disabledDataSources = OrchestrationFacade.getInstance().getRegistryCenter().loadDisabledDataSources();
         if (disabledDataSources.isEmpty()) {
             return;
         }
@@ -158,7 +158,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContexts());
         schemas.put(schemaName, getAddedSchemaContext(schemaAddedEvent));
         schemaContexts = new SchemaContexts(schemas, schemaContexts.getProps(), schemaContexts.getAuthentication());
-        ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.getSchemaContexts().get(schemaName).getSchema().getMetaData().getSchema());
+        OrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.getSchemaContexts().get(schemaName).getSchema().getMetaData().getSchema());
     }
     
     /**
@@ -243,7 +243,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
         schemaContexts.remove(schemaName);
         schemaContexts.put(schemaName, getChangedSchemaContext(this.schemaContexts.getSchemaContexts().get(schemaName), ruleConfigurationsChangedEvent.getRuleConfigurations()));
         this.schemaContexts = new SchemaContexts(schemaContexts, this.schemaContexts.getProps(), this.schemaContexts.getAuthentication());
-        ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.get(schemaName).getSchema().getMetaData().getSchema());
+        OrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.get(schemaName).getSchema().getMetaData().getSchema());
     }
     
     /**

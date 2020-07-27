@@ -46,9 +46,9 @@ rules:
         - db_slave_1
 
 orchestration:
-  test_ms_registry_name:
-    orchestrationType: registry_center
-    instanceType: FirstTestRegistryCenter
+  name: test_ms_registry_name
+  registryCenter:
+    type: REG_TEST
     serverLists: localhost:3181
     namespace: test_ms_registry
     props:
@@ -57,22 +57,10 @@ orchestration:
       timeToLiveSeconds: 10
       maxRetries: 10
       operationTimeoutMilliseconds: 10
-  test_ms_config_name:
-    orchestrationType: config_center
-    instanceType: FirstTestConfigCenter
+  additionalConfigCenter:
+    type: CONFIG_TEST
     serverLists: localhost:3181
     namespace: test_ms_config
-    props:
-      overwrite: true
-      retryIntervalMilliseconds: 10
-      timeToLiveSeconds: 10
-      maxRetries: 10
-      operationTimeoutMilliseconds: 10
-  test_ms_metadata_name:
-    orchestrationType: metadata_center
-    instanceType: FirstTestMetaDataCenter
-    serverLists: localhost:3181
-    namespace: test_ms_metadata
     props:
       overwrite: true
       retryIntervalMilliseconds: 10

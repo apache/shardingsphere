@@ -24,7 +24,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="42">
-            <aggregation-projection type="SUM" alias="orders_sum" inner-expression-start-index="10" start-index="7" stop-index="19" />
+            <aggregation-projection type="SUM" alias="orders_sum" inner-expression="(order_id)" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="36" stop-index="42" />
         </projections>
         <group-by>
@@ -42,7 +42,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="46">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="21" />
+            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(order_id)" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="40" stop-index="46" />
         </projections>
         <group-by>
@@ -60,7 +60,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="44">
-            <aggregation-projection type="MAX" alias="max_order_id" inner-expression-start-index="10" start-index="7" stop-index="19" />
+            <aggregation-projection type="MAX" alias="max_order_id" inner-expression="(order_id)" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="38" stop-index="44" />
         </projections>
         <group-by>
@@ -78,7 +78,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="44">
-            <aggregation-projection type="MIN" alias="min_order_id" inner-expression-start-index="10" start-index="7" stop-index="19" />
+            <aggregation-projection type="MIN" alias="min_order_id" inner-expression="(order_id)" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="38" stop-index="44" />
         </projections>
         <group-by>
@@ -96,7 +96,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="42">
-            <aggregation-projection type="AVG" alias="orders_avg" inner-expression-start-index="10" start-index="7" stop-index="19" />
+            <aggregation-projection type="AVG" alias="orders_avg" inner-expression="(order_id)" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="36" stop-index="42" />
         </projections>
         <group-by>
@@ -114,7 +114,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="42">
-            <aggregation-projection type="SUM" inner-expression-start-index="10" alias="orders_sum" start-index="7" stop-index="19" />
+            <aggregation-projection type="SUM" inner-expression="(order_id)" alias="orders_sum" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="36" stop-index="42" />
         </projections>
         <group-by>
@@ -157,7 +157,7 @@
             </join-table>
         </table-reference>
         <projections start-index="7" stop-index="29">
-            <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="items_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" inner-expression="(*)" alias="items_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="119" stop-index="174" literal-stop-index="175">
             <and-predicate>
@@ -220,7 +220,7 @@
         </table-reference>
         <projections start-index="7" stop-index="42">
             <column-projection name="user_id" start-index="7" stop-index="13" />
-            <aggregation-projection type="SUM"  inner-expression-start-index="19" alias="orders_sum" start-index="16" stop-index="28" />
+            <aggregation-projection type="SUM"  inner-expression="(order_id)" alias="orders_sum" start-index="16" stop-index="28" />
         </projections>
         <group-by>
             <column-item name="user_id" start-index="66" stop-index="72" />
@@ -263,8 +263,8 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="84">
-            <expression-projection alias="creation_date" start-index="7" stop-index="45" />
-            <aggregation-projection type="COUNT" inner-expression-start-index="70" alias="c_number" start-index="65" stop-index="72" />
+            <expression-projection alias="creation_date" start-index="7" stop-index="62" />
+            <aggregation-projection type="COUNT" inner-expression="(*)" alias="c_number" start-index="65" stop-index="72" />
         </projections>
         <where start-index="106" stop-index="130" literal-stop-index="135">
             <and-predicate>
@@ -291,7 +291,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="51">
-            <aggregation-projection type="SUM" inner-expression-start-index="10" alias="orders_sum" start-index="7" stop-index="19" />
+            <aggregation-projection type="SUM" inner-expression="(order_id)" alias="orders_sum" start-index="7" stop-index="19" />
             <column-projection name="user_id" alias="key" start-index="36" stop-index="42" />
         </projections>
         <group-by>
@@ -306,7 +306,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="46">
-            <aggregation-projection inner-expression-start-index="12" type="COUNT" alias="orders_count" start-index="7" stop-index="21" />
+            <aggregation-projection inner-expression="(order_id)" type="COUNT" alias="orders_count" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="40" stop-index="46" />
         </projections>
         <group-by>

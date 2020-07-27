@@ -49,7 +49,7 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
     }
     
     private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), SHADOW_DB_NAMES::contains);
+        return Maps.filterKeys(getDATABASE_TYPE_MAP().values().iterator().next(), SHADOW_DB_NAMES::contains);
     }
     
     private static File getFile(final String fileName) {
@@ -62,7 +62,7 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
     }
     
     @AfterClass
-    public static void close() throws Exception {
+    public static void close() {
         if (null == shadowDataSource) {
             return;
         }

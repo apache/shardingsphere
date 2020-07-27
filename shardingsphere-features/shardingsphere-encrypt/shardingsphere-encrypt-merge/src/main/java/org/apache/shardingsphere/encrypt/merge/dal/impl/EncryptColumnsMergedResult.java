@@ -117,7 +117,6 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
         throw new SQLFeatureNotSupportedException();
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         throw new SQLFeatureNotSupportedException();

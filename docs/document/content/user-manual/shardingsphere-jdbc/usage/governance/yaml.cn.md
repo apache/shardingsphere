@@ -33,9 +33,9 @@ weight = 2
 
 ```yaml
 orchestration:
-  orchestration_ds:
-      orchestrationType: registry_center,config_center,metadata_center
-      instanceType: zookeeper
+  name: orchestration_ds
+  registryCenter:
+      type: zookeeper
       serverLists: localhost:2181
       namespace: orchestration
       props:

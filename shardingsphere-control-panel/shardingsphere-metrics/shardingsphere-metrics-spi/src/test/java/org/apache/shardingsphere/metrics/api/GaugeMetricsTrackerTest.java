@@ -32,12 +32,12 @@ public final class GaugeMetricsTrackerTest implements GaugeMetricsTracker {
     }
     
     @Override
-    public void inc(final double amount, final String... labelValues) {
+    public void increment(final double amount, final String... labelValues) {
     
     }
     
     @Override
-    public void dec(final double amount, final String... labelValues) {
+    public void decrement(final double amount, final String... labelValues) {
     
     }
     

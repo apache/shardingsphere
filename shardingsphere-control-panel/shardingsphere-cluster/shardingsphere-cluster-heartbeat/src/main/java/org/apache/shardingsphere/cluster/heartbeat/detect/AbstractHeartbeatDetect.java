@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.cluster.heartbeat.detect;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 
@@ -26,31 +27,24 @@ import java.util.concurrent.Callable;
 /**
  * Abstract heart beat detect.
  */
+@RequiredArgsConstructor
 @Slf4j
 public abstract class AbstractHeartbeatDetect implements Callable<Map<String, HeartbeatResult>> {
     
-    private Boolean retryEnable;
+    private final boolean retryEnable;
     
-    private Integer retryMaximum;
+    private final int retryMaximum;
     
-    private Integer retryInterval;
+    private final int retryInterval;
     
-    private Boolean needDetect;
-    
-    public AbstractHeartbeatDetect(final Boolean retryEnable, final Integer retryMaximum,
-                                   final Integer retryInterval, final Boolean needDetect) {
-        this.retryEnable = retryEnable;
-        this.retryMaximum = retryMaximum;
-        this.retryInterval = retryInterval;
-        this.needDetect = needDetect;
-    }
-    
+    private final boolean needDetect;
+
     /**
      * Detect heart beat.
      *
      * @return heart beat result.
      */
-    protected abstract Boolean detect();
+    protected abstract boolean detect();
     
     /**
      * Build heart beat result.
@@ -58,19 +52,17 @@ public abstract class AbstractHeartbeatDetect implements Callable<Map<String, He
      * @param result heart beat result
      * @return heart beat result
      */
-    protected abstract Map<String, HeartbeatResult> buildResult(Boolean result);
+    protected abstract Map<String, HeartbeatResult> buildResult(boolean result);
     
     @Override
     public Map<String, HeartbeatResult> call() {
         if (!needDetect) {
-            return buildResult(Boolean.FALSE);
+            return buildResult(false);
         }
         if (retryEnable && retryMaximum > 0) {
-            Boolean result = Boolean.FALSE;
             for (int i = 0; i < retryMaximum; i++) {
-                result = detect();
-                if (result) {
-                    break;
+                if (detect()) {
+                    return buildResult(true);
                 }
                 try {
                     Thread.sleep(retryInterval * 1000);
@@ -78,7 +70,7 @@ public abstract class AbstractHeartbeatDetect implements Callable<Map<String, He
                     log.warn("Retry heart beat detect sleep error", ex);
                 }
             }
-            return buildResult(result);
+            return buildResult(false);
         } else {
             return buildResult(detect());
         }

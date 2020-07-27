@@ -26,7 +26,7 @@ import org.apache.shardingsphere.metrics.configuration.config.MetricsConfigurati
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetricsConfigurationChangedEvent implements ShardingOrchestrationEvent {
+public final class MetricsConfigurationChangedEvent implements OrchestrationEvent {
     
     private final MetricsConfiguration metricsConfiguration;
 }

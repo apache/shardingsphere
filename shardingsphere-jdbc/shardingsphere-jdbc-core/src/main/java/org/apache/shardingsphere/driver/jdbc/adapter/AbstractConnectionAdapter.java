@@ -237,6 +237,16 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         recordMethodInvocation(Connection.class, "setTransactionIsolation", new Class[]{int.class}, new Object[]{level});
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setTransactionIsolation(level));
     }
+
+    @Override
+    public final boolean isValid(final int timeout) throws SQLException {
+        for (Connection connection : cachedConnections.values()) {
+            if (!connection.isValid(timeout)) {
+                return false;
+            }
+        }
+        return true;
+    }
     
     // ------- Consist with MySQL driver implementation -------
     

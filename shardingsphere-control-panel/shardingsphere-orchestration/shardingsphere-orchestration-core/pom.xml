@@ -28,12 +28,11 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>shardingsphere-orchestration-core-configuration</module>
         <module>shardingsphere-orchestration-core-common</module>
-        <module>shardingsphere-orchestration-core-configcenter</module>
-        <module>shardingsphere-orchestration-core-registrycenter</module>
-        <module>shardingsphere-orchestration-core-metadatacenter</module>
-        <module>shardingsphere-orchestration-core-facade</module>
+        <module>shardingsphere-orchestration-core-config</module>
+        <module>shardingsphere-orchestration-core-registry</module>
+        <module>shardingsphere-orchestration-core-metadata</module>
         <module>shardingsphere-orchestration-core-schema</module>
+        <module>shardingsphere-orchestration-core-facade</module>
     </modules>
 </project>

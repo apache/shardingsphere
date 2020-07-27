@@ -37,7 +37,7 @@ public final class ModuloHintShardingAlgorithm implements HintShardingAlgorithm<
         Collection<String> result = new ArrayList<>();
         for (String each : availableTargetNames) {
             for (String value : shardingValue.getValues()) {
-                if (each.endsWith(String.valueOf(Long.valueOf(value) % 2))) {
+                if (each.endsWith(String.valueOf(Long.parseLong(value) % 2))) {
                     result.add(each);
                 }
             }

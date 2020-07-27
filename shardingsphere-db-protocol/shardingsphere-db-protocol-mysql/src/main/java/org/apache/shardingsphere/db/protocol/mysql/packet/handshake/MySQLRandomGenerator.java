@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class MySQLRandomGenerator {
     
     @Getter
-    private static MySQLRandomGenerator instance = new MySQLRandomGenerator();
+    private static final MySQLRandomGenerator INSTANCE = new MySQLRandomGenerator();
     
     private static final byte[] SEED = {
         'a', 'b', 'e', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 

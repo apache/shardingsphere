@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spring.namespace.orchestration.util;
 
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -32,21 +31,13 @@ public final class FieldValueUtil {
      *
      * @param obj obj
      * @param fieldName field name
-     * @param isFromSuperClass is from super class
      * @return field value
      */
-    public static Object getFieldValue(final Object obj, final String fieldName, final boolean isFromSuperClass) {
-        if (null == obj || Strings.isNullOrEmpty(fieldName)) {
-            return null;
-        }
-        Class<?> clazz = isFromSuperClass ? obj.getClass().getSuperclass() : obj.getClass();
-        return getFieldValue(clazz, obj, fieldName);
-    }
-    
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Object getFieldValue(final Class<?> clazz, final Object obj, final String fieldName) {
-        Field field = clazz.getDeclaredField(fieldName);
+    public static Object getFieldValue(final Object obj, final String fieldName) {
+        Field field = obj.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         return field.get(obj);
     }
+    
 }

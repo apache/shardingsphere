@@ -42,7 +42,7 @@ public final class ClusterInitFacadeTest {
         HeartbeatConfiguration heartBeatConfiguration = new HeartbeatConfiguration();
         heartBeatConfiguration.setSql("select 1");
         heartBeatConfiguration.setInterval(60);
-        heartBeatConfiguration.setRetryEnable(Boolean.TRUE);
+        heartBeatConfiguration.setRetryEnable(true);
         heartBeatConfiguration.setRetryMaximum(3);
         ClusterConfiguration clusterConfiguration = new ClusterConfiguration();
         clusterConfiguration.setHeartbeat(heartBeatConfiguration);
@@ -67,7 +67,7 @@ public final class ClusterInitFacadeTest {
         HeartbeatConfiguration heartBeatConfiguration = new HeartbeatConfiguration();
         heartBeatConfiguration.setSql("select 2");
         heartBeatConfiguration.setInterval(30);
-        heartBeatConfiguration.setRetryEnable(Boolean.FALSE);
+        heartBeatConfiguration.setRetryEnable(false);
         heartBeatConfiguration.setRetryMaximum(3);
         ClusterConfiguration clusterConfiguration = new ClusterConfiguration();
         clusterConfiguration.setHeartbeat(heartBeatConfiguration);
@@ -77,7 +77,7 @@ public final class ClusterInitFacadeTest {
     
     @Test
     public void assertEnable() {
-        ClusterInitFacade.enable(Boolean.FALSE);
+        ClusterInitFacade.enable(false);
         assertFalse(ClusterInitFacade.isEnabled());
     }
     

@@ -19,20 +19,17 @@ package org.apache.shardingsphere.spring.namespace.orchestration.parser;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.spring.namespace.orchestration.OrchestrationSpringShardingSphereDataSource;
+import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.spring.namespace.orchestration.constants.DataSourceBeanDefinitionTag;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Data source parser for spring namespace.
@@ -41,7 +38,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringShardingSphereDataSource.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationShardingSphereDataSource.class);
         configureFactory(element, factory);
         return factory.getBeanDefinition();
     }
@@ -60,17 +57,14 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     
     private BeanDefinition getOrchestrationConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationConfiguration.class);
-        factory.addConstructorArgValue(parseInstances(element));
-        return factory.getBeanDefinition();
-    }
-    
-    private Map<String, RuntimeBeanReference> parseInstances(final Element element) {
         List<String> instances = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionTag.INSTANCE_REF_TAG));
-        Map<String, RuntimeBeanReference> result = new ManagedMap<>(instances.size());
-        for (String each : instances) {
-            result.put(each, new RuntimeBeanReference(each));
+        factory.addConstructorArgValue(instances.get(0));
+        factory.addConstructorArgReference(instances.get(0));
+        if (instances.size() > 1) {
+            factory.addConstructorArgValue(instances.get(1));
+            factory.addConstructorArgReference(instances.get(1));
         }
-        return result;
+        return factory.getBeanDefinition();
     }
 }
 

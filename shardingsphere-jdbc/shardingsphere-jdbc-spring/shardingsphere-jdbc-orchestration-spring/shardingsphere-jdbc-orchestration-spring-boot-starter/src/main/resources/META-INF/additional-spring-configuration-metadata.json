@@ -77,7 +77,7 @@
     },
     {
       "name": "spring.shardingsphere.orchestration",
-      "type": "java.util.Map<java.lang.String,org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration>",
+      "type": "java.util.Map<java.lang.String,org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration>",
       "sourceType": "org.apache.shardingsphere.spring.boot.orchestration.common.OrchestrationSpringBootRootConfiguration",
       "description": "Customize ShardingSphere orchestration instance."
     },

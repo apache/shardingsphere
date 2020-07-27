@@ -102,7 +102,7 @@ public final class SelectStatementContextTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(null, "", Collections.emptyList(), selectStatement);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(null, Collections.emptyList(), selectStatement);
         assertTrue(selectStatementContext.isSameGroupByAndOrderByItems());
     }
     
@@ -110,7 +110,7 @@ public final class SelectStatementContextTest {
     public void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(null, "", Collections.emptyList(), selectStatement);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(null, Collections.emptyList(), selectStatement);
         assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
     }
     
@@ -120,7 +120,7 @@ public final class SelectStatementContextTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(null, "", Collections.emptyList(), selectStatement);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(null, Collections.emptyList(), selectStatement);
         assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
     }
     

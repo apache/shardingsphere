@@ -63,7 +63,7 @@ public class YamlOrchestrationShardingSphereDataSourceFactoryTest extends Abstra
     }
     
     @AfterClass
-    public static void close() throws Exception {
+    public static void close() {
         ((OrchestrationShardingSphereDataSource) dataSource).close();
     }
 }

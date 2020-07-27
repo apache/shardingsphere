@@ -400,9 +400,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private void clearStatements() throws SQLException {
-        statements.clear();
         for (Statement each : statements) {
             each.close();
         }
+        statements.clear();
     }
 }

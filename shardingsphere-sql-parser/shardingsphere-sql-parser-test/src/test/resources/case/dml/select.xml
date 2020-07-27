@@ -435,7 +435,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="orders_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="47" stop-index="142" literal-stop-index="148">
             <and-predicate>
@@ -478,7 +478,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="orders_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="47" stop-index="140" literal-stop-index="146">
             <and-predicate>
@@ -1386,7 +1386,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="30">
-            <aggregation-distinct-projection type="SUM" inner-expression-start-index="10" distinct-expression="order_id" alias="s" start-index="7" stop-index="28" />
+            <aggregation-distinct-projection type="SUM" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="s" start-index="7" stop-index="28" />
         </projections>
         <where start-index="45" stop-index="65">
             <and-predicate>
@@ -1408,7 +1408,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="32">
-            <aggregation-distinct-projection type="COUNT" inner-expression-start-index="12" distinct-expression="order_id" alias="c" start-index="7" stop-index="30" />
+            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="7" stop-index="30" />
         </projections>
         <where start-index="47" stop-index="67">
             <and-predicate>
@@ -1430,7 +1430,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="28">
-            <aggregation-distinct-projection type="AVG" inner-expression-start-index="10" distinct-expression="order_id" start-index="7" stop-index="28" />
+            <aggregation-distinct-projection type="AVG" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="28" />
         </projections>
         <where start-index="43" stop-index="63">
             <and-predicate>
@@ -1452,8 +1452,8 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="54">
-            <aggregation-distinct-projection type="COUNT" inner-expression-start-index="12" distinct-expression="order_id" start-index="7" stop-index="30" />
-            <aggregation-distinct-projection type="SUM" inner-expression-start-index="36" distinct-expression="order_id" start-index="33" stop-index="54" />
+            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="30" />
+            <aggregation-distinct-projection type="SUM" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="33" stop-index="54" />
         </projections>
         <where start-index="75" stop-index="89">
             <and-predicate>
@@ -1476,7 +1476,7 @@
         </table-reference>
         <projections start-index="7" stop-index="42">
             <column-projection name="order_id" start-index="7" stop-index="14" />
-            <aggregation-distinct-projection type="COUNT" inner-expression-start-index="22" distinct-expression="order_id" alias="c" start-index="17" stop-index="40" />
+            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="17" stop-index="40" />
         </projections>
         <where start-index="57" stop-index="77">
             <and-predicate>
@@ -1504,7 +1504,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="42">
-            <aggregation-distinct-projection type="COUNT" inner-expression-start-index="12" distinct-expression="order_id" alias="c" start-index="7" stop-index="30" />
+            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="7" stop-index="30" />
             <column-projection name="order_id" start-index="35" stop-index="42" />
         </projections>
         <group-by>
@@ -1536,7 +1536,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="42">
-            <aggregation-distinct-projection type="COUNT" inner-expression-start-index="12" distinct-expression="user_id+order_id" alias="c" start-index="7" stop-index="40" />
+            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT user_id + order_id)" distinct-expression="user_id+order_id" alias="c" start-index="7" stop-index="40" />
         </projections>
         <where start-index="57" stop-index="77">
             <and-predicate>
@@ -1558,9 +1558,9 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="69">
-            <aggregation-distinct-projection type="SUM" inner-expression-start-index="10" distinct-expression="order_id" start-index="7" stop-index="28" />
-            <aggregation-distinct-projection type="COUNT" inner-expression-start-index="35" distinct-expression="order_id" start-index="30" stop-index="53" />
-            <aggregation-projection type="COUNT" inner-expression-start-index="60" start-index="55" stop-index="69" />
+            <aggregation-distinct-projection type="SUM" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="28" />
+            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="30" stop-index="53" />
+            <aggregation-projection type="COUNT" inner-expression="(order_id)" start-index="55" stop-index="69" />
         </projections>
         <where start-index="85" stop-index="105">
             <and-predicate>
@@ -1705,7 +1705,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="41">
-            <aggregation-projection type="SUM" inner-expression-start-index="10" alias="func_status" start-index="7" stop-index="29" />
+            <aggregation-projection type="SUM" inner-expression="(if(status=0, 1, 0))" alias="func_status" start-index="7" stop-index="29" />
         </projections>
         <where start-index="56" stop-index="89" literal-stop-index="93">
             <and-predicate>
@@ -1736,7 +1736,7 @@
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="38">
-            <expression-projection alias="func_status" start-index="7" stop-index="26" />
+            <expression-projection alias="func_status" start-index="7" stop-index="38" />
         </projections>
         <where start-index="53" stop-index="86" literal-stop-index="90">
             <and-predicate>
@@ -1881,6 +1881,31 @@
                     <compare-right-value>
                         <literal-expression start-index="120" stop-index="121" value="10" />
                         <parameter-marker-expression value="1" start-index="116" stop-index="116" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_json_separator">
+        <projections start-index="7" stop-index="75">
+            <expression-projection start-index="7" stop-index="41" alias="nation" />
+            <expression-projection start-index="43" stop-index="75" alias="title" />
+        </projections>
+        <table-reference>
+            <table-factor>
+                <table name="tb_content_json" start-index="82" stop-index="98" alias="b" />
+            </table-factor>
+        </table-reference>
+        <where start-index="100" stop-index="119" literal-stop-index="121">
+            <and-predicate>
+                <predicate start-index="106" stop-index="119">
+                    <column-left-value name="content_id" start-index="106" stop-index="117">
+                        <owner stop-index="106" start-index="106" name="b"/>
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression start-index="119" stop-index="119" value="1" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>

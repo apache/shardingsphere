@@ -141,7 +141,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         TableNameSegment tableName;
         if (null != qualifiedName.indirection()) {
             ColIdContext colId = ctx.colId();
-    
             owner = new OwnerSegment(colId.start.getStartIndex(), colId.stop.getStopIndex(), new IdentifierValue(colId.getText()));
             AttrNameContext attrName = qualifiedName.indirection().indirectionEl().attrName();
             tableName = new TableNameSegment(attrName.start.getStartIndex(), attrName.stop.getStopIndex(), new IdentifierValue(attrName.getText()));
@@ -187,14 +186,13 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     @Override
     public ASTNode visitInsertColumnItem(final InsertColumnItemContext ctx) {
         if (null != ctx.optIndirection().indirectionEl()) {
-            ColumnSegment columnSegment = new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.optIndirection().stop.getStopIndex(),
+            ColumnSegment result = new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.optIndirection().stop.getStopIndex(),
                     new IdentifierValue(ctx.optIndirection().indirectionEl().attrName().getText()));
-            columnSegment.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
-            return columnSegment;
+            result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+            return result;
     
         } else {
-            ColumnSegment columnSegment = new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
-            return columnSegment;
+            return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
         }
     }
     
@@ -212,7 +210,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     private Collection<ExpressionSegment> createInsertValuesSegments(final ExprListContext ctx) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        
         if (null != ctx.exprList()) {
             Collection<ExpressionSegment> tmpResult = createInsertValuesSegments(ctx.exprList());
             result.addAll(tmpResult);
@@ -239,8 +236,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         ColumnSegment columnSegment = (ColumnSegment) visit(ctx.setTarget());
         SQLSegment sqlSegment = (SQLSegment) visit(ctx.aExpr());
         ExpressionSegment expressionSegment = new CommonExpressionSegment(sqlSegment.getStartIndex(), sqlSegment.getStopIndex(), sqlSegment.toString());
-        AssignmentSegment result = new AssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegment, expressionSegment);
-        return result;
+        return new AssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegment, expressionSegment);
     }
     
     @Override
@@ -272,7 +268,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
@@ -289,8 +284,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     @Override
     public ASTNode visitSetClauseList(final SetClauseListContext ctx) {
         Collection<AssignmentSegment> assignments = generateAssignmentSegments(ctx);
-        SetAssignmentSegment result = new SetAssignmentSegment(ctx.start.getStartIndex() - 4, ctx.stop.getStopIndex(), assignments);
-        return result;
+        return new SetAssignmentSegment(ctx.start.getStartIndex() - 4, ctx.stop.getStopIndex(), assignments);
     }
     
     @Override
@@ -298,7 +292,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         return super.visitSetTargetList(ctx);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement result = new DeleteStatement();
@@ -344,7 +337,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     @Override
     public ASTNode visitSelectWithParens(final SelectWithParensContext ctx) {
-        
         if (null != ctx.selectWithParens()) {
             return visit(ctx.selectWithParens());
         }
@@ -353,11 +345,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     @Override
     public ASTNode visitSelectClauseN(final SelectClauseNContext ctx) {
-        if (null != ctx.simpleSelect()) {
-            SelectStatement result = (SelectStatement) visit(ctx.simpleSelect());
-            return result;
-        }
-        return new SelectStatement();
+        return null == ctx.simpleSelect() ? new SelectStatement() : visit(ctx.simpleSelect());
     }
     
     @Override
@@ -391,8 +379,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         for (GroupByItemContext each : ctx.groupByList().groupByItem()) {
             items.add((OrderByItemSegment) visit(each));
         }
-        GroupBySegment result = new GroupBySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), items);
-        return result;
+        return new GroupBySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), items);
     }
     
     @Override
@@ -400,13 +387,12 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         if (null != ctx.aExpr()) {
             ASTNode astNode = visit(ctx.aExpr());
             if (astNode instanceof ColumnSegment) {
-                OrderByItemSegment result = new ColumnOrderByItemSegment((ColumnSegment) astNode, OrderDirection.ASC);
-                return result;
+                return new ColumnOrderByItemSegment((ColumnSegment) astNode, OrderDirection.ASC);
             }
             if (astNode instanceof LiteralExpressionSegment) {
                 LiteralExpressionSegment index = (LiteralExpressionSegment) astNode;
                 return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(),
-                        Integer.valueOf(index.getLiterals().toString()), OrderDirection.ASC);
+                        Integer.parseInt(index.getLiterals().toString()), OrderDirection.ASC);
             }
             return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.start.getStopIndex(), ctx.getText(), OrderDirection.ASC);
         }
@@ -456,7 +442,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             }
             return projection;
         }
-        
         if (null != expr.cExpr() && null != expr.cExpr().selectWithParens()) {
             SelectStatement select = (SelectStatement) visit(expr.cExpr().selectWithParens());
             SubquerySegment subquery = new SubquerySegment(expr.cExpr().selectWithParens().start.getStartIndex(), expr.cExpr().selectWithParens().stop.getStopIndex(), select);
@@ -466,13 +451,12 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             projection.setAlias(alias);
             return projection;
         }
-        
-        ExpressionProjectionSegment projection = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), expr.getText());
+        ExpressionProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), expr.getText());
         if (null != ctx.identifier()) {
             AliasSegment alias = new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText()));
-            projection.setAlias(alias);
+            result.setAlias(alias);
         }
-        return projection;
+        return result;
     }
     
     private ColumnProjectionSegment generateColumnProjection(final ColumnrefContext ctx) {
@@ -481,12 +465,10 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             ColumnSegment columnSegment = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(attrName.getText()));
             OwnerSegment owner = new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
             columnSegment.setOwner(owner);
-            ColumnProjectionSegment columnProjection = new ColumnProjectionSegment(columnSegment);
-            return columnProjection;
+            return new ColumnProjectionSegment(columnSegment);
         }
         ColumnSegment columnSegment = new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
-        ColumnProjectionSegment columnProjection = new ColumnProjectionSegment(columnSegment);
-        return columnProjection;
+        return new ColumnProjectionSegment(columnSegment);
     }
     
     @Override
@@ -506,9 +488,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     @Override
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
-    
         if (null != ctx.tableReference()) {
-    
             TableReferenceSegment result = (TableReferenceSegment) visit(ctx.tableReference());
             if (null != ctx.joinedTable()) {
                 result.getJoinedTables().add((JoinedTableSegment) visit(ctx.joinedTable()));
@@ -587,19 +567,16 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     @Override
     public ASTNode visitAliasClause(final AliasClauseContext ctx) {
         StringBuilder aliasName = new StringBuilder(ctx.colId().getText());
-        
         if (null != ctx.nameList()) {
             aliasName.append(ctx.LP_().getText());
             aliasName.append(ctx.nameList().getText());
             aliasName.append(ctx.RP_().getText());
         }
-        AliasSegment alias = new AliasSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(aliasName.toString()));
-        return alias;
+        return new AliasSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(aliasName.toString()));
     }
     
     private SimpleTableSegment generateTableFromRelationExpr(final RelationExprContext ctx) {
         QualifiedNameContext qualifiedName = ctx.qualifiedName();
-    
         if (null != qualifiedName.indirection()) {
             AttrNameContext tableName = qualifiedName.indirection().indirectionEl().attrName();
             SimpleTableSegment table = new SimpleTableSegment(tableName.start.getStartIndex(), tableName.stop.getStopIndex(), new IdentifierValue(tableName.getText()));
@@ -640,9 +617,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
-        LimitValueSegment result = new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
-                Long.valueOf(((LiteralExpressionSegment) astNode).getLiterals().toString()));
-        return result;
+        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
     }
     
     @Override
@@ -651,9 +626,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
-        LimitValueSegment result = new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
-                Long.valueOf(((LiteralExpressionSegment) astNode).getLiterals().toString()));
-        return result;
+        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
     }
     
     private LimitSegment createLimitSegmentWhenLimitAndOffset(final SelectLimitContext ctx) {
@@ -685,7 +658,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, limit);
         }
         LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
-    
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
     }
 }

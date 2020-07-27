@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.postgresql.visitor;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementBaseVisitor;
@@ -176,28 +177,24 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         if (null != ctx.cExpr()) {
             return visit(ctx.cExpr());
         }
-        
         if (null != ctx.BETWEEN() && null == ctx.NOT()) {
             return createBetweenSegment(ctx);
         }
         if (null != ctx.IN() && null == ctx.NOT()) {
             return createInSegment(ctx);
         }
-        
         if (null != ctx.comparisonOperator()) {
             ASTNode left = visit(ctx.aExpr(0));
             if (left instanceof ColumnSegment) {
                 ColumnSegment columnSegment = (ColumnSegment) left;
                 ASTNode right = visit(ctx.aExpr(1));
-                PredicateRightValue value = right instanceof ColumnSegment ? (PredicateRightValue) right
-                        : new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) right);
-                PredicateSegment predicate = new PredicateSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegment, value);
-                return predicate;
+                PredicateRightValue value = right instanceof ColumnSegment
+                        ? (PredicateRightValue) right : new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) right);
+                return new PredicateSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegment, value);
             }
             visit(ctx.aExpr(1));
             return new LiteralExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
         }
-        
         if (null != ctx.logicalOperator()) {
             return new PredicateBuilder(visit(ctx.aExpr(0)), visit(ctx.aExpr(1)), ctx.logicalOperator().getText()).mergePredicate();
         }
@@ -217,7 +214,6 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         if (null != ctx.parameterMarker()) {
             return new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
         }
-        
         if (null != ctx.aexprConst()) {
             ASTNode astNode = visit(ctx.aexprConst());
             if (astNode instanceof StringLiteralValue || astNode instanceof BooleanLiteralValue || astNode instanceof NumberLiteralValue) {
@@ -255,8 +251,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
             result.setOwner(owner);
             return result;
         }
-        ColumnSegment result = new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
-        return result;
+        return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
     }
     
     private PredicateSegment createInSegment(final AExprContext ctx) {
@@ -267,15 +262,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     
     private Collection<ExpressionSegment> getExpressionSegments(final AExprContext ctx) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-//        if (null != ctx.cExpr() && null != ctx.cExpr().select_with_parens()) {
-//            Select_with_parensContext subquery = ctx.cExpr().select_with_parens();
-//            result.add(new SubqueryExpressionSegment(new SubquerySegment(subquery.getStart().getStartIndex(), subquery.getStop().getStopIndex(),
-//                    (SelectStatement) visit(ctx.cExpr().select_with_parens()))));
-//            return result;
-//        }
-//        for (AExprContext each : ctx.aExpr()) {
-//            result.add(new CommonExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), each.getText()));
-//        }
+//        TODO deal with sqlExpressions in PredicateInRightValue
         return result;
     }
     
@@ -307,7 +294,6 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         if (null != ctx.funcApplication()) {
             return generateProjectFromFuncApplication(ctx.funcApplication());
         }
-        
         return generateProjectFromFunctionExprCommonSubexpr(ctx.functionExprCommonSubexpr());
     }
     
@@ -316,7 +302,6 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         if (AggregationType.isAggregationType(aggregationType)) {
             return createAggregationSegment(ctx, aggregationType);
         }
-        
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
@@ -326,13 +311,13 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     
     private ProjectionSegment createAggregationSegment(final FuncApplicationContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
-        int innerExpressionStartIndex = ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex();
+        String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
         if (null == ctx.DISTINCT()) {
-            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpressionStartIndex);
+            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
         }
-        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpressionStartIndex, getDistinctExpression(ctx));
+        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
     }
-
+    
     private String getDistinctExpression(final FuncApplicationContext ctx) {
         StringBuilder result = new StringBuilder();
         result.append(ctx.funcArgList().getText());
@@ -363,10 +348,9 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         }
         return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
-
+    
     @Override
     public final ASTNode visitSortby(final SortbyContext ctx) {
-        
         OrderDirection orderDirection = null != ctx.ascDesc() ? generateOrderDirection(ctx.ascDesc()) : OrderDirection.ASC;
         ASTNode astNode = visit(ctx.aExpr());
         if (astNode instanceof ColumnSegment) {
@@ -375,43 +359,41 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         }
         if (astNode instanceof LiteralExpressionSegment) {
             LiteralExpressionSegment index = (LiteralExpressionSegment) astNode;
-            return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(),
-                    Integer.valueOf(index.getLiterals().toString()), orderDirection);
+            return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(), Integer.parseInt(index.getLiterals().toString()), orderDirection);
         }
         return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), ctx.aExpr().getText(), orderDirection);
     }
     
     private OrderDirection generateOrderDirection(final AscDescContext ctx) {
-        OrderDirection result = null != ctx.DESC() ? OrderDirection.DESC : OrderDirection.ASC;
-        return result;
+        return null == ctx.DESC() ? OrderDirection.ASC : OrderDirection.DESC;
     }
     
     @Override
     public final ASTNode visitDataType(final DataTypeContext ctx) {
-        DataTypeSegment dataTypeSegment = new DataTypeSegment();
-        dataTypeSegment.setDataTypeName(((KeywordValue) visit(ctx.dataTypeName())).getValue());
-        dataTypeSegment.setStartIndex(ctx.start.getStartIndex());
-        dataTypeSegment.setStopIndex(ctx.stop.getStopIndex());
+        DataTypeSegment result = new DataTypeSegment();
+        result.setDataTypeName(((KeywordValue) visit(ctx.dataTypeName())).getValue());
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
         if (null != ctx.dataTypeLength()) {
             DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.dataTypeLength());
-            dataTypeSegment.setDataLength(dataTypeLengthSegment);
+            result.setDataLength(dataTypeLengthSegment);
         }
-        return dataTypeSegment;
+        return result;
     }
     
     @Override
     public final ASTNode visitDataTypeLength(final DataTypeLengthContext ctx) {
-        DataTypeLengthSegment dataTypeLengthSegment = new DataTypeLengthSegment();
-        dataTypeLengthSegment.setStartIndex(ctx.start.getStartIndex());
-        dataTypeLengthSegment.setStopIndex(ctx.stop.getStartIndex());
+        DataTypeLengthSegment result = new DataTypeLengthSegment();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStartIndex());
         List<TerminalNode> numbers = ctx.NUMBER_();
-        if (numbers.size() == 1) {
-            dataTypeLengthSegment.setPrecision(Integer.parseInt(numbers.get(0).getText()));
+        if (1 == numbers.size()) {
+            result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
         }
-        if (numbers.size() == 2) {
-            dataTypeLengthSegment.setPrecision(Integer.parseInt(numbers.get(0).getText()));
-            dataTypeLengthSegment.setScale(Integer.parseInt(numbers.get(1).getText()));
+        if (2 == numbers.size()) {
+            result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
+            result.setScale(Integer.parseInt(numbers.get(1).getText()));
         }
-        return dataTypeLengthSegment;
+        return result;
     }
 }

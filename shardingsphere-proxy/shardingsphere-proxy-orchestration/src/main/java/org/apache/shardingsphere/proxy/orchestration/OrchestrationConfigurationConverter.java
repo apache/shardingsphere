@@ -27,10 +27,9 @@ import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
 import org.apache.shardingsphere.proxy.config.converter.AbstractConfigurationConverter;
@@ -52,22 +51,20 @@ import java.util.Set;
  */
 public class OrchestrationConfigurationConverter extends AbstractConfigurationConverter {
     
-    private ShardingOrchestrationFacade shardingOrchestrationFacade;
+    private final OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance();
     
     @Override
     public ProxyConfiguration convert(final ShardingConfiguration shardingConfiguration) {
-        Map<String, YamlCenterRepositoryConfiguration> orchestration = shardingConfiguration.getServerConfiguration().getOrchestration();
+        YamlOrchestrationConfiguration orchestration = shardingConfiguration.getServerConfiguration().getOrchestration();
         Set<String> schemaNames = shardingConfiguration.getRuleConfigurationMap().keySet();
         ProxyConfiguration proxyConfiguration = new ProxyConfiguration();
-        shardingOrchestrationFacade = new ShardingOrchestrationFacade(
-                new OrchestrationConfigurationYamlSwapper().swapToObject(new YamlOrchestrationConfiguration(orchestration)), schemaNames
-        );
-        initShardingOrchestrationFacade(shardingConfiguration.getServerConfiguration(), shardingConfiguration.getRuleConfigurationMap(), shardingOrchestrationFacade);
-        Authentication authentication = shardingOrchestrationFacade.getConfigCenter().loadAuthentication();
-        Properties properties = shardingOrchestrationFacade.getConfigCenter().loadProperties();
-        Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(shardingOrchestrationFacade);
-        Map<String, Collection<RuleConfiguration>> schemaRules = getSchemaRules(shardingOrchestrationFacade);
-        ClusterConfiguration clusterConfiguration = shardingOrchestrationFacade.getConfigCenter().loadClusterConfiguration();
+        orchestrationFacade.init(new OrchestrationConfigurationYamlSwapper().swapToObject(orchestration), schemaNames);
+        initOrchestrationConfigurations(shardingConfiguration.getServerConfiguration(), shardingConfiguration.getRuleConfigurationMap(), orchestrationFacade);
+        Authentication authentication = orchestrationFacade.getConfigCenter().loadAuthentication();
+        Properties properties = orchestrationFacade.getConfigCenter().loadProperties();
+        Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(orchestrationFacade);
+        Map<String, Collection<RuleConfiguration>> schemaRules = getSchemaRules(orchestrationFacade);
+        ClusterConfiguration clusterConfiguration = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
         proxyConfiguration.setAuthentication(authentication);
         proxyConfiguration.setProps(properties);
         proxyConfiguration.setSchemaDataSources(schemaDataSources);
@@ -82,16 +79,16 @@ public class OrchestrationConfigurationConverter extends AbstractConfigurationCo
         return new ProxyOrchestrationSchemaContexts(builder.build());
     }
     
-    private void initShardingOrchestrationFacade(
-            final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final ShardingOrchestrationFacade shardingOrchestrationFacade) {
+    private void initOrchestrationConfigurations(
+            final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final OrchestrationFacade orchestrationFacade) {
         if (isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
-            shardingOrchestrationFacade.init();
+            orchestrationFacade.initConfigurations();
         } else {
-            shardingOrchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs),
+            orchestrationFacade.initConfigurations(getDataSourceConfigurationMap(ruleConfigs),
                     getRuleConfigurations(ruleConfigs), new AuthenticationYamlSwapper().swapToObject(serverConfig.getAuthentication()), serverConfig.getProps());
         }
-        shardingOrchestrationFacade.initMetricsConfiguration(Optional.ofNullable(serverConfig.getMetrics()).map(new MetricsConfigurationYamlSwapper()::swapToObject).orElse(null));
-        shardingOrchestrationFacade.initClusterConfiguration(Optional.ofNullable(serverConfig.getCluster()).map(new ClusterConfigurationYamlSwapper()::swapToObject).orElse(null));
+        orchestrationFacade.initMetricsConfiguration(Optional.ofNullable(serverConfig.getMetrics()).map(new MetricsConfigurationYamlSwapper()::swapToObject).orElse(null));
+        orchestrationFacade.initClusterConfiguration(Optional.ofNullable(serverConfig.getCluster()).map(new ClusterConfigurationYamlSwapper()::swapToObject).orElse(null));
     }
     
     private boolean isEmptyLocalConfiguration(final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
@@ -106,26 +103,26 @@ public class OrchestrationConfigurationConverter extends AbstractConfigurationCo
         return result;
     }
     
-    private Map<String, Map<String, DataSourceParameter>> getDataSourceParametersMap(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
+    private Map<String, Map<String, DataSourceParameter>> getDataSourceParametersMap(final OrchestrationFacade orchestrationFacade) {
         Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
-        for (String each : shardingOrchestrationFacade.getConfigCenter().getAllShardingSchemaNames()) {
-            result.put(each, DataSourceConverter.getDataSourceParameterMap(shardingOrchestrationFacade.getConfigCenter().loadDataSourceConfigurations(each)));
+        for (String each : orchestrationFacade.getConfigCenter().getAllShardingSchemaNames()) {
+            result.put(each, DataSourceConverter.getDataSourceParameterMap(orchestrationFacade.getConfigCenter().loadDataSourceConfigurations(each)));
         }
         return result;
     }
     
-    private Map<String, Collection<RuleConfiguration>> getSchemaRules(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
+    private Map<String, Collection<RuleConfiguration>> getSchemaRules(final OrchestrationFacade orchestrationFacade) {
         Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>();
-        for (String each : shardingOrchestrationFacade.getConfigCenter().getAllShardingSchemaNames()) {
-            result.put(each, shardingOrchestrationFacade.getConfigCenter().loadRuleConfigurations(each));
+        for (String each : orchestrationFacade.getConfigCenter().getAllShardingSchemaNames()) {
+            result.put(each, orchestrationFacade.getConfigCenter().loadRuleConfigurations(each));
         }
         return result;
     }
     
     @Override
     public void close() {
-        if (null != shardingOrchestrationFacade) {
-            shardingOrchestrationFacade.close();
+        if (null != orchestrationFacade) {
+            orchestrationFacade.close();
         }
     }
 }

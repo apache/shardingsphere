@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.spring.namespace.orchestration;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.namespace.orchestration.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.orchestration.util.FieldValueUtil;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -55,16 +56,15 @@ public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
     }
     
-    @SuppressWarnings("unchecked")
     private Map<String, DataSource> getDataSourceMap(final String shardingSphereDataSourceName) {
-        OrchestrationSpringShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(shardingSphereDataSourceName, OrchestrationSpringShardingSphereDataSource.class);
-        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(shardingSphereDataSource, "dataSource", true);
+        OrchestrationShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(shardingSphereDataSourceName, OrchestrationShardingSphereDataSource.class);
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(shardingSphereDataSource, "dataSource");
         return dataSource.getDataSourceMap();
     }
     
     private ShardingRule getShardingRule(final String shardingSphereDataSourceName) {
-        OrchestrationSpringShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(shardingSphereDataSourceName, OrchestrationSpringShardingSphereDataSource.class);
-        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(shardingSphereDataSource, "dataSource", true);
+        OrchestrationShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(shardingSphereDataSourceName, OrchestrationShardingSphereDataSource.class);
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(shardingSphereDataSource, "dataSource");
         return (ShardingRule) dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().iterator().next();
     }
 }

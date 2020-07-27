@@ -16,9 +16,9 @@
 #
 
 orchestration:
-  test_name_1:
-    orchestrationType: configuration_center
-    instanceType: zookeeper
+  name: test_name_1
+  registryCenter:
+    type: zookeeper
     serverLists: localhost:2181
     namespace: test_namespace_1
     props:

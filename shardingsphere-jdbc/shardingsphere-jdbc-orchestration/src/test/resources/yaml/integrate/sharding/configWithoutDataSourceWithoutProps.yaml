@@ -71,9 +71,9 @@ rules:
       type: INCREMENT
 
 orchestration:
-  test_sharding_registry_name:
-    orchestrationType: registry_center
-    instanceType: FirstTestRegistryCenter
+  name: test_sharding_registry_name
+  registryCenter:
+    type: REG_TEST
     serverLists: localhost:3181
     namespace: test_sharding_registry
     props:
@@ -82,22 +82,10 @@ orchestration:
       timeToLiveSeconds: 10
       maxRetries: 10
       operationTimeoutMilliseconds: 10
-  test_sharding_config_name:
-    orchestrationType: config_center
-    instanceType: FirstTestConfigCenter
+  additionalConfigCenter:
+    type: CONFIG_TEST
     serverLists: localhost:3181
     namespace: test_sharding_config
-    props:
-      overwrite: true
-      retryIntervalMilliseconds: 10
-      timeToLiveSeconds: 10
-      maxRetries: 10
-      operationTimeoutMilliseconds: 10
-  test_sharding_metadata_name:
-    orchestrationType: metadata_center
-    instanceType: FirstTestMetaDataCenter
-    serverLists: localhost:3181
-    namespace: test_sharding_metadata
     props:
       overwrite: true
       retryIntervalMilliseconds: 10

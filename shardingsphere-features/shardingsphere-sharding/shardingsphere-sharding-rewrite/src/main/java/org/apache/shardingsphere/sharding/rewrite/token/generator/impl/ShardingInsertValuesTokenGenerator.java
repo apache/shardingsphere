@@ -66,7 +66,7 @@ public final class ShardingInsertValuesTokenGenerator implements OptionalSQLToke
     private int getStartIndex(final Collection<InsertValuesSegment> segments) {
         int result = segments.iterator().next().getStartIndex();
         for (InsertValuesSegment each : segments) {
-            result = result > each.getStartIndex() ? each.getStartIndex() : result;
+            result = Math.min(result, each.getStartIndex());
         }
         return result;
     }
@@ -74,7 +74,7 @@ public final class ShardingInsertValuesTokenGenerator implements OptionalSQLToke
     private int getStopIndex(final Collection<InsertValuesSegment> segments) {
         int result = segments.iterator().next().getStopIndex();
         for (InsertValuesSegment each : segments) {
-            result = result < each.getStopIndex() ? each.getStopIndex() : result;
+            result = Math.max(result, each.getStopIndex());
         }
         return result;
     }

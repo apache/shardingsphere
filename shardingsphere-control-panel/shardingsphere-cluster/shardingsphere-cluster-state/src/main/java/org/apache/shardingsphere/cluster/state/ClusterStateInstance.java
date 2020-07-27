@@ -23,9 +23,9 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.cluster.state.enums.NodeState;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
-import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.OrchestrationEventBus;
+import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.registry.event.DisabledStateChangedEvent;
 
 /**
  * Cluster state instance.
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.orchestration.core.registrycenter.event.Disable
 public final class ClusterStateInstance {
     
     private ClusterStateInstance() {
-        ShardingOrchestrationEventBus.getInstance().register(this);
+        OrchestrationEventBus.getInstance().register(this);
     }
     
     /**
@@ -52,7 +52,7 @@ public final class ClusterStateInstance {
      */
     public void persistInstanceState(final InstanceState instanceState) {
         Preconditions.checkNotNull(instanceState, "instance state can not be null.");
-        ShardingOrchestrationFacade.getInstance().getRegistryCenter().persistInstanceData(YamlEngine.marshal(instanceState));
+        OrchestrationFacade.getInstance().getRegistryCenter().persistInstanceData(YamlEngine.marshal(instanceState));
     }
     
     /**
@@ -61,20 +61,8 @@ public final class ClusterStateInstance {
      * @return instance state
      */
     public InstanceState loadInstanceState() {
-        String instanceData = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadInstanceData();
+        String instanceData = OrchestrationFacade.getInstance().getRegistryCenter().loadInstanceData();
         Preconditions.checkState(!Strings.isNullOrEmpty(instanceData), "Can not load instance state from registry center");
-        return YamlEngine.unmarshal(instanceData, InstanceState.class);
-    }
-    
-    /**
-     * Load instance state by instance id.
-     *
-     * @param instanceId instance id
-     * @return instance state
-     */
-    private InstanceState loadInstanceState(final String instanceId) {
-        String instanceData = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadInstanceData(instanceId);
-        Preconditions.checkState(!Strings.isNullOrEmpty(instanceData), "Can not load instance state of '%s' from registry center", instanceId);
         return YamlEngine.unmarshal(instanceData, InstanceState.class);
     }
     

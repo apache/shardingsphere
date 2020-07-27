@@ -16,20 +16,18 @@
 #
 
 orchestration:
-  demo_nacos_yaml_ds_shadow:
-    orchestrationType: config_center
-    instanceType: nacos
+  name: demo_zookeeper_yaml_ds_shadow
+  registryCenter:
+    type: zookeeper
+    serverLists: localhost:2181
+    namespace:
+    props:
+      overwrite: false
+  additionalConfigCenter:
+    type: nacos
     serverLists: localhost:8848
     namespace:
     props:
       overwrite: false
       group: SHARDING_SPHERE_DEFAULT_GROUP
       timeout: 3000
-
-  demo_zookeeper_yaml_ds_shadow:
-    orchestrationType: registry_center,metadata_center
-    instanceType: zookeeper
-    serverLists: localhost:2181
-    namespace:
-    props:
-      overwrite: false

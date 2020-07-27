@@ -41,7 +41,6 @@ props.setProperty("overwrite", overwrite);
 CenterConfiguration centerConfiguration = new CenterConfiguration("zookeeper", props);
 centerConfiguration.setServerLists("localhost:2181");
 centerConfiguration.setNamespace("shardingsphere-orchestration");
-centerConfiguration.setOrchestrationType("registry_center,config_center,metadata_center");
 
 // Configure orchestration
 Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<String, CenterConfiguration>();

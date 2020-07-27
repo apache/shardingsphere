@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class RuleConfigurationsChangedEvent implements ShardingOrchestrationEvent {
+public final class RuleConfigurationsChangedEvent implements OrchestrationEvent {
     
     private final String shardingSchemaName;
     

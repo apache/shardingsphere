@@ -28,9 +28,7 @@ public final class InstanceBeanDefinitionTag {
     
     public static final String ROOT_TAG = "instance";
     
-    public static final String TYPE_TAG = "instance-type";
-    
-    public static final String ORCHESTRATION_TYPE_TAG = "orchestration-type";
+    public static final String TYPE_TAG = "type";
     
     public static final String SERVER_LISTS_TAG = "server-lists";
     

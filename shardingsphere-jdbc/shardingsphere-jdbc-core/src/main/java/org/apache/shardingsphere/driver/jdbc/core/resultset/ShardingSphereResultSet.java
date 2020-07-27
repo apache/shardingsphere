@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
-import java.sql.SQLFeatureNotSupportedException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -35,10 +31,14 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -186,13 +186,11 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
         return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
         return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(columnLabel);
@@ -287,13 +285,11 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
         return mergeResultSet.getInputStream(columnIndex, "Ascii");
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final int columnIndex) throws SQLException {
         return mergeResultSet.getInputStream(columnIndex, "Unicode");
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(columnLabel);

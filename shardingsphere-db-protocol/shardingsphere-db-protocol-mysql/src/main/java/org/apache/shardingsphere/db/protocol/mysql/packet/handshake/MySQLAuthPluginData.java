@@ -38,7 +38,7 @@ public final class MySQLAuthPluginData {
     private final byte[] authPluginDataPart2;
     
     public MySQLAuthPluginData() {
-        this(MySQLRandomGenerator.getInstance().generateRandomBytes(8), MySQLRandomGenerator.getInstance().generateRandomBytes(12));
+        this(MySQLRandomGenerator.getINSTANCE().generateRandomBytes(8), MySQLRandomGenerator.getINSTANCE().generateRandomBytes(12));
     }
     
     /**

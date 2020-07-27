@@ -60,7 +60,7 @@ public class BinlogPosition implements Position<BinlogPosition> {
     }
     
     private long toLong() {
-        return Long.valueOf(filename.substring(filename.lastIndexOf(".") + 1)) << 32 | position;
+        return Long.parseLong(filename.substring(filename.lastIndexOf(".") + 1)) << 32 | position;
     }
     
     @Override

@@ -23,15 +23,15 @@ import org.apache.shardingsphere.control.panel.spi.metrics.MetricsHandlerFacade;
 public class FirstMetricsTrackerFacade implements MetricsHandlerFacade {
     
     @Override
-    public void counterInc(final String metricsLabel, final String... labelValues) {
+    public void counterIncrement(final String metricsLabel, final String... labelValues) {
     }
     
     @Override
-    public void gaugeInc(final String metricsLabel, final String... labelValues) {
+    public void gaugeIncrement(final String metricsLabel, final String... labelValues) {
     }
     
     @Override
-    public void gaugeDec(final String metricsLabel, final String... labelValues) {
+    public void gaugeDecrement(final String metricsLabel, final String... labelValues) {
     }
     
     @Override

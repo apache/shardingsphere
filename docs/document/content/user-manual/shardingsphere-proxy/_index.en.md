@@ -19,7 +19,7 @@ It defines itself as a transparent database proxy, providing a database server t
 
 |                          | *ShardingSphere-JDBC* | *ShardingSphere-Proxy*       | *ShardingSphere-Sidecar* |
 | ------------------------ | --------------------- | ---------------------------- | ------------------------ |
-| Database                 | Any                   | `MySQL`                      | MySQL                    |
+| Database                 | Any                   | `MySQL/PostgreSQL`           | MySQL                    |
 | Connections Count Cost   | High                  | `Low`                        | High                     |
 | Supported Languages      | Java Only             | `Any`                        | Any                      |
 | Performance              | Low loss              | `Relatively high loss`       | Low loss                 |

@@ -17,21 +17,21 @@
 
 package org.apache.shardingsphere.cluster.heartbeat.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Heartbeat result.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public final class HeartbeatResult {
     
-    private String dataSourceName;
+    private final String dataSourceName;
     
-    private Boolean enable;
+    private final boolean enable;
     
-    private Long detectTimeStamp;
+    private final Long detectTimeStamp;
     
-    private Boolean disabled;
+    private final boolean disabled;
 }

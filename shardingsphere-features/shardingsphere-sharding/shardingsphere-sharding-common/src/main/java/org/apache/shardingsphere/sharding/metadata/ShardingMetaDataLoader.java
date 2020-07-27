@@ -159,7 +159,7 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
     
     @RequiredArgsConstructor
     @Getter
-    private final class TableMetaDataViolation {
+    private static final class TableMetaDataViolation {
         
         private final String actualTableName;
         

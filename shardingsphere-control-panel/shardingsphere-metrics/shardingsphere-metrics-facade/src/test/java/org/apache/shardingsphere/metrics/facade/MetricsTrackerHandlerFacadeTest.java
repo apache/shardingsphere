@@ -36,18 +36,18 @@ public final class MetricsTrackerHandlerFacadeTest {
     private final MetricsTrackerHandlerFacade metricsTrackerHandlerFacade = new MetricsTrackerHandlerFacade();
     
     @Test
-    public void assertCounterInc() {
-        metricsTrackerHandlerFacade.counterInc("request_total");
+    public void assertCounterIncrement() {
+        metricsTrackerHandlerFacade.counterIncrement("request_total");
     }
     
     @Test
-    public void assertGaugeInc() {
-        metricsTrackerHandlerFacade.gaugeInc("request_total");
+    public void assertGaugeIncrement() {
+        metricsTrackerHandlerFacade.gaugeIncrement("request_total");
     }
     
     @Test
-    public void assertGaugeDec() {
-        metricsTrackerHandlerFacade.gaugeDec("request_total");
+    public void assertGaugeDecrement() {
+        metricsTrackerHandlerFacade.gaugeDecrement("request_total");
     }
     
     @Test
@@ -64,7 +64,7 @@ public final class MetricsTrackerHandlerFacadeTest {
     }
     
     private void init() {
-        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, true, 8, null);
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, 0, false, true, 8, null);
         List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
         facadeConfigurations.add(metricsConfiguration);
         new ControlPanelFacadeEngine().init(facadeConfigurations);

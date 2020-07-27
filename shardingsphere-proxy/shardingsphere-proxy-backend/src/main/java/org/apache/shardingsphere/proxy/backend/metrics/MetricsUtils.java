@@ -43,9 +43,9 @@ public final class MetricsUtils {
                 Collection<RouteMapper> tableMappers = each.getTableMappers();
                 RouteMapper dataSourceMapper = each.getDataSourceMapper();
                 SingletonFacadeEngine.buildMetrics()
-                        .ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.SHARDING_DATASOURCE.getName(), dataSourceMapper.getActualName()));
+                        .ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.SHARDING_DATASOURCE.getName(), dataSourceMapper.getActualName()));
                 for (RouteMapper table : tableMappers) {
-                    SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.SHARDING_TABLE.getName(), table.getActualName()));
+                    SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.SHARDING_TABLE.getName(), table.getActualName()));
                 }
             }
         }
@@ -57,7 +57,7 @@ public final class MetricsUtils {
      * @param labelValue label value
      */
     public static void buriedTransactionMetric(final String labelValue) {
-        SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.TRANSACTION.getName(), labelValue));
+        SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.TRANSACTION.getName(), labelValue));
     }
     
     /**
@@ -69,7 +69,7 @@ public final class MetricsUtils {
     public static void buriedShardingRuleMetrics(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
         routeContext.getRouteResult().getActualDataSourceNames().forEach(dataSourceName -> rules.forEach(each -> {
             if (each instanceof ShadowRule && ((ShadowRule) each).getShadowMappings().containsValue(dataSourceName)) {
-                SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterInc(MetricsLabelEnum.SHADOW_HIT_TOTAL.getName()));
+                SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.SHADOW_HIT_TOTAL.getName()));
             }
         }));
     }

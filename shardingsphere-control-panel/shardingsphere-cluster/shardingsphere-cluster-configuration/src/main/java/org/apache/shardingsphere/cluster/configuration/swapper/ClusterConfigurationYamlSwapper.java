@@ -35,7 +35,7 @@ public final class ClusterConfigurationYamlSwapper implements YamlSwapper<YamlCl
         HeartbeatConfiguration heartbeat = clusterConfiguration.getHeartbeat();
         yamlHeartBeatConfiguration.setSql(heartbeat.getSql());
         yamlHeartBeatConfiguration.setInterval(heartbeat.getInterval());
-        yamlHeartBeatConfiguration.setRetryEnable(heartbeat.getRetryEnable());
+        yamlHeartBeatConfiguration.setRetryEnable(heartbeat.isRetryEnable());
         yamlHeartBeatConfiguration.setRetryMaximum(heartbeat.getRetryMaximum());
         yamlHeartBeatConfiguration.setRetryInterval(heartbeat.getRetryInterval());
         yamlHeartBeatConfiguration.setThreadCount(heartbeat.getThreadCount());
@@ -50,10 +50,10 @@ public final class ClusterConfigurationYamlSwapper implements YamlSwapper<YamlCl
         YamlHeartbeatConfiguration heartbeat = yamlConfiguration.getHeartbeat();
         heartBeatConfiguration.setSql(heartbeat.getSql());
         heartBeatConfiguration.setInterval(heartbeat.getInterval());
-        heartBeatConfiguration.setRetryEnable(heartbeat.getRetryEnable());
+        heartBeatConfiguration.setRetryEnable(heartbeat.isRetryEnable());
         heartBeatConfiguration.setRetryMaximum(heartbeat.getRetryMaximum());
         heartBeatConfiguration.setRetryInterval(heartbeat.getRetryInterval());
-        heartBeatConfiguration.setThreadCount(null == heartbeat.getThreadCount() ? Runtime.getRuntime().availableProcessors() << 1 : heartbeat.getThreadCount());
+        heartBeatConfiguration.setThreadCount(0 == heartbeat.getThreadCount() ? Runtime.getRuntime().availableProcessors() << 1 : heartbeat.getThreadCount());
         clusterConfiguration.setHeartbeat(heartBeatConfiguration);
         return clusterConfiguration;
     }

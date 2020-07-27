@@ -93,7 +93,7 @@ public class SimpleShadowDataSourceRouterTest {
         projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections().addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "true")));
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(schemaMetaData, "", Collections.emptyList(), selectStatement);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(schemaMetaData, Collections.emptyList(), selectStatement);
         SimpleShadowDataSourceRouter simpleShadowDataSourceRouter = new SimpleShadowDataSourceRouter(shadowRule, selectStatementContext);
         Assert.assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadowSQL());
         andPredicate.getPredicates().clear();
