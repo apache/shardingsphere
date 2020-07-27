@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -30,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.util.Collection;
 import java.util.List;
@@ -42,7 +43,7 @@ import java.util.Optional;
 public final class ShardingUpdateStatementValidator implements ShardingStatementValidator<UpdateStatement> {
     
     @Override
-    public void validate(final ShardingRule shardingRule, final UpdateStatement sqlStatement, final List<Object> parameters) {
+    public void validate(final ShardingRule shardingRule, final UpdateStatement sqlStatement, final TablesContext tablesContext, final List<Object> parameters) {
         String tableName = sqlStatement.getTables().iterator().next().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
             String shardingColumn = each.getColumn().getIdentifier().getValue();

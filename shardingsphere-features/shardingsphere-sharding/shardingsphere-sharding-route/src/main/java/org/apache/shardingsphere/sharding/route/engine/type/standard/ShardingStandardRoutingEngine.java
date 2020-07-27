@@ -68,7 +68,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     @Override
     public RouteResult route(final ShardingRule shardingRule) {
-        if (isDMLForModify(sqlStatementContext) && 1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
+        if (isDMLForModify(sqlStatementContext) && !containsInsertSelect(sqlStatementContext) && 1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
         return generateRouteResult(getDataNodes(shardingRule, shardingRule.getTableRule(logicTableName)));
@@ -76,6 +76,10 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private boolean isDMLForModify(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext || sqlStatementContext instanceof UpdateStatementContext || sqlStatementContext instanceof DeleteStatementContext;
+    }
+    
+    private boolean containsInsertSelect(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext();
     }
     
     private RouteResult generateRouteResult(final Collection<DataNode> routedDataNodes) {
