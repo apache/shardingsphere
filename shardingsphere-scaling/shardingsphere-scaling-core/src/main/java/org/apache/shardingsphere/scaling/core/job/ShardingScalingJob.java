@@ -48,5 +48,7 @@ public final class ShardingScalingJob {
     
     private final String jobName;
     
+    private final int shardingItem;
+    
     private String status = "RUNNING";
 }

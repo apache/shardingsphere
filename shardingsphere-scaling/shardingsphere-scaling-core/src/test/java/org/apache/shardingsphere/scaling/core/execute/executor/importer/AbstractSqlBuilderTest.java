@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
-import org.apache.shardingsphere.scaling.core.job.position.NopLogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.junit.Before;
@@ -89,7 +89,7 @@ public class AbstractSqlBuilderTest {
     }
     
     private DataRecord mockDataRecord(final String tableName) {
-        DataRecord result = new DataRecord(new NopLogPosition(), 4);
+        DataRecord result = new DataRecord(new NopPosition(), 4);
         result.setTableName(tableName);
         result.addColumn(new Column("id", "", false, true));
         result.addColumn(new Column("sc", "", false, false));

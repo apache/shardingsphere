@@ -23,15 +23,17 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.utils.RdbmsConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.scaling.core.job.position.NopLogPosition;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
@@ -80,12 +82,12 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     @Override
     public final void dump(final Channel channel) {
         try (Connection conn = dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()).getConnection()) {
-            String sql = String.format("SELECT * FROM %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
+            String sql = String.format("SELECT * FROM %s %s", rdbmsConfiguration.getTableName(), RdbmsConfigurationUtil.getWhereCondition(rdbmsConfiguration));
             PreparedStatement ps = createPreparedStatement(conn, sql);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
             while (isRunning() && rs.next()) {
-                DataRecord record = new DataRecord(new NopLogPosition(), metaData.getColumnCount());
+                DataRecord record = new DataRecord(newPrimaryKeyPosition(rs), metaData.getColumnCount());
                 record.setType("BOOTSTRAP-INSERT");
                 record.setTableName(rdbmsConfiguration.getTableNameMap().get(rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
@@ -93,13 +95,21 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
                 }
                 pushRecord(record);
             }
+            pushRecord(new FinishedRecord(new PrimaryKeyPosition.FinishedPosition()));
         } catch (SQLException e) {
             stop();
             channel.close();
             throw new SyncTaskExecuteException(e);
         } finally {
-            pushRecord(new FinishedRecord(new NopLogPosition()));
+            pushRecord(new FinishedRecord(new NopPosition()));
         }
+    }
+    
+    private PrimaryKeyPosition newPrimaryKeyPosition(final ResultSet rs) throws SQLException {
+        if (null == rdbmsConfiguration.getPrimaryKey()) {
+            return new PrimaryKeyPosition.PlaceholderPosition();
+        }
+        return new PrimaryKeyPosition(rs.getLong(rdbmsConfiguration.getPrimaryKey()), ((PrimaryKeyPosition) rdbmsConfiguration.getPositionManager().getCurrentPosition()).getEndValue());
     }
     
     /**

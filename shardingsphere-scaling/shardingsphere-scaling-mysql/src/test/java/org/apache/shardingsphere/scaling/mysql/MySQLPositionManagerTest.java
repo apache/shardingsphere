@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLLogPositionManagerTest {
+public final class MySQLPositionManagerTest {
     
     private static final String LOG_FILE_NAME = "binlog-000001";
     
@@ -60,8 +60,8 @@ public final class MySQLLogPositionManagerTest {
     
     @Test
     public void assertGetCurrentPosition() {
-        MySQLLogPositionManager mysqlLogManager = new MySQLLogPositionManager(dataSource);
-        BinlogPosition actual = mysqlLogManager.getCurrentPosition();
+        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(dataSource);
+        BinlogPosition actual = mysqlPositionManager.getCurrentPosition();
         assertThat(actual.getServerId(), is(SERVER_ID));
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));
@@ -69,10 +69,10 @@ public final class MySQLLogPositionManagerTest {
     
     @Test
     public void assertUpdateCurrentPosition() {
-        MySQLLogPositionManager mysqlLogManager = new MySQLLogPositionManager(dataSource);
+        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(dataSource);
         BinlogPosition expected = new BinlogPosition(LOG_FILE_NAME, LOG_POSITION, SERVER_ID);
-        mysqlLogManager.updateCurrentPosition(expected);
-        assertThat(mysqlLogManager.getCurrentPosition(), is(expected));
+        mysqlPositionManager.updateCurrentPosition(expected);
+        assertThat(mysqlPositionManager.getCurrentPosition(), is(expected));
     }
     
     private PreparedStatement mockPositionStatement() throws SQLException {

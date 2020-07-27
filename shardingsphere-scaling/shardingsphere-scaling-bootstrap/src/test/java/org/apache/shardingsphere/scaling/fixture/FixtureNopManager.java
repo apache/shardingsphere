@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.fixture;
 
-/**
- * Database itself data synchronize position manager.
- * Such as mysql binlog, postgreSQL wal.
- */
-public interface LogPositionManager<T extends LogPosition> {
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+
+import javax.sql.DataSource;
+
+@RequiredArgsConstructor
+public final class FixtureNopManager implements PositionManager<NopPosition> {
     
-    /**
-     * Get current log position.
-     *
-     * @return log position
-     */
-    T getCurrentPosition();
+    private final DataSource dataSource;
     
-    /**
-     * Update currentPosition.
-     *
-     * @param newLogPosition new log position.
-     */
-    void updateCurrentPosition(T newLogPosition);
+    @Override
+    public NopPosition getCurrentPosition() {
+        return new NopPosition();
+    }
+    
+    @Override
+    public void updateCurrentPosition(final NopPosition newPosition) {
+    }
 }

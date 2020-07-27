@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.annotations.Expose;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,16 +31,20 @@ import lombok.Setter;
 /**
  * Binlog Position.
  */
-@Getter
-@Setter
-@RequiredArgsConstructor
 @AllArgsConstructor
-public class BinlogPosition implements LogPosition<BinlogPosition> {
+@RequiredArgsConstructor
+@Setter
+@Getter
+public class BinlogPosition implements Position<BinlogPosition> {
     
     private static final long serialVersionUID = -4917415481787093677L;
     
+    private static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    
+    @Expose
     private final String filename;
     
+    @Expose
     private final long position;
     
     private long serverId;
@@ -53,5 +61,10 @@ public class BinlogPosition implements LogPosition<BinlogPosition> {
     
     private long toLong() {
         return Long.valueOf(filename.substring(filename.lastIndexOf(".") + 1)) << 32 | position;
+    }
+    
+    @Override
+    public JsonElement toJson() {
+        return GSON.toJsonTree(this);
     }
 }

@@ -62,12 +62,11 @@ public final class SyncConfigurationUtil {
         ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(scalingConfiguration.getRuleConfiguration().getSourceRule());
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDatasource.keySet());
         filterByShardingDataSourceTables(dataSourceTableNameMap, scalingConfiguration.getJobConfiguration());
-        for (String each : dataSourceTableNameMap.keySet()) {
-            RdbmsConfiguration dumperConfiguration = createDumperConfiguration(sourceDatasource.get(each));
+        for (Map.Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
+            RdbmsConfiguration dumperConfiguration = createDumperConfiguration(entry.getKey(), sourceDatasource.get(entry.getKey()));
             dumperConfiguration.setRetryTimes(scalingConfiguration.getJobConfiguration().getRetryTimes());
             RdbmsConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration, sourceRule);
-            Map<String, String> tableNameMap = dataSourceTableNameMap.get(each);
-            result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), tableNameMap, dumperConfiguration, importerConfiguration));
+            result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), entry.getValue(), dumperConfiguration, importerConfiguration));
         }
         return result;
     }
@@ -147,8 +146,9 @@ public final class SyncConfigurationUtil {
         }
     }
     
-    private static RdbmsConfiguration createDumperConfiguration(final DataSourceConfiguration dataSourceConfiguration) {
+    private static RdbmsConfiguration createDumperConfiguration(final String dataSourceName, final DataSourceConfiguration dataSourceConfiguration) {
         RdbmsConfiguration result = new RdbmsConfiguration();
+        result.setDataSourceName(dataSourceName);
         Map<String, Object> dataSourceProperties = dataSourceConfiguration.getProps();
         JDBCDataSourceConfiguration dumperDataSourceConfiguration = new JDBCDataSourceConfiguration(
                 dataSourceProperties.containsKey("jdbcUrl") ? dataSourceProperties.get("jdbcUrl").toString() : dataSourceProperties.get("url").toString(),
@@ -189,5 +189,4 @@ public final class SyncConfigurationUtil {
         }
         return Collections.EMPTY_SET;
     }
-    
 }

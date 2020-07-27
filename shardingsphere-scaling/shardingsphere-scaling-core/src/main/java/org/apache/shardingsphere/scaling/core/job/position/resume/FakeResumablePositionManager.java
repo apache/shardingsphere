@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.core.job.position.resume;
+
+import lombok.NoArgsConstructor;
 
 /**
- * Nop log position.
+ * Fake resumable position manager as defalut.
  */
-public final class NopLogPosition implements LogPosition<NopLogPosition> {
+@NoArgsConstructor
+public final class FakeResumablePositionManager extends AbstractResumablePositionManager implements ResumablePositionManager {
     
-    private static final long serialVersionUID = 1946907178847169020L;
-    
-    @Override
-    public int compareTo(final NopLogPosition nopLogPosition) {
-        return 0;
+    public FakeResumablePositionManager(final String databaseType, final String taskPath) {
+        setDatabaseType(databaseType);
+        setTaskPath(taskPath);
     }
 }

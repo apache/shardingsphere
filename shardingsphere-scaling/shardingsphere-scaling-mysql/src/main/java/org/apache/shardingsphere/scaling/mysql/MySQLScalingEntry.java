@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.mysql;
 
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
-import org.apache.shardingsphere.scaling.core.job.position.LogPositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
@@ -40,8 +40,8 @@ public final class MySQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends LogPositionManager> getLogPositionManager() {
-        return MySQLLogPositionManager.class;
+    public Class<? extends PositionManager> getPositionManager() {
+        return MySQLPositionManager.class;
     }
     
     @Override

@@ -15,12 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.core.config;
 
-import java.io.Serializable;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Log position interface.
+ * Resume configuration.
  */
-public interface LogPosition<T> extends Comparable<T>, Serializable {
+@Getter
+@Setter
+public final class ResumeConfiguration {
+    
+    private String serverLists;
+    
+    private String namespace;
 }

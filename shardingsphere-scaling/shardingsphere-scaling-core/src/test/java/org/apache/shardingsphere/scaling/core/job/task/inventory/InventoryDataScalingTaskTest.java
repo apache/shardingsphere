@@ -25,6 +25,8 @@ import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
+import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPositionManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -94,6 +96,7 @@ public final class InventoryDataScalingTaskTest {
         RdbmsConfiguration result = new RdbmsConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);
         result.setTableName("t_order");
+        result.setPositionManager(new PrimaryKeyPositionManager(new PrimaryKeyPosition(1, 100)));
         return result;
     }
     

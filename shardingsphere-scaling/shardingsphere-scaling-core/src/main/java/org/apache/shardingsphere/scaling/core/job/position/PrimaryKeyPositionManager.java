@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.execute.executor.record;
+package org.apache.shardingsphere.scaling.core.job.position;
 
-import org.apache.shardingsphere.scaling.core.job.position.Position;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
 
 /**
- * Record interface.
+ * Primary key position manager.
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public abstract class Record {
+@AllArgsConstructor
+public final class PrimaryKeyPositionManager implements PositionManager<PrimaryKeyPosition> {
     
-    private final Position position;
-        
-    private long commitTime;
+    private PrimaryKeyPosition position;
+    
+    @Override
+    public PrimaryKeyPosition getCurrentPosition() {
+        return position;
+    }
+    
+    @Override
+    public void updateCurrentPosition(final PrimaryKeyPosition newPosition) {
+        position = newPosition;
+    }
 }

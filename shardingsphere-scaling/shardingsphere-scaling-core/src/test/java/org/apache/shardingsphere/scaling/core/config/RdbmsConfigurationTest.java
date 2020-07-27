@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
+import org.apache.shardingsphere.scaling.core.config.utils.RdbmsConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPositionManager;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -38,8 +41,9 @@ public final class RdbmsConfigurationTest {
     @Test
     public void assertGetWhereCondition() {
         RdbmsConfiguration rdbmsConfiguration = new RdbmsConfiguration();
-        assertThat(rdbmsConfiguration.getWhereCondition(), is(""));
-        rdbmsConfiguration.setWhereCondition("WHERE 1=1");
-        assertThat(rdbmsConfiguration.getWhereCondition(), is("WHERE 1=1"));
+        assertThat(RdbmsConfigurationUtil.getWhereCondition(rdbmsConfiguration), is(""));
+        rdbmsConfiguration.setPrimaryKey("id");
+        rdbmsConfiguration.setPositionManager(new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 10)));
+        assertThat(RdbmsConfigurationUtil.getWhereCondition(rdbmsConfiguration), is("WHERE id BETWEEN 0 AND 10"));
     }
 }
