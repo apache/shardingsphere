@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.mysql;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
