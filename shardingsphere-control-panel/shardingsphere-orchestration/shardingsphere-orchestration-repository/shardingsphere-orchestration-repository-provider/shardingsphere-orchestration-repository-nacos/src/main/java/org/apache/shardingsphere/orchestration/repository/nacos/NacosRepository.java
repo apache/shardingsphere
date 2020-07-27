@@ -163,6 +163,6 @@ public final class NacosRepository implements ConfigurationRepository {
      */
     @Override
     public String getType() {
-        return "nacos";
+        return "Nacos";
     }
 }

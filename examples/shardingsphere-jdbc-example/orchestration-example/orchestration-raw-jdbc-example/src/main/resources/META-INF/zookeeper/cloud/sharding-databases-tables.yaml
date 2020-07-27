@@ -18,6 +18,6 @@
 orchestration:
   namespace: demo_yaml_ds_sharding
   registryCenter:
-    type: zookeeper
+    type: ZooKeeper
     serverLists: localhost:2181
   overwrite: false

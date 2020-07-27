@@ -30,7 +30,7 @@ public final class OrchestrationRepositoryConfigurationYamlSwapperTest {
     
     @Test
     public void assertToYamlConfiguration() {
-        OrchestrationCenterConfiguration config = new OrchestrationCenterConfiguration("zookeeper", "127.0.0.1:2181,127.0.0.1:2182", new Properties());
+        OrchestrationCenterConfiguration config = new OrchestrationCenterConfiguration("ZooKeeper", "127.0.0.1:2181,127.0.0.1:2182", new Properties());
         YamlOrchestrationCenterConfiguration yamlConfiguration = new OrchestrationCenterConfigurationYamlSwapper().swapToYamlConfiguration(config);
         assertThat(yamlConfiguration.getType(), is(config.getType()));
         assertThat(yamlConfiguration.getServerLists(), is(config.getServerLists()));
@@ -39,16 +39,16 @@ public final class OrchestrationRepositoryConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObject() {
-        YamlOrchestrationCenterConfiguration yamlConfiguration = getYamlInstanceConfiguration();
+        YamlOrchestrationCenterConfiguration yamlConfiguration = getYamlOrchestrationCenterConfiguration();
         OrchestrationCenterConfiguration orchestrationCenterConfig = new OrchestrationCenterConfigurationYamlSwapper().swapToObject(yamlConfiguration);
         assertThat(orchestrationCenterConfig.getType(), is(yamlConfiguration.getType()));
         assertThat(orchestrationCenterConfig.getServerLists(), is(yamlConfiguration.getServerLists()));
         assertThat(orchestrationCenterConfig.getProps(), is(yamlConfiguration.getProps()));
     }
     
-    private YamlOrchestrationCenterConfiguration getYamlInstanceConfiguration() {
+    private YamlOrchestrationCenterConfiguration getYamlOrchestrationCenterConfiguration() {
         YamlOrchestrationCenterConfiguration result = new YamlOrchestrationCenterConfiguration();
-        result.setType("zookeeper");
+        result.setType("ZooKeeper");
         result.setProps(new Properties());
         result.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
         return result;

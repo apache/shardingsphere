@@ -83,13 +83,12 @@ props:
 orchestration:
   namespace: demo_zookeeper_yaml_ds_sharding
   registryCenter:
-    type: zookeeper
+    type: ZooKeeper
     serverLists: localhost:2181
-    namespace:
   additionalConfigCenter:
-    type: nacos
+    type: Nacos
     serverLists: localhost:8848
-    namespace:
+    props:
       group: SHARDING_SPHERE_DEFAULT_GROUP
       timeout: 3000
   overwrite: true

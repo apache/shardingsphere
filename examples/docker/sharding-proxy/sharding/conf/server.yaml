@@ -24,7 +24,7 @@
 #orchestration:
 #  namespace: orchestration_ds
 #  registryCenter:
-#    type: zookeeper
+#    type: ZooKeeper
 #    serverLists: localhost:2181
 #  overwrite: false
 

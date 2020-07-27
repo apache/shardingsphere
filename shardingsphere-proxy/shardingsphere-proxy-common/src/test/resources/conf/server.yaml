@@ -18,7 +18,7 @@
 orchestration:
   namespace: test_name_1
   registryCenter:
-    type: zookeeper
+    type: ZooKeeper
     serverLists: localhost:2181
   overwrite: false
 
