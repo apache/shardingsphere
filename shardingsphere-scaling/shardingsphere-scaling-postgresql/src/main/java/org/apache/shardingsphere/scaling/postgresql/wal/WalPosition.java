@@ -15,56 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.mysql;
+package org.apache.shardingsphere.scaling.postgresql.wal;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.annotations.Expose;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.postgresql.replication.LogSequenceNumber;
 
 /**
- * Binlog Position.
+ * PostgreSQL wal position.
  */
-@AllArgsConstructor
 @RequiredArgsConstructor
-@Setter
 @Getter
-public class BinlogPosition implements Position<BinlogPosition> {
+public class WalPosition implements Position<WalPosition> {
     
-    private static final long serialVersionUID = -4917415481787093677L;
+    private static final long serialVersionUID = -3498484556749679001L;
     
-    private static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    private static final Gson GSON = new Gson();
     
-    @Expose
-    private final String filename;
-    
-    @Expose
-    private final long position;
-    
-    private long serverId;
+    private final LogSequenceNumber logSequenceNumber;
     
     @Override
-    public final int compareTo(final BinlogPosition binlogPosition) {
-        if (null == binlogPosition) {
+    public final int compareTo(final WalPosition walPosition) {
+        if (null == walPosition) {
             return 1;
         }
-        long o1 = toLong();
-        long o2 = binlogPosition.toLong();
+        long o1 = logSequenceNumber.asLong();
+        long o2 = walPosition.getLogSequenceNumber().asLong();
         return Long.compare(o1, o2);
-    }
-    
-    private long toLong() {
-        return Long.parseLong(filename.substring(filename.lastIndexOf(".") + 1)) << 32 | position;
     }
     
     @Override
     public JsonElement toJson() {
-        return GSON.toJsonTree(this);
+        return GSON.toJsonTree(logSequenceNumber.asLong());
     }
 }

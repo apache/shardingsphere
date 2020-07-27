@@ -29,6 +29,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalEventConverter;
+import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.TestDecodingPlugin;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
