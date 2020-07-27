@@ -6,11 +6,11 @@ chapter = true
 
 Welcome to pick up some of video selections to watch. Moreover look forward to your contribution!
 
-1. [Getting started with Apache ShardingSphere](/en/videos/OpenSource/)
+1. [Getting started with Apache ShardingSphere](/en/videos/opensource/)
 
 2. [How to develop ShardingSphere community with Apache way](/en/videos/build/)  
 
-3. [Exploring Apache ShardingSphere with the perspective of new SQL](/en/videos/new_SQL/)
+3. [Exploring Apache ShardingSphere with the perspective of new SQL](/en/videos/new_sql/)
 
 4. [Apache ShardingSphere architecture evolution driven by open source](/en/videos/evolution/)  
 
