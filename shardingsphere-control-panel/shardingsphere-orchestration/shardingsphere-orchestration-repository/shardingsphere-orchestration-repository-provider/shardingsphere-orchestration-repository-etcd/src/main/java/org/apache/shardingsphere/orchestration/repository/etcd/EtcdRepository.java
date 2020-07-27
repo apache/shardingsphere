@@ -33,7 +33,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 
@@ -56,7 +56,7 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     private EtcdProperties etcdProperties;
 
     @Override
-    public void init(final OrchestrationRepositoryConfiguration config) { 
+    public void init(final OrchestrationCenterConfiguration config) { 
         this.etcdProperties = new EtcdProperties(props);
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).build();
     }

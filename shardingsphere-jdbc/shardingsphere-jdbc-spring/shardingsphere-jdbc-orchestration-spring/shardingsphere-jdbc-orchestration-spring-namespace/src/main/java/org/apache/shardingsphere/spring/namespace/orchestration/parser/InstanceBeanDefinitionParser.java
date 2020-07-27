@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.namespace.orchestration.parser;
 
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.spring.namespace.orchestration.constants.InstanceBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -35,7 +35,7 @@ public final class InstanceBeanDefinitionParser extends AbstractBeanDefinitionPa
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationRepositoryConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationCenterConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionTag.TYPE_TAG));
         factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionTag.SERVER_LISTS_TAG));
         factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionTag.NAMESPACE_TAG));

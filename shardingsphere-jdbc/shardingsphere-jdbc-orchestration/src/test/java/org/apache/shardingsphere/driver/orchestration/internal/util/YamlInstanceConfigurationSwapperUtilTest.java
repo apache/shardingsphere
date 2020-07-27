@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.orchestration.internal.util;
 
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.junit.Test;
@@ -36,11 +36,11 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
         yamlConfiguration.setName("test");
         yamlConfiguration.setRegistryRepositoryConfiguration(yamlOrchestrationRepositoryConfiguration);
         OrchestrationConfiguration orchestrationConfiguration = YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(yamlConfiguration);
-        OrchestrationRepositoryConfiguration configuration = orchestrationConfiguration.getRegistryRepositoryConfiguration();
-        assertEquals(configuration.getType(), yamlOrchestrationRepositoryConfiguration.getType());
-        assertEquals(configuration.getNamespace(), yamlOrchestrationRepositoryConfiguration.getNamespace());
-        assertEquals(configuration.getServerLists(), yamlOrchestrationRepositoryConfiguration.getServerLists());
-        assertEquals(configuration.getProps(), yamlOrchestrationRepositoryConfiguration.getProps());
+        OrchestrationCenterConfiguration config = orchestrationConfiguration.getRegistryRepositoryConfiguration();
+        assertEquals(config.getType(), yamlOrchestrationRepositoryConfiguration.getType());
+        assertEquals(config.getNamespace(), yamlOrchestrationRepositoryConfiguration.getNamespace());
+        assertEquals(config.getServerLists(), yamlOrchestrationRepositoryConfiguration.getServerLists());
+        assertEquals(config.getProps(), yamlOrchestrationRepositoryConfiguration.getProps());
     }
     
     private YamlOrchestrationRepositoryConfiguration getYamlOrchestrationRepositoryConfiguration() {

@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +34,7 @@ public final class TestConfigurationRepository implements ConfigurationRepositor
     private Properties props = new Properties();
     
     @Override
-    public void init(final OrchestrationRepositoryConfiguration config) {
+    public void init(final OrchestrationCenterConfiguration config) {
     }
     
     @Override

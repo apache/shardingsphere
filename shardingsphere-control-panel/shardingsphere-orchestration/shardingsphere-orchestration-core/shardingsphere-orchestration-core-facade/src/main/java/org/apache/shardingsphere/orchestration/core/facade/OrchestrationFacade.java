@@ -36,7 +36,7 @@ import org.apache.shardingsphere.orchestration.core.registry.RegistryCenter;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
@@ -89,17 +89,17 @@ public final class OrchestrationFacade implements AutoCloseable {
     }
     
     private void initConfigCenter(final OrchestrationConfiguration orchestrationConfig) {
-        OrchestrationRepositoryConfiguration configRepositoryConfiguration
+        OrchestrationCenterConfiguration orchestrationCenterConfig
                 = orchestrationConfig.getAdditionalConfigurationRepositoryConfiguration().orElse(orchestrationConfig.getRegistryRepositoryConfiguration());
-        Preconditions.checkNotNull(configRepositoryConfiguration, "Config center configuration cannot be null.");
-        configurationRepository = TypedSPIRegistry.getRegisteredService(ConfigurationRepository.class, configRepositoryConfiguration.getType(), configRepositoryConfiguration.getProps());
-        configurationRepository.init(configRepositoryConfiguration);
-        isOverwrite = new OrchestrationProperties(configRepositoryConfiguration.getProps()).getValue(OrchestrationPropertyKey.OVERWRITE);
+        Preconditions.checkNotNull(orchestrationCenterConfig, "Config center configuration cannot be null.");
+        configurationRepository = TypedSPIRegistry.getRegisteredService(ConfigurationRepository.class, orchestrationCenterConfig.getType(), orchestrationCenterConfig.getProps());
+        configurationRepository.init(orchestrationCenterConfig);
+        isOverwrite = new OrchestrationProperties(orchestrationCenterConfig.getProps()).getValue(OrchestrationPropertyKey.OVERWRITE);
         configCenter = new ConfigCenter(name, configurationRepository);
     }
     
     private void initRegistryCenter(final OrchestrationConfiguration orchestrationConfig) {
-        OrchestrationRepositoryConfiguration regRepositoryConfiguration = orchestrationConfig.getRegistryRepositoryConfiguration();
+        OrchestrationCenterConfiguration regRepositoryConfiguration = orchestrationConfig.getRegistryRepositoryConfiguration();
         Preconditions.checkNotNull(regRepositoryConfiguration, "Registry center configuration cannot be null.");
         registryRepository = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, regRepositoryConfiguration.getType(), regRepositoryConfiguration.getProps());
         registryRepository.init(regRepositoryConfiguration);

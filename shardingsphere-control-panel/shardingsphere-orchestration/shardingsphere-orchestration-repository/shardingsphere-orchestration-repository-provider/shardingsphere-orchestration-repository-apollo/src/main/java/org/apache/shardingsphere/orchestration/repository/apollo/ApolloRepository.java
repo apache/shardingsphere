@@ -30,7 +30,7 @@ import org.apache.shardingsphere.orchestration.repository.apollo.wrapper.ApolloO
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.repository.api.util.ConfigKeyUtils;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public final class ApolloRepository implements ConfigurationRepository {
     private Properties props = new Properties();
     
     @Override
-    public void init(final OrchestrationRepositoryConfiguration config) {
+    public void init(final OrchestrationCenterConfiguration config) {
         ApolloProperties apolloProperties = new ApolloProperties(props);
         configWrapper = new ApolloConfigWrapper(config, apolloProperties);
         openApiWrapper = new ApolloOpenApiWrapper(config, apolloProperties);

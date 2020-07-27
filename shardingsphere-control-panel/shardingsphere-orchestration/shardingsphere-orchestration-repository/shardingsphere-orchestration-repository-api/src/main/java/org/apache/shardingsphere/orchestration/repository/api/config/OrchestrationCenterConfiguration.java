@@ -26,13 +26,13 @@ import java.util.Properties;
  * Orchestration repository configuration.
  */
 @Getter
-public final class OrchestrationRepositoryConfiguration extends TypedSPIConfiguration {
+public final class OrchestrationCenterConfiguration extends TypedSPIConfiguration {
     
     private final String serverLists;
     
     private final String namespace;
     
-    public OrchestrationRepositoryConfiguration(final String type, final String serverLists, final String namespace, final Properties props) {
+    public OrchestrationCenterConfiguration(final String type, final String serverLists, final String namespace, final Properties props) {
         super(type, props);
         this.serverLists = serverLists;
         this.namespace = namespace;

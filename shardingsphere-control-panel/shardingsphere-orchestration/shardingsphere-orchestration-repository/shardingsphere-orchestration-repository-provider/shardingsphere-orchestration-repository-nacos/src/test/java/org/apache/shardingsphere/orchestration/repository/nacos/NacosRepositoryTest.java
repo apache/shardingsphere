@@ -24,7 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.AdditionalAnswers;
@@ -60,8 +60,8 @@ public final class NacosRepositoryTest {
         Properties props = new Properties();
         props.setProperty("group", group);
         props.setProperty("timeout", "3000");
-        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration(REPOSITORY.getType(), "127.0.0.1:8848", "", props);
-        REPOSITORY.init(configuration);
+        OrchestrationCenterConfiguration config = new OrchestrationCenterConfiguration(REPOSITORY.getType(), "127.0.0.1:8848", "", props);
+        REPOSITORY.init(config);
         setConfigService(configService);
     }
     

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.repository.common.configuration.swapper;
 
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.junit.Test;
@@ -43,7 +43,7 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
-        return new OrchestrationConfiguration(LOGIC_SCHEMA, new OrchestrationRepositoryConfiguration("zookeeper", "127.0.0.1:2181,127.0.0.1:2182", "orchestration", new Properties()));
+        return new OrchestrationConfiguration(LOGIC_SCHEMA, new OrchestrationCenterConfiguration("zookeeper", "127.0.0.1:2181,127.0.0.1:2182", "orchestration", new Properties()));
     }
     
     @Test
