@@ -392,4 +392,156 @@
         <input sql="REPLACE INTO t_account SET amount = 1000, status = 'OK'" />
         <output sql="REPLACE INTO t_account_1 SET amount = 1000, status = 'OK', account_id = 1" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_all_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE account_id = ?" parameters="100" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_all_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_1 WHERE amount = ?" parameters="1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_all_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE account_id = 100" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_all_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_1 WHERE amount = 1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_without_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE account_id = ?" parameters="100" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_without_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_1 SELECT account_id, amount, status FROM t_account_1 WHERE amount = ?" parameters="1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_without_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE account_id = 100" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_without_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_1 SELECT account_id, amount, status FROM t_account_1 WHERE amount = 1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_with_all_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail WHERE account_id = ?" parameters="100" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_0 WHERE account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_with_all_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_0 WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_1 WHERE amount = ?" parameters="1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_with_all_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail WHERE account_id = 100" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_0 WHERE account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_with_all_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_0 WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_1 WHERE amount = 1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_without_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account_detail WHERE account_id = ?" parameters="100" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_detail_0 WHERE account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_without_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account_detail WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_detail_0 WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_1 SELECT account_id, amount, status FROM t_account_detail_1 WHERE amount = ?" parameters="1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_without_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account_detail WHERE account_id = 100" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_detail_0 WHERE account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_without_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account_detail WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_detail_0 WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_1 SELECT account_id, amount, status FROM t_account_detail_1 WHERE amount = 1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_subquery_with_all_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account WHERE account_id = ?) t WHERE t.account_id = ?" parameters="100, 100" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ?) t WHERE t.account_id = ?" parameters="100, 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_subquery_with_all_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account WHERE account_id = 100) t WHERE t.account_id = 100" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100) t WHERE t.account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_subquery_without_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account WHERE account_id = ?) t WHERE t.account_id = ?" parameters="100, 100" />
+        <output sql="REPLACE INTO t_account_0 SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ?) t WHERE t.account_id = ?" parameters="100, 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_subquery_without_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account WHERE account_id = 100) t WHERE t.account_id = 100" />
+        <output sql="REPLACE INTO t_account_0 SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100) t WHERE t.account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_with_all_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE account_id = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ? LIMIT ?, ?" parameters="100, 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_with_all_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="REPLACE INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_1 WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_with_all_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE account_id = 100 LIMIT 1, 2" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100 LIMIT 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_with_all_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE amount = 100 LIMIT 1, 2" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE amount = 100 LIMIT 1, 2" />
+        <output sql="REPLACE INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_1 WHERE amount = 100 LIMIT 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_without_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE account_id = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ? LIMIT ?, ?" parameters="100, 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_without_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="REPLACE INTO t_account_1 SELECT account_id, amount, status FROM t_account_1 WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_without_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE account_id = 100 LIMIT 1, 2" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100 LIMIT 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_without_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE amount = 100 LIMIT 1, 2" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE amount = 100 LIMIT 1, 2" />
+        <output sql="REPLACE INTO t_account_1 SELECT account_id, amount, status FROM t_account_1 WHERE amount = 100 LIMIT 1, 2" />
+    </rewrite-assertion>
 </rewrite-assertions>
