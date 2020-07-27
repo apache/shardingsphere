@@ -1,5 +1,5 @@
 +++
-title = "View of Apache ShardingSphere from the perspective of New SQL"
+title = "Exploring Apache ShardingSphere with the perspective of new SQL"
 weight = 3
 chapter = true
 +++
