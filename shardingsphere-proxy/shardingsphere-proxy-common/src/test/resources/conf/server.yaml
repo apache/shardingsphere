@@ -16,11 +16,10 @@
 #
 
 orchestration:
-  name: test_name_1
+  namespace: test_name_1
   registryCenter:
     type: zookeeper
     serverLists: localhost:2181
-    namespace: test_namespace_1
   overwrite: false
 
 authentication:

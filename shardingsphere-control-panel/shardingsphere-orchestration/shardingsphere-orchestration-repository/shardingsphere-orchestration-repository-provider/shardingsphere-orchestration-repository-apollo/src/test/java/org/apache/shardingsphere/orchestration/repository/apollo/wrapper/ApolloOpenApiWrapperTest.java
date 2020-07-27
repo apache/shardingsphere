@@ -21,10 +21,9 @@ import com.ctrip.framework.apollo.openapi.client.ApolloOpenApiClient;
 import com.ctrip.framework.apollo.openapi.dto.NamespaceReleaseDTO;
 import com.ctrip.framework.apollo.openapi.dto.OpenItemDTO;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.util.ConfigKeyUtils;
 import org.apache.shardingsphere.orchestration.repository.apollo.ApolloProperties;
 import org.apache.shardingsphere.orchestration.repository.apollo.ApolloPropertyKey;
-import org.apache.shardingsphere.orchestration.repository.api.util.ConfigKeyUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,12 +33,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Properties;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.junit.Assert.assertNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ApolloOpenApiWrapperTest {
@@ -64,7 +63,7 @@ public final class ApolloOpenApiWrapperTest {
         Properties props = new Properties();
         props.setProperty(ApolloPropertyKey.PORTAL_URL.getKey(), PORTAL_URL);
         props.setProperty(ApolloPropertyKey.TOKEN.getKey(), TOKEN);
-        apolloOpenApiWrapper = new ApolloOpenApiWrapper(new OrchestrationCenterConfiguration("apollo", "127.0.0.1", null, new Properties()), new ApolloProperties(props));
+        apolloOpenApiWrapper = new ApolloOpenApiWrapper("apollo_namespace", new ApolloProperties(props));
         FieldSetter.setField(apolloOpenApiWrapper, ApolloOpenApiWrapper.class.getDeclaredField("client"), client);
         FieldSetter.setField(apolloOpenApiWrapper, ApolloOpenApiWrapper.class.getDeclaredField("namespace"), NAME_SPACE);
         FieldSetter.setField(apolloOpenApiWrapper, ApolloOpenApiWrapper.class.getDeclaredField("appId"), ApolloPropertyKey.APP_ID.getDefaultValue());

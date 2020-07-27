@@ -16,7 +16,7 @@
 #
 
 orchestration:
-  name: demo_zookeeper_yaml_ds_ms
+  namespace: demo_zookeeper_yaml_ds_ms
   registryCenter:
     type: zookeeper
     serverLists: localhost:2181

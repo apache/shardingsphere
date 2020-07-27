@@ -22,11 +22,10 @@
 ######################################################################################################
 
 #orchestration:
-#  name: orchestration_ds
+#  namespace: orchestration_ds
 #  registryCenter:
 #    type: zookeeper
 #    serverLists: localhost:2181
-#    namespace: orchestration
 #  overwrite: false
 
 authentication:

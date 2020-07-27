@@ -46,11 +46,10 @@ rules:
         - db_slave_1
 
 orchestration:
-  name: test_ms_registry_name
+  namespace: test_ms_registry_name
   registryCenter:
     type: REG_TEST
     serverLists: localhost:3181
-    namespace: test_ms_registry
     props:
       retryIntervalMilliseconds: 10
       timeToLiveSeconds: 10
@@ -59,7 +58,6 @@ orchestration:
   additionalConfigCenter:
     type: CONFIG_TEST
     serverLists: localhost:3181
-    namespace: test_ms_config
     props:
       retryIntervalMilliseconds: 10
       timeToLiveSeconds: 10

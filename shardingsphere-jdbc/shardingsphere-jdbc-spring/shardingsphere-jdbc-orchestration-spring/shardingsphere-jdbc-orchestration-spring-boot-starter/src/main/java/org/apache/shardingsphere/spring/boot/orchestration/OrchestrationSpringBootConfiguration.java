@@ -25,7 +25,7 @@ import org.apache.shardingsphere.driver.orchestration.internal.datasource.Orches
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.swapper.OrchestrationRepositoryConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.swapper.OrchestrationCenterConfigurationYamlSwapper;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.orchestration.common.OrchestrationSpringBootRootConfiguration;
 import org.apache.shardingsphere.spring.boot.orchestration.rule.LocalRulesCondition;
@@ -68,7 +68,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final OrchestrationSpringBootRootConfiguration root;
     
-    private final OrchestrationRepositoryConfigurationYamlSwapper swapper = new OrchestrationRepositoryConfigurationYamlSwapper();
+    private final OrchestrationCenterConfigurationYamlSwapper swapper = new OrchestrationCenterConfigurationYamlSwapper();
     
     /**
      * Get orchestration configuration.

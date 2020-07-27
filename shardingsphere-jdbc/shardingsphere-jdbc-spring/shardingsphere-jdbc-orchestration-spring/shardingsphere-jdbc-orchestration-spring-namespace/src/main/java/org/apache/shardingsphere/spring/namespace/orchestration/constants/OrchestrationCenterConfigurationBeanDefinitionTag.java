@@ -32,7 +32,5 @@ public final class OrchestrationCenterConfigurationBeanDefinitionTag {
     
     public static final String SERVER_LISTS_ATTRIBUTE = "server-lists";
     
-    public static final String NAMESPACE_ATTRIBUTE = "namespace";
-    
     public static final String PROP_TAG = "props";
 }

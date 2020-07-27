@@ -81,7 +81,7 @@ props:
   sql.show: true
 
 orchestration:
-  name: demo_zookeeper_yaml_ds_sharding
+  namespace: demo_zookeeper_yaml_ds_sharding
   registryCenter:
     type: zookeeper
     serverLists: localhost:2181
