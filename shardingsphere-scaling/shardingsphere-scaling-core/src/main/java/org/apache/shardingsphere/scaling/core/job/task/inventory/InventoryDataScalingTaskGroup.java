@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
-import org.apache.shardingsphere.scaling.core.job.SyncProgress;
-import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
-import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
+import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.Collection;
 
@@ -29,6 +29,7 @@ import java.util.Collection;
  * Inventory data sync task group.
  */
 @Slf4j
+@Getter
 public final class InventoryDataScalingTaskGroup extends AbstractShardingScalingExecutor implements ScalingTask {
     
     private final Collection<ScalingTask> scalingTasks;

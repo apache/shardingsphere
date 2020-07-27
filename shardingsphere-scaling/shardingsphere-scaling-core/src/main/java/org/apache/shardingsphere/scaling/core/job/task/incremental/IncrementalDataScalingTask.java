@@ -20,20 +20,18 @@ package org.apache.shardingsphere.scaling.core.job.task.incremental;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.job.SyncProgress;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.DistributionChannel;
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.DumperFactory;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.ImporterFactory;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
+import org.apache.shardingsphere.scaling.core.job.SyncProgress;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,34 +49,29 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     
     private final DataSourceManager dataSourceManager;
     
-    private final String syncTaskId;
-    
-    private LogPosition logPosition;
-    
     private Dumper dumper;
     
     private long delayMillisecond;
     
-    public IncrementalDataScalingTask(final SyncConfiguration syncConfiguration, final LogPosition logPosition) {
+    public IncrementalDataScalingTask(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = new DataSourceManager();
-        this.logPosition = logPosition;
-        DataSourceMetaData dataSourceMetaData = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
-        syncTaskId = String.format("incremental-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
+        setTaskId(syncConfiguration.getDumperConfiguration().getDataSourceName());
+        setPositionManager(syncConfiguration.getDumperConfiguration().getPositionManager());
     }
     
     @Override
     public void start() {
         syncConfiguration.getDumperConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
-        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), logPosition);
+        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), getPositionManager().getCurrentPosition());
         Collection<Importer> importers = instanceImporters();
         instanceChannel(importers);
         Future future = ScalingContext.getInstance().getTaskExecuteEngine().submitAll(importers, new ExecuteCallback() {
-        
+            
             @Override
             public void onSuccess() {
             }
-        
+            
             @Override
             public void onFailure(final Throwable throwable) {
                 log.error("get an error when migrating the increment data", throwable);
@@ -101,7 +94,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     private void instanceChannel(final Collection<Importer> importers) {
         DistributionChannel channel = new DistributionChannel(importers.size(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
-            logPosition = lastHandledRecord.getLogPosition();
+            getPositionManager().updateCurrentPosition(lastHandledRecord.getPosition());
             delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();
         });
         dumper.setChannel(channel);
@@ -115,7 +108,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
             future.get();
         } catch (InterruptedException ignored) {
         } catch (ExecutionException e) {
-            throw new SyncTaskExecuteException(String.format("Task %s execute failed ", syncTaskId), e.getCause());
+            throw new SyncTaskExecuteException(String.format("Task %s execute failed ", getTaskId()), e.getCause());
         }
     }
     
@@ -129,6 +122,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     
     @Override
     public SyncProgress getProgress() {
-        return new IncrementalDataSyncTaskProgress(syncTaskId, delayMillisecond, logPosition);
+        return new IncrementalDataSyncTaskProgress(getTaskId(), delayMillisecond, getPositionManager().getCurrentPosition());
     }
+    
 }

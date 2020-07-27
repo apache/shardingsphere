@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.execute.executor.record;
+package org.apache.shardingsphere.scaling.core.job.position;
 
-import org.apache.shardingsphere.scaling.core.job.position.Position;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import com.google.gson.JsonElement;
+
+import java.io.Serializable;
 
 /**
- * Record interface.
+ * Position interface.
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public abstract class Record {
+public interface Position<T> extends Comparable<T>, Serializable {
     
-    private final Position position;
-        
-    private long commitTime;
+    /**
+     * To json element.
+     * @return json element
+     */
+    JsonElement toJson();
 }

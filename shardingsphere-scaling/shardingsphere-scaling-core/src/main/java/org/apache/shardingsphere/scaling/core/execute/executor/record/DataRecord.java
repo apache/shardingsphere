@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.record;
 
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -43,8 +43,8 @@ public final class DataRecord extends Record {
     
     private String tableName;
     
-    public DataRecord(final LogPosition logPosition, final int columnCount) {
-        super(logPosition);
+    public DataRecord(final Position position, final int columnCount) {
+        super(position);
         columns = new ArrayList<>(columnCount);
     }
     

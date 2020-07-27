@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.position.LogPositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.util.PSQLException;
 
@@ -29,10 +28,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * PostgreSQL log position manager.
+ * PostgreSQL position manager.
  */
-@RequiredArgsConstructor
-public final class PostgreSQLLogPositionManager implements LogPositionManager<WalPosition> {
+public final class PostgreSQLPositionManager implements PositionManager<WalPosition> {
     
     public static final String SLOT_NAME = "sharding_scaling";
     
@@ -40,9 +38,17 @@ public final class PostgreSQLLogPositionManager implements LogPositionManager<Wa
     
     public static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
     
-    private final DataSource dataSource;
+    private DataSource dataSource;
     
     private WalPosition currentPosition;
+    
+    public PostgreSQLPositionManager(final DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
+    public PostgreSQLPositionManager(final String position) {
+        this.currentPosition = new WalPosition(LogSequenceNumber.valueOf(position));
+    }
     
     @Override
     public WalPosition getCurrentPosition() {
@@ -89,7 +95,7 @@ public final class PostgreSQLLogPositionManager implements LogPositionManager<Wa
     }
     
     @Override
-    public void updateCurrentPosition(final WalPosition newLogPosition) {
-        currentPosition = newLogPosition;
+    public void updateCurrentPosition(final WalPosition newPosition) {
+        currentPosition = newPosition;
     }
 }

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -55,7 +55,7 @@ public final class DistributionChannel implements Channel {
     
     private final Queue<Record> toBeAcknowledgeRecords = new ConcurrentLinkedQueue<>();
     
-    private final Map<LogPosition, Record> pendingAcknowledgeRecords = new ConcurrentHashMap<>();
+    private final Map<Position, Record> pendingAcknowledgeRecords = new ConcurrentHashMap<>();
     
     private ScheduledExecutorService scheduleAckRecordsExecutor;
     
@@ -78,10 +78,10 @@ public final class DistributionChannel implements Channel {
             List<Record> result = new LinkedList<>();
             while (!toBeAcknowledgeRecords.isEmpty()) {
                 Record record = toBeAcknowledgeRecords.peek();
-                if (pendingAcknowledgeRecords.containsKey(record.getLogPosition())) {
+                if (pendingAcknowledgeRecords.containsKey(record.getPosition())) {
                     result.add(record);
                     toBeAcknowledgeRecords.poll();
-                    pendingAcknowledgeRecords.remove(record.getLogPosition());
+                    pendingAcknowledgeRecords.remove(record.getPosition());
                 } else {
                     break;
                 }
@@ -107,7 +107,7 @@ public final class DistributionChannel implements Channel {
             channels.get(index).pushRecord(dataRecord);
         } else if (PlaceholderRecord.class.equals(record.getClass())) {
             toBeAcknowledgeRecords.add(record);
-            pendingAcknowledgeRecords.put(record.getLogPosition(), record);
+            pendingAcknowledgeRecords.put(record.getPosition(), record);
         } else {
             throw new RuntimeException("Not Support Record Type");
         }
@@ -161,7 +161,7 @@ public final class DistributionChannel implements Channel {
         @Override
         public void onAck(final List<Record> records) {
             for (Record record : records) {
-                pendingAcknowledgeRecords.put(record.getLogPosition(), record);
+                pendingAcknowledgeRecords.put(record.getPosition(), record);
             }
         }
     }

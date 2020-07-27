@@ -21,25 +21,27 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+import org.apache.shardingsphere.scaling.core.config.utils.RdbmsConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
+import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.MemoryChannel;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.DumperFactory;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.ImporterFactory;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
+import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
@@ -48,13 +50,11 @@ import java.util.concurrent.atomic.AtomicLong;
  * Table slice execute task.
  */
 @Slf4j
-public final class InventoryDataScalingTask implements ScalingTask {
+public final class InventoryDataScalingTask extends AbstractShardingScalingExecutor implements ScalingTask {
     
     private final SyncConfiguration syncConfiguration;
     
     private final DataSourceManager dataSourceManager;
-    
-    private final String syncTaskId;
     
     private long estimatedRows;
     
@@ -69,13 +69,13 @@ public final class InventoryDataScalingTask implements ScalingTask {
     public InventoryDataScalingTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = dataSourceManager;
-        syncTaskId = generateSyncTaskId(syncConfiguration.getDumperConfiguration());
+        setTaskId(generateSyncTaskId(syncConfiguration.getDumperConfiguration()));
+        setPositionManager(syncConfiguration.getDumperConfiguration().getPositionManager());
     }
     
     private String generateSyncTaskId(final RdbmsConfiguration dumperConfiguration) {
-        DataSourceMetaData dataSourceMetaData = dumperConfiguration.getDataSourceConfiguration().getDataSourceMetaData();
-        String result = String.format("inventory-%s-%s", Optional.ofNullable(dataSourceMetaData.getCatalog()).orElse(dataSourceMetaData.getSchema()), dumperConfiguration.getTableName());
-        return null == dumperConfiguration.getWhereCondition() ? result : result + "#" + dumperConfiguration.getSpiltNum();
+        String result = String.format("%s.%s", dumperConfiguration.getDataSourceName(), dumperConfiguration.getTableName());
+        return null == dumperConfiguration.getSpiltNum() ? result : result + "#" + dumperConfiguration.getSpiltNum();
     }
     
     @Override
@@ -89,7 +89,7 @@ public final class InventoryDataScalingTask implements ScalingTask {
             @Override
             public void onSuccess() {
             }
-    
+            
             @Override
             public void onFailure(final Throwable throwable) {
                 log.error("get an error when migrating the inventory data", throwable);
@@ -106,7 +106,7 @@ public final class InventoryDataScalingTask implements ScalingTask {
         try (Connection connection = dataSource.getConnection()) {
             ResultSet resultSet = connection.prepareStatement(String.format("SELECT COUNT(*) FROM %s %s",
                     syncConfiguration.getDumperConfiguration().getTableName(),
-                    syncConfiguration.getDumperConfiguration().getWhereCondition()))
+                    RdbmsConfigurationUtil.getWhereCondition(syncConfiguration.getDumperConfiguration())))
                     .executeQuery();
             resultSet.next();
             estimatedRows = resultSet.getInt(1);
@@ -124,8 +124,12 @@ public final class InventoryDataScalingTask implements ScalingTask {
         MemoryChannel channel = new MemoryChannel(records -> {
             int count = 0;
             for (Record record : records) {
-                if (DataRecord.class.equals(record.getClass())) {
+                if (record instanceof DataRecord) {
                     count++;
+                } else if (record instanceof FinishedRecord) {
+                    if (record.getPosition() instanceof PrimaryKeyPosition) {
+                        getPositionManager().updateCurrentPosition(record.getPosition());
+                    }
                 }
             }
             syncedRows.addAndGet(count);
@@ -139,7 +143,7 @@ public final class InventoryDataScalingTask implements ScalingTask {
             future.get();
         } catch (InterruptedException ignored) {
         } catch (ExecutionException e) {
-            throw new SyncTaskExecuteException(String.format("Task %s execute failed ", syncTaskId), e.getCause());
+            throw new SyncTaskExecuteException(String.format("Task %s execute failed ", getTaskId()), e.getCause());
         }
     }
     
@@ -153,10 +157,6 @@ public final class InventoryDataScalingTask implements ScalingTask {
     
     @Override
     public SyncProgress getProgress() {
-        return new InventoryDataSyncTaskProgress(syncTaskId, estimatedRows, syncedRows.get());
-    }
-    
-    @Override
-    public void run() {
+        return new InventoryDataSyncTaskProgress(getTaskId(), estimatedRows, syncedRows.get());
     }
 }

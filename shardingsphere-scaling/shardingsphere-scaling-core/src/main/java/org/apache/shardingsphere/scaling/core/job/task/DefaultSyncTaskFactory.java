@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.scaling.core.job.task;
 
-import java.util.Collection;
-
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDataScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTaskGroup;
+
+import java.util.Collection;
 
 /**
  * Default sync task factory.
@@ -41,7 +40,7 @@ public final class DefaultSyncTaskFactory implements SyncTaskFactory {
     }
     
     @Override
-    public IncrementalDataScalingTask createIncrementalDataSyncTask(final SyncConfiguration syncConfiguration, final LogPosition logPosition) {
-        return new IncrementalDataScalingTask(syncConfiguration, logPosition);
+    public IncrementalDataScalingTask createIncrementalDataSyncTask(final SyncConfiguration syncConfiguration) {
+        return new IncrementalDataScalingTask(syncConfiguration);
     }
 }

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.position.LogPositionManager;
+import com.google.gson.Gson;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -27,14 +27,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * MySQL log manager, based on binlog mechanism.
+ * MySQL position manager, based on binlog mechanism.
  */
-@RequiredArgsConstructor
-public final class MySQLLogPositionManager implements LogPositionManager<BinlogPosition> {
+public final class MySQLPositionManager implements PositionManager<BinlogPosition> {
     
-    private final DataSource dataSource;
+    private static final Gson GSON = new Gson();
+    
+    private DataSource dataSource;
     
     private BinlogPosition currentPosition;
+    
+    public MySQLPositionManager(final DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
+    public MySQLPositionManager(final String position) {
+        currentPosition = GSON.fromJson(position, BinlogPosition.class);
+    }
     
     @Override
     public BinlogPosition getCurrentPosition() {
@@ -60,7 +69,7 @@ public final class MySQLLogPositionManager implements LogPositionManager<BinlogP
     }
     
     @Override
-    public void updateCurrentPosition(final BinlogPosition newLogPosition) {
-        this.currentPosition = newLogPosition;
+    public void updateCurrentPosition(final BinlogPosition newPosition) {
+        this.currentPosition = newPosition;
     }
 }

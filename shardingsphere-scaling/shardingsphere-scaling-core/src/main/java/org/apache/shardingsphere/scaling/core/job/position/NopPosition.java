@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.fixture;
+package org.apache.shardingsphere.scaling.core.job.position;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.position.LogPositionManager;
-import org.apache.shardingsphere.scaling.core.job.position.NopLogPosition;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
-import javax.sql.DataSource;
-
-@RequiredArgsConstructor
-public final class FixtureNopLogManager implements LogPositionManager<NopLogPosition> {
+/**
+ * Nop position.
+ */
+public final class NopPosition implements Position<NopPosition> {
     
-    private final DataSource dataSource;
+    private static final long serialVersionUID = 1946907178847169020L;
     
     @Override
-    public NopLogPosition getCurrentPosition() {
-        return new NopLogPosition();
+    public int compareTo(final NopPosition nopPosition) {
+        return 0;
     }
     
     @Override
-    public void updateCurrentPosition(final NopLogPosition newLogPosition) {
+    public JsonElement toJson() {
+        return new JsonObject();
     }
 }

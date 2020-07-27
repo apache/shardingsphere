@@ -17,30 +17,24 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
-
-import javax.sql.DataSource;
-
 /**
- * Log manager factory.
+ * Database itself data synchronize position manager.
+ * Such as mysql binlog, postgreSQL wal.
+ * Or use primary key as position.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LogPositionManagerFactory {
+public interface PositionManager<T extends Position> {
     
     /**
-     * New instance of log manager.
+     * Get current position.
      *
-     * @param databaseType database type
-     * @param dataSource data source
-     * @return log manager
+     * @return position
      */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static LogPositionManager newInstanceLogManager(final String databaseType, final DataSource dataSource) {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getLogPositionManager().getConstructor(DataSource.class).newInstance(dataSource);
-    }
+    T getCurrentPosition();
+    
+    /**
+     * Update currentPosition.
+     *
+     * @param newPosition new position.
+     */
+    void updateCurrentPosition(T newPosition);
 }

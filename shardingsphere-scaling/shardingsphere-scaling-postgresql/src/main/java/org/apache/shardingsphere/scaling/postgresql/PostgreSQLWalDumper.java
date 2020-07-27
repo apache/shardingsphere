@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
@@ -58,8 +58,8 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
     @Setter
     private Channel channel;
     
-    public PostgreSQLWalDumper(final RdbmsConfiguration rdbmsConfiguration, final LogPosition logPosition) {
-        walPosition = (WalPosition) logPosition;
+    public PostgreSQLWalDumper(final RdbmsConfiguration rdbmsConfiguration, final Position position) {
+        walPosition = (WalPosition) position;
         if (!JDBCDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");
         }
@@ -79,7 +79,7 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
             PGConnection pgConnection = logicalReplication.createPgConnection((JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration());
             decodingPlugin = new TestDecodingPlugin(((Connection) pgConnection).unwrap(PgConnection.class).getTimestampUtils());
             PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection,
-                    PostgreSQLLogPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
+                    PostgreSQLPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
             while (isRunning()) {
                 ByteBuffer msg = stream.readPending();
                 if (msg == null) {

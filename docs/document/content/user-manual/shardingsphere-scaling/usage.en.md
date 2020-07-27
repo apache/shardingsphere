@@ -149,7 +149,7 @@ Response：
             "realTimeSyncTaskProgress": {
                 "id": "realtime-test",
                 "delayMillisecond": 1576563771372,
-                "logPosition": {
+                "position": {
                     "filename": "ON.000007",
                     "position": 177532875,
                     "serverId": 0

@@ -21,6 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 import java.util.Map;
 import java.util.Set;
@@ -33,15 +34,19 @@ import java.util.Set;
 @EqualsAndHashCode
 public final class RdbmsConfiguration implements Cloneable {
     
+    private String dataSourceName;
+    
     private DataSourceConfiguration dataSourceConfiguration;
     
     private String tableName;
     
     private Map<String, Set<String>> shardingColumnsMap;
     
-    private String whereCondition;
+    private String primaryKey;
     
-    private int spiltNum;
+    private PositionManager positionManager;
+    
+    private Integer spiltNum;
     
     private Map<String, String> tableNameMap;
     
@@ -58,12 +63,4 @@ public final class RdbmsConfiguration implements Cloneable {
         return (RdbmsConfiguration) origin.clone();
     }
     
-    /**
-     * Get where condition.
-     *
-     * @return "" if whereCondition is null, otherwise whereCondition
-     */
-    public String getWhereCondition() {
-        return null == whereCondition ? "" : whereCondition;
-    }
 }
