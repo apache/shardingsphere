@@ -146,6 +146,8 @@ cp -f ~/elasticjob/elasticjob-distribution/elasticjob-lite-distribution/target/*
 cp -f ~/elasticjob/elasticjob-distribution/elasticjob-lite-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/elasticjob-${RELEASE.VERSION}
 cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/elasticjob-${RELEASE.VERSION}
 cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/elasticjob-${RELEASE.VERSION}
+cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/elasticjob-${RELEASE.VERSION}
+cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/elasticjob-${RELEASE.VERSION}
 ```
 
 ### 生成文件签名
@@ -154,6 +156,7 @@ cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-distribution/target/
 shasum -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip.sha512
 shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz.sha512
 ```
 
 ### 提交Apache SVN
@@ -171,6 +174,7 @@ svn --username=${APACHE LDAP 用户名} commit -m "release elasticjob-${RELEASE.
 shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip.sha512
 shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz.sha512
 shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz.sha512
 ```
 
 ### 检查gpg签名
@@ -204,6 +208,7 @@ Your decision? 5
 gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip
 gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz
 gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz
+gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz
 ```
 
 ### 检查发布文件内容
@@ -229,7 +234,8 @@ diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src-release sharding
 
 #### 检查二进制包的文件内容
 
-解压缩`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz`和`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz`
+解压缩`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz`，`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz`
+和`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz`
 进行如下检查:
 
 - 存在`LICENSE`和`NOTICE`文件
