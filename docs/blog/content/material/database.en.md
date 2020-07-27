@@ -1,6 +1,6 @@
 +++
-title = "5.How to construct the distributed database"
-weight = 6
+title = "How to construct the distributed database"
+weight = 3
 chapter = true
 +++
 

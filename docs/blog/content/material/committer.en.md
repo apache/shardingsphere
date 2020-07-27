@@ -1,6 +1,6 @@
 +++
-title = "3.Would you like to become an Apache committer"
-weight = 4
+title = "Would you like to become an Apache committer"
+weight = 8
 chapter = true
 +++
 ## Would you like to become an Apache committer
