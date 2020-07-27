@@ -35,8 +35,10 @@ public final class OrchestrationConfiguration {
     
     private final OrchestrationCenterConfiguration additionalConfigCenterConfiguration;
     
-    public OrchestrationConfiguration(final String name, final OrchestrationCenterConfiguration orchestrationCenterConfig) {
-        this(name, orchestrationCenterConfig, null);
+    private final boolean overwrite;
+    
+    public OrchestrationConfiguration(final String name, final OrchestrationCenterConfiguration orchestrationCenterConfig, final boolean overwrite) {
+        this(name, orchestrationCenterConfig, null, overwrite);
     }
     
     /**

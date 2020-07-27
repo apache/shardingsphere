@@ -21,5 +21,4 @@ orchestration:
     type: zookeeper
     serverLists: localhost:2181
     namespace: orchestration-yaml-demo
-    props:
-      overwrite: false
+  overwrite: false

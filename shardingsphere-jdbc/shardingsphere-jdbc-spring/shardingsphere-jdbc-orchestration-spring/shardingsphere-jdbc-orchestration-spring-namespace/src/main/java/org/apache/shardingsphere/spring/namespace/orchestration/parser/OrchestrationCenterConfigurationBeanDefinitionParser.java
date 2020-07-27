@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spring.namespace.orchestration.parser;
 
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
-import org.apache.shardingsphere.spring.namespace.orchestration.constants.InstanceBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.orchestration.constants.OrchestrationCenterConfigurationBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -29,22 +29,22 @@ import org.w3c.dom.Element;
 import java.util.Properties;
 
 /**
- * Orchestration instance parser for spring namespace.
+ * Orchestration center configuration parser for spring namespace.
  */
-public final class InstanceBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class OrchestrationCenterConfigurationBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationCenterConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionTag.TYPE_TAG));
-        factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionTag.SERVER_LISTS_TAG));
-        factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionTag.NAMESPACE_TAG));
+        factory.addConstructorArgValue(element.getAttribute(OrchestrationCenterConfigurationBeanDefinitionTag.TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(OrchestrationCenterConfigurationBeanDefinitionTag.SERVER_LISTS_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(OrchestrationCenterConfigurationBeanDefinitionTag.NAMESPACE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, InstanceBeanDefinitionTag.PROP_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, OrchestrationCenterConfigurationBeanDefinitionTag.PROP_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

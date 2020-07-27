@@ -29,14 +29,12 @@ import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.listener.OrchestrationListenerManager;
-import org.apache.shardingsphere.orchestration.core.facade.properties.OrchestrationProperties;
-import org.apache.shardingsphere.orchestration.core.facade.properties.OrchestrationPropertyKey;
 import org.apache.shardingsphere.orchestration.core.metadata.MetaDataCenter;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenter;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
@@ -55,6 +53,8 @@ public final class OrchestrationFacade implements AutoCloseable {
         ShardingSphereServiceLoader.register(RegistryRepository.class);
     }
     
+    private String name;
+    
     private RegistryRepository registryRepository;
     
     private ConfigurationRepository configurationRepository;
@@ -72,8 +72,6 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private OrchestrationListenerManager listenerManager;
     
-    private String name;
-    
     /**
      * Initialize orchestration facade.
      *
@@ -82,6 +80,7 @@ public final class OrchestrationFacade implements AutoCloseable {
      */
     public void init(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
         name = orchestrationConfig.getName();
+        isOverwrite = orchestrationConfig.isOverwrite();
         initRegistryCenter(orchestrationConfig);
         initConfigCenter(orchestrationConfig);
         initMetaDataCenter();
@@ -101,7 +100,6 @@ public final class OrchestrationFacade implements AutoCloseable {
         Preconditions.checkNotNull(additionalConfigCenterConfig, "Config center configuration cannot be null.");
         configurationRepository = TypedSPIRegistry.getRegisteredService(ConfigurationRepository.class, additionalConfigCenterConfig.getType(), additionalConfigCenterConfig.getProps());
         configurationRepository.init(additionalConfigCenterConfig);
-        isOverwrite = new OrchestrationProperties(additionalConfigCenterConfig.getProps()).getValue(OrchestrationPropertyKey.OVERWRITE);
         configCenter = new ConfigCenter(name, configurationRepository);
     }
     

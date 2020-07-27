@@ -28,12 +28,12 @@
 #    serverLists: localhost:2181
 #    namespace: orchestration
 #    props:
-#      overwrite: false
 #      retryIntervalMilliseconds: 500
 #      timeToLiveSeconds: 60
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
-#
+#  overwrite: false
+
 #authentication:
 #  users:
 #    root:

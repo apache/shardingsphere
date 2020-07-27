@@ -28,9 +28,11 @@ public final class DataSourceBeanDefinitionTag {
     
     public static final String ROOT_TAG = "data-source";
     
-    public static final String DATA_SOURCE_REF_TAG = "data-source-ref";
+    public static final String DATA_SOURCE_REF_ATTRIBUTE = "data-source-ref";
     
-    public static final String INSTANCE_REF_TAG = "instance-ref";
+    public static final String INSTANCE_REF_ATTRIBUTE = "instance-ref";
     
-    public static final String CLUSTER_REF_TAG = "cluster-ref";
+    public static final String CLUSTER_REF_ATTRIBUTE = "cluster-ref";
+    
+    public static final String OVERWRITE_ATTRIBUTE = "overwrite";
 }

@@ -71,7 +71,7 @@ public final class OrchestrationShardingSphereDataSourceTest {
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {
-        return new OrchestrationConfiguration("test_name", getRegistryCenterConfiguration(), getConfigRepositoryConfiguration());
+        return new OrchestrationConfiguration("test_name", getRegistryCenterConfiguration(), getConfigRepositoryConfiguration(), true);
     }
     
     private static OrchestrationCenterConfiguration getRegistryCenterConfiguration() {

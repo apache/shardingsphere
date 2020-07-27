@@ -90,8 +90,8 @@ public class JavaConfigurationExampleMain {
     
     private static OrchestrationConfiguration getOrchestrationConfiguration(final RegistryCenterType registryCenterType, final ShardingType shardingType) {
         return RegistryCenterType.ZOOKEEPER == registryCenterType
-                ? OrchestrationRepositoryConfigurationUtil.getZooKeeperConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType)
-                : OrchestrationRepositoryConfigurationUtil.getNacosConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType);
+                ? OrchestrationRepositoryConfigurationUtil.getZooKeeperConfiguration(!loadConfigFromRegCenter, shardingType)
+                : OrchestrationRepositoryConfigurationUtil.getNacosConfiguration(!loadConfigFromRegCenter, shardingType);
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {

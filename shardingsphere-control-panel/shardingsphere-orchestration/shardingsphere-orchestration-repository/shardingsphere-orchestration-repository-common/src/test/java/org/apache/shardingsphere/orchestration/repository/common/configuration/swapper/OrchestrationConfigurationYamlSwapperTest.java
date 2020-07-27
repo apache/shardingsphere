@@ -43,7 +43,7 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
-        return new OrchestrationConfiguration(LOGIC_SCHEMA, new OrchestrationCenterConfiguration("zookeeper", "127.0.0.1:2181,127.0.0.1:2182", "orchestration", new Properties()));
+        return new OrchestrationConfiguration(LOGIC_SCHEMA, new OrchestrationCenterConfiguration("zookeeper", "127.0.0.1:2181,127.0.0.1:2182", "orchestration", new Properties()), false);
     }
     
     @Test
