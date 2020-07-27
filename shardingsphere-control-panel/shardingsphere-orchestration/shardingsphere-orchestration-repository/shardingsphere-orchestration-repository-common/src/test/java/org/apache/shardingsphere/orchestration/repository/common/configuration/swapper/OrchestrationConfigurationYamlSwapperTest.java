@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.repository.common.configuration.swapper;
 
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.junit.Test;
@@ -36,35 +36,35 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     public void assertSwapToYamlOrchestrationConfiguration() {
         OrchestrationConfiguration data = getOrchestrationConfiguration();
         YamlOrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swapToYamlConfiguration(data);
-        assertThat(result.getRegistryRepositoryConfiguration().getType(), is(data.getRegistryRepositoryConfiguration().getType()));
-        assertThat(result.getRegistryRepositoryConfiguration().getNamespace(), is(data.getRegistryRepositoryConfiguration().getNamespace()));
-        assertThat(result.getRegistryRepositoryConfiguration().getServerLists(), is(data.getRegistryRepositoryConfiguration().getServerLists()));
-        assertThat(result.getRegistryRepositoryConfiguration().getProps(), is(data.getRegistryRepositoryConfiguration().getProps()));
+        assertThat(result.getRegistryCenter().getType(), is(data.getRegistryCenterConfiguration().getType()));
+        assertThat(result.getRegistryCenter().getNamespace(), is(data.getRegistryCenterConfiguration().getNamespace()));
+        assertThat(result.getRegistryCenter().getServerLists(), is(data.getRegistryCenterConfiguration().getServerLists()));
+        assertThat(result.getRegistryCenter().getProps(), is(data.getRegistryCenterConfiguration().getProps()));
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
-        return new OrchestrationConfiguration(LOGIC_SCHEMA, new OrchestrationRepositoryConfiguration("zookeeper", "127.0.0.1:2181,127.0.0.1:2182", "orchestration", new Properties()));
+        return new OrchestrationConfiguration(LOGIC_SCHEMA, new OrchestrationCenterConfiguration("zookeeper", "127.0.0.1:2181,127.0.0.1:2182", "orchestration", new Properties()));
     }
     
     @Test
     public void assertSwapToOrchestrationConfiguration() {
         YamlOrchestrationConfiguration data = getYamlOrchestrationConfiguration();
         OrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swapToObject(data);
-        assertThat(result.getRegistryRepositoryConfiguration().getType(), is(data.getRegistryRepositoryConfiguration().getType()));
-        assertThat(result.getRegistryRepositoryConfiguration().getNamespace(), is(data.getRegistryRepositoryConfiguration().getNamespace()));
-        assertThat(result.getRegistryRepositoryConfiguration().getServerLists(), is(data.getRegistryRepositoryConfiguration().getServerLists()));
-        assertThat(result.getRegistryRepositoryConfiguration().getProps(), is(data.getRegistryRepositoryConfiguration().getProps()));
+        assertThat(result.getRegistryCenterConfiguration().getType(), is(data.getRegistryCenter().getType()));
+        assertThat(result.getRegistryCenterConfiguration().getNamespace(), is(data.getRegistryCenter().getNamespace()));
+        assertThat(result.getRegistryCenterConfiguration().getServerLists(), is(data.getRegistryCenter().getServerLists()));
+        assertThat(result.getRegistryCenterConfiguration().getProps(), is(data.getRegistryCenter().getProps()));
     }
     
     private YamlOrchestrationConfiguration getYamlOrchestrationConfiguration() {
-        YamlOrchestrationRepositoryConfiguration registryRepositoryConfiguration = new YamlOrchestrationRepositoryConfiguration();
-        registryRepositoryConfiguration.setType("zookeeper");
-        registryRepositoryConfiguration.setProps(new Properties());
-        registryRepositoryConfiguration.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
-        registryRepositoryConfiguration.setNamespace("orchestration");
+        YamlOrchestrationRepositoryConfiguration registryCenterConfig = new YamlOrchestrationRepositoryConfiguration();
+        registryCenterConfig.setType("zookeeper");
+        registryCenterConfig.setProps(new Properties());
+        registryCenterConfig.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
+        registryCenterConfig.setNamespace("orchestration");
         YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();
         result.setName(LOGIC_SCHEMA);
-        result.setRegistryRepositoryConfiguration(registryRepositoryConfiguration);
+        result.setRegistryCenter(registryCenterConfig);
         return result;
     }
 }

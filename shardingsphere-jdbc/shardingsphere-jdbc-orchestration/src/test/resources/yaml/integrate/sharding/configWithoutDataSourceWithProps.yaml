@@ -70,7 +70,7 @@ rules:
 
 orchestration:
   name: test_sharding_registry_name
-  registryRepositoryConfiguration:
+  registryCenter:
     type: REG_TEST
     serverLists: localhost:3181
     namespace: test_sharding_registry
@@ -80,7 +80,7 @@ orchestration:
       timeToLiveSeconds: 10
       maxRetries: 10
       operationTimeoutMilliseconds: 10
-  additionalConfigurationRepositoryConfiguration:
+  additionalConfigCenter:
     type: CONFIG_TEST
     serverLists: localhost:3181
     namespace: test_sharding_config

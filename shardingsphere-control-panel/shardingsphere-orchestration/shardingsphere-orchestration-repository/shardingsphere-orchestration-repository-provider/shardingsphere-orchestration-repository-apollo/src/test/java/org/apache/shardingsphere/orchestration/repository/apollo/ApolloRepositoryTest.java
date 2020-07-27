@@ -25,7 +25,7 @@ import org.apache.shardingsphere.orchestration.repository.apollo.wrapper.ApolloC
 import org.apache.shardingsphere.orchestration.repository.apollo.wrapper.ApolloOpenApiWrapper;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.util.ConfigKeyUtils;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -68,10 +68,10 @@ public final class ApolloRepositoryTest {
         Properties props = new Properties();
         props.setProperty(ApolloPropertyKey.PORTAL_URL.getKey(), PORTAL_URL);
         props.setProperty(ApolloPropertyKey.TOKEN.getKey(), TOKEN);
-        OrchestrationRepositoryConfiguration configuration = new OrchestrationRepositoryConfiguration("apollo", "http://config-service-url", "orchestration", props);
+        OrchestrationCenterConfiguration config = new OrchestrationCenterConfiguration("apollo", "http://config-service-url", "orchestration", props);
         REPOSITORY.setProps(props);
-        REPOSITORY.init(configuration);
-        ApolloConfigWrapper configWrapper = new ApolloConfigWrapper(configuration, new ApolloProperties(props));
+        REPOSITORY.init(config);
+        ApolloConfigWrapper configWrapper = new ApolloConfigWrapper(config, new ApolloProperties(props));
         FieldSetter.setField(REPOSITORY, ApolloRepository.class.getDeclaredField("configWrapper"), configWrapper);
         FieldSetter.setField(REPOSITORY, ApolloRepository.class.getDeclaredField("openApiWrapper"), OPEN_API_WRAPPER);
     }

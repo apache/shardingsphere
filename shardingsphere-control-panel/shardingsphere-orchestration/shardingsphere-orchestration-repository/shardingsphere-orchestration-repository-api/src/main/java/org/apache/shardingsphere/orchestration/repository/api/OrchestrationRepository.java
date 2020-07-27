@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.repository.api;
 
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.infra.spi.type.TypedSPI;
 
@@ -29,11 +29,11 @@ import java.util.List;
 public interface OrchestrationRepository extends TypedSPI {
     
     /**
-     * Initialize config center.
+     * Initialize orchestration center.
      *
-     * @param config config center configuration
+     * @param config orchestration center configuration
      */
-    void init(OrchestrationRepositoryConfiguration config);
+    void init(OrchestrationCenterConfiguration config);
     
     /**
      * Get data from config center.

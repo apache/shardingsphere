@@ -31,20 +31,20 @@ public final class OrchestrationConfiguration {
     
     private final String name;
     
-    private final OrchestrationRepositoryConfiguration registryRepositoryConfiguration;
+    private final OrchestrationCenterConfiguration registryCenterConfiguration;
     
-    private final OrchestrationRepositoryConfiguration additionalConfigurationRepositoryConfiguration;
+    private final OrchestrationCenterConfiguration additionalConfigCenterConfiguration;
     
-    public OrchestrationConfiguration(final String name, final OrchestrationRepositoryConfiguration registryRepositoryConfiguration) {
-        this(name, registryRepositoryConfiguration, null);
+    public OrchestrationConfiguration(final String name, final OrchestrationCenterConfiguration orchestrationCenterConfig) {
+        this(name, orchestrationCenterConfig, null);
     }
     
     /**
-     * Get additional configuration repository configuration.
+     * Get additional config center configuration.
      * 
-     * @return additional configuration repository configuration
+     * @return additional config center configuration
      */
-    public Optional<OrchestrationRepositoryConfiguration> getAdditionalConfigurationRepositoryConfiguration() {
-        return Optional.ofNullable(additionalConfigurationRepositoryConfiguration);
+    public Optional<OrchestrationCenterConfiguration> getAdditionalConfigCenterConfiguration() {
+        return Optional.ofNullable(additionalConfigCenterConfiguration);
     }
 }

@@ -18,26 +18,26 @@
 package org.apache.shardingsphere.orchestration.repository.common.configuration.swapper;
 
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
  * Orchestration repository configuration YAML swapper.
  */
-public final class OrchestrationRepositoryConfigurationYamlSwapper implements YamlSwapper<YamlOrchestrationRepositoryConfiguration, OrchestrationRepositoryConfiguration> {
+public final class OrchestrationRepositoryConfigurationYamlSwapper implements YamlSwapper<YamlOrchestrationRepositoryConfiguration, OrchestrationCenterConfiguration> {
     
     @Override
-    public YamlOrchestrationRepositoryConfiguration swapToYamlConfiguration(final OrchestrationRepositoryConfiguration configuration) {
+    public YamlOrchestrationRepositoryConfiguration swapToYamlConfiguration(final OrchestrationCenterConfiguration config) {
         YamlOrchestrationRepositoryConfiguration result = new YamlOrchestrationRepositoryConfiguration();
-        result.setType(configuration.getType());
-        result.setServerLists(configuration.getServerLists());
-        result.setNamespace(configuration.getNamespace());
-        result.setProps(configuration.getProps());
+        result.setType(config.getType());
+        result.setServerLists(config.getServerLists());
+        result.setNamespace(config.getNamespace());
+        result.setProps(config.getProps());
         return result;
     }
     
     @Override
-    public OrchestrationRepositoryConfiguration swapToObject(final YamlOrchestrationRepositoryConfiguration yamlConfiguration) {
-        return new OrchestrationRepositoryConfiguration(yamlConfiguration.getType(), yamlConfiguration.getServerLists(), yamlConfiguration.getNamespace(), yamlConfiguration.getProps());
+    public OrchestrationCenterConfiguration swapToObject(final YamlOrchestrationRepositoryConfiguration yamlConfig) {
+        return new OrchestrationCenterConfiguration(yamlConfig.getType(), yamlConfig.getServerLists(), yamlConfig.getNamespace(), yamlConfig.getProps());
     }
 }

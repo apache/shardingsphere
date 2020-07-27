@@ -21,7 +21,7 @@ import com.ctrip.framework.apollo.openapi.client.ApolloOpenApiClient;
 import com.ctrip.framework.apollo.openapi.dto.NamespaceReleaseDTO;
 import com.ctrip.framework.apollo.openapi.dto.OpenItemDTO;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.apollo.ApolloProperties;
 import org.apache.shardingsphere.orchestration.repository.apollo.ApolloPropertyKey;
 import org.apache.shardingsphere.orchestration.repository.api.util.ConfigKeyUtils;
@@ -64,7 +64,7 @@ public final class ApolloOpenApiWrapperTest {
         Properties props = new Properties();
         props.setProperty(ApolloPropertyKey.PORTAL_URL.getKey(), PORTAL_URL);
         props.setProperty(ApolloPropertyKey.TOKEN.getKey(), TOKEN);
-        apolloOpenApiWrapper = new ApolloOpenApiWrapper(new OrchestrationRepositoryConfiguration("apollo", "127.0.0.1", null, new Properties()), new ApolloProperties(props));
+        apolloOpenApiWrapper = new ApolloOpenApiWrapper(new OrchestrationCenterConfiguration("apollo", "127.0.0.1", null, new Properties()), new ApolloProperties(props));
         FieldSetter.setField(apolloOpenApiWrapper, ApolloOpenApiWrapper.class.getDeclaredField("client"), client);
         FieldSetter.setField(apolloOpenApiWrapper, ApolloOpenApiWrapper.class.getDeclaredField("namespace"), NAME_SPACE);
         FieldSetter.setField(apolloOpenApiWrapper, ApolloOpenApiWrapper.class.getDeclaredField("appId"), ApolloPropertyKey.APP_ID.getDefaultValue());

@@ -23,7 +23,7 @@ import com.ctrip.framework.apollo.mockserver.EmbeddedApollo;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import com.google.common.util.concurrent.SettableFuture;
 import org.apache.shardingsphere.orchestration.repository.apollo.ApolloProperties;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -52,7 +52,7 @@ public final class ApolloConfigWrapperTest {
     @Before
     public void setup() {
         configWrapper = new ApolloConfigWrapper(
-                new OrchestrationRepositoryConfiguration("apollo", "http://config-service-url", "orchestration", new Properties()), new ApolloProperties(new Properties()));
+                new OrchestrationCenterConfiguration("apollo", "http://config-service-url", "orchestration", new Properties()), new ApolloProperties(new Properties()));
     }
     
     @Test

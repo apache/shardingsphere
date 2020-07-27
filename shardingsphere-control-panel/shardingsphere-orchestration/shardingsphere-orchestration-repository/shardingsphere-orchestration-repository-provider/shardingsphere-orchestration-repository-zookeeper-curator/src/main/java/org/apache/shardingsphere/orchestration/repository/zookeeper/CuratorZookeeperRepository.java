@@ -34,7 +34,7 @@ import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository
 import org.apache.shardingsphere.orchestration.repository.zookeeper.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
@@ -62,13 +62,13 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     private Properties props = new Properties();
     
     @Override
-    public void init(final OrchestrationRepositoryConfiguration config) {
+    public void init(final OrchestrationCenterConfiguration config) {
         ZookeeperProperties zookeeperProperties = new ZookeeperProperties(props);
         client = buildCuratorClient(config, zookeeperProperties);
         initCuratorClient(zookeeperProperties);
     }
     
-    private CuratorFramework buildCuratorClient(final OrchestrationRepositoryConfiguration config, final ZookeeperProperties zookeeperProperties) {
+    private CuratorFramework buildCuratorClient(final OrchestrationCenterConfiguration config, final ZookeeperProperties zookeeperProperties) {
         int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
         int maxRetries = zookeeperProperties.getValue(ZookeeperPropertyKey.MAX_RETRIES);
         int timeToLiveSeconds = zookeeperProperties.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);

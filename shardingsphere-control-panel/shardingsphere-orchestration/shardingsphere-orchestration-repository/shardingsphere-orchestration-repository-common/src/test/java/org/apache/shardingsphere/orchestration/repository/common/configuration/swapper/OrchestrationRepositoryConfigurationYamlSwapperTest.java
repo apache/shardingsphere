@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.repository.common.configuration.swapper;
 
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -30,26 +30,22 @@ public final class OrchestrationRepositoryConfigurationYamlSwapperTest {
     
     @Test
     public void assertToYamlConfiguration() {
-        OrchestrationRepositoryConfiguration configuration = getConfiguration();
-        YamlOrchestrationRepositoryConfiguration yamlConfiguration = new OrchestrationRepositoryConfigurationYamlSwapper().swapToYamlConfiguration(configuration);
-        assertThat(yamlConfiguration.getType(), is(configuration.getType()));
-        assertThat(yamlConfiguration.getServerLists(), is(configuration.getServerLists()));
-        assertThat(yamlConfiguration.getNamespace(), is(configuration.getNamespace()));
-        assertThat(yamlConfiguration.getProps(), is(configuration.getProps()));
-    }
-    
-    private OrchestrationRepositoryConfiguration getConfiguration() {
-        return new OrchestrationRepositoryConfiguration("zookeeper", "127.0.0.1:2181,127.0.0.1:2182", "orchestration", new Properties());
+        OrchestrationCenterConfiguration config = new OrchestrationCenterConfiguration("zookeeper", "127.0.0.1:2181,127.0.0.1:2182", "orchestration", new Properties());
+        YamlOrchestrationRepositoryConfiguration yamlConfiguration = new OrchestrationRepositoryConfigurationYamlSwapper().swapToYamlConfiguration(config);
+        assertThat(yamlConfiguration.getType(), is(config.getType()));
+        assertThat(yamlConfiguration.getServerLists(), is(config.getServerLists()));
+        assertThat(yamlConfiguration.getNamespace(), is(config.getNamespace()));
+        assertThat(yamlConfiguration.getProps(), is(config.getProps()));
     }
     
     @Test
     public void assertSwapToObject() {
         YamlOrchestrationRepositoryConfiguration yamlConfiguration = getYamlInstanceConfiguration();
-        OrchestrationRepositoryConfiguration instanceConfiguration = new OrchestrationRepositoryConfigurationYamlSwapper().swapToObject(yamlConfiguration);
-        assertThat(instanceConfiguration.getType(), is(yamlConfiguration.getType()));
-        assertThat(instanceConfiguration.getServerLists(), is(yamlConfiguration.getServerLists()));
-        assertThat(instanceConfiguration.getNamespace(), is(yamlConfiguration.getNamespace()));
-        assertThat(instanceConfiguration.getProps(), is(yamlConfiguration.getProps()));
+        OrchestrationCenterConfiguration orchestrationCenterConfig = new OrchestrationRepositoryConfigurationYamlSwapper().swapToObject(yamlConfiguration);
+        assertThat(orchestrationCenterConfig.getType(), is(yamlConfiguration.getType()));
+        assertThat(orchestrationCenterConfig.getServerLists(), is(yamlConfiguration.getServerLists()));
+        assertThat(orchestrationCenterConfig.getNamespace(), is(yamlConfiguration.getNamespace()));
+        assertThat(orchestrationCenterConfig.getProps(), is(yamlConfiguration.getProps()));
     }
     
     private YamlOrchestrationRepositoryConfiguration getYamlInstanceConfiguration() {
