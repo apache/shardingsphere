@@ -38,7 +38,6 @@ public final class OrchestrationCenterConfigurationBeanDefinitionParser extends 
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationCenterConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(OrchestrationCenterConfigurationBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(OrchestrationCenterConfigurationBeanDefinitionTag.SERVER_LISTS_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(OrchestrationCenterConfigurationBeanDefinitionTag.NAMESPACE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }

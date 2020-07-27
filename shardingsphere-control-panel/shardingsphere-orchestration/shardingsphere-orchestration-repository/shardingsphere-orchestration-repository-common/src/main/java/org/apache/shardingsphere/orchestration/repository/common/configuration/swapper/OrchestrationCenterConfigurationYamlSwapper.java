@@ -17,27 +17,26 @@
 
 package org.apache.shardingsphere.orchestration.repository.common.configuration.swapper;
 
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
- * Orchestration repository configuration YAML swapper.
+ * Orchestration center configuration YAML swapper.
  */
-public final class OrchestrationRepositoryConfigurationYamlSwapper implements YamlSwapper<YamlOrchestrationRepositoryConfiguration, OrchestrationCenterConfiguration> {
+public final class OrchestrationCenterConfigurationYamlSwapper implements YamlSwapper<YamlOrchestrationCenterConfiguration, OrchestrationCenterConfiguration> {
     
     @Override
-    public YamlOrchestrationRepositoryConfiguration swapToYamlConfiguration(final OrchestrationCenterConfiguration config) {
-        YamlOrchestrationRepositoryConfiguration result = new YamlOrchestrationRepositoryConfiguration();
+    public YamlOrchestrationCenterConfiguration swapToYamlConfiguration(final OrchestrationCenterConfiguration config) {
+        YamlOrchestrationCenterConfiguration result = new YamlOrchestrationCenterConfiguration();
         result.setType(config.getType());
         result.setServerLists(config.getServerLists());
-        result.setNamespace(config.getNamespace());
         result.setProps(config.getProps());
         return result;
     }
     
     @Override
-    public OrchestrationCenterConfiguration swapToObject(final YamlOrchestrationRepositoryConfiguration yamlConfig) {
-        return new OrchestrationCenterConfiguration(yamlConfig.getType(), yamlConfig.getServerLists(), yamlConfig.getNamespace(), yamlConfig.getProps());
+    public OrchestrationCenterConfiguration swapToObject(final YamlOrchestrationCenterConfiguration yamlConfig) {
+        return new OrchestrationCenterConfiguration(yamlConfig.getType(), yamlConfig.getServerLists(), yamlConfig.getProps());
     }
 }

@@ -52,7 +52,7 @@ public final class ApolloConfigWrapperTest {
     @Before
     public void setup() {
         configWrapper = new ApolloConfigWrapper(
-                new OrchestrationCenterConfiguration("apollo", "http://config-service-url", "orchestration", new Properties()), new ApolloProperties(new Properties()));
+                "orchestration", new OrchestrationCenterConfiguration("apollo", "http://config-service-url", new Properties()), new ApolloProperties(new Properties()));
     }
     
     @Test

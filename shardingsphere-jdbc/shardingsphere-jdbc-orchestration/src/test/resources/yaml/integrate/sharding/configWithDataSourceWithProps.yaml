@@ -85,11 +85,10 @@ rules:
       type: INCREMENT
 
 orchestration:
-  name: test_sharding_registry_name
+  namespace: test_sharding_registry_name
   registryCenter:
     type: REG_TEST
     serverLists: localhost:3181
-    namespace: test_sharding_registry
     props:
       retryIntervalMilliseconds: 10
       timeToLiveSeconds: 10
@@ -98,7 +97,6 @@ orchestration:
   additionalConfigCenter:
     type: CONFIG_TEST
     serverLists: localhost:3181
-    namespace: test_sharding_config
     props:
       retryIntervalMilliseconds: 10
       timeToLiveSeconds: 10

@@ -49,7 +49,7 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     public ZookeeperResumablePositionManager() {
         ResumeConfiguration resumeConfiguration = ScalingContext.getInstance().getServerConfiguration().getResumeConfiguration();
         if (null != resumeConfiguration) {
-            ZOOKEEPER.init(getCenterConfiguration(resumeConfiguration));
+            ZOOKEEPER.init(resumeConfiguration.getNamespace(), getCenterConfiguration(resumeConfiguration));
             log.info("zookeeper resumable position manager is available.");
             setAvailable(true);
         }
@@ -67,9 +67,7 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     }
     
     private OrchestrationCenterConfiguration getCenterConfiguration(final ResumeConfiguration resumeConfiguration) {
-        OrchestrationCenterConfiguration centerConfiguration =
-                new OrchestrationCenterConfiguration("zookeeper", resumeConfiguration.getServerLists(), resumeConfiguration.getNamespace(), new Properties());
-        return centerConfiguration;
+        return new OrchestrationCenterConfiguration("zookeeper", resumeConfiguration.getServerLists(), new Properties());
     }
     
     @Override

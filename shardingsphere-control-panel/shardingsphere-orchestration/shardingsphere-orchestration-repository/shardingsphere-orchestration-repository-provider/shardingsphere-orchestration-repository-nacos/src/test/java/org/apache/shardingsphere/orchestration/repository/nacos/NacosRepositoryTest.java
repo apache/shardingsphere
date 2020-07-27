@@ -60,8 +60,8 @@ public final class NacosRepositoryTest {
         Properties props = new Properties();
         props.setProperty("group", group);
         props.setProperty("timeout", "3000");
-        OrchestrationCenterConfiguration config = new OrchestrationCenterConfiguration(REPOSITORY.getType(), "127.0.0.1:8848", "", props);
-        REPOSITORY.init(config);
+        OrchestrationCenterConfiguration config = new OrchestrationCenterConfiguration(REPOSITORY.getType(), "127.0.0.1:8848", props);
+        REPOSITORY.init("orchestration", config);
         setConfigService(configService);
     }
     
