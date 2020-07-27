@@ -1,6 +1,6 @@
 +++
-title = "7.揭秘Sharding-Proxy——面向DBA的数据库中间层"
-weight = 8
+title = "揭秘Sharding-Proxy——面向DBA的数据库中间层"
+weight = 12
 chapter = true
 +++
 

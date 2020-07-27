@@ -1,5 +1,5 @@
 +++
-title = "4.快讯！Apache ShardingSphere进入CNCF全景图"
+title = "快讯！Apache ShardingSphere进入CNCF全景图"
 weight = 5
 chapter = true
 +++

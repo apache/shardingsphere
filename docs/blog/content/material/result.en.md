@@ -1,6 +1,6 @@
 +++
-title = "12.How to merge the child resultsets"
-weight = 13
+title = "How to merge the child resultsets"
+weight = 10
 chapter = true
 +++
 
