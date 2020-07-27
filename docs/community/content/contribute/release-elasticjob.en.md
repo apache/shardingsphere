@@ -147,6 +147,8 @@ cp -f ~/elasticjob/elasticjob-distribution/elasticjob-lite-distribution/target/*
 cp -f ~/elasticjob/elasticjob-distribution/elasticjob-lite-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/elasticjob-${RELEASE.VERSION}
 cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/elasticjob-${RELEASE.VERSION}
 cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/elasticjob-${RELEASE.VERSION}
+cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/elasticjob-${RELEASE.VERSION}
+cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/elasticjob-${RELEASE.VERSION}
 ```
 
 ### Generate sign files
@@ -155,6 +157,7 @@ cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-distribution/target/
 shasum -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip.sha512
 shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz.sha512
 ```
 
 ### Commit to Apache SVN
@@ -172,6 +175,7 @@ svn --username=${APACHE LDAP username} commit -m "release elasticjob-${RELEASE.V
 shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip.sha512
 shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz.sha512
 shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz.sha512
 ```
 
 ### Check gpg Signature
@@ -206,6 +210,7 @@ Then, check the gpg signature.
 gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip
 gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz
 gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz
+gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz
 ```
 
 ### Check Released Files
@@ -231,7 +236,8 @@ diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src-release sharding
 
 #### Check binary packages
 
-Decompress `apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz` and `apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz`
+Decompress `apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz`, `apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-bin.tar.gz`
+and `apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz`
 to check the following items:
 
 *   `LICENSE` and `NOTICE` files exist
