@@ -30,7 +30,7 @@ public final class YamlOrchestrationConfiguration implements YamlConfiguration {
     
     private String name;
     
-    private YamlOrchestrationRepositoryConfiguration registryRepositoryConfiguration;
+    private YamlOrchestrationRepositoryConfiguration registryCenter;
     
-    private YamlOrchestrationRepositoryConfiguration additionalConfigurationRepositoryConfiguration;
+    private YamlOrchestrationRepositoryConfiguration additionalConfigCenter;
 }

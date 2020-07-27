@@ -34,7 +34,7 @@ weight = 2
 ```yaml
 orchestration:
   name: orchestration_ds
-  registryRepositoryConfiguration:
+  registryCenter:
       type: zookeeper
       serverLists: localhost:2181
       namespace: orchestration

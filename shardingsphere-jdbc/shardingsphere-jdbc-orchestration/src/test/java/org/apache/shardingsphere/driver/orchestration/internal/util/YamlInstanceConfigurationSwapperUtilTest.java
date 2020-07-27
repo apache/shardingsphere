@@ -34,9 +34,9 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
         YamlOrchestrationRepositoryConfiguration yamlOrchestrationRepositoryConfiguration = getYamlOrchestrationRepositoryConfiguration();
         YamlOrchestrationConfiguration yamlConfiguration = new YamlOrchestrationConfiguration();
         yamlConfiguration.setName("test");
-        yamlConfiguration.setRegistryRepositoryConfiguration(yamlOrchestrationRepositoryConfiguration);
+        yamlConfiguration.setRegistryCenter(yamlOrchestrationRepositoryConfiguration);
         OrchestrationConfiguration orchestrationConfiguration = YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(yamlConfiguration);
-        OrchestrationCenterConfiguration config = orchestrationConfiguration.getRegistryRepositoryConfiguration();
+        OrchestrationCenterConfiguration config = orchestrationConfiguration.getRegistryCenterConfiguration();
         assertEquals(config.getType(), yamlOrchestrationRepositoryConfiguration.getType());
         assertEquals(config.getNamespace(), yamlOrchestrationRepositoryConfiguration.getNamespace());
         assertEquals(config.getServerLists(), yamlOrchestrationRepositoryConfiguration.getServerLists());

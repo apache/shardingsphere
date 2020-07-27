@@ -38,10 +38,10 @@ public final class YamlOrchestrationRepositoryConfigurationSwapperUtil {
      * @return orchestration repository configuration map
      */
     public static OrchestrationConfiguration marshal(final YamlOrchestrationConfiguration orchestration) {
-        if (null == orchestration.getAdditionalConfigurationRepositoryConfiguration()) {
-            return new OrchestrationConfiguration(orchestration.getName(), SWAPPER.swapToObject(orchestration.getRegistryRepositoryConfiguration()));
+        if (null == orchestration.getAdditionalConfigCenter()) {
+            return new OrchestrationConfiguration(orchestration.getName(), SWAPPER.swapToObject(orchestration.getRegistryCenter()));
         }
         return new OrchestrationConfiguration(orchestration.getName(), 
-                SWAPPER.swapToObject(orchestration.getRegistryRepositoryConfiguration()), SWAPPER.swapToObject(orchestration.getAdditionalConfigurationRepositoryConfiguration()));
+                SWAPPER.swapToObject(orchestration.getRegistryCenter()), SWAPPER.swapToObject(orchestration.getAdditionalConfigCenter()));
     }
 }

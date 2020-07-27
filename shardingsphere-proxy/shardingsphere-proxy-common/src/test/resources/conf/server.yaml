@@ -17,7 +17,7 @@
 
 orchestration:
   name: test_name_1
-  registryRepositoryConfiguration:
+  registryCenter:
     type: zookeeper
     serverLists: localhost:2181
     namespace: test_namespace_1

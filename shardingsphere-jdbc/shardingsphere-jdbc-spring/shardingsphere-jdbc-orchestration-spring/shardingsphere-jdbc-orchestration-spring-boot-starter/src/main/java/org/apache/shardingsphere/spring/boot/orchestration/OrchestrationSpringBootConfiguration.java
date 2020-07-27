@@ -80,11 +80,11 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     public OrchestrationConfiguration orchestrationConfiguration() {
         Preconditions.checkState(!CollectionUtils.isEmpty(root.getOrchestration()), "The orchestration configuration is invalid, please configure orchestration");
         for (Entry<String, YamlOrchestrationConfiguration> entry : root.getOrchestration().entrySet()) {
-            if (null == entry.getValue().getAdditionalConfigurationRepositoryConfiguration()) {
-                return new OrchestrationConfiguration(entry.getKey(), swapper.swapToObject(entry.getValue().getRegistryRepositoryConfiguration()));
+            if (null == entry.getValue().getAdditionalConfigCenter()) {
+                return new OrchestrationConfiguration(entry.getKey(), swapper.swapToObject(entry.getValue().getRegistryCenter()));
             }
             return new OrchestrationConfiguration(entry.getKey(), 
-                    swapper.swapToObject(entry.getValue().getRegistryRepositoryConfiguration()), swapper.swapToObject(entry.getValue().getAdditionalConfigurationRepositoryConfiguration()));
+                    swapper.swapToObject(entry.getValue().getRegistryCenter()), swapper.swapToObject(entry.getValue().getAdditionalConfigCenter()));
         }
         // TODO should return map when support multiple OrchestrationConfiguration
         return null;

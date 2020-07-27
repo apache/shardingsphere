@@ -34,7 +34,7 @@ Using ZooKeeper as config center and registry center for example.
 ```yaml
 orchestration:
   name: orchestration_ds
-  registryRepositoryConfiguration:
+  registryCenter:
     type: zookeeper
     serverLists: localhost:2181
     namespace: orchestration

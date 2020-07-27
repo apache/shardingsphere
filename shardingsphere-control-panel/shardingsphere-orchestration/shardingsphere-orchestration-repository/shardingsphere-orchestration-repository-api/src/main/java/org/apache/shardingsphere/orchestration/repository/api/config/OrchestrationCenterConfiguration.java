@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 import java.util.Properties;
 
 /**
- * Orchestration repository configuration.
+ * Orchestration center configuration.
  */
 @Getter
 public final class OrchestrationCenterConfiguration extends TypedSPIConfiguration {
