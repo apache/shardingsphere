@@ -288,6 +288,6 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     
     @Override
     public String getType() {
-        return "zookeeper";
+        return "ZooKeeper";
     }
 }

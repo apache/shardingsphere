@@ -42,7 +42,7 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
-        return new OrchestrationConfiguration(LOGIC_SCHEMA, new OrchestrationCenterConfiguration("zookeeper", "127.0.0.1:2181,127.0.0.1:2182", new Properties()), false);
+        return new OrchestrationConfiguration(LOGIC_SCHEMA, new OrchestrationCenterConfiguration("ZooKeeper", "127.0.0.1:2181,127.0.0.1:2182", new Properties()), false);
     }
     
     @Test
@@ -56,7 +56,7 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     
     private YamlOrchestrationConfiguration getYamlOrchestrationConfiguration() {
         YamlOrchestrationCenterConfiguration registryCenterConfig = new YamlOrchestrationCenterConfiguration();
-        registryCenterConfig.setType("zookeeper");
+        registryCenterConfig.setType("ZooKeeper");
         registryCenterConfig.setProps(new Properties());
         registryCenterConfig.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
         YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();

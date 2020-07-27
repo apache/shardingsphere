@@ -49,7 +49,7 @@ import java.util.Set;
 /**
  * Orchestration configuration converter.
  */
-public class OrchestrationConfigurationConverter extends AbstractConfigurationConverter {
+public final class OrchestrationConfigurationConverter extends AbstractConfigurationConverter {
     
     private final OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance();
     

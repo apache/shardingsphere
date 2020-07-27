@@ -47,7 +47,7 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
     
     private YamlOrchestrationCenterConfiguration createYamlOrchestrationRepositoryConfiguration() {
         YamlOrchestrationCenterConfiguration result = new YamlOrchestrationCenterConfiguration();
-        result.setType("zookeeper");
+        result.setType("ZooKeeper");
         result.setServerLists("localhost:2181");
         result.setProps(new Properties());
         return result;

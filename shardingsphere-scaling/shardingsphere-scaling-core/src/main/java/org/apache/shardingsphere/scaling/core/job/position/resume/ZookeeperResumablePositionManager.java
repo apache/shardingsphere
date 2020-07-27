@@ -67,7 +67,7 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     }
     
     private OrchestrationCenterConfiguration getCenterConfiguration(final ResumeConfiguration resumeConfiguration) {
-        return new OrchestrationCenterConfiguration("zookeeper", resumeConfiguration.getServerLists(), new Properties());
+        return new OrchestrationCenterConfiguration("ZooKeeper", resumeConfiguration.getServerLists(), new Properties());
     }
     
     @Override

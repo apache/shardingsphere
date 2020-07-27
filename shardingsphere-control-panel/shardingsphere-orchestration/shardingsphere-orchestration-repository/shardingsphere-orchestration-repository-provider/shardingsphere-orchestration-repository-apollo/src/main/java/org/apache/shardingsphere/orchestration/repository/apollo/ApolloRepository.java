@@ -120,6 +120,6 @@ public final class ApolloRepository implements ConfigurationRepository {
     
     @Override
     public String getType() {
-        return "apollo";
+        return "Apollo";
     }
 }

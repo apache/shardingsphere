@@ -30,7 +30,7 @@ public final class OrchestrationRepositoryConfigurationUtil {
     private static final String NACOS_CONNECTION_STRING = "localhost:8848";
     
     public static OrchestrationConfiguration getZooKeeperConfiguration(final boolean overwrite, final ShardingType shardingType) {
-        OrchestrationCenterConfiguration orchestrationCenterConfig = new OrchestrationCenterConfiguration("zookeeper", ZOOKEEPER_CONNECTION_STRING, new Properties());
+        OrchestrationCenterConfiguration orchestrationCenterConfig = new OrchestrationCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, new Properties());
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 return new OrchestrationConfiguration("orchestration-sharding-data-source", orchestrationCenterConfig, overwrite);
@@ -49,9 +49,9 @@ public final class OrchestrationRepositoryConfigurationUtil {
         Properties nacosProperties = new Properties();
         nacosProperties.setProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
         nacosProperties.setProperty("timeout", "3000");
-        OrchestrationCenterConfiguration nacosConfig = new OrchestrationCenterConfiguration("nacos", NACOS_CONNECTION_STRING, nacosProperties);
+        OrchestrationCenterConfiguration nacosConfig = new OrchestrationCenterConfiguration("Nacos", NACOS_CONNECTION_STRING, nacosProperties);
         Properties zookeeperProperties = new Properties();
-        OrchestrationCenterConfiguration zookeeperConfig = new OrchestrationCenterConfiguration("zookeeper", ZOOKEEPER_CONNECTION_STRING, zookeeperProperties);
+        OrchestrationCenterConfiguration zookeeperConfig = new OrchestrationCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, zookeeperProperties);
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 return new OrchestrationConfiguration("orchestration-zookeeper-sharding-data-source", zookeeperConfig, nacosConfig, overwrite);
