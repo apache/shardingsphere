@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.apache.shardingsphere.orchestration.center.instance.CuratorZookeeperCenterRepository;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.zookeeper.CuratorZookeeperRepository;
 import org.apache.shardingsphere.scaling.core.config.ResumeConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 
@@ -38,7 +38,7 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     
     private static final String INCREMENTAL = "/incremental";
     
-    private static final CuratorZookeeperCenterRepository ZOOKEEPER = new CuratorZookeeperCenterRepository();
+    private static final CuratorZookeeperRepository ZOOKEEPER = new CuratorZookeeperRepository();
     
     private ScheduledExecutorService executor;
     
@@ -66,10 +66,9 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
         executor.scheduleWithFixedDelay(this::persistPosition, 1, 1, TimeUnit.MINUTES);
     }
     
-    private CenterConfiguration getCenterConfiguration(final ResumeConfiguration resumeConfiguration) {
-        CenterConfiguration centerConfiguration = new CenterConfiguration("zookeeper", new Properties());
-        centerConfiguration.setServerLists(resumeConfiguration.getServerLists());
-        centerConfiguration.setNamespace(resumeConfiguration.getNamespace());
+    private OrchestrationCenterConfiguration getCenterConfiguration(final ResumeConfiguration resumeConfiguration) {
+        OrchestrationCenterConfiguration centerConfiguration =
+                new OrchestrationCenterConfiguration("zookeeper", resumeConfiguration.getServerLists(), resumeConfiguration.getNamespace(), new Properties());
         return centerConfiguration;
     }
     
