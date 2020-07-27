@@ -28,15 +28,15 @@ public final class ClusterBeanDefinitionTag {
     
     public static final String ROOT_TAG = "heartbeat";
     
-    public static final String SQL_TAG = "sql";
+    public static final String SQL_ATTRIBUTE = "sql";
     
-    public static final String THREAD_COUNT_TAG = "threadCount";
+    public static final String THREAD_COUNT_ATTRIBUTE = "threadCount";
     
-    public static final String INTERVAL_TAG = "interval";
+    public static final String INTERVAL_ATTRIBUTE = "interval";
     
-    public static final String RETRY_MAXIMUM_TAG = "retryMaximum";
+    public static final String RETRY_MAXIMUM_ATTRIBUTE = "retryMaximum";
     
-    public static final String RETRY_INTERVAL_TAG = "retryInterval";
+    public static final String RETRY_INTERVAL_ATTRIBUTE = "retryInterval";
     
-    public static final String RETRY_ENABLE_TAG = "retryEnable";
+    public static final String RETRY_ENABLE_ATTRIBUTE = "retryEnable";
 }

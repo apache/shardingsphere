@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.spring.namespace.orchestration.handler;
 
 import org.apache.shardingsphere.spring.namespace.orchestration.constants.DataSourceBeanDefinitionTag;
-import org.apache.shardingsphere.spring.namespace.orchestration.constants.InstanceBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.orchestration.constants.OrchestrationCenterConfigurationBeanDefinitionTag;
 import org.apache.shardingsphere.spring.namespace.orchestration.parser.DataSourceBeanDefinitionParser;
-import org.apache.shardingsphere.spring.namespace.orchestration.parser.InstanceBeanDefinitionParser;
+import org.apache.shardingsphere.spring.namespace.orchestration.parser.OrchestrationCenterConfigurationBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -30,7 +30,7 @@ public final class OrchestrationNamespaceHandler extends NamespaceHandlerSupport
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(InstanceBeanDefinitionTag.ROOT_TAG, new InstanceBeanDefinitionParser());
+        registerBeanDefinitionParser(OrchestrationCenterConfigurationBeanDefinitionTag.ROOT_TAG, new OrchestrationCenterConfigurationBeanDefinitionParser());
         registerBeanDefinitionParser(DataSourceBeanDefinitionTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
     }
 }

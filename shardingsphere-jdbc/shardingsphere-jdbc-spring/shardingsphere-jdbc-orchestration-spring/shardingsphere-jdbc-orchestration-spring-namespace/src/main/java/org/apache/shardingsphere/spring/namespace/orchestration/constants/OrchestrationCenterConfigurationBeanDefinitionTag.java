@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.facade.properties;
+package org.apache.shardingsphere.spring.namespace.orchestration.constants;
 
-import org.apache.shardingsphere.infra.properties.TypedProperties;
-
-import java.util.Properties;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Typed properties of orchestration.
+ * Orchestration center configuration bean definition tag.
  */
-public final class OrchestrationProperties extends TypedProperties<OrchestrationPropertyKey> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class OrchestrationCenterConfigurationBeanDefinitionTag {
     
-    public OrchestrationProperties(final Properties props) {
-        super(OrchestrationPropertyKey.class, props);
-    }
+    public static final String ROOT_TAG = "instance";
+    
+    public static final String TYPE_ATTRIBUTE = "type";
+    
+    public static final String SERVER_LISTS_ATTRIBUTE = "server-lists";
+    
+    public static final String NAMESPACE_ATTRIBUTE = "namespace";
+    
+    public static final String PROP_TAG = "props";
 }

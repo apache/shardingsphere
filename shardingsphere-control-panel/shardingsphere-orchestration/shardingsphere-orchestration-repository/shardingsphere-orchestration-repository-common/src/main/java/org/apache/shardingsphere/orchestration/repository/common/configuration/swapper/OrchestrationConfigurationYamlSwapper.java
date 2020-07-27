@@ -43,8 +43,8 @@ public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<
     public OrchestrationConfiguration swapToObject(final YamlOrchestrationConfiguration configuration) {
         if (null != configuration.getAdditionalConfigCenter()) {
             return new OrchestrationConfiguration(configuration.getName(), swapper.swapToObject(configuration.getRegistryCenter()),
-                    swapper.swapToObject(configuration.getAdditionalConfigCenter()));
+                    swapper.swapToObject(configuration.getAdditionalConfigCenter()), configuration.isOverwrite());
         }
-        return new OrchestrationConfiguration(configuration.getName(), swapper.swapToObject(configuration.getRegistryCenter()));
+        return new OrchestrationConfiguration(configuration.getName(), swapper.swapToObject(configuration.getRegistryCenter()), configuration.isOverwrite());
     }
 }

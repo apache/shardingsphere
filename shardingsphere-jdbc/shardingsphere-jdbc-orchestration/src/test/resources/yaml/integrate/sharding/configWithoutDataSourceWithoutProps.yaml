@@ -77,7 +77,6 @@ orchestration:
     serverLists: localhost:3181
     namespace: test_sharding_registry
     props:
-      overwrite: true
       retryIntervalMilliseconds: 10
       timeToLiveSeconds: 10
       maxRetries: 10
@@ -87,8 +86,8 @@ orchestration:
     serverLists: localhost:3181
     namespace: test_sharding_config
     props:
-      overwrite: true
       retryIntervalMilliseconds: 10
       timeToLiveSeconds: 10
       maxRetries: 10
       operationTimeoutMilliseconds: 10
+  overwrite: true

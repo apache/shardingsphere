@@ -21,8 +21,7 @@ orchestration:
     type: zookeeper
     serverLists: localhost:2181
     namespace: orchestration-yaml-demo
-    props:
-      overwrite: true
+  overwrite: true
 
 dataSources:
   uinque_ds: !!com.zaxxer.hikari.HikariDataSource

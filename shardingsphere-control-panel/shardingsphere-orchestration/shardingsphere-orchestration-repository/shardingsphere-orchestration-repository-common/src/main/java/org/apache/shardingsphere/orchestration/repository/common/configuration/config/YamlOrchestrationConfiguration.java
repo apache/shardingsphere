@@ -33,4 +33,6 @@ public final class YamlOrchestrationConfiguration implements YamlConfiguration {
     private YamlOrchestrationRepositoryConfiguration registryCenter;
     
     private YamlOrchestrationRepositoryConfiguration additionalConfigCenter;
+    
+    private boolean overwrite;
 }
