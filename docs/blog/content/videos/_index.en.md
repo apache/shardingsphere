@@ -8,9 +8,9 @@ Welcome to pick up some of video selections to watch. Moreover look forward to y
 
 1. [Getting started with Apache ShardingSphere](/en/videos/OpenSource/)
 
-2. [How to develop ShardingSphere with Apache](/en/videos/build/)  
+2. [How to develop ShardingSphere community with Apache way](/en/videos/build/)  
 
-3. [View of Apache ShardingSphere from the perspective of New SQL](/en/videos/new_SQL/)
+3. [Exploring Apache ShardingSphere with the perspective of new SQL](/en/videos/new_SQL/)
 
 4. [Apache ShardingSphere architecture evolution driven by open source](/en/videos/evolution/)  
 
