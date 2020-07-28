@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.rdl.parser.sql.visitor;
+package org.apache.shardingsphere.rdl.parser.statement.rdl;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import org.apache.shardingsphere.rdl.parser.sql.autogen.ShardingSphereStatementBaseVisitor;
-import org.apache.shardingsphere.rdl.parser.sql.autogen.ShardingSphereStatementParser.CreateDatasourceContext;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.statement.AbstractSQLStatement;
 
 /**
- * ShardingSphere visitor.
+ * RDL statement.
  */
-@Getter(AccessLevel.PROTECTED)
-public final class ShardingSphereVisitor extends ShardingSphereStatementBaseVisitor<ASTNode> {
-    
-    @Override
-    public ASTNode visitCreateDatasource(final CreateDatasourceContext ctx) {
-        return super.visitCreateDatasource(ctx);
-    }
+public abstract class RDLStatement extends AbstractSQLStatement {
 }

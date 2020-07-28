@@ -33,5 +33,6 @@
         <module>shardingsphere-rdl-parser-sql</module>
         <module>shardingsphere-rdl-parser-statement</module>
         <module>shardingsphere-rdl-parser-engine</module>
+        <module>shardingsphere-rdl-parser-binder</module>
     </modules>
 </project>

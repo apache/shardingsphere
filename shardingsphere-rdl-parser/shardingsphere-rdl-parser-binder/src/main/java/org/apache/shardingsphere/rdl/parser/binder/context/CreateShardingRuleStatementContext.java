@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.binder.statement.ddl;
+package org.apache.shardingsphere.rdl.parser.binder.context;
 
+import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateShardingRuleStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;

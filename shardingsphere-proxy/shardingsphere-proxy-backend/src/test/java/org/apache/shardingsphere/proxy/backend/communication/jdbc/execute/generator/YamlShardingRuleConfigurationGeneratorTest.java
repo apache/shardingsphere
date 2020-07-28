@@ -1,7 +1,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.generator;
 
+import org.apache.shardingsphere.rdl.parser.binder.context.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateShardingRuleStatementContext;
 import org.junit.Before;
 import org.junit.Test;
 

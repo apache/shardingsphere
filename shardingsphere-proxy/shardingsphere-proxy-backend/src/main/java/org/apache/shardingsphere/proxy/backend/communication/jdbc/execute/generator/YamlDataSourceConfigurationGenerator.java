@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.generator;
 
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDataSourcesStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDataSourcesStatementContext.DataSourceContext;
+import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStatementContext;
+import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStatementContext.DataSourceContext;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
