@@ -100,8 +100,8 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
         try {
             SyncProgress progresses = SCALING_JOB_CONTROLLER.getProgresses(jobId);
             response(GSON.toJson(ResponseContentUtil.build(progresses)), channelHandlerContext, HttpResponseStatus.OK);
-        } catch (ScalingJobNotFoundException e) {
-            response(GSON.toJson(ResponseContentUtil.handleBadRequest(e.getMessage())), channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
+        } catch (ScalingJobNotFoundException ex) {
+            response(GSON.toJson(ResponseContentUtil.handleBadRequest(ex.getMessage())), channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
         }
     }
     

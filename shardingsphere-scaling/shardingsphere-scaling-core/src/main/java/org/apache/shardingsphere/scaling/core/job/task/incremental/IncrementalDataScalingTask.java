@@ -107,8 +107,8 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
         try {
             future.get();
         } catch (InterruptedException ignored) {
-        } catch (ExecutionException e) {
-            throw new SyncTaskExecuteException(String.format("Task %s execute failed ", getTaskId()), e.getCause());
+        } catch (ExecutionException ex) {
+            throw new SyncTaskExecuteException(String.format("Task %s execute failed ", getTaskId()), ex.getCause());
         }
     }
     

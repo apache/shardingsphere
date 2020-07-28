@@ -179,16 +179,16 @@ public final class TestDecodingPlugin implements DecodingPlugin {
             case "time without time zone":
                 try {
                     return timestampUtils.toTime(null, readNextString(data));
-                } catch (SQLException e) {
-                    throw new DecodingException(e);
+                } catch (SQLException ex) {
+                    throw new DecodingException(ex);
                 }
             case "date":
                 return Date.valueOf(readNextString(data));
             case "timestamp without time zone":
                 try {
                     return timestampUtils.toTimestamp(null, readNextString(data));
-                } catch (SQLException e) {
-                    throw new DecodingException(e);
+                } catch (SQLException ex) {
+                    throw new DecodingException(ex);
                 }
             case "bytea":
                 return decodeHex(readNextString(data).substring(2));

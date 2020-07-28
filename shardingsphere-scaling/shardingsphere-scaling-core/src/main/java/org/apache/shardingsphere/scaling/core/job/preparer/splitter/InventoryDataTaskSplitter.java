@@ -141,8 +141,8 @@ public final class InventoryDataTaskSplitter {
                 result.add(new SyncConfiguration(concurrency, syncConfiguration.getTableNameMap(),
                     splitDumperConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration())));
             }
-        } catch (SQLException e) {
-            throw new PrepareFailedException(String.format("Split task for table %s by primary key %s error", dumperConfiguration.getTableName(), primaryKey), e);
+        } catch (SQLException ex) {
+            throw new PrepareFailedException(String.format("Split task for table %s by primary key %s error", dumperConfiguration.getTableName(), primaryKey), ex);
         }
         return result;
     }

@@ -65,8 +65,8 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
                     return;
                 }
             }
-        } catch (SQLException e) {
-            throw new PrepareFailedException("Source datasource check privileges failed.");
+        } catch (SQLException ex) {
+            throw new PrepareFailedException("Source datasource check privileges failed.", ex);
         }
         throw new PrepareFailedException("Source datasource is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges.");
     }
@@ -87,8 +87,8 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
             for (Map.Entry<String, String> entry : REQUIRED_VARIABLES.entrySet()) {
                 checkVariable(connection, entry);
             }
-        } catch (SQLException e) {
-            throw new PrepareFailedException("Source datasource check variables failed.");
+        } catch (SQLException ex) {
+            throw new PrepareFailedException("Source datasource check variables failed.", ex);
         }
     }
     

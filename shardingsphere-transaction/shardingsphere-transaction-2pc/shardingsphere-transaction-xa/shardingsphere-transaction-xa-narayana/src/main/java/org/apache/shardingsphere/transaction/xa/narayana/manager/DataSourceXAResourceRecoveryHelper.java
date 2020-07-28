@@ -114,8 +114,8 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     private void disconnect() {
         try {
             this.xaConnection.close();
-        } catch (SQLException e) {
-            log.warn("Failed to close connection", e);
+        } catch (SQLException ex) {
+            log.warn("Failed to close connection", ex);
         } finally {
             this.xaConnection = null;
             this.delegate = null;
