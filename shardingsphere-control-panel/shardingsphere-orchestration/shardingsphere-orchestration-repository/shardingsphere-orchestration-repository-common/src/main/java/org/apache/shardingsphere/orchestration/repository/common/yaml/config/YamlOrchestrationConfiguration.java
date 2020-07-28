@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.common.configuration.config;
+package org.apache.shardingsphere.orchestration.repository.common.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;

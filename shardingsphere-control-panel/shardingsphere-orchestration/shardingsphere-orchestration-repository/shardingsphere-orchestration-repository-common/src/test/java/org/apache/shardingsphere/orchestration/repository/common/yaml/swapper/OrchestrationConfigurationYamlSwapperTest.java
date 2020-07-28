@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.common.configuration.swapper;
+package org.apache.shardingsphere.orchestration.repository.common.yaml.swapper;
 
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationCenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.yaml.config.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.yaml.config.YamlOrchestrationCenterConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;

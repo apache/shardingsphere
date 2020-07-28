@@ -20,8 +20,8 @@ package org.apache.shardingsphere.driver.orchestration.internal.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.swapper.OrchestrationCenterConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.repository.common.yaml.config.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.yaml.swapper.OrchestrationCenterConfigurationYamlSwapper;
 
 /**
  * YAML orchestration configuration swapper utility.
