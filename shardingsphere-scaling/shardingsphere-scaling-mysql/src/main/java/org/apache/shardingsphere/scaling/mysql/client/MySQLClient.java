@@ -207,8 +207,8 @@ public final class MySQLClient {
                 throw new RuntimeException(((MySQLErrPacket) response).getErrorMessage());
             }
             throw new RuntimeException("unexpected response type");
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+        } catch (InterruptedException | ExecutionException ex) {
+            throw new RuntimeException(ex);
         }
     }
     

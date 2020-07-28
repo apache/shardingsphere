@@ -63,8 +63,8 @@ public final class PostgreSQLPositionManager implements PositionManager<WalPosit
             // Need to create slot first, hold oldest wal event.
             createIfNotExists(connection);
             currentPosition = getCurrentLsn(connection);
-        } catch (SQLException e) {
-            throw new RuntimeException("markPosition error", e);
+        } catch (SQLException ex) {
+            throw new RuntimeException("markPosition error", ex);
         }
     }
     
