@@ -30,7 +30,8 @@ public final class OrchestrationNamespaceHandler extends NamespaceHandlerSupport
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(OrchestrationCenterConfigurationBeanDefinitionTag.ROOT_TAG, new OrchestrationCenterConfigurationBeanDefinitionParser());
+        registerBeanDefinitionParser(OrchestrationCenterConfigurationBeanDefinitionTag.REG_CENTER_ROOT_TAG, new OrchestrationCenterConfigurationBeanDefinitionParser());
+        registerBeanDefinitionParser(OrchestrationCenterConfigurationBeanDefinitionTag.CONFIG_CENTER_ROOT_TAG, new OrchestrationCenterConfigurationBeanDefinitionParser());
         registerBeanDefinitionParser(DataSourceBeanDefinitionTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
     }
 }

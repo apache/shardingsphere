@@ -26,7 +26,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrchestrationCenterConfigurationBeanDefinitionTag {
     
-    public static final String ROOT_TAG = "instance";
+    public static final String REG_CENTER_ROOT_TAG = "reg-center";
+    
+    public static final String CONFIG_CENTER_ROOT_TAG = "config-center";
     
     public static final String TYPE_ATTRIBUTE = "type";
     

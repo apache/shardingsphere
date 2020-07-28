@@ -27,13 +27,25 @@
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-ref" type="xsd:string" />
-            <xsd:attribute name="instance-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="reg-center-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="config-center-ref" type="xsd:string" />
             <xsd:attribute name="cluster-ref" type="xsd:string" />
             <xsd:attribute name="overwrite" type="xsd:string" default="false" />
         </xsd:complexType>
     </xsd:element>
     
-    <xsd:element name="instance">
+    <xsd:element name="reg-center">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="beans:props" minOccurs="0" />
+            </xsd:all>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="type" type="xsd:string" use="required" />
+            <xsd:attribute name="server-lists" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    
+    <xsd:element name="config-center">
         <xsd:complexType>
             <xsd:all>
                 <xsd:element ref="beans:props" minOccurs="0" />
