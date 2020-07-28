@@ -33,7 +33,7 @@
     
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
-    <orchestration:data-source id="encryptDataSource" instance-ref="regCenter" />
+    <orchestration:data-source id="encryptDataSource" reg-center-ref="regCenter" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="encryptDataSource" />

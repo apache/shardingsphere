@@ -41,27 +41,27 @@
     
     <bean id="shadow_demo_ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/shadow_demo_ds"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/shadow_demo_ds" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
 
     <bean id="demo_ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds"/>
-        <property name="username" value="root"/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds" />
+        <property name="username" value="root" />
         <property name="password" value=""/>
     </bean>
     
     <shadow:rule id="shadowRule" column="shadow">
         <shadow:mappings>
-            <shadow:mapping product-data-source-name="demo_ds" shadow-data-source-name="shadow_demo_ds"/>
+            <shadow:mapping product-data-source-name="demo_ds" shadow-data-source-name="shadow_demo_ds" />
         </shadow:mappings>
     </shadow:rule>
     
     <shardingsphere:data-source id="realShadowDataSource" data-source-names="demo_ds,shadow_demo_ds" rule-refs="shadowRule" />
-
-    <orchestration:data-source id="shadowDataSource" data-source-ref="realShadowDataSource" instance-ref="regCenter,confCenter" />
+    
+    <orchestration:data-source id="shadowDataSource" data-source-ref="realShadowDataSource" reg-center-ref="regCenter" config-center-ref="confCenter" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shadowDataSource" />
@@ -70,11 +70,11 @@
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="shadowDataSource"/>
-        <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
+        <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml" />
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository"/>
-        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
     </bean>
 </beans>

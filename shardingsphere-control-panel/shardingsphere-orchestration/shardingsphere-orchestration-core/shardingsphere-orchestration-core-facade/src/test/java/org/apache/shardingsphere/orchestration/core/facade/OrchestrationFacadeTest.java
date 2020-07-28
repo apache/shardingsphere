@@ -92,7 +92,7 @@ public final class OrchestrationFacadeTest {
         verify(configCenter).persistGlobalConfiguration(authentication, props, false);
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataSourcesNode();
-        verify(listenerManager).initListeners();
+        verify(listenerManager).init();
     }
     
     @Test
@@ -107,7 +107,7 @@ public final class OrchestrationFacadeTest {
         orchestrationFacade.initConfigurations();
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataSourcesNode();
-        verify(listenerManager).initListeners();
+        verify(listenerManager).init();
     }
     
     @Test

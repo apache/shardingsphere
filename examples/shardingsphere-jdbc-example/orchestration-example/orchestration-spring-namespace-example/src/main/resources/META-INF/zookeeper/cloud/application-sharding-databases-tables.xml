@@ -32,7 +32,7 @@
     <import resource="classpath*:META-INF/zookeeper/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
 
-    <orchestration:data-source id="shardingDatabasesTablesDataSource" instance-ref="regCenter" />
+    <orchestration:data-source id="shardingDatabasesTablesDataSource" reg-center-ref="regCenter" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shardingDatabasesTablesDataSource" />

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spring.namespace.orchestration.parser;
 
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
@@ -28,8 +27,6 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
-
-import java.util.List;
 
 /**
  * Data source parser for spring namespace.
@@ -57,12 +54,10 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     
     private BeanDefinition getOrchestrationConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationConfiguration.class);
-        List<String> instances = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionTag.INSTANCE_REF_ATTRIBUTE));
-        factory.addConstructorArgValue(instances.get(0));
-        factory.addConstructorArgReference(instances.get(0));
-        if (instances.size() > 1) {
-            factory.addConstructorArgValue(instances.get(1));
-            factory.addConstructorArgReference(instances.get(1));
+        factory.addConstructorArgValue(element.getAttribute(DataSourceBeanDefinitionTag.ID_ATTRIBUTE));
+        factory.addConstructorArgReference(element.getAttribute(DataSourceBeanDefinitionTag.REG_CENTER_REF_ATTRIBUTE));
+        if (!Strings.isNullOrEmpty(element.getAttribute(DataSourceBeanDefinitionTag.CONFIG_CENTER_REF_ATTRIBUTE))) {
+            factory.addConstructorArgReference(element.getAttribute(DataSourceBeanDefinitionTag.CONFIG_CENTER_REF_ATTRIBUTE));
         }
         factory.addConstructorArgValue(element.getAttribute(DataSourceBeanDefinitionTag.OVERWRITE_ATTRIBUTE));
         return factory.getBeanDefinition();

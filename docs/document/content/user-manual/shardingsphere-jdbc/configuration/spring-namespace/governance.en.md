@@ -17,25 +17,35 @@ weight = 6
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 ">
-    <orchestration:instance id="regCenter" type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo">
+    <orchestration:reg-center id="regCenter" type="zookeeper" server-lists="localhost:2181">
         <props>
             <prop key="overwrite">true</prop>
         </props>
-     </orchestration:instance>
-    <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" instance-ref="regCenter" />
+     </orchestration:reg-center>
+    <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" reg-center-ref="regCenter" />
 </beans>
 ```
+
 Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration-5.0.0.xsd)
 
-<orchestration:instance />
+<orchestration:reg-center />
 
-| *Name*        | *Type*     | *Description*                                                                                                    |
-| ------------- | ---------- | ---------------------------------------------------------------------------------------------------------------- |
-| id            | Attribute  | Orchestration instance name                                                                                      |
-| type          | Attribute  | Orchestration instance type. Example:zookeeper, etcd, apollo, nacos                                              |
-| server-lists  | Attribute  | The list of servers that connect to orchestration instance, including IP and port number; use commas to separate |
-| namespace (?) | Attribute  | Orchestration namespace                                                                                          |
-| props (?)     | Attribute  | Properties for center instance config, such as options of zookeeper                                              |
+| *Name*        | *Type*     | *Description*                                                                                             |
+| ------------- | ---------- | --------------------------------------------------------------------------------------------------------- |
+| id            | Attribute  | Registry center name                                                                                      |
+| type          | Attribute  | Registry center type. Example: ZooKeeper, etcd                                                            |
+| server-lists  | Attribute  | The list of servers that connect to registry center, including IP and port number; use commas to separate |
+| props (?)     | Attribute  | Properties for center instance config, such as options of zookeeper                                       |
+
+<orchestration:config-center />
+
+| *Name*        | *Type*     | *Description*                                                                                           |
+| ------------- | ---------- | ------------------------------------------------------------------------------------------------------- |
+| id            | Attribute  | Config center name                                                                                      |
+| type          | Attribute  | Config center type. Example: ZooKeeper, etcd, Nacos, Apollo                                             |
+| server-lists  | Attribute  | The list of servers that connect to config center, including IP and port number; use commas to separate |
+| props (?)     | Attribute  | Properties for center instance config, such as options of zookeeper                                     |
+
 ### Cluster
 
 ```xml
@@ -52,10 +62,11 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                            http://shardingsphere.apache.org/schema/shardingsphere/cluster/cluster.xsd
                            ">
  
-    <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" instance-ref="regCenter" cluster-ref="cluster" />
+    <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" reg-center-ref="regCenter" cluster-ref="cluster" />
     <cluster:heartbeat id="cluster" sql="select 1" threadCount="1" interval="60" retryEnable="false" retryMaximum="3" retryInterval="3"/>
 </beans>
 ```
+
 Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/orchestration/cluster-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/orchestration/cluster-5.0.0.xsd)
 
 <cluster:heartbeat />

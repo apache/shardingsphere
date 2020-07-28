@@ -34,20 +34,20 @@
         <prop key="operation-timeout-milliseconds">1000</prop>
     </util:properties>
     
-    <orchestration:instance id="centerRepository" type="TestRegistry" server-lists="localhost:3181">
+    <orchestration:reg-center id="registryRepository" type="TestRegistry" server-lists="localhost:3181">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>
         </props>
-    </orchestration:instance>
+    </orchestration:reg-center>
     
-    <orchestration:data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" instance-ref="centerRepository" />
-    <orchestration:data-source id="shardingRuleWithAttributesDataSourceOrchestration" data-source-ref="shardingRuleWithAttributesDataSource" instance-ref="centerRepository" />
-    <orchestration:data-source id="multiTableRulesDataSourceOrchestration" data-source-ref="multiTableRulesDataSource" instance-ref="centerRepository" />
-    <orchestration:data-source id="propsDataSourceOrchestration" data-source-ref="propsDataSource" instance-ref="centerRepository" />
-    <orchestration:data-source id="tableRuleWithAttributesDataSourceOrchestration" data-source-ref="tableRuleWithAttributesDataSource" instance-ref="centerRepository" />
-    <orchestration:data-source id="bindingTableRuleDatasourceOrchestration" data-source-ref="bindingTableRuleDatasource" instance-ref="centerRepository" />
-    <orchestration:data-source id="multiBindingTableRulesDatasourceOrchestration" data-source-ref="multiBindingTableRulesDatasource" instance-ref="centerRepository" />
-    <orchestration:data-source id="broadcastTableRuleDatasourceOrchestration" data-source-ref="broadcastTableRuleDatasource" instance-ref="centerRepository" />
-    <orchestration:data-source id="multiBroadcastTableRulesDatasourceOrchestration" data-source-ref="multiBroadcastTableRulesDatasource" instance-ref="centerRepository" />
+    <orchestration:data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="shardingRuleWithAttributesDataSourceOrchestration" data-source-ref="shardingRuleWithAttributesDataSource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="multiTableRulesDataSourceOrchestration" data-source-ref="multiTableRulesDataSource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="propsDataSourceOrchestration" data-source-ref="propsDataSource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="tableRuleWithAttributesDataSourceOrchestration" data-source-ref="tableRuleWithAttributesDataSource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="bindingTableRuleDatasourceOrchestration" data-source-ref="bindingTableRuleDatasource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="multiBindingTableRulesDatasourceOrchestration" data-source-ref="multiBindingTableRulesDatasource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="broadcastTableRuleDatasourceOrchestration" data-source-ref="broadcastTableRuleDatasource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="multiBroadcastTableRulesDatasourceOrchestration" data-source-ref="multiBroadcastTableRulesDatasource" reg-center-ref="registryRepository" />
 </beans>

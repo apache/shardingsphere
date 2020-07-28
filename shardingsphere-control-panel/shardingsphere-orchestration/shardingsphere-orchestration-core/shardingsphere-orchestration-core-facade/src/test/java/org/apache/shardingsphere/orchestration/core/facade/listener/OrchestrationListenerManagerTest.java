@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.facade;
+package org.apache.shardingsphere.orchestration.core.facade.listener;
 
+import org.apache.shardingsphere.orchestration.core.config.listener.ConfigurationListenerManager;
+import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.orchestration.core.metadata.listener.MetaDataListenerManager;
+import org.apache.shardingsphere.orchestration.core.registry.listener.RegistryListenerManager;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
-
-import org.apache.shardingsphere.orchestration.core.config.listener.ConfigurationChangedListenerManager;
-import org.apache.shardingsphere.orchestration.core.facade.listener.OrchestrationListenerManager;
-import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
-import org.apache.shardingsphere.orchestration.core.registry.listener.RegistryListenerManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -44,7 +42,7 @@ public final class OrchestrationListenerManagerTest {
     private ConfigurationRepository configurationRepository;
     
     @Mock
-    private ConfigurationChangedListenerManager configurationChangedListenerManager;
+    private ConfigurationListenerManager configurationListenerManager;
     
     @Mock
     private MetaDataListenerManager metaDataListenerManager;
@@ -53,13 +51,13 @@ public final class OrchestrationListenerManagerTest {
     private RegistryListenerManager registryListenerManager;
     
     @Test
-    public void assertInitListeners() {
+    public void assertInit() {
         OrchestrationListenerManager actual = new OrchestrationListenerManager("test_name", registryRepository, configurationRepository, Collections.emptyList());
-        FieldUtil.setField(actual, "configurationChangedListenerManager", configurationChangedListenerManager);
+        FieldUtil.setField(actual, "configurationListenerManager", configurationListenerManager);
         FieldUtil.setField(actual, "registryListenerManager", registryListenerManager);
         FieldUtil.setField(actual, "metaDataListenerManager", metaDataListenerManager);
-        actual.initListeners();
-        verify(configurationChangedListenerManager).initListeners();
+        actual.init();
+        verify(configurationListenerManager).initListeners();
         verify(registryListenerManager).initListeners();
         verify(metaDataListenerManager).initListeners();
     }
