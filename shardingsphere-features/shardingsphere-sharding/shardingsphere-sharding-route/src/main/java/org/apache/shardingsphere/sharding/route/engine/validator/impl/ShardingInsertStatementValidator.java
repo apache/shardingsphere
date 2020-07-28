@@ -38,7 +38,7 @@ import java.util.Optional;
  * Sharding insert statement validator.
  */
 public final class ShardingInsertStatementValidator implements ShardingStatementValidator<InsertStatement> {
-
+    
     @Override
     public void validate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, final List<Object> parameters) {
         if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext() && 1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
@@ -60,7 +60,7 @@ public final class ShardingInsertStatementValidator implements ShardingStatement
             throw new ShardingSphereException("The table inserted and the table selected must be the same or bind tables.");
         }
     }
-
+    
     private boolean isUpdateShardingKey(final ShardingRule shardingRule, final OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment, final String tableName) {
         for (AssignmentSegment each : onDuplicateKeyColumnsSegment.getColumns()) {
             if (shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName)) {
@@ -69,15 +69,15 @@ public final class ShardingInsertStatementValidator implements ShardingStatement
         }
         return false;
     }
-
+    
     private boolean isContainsKeyGenerateStrategy(final ShardingRule shardingRule, final String tableName) {
         return shardingRule.findGenerateKeyColumnName(tableName).isPresent();
     }
-
+    
     private boolean isContainsKeyGenerateColumn(final ShardingRule shardingRule, final Collection<ColumnSegment> columns, final String tableName) {
         return columns.isEmpty() || columns.stream().anyMatch(each -> shardingRule.isGenerateKeyColumn(each.getIdentifier().getValue(), tableName));
     }
-
+    
     private boolean isAllSameTables(final Collection<String> tableNames) {
         return 1 == tableNames.stream().distinct().count();
     }
