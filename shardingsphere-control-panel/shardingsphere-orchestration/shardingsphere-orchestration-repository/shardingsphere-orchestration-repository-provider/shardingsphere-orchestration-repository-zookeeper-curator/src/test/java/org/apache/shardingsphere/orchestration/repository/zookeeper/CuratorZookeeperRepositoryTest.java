@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.repository.zookeeper;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.exception.OrchestrationException;
+import org.apache.shardingsphere.orchestration.repository.common.exception.OrchestrationException;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.junit.Assert;
 import org.junit.BeforeClass;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.api.exception;
+package org.apache.shardingsphere.orchestration.repository.common.exception;
 
 /**
  * Orchestration exception.
