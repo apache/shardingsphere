@@ -947,49 +947,51 @@
     
     <create-table sql-case-id="create_table_with_exist_index">
         <table name="t_order" start-index="13" stop-index="19" />
-        <column-definition type="NUMBER" primary-key="true">
+        <column-definition type="NUMBER" primary-key="true" start-index="22" stop-index="76">
             <column name="order_id" />
         </column-definition>
-        <column-definition type="NUMBER">
+        <column-definition type="NUMBER" start-index="79" stop-index="96">
             <column name="user_id" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="99" stop-index="117">
             <column name="status" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="120" stop-index="139">
             <column name="column1" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="142" stop-index="161">
             <column name="column2" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="164" stop-index="183">
             <column name="column3" />
         </column-definition>
-        <index name="order_index" />
+<!--        TODO index assert-->
+<!--        <index name="order_index" />-->
     </create-table>
     
     <create-table sql-case-id="create_table_with_create_index">
         <table name="t_order" start-index="13" stop-index="19" />
-        <table name="t_order" start-index="95" stop-index="101" />
-        <column-definition type="NUMBER" primary-key="true">
+<!--        <table name="t_order" start-index="95" stop-index="101" />-->
+        <column-definition type="NUMBER" primary-key="true" start-index="22" stop-index="113">
             <column name="order_id" />
         </column-definition>
-        <column-definition type="NUMBER">
+        <column-definition type="NUMBER" start-index="116" stop-index="133">
             <column name="user_id" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="136" stop-index="154">
             <column name="status" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="157" stop-index="176">
             <column name="column1" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="179" stop-index="198">
             <column name="column2" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="201" stop-index="220">
             <column name="column3" />
         </column-definition>
-        <index name="order_index" />
+<!--        TODO index assert-->
+<!--        <index name="order_index" />-->
     </create-table>
     
     <create-table sql-case-id="create_table_with_partition_oracle">

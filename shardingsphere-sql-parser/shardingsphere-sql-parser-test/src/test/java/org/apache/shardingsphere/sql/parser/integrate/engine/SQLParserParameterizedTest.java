@@ -95,16 +95,6 @@ public final class SQLParserParameterizedTest {
     
     private static boolean isPassedSqlCase(final String sqlCaseId) {
         Collection<String> sqlCases = new LinkedList<>();
-        sqlCases.add("show_index_with_indexes_with_table_and_database");
-        sqlCases.add("show_index_with_database_back_quotes");
-        sqlCases.add("show_index_with_table_back_quotes");
-        // TODO Alter statement needs new segment
-        sqlCases.add("alter_table_add_foreign_key");
-        sqlCases.add("alter_table_add_primary_foreign_key");
-        sqlCases.add("alter_table_add_constraints_sqlserver");
-        // TODO cannot parse create index behind pk in create table statement, and new segment is necessary
-        sqlCases.add("create_table_with_create_index");
-        sqlCases.add("create_table_with_exist_index");
         // TODO cannot support insert all
         sqlCases.add("insert_all_with_all_placeholders");
         return sqlCases.contains(sqlCaseId);
@@ -116,6 +106,9 @@ public final class SQLParserParameterizedTest {
     
     @Test
     public void assertSupportedSQL() {
+        if("show_index_with_indexes_with_table_and_database".equals(sqlCaseId)) {
+            System.out.println("fasfd");
+        }
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());

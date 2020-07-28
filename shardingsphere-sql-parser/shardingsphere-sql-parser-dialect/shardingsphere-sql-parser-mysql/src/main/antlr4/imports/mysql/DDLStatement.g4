@@ -350,7 +350,11 @@ indexOption_
     ;
 
 constraintDefinition
-    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption | uniqueOption_ | foreignKeyOption)
+    : (CONSTRAINT ignoredIdentifier_?)? constraintDefinitionOption*
+    ;
+
+constraintDefinitionOption
+    : primaryKeyOption | uniqueOption_ | foreignKeyOption
     ;
 
 primaryKeyOption

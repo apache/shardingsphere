@@ -43,6 +43,8 @@ public final class ConstraintDefinitionSegment implements CreateDefinitionSegmen
     
     private final Collection<ColumnSegment> primaryKeyColumns = new LinkedList<>();
     
+    private final Collection<ColumnSegment> unionKeyColumns = new LinkedList<>();
+    
     private SimpleTableSegment referencedTable;
     
     /**

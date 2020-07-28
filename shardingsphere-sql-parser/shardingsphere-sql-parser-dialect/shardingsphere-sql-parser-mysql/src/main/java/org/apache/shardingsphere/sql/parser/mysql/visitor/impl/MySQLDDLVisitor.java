@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyPart_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyParts_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnSpecificationContext;
@@ -269,11 +270,16 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitConstraintDefinition(final ConstraintDefinitionContext ctx) {
         ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        if (null != ctx.primaryKeyOption()) {
-            result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.primaryKeyOption().keyParts_())).getValue());
-        }
-        if (null != ctx.foreignKeyOption()) {
-            result.setReferencedTable((SimpleTableSegment) visit(ctx.foreignKeyOption().referenceDefinition()));
+        for (MySQLStatementParser.ConstraintDefinitionOptionContext each : ctx.constraintDefinitionOption()) {
+            if (null != each.primaryKeyOption()) {
+                result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(each.primaryKeyOption().keyParts_())).getValue());
+            }
+            if (null != each.foreignKeyOption()) {
+                result.setReferencedTable((SimpleTableSegment) visit(each.foreignKeyOption().referenceDefinition()));
+            }
+            if (null != each.uniqueOption_()) {
+                result.getUnionKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(each.uniqueOption_())).getValue());
+            }
         }
         return result;
     }
