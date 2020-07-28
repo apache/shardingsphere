@@ -36,6 +36,11 @@
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -47,7 +52,7 @@
                     <execution>
                         <id>antlr</id>
                         <configuration>
-                            <libDirectory>src/main/antlr4/imports/mysql/</libDirectory>
+                            <libDirectory>src/main/antlr4/imports/</libDirectory>
                             <listener>false</listener>
                             <visitor>true</visitor>
                         </configuration>

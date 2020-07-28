@@ -20,9 +20,17 @@ grammar RDLStatement;
 import Keyword, Literals, Symbol;
 
 createDatasource
-    : CREATE DATASOURCE datasource (COMMA datasource)* SEMI*
+    : CREATE DATASOURCE datasource (COMMA datasource)*
     ;
-    
+
+createShardingrule
+    : CREATE SHARDINGRULE shardingrule (COMMA shardingrule)*
+    ;
+
+shardingrule
+    : key EQ shardingruleValue
+    ;
+
 datasource
     : key EQ datasourceValue
     ;
@@ -34,7 +42,34 @@ key
 datasourceValue
     : hostName COLON port COLON dbName
     ;
-    
+
+shardingruleValue
+    : strategyType LP strategyValue RP
+    ;
+
+strategyType
+    : IDENTIFIER
+    ;
+
+strategyValue
+    : tableName COMMA columName COMMA strategyProps+
+    ;
+
+strategyProps
+    : strategyProp (COMMA strategyProp)*
+    ;
+strategyProp
+    : IDENTIFIER | NUMBER | INT
+    ;
+
+tableName
+    : IDENTIFIER UL* IDENTIFIER*
+    ;
+
+columName
+    : IDENTIFIER UL* IDENTIFIER*
+    ;
+
 hostName
     : ip | IDENTIFIER
     ;

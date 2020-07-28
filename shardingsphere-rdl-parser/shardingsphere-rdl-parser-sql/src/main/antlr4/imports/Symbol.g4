@@ -58,3 +58,4 @@ QUESTION:           '?';
 AT:                 '@';
 SEMI:               ';';
 JSONSEPARATOR:      '->>';
+UL:                 '_';
