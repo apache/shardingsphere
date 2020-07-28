@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.api.util;
+package org.apache.shardingsphere.orchestration.repository.common.util;
 
 /**
  * Config key utils.
