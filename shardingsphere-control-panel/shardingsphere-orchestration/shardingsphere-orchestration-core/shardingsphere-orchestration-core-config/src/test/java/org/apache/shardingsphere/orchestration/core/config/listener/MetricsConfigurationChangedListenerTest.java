@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.orchestration.core.config.listener;
 
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
+import org.apache.shardingsphere.orchestration.core.common.event.MetricsConfigurationChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.MetricsConfigurationChangedEvent;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,7 +52,7 @@ public final class MetricsConfigurationChangedListenerTest {
     
     @Test
     public void assertCreateOrchestrationEvent() {
-        MetricsConfigurationChangedEvent event = metricsConfigurationChangedListener.createOrchestrationEvent(new DataChangedEvent("test", METRICS_YAML, DataChangedEvent.ChangedType.UPDATED));
+        MetricsConfigurationChangedEvent event = metricsConfigurationChangedListener.createOrchestrationEvent(new DataChangedEvent("test", METRICS_YAML, ChangedType.UPDATED));
         MetricsConfiguration actual = event.getMetricsConfiguration();
         assertThat(actual, notNullValue());
         assertThat(actual.getMetricsName(), is("prometheus"));

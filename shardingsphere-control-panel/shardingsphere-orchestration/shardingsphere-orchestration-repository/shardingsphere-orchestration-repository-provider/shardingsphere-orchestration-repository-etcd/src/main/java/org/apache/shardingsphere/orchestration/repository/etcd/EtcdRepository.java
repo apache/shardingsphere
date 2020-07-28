@@ -35,6 +35,7 @@ import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepos
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 
 import java.util.List;
@@ -101,8 +102,8 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         Watch.Listener listener = Watch.listener(response -> {
             for (WatchEvent each : response.getEvents()) {
-                DataChangedEvent.ChangedType changedType = getEventChangedType(each);
-                if (DataChangedEvent.ChangedType.IGNORED != changedType) {
+                ChangedType changedType = getEventChangedType(each);
+                if (ChangedType.IGNORED != changedType) {
                     dataChangedEventListener.onChange(new DataChangedEvent(each.getKeyValue().getKey().toString(Charsets.UTF_8), each.getKeyValue().getValue().toString(Charsets.UTF_8), changedType));
                 }
             }
@@ -115,14 +116,14 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
         client.getKVClient().delete(ByteSequence.from(key, Charsets.UTF_8));
     }
     
-    private DataChangedEvent.ChangedType getEventChangedType(final WatchEvent event) {
+    private ChangedType getEventChangedType(final WatchEvent event) {
         switch (event.getEventType()) {
             case PUT:
-                return DataChangedEvent.ChangedType.UPDATED;
+                return ChangedType.UPDATED;
             case DELETE:
-                return DataChangedEvent.ChangedType.DELETED;
+                return ChangedType.DELETED;
             default:
-                return DataChangedEvent.ChangedType.IGNORED;
+                return ChangedType.IGNORED;
         }
     }
     

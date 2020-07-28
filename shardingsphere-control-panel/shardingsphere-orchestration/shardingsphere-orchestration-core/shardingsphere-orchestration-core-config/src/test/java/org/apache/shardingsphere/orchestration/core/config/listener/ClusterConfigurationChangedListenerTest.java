@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.orchestration.core.config.listener;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.orchestration.core.common.event.ClusterConfigurationChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.ClusterConfigurationChangedEvent;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -51,7 +52,7 @@ public final class ClusterConfigurationChangedListenerTest {
     @Test
     public void assertCreateOrchestrationEvent() {
         ClusterConfigurationChangedEvent event = clusterConfigurationChangedListener
-                .createOrchestrationEvent(new DataChangedEvent("test", readYAML(DATA_CLUSTER_YAML), DataChangedEvent.ChangedType.UPDATED));
+                .createOrchestrationEvent(new DataChangedEvent("test", readYAML(DATA_CLUSTER_YAML), ChangedType.UPDATED));
         assertNotNull(event);
         assertNotNull(event.getClusterConfiguration());
         assertNotNull(event.getClusterConfiguration().getHeartbeat());

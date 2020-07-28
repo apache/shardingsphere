@@ -31,10 +31,11 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
-import org.apache.shardingsphere.orchestration.repository.zookeeper.handler.CuratorZookeeperExceptionHandler;
-import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
+import org.apache.shardingsphere.orchestration.repository.zookeeper.handler.CuratorZookeeperExceptionHandler;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
@@ -221,7 +222,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
                 return;
             }
             DataChangedEvent.ChangedType changedType = getChangedType(event);
-            if (DataChangedEvent.ChangedType.IGNORED != changedType) {
+            if (ChangedType.IGNORED != changedType) {
                 dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), Charsets.UTF_8), changedType));
             }
         });
@@ -240,16 +241,16 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         }
     }
     
-    private DataChangedEvent.ChangedType getChangedType(final TreeCacheEvent event) {
+    private ChangedType getChangedType(final TreeCacheEvent event) {
         switch (event.getType()) {
             case NODE_ADDED:
-                return DataChangedEvent.ChangedType.ADDED;
+                return ChangedType.ADDED;
             case NODE_UPDATED:
-                return DataChangedEvent.ChangedType.UPDATED;
+                return ChangedType.UPDATED;
             case NODE_REMOVED:
-                return DataChangedEvent.ChangedType.DELETED;
+                return ChangedType.DELETED;
             default:
-                return DataChangedEvent.ChangedType.IGNORED;
+                return ChangedType.IGNORED;
         }
     }
     

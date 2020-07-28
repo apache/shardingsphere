@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.repository.common.util.ConfigKeyUtils;
 
@@ -134,7 +135,7 @@ public final class NacosRepository implements ConfigurationRepository {
                 
                 @Override
                 public void receiveConfigInfo(final String configInfo) {
-                    dataChangedEventListener.onChange(new DataChangedEvent(key, configInfo, DataChangedEvent.ChangedType.UPDATED));
+                    dataChangedEventListener.onChange(new DataChangedEvent(key, configInfo, ChangedType.UPDATED));
                 }
             });
         } catch (final NacosException ex) {

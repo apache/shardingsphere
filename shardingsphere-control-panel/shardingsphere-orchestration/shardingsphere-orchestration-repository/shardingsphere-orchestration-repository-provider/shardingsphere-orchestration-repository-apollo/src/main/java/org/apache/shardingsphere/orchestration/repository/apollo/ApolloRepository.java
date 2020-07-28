@@ -25,12 +25,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.repository.apollo.wrapper.ApolloConfigWrapper;
 import org.apache.shardingsphere.orchestration.repository.apollo.wrapper.ApolloOpenApiWrapper;
-import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.repository.common.util.ConfigKeyUtils;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -84,8 +85,8 @@ public final class ApolloRepository implements ConfigurationRepository {
         ConfigChangeListener listener = changeEvent -> {
             for (String changeKey : changeEvent.changedKeys()) {
                 ConfigChange change = changeEvent.getChange(changeKey);
-                DataChangedEvent.ChangedType changedType = getChangedType(change.getChangeType());
-                if (DataChangedEvent.ChangedType.IGNORED == changedType) {
+                ChangedType changedType = getChangedType(change.getChangeType());
+                if (ChangedType.IGNORED == changedType) {
                     continue;
                 }
                 if (!caches.containsKey(changeKey)) {
@@ -102,15 +103,15 @@ public final class ApolloRepository implements ConfigurationRepository {
         openApiWrapper.remove(ConfigKeyUtils.pathToKey(key));
     }
     
-    private DataChangedEvent.ChangedType getChangedType(final PropertyChangeType changeType) {
+    private ChangedType getChangedType(final PropertyChangeType changeType) {
         switch (changeType) {
             case ADDED:
             case MODIFIED:
-                return DataChangedEvent.ChangedType.UPDATED;
+                return ChangedType.UPDATED;
             case DELETED:
-                return DataChangedEvent.ChangedType.DELETED;
+                return ChangedType.DELETED;
             default:
-                return DataChangedEvent.ChangedType.IGNORED;
+                return ChangedType.IGNORED;
         }
     }
     
