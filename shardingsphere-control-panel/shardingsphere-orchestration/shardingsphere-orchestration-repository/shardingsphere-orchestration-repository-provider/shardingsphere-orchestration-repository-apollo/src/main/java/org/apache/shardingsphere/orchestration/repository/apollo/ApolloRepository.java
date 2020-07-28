@@ -98,11 +98,6 @@ public final class ApolloRepository implements ConfigurationRepository {
         configWrapper.addChangeListener(listener, Collections.singleton(apolloKey), Collections.singleton(apolloKey));
     }
     
-    @Override
-    public void delete(final String key) {
-        openApiWrapper.remove(ConfigKeyUtils.pathToKey(key));
-    }
-    
     private ChangedType getChangedType(final PropertyChangeType changeType) {
         switch (changeType) {
             case ADDED:
@@ -113,6 +108,11 @@ public final class ApolloRepository implements ConfigurationRepository {
             default:
                 return ChangedType.IGNORED;
         }
+    }
+    
+    @Override
+    public void delete(final String key) {
+        openApiWrapper.remove(ConfigKeyUtils.pathToKey(key));
     }
     
     @Override

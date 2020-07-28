@@ -228,17 +228,16 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         });
     }
     
-    @Override
-    public void delete(final String key) {
+    private void addCacheData(final String cachePath) {
+        TreeCache cache = new TreeCache(client, cachePath);
         try {
-            if (isExisted(key)) {
-                client.delete().deletingChildrenIfNeeded().forPath(key);
-            }
+            cache.start();
             // CHECKSTYLE:OFF
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
+        caches.put(cachePath + "/", cache);
     }
     
     private ChangedType getChangedType(final TreeCacheEvent event) {
@@ -254,16 +253,17 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         }
     }
     
-    private void addCacheData(final String cachePath) {
-        TreeCache cache = new TreeCache(client, cachePath);
+    @Override
+    public void delete(final String key) {
         try {
-            cache.start();
+            if (isExisted(key)) {
+                client.delete().deletingChildrenIfNeeded().forPath(key);
+            }
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
-        caches.put(cachePath + "/", cache);
     }
     
     @Override
