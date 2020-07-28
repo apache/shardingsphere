@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -31,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -40,6 +42,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -49,38 +52,47 @@ public final class ShardingUpdateStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
-    
+
+    @Test(expected = ShardingSphereException.class)
+    public void assertValidateUpdateModifyMultiTables() {
+        SQLStatementContext<UpdateStatement> sqlStatementContext = new UpdateStatementContext(createUpdateStatement());
+        sqlStatementContext.getTablesContext().getTables().addAll(createMultiTablesContext().getTables());
+        new ShardingUpdateStatementValidator().validate(shardingRule, sqlStatementContext, Collections.emptyList());
+    }
+
     @Test
     public void assertValidateUpdateWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), createTablesContext(), Collections.emptyList());
+        new ShardingUpdateStatementValidator().validate(shardingRule, new UpdateStatementContext(createUpdateStatement()), Collections.emptyList());
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), createTablesContext(), Collections.emptyList());
+        new ShardingUpdateStatementValidator().validate(shardingRule, new UpdateStatementContext(createUpdateStatement()), Collections.emptyList());
     }
     
     @Test
     public void assertValidateUpdateWithoutShardingKeyAndParameters() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), createTablesContext(), parameters);
+        new ShardingUpdateStatementValidator().validate(shardingRule, new UpdateStatementContext(createUpdateStatement()), parameters);
     }
     
     @Test
     public void assertValidateUpdateWithShardingKeyAndShardingParameterEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(1), createTablesContext(), parameters);
+        SQLStatementContext<UpdateStatement> updateStatementContext = new UpdateStatementContext(createUpdateStatementAndParameters(1));
+        new ShardingUpdateStatementValidator().validate(shardingRule, updateStatementContext, parameters);
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKeyAndShardingParameterNotEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(2), createTablesContext(), parameters);
+        SQLStatementContext<UpdateStatement> updateStatementContext = new UpdateStatementContext(createUpdateStatementAndParameters(2));
+        new ShardingUpdateStatementValidator().validate(shardingRule, updateStatementContext, parameters);
     }
     
     private UpdateStatement createUpdateStatement() {
@@ -105,9 +117,11 @@ public final class ShardingUpdateStatementValidatorTest {
         result.setWhere(where);
         return result;
     }
-    
-    private TablesContext createTablesContext() {
-        SimpleTableSegment tableSegment = new SimpleTableSegment(0, 0, new IdentifierValue("user"));
-        return new TablesContext(tableSegment);
+
+    private TablesContext createMultiTablesContext() {
+        List<SimpleTableSegment> result = new LinkedList<>();
+        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
+        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
+        return new TablesContext(result);
     }
 }

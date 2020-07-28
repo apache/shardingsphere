@@ -21,6 +21,9 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
@@ -35,9 +38,13 @@ import java.util.Optional;
  * Sharding insert statement validator.
  */
 public final class ShardingInsertStatementValidator implements ShardingStatementValidator<InsertStatement> {
-    
+
     @Override
-    public void validate(final ShardingRule shardingRule, final InsertStatement sqlStatement, final TablesContext tablesContext, final List<Object> parameters) {
+    public void validate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, final List<Object> parameters) {
+        if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext() && 1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
+            throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
+        }
+        InsertStatement sqlStatement = sqlStatementContext.getSqlStatement();
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = sqlStatement.getOnDuplicateKeyColumns();
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(shardingRule, onDuplicateKeyColumnsSegment.get(), tableName)) {
@@ -48,11 +55,12 @@ public final class ShardingInsertStatementValidator implements ShardingStatement
                 && !isContainsKeyGenerateColumn(shardingRule, sqlStatement.getColumns(), tableName)) {
             throw new ShardingSphereException("INSERT INTO .... SELECT can not support applying keyGenerator to absent generateKeyColumn.");
         }
+        TablesContext tablesContext = sqlStatementContext.getTablesContext();
         if (insertSelectSegment.isPresent() && !isAllSameTables(tablesContext.getTableNames()) && !shardingRule.isAllBindingTables(tablesContext.getTableNames())) {
             throw new ShardingSphereException("The table inserted and the table selected must be the same or bind tables.");
         }
     }
-    
+
     private boolean isUpdateShardingKey(final ShardingRule shardingRule, final OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment, final String tableName) {
         for (AssignmentSegment each : onDuplicateKeyColumnsSegment.getColumns()) {
             if (shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName)) {
@@ -61,15 +69,15 @@ public final class ShardingInsertStatementValidator implements ShardingStatement
         }
         return false;
     }
-    
+
     private boolean isContainsKeyGenerateStrategy(final ShardingRule shardingRule, final String tableName) {
         return shardingRule.findGenerateKeyColumnName(tableName).isPresent();
     }
-    
+
     private boolean isContainsKeyGenerateColumn(final ShardingRule shardingRule, final Collection<ColumnSegment> columns, final String tableName) {
         return columns.isEmpty() || columns.stream().anyMatch(each -> shardingRule.isGenerateKeyColumn(each.getIdentifier().getValue(), tableName));
     }
-    
+
     private boolean isAllSameTables(final Collection<String> tableNames) {
         return 1 == tableNames.stream().distinct().count();
     }

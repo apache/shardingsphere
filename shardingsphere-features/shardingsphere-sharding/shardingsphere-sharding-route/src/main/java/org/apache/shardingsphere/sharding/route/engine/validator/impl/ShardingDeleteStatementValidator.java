@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator;
+package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 
 import java.util.List;
 
 /**
- * Sharding statement validator.
- *
- * @param <T> type of SQL statement
+ * Sharding delete statement validator.
  */
-public interface ShardingStatementValidator<T extends SQLStatement> {
-    
-    /**
-     * Validate whether sharding operation is supported.
-     * 
-     * @param shardingRule sharding rule
-     * @param sqlStatementContext SQL statement context
-     * @param parameters SQL parameters
-     */
-    void validate(ShardingRule shardingRule, SQLStatementContext<T> sqlStatementContext, List<Object> parameters);
+public final class ShardingDeleteStatementValidator implements ShardingStatementValidator<DeleteStatement> {
+
+    @Override
+    public void validate(final ShardingRule shardingRule, final SQLStatementContext<DeleteStatement> sqlStatementContext, final List<Object> parameters) {
+        if (1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
+            throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
+        }
+    }
 }
