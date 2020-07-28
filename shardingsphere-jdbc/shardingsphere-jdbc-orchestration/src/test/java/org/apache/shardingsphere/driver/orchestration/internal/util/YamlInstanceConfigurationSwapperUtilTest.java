@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.driver.orchestration.internal.util;
 
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.yaml.config.YamlOrchestrationCenterConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.yaml.config.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationCenterConfiguration;
+import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;

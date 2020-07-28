@@ -23,9 +23,9 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.repository.apollo.wrapper.ApolloConfigWrapper;
 import org.apache.shardingsphere.orchestration.repository.apollo.wrapper.ApolloOpenApiWrapper;
-import org.apache.shardingsphere.orchestration.repository.common.util.ConfigKeyUtils;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -88,7 +88,7 @@ public final class ApolloRepositoryTest {
     
     @Test
     public void assertWatch() throws InterruptedException, ExecutionException, TimeoutException {
-        assertWatchUpdateChangedType("/test/children/1", "newValue");
+        assertWatchUpdateChangedType("/test/children/1", "test.children.1", "newValue");
     }
     
     @Test
@@ -98,45 +98,45 @@ public final class ApolloRepositoryTest {
     
     @Test
     public void assertWatchUpdateChangedTypeWithExistedKey() throws InterruptedException, ExecutionException, TimeoutException {
-        assertWatchUpdateChangedType("/test/children/4", "newValue4");
+        assertWatchUpdateChangedType("/test/children/4", "test.children.4", "newValue4");
         assertThat(REPOSITORY.get("/test/children/4"), is("newValue4"));
     }
     
     @Test
-    public void assertWatchDeletedChangedTypeWithExistedKey() throws InterruptedException, ExecutionException, TimeoutException {
-        assertWatchDeletedChangedType("/test/children/3");
+    public void assertWatchUpdateChangedTypeWithNotExistedKey() throws InterruptedException, ExecutionException, TimeoutException {
+        assertWatchUpdateChangedType("/test/children/newKey", "test.children.newKey", "newValue");
     }
     
-    private void assertWatchDeletedChangedType(final String key) throws InterruptedException, ExecutionException, TimeoutException {
+    private void assertWatchUpdateChangedType(final String path, final String key, final String newValue) throws InterruptedException, ExecutionException, TimeoutException {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        REPOSITORY.watch(key, future::set);
-        embeddedApollo.deleteProperty("orchestration", ConfigKeyUtils.pathToKey(key));
+        REPOSITORY.watch(path, future::set);
+        embeddedApollo.addOrModifyProperty("orchestration", key, newValue);
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
-        assertThat(changeEvent.getKey(), is(key));
-        assertNull(changeEvent.getValue());
-        assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.DELETED));
-        assertNull(REPOSITORY.get(key));
+        assertThat(changeEvent.getKey(), is(path));
+        assertThat(changeEvent.getValue(), is(newValue));
+        assertThat(changeEvent.getChangedType(), is(ChangedType.UPDATED));
     }
     
     @Test
-    public void assertWatchUpdateChangedTypeWithNotExistedKey() throws InterruptedException, ExecutionException, TimeoutException {
-        assertWatchUpdateChangedType("/test/children/newKey", "newValue");
+    public void assertWatchDeletedChangedTypeWithExistedKey() throws InterruptedException, ExecutionException, TimeoutException {
+        assertWatchDeletedChangedType("/test/children/3", "test.children.3");
     }
     
-    private void assertWatchUpdateChangedType(final String key, final String newValue) throws InterruptedException, ExecutionException, TimeoutException {
+    private void assertWatchDeletedChangedType(final String path, final String key) throws InterruptedException, ExecutionException, TimeoutException {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        REPOSITORY.watch(key, future::set);
-        embeddedApollo.addOrModifyProperty("orchestration", ConfigKeyUtils.pathToKey(key), newValue);
+        REPOSITORY.watch(path, future::set);
+        embeddedApollo.deleteProperty("orchestration", key);
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
-        assertThat(changeEvent.getKey(), is(key));
-        assertThat(changeEvent.getValue(), is(newValue));
-        assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
+        assertThat(changeEvent.getKey(), is(path));
+        assertNull(changeEvent.getValue());
+        assertThat(changeEvent.getChangedType(), is(ChangedType.DELETED));
+        assertNull(REPOSITORY.get(path));
     }
     
     @Test
     public void assertDelete() {
         REPOSITORY.delete("/test/children/2");
-        verify(OPEN_API_WRAPPER).remove(ConfigKeyUtils.pathToKey("/test/children/2"));
+        verify(OPEN_API_WRAPPER).remove("test.children.2");
     }
     
     @Test
@@ -147,7 +147,7 @@ public final class ApolloRepositoryTest {
     @Test
     public void assertPersist() {
         REPOSITORY.persist("/test/children/6", "value6");
-        verify(OPEN_API_WRAPPER).persist(ConfigKeyUtils.pathToKey("/test/children/6"), "value6");
+        verify(OPEN_API_WRAPPER).persist("test.children.6", "value6");
     }
     
     @Test

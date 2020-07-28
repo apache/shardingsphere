@@ -15,35 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.common.util;
+package org.apache.shardingsphere.orchestration.core.common.yaml.config;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 /**
- * Config key utilities.
+ * Orchestration configuration for YAML.
  */
-public final class ConfigKeyUtils {
+@Getter
+@Setter
+public final class YamlOrchestrationConfiguration implements YamlConfiguration {
     
-    private static final String DOT_SEPARATOR = ".";
+    private String namespace;
     
-    private static final String PATH_SEPARATOR = "/";
+    private YamlOrchestrationCenterConfiguration registryCenter;
     
-    /**
-     * Convert path to key.
-     * 
-     * @param path config path
-     * @return config key
-     */
-    public static String pathToKey(final String path) {
-        String key = path.replace(PATH_SEPARATOR, DOT_SEPARATOR);
-        return key.substring(key.indexOf(DOT_SEPARATOR) + 1);
-    }
+    private YamlOrchestrationCenterConfiguration additionalConfigCenter;
     
-    /**
-     * Convert key to path.
-     * 
-     * @param key config key
-     * @return config path
-     */
-    public static String keyToPath(final String key) {
-        return PATH_SEPARATOR + key.replace(DOT_SEPARATOR, PATH_SEPARATOR);
-    }
+    private boolean overwrite;
 }

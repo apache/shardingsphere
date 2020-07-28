@@ -34,7 +34,7 @@ public enum NacosPropertyKey implements TypedPropertyKey {
     GROUP("group", "SHARDING_SPHERE_DEFAULT_GROUP", String.class),
     
     /**
-     * Nacos get config data timeout value.
+     * Get config data timeout value.
      */
     TIMEOUT("timeout", String.valueOf(3000), long.class);
     

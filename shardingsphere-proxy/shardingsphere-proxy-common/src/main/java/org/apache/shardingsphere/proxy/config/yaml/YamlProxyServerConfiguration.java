@@ -23,7 +23,7 @@ import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfigura
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.yaml.config.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationConfiguration;
 
 import java.util.Properties;
 

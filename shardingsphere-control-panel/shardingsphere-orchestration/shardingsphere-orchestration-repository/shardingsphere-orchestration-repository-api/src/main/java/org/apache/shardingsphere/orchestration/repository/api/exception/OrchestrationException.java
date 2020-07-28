@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.common.yaml.config;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+package org.apache.shardingsphere.orchestration.repository.api.exception;
 
 /**
- * Orchestration configuration for YAML.
+ * Orchestration exception.
  */
-@Getter
-@Setter
-public final class YamlOrchestrationConfiguration implements YamlConfiguration {
+public final class OrchestrationException extends RuntimeException {
     
-    private String namespace;
+    private static final long serialVersionUID = -6417179023552012152L;
     
-    private YamlOrchestrationCenterConfiguration registryCenter;
-    
-    private YamlOrchestrationCenterConfiguration additionalConfigCenter;
-    
-    private boolean overwrite;
+    public OrchestrationException(final Exception cause) {
+        super(cause);
+    }
 }

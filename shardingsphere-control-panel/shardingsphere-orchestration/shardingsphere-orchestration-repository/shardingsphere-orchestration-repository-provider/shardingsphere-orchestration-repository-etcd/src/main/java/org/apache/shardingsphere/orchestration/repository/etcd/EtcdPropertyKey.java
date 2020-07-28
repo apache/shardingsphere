@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
 public enum EtcdPropertyKey implements TypedPropertyKey {
     
     /**
-     * The portal url for apollo open api client.
+     * Time to live seconds.
      */
     TIME_TO_LIVE_SECONDS("timeToLiveSeconds", "30", long.class);
     

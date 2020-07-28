@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.orchestration.core.common.listener;
 
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 import org.apache.shardingsphere.orchestration.repository.api.OrchestrationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -54,10 +55,10 @@ public final class PostOrchestrationRepositoryEventListenerTest {
         };
         doAnswer(invocationOnMock -> {
             DataChangedEventListener listener = (DataChangedEventListener) invocationOnMock.getArguments()[1];
-            listener.onChange(new DataChangedEvent("test", "value", DataChangedEvent.ChangedType.UPDATED));
+            listener.onChange(new DataChangedEvent("test", "value", ChangedType.UPDATED));
             return mock(DataChangedEventListener.class);
         }).when(orchestrationRepository).watch(anyString(), any(DataChangedEventListener.class));
-        postEventListener.watch(DataChangedEvent.ChangedType.UPDATED);
+        postEventListener.watch(ChangedType.UPDATED);
         verify(orchestrationRepository).watch(eq("test"), ArgumentMatchers.any());
     }
     
@@ -72,10 +73,10 @@ public final class PostOrchestrationRepositoryEventListenerTest {
         };
         doAnswer(invocationOnMock -> {
             DataChangedEventListener listener = (DataChangedEventListener) invocationOnMock.getArguments()[1];
-            listener.onChange(new DataChangedEvent("test", "value", DataChangedEvent.ChangedType.UPDATED));
+            listener.onChange(new DataChangedEvent("test", "value", ChangedType.UPDATED));
             return mock(DataChangedEventListener.class);
         }).when(orchestrationRepository).watch(anyString(), any(DataChangedEventListener.class));
-        postEventListener.watch(DataChangedEvent.ChangedType.UPDATED, DataChangedEvent.ChangedType.DELETED);
+        postEventListener.watch(ChangedType.UPDATED, ChangedType.DELETED);
         verify(orchestrationRepository).watch(eq("test"), ArgumentMatchers.any());
         verify(orchestrationRepository).watch(eq("dev"), ArgumentMatchers.any());
     }

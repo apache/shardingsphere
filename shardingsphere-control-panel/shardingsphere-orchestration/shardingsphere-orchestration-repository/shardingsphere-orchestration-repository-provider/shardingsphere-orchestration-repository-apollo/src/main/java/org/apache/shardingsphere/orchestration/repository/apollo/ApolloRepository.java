@@ -25,12 +25,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.repository.apollo.wrapper.ApolloConfigWrapper;
 import org.apache.shardingsphere.orchestration.repository.apollo.wrapper.ApolloOpenApiWrapper;
-import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.orchestration.repository.common.util.ConfigKeyUtils;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,6 +43,10 @@ import java.util.Properties;
  */
 @Slf4j
 public final class ApolloRepository implements ConfigurationRepository {
+    
+    private static final String DOT_SEPARATOR = ".";
+    
+    private static final String PATH_SEPARATOR = "/";
     
     private final Map<String, DataChangedEventListener> caches = new HashMap<>();
     
@@ -63,8 +67,8 @@ public final class ApolloRepository implements ConfigurationRepository {
     
     @Override
     public String get(final String key) {
-        String value = configWrapper.getProperty(ConfigKeyUtils.pathToKey(key));
-        return Strings.isNullOrEmpty(value) ? openApiWrapper.getValue(ConfigKeyUtils.pathToKey(key)) : value;
+        String value = configWrapper.getProperty(pathToKey(key));
+        return Strings.isNullOrEmpty(value) ? openApiWrapper.getValue(pathToKey(key)) : value;
     }
     
     @Override
@@ -74,44 +78,53 @@ public final class ApolloRepository implements ConfigurationRepository {
     
     @Override
     public void persist(final String key, final String value) {
-        openApiWrapper.persist(ConfigKeyUtils.pathToKey(key), value);
+        openApiWrapper.persist(pathToKey(key), value);
     }
     
     @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
-        String apolloKey = ConfigKeyUtils.pathToKey(key);
+        String apolloKey = pathToKey(key);
         caches.put(apolloKey, dataChangedEventListener);
         ConfigChangeListener listener = changeEvent -> {
             for (String changeKey : changeEvent.changedKeys()) {
                 ConfigChange change = changeEvent.getChange(changeKey);
-                DataChangedEvent.ChangedType changedType = getChangedType(change.getChangeType());
-                if (DataChangedEvent.ChangedType.IGNORED == changedType) {
+                ChangedType changedType = getChangedType(change.getChangeType());
+                if (ChangedType.IGNORED == changedType) {
                     continue;
                 }
-                if (caches.get(changeKey) == null) {
+                if (!caches.containsKey(changeKey)) {
                     continue;
                 }
-                caches.get(changeKey).onChange(new DataChangedEvent(ConfigKeyUtils.keyToPath(changeKey), change.getNewValue(), changedType));
+                caches.get(changeKey).onChange(new DataChangedEvent(keyToPath(changeKey), change.getNewValue(), changedType));
             }
         };
         configWrapper.addChangeListener(listener, Collections.singleton(apolloKey), Collections.singleton(apolloKey));
     }
     
-    @Override
-    public void delete(final String key) {
-        openApiWrapper.remove(ConfigKeyUtils.pathToKey(key));
-    }
-    
-    private DataChangedEvent.ChangedType getChangedType(final PropertyChangeType changeType) {
+    private ChangedType getChangedType(final PropertyChangeType changeType) {
         switch (changeType) {
             case ADDED:
             case MODIFIED:
-                return DataChangedEvent.ChangedType.UPDATED;
+                return ChangedType.UPDATED;
             case DELETED:
-                return DataChangedEvent.ChangedType.DELETED;
+                return ChangedType.DELETED;
             default:
-                return DataChangedEvent.ChangedType.IGNORED;
+                return ChangedType.IGNORED;
         }
+    }
+    
+    @Override
+    public void delete(final String key) {
+        openApiWrapper.remove(pathToKey(key));
+    }
+    
+    private String pathToKey(final String path) {
+        String key = path.replace(PATH_SEPARATOR, DOT_SEPARATOR);
+        return key.substring(key.indexOf(DOT_SEPARATOR) + 1);
+    }
+    
+    private String keyToPath(final String key) {
+        return PATH_SEPARATOR + key.replace(DOT_SEPARATOR, PATH_SEPARATOR);
     }
     
     @Override

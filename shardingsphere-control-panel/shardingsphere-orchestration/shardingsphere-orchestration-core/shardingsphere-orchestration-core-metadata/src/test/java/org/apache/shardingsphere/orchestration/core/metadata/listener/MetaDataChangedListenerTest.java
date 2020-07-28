@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.orchestration.core.metadata.listener;
 
+import org.apache.shardingsphere.orchestration.core.metadata.MetaDataTest;
 import org.apache.shardingsphere.orchestration.core.metadata.event.MetaDataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.OrchestrationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.core.metadata.MetaDataTest;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -45,7 +46,7 @@ public final class MetaDataChangedListenerTest {
     
     @Test
     public void createOrchestrationEvent() {
-        DataChangedEvent event = new DataChangedEvent("/test/metadata/schema", MetaDataTest.META_DATA, DataChangedEvent.ChangedType.UPDATED);
+        DataChangedEvent event = new DataChangedEvent("/test/metadata/schema", MetaDataTest.META_DATA, ChangedType.UPDATED);
         MetaDataChangedEvent metaDataChangedEvent = (MetaDataChangedEvent) metaDataChangedListener.createOrchestrationEvent(event);
         assertNotNull(metaDataChangedEvent);
         assertThat(metaDataChangedEvent.getSchemaNames(), is(Collections.singleton("schema")));

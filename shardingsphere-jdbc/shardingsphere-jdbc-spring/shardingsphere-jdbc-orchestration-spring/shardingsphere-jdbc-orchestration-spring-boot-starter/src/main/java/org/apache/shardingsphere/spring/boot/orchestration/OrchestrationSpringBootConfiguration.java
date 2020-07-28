@@ -24,8 +24,8 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.yaml.config.YamlOrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.yaml.swapper.OrchestrationCenterConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.OrchestrationCenterConfigurationYamlSwapper;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.orchestration.common.OrchestrationSpringBootRootConfiguration;
 import org.apache.shardingsphere.spring.boot.orchestration.rule.LocalRulesCondition;

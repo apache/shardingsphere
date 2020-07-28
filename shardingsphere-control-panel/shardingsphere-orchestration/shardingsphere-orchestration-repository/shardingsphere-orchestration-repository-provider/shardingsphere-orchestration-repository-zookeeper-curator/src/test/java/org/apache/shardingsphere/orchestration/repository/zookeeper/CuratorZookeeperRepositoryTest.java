@@ -19,8 +19,9 @@ package org.apache.shardingsphere.orchestration.repository.zookeeper;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.exception.OrchestrationException;
+import org.apache.shardingsphere.orchestration.repository.api.exception.OrchestrationException;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -85,7 +86,7 @@ public final class CuratorZookeeperRepositoryTest {
         Thread.sleep(50L);
         DataChangedEvent dataChangedEvent = dataChangedEventActual.get();
         assertNotNull(dataChangedEvent);
-        assertThat(dataChangedEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
+        assertThat(dataChangedEvent.getChangedType(), is(ChangedType.UPDATED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_updated/1"));
         assertThat(dataChangedEvent.getValue(), is("value2"));
         assertThat(REPOSITORY.get("/test/children_updated/1"), is("value2"));
@@ -103,7 +104,7 @@ public final class CuratorZookeeperRepositoryTest {
         Thread.sleep(50L);
         DataChangedEvent dataChangedEvent = dataChangedEventActual.get();
         assertNotNull(dataChangedEvent);
-        assertThat(dataChangedEvent.getChangedType(), is(DataChangedEvent.ChangedType.DELETED));
+        assertThat(dataChangedEvent.getChangedType(), is(ChangedType.DELETED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_deleted/5"));
         assertThat(dataChangedEvent.getValue(), is("value5"));
     }
@@ -116,7 +117,7 @@ public final class CuratorZookeeperRepositoryTest {
         Thread.sleep(50L);
         DataChangedEvent event = actualDataChangedEvent.get();
         assertNotNull(event);
-        assertThat(event.getChangedType(), is(DataChangedEvent.ChangedType.ADDED));
+        assertThat(event.getChangedType(), is(ChangedType.ADDED));
         assertThat(event.getKey(), is("/test/children_added/4"));
         assertThat(event.getValue(), is("value4"));
     }

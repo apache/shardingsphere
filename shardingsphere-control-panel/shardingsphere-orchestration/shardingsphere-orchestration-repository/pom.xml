@@ -29,7 +29,6 @@
     
     <modules>
         <module>shardingsphere-orchestration-repository-api</module>
-        <module>shardingsphere-orchestration-repository-common</module>
         <module>shardingsphere-orchestration-repository-provider</module>
     </modules>
 </project>

@@ -42,8 +42,8 @@ import org.apache.shardingsphere.metrics.configuration.config.MetricsConfigurati
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.orchestration.core.common.configuration.DataSourceConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.core.common.configuration.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.DataSourceConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -224,7 +224,7 @@ public final class ConfigCenter {
      * @param shardingSchemaName sharding schema name
      * @return data source configurations
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String shardingSchemaName) {
         if (!hasDataSourceConfiguration(shardingSchemaName)) {
             return new LinkedHashMap<>();

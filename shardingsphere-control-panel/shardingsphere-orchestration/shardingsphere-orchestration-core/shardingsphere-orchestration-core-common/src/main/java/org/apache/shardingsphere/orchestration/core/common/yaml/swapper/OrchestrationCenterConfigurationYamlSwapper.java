@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.common.yaml.swapper;
+package org.apache.shardingsphere.orchestration.core.common.yaml.swapper;
 
-import org.apache.shardingsphere.orchestration.repository.common.yaml.config.YamlOrchestrationCenterConfiguration;
+import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 

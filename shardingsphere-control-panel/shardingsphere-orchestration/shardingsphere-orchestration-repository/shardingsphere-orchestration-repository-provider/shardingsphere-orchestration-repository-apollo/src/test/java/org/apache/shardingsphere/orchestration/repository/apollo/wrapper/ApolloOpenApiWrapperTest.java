@@ -23,7 +23,6 @@ import com.ctrip.framework.apollo.openapi.dto.OpenItemDTO;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.repository.apollo.ApolloProperties;
 import org.apache.shardingsphere.orchestration.repository.apollo.ApolloPropertyKey;
-import org.apache.shardingsphere.orchestration.repository.common.util.ConfigKeyUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,28 +73,28 @@ public final class ApolloOpenApiWrapperTest {
     
     @Test
     public void getValue() {
-        apolloOpenApiWrapper.getValue(ConfigKeyUtils.pathToKey("/test/children/0"));
+        apolloOpenApiWrapper.getValue("test.children.0");
         verify(client).getItem(ApolloPropertyKey.APP_ID.getDefaultValue(), ApolloPropertyKey.ENV.getDefaultValue(),
-                ApolloPropertyKey.CLUSTER_NAME.getDefaultValue(), NAME_SPACE, ConfigKeyUtils.pathToKey("/test/children/0"));
+                ApolloPropertyKey.CLUSTER_NAME.getDefaultValue(), NAME_SPACE, "test.children.0");
     }
     
     @Test
     public void getValueNotNull() {
         when(client.getItem(ApolloPropertyKey.APP_ID.getDefaultValue(), ApolloPropertyKey.ENV.getDefaultValue(),
-                ApolloPropertyKey.CLUSTER_NAME.getDefaultValue(), NAME_SPACE, ConfigKeyUtils.pathToKey("/test/children/0"))).thenReturn(openItemDTO);
-        assertNull(apolloOpenApiWrapper.getValue(ConfigKeyUtils.pathToKey("/test/children/0")));
+                ApolloPropertyKey.CLUSTER_NAME.getDefaultValue(), NAME_SPACE, "test.children.0")).thenReturn(openItemDTO);
+        assertNull(apolloOpenApiWrapper.getValue("test.children.0"));
     }
     
     @Test
     public void persist() {
-        apolloOpenApiWrapper.persist(ConfigKeyUtils.pathToKey("/test/children/0"), "value0");
+        apolloOpenApiWrapper.persist("test.children.0", "value0");
         verify(client).createOrUpdateItem(anyString(), anyString(), anyString(), anyString(), any(OpenItemDTO.class));
         verify(client).publishNamespace(anyString(), anyString(), anyString(), anyString(), any(NamespaceReleaseDTO.class));
     }
     
     @Test
     public void remove() {
-        apolloOpenApiWrapper.remove(ConfigKeyUtils.pathToKey("/test/children/0"));
-        verify(client).removeItem(anyString(), anyString(), anyString(), anyString(), eq(ConfigKeyUtils.pathToKey("/test/children/0")), anyString());
+        apolloOpenApiWrapper.remove("test.children.0");
+        verify(client).removeItem(anyString(), anyString(), anyString(), anyString(), eq("test.children.0"), anyString());
     }
 }

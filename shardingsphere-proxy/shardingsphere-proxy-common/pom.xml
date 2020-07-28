@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-repository-common</artifactId>
+            <artifactId>shardingsphere-orchestration-core-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

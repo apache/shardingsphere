@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.common.util;
+package org.apache.shardingsphere.orchestration.core.common.yaml.config;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.HashMap;
+import java.util.Map;
 
-public final class ConfigKeyUtilsTest {
+/**
+ * Data source configuration for YAML.
+ */
+@Getter
+@Setter
+public final class YamlDataSourceConfiguration implements YamlConfiguration {
     
-    @Test
-    public void assertPathToKey() {
-        assertThat(ConfigKeyUtils.pathToKey("/orchestration_ds/config/schema/test/rule"), is("orchestration_ds.config.schema.test.rule"));
-    }
+    private String dataSourceClassName;
     
-    @Test
-    public void assertKeyToPath() {
-        assertThat(ConfigKeyUtils.keyToPath("orchestration_ds.config.schema.test.rule"), is("/orchestration_ds/config/schema/test/rule"));
-    }
+    private Map<String, Object> props = new HashMap<>();
 }
