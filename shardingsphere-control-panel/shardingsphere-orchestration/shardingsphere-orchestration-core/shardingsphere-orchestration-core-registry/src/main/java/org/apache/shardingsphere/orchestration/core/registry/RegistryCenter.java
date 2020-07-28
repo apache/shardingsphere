@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * RegistryCenter hold and persist instance state.
+ * Registry center.
  */
 public final class RegistryCenter {
     
@@ -36,9 +36,9 @@ public final class RegistryCenter {
     private final OrchestrationInstance instance;
 
     public RegistryCenter(final String name, final RegistryRepository registryRepository) {
-        this.node = new RegistryCenterNode(name);
-        this.repository = registryRepository;
-        this.instance = OrchestrationInstance.getInstance();
+        node = new RegistryCenterNode(name);
+        repository = registryRepository;
+        instance = OrchestrationInstance.getInstance();
     }
     
     /**
