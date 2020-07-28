@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.facade;
-
-import org.apache.shardingsphere.orchestration.core.metadata.listener.MetaDataListenerManager;
-import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
+package org.apache.shardingsphere.orchestration.core.facade.listener;
 
 import org.apache.shardingsphere.orchestration.core.config.listener.ConfigurationListenerManager;
-import org.apache.shardingsphere.orchestration.core.facade.listener.OrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
+import org.apache.shardingsphere.orchestration.core.metadata.listener.MetaDataListenerManager;
 import org.apache.shardingsphere.orchestration.core.registry.listener.RegistryListenerManager;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
+import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
