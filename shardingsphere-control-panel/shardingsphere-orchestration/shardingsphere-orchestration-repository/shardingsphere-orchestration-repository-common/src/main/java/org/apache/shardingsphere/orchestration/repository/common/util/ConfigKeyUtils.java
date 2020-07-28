@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.repository.common.util;
 
 /**
- * Config key utils.
+ * Config key utilities.
  */
 public final class ConfigKeyUtils {
     
