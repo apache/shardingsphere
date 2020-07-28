@@ -27,4 +27,12 @@
     </parent>
     <artifactId>shardingsphere-rdl-parser-statement</artifactId>
     <name>${project.artifactId}</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-statement</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
