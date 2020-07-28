@@ -37,7 +37,7 @@ public interface OrchestrationRepository extends TypedSPI {
     void init(String namespace, OrchestrationCenterConfiguration config);
     
     /**
-     * Get data from config center.
+     * Get data from orchestration center.
      *
      * <p>Maybe use cache if existed.</p>
      *
@@ -63,7 +63,7 @@ public interface OrchestrationRepository extends TypedSPI {
     List<String> getChildrenKeys(String key);
 
     /**
-     * Watch key or path of the config server.
+     * Watch key or path of orchestration server.
      *
      * @param key key of data
      * @param dataChangedEventListener data changed event listener
