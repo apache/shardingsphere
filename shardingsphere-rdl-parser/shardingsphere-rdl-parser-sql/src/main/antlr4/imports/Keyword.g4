@@ -34,4 +34,3 @@ DATASOURCE
 SHARDINGRULE
     : S H A R D I N G R U L E
     ;
-    
