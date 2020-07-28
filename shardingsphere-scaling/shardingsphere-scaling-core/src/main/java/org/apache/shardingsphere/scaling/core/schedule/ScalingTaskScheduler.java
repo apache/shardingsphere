@@ -25,7 +25,6 @@ import org.apache.shardingsphere.scaling.core.job.SyncProgress;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
