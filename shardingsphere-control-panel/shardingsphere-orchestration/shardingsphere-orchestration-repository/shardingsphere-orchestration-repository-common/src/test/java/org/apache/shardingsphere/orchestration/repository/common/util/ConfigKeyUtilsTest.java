@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.api.exception;
+package org.apache.shardingsphere.orchestration.repository.common.util;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class OrchestrationExceptionTest {
+public final class ConfigKeyUtilsTest {
     
     @Test
-    public void assertException() {
-        OrchestrationException exception = new OrchestrationException(new RuntimeException("error"));
-        assertThat(exception.getCause().getMessage(), is("error"));
-        exception = new OrchestrationException("error: %s", "Orchestration");
-        assertThat(exception.getMessage(), is("error: Orchestration"));
+    public void assertPathToKey() {
+        assertThat(ConfigKeyUtils.pathToKey("/orchestration_ds/config/schema/test/rule"), is("orchestration_ds.config.schema.test.rule"));
+    }
+    
+    @Test
+    public void assertKeyToPath() {
+        assertThat(ConfigKeyUtils.keyToPath("orchestration_ds.config.schema.test.rule"), is("/orchestration_ds/config/schema/test/rule"));
     }
 }

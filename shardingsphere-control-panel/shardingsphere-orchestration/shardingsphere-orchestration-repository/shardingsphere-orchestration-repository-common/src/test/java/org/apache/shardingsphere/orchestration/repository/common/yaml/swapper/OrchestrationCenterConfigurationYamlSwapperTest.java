@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.common.configuration.swapper;
+package org.apache.shardingsphere.orchestration.repository.common.yaml.swapper;
 
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationCenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.yaml.config.YamlOrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.junit.Test;
 
@@ -26,15 +26,15 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class OrchestrationRepositoryConfigurationYamlSwapperTest {
+public final class OrchestrationCenterConfigurationYamlSwapperTest {
     
     @Test
     public void assertToYamlConfiguration() {
-        OrchestrationCenterConfiguration config = new OrchestrationCenterConfiguration("ZooKeeper", "127.0.0.1:2181,127.0.0.1:2182", new Properties());
-        YamlOrchestrationCenterConfiguration yamlConfiguration = new OrchestrationCenterConfigurationYamlSwapper().swapToYamlConfiguration(config);
-        assertThat(yamlConfiguration.getType(), is(config.getType()));
-        assertThat(yamlConfiguration.getServerLists(), is(config.getServerLists()));
-        assertThat(yamlConfiguration.getProps(), is(config.getProps()));
+        OrchestrationCenterConfiguration expected = new OrchestrationCenterConfiguration("TEST", "127.0.0.1:2181", new Properties());
+        YamlOrchestrationCenterConfiguration actual = new OrchestrationCenterConfigurationYamlSwapper().swapToYamlConfiguration(expected);
+        assertThat(actual.getType(), is(expected.getType()));
+        assertThat(actual.getServerLists(), is(expected.getServerLists()));
+        assertThat(actual.getProps(), is(expected.getProps()));
     }
     
     @Test
@@ -48,9 +48,9 @@ public final class OrchestrationRepositoryConfigurationYamlSwapperTest {
     
     private YamlOrchestrationCenterConfiguration getYamlOrchestrationCenterConfiguration() {
         YamlOrchestrationCenterConfiguration result = new YamlOrchestrationCenterConfiguration();
-        result.setType("ZooKeeper");
+        result.setType("TEST");
         result.setProps(new Properties());
-        result.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
+        result.setServerLists("127.0.0.1:2181");
         return result;
     }
 }

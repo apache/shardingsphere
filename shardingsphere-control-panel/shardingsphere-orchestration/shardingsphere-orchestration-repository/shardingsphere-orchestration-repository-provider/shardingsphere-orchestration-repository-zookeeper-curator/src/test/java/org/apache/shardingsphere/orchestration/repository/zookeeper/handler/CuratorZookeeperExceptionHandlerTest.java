@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.repository.zookeeper.handler;
 
-import org.apache.shardingsphere.orchestration.repository.api.exception.OrchestrationException;
+import org.apache.shardingsphere.orchestration.repository.common.exception.OrchestrationException;
 import org.apache.zookeeper.KeeperException;
 import org.junit.Assert;
 import org.junit.Test;

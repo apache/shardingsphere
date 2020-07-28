@@ -15,35 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.api.util;
+package org.apache.shardingsphere.orchestration.repository.common.exception;
 
 /**
- * Config key utils.
+ * Orchestration exception.
  */
-public final class ConfigKeyUtils {
+public final class OrchestrationException extends RuntimeException {
     
-    private static final String DOT_SEPARATOR = ".";
+    private static final long serialVersionUID = -6417179023552012152L;
     
-    private static final String PATH_SEPARATOR = "/";
-    
-    /**
-     * Convert path to key.
-     * 
-     * @param path config path
-     * @return config key
-     */
-    public static String pathToKey(final String path) {
-        String key = path.replace(PATH_SEPARATOR, DOT_SEPARATOR);
-        return key.substring(key.indexOf(DOT_SEPARATOR) + 1);
+    public OrchestrationException(final String errorMessage, final Object... args) {
+        super(String.format(errorMessage, args));
     }
     
-    /**
-     * Convert key to path.
-     * 
-     * @param key config key
-     * @return config path
-     */
-    public static String keyToPath(final String key) {
-        return PATH_SEPARATOR + key.replace(DOT_SEPARATOR, PATH_SEPARATOR);
+    public OrchestrationException(final Exception cause) {
+        super(cause);
     }
 }

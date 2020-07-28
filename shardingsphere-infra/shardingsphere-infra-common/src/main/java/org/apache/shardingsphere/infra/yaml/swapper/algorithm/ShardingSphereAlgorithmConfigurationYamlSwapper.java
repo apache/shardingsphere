@@ -35,7 +35,7 @@ public final class ShardingSphereAlgorithmConfigurationYamlSwapper implements Ya
     }
     
     @Override
-    public ShardingSphereAlgorithmConfiguration swapToObject(final YamlShardingSphereAlgorithmConfiguration yamlConfiguration) {
-        return new ShardingSphereAlgorithmConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProps());
+    public ShardingSphereAlgorithmConfiguration swapToObject(final YamlShardingSphereAlgorithmConfiguration yamlConfig) {
+        return new ShardingSphereAlgorithmConfiguration(yamlConfig.getType(), yamlConfig.getProps());
     }
 }

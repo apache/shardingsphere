@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.api.listener;
+package org.apache.shardingsphere.orchestration.repository.common.exception;
 
-import org.apache.shardingsphere.orchestration.repository.api.fixture.TestConfigurationRepository;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class DataChangedEventListenerTest {
+public final class OrchestrationExceptionTest {
     
     @Test
-    public void assertOnChange() {
-        TestConfigurationRepository repository = new TestConfigurationRepository();
-        DataChangedEventListener listener = dataChangedEvent -> assertThat(dataChangedEvent.getChangedType().name(), is(dataChangedEvent.getValue()));
-        repository.watch("UPDATED", listener);
-        repository.watch("DELETED", listener);
-        repository.watch("IGNORED", listener);
+    public void assertException() {
+        OrchestrationException exception = new OrchestrationException(new RuntimeException("error"));
+        assertThat(exception.getCause().getMessage(), is("error"));
+        exception = new OrchestrationException("error: %s", "Orchestration");
+        assertThat(exception.getMessage(), is("error: Orchestration"));
     }
 }

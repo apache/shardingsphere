@@ -29,7 +29,7 @@ import org.apache.shardingsphere.orchestration.repository.apollo.wrapper.ApolloC
 import org.apache.shardingsphere.orchestration.repository.apollo.wrapper.ApolloOpenApiWrapper;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.orchestration.repository.api.util.ConfigKeyUtils;
+import org.apache.shardingsphere.orchestration.repository.common.util.ConfigKeyUtils;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 
 import java.util.Collections;

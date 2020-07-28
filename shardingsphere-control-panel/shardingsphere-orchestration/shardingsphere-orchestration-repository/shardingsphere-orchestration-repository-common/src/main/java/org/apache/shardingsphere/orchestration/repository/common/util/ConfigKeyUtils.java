@@ -15,22 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.api.util;
+package org.apache.shardingsphere.orchestration.repository.common.util;
 
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class ConfigKeyUtilsTest {
+/**
+ * Config key utilities.
+ */
+public final class ConfigKeyUtils {
     
-    @Test
-    public void assertPathToKey() {
-        assertThat(ConfigKeyUtils.pathToKey("/orchestration_ds/config/schema/test/rule"), is("orchestration_ds.config.schema.test.rule"));
+    private static final String DOT_SEPARATOR = ".";
+    
+    private static final String PATH_SEPARATOR = "/";
+    
+    /**
+     * Convert path to key.
+     * 
+     * @param path config path
+     * @return config key
+     */
+    public static String pathToKey(final String path) {
+        String key = path.replace(PATH_SEPARATOR, DOT_SEPARATOR);
+        return key.substring(key.indexOf(DOT_SEPARATOR) + 1);
     }
     
-    @Test
-    public void assertKeyToPath() {
-        assertThat(ConfigKeyUtils.keyToPath("orchestration_ds.config.schema.test.rule"), is("/orchestration_ds/config/schema/test/rule"));
+    /**
+     * Convert key to path.
+     * 
+     * @param key config key
+     * @return config path
+     */
+    public static String keyToPath(final String key) {
+        return PATH_SEPARATOR + key.replace(DOT_SEPARATOR, PATH_SEPARATOR);
     }
 }

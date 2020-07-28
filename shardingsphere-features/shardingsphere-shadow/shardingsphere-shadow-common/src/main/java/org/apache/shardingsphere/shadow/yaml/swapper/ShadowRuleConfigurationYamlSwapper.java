@@ -36,8 +36,8 @@ public final class ShadowRuleConfigurationYamlSwapper implements YamlRuleConfigu
     }
     
     @Override
-    public ShadowRuleConfiguration swapToObject(final YamlShadowRuleConfiguration yamlConfiguration) {
-        return new ShadowRuleConfiguration(yamlConfiguration.getColumn(), yamlConfiguration.getShadowMappings());
+    public ShadowRuleConfiguration swapToObject(final YamlShadowRuleConfiguration yamlConfig) {
+        return new ShadowRuleConfiguration(yamlConfig.getColumn(), yamlConfig.getShadowMappings());
     }
     
     @Override

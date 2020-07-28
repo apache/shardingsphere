@@ -56,9 +56,9 @@ public final class MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapper impl
     }
     
     @Override
-    public AlgorithmProvidedMasterSlaveRuleConfiguration swapToObject(final YamlMasterSlaveRuleConfiguration yamlConfiguration) {
+    public AlgorithmProvidedMasterSlaveRuleConfiguration swapToObject(final YamlMasterSlaveRuleConfiguration yamlConfig) {
         Collection<MasterSlaveDataSourceRuleConfiguration> dataSources = new LinkedList<>();
-        for (Entry<String, YamlMasterSlaveDataSourceRuleConfiguration> entry : yamlConfiguration.getDataSources().entrySet()) {
+        for (Entry<String, YamlMasterSlaveDataSourceRuleConfiguration> entry : yamlConfig.getDataSources().entrySet()) {
             dataSources.add(swapToObject(entry.getKey(), entry.getValue()));
         }
         AlgorithmProvidedMasterSlaveRuleConfiguration ruleConfiguration = new AlgorithmProvidedMasterSlaveRuleConfiguration();

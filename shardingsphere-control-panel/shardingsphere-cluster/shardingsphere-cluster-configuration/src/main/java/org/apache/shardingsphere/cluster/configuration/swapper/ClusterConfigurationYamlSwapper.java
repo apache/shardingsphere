@@ -44,10 +44,10 @@ public final class ClusterConfigurationYamlSwapper implements YamlSwapper<YamlCl
     }
     
     @Override
-    public ClusterConfiguration swapToObject(final YamlClusterConfiguration yamlConfiguration) {
+    public ClusterConfiguration swapToObject(final YamlClusterConfiguration yamlConfig) {
         final ClusterConfiguration clusterConfiguration = new ClusterConfiguration();
         final HeartbeatConfiguration heartBeatConfiguration = new HeartbeatConfiguration();
-        YamlHeartbeatConfiguration heartbeat = yamlConfiguration.getHeartbeat();
+        YamlHeartbeatConfiguration heartbeat = yamlConfig.getHeartbeat();
         heartBeatConfiguration.setSql(heartbeat.getSql());
         heartBeatConfiguration.setInterval(heartbeat.getInterval());
         heartBeatConfiguration.setRetryEnable(heartbeat.isRetryEnable());

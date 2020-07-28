@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.orchestration.repository.api.listener;
 
 /**
- * Listener for data changed event.
+ * Listener for data changed.
  */
 public interface DataChangedEventListener {
     
     /**
      * Fire when data changed.
      * 
-     * @param dataChangedEvent data changed event
+     * @param event data changed event
      */
-    void onChange(DataChangedEvent dataChangedEvent);
+    void onChange(DataChangedEvent event);
 }
