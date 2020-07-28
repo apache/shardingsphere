@@ -46,7 +46,7 @@ public final class OrchestrationListenerManager {
     /**
      * Initialize all orchestration listeners.
      */
-    public void initListeners() {
+    public void init() {
         configurationListenerManager.initListeners();
         registryListenerManager.initListeners();
         metaDataListenerManager.initListeners();

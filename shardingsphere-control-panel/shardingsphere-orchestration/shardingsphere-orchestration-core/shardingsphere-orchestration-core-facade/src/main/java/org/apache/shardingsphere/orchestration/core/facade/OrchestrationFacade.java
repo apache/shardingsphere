@@ -132,7 +132,7 @@ public final class OrchestrationFacade implements AutoCloseable {
     public void initConfigurations() {
         registryCenter.persistInstanceOnline();
         registryCenter.persistDataSourcesNode();
-        listenerManager.initListeners();
+        listenerManager.init();
     }
     
     /**
