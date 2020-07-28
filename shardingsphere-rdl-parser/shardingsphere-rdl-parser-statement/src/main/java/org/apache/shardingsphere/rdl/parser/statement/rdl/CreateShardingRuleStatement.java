@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
+package org.apache.shardingsphere.rdl.parser.statement.rdl;
 
 /**
- * Create dataSource statement.
+ * Create sharding rule statement.
  */
-public final class CreateDataSourcesStatement extends DDLStatement {
+public final class CreateShardingRuleStatement extends RDLStatement {
 }

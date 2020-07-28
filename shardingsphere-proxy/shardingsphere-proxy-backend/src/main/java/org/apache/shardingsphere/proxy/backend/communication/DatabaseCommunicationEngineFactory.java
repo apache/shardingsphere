@@ -28,9 +28,9 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExe
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.StatementExecutorWrapper;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateShardingRuleStatement;
 
 import java.util.List;
 

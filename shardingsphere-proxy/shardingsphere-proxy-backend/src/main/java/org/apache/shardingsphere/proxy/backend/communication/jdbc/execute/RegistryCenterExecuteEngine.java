@@ -33,10 +33,10 @@ import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.config.util.DataSourceConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStatementContext;
+import org.apache.shardingsphere.rdl.parser.binder.context.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDataSourcesStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.sql.SQLException;

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.binder.statement.ddl;
+package org.apache.shardingsphere.rdl.parser.binder.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDataSourcesStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
