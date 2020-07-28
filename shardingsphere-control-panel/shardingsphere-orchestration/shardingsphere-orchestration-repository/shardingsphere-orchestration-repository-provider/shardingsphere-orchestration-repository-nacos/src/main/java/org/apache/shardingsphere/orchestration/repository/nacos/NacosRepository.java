@@ -122,10 +122,10 @@ public final class NacosRepository implements ConfigurationRepository {
      * Watch key or path of the config server.
      *
      * @param key key of data
-     * @param dataChangedEventListener data changed event listener
+     * @param listener data changed event listener
      */
     @Override
-    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
+    public void watch(final String key, final DataChangedEventListener listener) {
         try {
             String dataId = pathToKey(key);
             String group = nacosProperties.getValue(NacosPropertyKey.GROUP);
@@ -138,7 +138,7 @@ public final class NacosRepository implements ConfigurationRepository {
                 
                 @Override
                 public void receiveConfigInfo(final String configInfo) {
-                    dataChangedEventListener.onChange(new DataChangedEvent(key, configInfo, ChangedType.UPDATED));
+                    listener.onChange(new DataChangedEvent(key, configInfo, ChangedType.UPDATED));
                 }
             });
         } catch (final NacosException ex) {

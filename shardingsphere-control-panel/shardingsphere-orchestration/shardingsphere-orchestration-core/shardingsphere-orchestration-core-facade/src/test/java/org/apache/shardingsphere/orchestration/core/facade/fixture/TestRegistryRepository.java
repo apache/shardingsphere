@@ -56,11 +56,11 @@ public final class TestRegistryRepository implements RegistryRepository {
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
+    public void delete(final String key) {
     }
     
     @Override
-    public void delete(final String key) {
+    public void watch(final String key, final DataChangedEventListener listener) {
     }
     
     @Override

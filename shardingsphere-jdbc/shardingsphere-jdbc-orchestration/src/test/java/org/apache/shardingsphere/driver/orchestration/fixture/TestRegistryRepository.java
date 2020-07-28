@@ -63,11 +63,11 @@ public final class TestRegistryRepository implements RegistryRepository, Configu
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
+    public void delete(final String key) {
     }
     
     @Override
-    public void delete(final String key) {
+    public void watch(final String key, final DataChangedEventListener listener) {
     }
     
     @Override
