@@ -397,7 +397,7 @@
                     <column-left-value name="order_id" start-index="36" stop-index="43" literal-start-index="36" literal-stop-index="43" />
                     <operator type="=" />
                     <compare-right-value>
-                        <common-expression text="order_id-?" literal-text="order_id-2" start-index="47" stop-index="58" literal-start-index="47" literal-stop-index="58"/>
+                        <common-expression text="order_id - ?" literal-text="order_id - 2" start-index="47" stop-index="58" literal-start-index="47" literal-stop-index="58"/>
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="64" stop-index="74" literal-start-index="64" literal-stop-index="74">
