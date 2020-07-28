@@ -15,20 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.common.exception;
+package org.apache.shardingsphere.orchestration.repository.api.exception;
 
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class OrchestrationExceptionTest {
+/**
+ * Orchestration exception.
+ */
+public final class OrchestrationException extends RuntimeException {
     
-    @Test
-    public void assertException() {
-        OrchestrationException exception = new OrchestrationException(new RuntimeException("error"));
-        assertThat(exception.getCause().getMessage(), is("error"));
-        exception = new OrchestrationException("error: %s", "Orchestration");
-        assertThat(exception.getMessage(), is("error: Orchestration"));
+    private static final long serialVersionUID = -6417179023552012152L;
+    
+    public OrchestrationException(final Exception cause) {
+        super(cause);
     }
 }

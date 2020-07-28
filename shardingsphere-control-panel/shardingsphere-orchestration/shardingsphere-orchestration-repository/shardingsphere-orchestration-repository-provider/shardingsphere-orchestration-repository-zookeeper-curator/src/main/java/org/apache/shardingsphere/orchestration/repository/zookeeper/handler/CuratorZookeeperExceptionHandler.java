@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.repository.zookeeper.handler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.orchestration.repository.common.exception.OrchestrationException;
+import org.apache.shardingsphere.orchestration.repository.api.exception.OrchestrationException;
 import org.apache.zookeeper.KeeperException.ConnectionLossException;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
