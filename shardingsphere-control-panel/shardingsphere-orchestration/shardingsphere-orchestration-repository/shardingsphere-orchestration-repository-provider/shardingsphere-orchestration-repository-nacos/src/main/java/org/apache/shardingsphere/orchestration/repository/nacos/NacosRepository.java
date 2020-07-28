@@ -147,7 +147,7 @@ public final class NacosRepository implements ConfigurationRepository {
         try {
             String dataId = ConfigKeyUtils.pathToKey(key);
             configService.removeConfig(dataId, nacosProperties.getValue(NacosPropertyKey.GROUP));
-        } catch (NacosException ex) {
+        } catch (final NacosException ex) {
             log.debug("Nacos remove config exception for: {}", ex.toString());
         }
     }

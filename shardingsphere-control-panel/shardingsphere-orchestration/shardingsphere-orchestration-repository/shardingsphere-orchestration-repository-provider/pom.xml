@@ -30,7 +30,7 @@
     <modules>
         <module>shardingsphere-orchestration-repository-zookeeper-curator</module>
         <module>shardingsphere-orchestration-repository-etcd</module>
-        <module>shardingsphere-orchestration-repository-apollo</module>
         <module>shardingsphere-orchestration-repository-nacos</module>
+        <module>shardingsphere-orchestration-repository-apollo</module>
     </modules>
 </project>

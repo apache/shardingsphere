@@ -88,7 +88,7 @@ public final class ApolloRepository implements ConfigurationRepository {
                 if (DataChangedEvent.ChangedType.IGNORED == changedType) {
                     continue;
                 }
-                if (caches.get(changeKey) == null) {
+                if (!caches.containsKey(changeKey)) {
                     continue;
                 }
                 caches.get(changeKey).onChange(new DataChangedEvent(ConfigKeyUtils.keyToPath(changeKey), change.getNewValue(), changedType));
