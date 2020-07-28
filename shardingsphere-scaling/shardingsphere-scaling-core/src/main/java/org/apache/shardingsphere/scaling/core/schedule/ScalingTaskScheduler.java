@@ -27,6 +27,7 @@ import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * Sharding scaling task scheduler.
@@ -125,11 +126,7 @@ public final class ScalingTaskScheduler implements Runnable {
      * @return all inventory data task progress
      */
     public Collection<SyncProgress> getInventoryDataTaskProgress() {
-        Collection<SyncProgress> result = new LinkedList<>();
-        for (ScalingTask each : shardingScalingJob.getInventoryDataTasks()) {
-            result.add(each.getProgress());
-        }
-        return result;
+        return shardingScalingJob.getInventoryDataTasks().stream().map(ScalingTask::getProgress).collect(Collectors.toList());
     }
     
     /**
@@ -138,10 +135,6 @@ public final class ScalingTaskScheduler implements Runnable {
      * @return all incremental data task progress
      */
     public Collection<SyncProgress> getIncrementalDataTaskProgress() {
-        Collection<SyncProgress> result = new LinkedList<>();
-        for (ScalingTask each : shardingScalingJob.getIncrementalDataTasks()) {
-            result.add(each.getProgress());
-        }
-        return result;
+        return shardingScalingJob.getIncrementalDataTasks().stream().map(ScalingTask::getProgress).collect(Collectors.toList());
     }
 }

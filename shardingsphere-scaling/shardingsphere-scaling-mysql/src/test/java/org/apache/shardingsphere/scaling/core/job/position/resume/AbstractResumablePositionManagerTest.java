@@ -50,20 +50,20 @@ public final class AbstractResumablePositionManagerTest {
     @Test
     public void assertResumeIncrementalPosition() {
         resumablePositionManager.resumeIncrementalPosition(incrementalPosition);
-        assertEquals(resumablePositionManager.getIncrementalPositionManagerMap().size(), 2);
+        assertEquals(2, resumablePositionManager.getIncrementalPositionManagerMap().size());
     }
     
     @Test
     public void assertResumeInventoryPosition() {
         resumablePositionManager.resumeInventoryPosition(inventoryPosition);
-        assertEquals(resumablePositionManager.getInventoryPositionManagerMap().size(), 3);
+        assertEquals(3, resumablePositionManager.getInventoryPositionManagerMap().size());
     }
     
     @Test
     public void assertGetIncrementalPositionData() {
         resumablePositionManager.getIncrementalPositionManagerMap().put("ds0", new MySQLPositionManager("{\"filename\":\"mysql-bin.000001\",\"position\":4}"));
         resumablePositionManager.getIncrementalPositionManagerMap().put("ds1", new MySQLPositionManager("{\"filename\":\"mysql-bin.000002\",\"position\":4}"));
-        assertEquals(resumablePositionManager.getIncrementalPositionData(), incrementalPosition);
+        assertEquals(incrementalPosition, resumablePositionManager.getIncrementalPositionData());
     }
     
     @Test
@@ -71,6 +71,6 @@ public final class AbstractResumablePositionManagerTest {
         resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 100)));
         resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_1#1", new PrimaryKeyPositionManager(new PrimaryKeyPosition.FinishedPosition()));
         resumablePositionManager.getInventoryPositionManagerMap().put("ds1.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 200)));
-        assertEquals(resumablePositionManager.getInventoryPositionData(), inventoryPosition);
+        assertEquals(inventoryPosition, resumablePositionManager.getInventoryPositionData());
     }
 }

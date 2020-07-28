@@ -69,8 +69,8 @@ public final class SyncPositionResumerTest {
         resumablePositionManager.getInventoryPositionManagerMap().put("ds0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 100)));
         resumablePositionManager.getIncrementalPositionManagerMap().put("ds0.t_order", mockPositionManager());
         syncPositionResumer.resumePosition(shardingScalingJob, new DataSourceManager(), resumablePositionManager);
-        assertEquals(shardingScalingJob.getIncrementalDataTasks().size(), 1);
-        assertEquals(shardingScalingJob.getInventoryDataTasks().size(), 3);
+        assertEquals(1, shardingScalingJob.getIncrementalDataTasks().size());
+        assertEquals(0, shardingScalingJob.getInventoryDataTasks().size());
     }
     
     @Test
