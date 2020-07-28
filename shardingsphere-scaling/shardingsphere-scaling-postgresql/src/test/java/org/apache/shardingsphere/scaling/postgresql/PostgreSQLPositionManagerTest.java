@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
+import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
