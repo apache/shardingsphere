@@ -39,7 +39,7 @@ HEX
     ;
 
 NUMBER
-    : INT? DOT? (E (PLUS | MINUS)? INT)?
+    : INT? DOT? INT (E (PLUS | MINUS)? INT)?
     ;
 
 HEXDIGIT
