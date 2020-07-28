@@ -21,7 +21,7 @@ import org.apache.shardingsphere.orchestration.core.metadata.listener.MetaDataLi
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 
-import org.apache.shardingsphere.orchestration.core.config.listener.ConfigurationChangedListenerManager;
+import org.apache.shardingsphere.orchestration.core.config.listener.ConfigurationListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.listener.OrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.orchestration.core.registry.listener.RegistryListenerManager;
@@ -44,7 +44,7 @@ public final class OrchestrationListenerManagerTest {
     private ConfigurationRepository configurationRepository;
     
     @Mock
-    private ConfigurationChangedListenerManager configurationChangedListenerManager;
+    private ConfigurationListenerManager configurationListenerManager;
     
     @Mock
     private MetaDataListenerManager metaDataListenerManager;
@@ -55,11 +55,11 @@ public final class OrchestrationListenerManagerTest {
     @Test
     public void assertInitListeners() {
         OrchestrationListenerManager actual = new OrchestrationListenerManager("test_name", registryRepository, configurationRepository, Collections.emptyList());
-        FieldUtil.setField(actual, "configurationChangedListenerManager", configurationChangedListenerManager);
+        FieldUtil.setField(actual, "configurationChangedListenerManager", configurationListenerManager);
         FieldUtil.setField(actual, "registryListenerManager", registryListenerManager);
         FieldUtil.setField(actual, "metaDataListenerManager", metaDataListenerManager);
         actual.initListeners();
-        verify(configurationChangedListenerManager).initListeners();
+        verify(configurationListenerManager).initListeners();
         verify(registryListenerManager).initListeners();
         verify(metaDataListenerManager).initListeners();
     }

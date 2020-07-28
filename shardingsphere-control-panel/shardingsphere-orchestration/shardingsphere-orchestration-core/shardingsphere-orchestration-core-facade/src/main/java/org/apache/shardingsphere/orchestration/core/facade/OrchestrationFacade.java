@@ -49,8 +49,8 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     static {
         // TODO avoid multiple loading
-        ShardingSphereServiceLoader.register(ConfigurationRepository.class);
         ShardingSphereServiceLoader.register(RegistryRepository.class);
+        ShardingSphereServiceLoader.register(ConfigurationRepository.class);
     }
     
     private RegistryRepository registryRepository;

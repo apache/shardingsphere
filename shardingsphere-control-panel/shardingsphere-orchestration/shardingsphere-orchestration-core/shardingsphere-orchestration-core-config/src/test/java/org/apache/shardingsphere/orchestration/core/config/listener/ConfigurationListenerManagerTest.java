@@ -31,7 +31,7 @@ import java.util.Arrays;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ConfigurationChangedListenerManagerTest {
+public final class ConfigurationListenerManagerTest {
     
     @Mock
     private ConfigurationRepository configurationRepository;
@@ -47,7 +47,7 @@ public final class ConfigurationChangedListenerManagerTest {
     
     @Test
     public void assertInitListeners() {
-        ConfigurationChangedListenerManager actual = new ConfigurationChangedListenerManager("test", configurationRepository, Arrays.asList("sharding_db", "masterslave_db"));
+        ConfigurationListenerManager actual = new ConfigurationListenerManager("test", configurationRepository, Arrays.asList("sharding_db", "masterslave_db"));
         setField(actual, "schemaChangedListener", schemaChangedListener);
         setField(actual, "propertiesChangedListener", propertiesChangedListener);
         setField(actual, "authenticationChangedListener", authenticationChangedListener);
