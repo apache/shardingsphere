@@ -40,13 +40,13 @@ public final class MetricsConfigurationYamlSwapper implements YamlSwapper<YamlMe
     }
     
     @Override
-    public MetricsConfiguration swapToObject(final YamlMetricsConfiguration metricsConfiguration) {
-        return new MetricsConfiguration(metricsConfiguration.getName(), metricsConfiguration.getHost(),
-                0 == metricsConfiguration.getPort() ? MetricsConfiguration.DEFAULT_PORT : metricsConfiguration.getPort(),
-                null == metricsConfiguration.getAsync() ? true : metricsConfiguration.getAsync(),
-                null == metricsConfiguration.getEnable() ? true : metricsConfiguration.getEnable(),
-                0 == metricsConfiguration.getThreadCount() ? Runtime.getRuntime().availableProcessors() << 1 : metricsConfiguration.getThreadCount(),
-                metricsConfiguration.getProps());
+    public MetricsConfiguration swapToObject(final YamlMetricsConfiguration yamlConfig) {
+        return new MetricsConfiguration(yamlConfig.getName(), yamlConfig.getHost(),
+                0 == yamlConfig.getPort() ? MetricsConfiguration.DEFAULT_PORT : yamlConfig.getPort(),
+                null == yamlConfig.getAsync() ? true : yamlConfig.getAsync(),
+                null == yamlConfig.getEnable() ? true : yamlConfig.getEnable(),
+                0 == yamlConfig.getThreadCount() ? Runtime.getRuntime().availableProcessors() << 1 : yamlConfig.getThreadCount(),
+                yamlConfig.getProps());
     }
 }
 

@@ -45,9 +45,9 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapper implemen
     }
     
     @Override
-    public AlgorithmProvidedEncryptRuleConfiguration swapToObject(final YamlEncryptRuleConfiguration yamlConfiguration) {
+    public AlgorithmProvidedEncryptRuleConfiguration swapToObject(final YamlEncryptRuleConfiguration yamlConfig) {
         AlgorithmProvidedEncryptRuleConfiguration ruleConfiguration = new AlgorithmProvidedEncryptRuleConfiguration();
-        ruleConfiguration.setTables(swapTables(yamlConfiguration));
+        ruleConfiguration.setTables(swapTables(yamlConfig));
         return ruleConfiguration;
     }
     

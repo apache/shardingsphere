@@ -48,14 +48,14 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper implements Yaml
     }
     
     @Override
-    public ShardingAutoTableRuleConfiguration swapToObject(final YamlShardingAutoTableRuleConfiguration yamlConfiguration) {
-        Preconditions.checkNotNull(yamlConfiguration.getLogicTable(), "Logic table cannot be null.");
-        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration(yamlConfiguration.getLogicTable(), yamlConfiguration.getActualDataSources());
-        if (null != yamlConfiguration.getShardingStrategy()) {
-            result.setShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfiguration.getShardingStrategy()));
+    public ShardingAutoTableRuleConfiguration swapToObject(final YamlShardingAutoTableRuleConfiguration yamlConfig) {
+        Preconditions.checkNotNull(yamlConfig.getLogicTable(), "Logic table cannot be null.");
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration(yamlConfig.getLogicTable(), yamlConfig.getActualDataSources());
+        if (null != yamlConfig.getShardingStrategy()) {
+            result.setShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfig.getShardingStrategy()));
         }
-        if (null != yamlConfiguration.getKeyGenerateStrategy()) {
-            result.setKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToObject(yamlConfiguration.getKeyGenerateStrategy()));
+        if (null != yamlConfig.getKeyGenerateStrategy()) {
+            result.setKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToObject(yamlConfig.getKeyGenerateStrategy()));
         }
         return result;
     }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.orchestration.repository.common.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.yaml.config.YamlOrchestrationConfiguration;
 
@@ -26,25 +27,26 @@ import org.apache.shardingsphere.orchestration.repository.common.yaml.config.Yam
  */
 public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<YamlOrchestrationConfiguration, OrchestrationConfiguration> {
     
-    private final OrchestrationCenterConfigurationYamlSwapper swapper = new OrchestrationCenterConfigurationYamlSwapper();
+    private final OrchestrationCenterConfigurationYamlSwapper orchestrationCenterConfigurationSwapper = new OrchestrationCenterConfigurationYamlSwapper();
     
     @Override
-    public YamlOrchestrationConfiguration swapToYamlConfiguration(final OrchestrationConfiguration configuration) {
+    public YamlOrchestrationConfiguration swapToYamlConfiguration(final OrchestrationConfiguration data) {
         YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();
-        result.setNamespace(configuration.getNamespace());
-        result.setRegistryCenter(swapper.swapToYamlConfiguration(configuration.getRegistryCenterConfiguration()));
-        if (configuration.getAdditionalConfigCenterConfiguration().isPresent()) {
-            result.setAdditionalConfigCenter(swapper.swapToYamlConfiguration(configuration.getAdditionalConfigCenterConfiguration().get()));
+        result.setNamespace(data.getNamespace());
+        result.setRegistryCenter(orchestrationCenterConfigurationSwapper.swapToYamlConfiguration(data.getRegistryCenterConfiguration()));
+        if (data.getAdditionalConfigCenterConfiguration().isPresent()) {
+            result.setAdditionalConfigCenter(orchestrationCenterConfigurationSwapper.swapToYamlConfiguration(data.getAdditionalConfigCenterConfiguration().get()));
         }
         return result;
     }
     
     @Override
-    public OrchestrationConfiguration swapToObject(final YamlOrchestrationConfiguration configuration) {
-        if (null != configuration.getAdditionalConfigCenter()) {
-            return new OrchestrationConfiguration(configuration.getNamespace(), swapper.swapToObject(configuration.getRegistryCenter()),
-                    swapper.swapToObject(configuration.getAdditionalConfigCenter()), configuration.isOverwrite());
+    public OrchestrationConfiguration swapToObject(final YamlOrchestrationConfiguration yamlConfig) {
+        OrchestrationCenterConfiguration registryCenter = orchestrationCenterConfigurationSwapper.swapToObject(yamlConfig.getRegistryCenter());
+        if (null == yamlConfig.getAdditionalConfigCenter()) {
+            return new OrchestrationConfiguration(yamlConfig.getNamespace(), registryCenter, yamlConfig.isOverwrite());
         }
-        return new OrchestrationConfiguration(configuration.getNamespace(), swapper.swapToObject(configuration.getRegistryCenter()), configuration.isOverwrite());
+        OrchestrationCenterConfiguration additionalConfigCenter = orchestrationCenterConfigurationSwapper.swapToObject(yamlConfig.getAdditionalConfigCenter());
+        return new OrchestrationConfiguration(yamlConfig.getNamespace(), registryCenter, additionalConfigCenter, yamlConfig.isOverwrite());
     }
 }
