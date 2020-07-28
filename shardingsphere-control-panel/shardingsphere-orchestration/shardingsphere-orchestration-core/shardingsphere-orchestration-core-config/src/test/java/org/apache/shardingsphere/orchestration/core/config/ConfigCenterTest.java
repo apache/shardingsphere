@@ -528,10 +528,10 @@ public final class ConfigCenterTest {
     }
     
     @Test
-    public void assertGetAllShardingSchemaNames() {
+    public void assertGetAllSchemaNames() {
         when(configurationRepository.get("/test/config/schema")).thenReturn("sharding_db,masterslave_db");
         ConfigCenter configurationService = new ConfigCenter("test", configurationRepository);
-        Collection<String> actual = configurationService.getAllShardingSchemaNames();
+        Collection<String> actual = configurationService.getAllSchemaNames();
         assertThat(actual.size(), is(2));
         assertThat(actual, hasItems("sharding_db"));
         assertThat(actual, hasItems("masterslave_db"));

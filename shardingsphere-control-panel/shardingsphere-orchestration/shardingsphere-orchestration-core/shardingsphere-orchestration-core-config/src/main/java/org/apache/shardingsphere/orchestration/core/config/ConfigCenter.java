@@ -285,13 +285,13 @@ public final class ConfigCenter {
     }
     
     /**
-     * Get all sharding schema names.
+     * Get all schema names.
      * 
      * @return all sharding schema names
      */
-    public Collection<String> getAllShardingSchemaNames() {
-        String shardingSchemaNames = repository.get(node.getSchemaPath());
-        return Strings.isNullOrEmpty(shardingSchemaNames) ? new LinkedList<>() : node.splitShardingSchemaName(shardingSchemaNames);
+    public Collection<String> getAllSchemaNames() {
+        String schemaNames = repository.get(node.getSchemaPath());
+        return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : node.splitShardingSchemaName(schemaNames);
     }
     
     /**

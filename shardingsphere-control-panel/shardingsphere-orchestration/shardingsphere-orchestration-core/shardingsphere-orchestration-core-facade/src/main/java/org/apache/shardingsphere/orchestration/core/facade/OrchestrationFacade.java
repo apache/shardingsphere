@@ -74,14 +74,14 @@ public final class OrchestrationFacade implements AutoCloseable {
      * Initialize orchestration facade.
      *
      * @param orchestrationConfig orchestration configuration
-     * @param shardingSchemaNames sharding schema names
+     * @param schemaNames schema names
      */
-    public void init(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
+    public void init(final OrchestrationConfiguration orchestrationConfig, final Collection<String> schemaNames) {
         isOverwrite = orchestrationConfig.isOverwrite();
         initRegistryCenter(orchestrationConfig);
         initConfigCenter(orchestrationConfig);
         initMetaDataCenter(orchestrationConfig);
-        initListenerManager(orchestrationConfig, shardingSchemaNames);
+        initListenerManager(orchestrationConfig, schemaNames);
     }
     
     private void initRegistryCenter(final OrchestrationConfiguration orchestrationConfig) {
@@ -104,9 +104,9 @@ public final class OrchestrationFacade implements AutoCloseable {
         metaDataCenter = new MetaDataCenter(orchestrationConfig.getNamespace(), configurationRepository);
     }
     
-    private void initListenerManager(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
+    private void initListenerManager(final OrchestrationConfiguration orchestrationConfig, final Collection<String> schemaNames) {
         listenerManager = new OrchestrationListenerManager(
-                orchestrationConfig.getNamespace(), registryRepository, configurationRepository, shardingSchemaNames.isEmpty() ? configCenter.getAllShardingSchemaNames() : shardingSchemaNames);
+                orchestrationConfig.getNamespace(), registryRepository, configurationRepository, schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);
     }
     
     /**
