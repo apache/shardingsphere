@@ -16,13 +16,11 @@
 #
 
 orchestration:
-  name: demo_yaml_ds_ms
+  namespace: demo_yaml_ds_ms
   registryCenter:
-    type: zookeeper
+    type: ZooKeeper
     serverLists: localhost:2181
-    namespace: orchestration-yaml-demo
-    props:
-      overwrite: true
+  overwrite: true
 
 dataSources:
   ds_master: !!com.zaxxer.hikari.HikariDataSource

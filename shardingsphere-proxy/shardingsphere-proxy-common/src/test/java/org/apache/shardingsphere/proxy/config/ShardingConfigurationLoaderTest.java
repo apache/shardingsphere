@@ -21,8 +21,6 @@ import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguratio
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.rule.YamlMasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -44,17 +42,11 @@ public final class ShardingConfigurationLoaderTest {
     @Test
     public void assertLoad() throws IOException {
         ShardingConfiguration actual = new ShardingConfigurationLoader().load("/conf/");
-        assertOrchestrationConfiguration(actual.getServerConfiguration().getOrchestration());
+        assertThat(actual.getServerConfiguration().getOrchestration().getRegistryCenter().getServerLists(), is("localhost:2181"));
         assertThat(actual.getRuleConfigurationMap().size(), is(3));
         assertShardingRuleConfiguration(actual.getRuleConfigurationMap().get("sharding_db"));
         assertMasterSlaveRuleConfiguration(actual.getRuleConfigurationMap().get("master_slave_db"));
         assertEncryptRuleConfiguration(actual.getRuleConfigurationMap().get("encrypt_db"));
-    }
-    
-    private void assertOrchestrationConfiguration(final YamlOrchestrationConfiguration orchestration) {
-        YamlOrchestrationRepositoryConfiguration actual = orchestration.getRegistryCenter();
-        assertThat(actual.getNamespace(), is("test_namespace_1"));
-        assertThat(actual.getServerLists(), is("localhost:2181"));
     }
     
     private void assertShardingRuleConfiguration(final YamlProxyRuleConfiguration actual) {

@@ -44,12 +44,12 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private void configureFactory(final Element element, final BeanDefinitionBuilder factory) {
-        String dataSourceName = element.getAttribute(DataSourceBeanDefinitionTag.DATA_SOURCE_REF_TAG);
+        String dataSourceName = element.getAttribute(DataSourceBeanDefinitionTag.DATA_SOURCE_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(dataSourceName)) {
             factory.addConstructorArgReference(dataSourceName);
         }
         factory.addConstructorArgValue(getOrchestrationConfiguration(element));
-        String cluster = element.getAttribute(DataSourceBeanDefinitionTag.CLUSTER_REF_TAG);
+        String cluster = element.getAttribute(DataSourceBeanDefinitionTag.CLUSTER_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(cluster)) {
             factory.addConstructorArgReference(cluster);
         }
@@ -57,14 +57,14 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     
     private BeanDefinition getOrchestrationConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationConfiguration.class);
-        List<String> instances = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionTag.INSTANCE_REF_TAG));
+        List<String> instances = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionTag.INSTANCE_REF_ATTRIBUTE));
         factory.addConstructorArgValue(instances.get(0));
         factory.addConstructorArgReference(instances.get(0));
         if (instances.size() > 1) {
             factory.addConstructorArgValue(instances.get(1));
             factory.addConstructorArgReference(instances.get(1));
         }
+        factory.addConstructorArgValue(element.getAttribute(DataSourceBeanDefinitionTag.OVERWRITE_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
 }
-

@@ -35,7 +35,7 @@ public final class TestConfigurationRepository implements ConfigurationRepositor
     private Properties props = new Properties();
     
     @Override
-    public void init(final OrchestrationCenterConfiguration config) {
+    public void init(final String namespace, final OrchestrationCenterConfiguration config) {
     }
     
     @Override

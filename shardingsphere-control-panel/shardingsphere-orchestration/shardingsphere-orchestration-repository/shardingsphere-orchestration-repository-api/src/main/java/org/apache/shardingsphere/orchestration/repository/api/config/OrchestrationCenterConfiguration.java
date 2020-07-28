@@ -30,11 +30,8 @@ public final class OrchestrationCenterConfiguration extends TypedSPIConfiguratio
     
     private final String serverLists;
     
-    private final String namespace;
-    
-    public OrchestrationCenterConfiguration(final String type, final String serverLists, final String namespace, final Properties props) {
+    public OrchestrationCenterConfiguration(final String type, final String serverLists, final Properties props) {
         super(type, props);
         this.serverLists = serverLists;
-        this.namespace = namespace;
     }
 }

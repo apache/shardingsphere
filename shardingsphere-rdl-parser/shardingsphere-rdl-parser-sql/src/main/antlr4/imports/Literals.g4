@@ -15,26 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.repository.common.configuration.config;
+lexer grammar Literals;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import Alphabet, Symbol;
 
-import java.util.Properties;
+IDENTIFIER
+    : [A-Za-z$0-9]*?[A-Za-z$]+?[A-Za-z$0-9]*
+    |  BQ ~'`'+ BQ
+    | (DQ ( '\\'. | '""' | ~('"'| '\\') )* DQ)
+    ;
+    
+STRING
+    : (DQ ( '\\'. | '""' | ~('"'| '\\') )* DQ)
+    | (SQ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ)
+    ;
 
-/**
- * Orchestration repository configuration for YAML.
- */
-@Getter
-@Setter
-public final class YamlOrchestrationRepositoryConfiguration implements YamlConfiguration {
+INT
+    : [0-9]+
+    ;
+
+HEX
+    : [0-9a-fA-F]
+    ;
+
+NUMBER
+    : INT? DOT? INT (E (PLUS | MINUS)? INT)?
+    ;
+
+HEXDIGIT
+    : '0x' HEX+ | 'X' SQ HEX+ SQ
+    ;
     
-    private String type;
-    
-    private String serverLists;
-    
-    private String namespace;
-    
-    private Properties props = new Properties();
-}
+BITNUM
+    : '0b' ('0' | '1')+ | B SQ ('0' | '1')+ SQ
+    ;

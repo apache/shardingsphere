@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.orchestration.constants;
+package org.apache.shardingsphere.orchestration.repository.common.configuration.config;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+
+import java.util.Properties;
 
 /**
- * Orchestration instance bean definition tag.
+ * Orchestration center configuration for YAML.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InstanceBeanDefinitionTag {
+@Getter
+@Setter
+public final class YamlOrchestrationCenterConfiguration implements YamlConfiguration {
     
-    public static final String ROOT_TAG = "instance";
+    private String type;
     
-    public static final String TYPE_TAG = "type";
+    private String serverLists;
     
-    public static final String SERVER_LISTS_TAG = "server-lists";
-    
-    public static final String NAMESPACE_TAG = "namespace";
-    
-    public static final String PROP_TAG = "props";
+    private Properties props = new Properties();
 }

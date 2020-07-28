@@ -15,32 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.facade.properties;
+grammar RDLStatement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
+import Keyword, Literals, Symbol;
 
-/**
- * Typed property key of orchestration.
- */
-@RequiredArgsConstructor
-@Getter
-public enum OrchestrationPropertyKey implements TypedPropertyKey {
+createDatasource
+    : CREATE DATASOURCE datasource (COMMA datasource)* SEMI*
+    ;
     
-    /**
-     * Enable or disable to overwrite orchestration config center data.
-     *
-     * <p>
-     * If this properties is true, yaml file config properties will overwrite orchestration config center data.
-     * Default: false
-     * </p>
-     */
-    OVERWRITE("overwrite", String.valueOf(Boolean.FALSE), boolean.class);
+datasource
+    : key EQ datasourceValue
+    ;
     
-    private final String key;
+key
+    : IDENTIFIER
+    ;
     
-    private final String defaultValue;
+datasourceValue
+    : hostName COLON port COLON dbName
+    ;
     
-    private final Class<?> type;
-}
+hostName
+    : ip | IDENTIFIER
+    ;
+
+ip
+    : NUMBER+ INT
+    ;
+port
+    : INT
+    ;
+    
+dbName
+    : IDENTIFIER | NUMBER
+    ;

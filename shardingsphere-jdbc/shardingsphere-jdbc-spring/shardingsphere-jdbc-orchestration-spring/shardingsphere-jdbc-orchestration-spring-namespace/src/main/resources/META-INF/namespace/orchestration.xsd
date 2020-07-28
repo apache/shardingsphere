@@ -28,7 +28,8 @@
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-ref" type="xsd:string" />
             <xsd:attribute name="instance-ref" type="xsd:string" use="required" />
-            <xsd:attribute name="cluster-ref" type="xsd:string"/>
+            <xsd:attribute name="cluster-ref" type="xsd:string" />
+            <xsd:attribute name="overwrite" type="xsd:string" default="false" />
         </xsd:complexType>
     </xsd:element>
     
@@ -40,7 +41,6 @@
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="type" type="xsd:string" use="required" />
             <xsd:attribute name="server-lists" type="xsd:string" use="required" />
-            <xsd:attribute name="namespace" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

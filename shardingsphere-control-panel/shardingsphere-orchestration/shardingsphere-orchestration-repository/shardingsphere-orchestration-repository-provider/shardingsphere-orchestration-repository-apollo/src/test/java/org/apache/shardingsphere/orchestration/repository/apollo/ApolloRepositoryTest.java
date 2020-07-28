@@ -68,10 +68,10 @@ public final class ApolloRepositoryTest {
         Properties props = new Properties();
         props.setProperty(ApolloPropertyKey.PORTAL_URL.getKey(), PORTAL_URL);
         props.setProperty(ApolloPropertyKey.TOKEN.getKey(), TOKEN);
-        OrchestrationCenterConfiguration config = new OrchestrationCenterConfiguration("apollo", "http://config-service-url", "orchestration", props);
+        OrchestrationCenterConfiguration config = new OrchestrationCenterConfiguration("Apollo", "http://config-service-url", props);
         REPOSITORY.setProps(props);
-        REPOSITORY.init(config);
-        ApolloConfigWrapper configWrapper = new ApolloConfigWrapper(config, new ApolloProperties(props));
+        REPOSITORY.init("orchestration", config);
+        ApolloConfigWrapper configWrapper = new ApolloConfigWrapper("orchestration", config, new ApolloProperties(props));
         FieldSetter.setField(REPOSITORY, ApolloRepository.class.getDeclaredField("configWrapper"), configWrapper);
         FieldSetter.setField(REPOSITORY, ApolloRepository.class.getDeclaredField("openApiWrapper"), OPEN_API_WRAPPER);
     }
@@ -152,6 +152,6 @@ public final class ApolloRepositoryTest {
     
     @Test
     public void assertGetType() {
-        assertThat(REPOSITORY.getType(), is("apollo"));
+        assertThat(REPOSITORY.getType(), is("Apollo"));
     }
 }

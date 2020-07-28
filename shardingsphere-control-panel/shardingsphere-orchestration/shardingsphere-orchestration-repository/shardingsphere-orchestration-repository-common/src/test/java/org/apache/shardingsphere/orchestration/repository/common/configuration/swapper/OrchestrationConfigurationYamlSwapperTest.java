@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.repository.common.configuration.
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.repository.common.configuration.config.YamlOrchestrationCenterConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -37,13 +37,12 @@ public final class OrchestrationConfigurationYamlSwapperTest {
         OrchestrationConfiguration data = getOrchestrationConfiguration();
         YamlOrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swapToYamlConfiguration(data);
         assertThat(result.getRegistryCenter().getType(), is(data.getRegistryCenterConfiguration().getType()));
-        assertThat(result.getRegistryCenter().getNamespace(), is(data.getRegistryCenterConfiguration().getNamespace()));
         assertThat(result.getRegistryCenter().getServerLists(), is(data.getRegistryCenterConfiguration().getServerLists()));
         assertThat(result.getRegistryCenter().getProps(), is(data.getRegistryCenterConfiguration().getProps()));
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
-        return new OrchestrationConfiguration(LOGIC_SCHEMA, new OrchestrationCenterConfiguration("zookeeper", "127.0.0.1:2181,127.0.0.1:2182", "orchestration", new Properties()));
+        return new OrchestrationConfiguration(LOGIC_SCHEMA, new OrchestrationCenterConfiguration("ZooKeeper", "127.0.0.1:2181,127.0.0.1:2182", new Properties()), false);
     }
     
     @Test
@@ -51,19 +50,17 @@ public final class OrchestrationConfigurationYamlSwapperTest {
         YamlOrchestrationConfiguration data = getYamlOrchestrationConfiguration();
         OrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swapToObject(data);
         assertThat(result.getRegistryCenterConfiguration().getType(), is(data.getRegistryCenter().getType()));
-        assertThat(result.getRegistryCenterConfiguration().getNamespace(), is(data.getRegistryCenter().getNamespace()));
         assertThat(result.getRegistryCenterConfiguration().getServerLists(), is(data.getRegistryCenter().getServerLists()));
         assertThat(result.getRegistryCenterConfiguration().getProps(), is(data.getRegistryCenter().getProps()));
     }
     
     private YamlOrchestrationConfiguration getYamlOrchestrationConfiguration() {
-        YamlOrchestrationRepositoryConfiguration registryCenterConfig = new YamlOrchestrationRepositoryConfiguration();
-        registryCenterConfig.setType("zookeeper");
+        YamlOrchestrationCenterConfiguration registryCenterConfig = new YamlOrchestrationCenterConfiguration();
+        registryCenterConfig.setType("ZooKeeper");
         registryCenterConfig.setProps(new Properties());
         registryCenterConfig.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
-        registryCenterConfig.setNamespace("orchestration");
         YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();
-        result.setName(LOGIC_SCHEMA);
+        result.setNamespace(LOGIC_SCHEMA);
         result.setRegistryCenter(registryCenterConfig);
         return result;
     }

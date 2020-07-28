@@ -39,7 +39,7 @@ public final class TestRegistryRepository implements RegistryRepository, Configu
     private Properties props = new Properties();
     
     @Override
-    public void init(final OrchestrationCenterConfiguration config) {
+    public void init(final String namespace, final OrchestrationCenterConfiguration config) {
     }
     
     @Override

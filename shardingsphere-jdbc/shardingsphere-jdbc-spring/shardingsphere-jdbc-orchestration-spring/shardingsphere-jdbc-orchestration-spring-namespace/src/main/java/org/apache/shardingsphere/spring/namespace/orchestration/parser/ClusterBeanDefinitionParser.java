@@ -56,12 +56,12 @@ public final class ClusterBeanDefinitionParser extends AbstractBeanDefinitionPar
     
     private BeanDefinition getHeartbeatConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(HeartbeatConfiguration.class);
-        addPropertyValueIfNotEmpty(ClusterBeanDefinitionTag.SQL_TAG, PROPERTY_SQL, element, factory);
-        addPropertyValueIfNotEmpty(ClusterBeanDefinitionTag.THREAD_COUNT_TAG, PROPERTY_THREAD_COUNT, element, factory);
-        addPropertyValueIfNotEmpty(ClusterBeanDefinitionTag.INTERVAL_TAG, PROPERTY_INTERVAL, element, factory);
-        addPropertyValueIfNotEmpty(ClusterBeanDefinitionTag.RETRY_ENABLE_TAG, PROPERTY_RETRY_ENABLE, element, factory);
-        addPropertyValueIfNotEmpty(ClusterBeanDefinitionTag.RETRY_MAXIMUM_TAG, PROPERTY_RETRY_MAXIMUM, element, factory);
-        addPropertyValueIfNotEmpty(ClusterBeanDefinitionTag.RETRY_INTERVAL_TAG, PROPERTY_RETRY_INTERVAL, element, factory);
+        addPropertyValueIfNotEmpty(ClusterBeanDefinitionTag.SQL_ATTRIBUTE, PROPERTY_SQL, element, factory);
+        addPropertyValueIfNotEmpty(ClusterBeanDefinitionTag.THREAD_COUNT_ATTRIBUTE, PROPERTY_THREAD_COUNT, element, factory);
+        addPropertyValueIfNotEmpty(ClusterBeanDefinitionTag.INTERVAL_ATTRIBUTE, PROPERTY_INTERVAL, element, factory);
+        addPropertyValueIfNotEmpty(ClusterBeanDefinitionTag.RETRY_ENABLE_ATTRIBUTE, PROPERTY_RETRY_ENABLE, element, factory);
+        addPropertyValueIfNotEmpty(ClusterBeanDefinitionTag.RETRY_MAXIMUM_ATTRIBUTE, PROPERTY_RETRY_MAXIMUM, element, factory);
+        addPropertyValueIfNotEmpty(ClusterBeanDefinitionTag.RETRY_INTERVAL_ATTRIBUTE, PROPERTY_RETRY_INTERVAL, element, factory);
         return factory.getBeanDefinition();
     }
     

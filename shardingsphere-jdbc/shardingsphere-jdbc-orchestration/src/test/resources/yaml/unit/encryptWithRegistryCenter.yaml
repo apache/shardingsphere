@@ -16,13 +16,10 @@
 #
 
 orchestration:
-  name: test_encrypt_registry_name
+  namespace: test_encrypt_registry_name
   registryCenter:
     type: REG_TEST
     serverLists: localhost:3181
-    namespace: test_encrypt_registry
-    props:
-      overwrite: true
       retryIntervalMilliseconds: 10
       timeToLiveSeconds: 10
       maxRetries: 10
@@ -30,13 +27,11 @@ orchestration:
   additionalConfigCenter:
     type: CONFIG_TEST
     serverLists: localhost:3181
-    namespace: test_encrypt_config
-    props:
-      overwrite: true
       retryIntervalMilliseconds: 10
       timeToLiveSeconds: 10
       maxRetries: 10
       operationTimeoutMilliseconds: 10
+  overwrite: true
 
 dataSource: !!org.apache.commons.dbcp2.BasicDataSource
   driverClassName: org.h2.Driver

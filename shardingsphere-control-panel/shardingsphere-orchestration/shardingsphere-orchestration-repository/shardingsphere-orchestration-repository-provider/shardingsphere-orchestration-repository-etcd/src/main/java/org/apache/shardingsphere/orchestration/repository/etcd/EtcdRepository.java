@@ -56,7 +56,7 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     private EtcdProperties etcdProperties;
 
     @Override
-    public void init(final OrchestrationCenterConfiguration config) { 
+    public void init(final String namespace, final OrchestrationCenterConfiguration config) { 
         this.etcdProperties = new EtcdProperties(props);
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).build();
     }

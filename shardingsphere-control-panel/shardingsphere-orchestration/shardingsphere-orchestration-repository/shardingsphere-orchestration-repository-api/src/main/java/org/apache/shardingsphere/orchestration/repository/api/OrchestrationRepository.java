@@ -31,9 +31,10 @@ public interface OrchestrationRepository extends TypedSPI {
     /**
      * Initialize orchestration center.
      *
+     * @param namespace orchestration center namespace
      * @param config orchestration center configuration
      */
-    void init(OrchestrationCenterConfiguration config);
+    void init(String namespace, OrchestrationCenterConfiguration config);
     
     /**
      * Get data from config center.

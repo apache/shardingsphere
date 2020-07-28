@@ -38,7 +38,7 @@ public final class ApolloConfigWrapper {
     
     private final Config apolloConfig;
     
-    public ApolloConfigWrapper(final OrchestrationCenterConfiguration config, final ApolloProperties props) {
+    public ApolloConfigWrapper(final String namespace, final OrchestrationCenterConfiguration config, final ApolloProperties props) {
         String appId = props.getValue(ApolloPropertyKey.APP_ID);
         String env = props.getValue(ApolloPropertyKey.ENV);
         String clusterName = props.getValue(ApolloPropertyKey.CLUSTER_NAME);
@@ -46,7 +46,6 @@ public final class ApolloConfigWrapper {
         System.setProperty(APOLLO_KEY_ENV, env);
         System.setProperty(ConfigConsts.APOLLO_CLUSTER_KEY, clusterName);
         System.setProperty(ConfigConsts.APOLLO_META_KEY, config.getServerLists());
-        String namespace = config.getNamespace();
         apolloConfig = ConfigService.getConfig(namespace);
     }
     

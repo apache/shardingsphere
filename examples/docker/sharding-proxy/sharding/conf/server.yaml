@@ -22,13 +22,11 @@
 ######################################################################################################
 
 #orchestration:
-#  name: orchestration_ds
+#  namespace: orchestration_ds
 #  registryCenter:
-#    type: zookeeper
+#    type: ZooKeeper
 #    serverLists: localhost:2181
-#    namespace: orchestration
-#    props:
-#      overwrite: false
+#  overwrite: false
 
 authentication:
   username: root

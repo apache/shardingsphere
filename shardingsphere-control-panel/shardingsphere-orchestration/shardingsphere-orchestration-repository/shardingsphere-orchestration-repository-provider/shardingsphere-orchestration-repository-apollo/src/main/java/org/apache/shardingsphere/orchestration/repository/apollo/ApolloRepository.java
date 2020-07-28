@@ -55,10 +55,10 @@ public final class ApolloRepository implements ConfigurationRepository {
     private Properties props = new Properties();
     
     @Override
-    public void init(final OrchestrationCenterConfiguration config) {
+    public void init(final String namespace, final OrchestrationCenterConfiguration config) {
         ApolloProperties apolloProperties = new ApolloProperties(props);
-        configWrapper = new ApolloConfigWrapper(config, apolloProperties);
-        openApiWrapper = new ApolloOpenApiWrapper(config, apolloProperties);
+        configWrapper = new ApolloConfigWrapper(namespace, config, apolloProperties);
+        openApiWrapper = new ApolloOpenApiWrapper(namespace, apolloProperties);
     }
     
     @Override
@@ -120,6 +120,6 @@ public final class ApolloRepository implements ConfigurationRepository {
     
     @Override
     public String getType() {
-        return "apollo";
+        return "Apollo";
     }
 }

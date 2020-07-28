@@ -29,14 +29,16 @@ import java.util.Optional;
 @Getter
 public final class OrchestrationConfiguration {
     
-    private final String name;
+    private final String namespace;
     
     private final OrchestrationCenterConfiguration registryCenterConfiguration;
     
     private final OrchestrationCenterConfiguration additionalConfigCenterConfiguration;
     
-    public OrchestrationConfiguration(final String name, final OrchestrationCenterConfiguration orchestrationCenterConfig) {
-        this(name, orchestrationCenterConfig, null);
+    private final boolean overwrite;
+    
+    public OrchestrationConfiguration(final String namespace, final OrchestrationCenterConfiguration orchestrationCenterConfig, final boolean overwrite) {
+        this(namespace, orchestrationCenterConfig, null, overwrite);
     }
     
     /**

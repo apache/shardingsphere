@@ -16,10 +16,8 @@
 #
 
 orchestration:
-  name: demo_yaml_ds_encrypt
+  namespace: demo_yaml_ds_encrypt
   registryCenter:
-    type: zookeeper
+    type: ZooKeeper
     serverLists: localhost:2181
-    namespace: orchestration-yaml-demo
-    props:
-      overwrite: false
+  overwrite: false
