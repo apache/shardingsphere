@@ -30,7 +30,7 @@ public interface QueryResult {
     /**
      * Get JDBC ResultSetMetaData.
      *
-     * @return {@linkplain ResultSetMetaData}
+     * @return JDBC ResultSetMetaData
      */
     ResultSetMetaData getResultSetMetaData();
 

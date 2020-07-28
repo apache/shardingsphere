@@ -19,19 +19,20 @@ package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-public class PostgreSQLColumnTypeNameOidMappingsTest {
+public class PostgreSQLArrayColumnTypeTest {
     
     @Test
     public void assertIntegerArrayGot() {
-        int columnTypeName = PostgreSQLColumnTypeNameOidMappings.getTypeOidByColumnTypeName("_int4");
-        assertEquals(1007, columnTypeName);
+        int columnTypeName = PostgreSQLArrayColumnType.getTypeOidByColumnTypeName("_int4");
+        assertThat(columnTypeName, is(1007));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertIllegalArgExThrown() {
-        PostgreSQLColumnTypeNameOidMappings.getTypeOidByColumnTypeName("not_exist_type");
+        PostgreSQLArrayColumnType.getTypeOidByColumnTypeName("not_exist_type");
     }
     
 }
