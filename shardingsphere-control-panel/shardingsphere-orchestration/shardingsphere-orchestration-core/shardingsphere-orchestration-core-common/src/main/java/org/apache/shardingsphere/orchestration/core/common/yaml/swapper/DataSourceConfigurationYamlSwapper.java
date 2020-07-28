@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.common.configuration;
+package org.apache.shardingsphere.orchestration.core.common.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration;
 
 /**
  * Data source configuration YAML swapper.

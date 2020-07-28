@@ -36,8 +36,8 @@ import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEv
 import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenterNode;
-import org.apache.shardingsphere.orchestration.core.common.configuration.DataSourceConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.core.common.configuration.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.DataSourceConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -109,7 +109,7 @@ public final class SchemaChangedListener extends PostOrchestrationRepositoryEven
                 ? createDataSourceChangedEvent(shardingSchemaName, event) : createRuleChangedEvent(shardingSchemaName, event);
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private DataSourceChangedEvent createDataSourceChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
         Map<String, YamlDataSourceConfiguration> dataSourceConfigurations = (Map) YamlEngine.unmarshal(event.getValue());
         Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data sources to load for orchestration.");
