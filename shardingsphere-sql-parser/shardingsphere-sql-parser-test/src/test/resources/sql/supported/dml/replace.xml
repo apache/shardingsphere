@@ -46,4 +46,8 @@
     <sql-case id="replace_with_unix_timestamp_function" value="REPLACE INTO t_order(status, order_id, user_id) VALUES (unix_timestamp(?), ?, ?)" db-types="MySQL" />
     <sql-case id="replace_with_str_to_date" value="REPLACE INTO t_order(present_date, order_id, user_id) VALUES (str_to_date(?, '%Y-%m-%d'), ?, ?)" db-types="MySQL" />
     <sql-case id="replace_with_str_date_add" value="REPLACE INTO t_order(present_date, order_id, user_id) VALUES (date_add(now(),interval ? second), ?, ?)" db-types="MySQL" />
+    <sql-case id="replace_select_with_all_columns" value="REPLACE INTO t_order (order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = ?" db-types="MySQL" />
+    <sql-case id="replace_select_without_columns" value="REPLACE INTO t_order SELECT order_id, user_id, status FROM t_order WHERE order_id = ?" db-types="MySQL" />
+    <sql-case id="replace_select_with_generate_key_column" value="REPLACE INTO t_order_item(item_id, order_id, user_id, status, creation_date) SELECT item_id, order_id, user_id, 'insert', '2017-08-08' FROM t_order_item WHERE item_id = ?" db-types="MySQL" />
+    <sql-case id="replace_select_without_generate_key_column" value="REPLACE INTO t_order_item(order_id, user_id, status, creation_date) SELECT order_id, user_id, 'insert', '2017-08-08' FROM t_order_item WHERE order_id = ?" db-types="MySQL" />
 </sql-cases>
