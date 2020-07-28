@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer.utils;
 
+import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -39,14 +37,7 @@ public final class JobPrepareUtil {
      * @param allInventoryDataTasks all inventory data tasks
      * @return task group list
      */
-    public static List<Collection<ScalingTask>> groupInventoryDataTasks(final int taskNumber, final List<ScalingTask> allInventoryDataTasks) {
-        List<Collection<ScalingTask>> result = new ArrayList<>(taskNumber);
-        for (int i = 0; i < taskNumber; i++) {
-            result.add(new LinkedList<>());
-        }
-        for (int i = 0; i < allInventoryDataTasks.size(); i++) {
-            result.get(i % taskNumber).add(allInventoryDataTasks.get(i));
-        }
-        return result;
+    public static List<List<ScalingTask>> groupInventoryDataTasks(final int taskNumber, final List<ScalingTask> allInventoryDataTasks) {
+        return Lists.partition(allInventoryDataTasks, taskNumber);
     }
 }
