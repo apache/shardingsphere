@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.orchestration.core.facade.fixture.TestRegistryRepository
+org.apache.shardingsphere.orchestration.core.facade.fixture.TestAllRepository

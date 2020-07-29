@@ -67,9 +67,7 @@ public final class OrchestrationFacadeTest {
     
     @Before
     public void setUp() {
-        OrchestrationCenterConfiguration regCenterConfig = new OrchestrationCenterConfiguration("REG_TEST", "127.0.0.1", new Properties());
-        OrchestrationCenterConfiguration additionalConfigCenterConfig = new OrchestrationCenterConfiguration("CONFIG_TEST", "127.0.0.1", new Properties());
-        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration("test_name", regCenterConfig, additionalConfigCenterConfig, false);
+        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration("test_name", new OrchestrationCenterConfiguration("ALL", "127.0.0.1", new Properties()), false);
         orchestrationFacade.init(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
         FieldUtil.setField(orchestrationFacade, "repositoryFacade", repositoryFacade);
         FieldUtil.setField(orchestrationFacade, "configCenter", configCenter);

@@ -65,6 +65,6 @@ public final class TestConfigurationRepository implements ConfigurationRepositor
     
     @Override
     public String getType() {
-        return "CONFIG_TEST";
+        return "CONFIG";
     }
 }
