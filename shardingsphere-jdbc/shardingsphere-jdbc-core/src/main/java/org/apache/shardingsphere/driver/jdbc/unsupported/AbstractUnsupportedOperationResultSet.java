@@ -182,12 +182,12 @@ public abstract class AbstractUnsupportedOperationResultSet extends AbstractUnsu
     }
     
     @Override
-    public final Array getArray(final int columnIndex) throws SQLException {
+    public Array getArray(final int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException("getArray");
     }
     
     @Override
-    public final Array getArray(final String columnLabel) throws SQLException {
+    public Array getArray(final String columnLabel) throws SQLException {
         throw new SQLFeatureNotSupportedException("getArray");
     }
     

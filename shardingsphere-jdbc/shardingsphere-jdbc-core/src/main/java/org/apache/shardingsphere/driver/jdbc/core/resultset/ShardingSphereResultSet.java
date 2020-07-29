@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
+import java.sql.Array;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -317,10 +318,20 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     public Clob getClob(final int columnIndex) throws SQLException {
         return (Clob) mergeResultSet.getValue(columnIndex, Clob.class);
     }
-        
+    
+    @Override
+    public Array getArray(final int columnIndex) throws SQLException {
+        return (Array) mergeResultSet.getValue(columnIndex, Array.class);
+    }
+    
     @Override
     public Clob getClob(final String columnLabel) throws SQLException {
         return getClob(getIndexFromColumnLabelAndIndexMap(columnLabel));
+    }
+    
+    @Override
+    public Array getArray(final String columnLabel) throws SQLException {
+        return getArray(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override

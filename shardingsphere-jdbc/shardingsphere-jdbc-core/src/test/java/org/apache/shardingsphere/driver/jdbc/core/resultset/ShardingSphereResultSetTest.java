@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
+import java.sql.Array;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
@@ -416,6 +417,20 @@ public final class ShardingSphereResultSetTest {
         Clob clob = mock(Clob.class);
         when(mergeResultSet.getValue(1, Clob.class)).thenReturn(clob);
         assertThat(shardingSphereResultSet.getClob("label"), is(clob));
+    }
+    
+    @Test
+    public void assertGetArrayWithColumnIndex() throws SQLException {
+        Array array = mock(Array.class);
+        when(mergeResultSet.getValue(1, Array.class)).thenReturn(array);
+        assertThat(shardingSphereResultSet.getArray(1), is(array));
+    }
+    
+    @Test
+    public void assertGetArrayWithColumnLabel() throws SQLException {
+        Array array = mock(Array.class);
+        when(mergeResultSet.getValue(1, Array.class)).thenReturn(array);
+        assertThat(shardingSphereResultSet.getArray("label"), is(array));
     }
     
     @Test
