@@ -17,23 +17,18 @@
 
 package org.apache.shardingsphere.orchestration.core.facade;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.listener.OrchestrationListenerManager;
+import org.apache.shardingsphere.orchestration.core.facade.repository.OrchestrationRepositoryFacade;
 import org.apache.shardingsphere.orchestration.core.metadata.MetaDataCenter;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenter;
-import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 
 import java.util.Collection;
@@ -47,16 +42,9 @@ import java.util.Properties;
 @Slf4j
 public final class OrchestrationFacade implements AutoCloseable {
     
-    static {
-        ShardingSphereServiceLoader.register(RegistryRepository.class);
-        ShardingSphereServiceLoader.register(ConfigurationRepository.class);
-    }
-    
-    private RegistryRepository registryRepository;
-    
-    private ConfigurationRepository configurationRepository;
-    
     private boolean isOverwrite;
+    
+    private OrchestrationRepositoryFacade repositoryFacade;
     
     @Getter
     private ConfigCenter configCenter;
@@ -77,40 +65,12 @@ public final class OrchestrationFacade implements AutoCloseable {
      */
     public void init(final OrchestrationConfiguration config, final Collection<String> schemaNames) {
         isOverwrite = config.isOverwrite();
-        initRegistryCenter(config);
-        initConfigCenter(config);
-        initMetaDataCenter(config);
-        initListenerManager(config, schemaNames);
-    }
-    
-    private void initRegistryCenter(final OrchestrationConfiguration config) {
-        OrchestrationCenterConfiguration registryCenterConfig = config.getRegistryCenterConfiguration();
-        Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");
-        registryRepository = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
-        registryRepository.init(config.getNamespace(), registryCenterConfig);
-        registryCenter = new RegistryCenter(config.getNamespace(), registryRepository);
-    }
-    
-    private void initConfigCenter(final OrchestrationConfiguration config) {
-        if (config.getAdditionalConfigCenterConfiguration().isPresent()) {
-            OrchestrationCenterConfiguration additionalConfigCenterConfig = config.getAdditionalConfigCenterConfiguration().orElse(config.getRegistryCenterConfiguration());
-            configurationRepository = TypedSPIRegistry.getRegisteredService(ConfigurationRepository.class, additionalConfigCenterConfig.getType(), additionalConfigCenterConfig.getProps());
-            configurationRepository.init(config.getNamespace(), additionalConfigCenterConfig);
-            configCenter = new ConfigCenter(config.getNamespace(), configurationRepository);
-        } else if (registryRepository instanceof ConfigurationRepository) {
-            configurationRepository = (ConfigurationRepository) registryRepository;
-            configCenter = new ConfigCenter(config.getNamespace(), configurationRepository);
-        } else {
-            throw new IllegalArgumentException("Registry repository is not suitable for config center and no additional config center configuration provided.");
-        }
-    }
-    
-    private void initMetaDataCenter(final OrchestrationConfiguration config) {
-        metaDataCenter = new MetaDataCenter(config.getNamespace(), configurationRepository);
-    }
-    
-    private void initListenerManager(final OrchestrationConfiguration config, final Collection<String> schemaNames) {
-        listenerManager = new OrchestrationListenerManager(config.getNamespace(), registryRepository, configurationRepository, schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);
+        repositoryFacade = new OrchestrationRepositoryFacade(config);
+        registryCenter = new RegistryCenter(config.getNamespace(), repositoryFacade.getRegistryRepository());
+        configCenter = new ConfigCenter(config.getNamespace(), repositoryFacade.getConfigurationRepository());
+        metaDataCenter = new MetaDataCenter(config.getNamespace(), repositoryFacade.getConfigurationRepository());
+        listenerManager = new OrchestrationListenerManager(config.getNamespace(), 
+                repositoryFacade.getRegistryRepository(), repositoryFacade.getConfigurationRepository(), schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);
     }
     
     /**
@@ -159,16 +119,7 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     @Override
     public void close() {
-        try {
-            registryRepository.close();
-            if (registryRepository != configurationRepository) {
-                configurationRepository.close();
-            }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.warn("RegCenter exception for: {}", ex.getMessage());
-        }
+        repositoryFacade.close();
     }
     
     /**
