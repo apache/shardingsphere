@@ -15,14 +15,14 @@ weight = 2
 <!-- import if using ZooKeeper -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-orchestration-center-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-orchestration-repository-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- import if using Etcd -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-orchestration-center-etcd</artifactId>
+    <artifactId>shardingsphere-orchestration-repository-etcd</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -33,13 +33,11 @@ Using ZooKeeper as config center and registry center for example.
 
 ```yaml
 orchestration:
-  name: orchestration_ds
+  namespace: orchestration_ds
   registryCenter:
-    type: zookeeper
-    serverLists: localhost:2181
-    namespace: orchestration
-    props:
-      overwrite: true
+      type: Zookeeper
+      serverLists: localhost:2181
+  overwrite: true
 ```
 
 ```java

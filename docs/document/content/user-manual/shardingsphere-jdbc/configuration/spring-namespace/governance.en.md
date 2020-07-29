@@ -17,7 +17,7 @@ weight = 6
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 ">
-    <orchestration:reg-center id="regCenter" type="zookeeper" server-lists="localhost:2181">
+    <orchestration:reg-center id="regCenter" type="Zookeeper" server-lists="localhost:2181">
         <props>
             <prop key="overwrite">true</prop>
         </props>

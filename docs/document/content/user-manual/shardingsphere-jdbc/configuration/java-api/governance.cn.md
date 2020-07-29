@@ -13,19 +13,23 @@ weight = 6
 
 可配置属性：
 
-| *名称*                    | *数据类型*                           | *说明*                                                            |
-| ------------------------ | ----------------------------------- | ----------------------------------------------------------------- |
-| instanceConfigurationMap | Map\<String, CenterConfiguration\>  | 治理实例的配置 map，key 为名称，value 为治理实例 |
+| *名称*                              | *数据类型*                           | *说明*                                                            |
+| ----------------------------------- | ----------------------------------- | ----------------------------------------------------------------- |
+| registryCenterConfiguration         | Map\<String, CenterConfiguration\>  | 注册中心实例的配置 map，key 为名称，value 为治理实例 |
+| additionalConfigCenterConfiguration | Map\<String, CenterConfiguration\>  | 可选的配置中心实例的配置 map，key 为名称，value 为治理实例 |
+
+注册中心的类型可以为Zookeeper或etcd。
+配置中心的类型可以为Zookeeper或etcd、Apollo、Nacos。
 
 *治理实例配置*
 
-类名称：org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration
+类名称：org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration
 
 可配置属性：
 
 | *名称*         | *数据类型* | *说明*                                                                      |
 | ------------- | ---------- | -------------------------------------------------------------------------- |
-| type          | String     | 治理实例类型，如：zookeeper, etcd, apollo, nacos                             |
+| type          | String     | 治理实例类型，如：Zookeeper, etcd, Apollo, Nacos                             |
 | serverLists   | String     | 治理服务列表，包括 IP 地址和端口号，多个地址用逗号分隔，如: host1:2181,host2:2181 |
 | namespace (?) | String     | 治理命名空间                                                                 |
 | props         | Properties | 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等                            |

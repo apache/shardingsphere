@@ -15,14 +15,14 @@ weight = 4
 <!-- 使用 ZooKeeper 时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-orchestration-center-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-orchestration-repository-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- 使用 Etcd 时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-orchestration-center-etcd</artifactId>
+    <artifactId>shardingsphere-orchestration-repository-etcd</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -42,7 +42,7 @@ weight = 4
          <prop key="max-retries">3</prop>
          <prop key="operation-timeout-milliseconds">3000</prop>
      </util:properties>
-     <orchestration:reg-center id="regCenter" type="zookeeper" server-lists="localhost:2181" />
+     <orchestration:reg-center id="regCenter" type="Zookeeper" server-lists="localhost:2181" />
      <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" reg-center-ref="regCenter" overwrite="true" />
      <orchestration:slave-data-source id="masterSlaveDataSource" data-source-ref="realMasterSlaveDataSource" reg-center-ref="regCenter" overwrite="true" />
      <orchestration:data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" reg-center-ref="regCenter" overwrite="true" />
