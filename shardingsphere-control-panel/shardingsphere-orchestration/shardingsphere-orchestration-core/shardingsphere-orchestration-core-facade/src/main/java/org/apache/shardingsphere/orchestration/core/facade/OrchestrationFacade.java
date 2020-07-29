@@ -48,7 +48,6 @@ import java.util.Properties;
 public final class OrchestrationFacade implements AutoCloseable {
     
     static {
-        // TODO avoid multiple loading
         ShardingSphereServiceLoader.register(RegistryRepository.class);
         ShardingSphereServiceLoader.register(ConfigurationRepository.class);
     }
@@ -93,11 +92,15 @@ public final class OrchestrationFacade implements AutoCloseable {
     }
     
     private void initConfigCenter(final OrchestrationConfiguration config) {
-        OrchestrationCenterConfiguration additionalConfigCenterConfig = config.getAdditionalConfigCenterConfiguration().orElse(config.getRegistryCenterConfiguration());
-        Preconditions.checkNotNull(additionalConfigCenterConfig, "Config center configuration cannot be null.");
-        configurationRepository = TypedSPIRegistry.getRegisteredService(ConfigurationRepository.class, additionalConfigCenterConfig.getType(), additionalConfigCenterConfig.getProps());
-        configurationRepository.init(config.getNamespace(), additionalConfigCenterConfig);
-        configCenter = new ConfigCenter(config.getNamespace(), configurationRepository);
+        if (config.getAdditionalConfigCenterConfiguration().isPresent()) {
+            OrchestrationCenterConfiguration additionalConfigCenterConfig = config.getAdditionalConfigCenterConfiguration().orElse(config.getRegistryCenterConfiguration());
+            configurationRepository = TypedSPIRegistry.getRegisteredService(ConfigurationRepository.class, additionalConfigCenterConfig.getType(), additionalConfigCenterConfig.getProps());
+            configurationRepository.init(config.getNamespace(), additionalConfigCenterConfig);
+            configCenter = new ConfigCenter(config.getNamespace(), configurationRepository);
+        } else if (registryRepository instanceof ConfigurationRepository) {
+            configCenter = new ConfigCenter(config.getNamespace(), (ConfigurationRepository) registryRepository);
+        }
+        throw new IllegalArgumentException("Registry repository is not suitable for config center and no additional config center configuration provided.");
     }
     
     private void initMetaDataCenter(final OrchestrationConfiguration config) {
@@ -154,13 +157,9 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     @Override
     public void close() {
-        try {
-            registryRepository.close();
+        registryRepository.close();
+        if (null != configurationRepository) {
             configurationRepository.close();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.warn("RegCenter exception for: {}", ex.getMessage());
         }
     }
     
