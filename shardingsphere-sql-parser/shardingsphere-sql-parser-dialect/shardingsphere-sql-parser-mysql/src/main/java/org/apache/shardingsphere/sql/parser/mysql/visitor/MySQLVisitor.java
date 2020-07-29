@@ -278,7 +278,8 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()));
         }
         //TODO deal with IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
@@ -369,7 +370,8 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         if (null != ctx.predicate()) {
             visit(ctx.predicate());
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
@@ -378,7 +380,8 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             return createExpressionSegment(visit(ctx.simpleExpr()), ctx);
         }
         visitRemainBitExpr(ctx);
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
@@ -459,8 +462,9 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     @Override
     public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
         String aggregationType = ctx.aggregationFunctionName().getText();
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return AggregationType.isAggregationType(aggregationType)
-                ? createAggregationSegment(ctx, aggregationType) : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+                ? createAggregationSegment(ctx, aggregationType) : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
@@ -509,61 +513,71 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         if (null != ctx.weightStringFunction()) {
             return visit(ctx.weightStringFunction());
         }
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
     public final ASTNode visitGroupConcatFunction(final GroupConcatFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
     public final ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
     public final ASTNode visitConvertFunction(final ConvertFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
     public final ASTNode visitPositionFunction(final PositionFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
     public final ASTNode visitSubstringFunction(final SubstringFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
     public final ASTNode visitExtractFunction(final ExtractFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
     public final ASTNode visitCharFunction(final CharFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
     public final ASTNode visitWeightStringFunction(final WeightStringFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
@@ -571,7 +585,8 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         if (null != ctx.completeRegularFunction()) {
             calculateParameterCount(ctx.completeRegularFunction().expr());
         }
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx) {
@@ -584,18 +599,21 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         for (SimpleExprContext each : ctx.simpleExpr()) {
             visit(each);
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
     public final ASTNode visitMatchExpression_(final MatchExpression_Context ctx) {
         visit(ctx.expr());
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
     public final ASTNode visitCaseExpression(final CaseExpressionContext ctx) {
-        return new OtherLiteralValue(ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new OtherLiteralValue(text);
     }
     
     @Override

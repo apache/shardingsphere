@@ -67,7 +67,7 @@ public final class ScalingJobController {
             return;
         }
         scalingTaskSchedulerMap.get(shardingScalingJobId).stop();
-        scalingJobMap.get(shardingScalingJobId).setStatus("STOPPED");
+        scalingJobMap.get(shardingScalingJobId).setStatus(SyncTaskControlStatus.STOPPED.name());
     }
     
     /**

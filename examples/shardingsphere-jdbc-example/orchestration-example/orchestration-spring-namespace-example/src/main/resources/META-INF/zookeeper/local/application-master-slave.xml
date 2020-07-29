@@ -68,7 +68,7 @@
     
     <shardingsphere:data-source id="realMasterSlaveDataSource" data-source-names="demo_ds_master, demo_ds_slave_0, demo_ds_slave_1" rule-refs="masterSlaveRule" />
     
-    <orchestration:data-source id="masterSlaveDataSource" data-source-ref="realMasterSlaveDataSource" instance-ref="regCenter" />
+    <orchestration:data-source id="masterSlaveDataSource" data-source-ref="realMasterSlaveDataSource" reg-center-ref="regCenter" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="masterSlaveDataSource" />

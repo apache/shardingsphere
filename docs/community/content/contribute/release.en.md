@@ -91,7 +91,7 @@ Among them, 700E6065 is public key ID.
 
 ### Upload the Public Key to Key Server
 
-The command is as follow:
+The command is as follows:
 
 ```shell
 gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065

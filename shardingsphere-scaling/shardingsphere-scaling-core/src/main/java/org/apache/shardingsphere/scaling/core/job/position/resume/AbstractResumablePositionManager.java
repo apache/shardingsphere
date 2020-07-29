@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
@@ -45,13 +46,11 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
     
     private static final Gson GSON = new Gson();
     
+    private boolean resumable;
+    
     private String databaseType;
     
     private String taskPath;
-    
-    private boolean available;
-    
-    private boolean resumable;
     
     private final Map<String, PositionManager<PrimaryKeyPosition>> inventoryPositionManagerMap = Maps.newConcurrentMap();
     
@@ -66,7 +65,7 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
     }
     
     protected void resumeInventoryPosition(final String data) {
-        if (isEmpty(data)) {
+        if (Strings.isNullOrEmpty(data)) {
             return;
         }
         log.info("resume inventory position from {} = {}", taskPath, data);
@@ -81,7 +80,7 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
     }
     
     protected void resumeIncrementalPosition(final String data) {
-        if (isEmpty(data)) {
+        if (Strings.isNullOrEmpty(data)) {
             return;
         }
         log.info("resume incremental position from {} = {}", taskPath, data);
@@ -89,10 +88,6 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
         for (Map.Entry<String, Object> entry : incrementalPosition.entrySet()) {
             getIncrementalPositionManagerMap().put(entry.getKey(), PositionManagerFactory.newInstance(databaseType, entry.getValue().toString()));
         }
-    }
-    
-    private boolean isEmpty(final String data) {
-        return null == data || "".equals(data);
     }
     
     protected String getInventoryPositionData() {

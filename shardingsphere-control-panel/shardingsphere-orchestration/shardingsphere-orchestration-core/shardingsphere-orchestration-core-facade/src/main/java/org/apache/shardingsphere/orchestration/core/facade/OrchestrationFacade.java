@@ -49,8 +49,8 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     static {
         // TODO avoid multiple loading
-        ShardingSphereServiceLoader.register(ConfigurationRepository.class);
         ShardingSphereServiceLoader.register(RegistryRepository.class);
+        ShardingSphereServiceLoader.register(ConfigurationRepository.class);
     }
     
     private RegistryRepository registryRepository;
@@ -73,40 +73,39 @@ public final class OrchestrationFacade implements AutoCloseable {
     /**
      * Initialize orchestration facade.
      *
-     * @param orchestrationConfig orchestration configuration
-     * @param shardingSchemaNames sharding schema names
+     * @param config orchestration configuration
+     * @param schemaNames schema names
      */
-    public void init(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
-        isOverwrite = orchestrationConfig.isOverwrite();
-        initRegistryCenter(orchestrationConfig);
-        initConfigCenter(orchestrationConfig);
-        initMetaDataCenter(orchestrationConfig);
-        initListenerManager(orchestrationConfig, shardingSchemaNames);
+    public void init(final OrchestrationConfiguration config, final Collection<String> schemaNames) {
+        isOverwrite = config.isOverwrite();
+        initRegistryCenter(config);
+        initConfigCenter(config);
+        initMetaDataCenter(config);
+        initListenerManager(config, schemaNames);
     }
     
-    private void initRegistryCenter(final OrchestrationConfiguration orchestrationConfig) {
-        OrchestrationCenterConfiguration registryCenterConfig = orchestrationConfig.getRegistryCenterConfiguration();
+    private void initRegistryCenter(final OrchestrationConfiguration config) {
+        OrchestrationCenterConfiguration registryCenterConfig = config.getRegistryCenterConfiguration();
         Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");
         registryRepository = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
-        registryRepository.init(orchestrationConfig.getNamespace(), registryCenterConfig);
-        registryCenter = new RegistryCenter(orchestrationConfig.getNamespace(), registryRepository);
+        registryRepository.init(config.getNamespace(), registryCenterConfig);
+        registryCenter = new RegistryCenter(config.getNamespace(), registryRepository);
     }
     
-    private void initConfigCenter(final OrchestrationConfiguration orchestrationConfig) {
-        OrchestrationCenterConfiguration additionalConfigCenterConfig = orchestrationConfig.getAdditionalConfigCenterConfiguration().orElse(orchestrationConfig.getRegistryCenterConfiguration());
+    private void initConfigCenter(final OrchestrationConfiguration config) {
+        OrchestrationCenterConfiguration additionalConfigCenterConfig = config.getAdditionalConfigCenterConfiguration().orElse(config.getRegistryCenterConfiguration());
         Preconditions.checkNotNull(additionalConfigCenterConfig, "Config center configuration cannot be null.");
         configurationRepository = TypedSPIRegistry.getRegisteredService(ConfigurationRepository.class, additionalConfigCenterConfig.getType(), additionalConfigCenterConfig.getProps());
-        configurationRepository.init(orchestrationConfig.getNamespace(), additionalConfigCenterConfig);
-        configCenter = new ConfigCenter(orchestrationConfig.getNamespace(), configurationRepository);
+        configurationRepository.init(config.getNamespace(), additionalConfigCenterConfig);
+        configCenter = new ConfigCenter(config.getNamespace(), configurationRepository);
     }
     
-    private void initMetaDataCenter(final OrchestrationConfiguration orchestrationConfig) {
-        metaDataCenter = new MetaDataCenter(orchestrationConfig.getNamespace(), configurationRepository);
+    private void initMetaDataCenter(final OrchestrationConfiguration config) {
+        metaDataCenter = new MetaDataCenter(config.getNamespace(), configurationRepository);
     }
     
-    private void initListenerManager(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
-        listenerManager = new OrchestrationListenerManager(
-                orchestrationConfig.getNamespace(), registryRepository, configurationRepository, shardingSchemaNames.isEmpty() ? configCenter.getAllShardingSchemaNames() : shardingSchemaNames);
+    private void initListenerManager(final OrchestrationConfiguration config, final Collection<String> schemaNames) {
+        listenerManager = new OrchestrationListenerManager(config.getNamespace(), registryRepository, configurationRepository, schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);
     }
     
     /**
@@ -132,7 +131,7 @@ public final class OrchestrationFacade implements AutoCloseable {
     public void initConfigurations() {
         registryCenter.persistInstanceOnline();
         registryCenter.persistDataSourcesNode();
-        listenerManager.initListeners();
+        listenerManager.init();
     }
     
     /**
@@ -156,8 +155,8 @@ public final class OrchestrationFacade implements AutoCloseable {
     @Override
     public void close() {
         try {
-            configurationRepository.close();
             registryRepository.close();
+            configurationRepository.close();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

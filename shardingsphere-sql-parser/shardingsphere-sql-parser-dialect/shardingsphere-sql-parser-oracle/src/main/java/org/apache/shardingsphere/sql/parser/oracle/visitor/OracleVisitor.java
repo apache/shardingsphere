@@ -358,7 +358,8 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
             return createExpressionSegment(visit(ctx.simpleExpr()), ctx);
         }
         visitRemainBitExpr(ctx);
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {

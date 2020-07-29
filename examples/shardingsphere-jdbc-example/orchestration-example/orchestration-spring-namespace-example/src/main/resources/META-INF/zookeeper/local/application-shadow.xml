@@ -45,7 +45,7 @@
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
-
+    
     <bean id="demo_ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds"/>
@@ -60,8 +60,8 @@
     </shadow:rule>
     
     <shardingsphere:data-source id="realShadowDataSource" data-source-names="demo_ds,shadow_demo_ds" rule-refs="shadowRule" />
-
-    <orchestration:data-source id="shadowDataSource" data-source-ref="realShadowDataSource" instance-ref="regCenter" />
+    
+    <orchestration:data-source id="shadowDataSource" data-source-ref="realShadowDataSource" reg-center-ref="regCenter" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shadowDataSource" />

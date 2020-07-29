@@ -23,9 +23,9 @@ import org.apache.shardingsphere.orchestration.repository.api.listener.DataChang
 import java.util.Collection;
 
 /**
- * Configuration changed listener manager.
+ * Configuration listener manager.
  */
-public final class ConfigurationChangedListenerManager {
+public final class ConfigurationListenerManager {
     
     private final SchemaChangedListener schemaChangedListener;
     
@@ -37,7 +37,7 @@ public final class ConfigurationChangedListenerManager {
     
     private final ClusterConfigurationChangedListener clusterConfigurationChangedListener;
     
-    public ConfigurationChangedListenerManager(final String name, final ConfigurationRepository configurationRepository, final Collection<String> shardingSchemaNames) {
+    public ConfigurationListenerManager(final String name, final ConfigurationRepository configurationRepository, final Collection<String> shardingSchemaNames) {
         schemaChangedListener = new SchemaChangedListener(name, configurationRepository, shardingSchemaNames);
         propertiesChangedListener = new PropertiesChangedListener(name, configurationRepository);
         authenticationChangedListener = new AuthenticationChangedListener(name, configurationRepository);

@@ -28,25 +28,22 @@ import java.util.Map;
 public interface ResumablePositionManager {
     
     /**
-     * If it is available.
-     * @return is available
-     */
-    boolean isAvailable();
-    
-    /**
      * If has resumable data.
+     *
      * @return is resumable
      */
     boolean isResumable();
     
     /**
      * Get inventory position map.
+     *
      * @return inventory position map
      */
     Map<String, PositionManager<PrimaryKeyPosition>> getInventoryPositionManagerMap();
     
     /**
      * Get incremental position map.
+     *
      * @return incremental position map
      */
     Map<String, PositionManager> getIncrementalPositionManagerMap();

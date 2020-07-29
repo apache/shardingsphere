@@ -105,7 +105,7 @@ public final class OrchestrationConfigurationConverter extends AbstractConfigura
     
     private Map<String, Map<String, DataSourceParameter>> getDataSourceParametersMap(final OrchestrationFacade orchestrationFacade) {
         Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
-        for (String each : orchestrationFacade.getConfigCenter().getAllShardingSchemaNames()) {
+        for (String each : orchestrationFacade.getConfigCenter().getAllSchemaNames()) {
             result.put(each, DataSourceConverter.getDataSourceParameterMap(orchestrationFacade.getConfigCenter().loadDataSourceConfigurations(each)));
         }
         return result;
@@ -113,7 +113,7 @@ public final class OrchestrationConfigurationConverter extends AbstractConfigura
     
     private Map<String, Collection<RuleConfiguration>> getSchemaRules(final OrchestrationFacade orchestrationFacade) {
         Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>();
-        for (String each : orchestrationFacade.getConfigCenter().getAllShardingSchemaNames()) {
+        for (String each : orchestrationFacade.getConfigCenter().getAllSchemaNames()) {
             result.put(each, orchestrationFacade.getConfigCenter().loadRuleConfigurations(each));
         }
         return result;

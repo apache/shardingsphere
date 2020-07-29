@@ -15,15 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position.resume;
+package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
-/**
- * Fake resumable position manager as defalut.
- */
-public final class FakeResumablePositionManager extends AbstractResumablePositionManager implements ResumablePositionManager {
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public class PostgreSQLArrayColumnTypeTest {
     
-    public FakeResumablePositionManager(final String databaseType, final String taskPath) {
-        setDatabaseType(databaseType);
-        setTaskPath(taskPath);
+    @Test
+    public void assertIntegerArrayGot() {
+        int columnTypeName = PostgreSQLArrayColumnType.getTypeOidByColumnTypeName("_int4");
+        assertThat(columnTypeName, is(1007));
     }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertIllegalArgExThrown() {
+        PostgreSQLArrayColumnType.getTypeOidByColumnTypeName("not_exist_type");
+    }
+    
 }

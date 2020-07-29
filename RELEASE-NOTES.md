@@ -44,7 +44,7 @@
 
 ### Bug Fixes
 
-1. Fix an exception caused by using a CHAR/VARCHAR type column as a order by item
+1. Fix an exception caused by using a CHAR/VARCHAR type column as an order by item
 1. Refine `DataTypeName` syntax rules of all database dialects
 1. Fix an exception caused by executing `BEGIN` using prepared statement of MySQL C API
 1. Fix the problem that `ALTER TABLE` fails to execute when the field type of the table contains Integer/Double/BigDecimal

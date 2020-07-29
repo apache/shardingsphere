@@ -10,7 +10,7 @@ The Attachments shortcode displays a list of files attached to a page.
 ## Usage
 
 The shortcurt lists files found in a **specific folder**.
-Currently, it support two implementations for pages
+Currently, it supports two implementations for pages
 
 1. If your page is a markdown file, attachements must be place in a **folder** named like your page and ending with **.files**.
 

@@ -25,11 +25,11 @@
     <xsd:element name="heartbeat">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="sql" type="xsd:string" use="required"/>
+            <xsd:attribute name="sql" type="xsd:string" use="required" />
             <xsd:attribute name="threadCount" type="xsd:string" use="required" />
-            <xsd:attribute name="interval" type="xsd:string" use="required"/>
-            <xsd:attribute name="retryMaximum" type="xsd:string"/>
-            <xsd:attribute name="retryInterval" type="xsd:string"/>
+            <xsd:attribute name="interval" type="xsd:string" use="required" />
+            <xsd:attribute name="retryMaximum" type="xsd:string" />
+            <xsd:attribute name="retryInterval" type="xsd:string" />
             <xsd:attribute name="retryEnable" type="xsd:string" default="false" />
         </xsd:complexType>
     </xsd:element>

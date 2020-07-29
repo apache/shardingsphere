@@ -25,12 +25,12 @@
                            ">
     <import resource="namespace/encryptDataSourceNamespace.xml" />
     
-    <orchestration:instance id="regCenter" type="TestRegistry" server-lists="localhost:3181">
+    <orchestration:reg-center id="regCenter" type="TestRegistry" server-lists="localhost:3181">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>
         </props>
-    </orchestration:instance>
+    </orchestration:reg-center>
     
-    <orchestration:data-source id="encryptDataSourceOrchestration" data-source-ref="encryptDataSource" instance-ref="regCenter" />
+    <orchestration:data-source id="encryptDataSourceOrchestration" data-source-ref="encryptDataSource" reg-center-ref="regCenter" />
 </beans>

@@ -44,7 +44,12 @@ public final class StreamQueryResult implements QueryResult {
         resultSetMetaData = resultSet.getMetaData();
         this.resultSet = resultSet;
     }
-    
+
+    @Override
+    public ResultSetMetaData getResultSetMetaData() {
+        return resultSetMetaData;
+    }
+
     @Override
     public boolean next() throws SQLException {
         return resultSet.next();

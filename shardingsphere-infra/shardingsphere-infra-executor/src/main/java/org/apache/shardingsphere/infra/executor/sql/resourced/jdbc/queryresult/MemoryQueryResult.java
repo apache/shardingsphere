@@ -111,7 +111,12 @@ public final class MemoryQueryResult implements QueryResult {
                 return resultSet.getObject(columnIndex);
         }
     }
-    
+
+    @Override
+    public ResultSetMetaData getResultSetMetaData() {
+        return resultSetMetaData;
+    }
+
     @Override
     public boolean next() {
         if (rows.hasNext()) {

@@ -32,7 +32,7 @@
     <import resource="classpath*:META-INF/nacos/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
 
-    <orchestration:data-source id="shardingDatabasesTablesDataSource" instance-ref="regCenter,confCenter" />
+    <orchestration:data-source id="shardingDatabasesTablesDataSource" reg-center-ref="regCenter" config-center-ref="confCenter" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shardingDatabasesTablesDataSource" />
@@ -40,12 +40,12 @@
     <tx:annotation-driven />
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="shardingDatabasesTablesDataSource"/>
-        <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
+        <property name="dataSource" ref="shardingDatabasesTablesDataSource" />
+        <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml" />
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository"/>
-        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
     </bean>
 </beans>

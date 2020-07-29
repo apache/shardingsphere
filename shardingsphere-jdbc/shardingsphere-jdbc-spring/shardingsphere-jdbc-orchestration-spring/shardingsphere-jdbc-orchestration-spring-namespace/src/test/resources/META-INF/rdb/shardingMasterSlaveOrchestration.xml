@@ -26,13 +26,13 @@
                            ">
     <import resource="namespace/shardingMasterSlaveNamespace.xml" />
     
-    <orchestration:instance id="regCenter" type="TestRegistry" server-lists="localhost:3181">
+    <orchestration:reg-center id="regCenter" type="TestRegistry" server-lists="localhost:3181">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>
         </props>
-    </orchestration:instance>
+    </orchestration:reg-center>
     
-    <orchestration:data-source id="masterSlaveShardingDataSourceByDefaultStrategyOrchestration" data-source-ref="masterSlaveShardingDataSourceByDefaultStrategy" instance-ref="regCenter" />
-    <orchestration:data-source id="masterSlaveShardingDataSourceByUserStrategyOrchestration" data-source-ref="masterSlaveShardingDataSourceByUserStrategy" instance-ref="regCenter" />
+    <orchestration:data-source id="masterSlaveShardingDataSourceByDefaultStrategyOrchestration" data-source-ref="masterSlaveShardingDataSourceByDefaultStrategy" reg-center-ref="regCenter" />
+    <orchestration:data-source id="masterSlaveShardingDataSourceByUserStrategyOrchestration" data-source-ref="masterSlaveShardingDataSourceByUserStrategy" reg-center-ref="regCenter" />
 </beans>

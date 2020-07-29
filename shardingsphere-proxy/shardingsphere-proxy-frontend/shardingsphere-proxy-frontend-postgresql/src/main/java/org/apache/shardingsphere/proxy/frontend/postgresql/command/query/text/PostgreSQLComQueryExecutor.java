@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.text;
 
+import java.sql.ResultSetMetaData;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.tex
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
@@ -102,9 +104,11 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private List<PostgreSQLColumnDescription> getPostgreSQLColumnDescriptions(final QueryResponse queryResponse) {
         List<PostgreSQLColumnDescription> result = new LinkedList<>();
+        List<QueryResult> queryResults = queryResponse.getQueryResults();
+        ResultSetMetaData resultSetMetaData = queryResults.size() > 0 ? queryResults.get(0).getResultSetMetaData() : null;
         int columnIndex = 0;
         for (QueryHeader each : queryResponse.getQueryHeaders()) {
-            result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength()));
+            result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength(), resultSetMetaData));
         }
         return result;
     }

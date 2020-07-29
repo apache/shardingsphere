@@ -18,25 +18,33 @@ weight = 6
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 ">
     
-    <orchestration:instance id="regCenter" type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo">
+    <orchestration:reg-center id="regCenter" type="ZooKeeper" server-lists="localhost:2181">
         <props>
             <prop key="overwrite">true</prop>
         </props>
-     </orchestration:instance>
-    <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" instance-ref="regCenter" />
+     </orchestration:reg-center>
+    <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" reg-center-ref="regCenter" />
 </beans>
 ```
 命名空间: [http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration-5.0.0.xsd)
 
-<orchestration:instance />
+<orchestration:reg-center />
 
-| *名称*         | *类型* | *说明*                                                                      |
-| ------------- | ------ | -------------------------------------------------------------------------- |
-| id            | 属性   | 治理实例名称                                                                 |
-| type          | 属性   | 治理实例类型。如：zookeeper, etcd, apollo, nacos                              |
-| server-lists  | 属性   | 治理服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
-| namespace (?) | 属性   | 治理命名空间                                                                 |
-| props (?)     | 属性   | 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等                            |
+| *名称*         | *类型* | *说明*                                                                        |
+| ------------- | ------ | ----------------------------------------------------------------------------- |
+| id            | 属性   | 注册中心实例名称                                                                 |
+| type          | 属性   | 注册中心类型。如：ZooKeeper, etcd                                                |
+| server-lists  | 属性   | 注册中心服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
+| props (?)     | 属性   | 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等                               |
+
+<orchestration:config-center />
+
+| *名称*         | *类型* | *说明*                                                                         |
+| ------------- | ------ | ----------------------------------------------------------------------------- |
+| id            | 属性   | 配置中心实例名称                                                                 |
+| type          | 属性   | 配置中心类型。如：ZooKeeper, etcd, Apollo, Nacos                                 |
+| server-lists  | 属性   | 配置中心服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
+| props (?)     | 属性   | 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等                               |
 
 ### 集群管理
 
@@ -54,10 +62,11 @@ weight = 6
                            http://shardingsphere.apache.org/schema/shardingsphere/cluster/cluster.xsd
                            ">
  
-    <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" instance-ref="regCenter" cluster-ref="cluster" />
+    <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" reg-center-ref="regCenter" cluster-ref="cluster" />
     <cluster:heartbeat id="cluster" sql="select 1" threadCount="1" interval="60" retryEnable="false" retryMaximum="3" retryInterval="3"/>
 </beans>
 ```
+
 命名空间: [http://shardingsphere.apache.org/schema/shardingsphere/orchestration/cluster-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/orchestration/cluster-5.0.0.xsd)
 
 <cluster:heartbeat />

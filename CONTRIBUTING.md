@@ -24,7 +24,7 @@ You can report a bug, submit a new feature enhancement recommendation, or commit
 
 ## Commit pull request
 
- - Please choose a interested issue, or create a new issue and then settle a correct label.
+ - Please choose an interested issue, or create a new issue and then settle a correct label.
  - Reply a deadline message to pickup this issue. 
  - Find a mentor in [Core developers list](https://shardingsphere.apache.org/community/en/team/), he will give you feedback for design and implements.
  - Fork to your github repo and begin to work.

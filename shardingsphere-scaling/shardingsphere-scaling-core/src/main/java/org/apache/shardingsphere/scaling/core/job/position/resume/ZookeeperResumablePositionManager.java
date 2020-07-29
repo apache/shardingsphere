@@ -38,7 +38,9 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     
     private static final String INCREMENTAL = "/incremental";
     
-    private static final CuratorZookeeperRepository ZOOKEEPER = new CuratorZookeeperRepository();
+    private static final CuratorZookeeperRepository CURATOR_ZOOKEEPER_REPOSITORY = new CuratorZookeeperRepository();
+    
+    private static boolean available;
     
     private ScheduledExecutorService executor;
     
@@ -46,12 +48,12 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     
     private String incrementalPath;
     
-    public ZookeeperResumablePositionManager() {
+    static {
         ResumeConfiguration resumeConfiguration = ScalingContext.getInstance().getServerConfiguration().getResumeConfiguration();
         if (null != resumeConfiguration) {
-            ZOOKEEPER.init(resumeConfiguration.getNamespace(), new OrchestrationCenterConfiguration("ZooKeeper", resumeConfiguration.getServerLists(), new Properties()));
+            CURATOR_ZOOKEEPER_REPOSITORY.init(resumeConfiguration.getNamespace(), new OrchestrationCenterConfiguration("ZooKeeper", resumeConfiguration.getServerLists(), new Properties()));
             log.info("zookeeper resumable position manager is available.");
-            setAvailable(true);
+            available = true;
         }
     }
     
@@ -66,6 +68,14 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
         executor.scheduleWithFixedDelay(this::persistPosition, 1, 1, TimeUnit.MINUTES);
     }
     
+    /**
+     * If it is available.
+     * @return is available
+     */
+    public static boolean isAvailable() {
+        return available;
+    }
+    
     @Override
     public void close() {
         executor.submit(this::persistPosition);
@@ -73,8 +83,8 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     }
     
     private void resumePosition() {
-        resumeInventoryPosition(ZOOKEEPER.get(inventoryPath));
-        resumeIncrementalPosition(ZOOKEEPER.get(incrementalPath));
+        resumeInventoryPosition(CURATOR_ZOOKEEPER_REPOSITORY.get(inventoryPath));
+        resumeIncrementalPosition(CURATOR_ZOOKEEPER_REPOSITORY.get(incrementalPath));
     }
     
     private void persistPosition() {
@@ -85,14 +95,14 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     @Override
     public void persistInventoryPosition() {
         String result = getInventoryPositionData();
-        ZOOKEEPER.persist(inventoryPath, result);
+        CURATOR_ZOOKEEPER_REPOSITORY.persist(inventoryPath, result);
         log.info("persist inventory position {} = {}", inventoryPath, result);
     }
     
     @Override
     public void persistIncrementalPosition() {
         String result = getIncrementalPositionData();
-        ZOOKEEPER.persist(incrementalPath, result);
+        CURATOR_ZOOKEEPER_REPOSITORY.persist(incrementalPath, result);
         log.info("persist incremental position {} = {}", incrementalPath, result);
     }
 }
