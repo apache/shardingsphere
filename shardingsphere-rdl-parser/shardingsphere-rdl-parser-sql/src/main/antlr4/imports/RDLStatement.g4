@@ -40,7 +40,7 @@ key
     ;
     
 datasourceValue
-    : hostName COLON port COLON dbName
+    : hostName COLON port COLON dbName COLON user COLON password
     ;
 
 shardingruleValue
@@ -82,5 +82,13 @@ port
     ;
     
 dbName
+    : IDENTIFIER | NUMBER
+    ;
+
+user
+    : IDENTIFIER | NUMBER
+    ;
+
+password
     : IDENTIFIER | NUMBER
     ;
