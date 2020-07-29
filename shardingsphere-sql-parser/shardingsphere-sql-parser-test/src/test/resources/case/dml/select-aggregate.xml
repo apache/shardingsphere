@@ -76,7 +76,7 @@
                     <column-left-value name="order_id" start-index="51" stop-index="58" />
                     <operator type="&gt;" />
                     <compare-right-value>
-                        <common-expression text="1-1" start-index="62" stop-index="66" literal-start-index="62" literal-stop-index="66"/>
+                        <common-expression text="1 - 1" start-index="62" stop-index="66" literal-start-index="62" literal-stop-index="66"/>
                     </compare-right-value>
                 </predicate>
             </and-predicate>

@@ -203,7 +203,8 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
             return visit(ctx.aExpr(0));
         }
         super.visitAExpr(ctx);
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
