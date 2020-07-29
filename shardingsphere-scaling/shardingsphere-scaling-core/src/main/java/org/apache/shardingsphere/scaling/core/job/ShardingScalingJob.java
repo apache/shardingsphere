@@ -42,9 +42,9 @@ public final class ShardingScalingJob {
     
     private final transient List<SyncConfiguration> syncConfigurations = new LinkedList<>();
     
-    private final List<ScalingTask> inventoryDataTasks = new LinkedList<>();
+    private final transient List<ScalingTask> inventoryDataTasks = new LinkedList<>();
     
-    private final List<ScalingTask> incrementalDataTasks = new LinkedList<>();
+    private final transient List<ScalingTask> incrementalDataTasks = new LinkedList<>();
     
     private final String jobName;
     
