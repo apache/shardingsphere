@@ -51,7 +51,7 @@ It is able to orchestrate read-write split slave database, delete or disable dat
 
 Write `DISABLED` (case insensitive) to `IP@-@PID` to disable that instance; delete `DISABLED` to enable the instance.
 
-Zookeeper command is as follow:
+Zookeeper command is as follows:
 
 ```
 [zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED
@@ -61,7 +61,7 @@ Zookeeper command is as follow:
 
 Under read-write split scenarios, users can write `DISABLED` (case insensitive) to sub-nodes of data source name to disable slave database sources. Delete `DISABLED` or the node to enable it.
 
-Zookeeper command is as follow:
+Zookeeper command is as follows:
 
 ```
 [zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/datasources/your_slave_datasource_name DISABLED
