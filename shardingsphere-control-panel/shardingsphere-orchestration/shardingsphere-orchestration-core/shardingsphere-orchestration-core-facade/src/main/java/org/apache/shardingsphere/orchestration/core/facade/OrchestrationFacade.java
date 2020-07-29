@@ -73,6 +73,15 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     /**
      * Initialize configurations of orchestration.
+     */
+    public void initConfigurations() {
+        registryCenter.persistInstanceOnline();
+        registryCenter.persistDataSourcesNode();
+        listenerManager.init();
+    }
+    
+    /**
+     * Initialize configurations of orchestration.
      *
      * @param dataSourceConfigurationMap schema data source configuration map
      * @param schemaRuleMap schema rule map
@@ -86,15 +95,6 @@ public final class OrchestrationFacade implements AutoCloseable {
             configCenter.persistConfigurations(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), isOverwrite);
         }
         initConfigurations();
-    }
-    
-    /**
-     * Initialize configurations of orchestration.
-     */
-    public void initConfigurations() {
-        registryCenter.persistInstanceOnline();
-        registryCenter.persistDataSourcesNode();
-        listenerManager.init();
     }
     
     /**
