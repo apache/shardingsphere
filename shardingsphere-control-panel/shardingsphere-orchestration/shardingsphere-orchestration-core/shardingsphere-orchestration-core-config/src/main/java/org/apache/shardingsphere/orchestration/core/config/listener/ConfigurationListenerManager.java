@@ -37,8 +37,8 @@ public final class ConfigurationListenerManager {
     
     private final ClusterConfigurationChangedListener clusterConfigurationChangedListener;
     
-    public ConfigurationListenerManager(final String name, final ConfigurationRepository configurationRepository, final Collection<String> shardingSchemaNames) {
-        schemaChangedListener = new SchemaChangedListener(name, configurationRepository, shardingSchemaNames);
+    public ConfigurationListenerManager(final String name, final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
+        schemaChangedListener = new SchemaChangedListener(name, configurationRepository, schemaNames);
         propertiesChangedListener = new PropertiesChangedListener(name, configurationRepository);
         authenticationChangedListener = new AuthenticationChangedListener(name, configurationRepository);
         metricsConfigurationChangedListener = new MetricsConfigurationChangedListener(name, configurationRepository);

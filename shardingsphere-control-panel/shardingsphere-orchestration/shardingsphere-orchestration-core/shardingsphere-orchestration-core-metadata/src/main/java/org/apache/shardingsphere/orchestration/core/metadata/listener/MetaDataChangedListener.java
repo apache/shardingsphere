@@ -37,9 +37,9 @@ public final class MetaDataChangedListener extends PostOrchestrationRepositoryEv
     
     private final Collection<String> schemaNames;
     
-    public MetaDataChangedListener(final String name, final OrchestrationRepository orchestrationRepository, final Collection<String> shardingSchemaNames) {
-        super(orchestrationRepository, new MetaDataCenterNode(name).getAllSchemaMetadataPaths(shardingSchemaNames));
-        this.schemaNames = shardingSchemaNames;
+    public MetaDataChangedListener(final String name, final OrchestrationRepository orchestrationRepository, final Collection<String> schemaNames) {
+        super(orchestrationRepository, new MetaDataCenterNode(name).getAllSchemaMetadataPaths(schemaNames));
+        this.schemaNames = schemaNames;
     }
     
     @Override
