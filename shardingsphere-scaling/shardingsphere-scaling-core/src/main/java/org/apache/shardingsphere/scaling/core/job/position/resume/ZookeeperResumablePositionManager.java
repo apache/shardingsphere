@@ -40,18 +40,20 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     
     private static final CuratorZookeeperRepository CURATOR_ZOOKEEPER_REPOSITORY = new CuratorZookeeperRepository();
     
+    private static boolean available;
+    
     private ScheduledExecutorService executor;
     
     private String inventoryPath;
     
     private String incrementalPath;
     
-    public ZookeeperResumablePositionManager() {
+    static {
         ResumeConfiguration resumeConfiguration = ScalingContext.getInstance().getServerConfiguration().getResumeConfiguration();
         if (null != resumeConfiguration) {
             CURATOR_ZOOKEEPER_REPOSITORY.init(resumeConfiguration.getNamespace(), new OrchestrationCenterConfiguration("ZooKeeper", resumeConfiguration.getServerLists(), new Properties()));
             log.info("zookeeper resumable position manager is available.");
-            setAvailable(true);
+            available = true;
         }
     }
     
@@ -64,6 +66,14 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
         setResumable(!getInventoryPositionManagerMap().isEmpty() && !getIncrementalPositionManagerMap().isEmpty());
         executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleWithFixedDelay(this::persistPosition, 1, 1, TimeUnit.MINUTES);
+    }
+    
+    /**
+     * If it is available.
+     * @return is available
+     */
+    public static boolean isAvailable() {
+        return available;
     }
     
     @Override
