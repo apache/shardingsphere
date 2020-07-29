@@ -6,7 +6,7 @@ rm -rf target
 mkdir -p target/document/current
 cd document
 hugo --cleanDestinationDir
-find ./ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/document/current|g' {} \;
+find ../document/public/ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/document/current|g' {} \;
 cd public/en
 sed -i -e 's/cn/en/g' index.html
 cd ../..
@@ -16,7 +16,7 @@ mv document/public/* target/document/current
 mkdir target/community
 cd community
 hugo --cleanDestinationDir
-find ./ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/community|g' {} \;
+find ../community/public/ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/community|g' {} \;
 cd public/en
 sed -i -e 's/cn/en/g' index.html
 cd ../..
@@ -26,7 +26,7 @@ mv community/public/* target/community/
 mkdir target/blog
 cd blog
 hugo --cleanDestinationDir
-find ./ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/blog|g' {} \;
+find ../blog/public/ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/blog|g' {} \;
 cd public/en
 sed -i -e 's/cn/en/g' index.html
 cd ../..
