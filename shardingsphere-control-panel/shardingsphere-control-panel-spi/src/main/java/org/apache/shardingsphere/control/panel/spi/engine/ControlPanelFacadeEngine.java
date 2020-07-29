@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.control.panel.spi.engine;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.shardingsphere.control.panel.spi.ControlPanelFacade;
 import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
  * Control panel facade engine.
  */
-@SuppressWarnings("ALL")
 public final class ControlPanelFacadeEngine {
     
     static {
@@ -36,10 +36,11 @@ public final class ControlPanelFacadeEngine {
     }
     
     /**
-     * Init control panel facade.
+     * Initialize control panel facade.
      *
      * @param facadeConfigurations facade configurations
      */
+    @SuppressWarnings("rawtypes")
     public void init(final Collection<FacadeConfiguration> facadeConfigurations) {
         Collection<Class<?>> facadeClassTypes = facadeConfigurations.stream().map(FacadeConfiguration::getClass).collect(Collectors.toList());
         for (Map.Entry<Class<?>, ControlPanelFacade> entry : OrderedSPIRegistry.getRegisteredServicesByClass(facadeClassTypes, ControlPanelFacade.class).entrySet()) {
@@ -47,6 +48,7 @@ public final class ControlPanelFacadeEngine {
         }
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private void doInit(final Collection<FacadeConfiguration> facadeConfigurations, final Class<?> configurationType, final ControlPanelFacade facade) {
         for (FacadeConfiguration each : facadeConfigurations) {
             if (each.getClass().equals(configurationType)) {

@@ -30,6 +30,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * Schema contexts.
+ */
 @Getter
 public final class SchemaContexts implements SchemaContextsAware {
     
