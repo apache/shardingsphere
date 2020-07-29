@@ -3,7 +3,7 @@ cd `dirname $0`
 
 rm -rf target
 
-mkdir -p target/document
+mkdir -p target/document/current
 cd document
 hugo --cleanDestinationDir
 find ./ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/document/current|g' {} \;
