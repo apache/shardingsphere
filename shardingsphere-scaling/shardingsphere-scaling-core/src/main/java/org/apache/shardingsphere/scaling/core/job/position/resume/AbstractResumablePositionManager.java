@@ -46,13 +46,11 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
     
     private static final Gson GSON = new Gson();
     
+    private boolean resumable;
+    
     private String databaseType;
     
     private String taskPath;
-    
-    private boolean available;
-    
-    private boolean resumable;
     
     private final Map<String, PositionManager<PrimaryKeyPosition>> inventoryPositionManagerMap = Maps.newConcurrentMap();
     

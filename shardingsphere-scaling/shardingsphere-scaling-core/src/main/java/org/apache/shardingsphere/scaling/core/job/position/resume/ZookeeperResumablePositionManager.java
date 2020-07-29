@@ -34,6 +34,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class ZookeeperResumablePositionManager extends AbstractResumablePositionManager implements ResumablePositionManager {
     
+    private static boolean available;
+    
     private static final String INVENTORY = "/inventory";
     
     private static final String INCREMENTAL = "/incremental";
@@ -46,12 +48,12 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     
     private String incrementalPath;
     
-    public ZookeeperResumablePositionManager() {
+    static {
         ResumeConfiguration resumeConfiguration = ScalingContext.getInstance().getServerConfiguration().getResumeConfiguration();
         if (null != resumeConfiguration) {
             CURATOR_ZOOKEEPER_REPOSITORY.init(resumeConfiguration.getNamespace(), new OrchestrationCenterConfiguration("ZooKeeper", resumeConfiguration.getServerLists(), new Properties()));
             log.info("zookeeper resumable position manager is available.");
-            setAvailable(true);
+            available = true;
         }
     }
     
@@ -64,6 +66,14 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
         setResumable(!getInventoryPositionManagerMap().isEmpty() && !getIncrementalPositionManagerMap().isEmpty());
         executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleWithFixedDelay(this::persistPosition, 1, 1, TimeUnit.MINUTES);
+    }
+    
+    /**
+     * If it is available.
+     * @return is available
+     */
+    public static boolean isAvailable() {
+        return available;
     }
     
     @Override

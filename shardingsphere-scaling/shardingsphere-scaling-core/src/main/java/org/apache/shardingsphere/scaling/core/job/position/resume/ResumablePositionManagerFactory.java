@@ -30,7 +30,7 @@ public final class ResumablePositionManagerFactory {
     private static Class<? extends ResumablePositionManager> clazz = FakeResumablePositionManager.class;
     
     static {
-        if (new ZookeeperResumablePositionManager().isAvailable()) {
+        if (ZookeeperResumablePositionManager.isAvailable()) {
             clazz = ZookeeperResumablePositionManager.class;
         }
     }

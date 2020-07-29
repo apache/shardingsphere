@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
-import lombok.NoArgsConstructor;
-
 /**
  * Fake resumable position manager as defalut.
  */
-@NoArgsConstructor
 public final class FakeResumablePositionManager extends AbstractResumablePositionManager implements ResumablePositionManager {
     
     public FakeResumablePositionManager(final String databaseType, final String taskPath) {
