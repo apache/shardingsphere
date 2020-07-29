@@ -30,15 +30,15 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 @Setter
 public final class DataSourceConnectionSegment implements ASTNode {
     
-    private final String name;
+    private String name;
     
-    private final String hostName;
+    private String hostName;
     
-    private final String port;
+    private String port;
     
-    private final String db;
+    private String db;
     
-    private final String userName;
+    private String user;
     
-    private final String password;
+    private String password;
 }
