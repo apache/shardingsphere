@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.orchestration.internal.datasource;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
@@ -46,7 +45,6 @@ import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
@@ -57,6 +55,7 @@ import org.apache.shardingsphere.orchestration.core.metadata.event.MetaDataChang
 import org.apache.shardingsphere.orchestration.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.schema.OrchestrationSchema;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -70,7 +69,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -90,28 +88,27 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     private ShardingSphereDataSource dataSource;
     
     public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        initOrchestration(orchestrationConfig);
-        dataSource = createDataSource();
-        initOrchestrationFacade(null);
-        disableDataSources();
-        persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
-        initCluster();
-    }
-    
-    public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource shardingSphereDataSource, final OrchestrationConfiguration orchestrationConfig) {
-        initOrchestration(orchestrationConfig);
-        dataSource = shardingSphereDataSource;
-        initOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
-                getRuleConfigurationMap(), dataSource.getSchemaContexts().getProps().getProps(), null);
+        init(orchestrationConfig);
+        dataSource = loadDataSource();
+        onlineInstanceWithOrchestrationCenter(null);
         disableDataSources();
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
         initCluster();
     }
     
     public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) throws SQLException {
-        initOrchestration(orchestrationConfig);
-        dataSource = createDataSource();
-        initOrchestrationFacade(clusterConfiguration);
+        init(orchestrationConfig);
+        dataSource = loadDataSource();
+        onlineInstanceWithOrchestrationCenter(clusterConfiguration);
+        disableDataSources();
+        persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
+        initCluster();
+    }
+    
+    public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource shardingSphereDataSource, final OrchestrationConfiguration orchestrationConfig) {
+        init(orchestrationConfig);
+        dataSource = shardingSphereDataSource;
+        onlineInstanceWithLocalConfiguration(null);
         disableDataSources();
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
         initCluster();
@@ -119,88 +116,71 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     
     public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource shardingSphereDataSource, 
                                                  final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) {
-        initOrchestration(orchestrationConfig);
+        init(orchestrationConfig);
         dataSource = shardingSphereDataSource;
-        initOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
-                getRuleConfigurationMap(), dataSource.getSchemaContexts().getProps().getProps(), clusterConfiguration);
+        onlineInstanceWithLocalConfiguration(clusterConfiguration);
         disableDataSources();
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
         initCluster();
     }
     
-    private void initOrchestration(final OrchestrationConfiguration orchestrationConfig) {
+    private void init(final OrchestrationConfiguration orchestrationConfig) {
         orchestrationFacade.init(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME));
         OrchestrationEventBus.getInstance().register(this);
     }
     
-    private ShardingSphereDataSource createDataSource() throws SQLException {
-        ConfigCenter configService = orchestrationFacade.getConfigCenter();
-        Collection<RuleConfiguration> configurations = configService.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
-        Preconditions.checkState(!configurations.isEmpty(), "Missing the sharding rule configuration on registry center");
-        Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
-        return new ShardingSphereDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations), configurations, configService.loadProperties());
+    private ShardingSphereDataSource loadDataSource() throws SQLException {
+        ConfigCenter configCenter = orchestrationFacade.getConfigCenter();
+        Map<String, DataSourceConfiguration> dataSourceConfigurations = configCenter.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
+        Collection<RuleConfiguration> ruleConfigurations = configCenter.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
+        return new ShardingSphereDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations), ruleConfigurations, configCenter.loadProperties());
     }
     
-    private Map<String, Collection<RuleConfiguration>> getRuleConfigurationMap() {
-        Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>(1, 1);
-        result.put(DefaultSchema.LOGIC_NAME, dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations());
-        return result;
-    }
-    
-    private void initOrchestrationFacade(final ClusterConfiguration clusterConfiguration) {
-        orchestrationFacade.initConfigurations();
+    private void onlineInstanceWithOrchestrationCenter(final ClusterConfiguration clusterConfiguration) {
+        orchestrationFacade.onlineInstance();
         if (null != clusterConfiguration) {
             orchestrationFacade.initClusterConfiguration(clusterConfiguration);
         }
         dataSourceConfigurations.putAll(orchestrationFacade.getConfigCenter().loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME));
     }
     
-    private void initOrchestrationFacade(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurations,
-                                         final Map<String, Collection<RuleConfiguration>> schemaRules, final Properties props, final ClusterConfiguration clusterConfiguration) {
-        orchestrationFacade.initConfigurations(dataSourceConfigurations, schemaRules, null, props);
+    private void onlineInstanceWithLocalConfiguration(final ClusterConfiguration clusterConfiguration) {
+        Map<String, DataSourceConfiguration> dataSourceConfigurations = DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap());
+        Collection<RuleConfiguration> ruleConfigurations = dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations();
+        orchestrationFacade.onlineInstance(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigurations), Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), 
+                null, dataSource.getSchemaContexts().getProps().getProps());
         if (null != clusterConfiguration) {
             orchestrationFacade.initClusterConfiguration(clusterConfiguration);
         }
-        this.dataSourceConfigurations.putAll(dataSourceConfigurations.get(DefaultSchema.LOGIC_NAME));
+        this.dataSourceConfigurations.putAll(dataSourceConfigurations);
     }
     
-    private synchronized Map<String, DataSource> getChangedDataSources(final Map<String, DataSource> oldDataSources, final Map<String, DataSourceConfiguration> newDataSources) {
-        Map<String, DataSource> result = new LinkedHashMap<>(oldDataSources);
-        Map<String, DataSourceConfiguration> modifiedDataSources = getModifiedDataSources(newDataSources);
-        result.keySet().removeAll(getDeletedDataSources(newDataSources));
-        result.keySet().removeAll(modifiedDataSources.keySet());
-        result.putAll(DataSourceConverter.getDataSourceMap(modifiedDataSources));
-        result.putAll(DataSourceConverter.getDataSourceMap(getAddedDataSources(newDataSources)));
-        return result;
+    // TODO decouple MasterSlaveRule
+    private void disableDataSources() {
+        Collection<String> disabledDataSources = orchestrationFacade.getRegistryCenter().loadDisabledDataSources();
+        if (!disabledDataSources.isEmpty()) {
+            dataSource.getSchemaContexts().getSchemaContexts().forEach((key, value)
+                    -> value.getSchema().getRules().stream().filter(each -> each instanceof MasterSlaveRule).forEach(each -> disableDataSources((MasterSlaveRule) each, disabledDataSources, key)));
+        }
     }
     
-    private synchronized Map<String, DataSourceConfiguration> getModifiedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        return dataSourceConfigurations.entrySet().stream().filter(this::isModifiedDataSource).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (key, repeatKey) -> key, LinkedHashMap::new));
+    private void disableDataSources(final MasterSlaveRule masterSlaveRule, final Collection<String> disabledDataSources, final String schemaName) {
+        masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames().forEach(each -> {
+            if (disabledDataSources.contains(Joiner.on(".").join(schemaName, each))) {
+                masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true));
+            }
+        });
     }
     
-    private synchronized boolean isModifiedDataSource(final Entry<String, DataSourceConfiguration> dataSourceNameAndConfig) {
-        return dataSourceConfigurations.containsKey(dataSourceNameAndConfig.getKey()) && !dataSourceConfigurations.get(dataSourceNameAndConfig.getKey()).equals(dataSourceNameAndConfig.getValue());
-    }
-    
-    private synchronized List<String> getDeletedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        List<String> result = new LinkedList<>(this.dataSourceConfigurations.keySet());
-        result.removeAll(dataSourceConfigurations.keySet());
-        return result;
-    }
-    
-    private synchronized Map<String, DataSourceConfiguration> getAddedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        return Maps.filterEntries(dataSourceConfigurations, input -> !this.dataSourceConfigurations.containsKey(input.getKey()));
-    }
-    
-    private void persistMetaData(final RuleSchemaMetaData ruleSchemaMetaData) {
-        OrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(DefaultSchema.LOGIC_NAME, ruleSchemaMetaData);
+    private void persistMetaData(final RuleSchemaMetaData metaData) {
+        orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(DefaultSchema.LOGIC_NAME, metaData);
     }
     
     private void initCluster() {
-        ClusterConfiguration clusterConfiguration = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
-        if (null != clusterConfiguration && null != clusterConfiguration.getHeartbeat()) {
-            List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
-            facadeConfigurations.add(clusterConfiguration);
+        ClusterConfiguration clusterConfig = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
+        if (null != clusterConfig && null != clusterConfig.getHeartbeat()) {
+            Collection<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
+            facadeConfigurations.add(clusterConfig);
             new ControlPanelFacadeEngine().init(facadeConfigurations);
         }
     }
@@ -218,12 +198,12 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         Map<String, SchemaContext> schemaContexts = new HashMap<>(dataSource.getSchemaContexts().getSchemaContexts().size());
         SchemaContext oldSchemaContext = dataSource.getSchemaContexts().getSchemaContexts().get(DefaultSchema.LOGIC_NAME);
         schemaContexts.put(DefaultSchema.LOGIC_NAME, new SchemaContext(oldSchemaContext.getName(),
-                getChangedShardingSphereSchema(oldSchemaContext.getSchema(), event.getRuleSchemaMetaData()), oldSchemaContext.getRuntimeContext()));
+                getChangedSchema(oldSchemaContext.getSchema(), event.getRuleSchemaMetaData()), oldSchemaContext.getRuntimeContext()));
         dataSource = new ShardingSphereDataSource(new SchemaContexts(schemaContexts, dataSource.getSchemaContexts().getProps(), dataSource.getSchemaContexts().getAuthentication()));
     }
     
     /**
-     * Renew sharding rule.
+     * Renew rule configuration.
      *
      * @param ruleConfigurationsChangedEvent rule configurations changed event
      */
@@ -238,7 +218,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     }
     
     /**
-     * Renew sharding data source.
+     * Renew data sources.
      *
      * @param dataSourceChangedEvent data source changed event
      */
@@ -310,26 +290,38 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         }
     }
     
-    private ShardingSphereSchema getChangedShardingSphereSchema(final ShardingSphereSchema oldShardingSphereSchema, final RuleSchemaMetaData newRuleSchemaMetaData) {
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(oldShardingSphereSchema.getMetaData().getDataSources(), newRuleSchemaMetaData);
-        return new ShardingSphereSchema(oldShardingSphereSchema.getDatabaseType(), oldShardingSphereSchema.getConfigurations(),
-                oldShardingSphereSchema.getRules(), oldShardingSphereSchema.getDataSources(), metaData);
+    private synchronized Map<String, DataSource> getChangedDataSources(final Map<String, DataSource> oldDataSources, final Map<String, DataSourceConfiguration> newDataSources) {
+        Map<String, DataSource> result = new LinkedHashMap<>(oldDataSources);
+        Map<String, DataSourceConfiguration> modifiedDataSources = getModifiedDataSources(newDataSources);
+        result.keySet().removeAll(getDeletedDataSources(newDataSources));
+        result.keySet().removeAll(modifiedDataSources.keySet());
+        result.putAll(DataSourceConverter.getDataSourceMap(modifiedDataSources));
+        result.putAll(DataSourceConverter.getDataSourceMap(getAddedDataSources(newDataSources)));
+        return result;
     }
     
-    private void disableDataSources() {
-        Collection<String> disabledDataSources = OrchestrationFacade.getInstance().getRegistryCenter().loadDisabledDataSources();
-        if (!disabledDataSources.isEmpty()) {
-            dataSource.getSchemaContexts().getSchemaContexts().forEach((key, value)
-                -> value.getSchema().getRules().stream().filter(each -> each instanceof MasterSlaveRule).forEach(e -> disableDataSources((MasterSlaveRule) e, disabledDataSources, key)));
-        }
+    private synchronized Map<String, DataSourceConfiguration> getModifiedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        return dataSourceConfigurations.entrySet().stream().filter(this::isModifiedDataSource).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (key, repeatKey) -> key, LinkedHashMap::new));
     }
     
-    private void disableDataSources(final MasterSlaveRule masterSlaveRule, final Collection<String> disabledDataSources, final String schemaName) {
-        masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames().forEach(each -> {
-            if (disabledDataSources.contains(Joiner.on(".").join(schemaName, each))) {
-                masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true));
-            }
-        });
+    private synchronized boolean isModifiedDataSource(final Entry<String, DataSourceConfiguration> dataSourceNameAndConfig) {
+        return dataSourceConfigurations.containsKey(dataSourceNameAndConfig.getKey()) && !dataSourceConfigurations.get(dataSourceNameAndConfig.getKey()).equals(dataSourceNameAndConfig.getValue());
+    }
+    
+    private synchronized List<String> getDeletedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        List<String> result = new LinkedList<>(this.dataSourceConfigurations.keySet());
+        result.removeAll(dataSourceConfigurations.keySet());
+        return result;
+    }
+    
+    private synchronized Map<String, DataSourceConfiguration> getAddedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        return Maps.filterEntries(dataSourceConfigurations, input -> !this.dataSourceConfigurations.containsKey(input.getKey()));
+    }
+    
+    private ShardingSphereSchema getChangedSchema(final ShardingSphereSchema oldSchema, final RuleSchemaMetaData newRuleSchemaMetaData) {
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(oldSchema.getMetaData().getDataSources(), newRuleSchemaMetaData);
+        return new ShardingSphereSchema(oldSchema.getDatabaseType(), oldSchema.getConfigurations(),
+                oldSchema.getRules(), oldSchema.getDataSources(), metaData);
     }
     
     @Override

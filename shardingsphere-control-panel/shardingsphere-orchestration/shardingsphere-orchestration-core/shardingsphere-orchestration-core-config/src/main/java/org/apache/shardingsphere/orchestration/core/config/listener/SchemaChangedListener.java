@@ -58,11 +58,11 @@ public final class SchemaChangedListener extends PostOrchestrationRepositoryEven
     
     private final Collection<String> existedSchemaNames = new LinkedList<>();
     
-    public SchemaChangedListener(final String name, final ConfigurationRepository configurationRepository, final Collection<String> shardingSchemaNames) {
-        super(configurationRepository, new ConfigCenterNode(name).getAllSchemaConfigPaths(shardingSchemaNames));
+    public SchemaChangedListener(final String name, final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
+        super(configurationRepository, new ConfigCenterNode(name).getAllSchemaConfigPaths(schemaNames));
         configurationService = new ConfigCenter(name, configurationRepository);
         configurationNode = new ConfigCenterNode(name);
-        existedSchemaNames.addAll(shardingSchemaNames);
+        existedSchemaNames.addAll(schemaNames);
     }
     
     @Override

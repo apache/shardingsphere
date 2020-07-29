@@ -50,6 +50,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+/**
+ * Schema contexts builder.
+ */
 @Slf4j(topic = "ShardingSphere-schemaContexts")
 public final class SchemaContextsBuilder {
     

@@ -24,7 +24,6 @@ import java.util.Map;
 
 /**
  * Schema contexts aware.
- * 
  */
 public interface SchemaContextsAware extends AutoCloseable {
     

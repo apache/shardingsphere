@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.orchestration.core.facade;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
@@ -39,7 +38,6 @@ import java.util.Properties;
 /**
  * Orchestration facade.
  */
-@Slf4j
 public final class OrchestrationFacade implements AutoCloseable {
     
     private boolean isOverwrite;
@@ -74,29 +72,29 @@ public final class OrchestrationFacade implements AutoCloseable {
     }
     
     /**
-     * Initialize configurations of orchestration.
+     * Online instance.
+     */
+    public void onlineInstance() {
+        registryCenter.persistInstanceOnline();
+        registryCenter.persistDataSourcesNode();
+        listenerManager.init();
+    }
+    
+    /**
+     * Online instance.
      *
      * @param dataSourceConfigurationMap schema data source configuration map
      * @param schemaRuleMap schema rule map
      * @param authentication authentication
      * @param props properties
      */
-    public void initConfigurations(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurationMap, 
-                                   final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final Authentication authentication, final Properties props) {
+    public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurationMap,
+                               final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final Authentication authentication, final Properties props) {
         configCenter.persistGlobalConfiguration(authentication, props, isOverwrite);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigurationMap.entrySet()) {
             configCenter.persistConfigurations(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), isOverwrite);
         }
-        initConfigurations();
-    }
-    
-    /**
-     * Initialize configurations of orchestration.
-     */
-    public void initConfigurations() {
-        registryCenter.persistInstanceOnline();
-        registryCenter.persistDataSourcesNode();
-        listenerManager.init();
+        onlineInstance();
     }
     
     /**

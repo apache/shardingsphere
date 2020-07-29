@@ -82,9 +82,9 @@ public final class OrchestrationConfigurationConverter extends AbstractConfigura
     private void initOrchestrationConfigurations(
             final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final OrchestrationFacade orchestrationFacade) {
         if (isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
-            orchestrationFacade.initConfigurations();
+            orchestrationFacade.onlineInstance();
         } else {
-            orchestrationFacade.initConfigurations(getDataSourceConfigurationMap(ruleConfigs),
+            orchestrationFacade.onlineInstance(getDataSourceConfigurationMap(ruleConfigs),
                     getRuleConfigurations(ruleConfigs), new AuthenticationYamlSwapper().swapToObject(serverConfig.getAuthentication()), serverConfig.getProps());
         }
         orchestrationFacade.initMetricsConfiguration(Optional.ofNullable(serverConfig.getMetrics()).map(new MetricsConfigurationYamlSwapper()::swapToObject).orElse(null));
