@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.orchestration.core.facade;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
@@ -39,7 +38,6 @@ import java.util.Properties;
 /**
  * Orchestration facade.
  */
-@Slf4j
 public final class OrchestrationFacade implements AutoCloseable {
     
     private boolean isOverwrite;
