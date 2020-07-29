@@ -40,13 +40,13 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     
     private static final CuratorZookeeperRepository CURATOR_ZOOKEEPER_REPOSITORY = new CuratorZookeeperRepository();
     
+    private final ScheduledExecutorService executor;
+    
+    private final String inventoryPath;
+    
+    private final String incrementalPath;
+    
     private static boolean available;
-    
-    private ScheduledExecutorService executor;
-    
-    private String inventoryPath;
-    
-    private String incrementalPath;
     
     static {
         ResumeConfiguration resumeConfiguration = ScalingContext.getInstance().getServerConfiguration().getResumeConfiguration();
@@ -70,6 +70,7 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     
     /**
      * If it is available.
+     *
      * @return is available
      */
     public static boolean isAvailable() {
