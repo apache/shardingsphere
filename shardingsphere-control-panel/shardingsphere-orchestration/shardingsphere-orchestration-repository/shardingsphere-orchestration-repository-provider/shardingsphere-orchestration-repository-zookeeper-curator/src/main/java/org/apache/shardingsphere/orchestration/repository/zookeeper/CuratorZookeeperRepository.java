@@ -135,6 +135,20 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     }
     
     @Override
+    public List<String> getChildrenKeys(final String key) {
+        try {
+            List<String> result = client.getChildren().forPath(key);
+            result.sort(Comparator.reverseOrder());
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(ex);
+            return Collections.emptyList();
+        }
+    }
+    
+    @Override
     public void persist(final String key, final String value) {
         try {
             if (!isExisted(key)) {
@@ -196,21 +210,20 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     }
     
     @Override
-    public List<String> getChildrenKeys(final String key) {
+    public void delete(final String key) {
         try {
-            List<String> result = client.getChildren().forPath(key);
-            result.sort(Comparator.reverseOrder());
-            return result;
+            if (isExisted(key)) {
+                client.delete().deletingChildrenIfNeeded().forPath(key);
+            }
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
-            return Collections.emptyList();
         }
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
+    public void watch(final String key, final DataChangedEventListener listener) {
         final String path = key + "/";
         if (!caches.containsKey(path)) {
             addCacheData(key);
@@ -223,7 +236,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
             }
             DataChangedEvent.ChangedType changedType = getChangedType(event);
             if (ChangedType.IGNORED != changedType) {
-                dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), Charsets.UTF_8), changedType));
+                listener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), Charsets.UTF_8), changedType));
             }
         });
     }
@@ -254,26 +267,13 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     }
     
     @Override
-    public void delete(final String key) {
-        try {
-            if (isExisted(key)) {
-                client.delete().deletingChildrenIfNeeded().forPath(key);
-            }
-            // CHECKSTYLE:OFF
-        } catch (Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-        }
-    }
-    
-    @Override
     public void close() {
         caches.values().forEach(TreeCache::close);
         waitForCacheClose();
         CloseableUtils.closeQuietly(client);
     }
     
-    /* TODO wait 500ms,  close cache before close client, or will throw exception
+    /* TODO wait 500ms, close cache before close client, or will throw exception
      * Because of asynchronous processing, may cause client to close
      * first and cache has not yet closed the end.
      * Wait for new version of Curator to fix this.

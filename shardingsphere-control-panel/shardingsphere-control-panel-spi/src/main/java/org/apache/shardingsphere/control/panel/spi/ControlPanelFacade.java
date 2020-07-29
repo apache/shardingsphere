@@ -20,15 +20,14 @@ package org.apache.shardingsphere.control.panel.spi;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
 
 /**
- * Interface Control panel facade.
+ * Control panel facade.
  */
 public interface ControlPanelFacade<T extends FacadeConfiguration> extends OrderedSPI<T> {
     
     /**
-     * Init.
+     * Initialize facade.
      *
      * @param configuration configuration
      */
     void init(T configuration);
-    
 }

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.orchestration.repository.api;
 
+import org.apache.shardingsphere.infra.spi.type.TypedSPI;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.infra.spi.type.TypedSPI;
 
 import java.util.List;
 
@@ -47,6 +47,14 @@ public interface OrchestrationRepository extends TypedSPI {
     String get(String key);
     
     /**
+     * Get node's sub-nodes list.
+     *
+     * @param key key of data
+     * @return sub-nodes name list
+     */
+    List<String> getChildrenKeys(String key);
+    
+    /**
      * Persist data.
      *
      * @param key key of data
@@ -55,27 +63,19 @@ public interface OrchestrationRepository extends TypedSPI {
     void persist(String key, String value);
     
     /**
-     * Get node's sub-nodes list.
-     *
-     * @param key key of data
-     * @return sub-nodes name list
-     */
-    List<String> getChildrenKeys(String key);
-
-    /**
-     * Watch key or path of orchestration server.
-     *
-     * @param key key of data
-     * @param dataChangedEventListener data changed event listener
-     */
-    void watch(String key, DataChangedEventListener dataChangedEventListener);
-    
-    /**
      * Delete node.
      *
      * @param key key of data
      */
     void delete(String key);
+    
+    /**
+     * Watch key or path of orchestration server.
+     *
+     * @param key key of data
+     * @param listener data changed event listener
+     */
+    void watch(String key, DataChangedEventListener listener);
     
     /**
      * Close.

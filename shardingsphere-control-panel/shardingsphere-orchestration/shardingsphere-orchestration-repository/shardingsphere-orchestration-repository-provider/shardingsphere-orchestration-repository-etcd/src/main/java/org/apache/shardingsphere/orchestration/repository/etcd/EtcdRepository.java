@@ -99,6 +99,11 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     }
     
     @Override
+    public void delete(final String key) {
+        client.getKVClient().delete(ByteSequence.from(key, Charsets.UTF_8));
+    }
+    
+    @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         Watch.Listener listener = Watch.listener(response -> {
             for (WatchEvent each : response.getEvents()) {
@@ -120,11 +125,6 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
             default:
                 return ChangedType.IGNORED;
         }
-    }
-    
-    @Override
-    public void delete(final String key) {
-        client.getKVClient().delete(ByteSequence.from(key, Charsets.UTF_8));
     }
     
     @Override

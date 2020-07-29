@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.control.panel.spi;
 
 /**
- * Interface Facade configuration.
+ * Facade configuration.
  */
 public interface FacadeConfiguration {
 }

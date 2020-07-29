@@ -82,6 +82,11 @@ public final class ApolloRepository implements ConfigurationRepository {
     }
     
     @Override
+    public void delete(final String key) {
+        openApiWrapper.remove(pathToKey(key));
+    }
+    
+    @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         String apolloKey = pathToKey(key);
         caches.put(apolloKey, dataChangedEventListener);
@@ -111,11 +116,6 @@ public final class ApolloRepository implements ConfigurationRepository {
             default:
                 return ChangedType.IGNORED;
         }
-    }
-    
-    @Override
-    public void delete(final String key) {
-        openApiWrapper.remove(pathToKey(key));
     }
     
     private String pathToKey(final String path) {

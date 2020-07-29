@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spring.boot.orchestration.type;
 
-import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
@@ -55,8 +54,7 @@ public class OrchestrationSpringBootEncryptTest {
     }
     
     @Test
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void assertWithEncryptDataSource() {
+    public void assertWithEncryptDataSource() throws NoSuchFieldException, IllegalAccessException {
         assertTrue(dataSource instanceof OrchestrationShardingSphereDataSource);
         Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("dataSource");
         field.setAccessible(true);

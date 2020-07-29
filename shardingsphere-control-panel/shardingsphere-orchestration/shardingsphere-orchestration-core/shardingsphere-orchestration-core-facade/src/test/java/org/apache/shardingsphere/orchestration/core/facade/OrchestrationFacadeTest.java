@@ -24,12 +24,12 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.listener.OrchestrationListenerManager;
+import org.apache.shardingsphere.orchestration.core.facade.repository.OrchestrationRepositoryFacade;
 import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.orchestration.core.metadata.MetaDataCenter;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenter;
-import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +42,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -52,7 +51,7 @@ public final class OrchestrationFacadeTest {
     private final OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance();
     
     @Mock
-    private RegistryRepository registryRepository;
+    private OrchestrationRepositoryFacade repositoryFacade;
     
     @Mock
     private ConfigCenter configCenter;
@@ -68,11 +67,9 @@ public final class OrchestrationFacadeTest {
     
     @Before
     public void setUp() {
-        OrchestrationCenterConfiguration regCenterConfig = new OrchestrationCenterConfiguration("REG_TEST", "127.0.0.1", new Properties());
-        OrchestrationCenterConfiguration additionalConfigCenterConfig = new OrchestrationCenterConfiguration("CONFIG_TEST", "127.0.0.1", new Properties());
-        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration("test_name", regCenterConfig, additionalConfigCenterConfig, false);
+        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration("test_name", new OrchestrationCenterConfiguration("ALL", "127.0.0.1", new Properties()), false);
         orchestrationFacade.init(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
-        FieldUtil.setField(orchestrationFacade, "registryRepository", registryRepository);
+        FieldUtil.setField(orchestrationFacade, "repositoryFacade", repositoryFacade);
         FieldUtil.setField(orchestrationFacade, "configCenter", configCenter);
         FieldUtil.setField(orchestrationFacade, "registryCenter", registryCenter);
         FieldUtil.setField(orchestrationFacade, "metaDataCenter", metaDataCenter);
@@ -111,15 +108,8 @@ public final class OrchestrationFacadeTest {
     }
     
     @Test
-    public void assertCloseSuccess() {
+    public void assertClose() {
         orchestrationFacade.close();
-        verify(registryRepository).close();
-    }
-    
-    @Test
-    public void assertCloseFailure() {
-        doThrow(new RuntimeException()).when(registryRepository).close();
-        orchestrationFacade.close();
-        verify(registryRepository).close();
+        verify(repositoryFacade).close();
     }
 }

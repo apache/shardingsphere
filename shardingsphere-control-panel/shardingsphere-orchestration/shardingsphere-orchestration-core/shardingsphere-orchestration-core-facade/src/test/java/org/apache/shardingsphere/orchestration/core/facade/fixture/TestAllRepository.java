@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.orchestration.registry;
+package org.apache.shardingsphere.orchestration.core.facade.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,16 +25,12 @@ import org.apache.shardingsphere.orchestration.repository.api.config.Orchestrati
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 @Getter
 @Setter
-public final class TestOrchestrationRepository implements RegistryRepository, ConfigurationRepository {
-    
-    private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
+public final class TestAllRepository implements RegistryRepository, ConfigurationRepository {
     
     private Properties props = new Properties();
     
@@ -44,7 +40,7 @@ public final class TestOrchestrationRepository implements RegistryRepository, Co
     
     @Override
     public String get(final String key) {
-        return REGISTRY_DATA.get(key);
+        return "";
     }
     
     @Override
@@ -54,12 +50,10 @@ public final class TestOrchestrationRepository implements RegistryRepository, Co
     
     @Override
     public void persist(final String key, final String value) {
-        REGISTRY_DATA.put(key, value);
     }
     
     @Override
     public void persistEphemeral(final String key, final String value) {
-        REGISTRY_DATA.put(key, value);
     }
     
     @Override
@@ -72,11 +66,10 @@ public final class TestOrchestrationRepository implements RegistryRepository, Co
     
     @Override
     public void close() {
-        REGISTRY_DATA.clear();
     }
     
     @Override
     public String getType() {
-        return "TestRegistry";
+        return "ALL";
     }
 }
