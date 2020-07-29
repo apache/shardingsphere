@@ -40,13 +40,13 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     
     private static final CuratorZookeeperRepository CURATOR_ZOOKEEPER_REPOSITORY = new CuratorZookeeperRepository();
     
+    private static boolean available;
+    
     private final ScheduledExecutorService executor;
     
     private final String inventoryPath;
     
     private final String incrementalPath;
-    
-    private static boolean available;
     
     static {
         ResumeConfiguration resumeConfiguration = ScalingContext.getInstance().getServerConfiguration().getResumeConfiguration();
