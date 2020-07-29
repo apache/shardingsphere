@@ -34,13 +34,13 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class ZookeeperResumablePositionManager extends AbstractResumablePositionManager implements ResumablePositionManager {
     
-    private static boolean available;
-    
     private static final String INVENTORY = "/inventory";
     
     private static final String INCREMENTAL = "/incremental";
     
     private static final CuratorZookeeperRepository CURATOR_ZOOKEEPER_REPOSITORY = new CuratorZookeeperRepository();
+    
+    private static boolean available;
     
     private ScheduledExecutorService executor;
     
