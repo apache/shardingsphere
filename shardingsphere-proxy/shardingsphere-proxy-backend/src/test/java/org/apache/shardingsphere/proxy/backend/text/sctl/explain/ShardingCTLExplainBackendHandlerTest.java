@@ -59,4 +59,4 @@ public class ShardingCTLExplainBackendHandlerTest {
         assertTrue(handler.next());
         assertThat(handler.getQueryData().getData().get(1), is("select 1"));
     }
- }
+}
