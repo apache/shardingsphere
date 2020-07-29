@@ -5,29 +5,29 @@ weight = 8
 chapter = true
 +++
 
-## ConfigCenterRepository
+## ConfigurationRepository
 
 | *SPI 名称*                       | *详细说明*               |
 | -------------------------------- | ----------------------- |
-| ConfigCenterRepository           | 配置中心                 |
+| ConfigurationRepository          | 配置中心                 |
 
 | *已知实现类*                      | *详细说明*               |
 | -------------------------------- | ----------------------- |
-| CuratorZookeeperCenterRepository | 基于 ZooKeeper 的配置中心 |
-| EtcdCenterRepository             | 基于 Etcd 的配置中心      |
-| NacosCenterRepository            | 基于 Nacos 的配置中心     |
-| ApolloCenterRepository           | 基于 Apollo 的配置中心    |
+| CuratorZookeeperRepository | 基于 ZooKeeper 的配置中心 |
+| EtcdRepository             | 基于 etcd 的配置中心      |
+| NacosRepository            | 基于 Nacos 的配置中心     |
+| ApolloRepository           | 基于 Apollo 的配置中心    |
 
-## RegistryCenterRepository
+## RegistryRepository
 
 | *SPI 名称*                       | *详细说明*               |
 | -------------------------------- | ----------------------- |
-| RegistryCenterRepository         | 注册中心                 |
+| RegistryRepository               | 注册中心                 |
 
 | *已知实现类*                      | *详细说明*               |
 | -------------------------------- | ----------------------- |
-| CuratorZookeeperCenterRepository | 基于 ZooKeeper 的注册中心 |
-| EtcdCenterRepository             | 基于 Etcd 的注册中心      |
+| CuratorZookeeperRepository | 基于 ZooKeeper 的注册中心 |
+| EtcdRepository             | 基于 etcd 的注册中心      |
 
 ## RootInvokeHook
 

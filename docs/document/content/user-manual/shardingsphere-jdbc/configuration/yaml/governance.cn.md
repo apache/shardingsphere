@@ -8,13 +8,15 @@ weight = 6
 ### 治理
 
 ```yaml
-orchestration:
-  demo_yaml_ds_sharding: # 治理实例名称
-    type: # 治理持久化类型。如：zookeeper, etcd, apollo, nacos
-    serverLists: # 治理服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
-    namespace: # 治理命名空间
-    props: # 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等
-      overwrite: # 本地配置是否覆盖配置中心配置。如果可覆盖，每次启动都以本地配置为准
+orchestration:  
+  namespace: # 治理命名空间
+  registryCenter: # 配置中心
+    type: # 治理持久化类型。如：Zookeeper, etcd
+    serverLists: # 治理服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 
+  additionalConfigCenter:
+    type: # 治理持久化类型。如：Zookeeper, etcd, Nacos, Apollo
+    serverLists: # 治理服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 
+  overwrite: # 本地配置是否覆盖配置中心配置。如果可覆盖，每次启动都以本地配置为准
 ```
 
 ### 集群管理

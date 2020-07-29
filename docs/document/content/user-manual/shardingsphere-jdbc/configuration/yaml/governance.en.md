@@ -9,12 +9,14 @@ weight = 6
 
 ```yaml
 orchestration:
-  demo_yaml_ds_sharding: #Orchestration instance name
-    type: #Orchestration instance type. Example:zookeeper, etcd, apollo, nacos
+  namespace: #Orchestration namespace
+  registryCenter: # Registry Center
+    type: #Orchestration instance type. Example:Zookeeper, etcd
     serverLists: #The list of servers that connect to orchestration instance, including IP and port number; use commas to separate
-    namespace: #Orchestration namespace
-    props: #Properties for center instance config, such as options of zookeeper
-      overwrite: #Whether to overwrite local configurations with config center configurations; if it can, each initialization should refer to local configurations
+  additionalConfigCenter:
+    type: #Orchestration instance type. Example:Zookeeper, etcd, Apollo, Nacos
+    serverLists: #The list of servers that connect to orchestration instance, including IP and port number; use commas to separate
+  overwrite: #Whether to overwrite local configurations with config center configurations; if it can, each initialization should refer to local configurations
 ```
 
 ### Cluster

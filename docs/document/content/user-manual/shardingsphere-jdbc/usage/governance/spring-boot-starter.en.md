@@ -15,14 +15,14 @@ weight = 3
 <!-- import if using ZooKeeper -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-orchestration-center-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-orchestration-repository-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- import if using Etcd -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-orchestration-center-etcd</artifactId>
+    <artifactId>shardingsphere-orchestration-repository-etcd</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -30,7 +30,7 @@ weight = 3
 ## Configure Rule
 
 ```properties
-spring.shardingsphere.orchestration.spring_boot_ds.type=zookeeper
+spring.shardingsphere.orchestration.spring_boot_ds.type=Zookeeper
 spring.shardingsphere.orchestration.spring_boot_ds.server-lists=localhost:2181
 spring.shardingsphere.orchestration.spring_boot_ds.namespace=orchestration-spring-boot-shardingsphere-test
 spring.shardingsphere.orchestration.spring_boot_ds.properties.overwrite=true

@@ -13,19 +13,23 @@ Class name: org.apache.shardingsphere.orchestration.repository.api.config.Orches
 
 Attributes:
 
-| *Name*                   | *Data Type*                         | *Description*                                                                                                       |
-| ------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| instanceConfigurationMap | Map\<String, CenterConfiguration\>  | Config map of config-center&registry-center, the key is orchestration name, the value is the orchestration instance |
+| *Name*                              | *Data Type*                         | *Description*                                                                                                       |
+| ----------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| registryCenterConfiguration         | Map\<String, CenterConfiguration\>  | Config map of registry-center, the key is orchestration name, the value is the orchestration instance |
+| additionalConfigCenterConfiguration | Map\<String, CenterConfiguration\>  | Config additional map of config-center, the key is orchestration name, the value is the orchestration instance |
+
+The type of registryCenter could be Zookeeper or etcd.
+The type of additional ConfigCenter could be Zookeeper or etcd, Apollo, Nacos.
 
 *Orchestration Instance Configuration*
 
-Class name: org.apache.shardingsphere.orchestration.repository.api.config.CenterConfiguration
+Class name: org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration
 
 Attributes:
 
 | *Name*        | *Data Type* | *Description*                                                                                                                                    |
 | ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| type          | String      | Orchestration instance type, such as: zookeeper, etcd, apollo, nacos                                                                             |
+| type          | String      | Orchestration instance type, such as: Zookeeper, etcd, Apollo, Nacos                                                                             |
 | serverLists   | String      | The list of servers that connect to orchestration instance, including IP and port number, use commas to separate, such as: host1:2181,host2:2181 |
 | namespace (?) | String      | Orchestration namespace                                                                                                                          |
 | props         | Properties  | Properties for center instance config, such as options of zookeeper                                                                              |
