@@ -98,9 +98,11 @@ public final class OrchestrationFacade implements AutoCloseable {
             configurationRepository.init(config.getNamespace(), additionalConfigCenterConfig);
             configCenter = new ConfigCenter(config.getNamespace(), configurationRepository);
         } else if (registryRepository instanceof ConfigurationRepository) {
-            configCenter = new ConfigCenter(config.getNamespace(), (ConfigurationRepository) registryRepository);
+            configurationRepository = (ConfigurationRepository) registryRepository;
+            configCenter = new ConfigCenter(config.getNamespace(), configurationRepository);
+        } else {
+            throw new IllegalArgumentException("Registry repository is not suitable for config center and no additional config center configuration provided.");
         }
-        throw new IllegalArgumentException("Registry repository is not suitable for config center and no additional config center configuration provided.");
     }
     
     private void initMetaDataCenter(final OrchestrationConfiguration config) {
@@ -157,9 +159,15 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     @Override
     public void close() {
-        registryRepository.close();
-        if (null != configurationRepository) {
-            configurationRepository.close();
+        try {
+            registryRepository.close();
+            if (registryRepository != configurationRepository) {
+                configurationRepository.close();
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("RegCenter exception for: {}", ex.getMessage());
         }
     }
     

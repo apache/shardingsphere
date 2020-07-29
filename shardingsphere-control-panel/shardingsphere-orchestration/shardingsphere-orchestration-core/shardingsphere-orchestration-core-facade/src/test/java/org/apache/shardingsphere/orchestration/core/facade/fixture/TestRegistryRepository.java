@@ -19,9 +19,10 @@ package org.apache.shardingsphere.orchestration.core.facade.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
-import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.Properties;
 
 @Getter
 @Setter
-public final class TestRegistryRepository implements RegistryRepository {
+public final class TestRegistryRepository implements RegistryRepository, ConfigurationRepository {
     
     private Properties props = new Properties();
     
