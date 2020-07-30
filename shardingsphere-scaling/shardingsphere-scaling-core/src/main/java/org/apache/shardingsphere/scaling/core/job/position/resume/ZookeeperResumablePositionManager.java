@@ -60,8 +60,8 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     public ZookeeperResumablePositionManager(final String databaseType, final String taskPath) {
         setDatabaseType(databaseType);
         setTaskPath(taskPath);
-        this.inventoryPath = taskPath + INVENTORY;
-        this.incrementalPath = taskPath + INCREMENTAL;
+        inventoryPath = taskPath + INVENTORY;
+        incrementalPath = taskPath + INCREMENTAL;
         resumePosition();
         setResumable(!getInventoryPositionManagerMap().isEmpty() && !getIncrementalPositionManagerMap().isEmpty());
         executor = Executors.newSingleThreadScheduledExecutor();
