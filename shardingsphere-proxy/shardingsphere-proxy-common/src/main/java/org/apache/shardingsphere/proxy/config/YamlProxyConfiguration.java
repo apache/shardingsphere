@@ -25,13 +25,13 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import java.util.Map;
 
 /**
- * Sharding configuration.
+ * Yaml proxy configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingConfiguration {
+public final class YamlProxyConfiguration {
     
     private final YamlProxyServerConfiguration serverConfiguration;
     
-    private final Map<String, YamlProxyRuleConfiguration> ruleConfigurationMap;
+    private final Map<String, YamlProxyRuleConfiguration> ruleConfigurations;
 }

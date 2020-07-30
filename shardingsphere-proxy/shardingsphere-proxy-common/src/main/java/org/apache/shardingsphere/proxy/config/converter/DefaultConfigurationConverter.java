@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.proxy.config.converter;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
@@ -31,7 +27,12 @@ import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
+import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
+
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Default configuration converter.
@@ -39,18 +40,18 @@ import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
 public final class DefaultConfigurationConverter extends AbstractConfigurationConverter {
     
     @Override
-    public ProxyConfiguration convert(final ShardingConfiguration shardingConfiguration) {
-        ProxyConfiguration proxyConfiguration = new ProxyConfiguration();
-        Authentication authentication = new AuthenticationYamlSwapper().swapToObject(shardingConfiguration.getServerConfiguration().getAuthentication());
-        Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(shardingConfiguration.getRuleConfigurationMap());
-        Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(shardingConfiguration.getRuleConfigurationMap());
-        proxyConfiguration.setAuthentication(authentication);
-        proxyConfiguration.setProps(shardingConfiguration.getServerConfiguration().getProps());
-        proxyConfiguration.setSchemaDataSources(schemaDataSources);
-        proxyConfiguration.setSchemaRules(schemaRules);
-        proxyConfiguration.setCluster(getClusterConfiguration(shardingConfiguration.getServerConfiguration().getCluster()));
-        proxyConfiguration.setMetrics(getMetricsConfiguration(shardingConfiguration.getServerConfiguration().getMetrics()));
-        return proxyConfiguration;
+    public ProxyConfiguration convert(final YamlProxyConfiguration yamlProxyConfiguration) {
+        ProxyConfiguration result = new ProxyConfiguration();
+        Authentication authentication = new AuthenticationYamlSwapper().swapToObject(yamlProxyConfiguration.getServerConfiguration().getAuthentication());
+        Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(yamlProxyConfiguration.getRuleConfigurations());
+        Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(yamlProxyConfiguration.getRuleConfigurations());
+        result.setAuthentication(authentication);
+        result.setProps(yamlProxyConfiguration.getServerConfiguration().getProps());
+        result.setSchemaDataSources(schemaDataSources);
+        result.setSchemaRules(schemaRules);
+        result.setCluster(getClusterConfiguration(yamlProxyConfiguration.getServerConfiguration().getCluster()));
+        result.setMetrics(getMetricsConfiguration(yamlProxyConfiguration.getServerConfiguration().getMetrics()));
+        return result;
     }
     
     @Override

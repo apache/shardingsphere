@@ -69,6 +69,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -90,7 +91,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         init(orchestrationConfig);
         dataSource = loadDataSource();
-        onlineInstanceWithOrchestrationCenter(null);
+        initWithOrchestrationCenter(null);
         disableDataSources();
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
         initCluster();
@@ -99,7 +100,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) throws SQLException {
         init(orchestrationConfig);
         dataSource = loadDataSource();
-        onlineInstanceWithOrchestrationCenter(clusterConfiguration);
+        initWithOrchestrationCenter(clusterConfiguration);
         disableDataSources();
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
         initCluster();
@@ -108,7 +109,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource shardingSphereDataSource, final OrchestrationConfiguration orchestrationConfig) {
         init(orchestrationConfig);
         dataSource = shardingSphereDataSource;
-        onlineInstanceWithLocalConfiguration(null);
+        initWithLocalConfiguration(null);
         disableDataSources();
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
         initCluster();
@@ -118,14 +119,14 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
                                                  final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) {
         init(orchestrationConfig);
         dataSource = shardingSphereDataSource;
-        onlineInstanceWithLocalConfiguration(clusterConfiguration);
+        initWithLocalConfiguration(clusterConfiguration);
         disableDataSources();
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
         initCluster();
     }
     
-    private void init(final OrchestrationConfiguration orchestrationConfig) {
-        orchestrationFacade.init(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME));
+    private void init(final OrchestrationConfiguration config) {
+        orchestrationFacade.init(config, Collections.singletonList(DefaultSchema.LOGIC_NAME));
         OrchestrationEventBus.getInstance().register(this);
     }
     
@@ -136,7 +137,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         return new ShardingSphereDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations), ruleConfigurations, configCenter.loadProperties());
     }
     
-    private void onlineInstanceWithOrchestrationCenter(final ClusterConfiguration clusterConfiguration) {
+    private void initWithOrchestrationCenter(final ClusterConfiguration clusterConfiguration) {
         orchestrationFacade.onlineInstance();
         if (null != clusterConfiguration) {
             orchestrationFacade.initClusterConfiguration(clusterConfiguration);
@@ -144,22 +145,23 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         dataSourceConfigurations.putAll(orchestrationFacade.getConfigCenter().loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME));
     }
     
-    private void onlineInstanceWithLocalConfiguration(final ClusterConfiguration clusterConfiguration) {
+    private void initWithLocalConfiguration(final ClusterConfiguration clusterConfiguration) {
         Map<String, DataSourceConfiguration> dataSourceConfigurations = DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap());
         Collection<RuleConfiguration> ruleConfigurations = dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations();
-        orchestrationFacade.onlineInstance(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigurations), Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), 
-                null, dataSource.getSchemaContexts().getProps().getProps());
+        Properties props = dataSource.getSchemaContexts().getProps().getProps();
+        orchestrationFacade.onlineInstance(
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigurations), Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), null, props);
         if (null != clusterConfiguration) {
             orchestrationFacade.initClusterConfiguration(clusterConfiguration);
         }
         this.dataSourceConfigurations.putAll(dataSourceConfigurations);
     }
     
-    // TODO decouple MasterSlaveRule
+    // TODO decouple masterslave rule
     private void disableDataSources() {
         Collection<String> disabledDataSources = orchestrationFacade.getRegistryCenter().loadDisabledDataSources();
         if (!disabledDataSources.isEmpty()) {
-            dataSource.getSchemaContexts().getSchemaContexts().forEach((key, value) 
+            dataSource.getSchemaContexts().getSchemaContexts().forEach((key, value)
                 -> value.getSchema().getRules().stream().filter(each -> each instanceof MasterSlaveRule).forEach(each -> disableDataSources((MasterSlaveRule) each, disabledDataSources, key)));
         }
     }
@@ -176,6 +178,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(DefaultSchema.LOGIC_NAME, metaData);
     }
     
+    // TODO decouple ClusterConfiguration
     private void initCluster() {
         ClusterConfiguration clusterConfig = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
         if (null != clusterConfig && null != clusterConfig.getHeartbeat()) {
@@ -278,18 +281,6 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         }
     }
     
-    /**
-     * Heart beat detect.
-     *
-     * @param event heart beat detect notice event
-     */
-    @Subscribe
-    public synchronized void heartbeat(final HeartbeatDetectNoticeEvent event) {
-        if (ClusterInitFacade.isEnabled()) {
-            ClusterFacade.getInstance().detectHeartbeat(dataSource.getSchemaContexts().getSchemaContexts());
-        }
-    }
-    
     private synchronized Map<String, DataSource> getChangedDataSources(final Map<String, DataSource> oldDataSources, final Map<String, DataSourceConfiguration> newDataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(oldDataSources);
         Map<String, DataSourceConfiguration> modifiedDataSources = getModifiedDataSources(newDataSources);
@@ -320,8 +311,19 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     
     private ShardingSphereSchema getChangedSchema(final ShardingSphereSchema oldSchema, final RuleSchemaMetaData newRuleSchemaMetaData) {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(oldSchema.getMetaData().getDataSources(), newRuleSchemaMetaData);
-        return new ShardingSphereSchema(oldSchema.getDatabaseType(), oldSchema.getConfigurations(),
-                oldSchema.getRules(), oldSchema.getDataSources(), metaData);
+        return new ShardingSphereSchema(oldSchema.getDatabaseType(), oldSchema.getConfigurations(), oldSchema.getRules(), oldSchema.getDataSources(), metaData);
+    }
+    
+    /**
+     * Heart beat detect.
+     *
+     * @param event heart beat detect notice event
+     */
+    @Subscribe
+    public synchronized void heartbeat(final HeartbeatDetectNoticeEvent event) {
+        if (ClusterInitFacade.isEnabled()) {
+            ClusterFacade.getInstance().detectHeartbeat(dataSource.getSchemaContexts().getSchemaContexts());
+        }
     }
     
     @Override
