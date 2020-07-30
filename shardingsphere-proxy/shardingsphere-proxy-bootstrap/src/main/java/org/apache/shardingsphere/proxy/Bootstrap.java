@@ -82,11 +82,11 @@ public final class Bootstrap {
     public static void main(final String[] args) throws Exception {
         int port = getPort(args);
         System.setProperty(Constants.PORT_KEY, String.valueOf(port));
-        YamlProxyConfiguration shardingConfig = new ProxyConfigurationLoader().load(getConfigurationPath(args));
-        logRuleConfigurationMap(getRuleConfigurations(shardingConfig.getRuleConfigurations()).values());
-        boolean isOrchestration = null != shardingConfig.getServerConfiguration().getOrchestration();
+        YamlProxyConfiguration yamlConfig = new ProxyConfigurationLoader().load(getConfigurationPath(args));
+        logRuleConfigurationMap(getRuleConfigurations(yamlConfig.getRuleConfigurations()).values());
+        boolean isOrchestration = null != yamlConfig.getServerConfiguration().getOrchestration();
         try (ProxyConfigurationConverter converter = ProxyConfigurationConverterFactory.newInstances(isOrchestration)) {
-            ProxyConfiguration proxyConfiguration = converter.convert(shardingConfig);
+            ProxyConfiguration proxyConfiguration = converter.convert(yamlConfig);
             initialize(proxyConfiguration, port, converter);
         }
     }

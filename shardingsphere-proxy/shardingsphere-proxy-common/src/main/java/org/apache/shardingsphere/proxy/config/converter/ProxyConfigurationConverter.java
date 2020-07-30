@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.proxy.config.converter;
 
-import java.sql.SQLException;
 import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
+
+import java.sql.SQLException;
 
 /**
  * Proxy configuration converter.
@@ -31,10 +32,10 @@ public interface ProxyConfigurationConverter extends AutoCloseable {
     /**
      * Convert proxy configuration.
      *
-     * @param shardingConfiguration sharding configuration
+     * @param yamlProxyConfiguration YAML proxy configuration
      * @return proxy configuration
      */
-    ProxyConfiguration convert(YamlProxyConfiguration shardingConfiguration);
+    ProxyConfiguration convert(YamlProxyConfiguration yamlProxyConfiguration);
     
     /**
      * Build contexts aware.
