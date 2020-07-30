@@ -119,8 +119,8 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 | SQL                                                                                        | Reason                                              |
 | ------------------------------------------------------------------------------------------ | --------------------------------------------------- |
 | INSERT INTO tbl_name (col1, col2, ...) VALUES(1+2, ?, ...)                                 | VALUES clause does not support operation expression |
-| INSERT INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?               | SELECT clause does not support *-shorthand and does not support built-in key generators |
-| REPLACE INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?              | SELECT clause does not support *-shorthand and does not support built-in key generators |
+| INSERT INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?               | SELECT clause does not support *-shorthand and built-in key generators |
+| REPLACE INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?              | SELECT clause does not support *-shorthand and built-in key generators |
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                      | UNION                                               |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                  | UNION ALL                                           |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | See DISTINCT availability detail                    |
