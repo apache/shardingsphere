@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.generator;
+package org.apache.shardingsphere.rdl.parser.binder.generator;
 
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 /**
- * Yaml configuration generator.
+ * SQL statement context converter.
  */
-public interface YamlConfigurationGenerator<I extends SQLStatementContext, O> {
+public interface SQLStatementContextConverter<I extends SQLStatementContext, O> {
     
     /**
-     * Generate yaml configuration.
+     * Convert sql statement.
      *
      * @param sqlStatement sql statement
      * @return yaml configurations
      */
-    O generate(I sqlStatement);
+    O convert(I sqlStatement);
 }

@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.generator.YamlDataSourceConfigurationGenerator;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.generator.YamlShardingRuleConfigurationGenerator;
+import org.apache.shardingsphere.proxy.convert.CreateDataSourcesStatementContextConverter;
+import org.apache.shardingsphere.sharding.convert.CreateShardingRuleStatementContextConverter;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
@@ -72,7 +72,7 @@ public class RegistryCenterExecuteEngine implements SQLExecuteEngine {
         if (!isRegistryCenterExisted()) {
             return new ErrorResponse(new SQLException("No Registry center to execute `%s` SQL", context.getClass().getSimpleName()));
         }
-        Map<String, YamlDataSourceParameter> parameters = new YamlDataSourceConfigurationGenerator().generate(context);
+        Map<String, YamlDataSourceParameter> parameters = new CreateDataSourcesStatementContextConverter().convert(context);
         Map<String, DataSourceConfiguration> dataSources = DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(parameters));
         // TODO Need to get the executed feedback from registry center for returning.
         DataSourceCallback.getInstance().run(schemaName, dataSources);
@@ -85,7 +85,7 @@ public class RegistryCenterExecuteEngine implements SQLExecuteEngine {
         if (!isRegistryCenterExisted()) {
             return new ErrorResponse(new SQLException("No Registry center to execute `%s` SQL", context.getClass().getSimpleName()));
         }
-        YamlShardingRuleConfiguration configurations = new YamlShardingRuleConfigurationGenerator().generate(context);
+        YamlShardingRuleConfiguration configurations = new CreateShardingRuleStatementContextConverter().convert(context);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(configurations));
         // TODO Need to get the executed feedback from registry center for returning.
         RuleCallback.getInstance().run(schemaName, rules);
