@@ -19,7 +19,10 @@ package org.apache.shardingsphere.rdl.parser.binder.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.rdl.parser.binder.util.DataSourceConnectionUrlUtil;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.DataSourceConnectionSegment;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 
 import java.util.Collection;
@@ -28,24 +31,22 @@ import java.util.LinkedList;
 /**
  * Create dataSource statement context.
  */
+@Getter
 public final class CreateDataSourcesStatementContext extends CommonSQLStatementContext<CreateDataSourcesStatement> {
     
-    public CreateDataSourcesStatementContext(final CreateDataSourcesStatement sqlStatement) {
-        super(sqlStatement);
-    }
+    private final Collection<DataSourceConnectionUrl> urls;
     
-    /**
-     * Get dataSource contexts.
-     *
-     * @return dataSource contexts
-     */
-    public Collection<DataSourceContext> getDataSourceContexts() {
-        return new LinkedList<>();
+    public CreateDataSourcesStatementContext(final CreateDataSourcesStatement sqlStatement, final DatabaseType databaseType) {
+        super(sqlStatement);
+        urls = new LinkedList<>();
+        for (DataSourceConnectionSegment each : sqlStatement.getConnectionInfos()) {
+            urls.add(new DataSourceConnectionUrl(each.getName(), DataSourceConnectionUrlUtil.getUrl(each, databaseType), each.getUser(), each.getPassword()));
+        }
     }
     
     @RequiredArgsConstructor
     @Getter
-    public static final class DataSourceContext {
+    public static final class DataSourceConnectionUrl {
         
         private final String name;
         
