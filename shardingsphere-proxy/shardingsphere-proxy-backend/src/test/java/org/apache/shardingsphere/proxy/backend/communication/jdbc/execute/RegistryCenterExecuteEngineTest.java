@@ -57,7 +57,7 @@ public final class RegistryCenterExecuteEngineTest {
     
     private void createDataSourcesContext() {
         dataSourcesContext = mock(CreateDataSourcesStatementContext.class);
-        when(dataSourcesContext.getDataSourceContexts()).thenReturn(Collections.emptyList());
+        when(dataSourcesContext.getUrls()).thenReturn(Collections.emptyList());
     }
     
     private void createRuleContext() {

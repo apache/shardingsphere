@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.generator;
+package org.apache.shardingsphere.sharding.convert;
 
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.rdl.parser.binder.context.CreateShardingRuleStatementContext;
+import org.apache.shardingsphere.rdl.parser.binder.generator.SQLStatementContextConverter;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
 
 /**
- * Yaml sharding rule configuration generator.
+ * Create sharding rule statement context converter.
  */
-public class YamlShardingRuleConfigurationGenerator implements YamlConfigurationGenerator<CreateShardingRuleStatementContext, YamlShardingRuleConfiguration> {
+public final class CreateShardingRuleStatementContextConverter implements SQLStatementContextConverter<CreateShardingRuleStatementContext, YamlShardingRuleConfiguration> {
     
     @Override
-    public YamlShardingRuleConfiguration generate(final CreateShardingRuleStatementContext sqlStatement) {
+    public YamlShardingRuleConfiguration convert(final CreateShardingRuleStatementContext sqlStatement) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
         addYamlShardingSphereAlgorithmConfiguration(sqlStatement, result);
         addYamlShardingAutoTableRuleConfiguration(sqlStatement, result);
