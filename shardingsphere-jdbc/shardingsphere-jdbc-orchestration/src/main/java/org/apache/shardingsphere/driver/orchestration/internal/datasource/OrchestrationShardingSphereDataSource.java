@@ -162,7 +162,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         Collection<String> disabledDataSources = orchestrationFacade.getRegistryCenter().loadDisabledDataSources();
         if (!disabledDataSources.isEmpty()) {
             dataSource.getSchemaContexts().getSchemaContexts().forEach((key, value)
-                -> value.getSchema().getRules().stream().filter(each -> each instanceof MasterSlaveRule).forEach(e -> disableDataSources((MasterSlaveRule) e, disabledDataSources, key)));
+                -> value.getSchema().getRules().stream().filter(each -> each instanceof MasterSlaveRule).forEach(each -> disableDataSources((MasterSlaveRule) each, disabledDataSources, key)));
         }
     }
     
@@ -182,7 +182,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     private void initCluster() {
         ClusterConfiguration clusterConfig = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
         if (null != clusterConfig && null != clusterConfig.getHeartbeat()) {
-            List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
+            Collection<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
             facadeConfigurations.add(clusterConfig);
             new ControlPanelFacadeEngine().init(facadeConfigurations);
         }
