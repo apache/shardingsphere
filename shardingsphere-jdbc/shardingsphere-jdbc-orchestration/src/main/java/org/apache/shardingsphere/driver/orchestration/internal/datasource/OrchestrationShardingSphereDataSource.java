@@ -159,32 +159,21 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         this.dataSourceConfigurations.putAll(dataSourceConfigurationMap);
     }
     
-    private synchronized Map<String, DataSource> getChangedDataSources(final Map<String, DataSource> oldDataSources, final Map<String, DataSourceConfiguration> newDataSources) {
-        Map<String, DataSource> result = new LinkedHashMap<>(oldDataSources);
-        Map<String, DataSourceConfiguration> modifiedDataSources = getModifiedDataSources(newDataSources);
-        result.keySet().removeAll(getDeletedDataSources(newDataSources));
-        result.keySet().removeAll(modifiedDataSources.keySet());
-        result.putAll(DataSourceConverter.getDataSourceMap(modifiedDataSources));
-        result.putAll(DataSourceConverter.getDataSourceMap(getAddedDataSources(newDataSources)));
-        return result;
+    // TODO decouple masterslave rule
+    private void disableDataSources() {
+        Collection<String> disabledDataSources = OrchestrationFacade.getInstance().getRegistryCenter().loadDisabledDataSources();
+        if (!disabledDataSources.isEmpty()) {
+            dataSource.getSchemaContexts().getSchemaContexts().forEach((key, value)
+                    -> value.getSchema().getRules().stream().filter(each -> each instanceof MasterSlaveRule).forEach(e -> disableDataSources((MasterSlaveRule) e, disabledDataSources, key)));
+        }
     }
     
-    private synchronized Map<String, DataSourceConfiguration> getModifiedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        return dataSourceConfigurations.entrySet().stream().filter(this::isModifiedDataSource).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (key, repeatKey) -> key, LinkedHashMap::new));
-    }
-    
-    private synchronized boolean isModifiedDataSource(final Entry<String, DataSourceConfiguration> dataSourceNameAndConfig) {
-        return dataSourceConfigurations.containsKey(dataSourceNameAndConfig.getKey()) && !dataSourceConfigurations.get(dataSourceNameAndConfig.getKey()).equals(dataSourceNameAndConfig.getValue());
-    }
-    
-    private synchronized List<String> getDeletedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        List<String> result = new LinkedList<>(this.dataSourceConfigurations.keySet());
-        result.removeAll(dataSourceConfigurations.keySet());
-        return result;
-    }
-    
-    private synchronized Map<String, DataSourceConfiguration> getAddedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        return Maps.filterEntries(dataSourceConfigurations, input -> !this.dataSourceConfigurations.containsKey(input.getKey()));
+    private void disableDataSources(final MasterSlaveRule masterSlaveRule, final Collection<String> disabledDataSources, final String schemaName) {
+        masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames().forEach(each -> {
+            if (disabledDataSources.contains(Joiner.on(".").join(schemaName, each))) {
+                masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true));
+            }
+        });
     }
     
     private void persistMetaData(final RuleSchemaMetaData ruleSchemaMetaData) {
@@ -213,7 +202,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         Map<String, SchemaContext> schemaContexts = new HashMap<>(dataSource.getSchemaContexts().getSchemaContexts().size());
         SchemaContext oldSchemaContext = dataSource.getSchemaContexts().getSchemaContexts().get(DefaultSchema.LOGIC_NAME);
         schemaContexts.put(DefaultSchema.LOGIC_NAME, new SchemaContext(oldSchemaContext.getName(),
-                getChangedShardingSphereSchema(oldSchemaContext.getSchema(), event.getRuleSchemaMetaData()), oldSchemaContext.getRuntimeContext()));
+                getChangedSchema(oldSchemaContext.getSchema(), event.getRuleSchemaMetaData()), oldSchemaContext.getRuntimeContext()));
         dataSource = new ShardingSphereDataSource(new SchemaContexts(schemaContexts, dataSource.getSchemaContexts().getProps(), dataSource.getSchemaContexts().getAuthentication()));
     }
     
@@ -293,6 +282,39 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         }
     }
     
+    private synchronized Map<String, DataSource> getChangedDataSources(final Map<String, DataSource> oldDataSources, final Map<String, DataSourceConfiguration> newDataSources) {
+        Map<String, DataSource> result = new LinkedHashMap<>(oldDataSources);
+        Map<String, DataSourceConfiguration> modifiedDataSources = getModifiedDataSources(newDataSources);
+        result.keySet().removeAll(getDeletedDataSources(newDataSources));
+        result.keySet().removeAll(modifiedDataSources.keySet());
+        result.putAll(DataSourceConverter.getDataSourceMap(modifiedDataSources));
+        result.putAll(DataSourceConverter.getDataSourceMap(getAddedDataSources(newDataSources)));
+        return result;
+    }
+    
+    private synchronized Map<String, DataSourceConfiguration> getModifiedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        return dataSourceConfigurations.entrySet().stream().filter(this::isModifiedDataSource).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (key, repeatKey) -> key, LinkedHashMap::new));
+    }
+    
+    private synchronized boolean isModifiedDataSource(final Entry<String, DataSourceConfiguration> dataSourceNameAndConfig) {
+        return dataSourceConfigurations.containsKey(dataSourceNameAndConfig.getKey()) && !dataSourceConfigurations.get(dataSourceNameAndConfig.getKey()).equals(dataSourceNameAndConfig.getValue());
+    }
+    
+    private synchronized List<String> getDeletedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        List<String> result = new LinkedList<>(this.dataSourceConfigurations.keySet());
+        result.removeAll(dataSourceConfigurations.keySet());
+        return result;
+    }
+    
+    private synchronized Map<String, DataSourceConfiguration> getAddedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        return Maps.filterEntries(dataSourceConfigurations, input -> !this.dataSourceConfigurations.containsKey(input.getKey()));
+    }
+    
+    private ShardingSphereSchema getChangedSchema(final ShardingSphereSchema oldSchema, final RuleSchemaMetaData newRuleSchemaMetaData) {
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(oldSchema.getMetaData().getDataSources(), newRuleSchemaMetaData);
+        return new ShardingSphereSchema(oldSchema.getDatabaseType(), oldSchema.getConfigurations(), oldSchema.getRules(), oldSchema.getDataSources(), metaData);
+    }
+    
     /**
      * Heart beat detect.
      *
@@ -303,28 +325,6 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         if (ClusterInitFacade.isEnabled()) {
             ClusterFacade.getInstance().detectHeartbeat(dataSource.getSchemaContexts().getSchemaContexts());
         }
-    }
-    
-    private ShardingSphereSchema getChangedShardingSphereSchema(final ShardingSphereSchema oldShardingSphereSchema, final RuleSchemaMetaData newRuleSchemaMetaData) {
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(oldShardingSphereSchema.getMetaData().getDataSources(), newRuleSchemaMetaData);
-        return new ShardingSphereSchema(oldShardingSphereSchema.getDatabaseType(), oldShardingSphereSchema.getConfigurations(),
-                oldShardingSphereSchema.getRules(), oldShardingSphereSchema.getDataSources(), metaData);
-    }
-    
-    private void disableDataSources() {
-        Collection<String> disabledDataSources = OrchestrationFacade.getInstance().getRegistryCenter().loadDisabledDataSources();
-        if (!disabledDataSources.isEmpty()) {
-            dataSource.getSchemaContexts().getSchemaContexts().forEach((key, value)
-                -> value.getSchema().getRules().stream().filter(each -> each instanceof MasterSlaveRule).forEach(e -> disableDataSources((MasterSlaveRule) e, disabledDataSources, key)));
-        }
-    }
-    
-    private void disableDataSources(final MasterSlaveRule masterSlaveRule, final Collection<String> disabledDataSources, final String schemaName) {
-        masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames().forEach(each -> {
-            if (disabledDataSources.contains(Joiner.on(".").join(schemaName, each))) {
-                masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true));
-            }
-        });
     }
     
     @Override
