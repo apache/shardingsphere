@@ -34,8 +34,8 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.emptyList();
+    public Collection<String> getJdbcUrlPrefixes() {
+        return Collections.singleton(String.format("jdbc:%s:", getName().toLowerCase()));
     }
     
     @Override
