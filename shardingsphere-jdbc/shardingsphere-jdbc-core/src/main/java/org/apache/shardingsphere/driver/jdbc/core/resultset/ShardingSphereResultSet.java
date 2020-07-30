@@ -320,13 +320,13 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     }
     
     @Override
-    public Array getArray(final int columnIndex) throws SQLException {
-        return (Array) mergeResultSet.getValue(columnIndex, Array.class);
+    public Clob getClob(final String columnLabel) throws SQLException {
+        return getClob(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
-    public Clob getClob(final String columnLabel) throws SQLException {
-        return getClob(getIndexFromColumnLabelAndIndexMap(columnLabel));
+    public Array getArray(final int columnIndex) throws SQLException {
+        return (Array) mergeResultSet.getValue(columnIndex, Array.class);
     }
     
     @Override
