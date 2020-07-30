@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.proxy.config.converter;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
@@ -33,6 +29,11 @@ import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
 
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * Default configuration converter.
  */
@@ -42,8 +43,8 @@ public final class DefaultConfigurationConverter extends AbstractConfigurationCo
     public ProxyConfiguration convert(final ShardingConfiguration shardingConfiguration) {
         ProxyConfiguration proxyConfiguration = new ProxyConfiguration();
         Authentication authentication = new AuthenticationYamlSwapper().swapToObject(shardingConfiguration.getServerConfiguration().getAuthentication());
-        Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(shardingConfiguration.getRuleConfigurationMap());
-        Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(shardingConfiguration.getRuleConfigurationMap());
+        Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(shardingConfiguration.getRuleConfigurations());
+        Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(shardingConfiguration.getRuleConfigurations());
         proxyConfiguration.setAuthentication(authentication);
         proxyConfiguration.setProps(shardingConfiguration.getServerConfiguration().getProps());
         proxyConfiguration.setSchemaDataSources(schemaDataSources);

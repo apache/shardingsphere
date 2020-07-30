@@ -55,11 +55,11 @@ public final class OrchestrationConfigurationConverter extends AbstractConfigura
     
     @Override
     public ProxyConfiguration convert(final ShardingConfiguration shardingConfiguration) {
-        YamlOrchestrationConfiguration orchestration = shardingConfiguration.getServerConfiguration().getOrchestration();
-        Set<String> schemaNames = shardingConfiguration.getRuleConfigurationMap().keySet();
+        YamlOrchestrationConfiguration orchestrationConfig = shardingConfiguration.getServerConfiguration().getOrchestration();
+        Set<String> schemaNames = shardingConfiguration.getRuleConfigurations().keySet();
         ProxyConfiguration proxyConfiguration = new ProxyConfiguration();
-        orchestrationFacade.init(new OrchestrationConfigurationYamlSwapper().swapToObject(orchestration), schemaNames);
-        initOrchestrationConfigurations(shardingConfiguration.getServerConfiguration(), shardingConfiguration.getRuleConfigurationMap(), orchestrationFacade);
+        orchestrationFacade.init(new OrchestrationConfigurationYamlSwapper().swapToObject(orchestrationConfig), schemaNames);
+        initOrchestrationConfigurations(shardingConfiguration.getServerConfiguration(), shardingConfiguration.getRuleConfigurations(), orchestrationFacade);
         Authentication authentication = orchestrationFacade.getConfigCenter().loadAuthentication();
         Properties properties = orchestrationFacade.getConfigCenter().loadProperties();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(orchestrationFacade);

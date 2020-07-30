@@ -33,5 +33,5 @@ public final class ShardingConfiguration {
     
     private final YamlProxyServerConfiguration serverConfiguration;
     
-    private final Map<String, YamlProxyRuleConfiguration> ruleConfigurationMap;
+    private final Map<String, YamlProxyRuleConfiguration> ruleConfigurations;
 }

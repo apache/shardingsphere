@@ -35,9 +35,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Sharding configuration loader.
+ * Proxy configuration loader.
  */
-public final class ShardingConfigurationLoader {
+public final class ProxyConfigurationLoader {
     
     private static final String DEFAULT_DATASOURCE_NAME = "dataSource";
     
@@ -70,7 +70,7 @@ public final class ShardingConfigurationLoader {
     }
     
     private File getResourceFile(final String path) {
-        URL url = ShardingConfigurationLoader.class.getResource(path);
+        URL url = ProxyConfigurationLoader.class.getResource(path);
         if (null != url) {
             return new File(url.getFile());
         }
