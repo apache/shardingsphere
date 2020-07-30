@@ -19,15 +19,26 @@ package org.apache.shardingsphere.rdl.parser.statement.rdl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
- * Create dataSource statement.
+ * Data source connection segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateDataSourcesStatement extends RDLStatement {
+@Setter
+public final class DataSourceConnectionSegment implements ASTNode {
     
-    private final Collection<DataSourceConnectionSegment> connectionInfos;
+    private String name;
+    
+    private String hostName;
+    
+    private String port;
+    
+    private String db;
+    
+    private String user;
+    
+    private String password;
 }
