@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 /**
- * Fake resumable position manager as defalut.
+ * Fake resumable position manager as default.
  */
 public final class FakeResumablePositionManager extends AbstractResumablePositionManager implements ResumablePositionManager {
     

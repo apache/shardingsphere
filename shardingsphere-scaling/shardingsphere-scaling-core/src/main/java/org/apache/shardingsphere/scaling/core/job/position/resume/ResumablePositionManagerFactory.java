@@ -39,7 +39,7 @@ public final class ResumablePositionManagerFactory {
      * New resumable position manager instance.
      *
      * @param databaseType database type
-     * @param taskPath     task path for persist data.
+     * @param taskPath task path for persist data.
      * @return resumable position manager
      */
     @SneakyThrows(ReflectiveOperationException.class)

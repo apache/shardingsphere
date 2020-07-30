@@ -42,11 +42,11 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     
     private static boolean available;
     
-    private ScheduledExecutorService executor;
+    private final ScheduledExecutorService executor;
     
-    private String inventoryPath;
+    private final String inventoryPath;
     
-    private String incrementalPath;
+    private final String incrementalPath;
     
     static {
         ResumeConfiguration resumeConfiguration = ScalingContext.getInstance().getServerConfiguration().getResumeConfiguration();
@@ -60,8 +60,8 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     public ZookeeperResumablePositionManager(final String databaseType, final String taskPath) {
         setDatabaseType(databaseType);
         setTaskPath(taskPath);
-        this.inventoryPath = taskPath + INVENTORY;
-        this.incrementalPath = taskPath + INCREMENTAL;
+        inventoryPath = taskPath + INVENTORY;
+        incrementalPath = taskPath + INCREMENTAL;
         resumePosition();
         setResumable(!getInventoryPositionManagerMap().isEmpty() && !getIncrementalPositionManagerMap().isEmpty());
         executor = Executors.newSingleThreadScheduledExecutor();
@@ -70,6 +70,7 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
     
     /**
      * If it is available.
+     *
      * @return is available
      */
     public static boolean isAvailable() {

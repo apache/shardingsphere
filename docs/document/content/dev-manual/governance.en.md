@@ -13,10 +13,10 @@ chapter = true
 
 | *Implementation Class*           | *Description*           |
 | -------------------------------- | ----------------------- |
-| CuratorZookeeperRepository | ZooKeeper config repository |
-| EtcdRepository             | etcd config repository      |
-| NacosRepository            | Nacos config repository     |
-| ApolloRepository           | Apollo config repository    |
+| CuratorZookeeperRepository       | ZooKeeper config repository |
+| EtcdRepository                   | etcd config repository      |
+| NacosRepository                  | Nacos config repository     |
+| ApolloRepository                 | Apollo config repository    |
 
 ## RegistryRepository
 
