@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.orchestration.internal.datasource;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
@@ -45,6 +46,7 @@ import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
@@ -55,7 +57,6 @@ import org.apache.shardingsphere.orchestration.core.metadata.event.MetaDataChang
 import org.apache.shardingsphere.orchestration.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.schema.OrchestrationSchema;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -69,6 +70,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -90,7 +92,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         init(orchestrationConfig);
         dataSource = loadDataSource();
-        onlineInstanceWithOrchestrationCenter(null);
+        initWithOrchestrationCenter(null);
         disableDataSources();
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
         initCluster();
@@ -99,7 +101,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) throws SQLException {
         init(orchestrationConfig);
         dataSource = loadDataSource();
-        onlineInstanceWithOrchestrationCenter(clusterConfiguration);
+        initWithOrchestrationCenter(clusterConfiguration);
         disableDataSources();
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
         initCluster();
@@ -108,7 +110,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource shardingSphereDataSource, final OrchestrationConfiguration orchestrationConfig) {
         init(orchestrationConfig);
         dataSource = shardingSphereDataSource;
-        onlineInstanceWithLocalConfiguration(null);
+        initWithLocalConfiguration(null);
         disableDataSources();
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
         initCluster();
@@ -118,25 +120,26 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
                                                  final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) {
         init(orchestrationConfig);
         dataSource = shardingSphereDataSource;
-        onlineInstanceWithLocalConfiguration(clusterConfiguration);
+        initWithLocalConfiguration(clusterConfiguration);
         disableDataSources();
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
         initCluster();
     }
     
-    private void init(final OrchestrationConfiguration orchestrationConfig) {
-        orchestrationFacade.init(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME));
+    private void init(final OrchestrationConfiguration config) {
+        orchestrationFacade.init(config, Collections.singletonList(DefaultSchema.LOGIC_NAME));
         OrchestrationEventBus.getInstance().register(this);
     }
     
     private ShardingSphereDataSource loadDataSource() throws SQLException {
-        ConfigCenter configCenter = orchestrationFacade.getConfigCenter();
-        Map<String, DataSourceConfiguration> dataSourceConfigurations = configCenter.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
-        Collection<RuleConfiguration> ruleConfigurations = configCenter.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
-        return new ShardingSphereDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations), ruleConfigurations, configCenter.loadProperties());
+        ConfigCenter configService = orchestrationFacade.getConfigCenter();
+        Collection<RuleConfiguration> configurations = configService.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
+        Preconditions.checkState(!configurations.isEmpty(), "Missing the sharding rule configuration on registry center");
+        Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
+        return new ShardingSphereDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations), configurations, configService.loadProperties());
     }
     
-    private void onlineInstanceWithOrchestrationCenter(final ClusterConfiguration clusterConfiguration) {
+    private void initWithOrchestrationCenter(final ClusterConfiguration clusterConfiguration) {
         orchestrationFacade.onlineInstance();
         if (null != clusterConfiguration) {
             orchestrationFacade.initClusterConfiguration(clusterConfiguration);
@@ -144,23 +147,24 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         dataSourceConfigurations.putAll(orchestrationFacade.getConfigCenter().loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME));
     }
     
-    private void onlineInstanceWithLocalConfiguration(final ClusterConfiguration clusterConfiguration) {
-        Map<String, DataSourceConfiguration> dataSourceConfigurations = DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap());
+    private void initWithLocalConfiguration(final ClusterConfiguration clusterConfiguration) {
+        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap());
         Collection<RuleConfiguration> ruleConfigurations = dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations();
-        orchestrationFacade.onlineInstance(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigurations), Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), 
-                null, dataSource.getSchemaContexts().getProps().getProps());
+        Properties props = dataSource.getSchemaContexts().getProps().getProps();
+        orchestrationFacade.onlineInstance(
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigurationMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), null, props);
         if (null != clusterConfiguration) {
             orchestrationFacade.initClusterConfiguration(clusterConfiguration);
         }
-        this.dataSourceConfigurations.putAll(dataSourceConfigurations);
+        this.dataSourceConfigurations.putAll(dataSourceConfigurationMap);
     }
     
-    // TODO decouple MasterSlaveRule
+    // TODO decouple masterslave rule
     private void disableDataSources() {
-        Collection<String> disabledDataSources = orchestrationFacade.getRegistryCenter().loadDisabledDataSources();
+        Collection<String> disabledDataSources = OrchestrationFacade.getInstance().getRegistryCenter().loadDisabledDataSources();
         if (!disabledDataSources.isEmpty()) {
-            dataSource.getSchemaContexts().getSchemaContexts().forEach((key, value) 
-                -> value.getSchema().getRules().stream().filter(each -> each instanceof MasterSlaveRule).forEach(each -> disableDataSources((MasterSlaveRule) each, disabledDataSources, key)));
+            dataSource.getSchemaContexts().getSchemaContexts().forEach((key, value)
+                -> value.getSchema().getRules().stream().filter(each -> each instanceof MasterSlaveRule).forEach(e -> disableDataSources((MasterSlaveRule) e, disabledDataSources, key)));
         }
     }
     
@@ -172,15 +176,16 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         });
     }
     
-    private void persistMetaData(final RuleSchemaMetaData metaData) {
-        orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(DefaultSchema.LOGIC_NAME, metaData);
+    private void persistMetaData(final RuleSchemaMetaData ruleSchemaMetaData) {
+        OrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(DefaultSchema.LOGIC_NAME, ruleSchemaMetaData);
     }
     
+    // TODO decouple ClusterConfiguration
     private void initCluster() {
-        ClusterConfiguration clusterConfig = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
-        if (null != clusterConfig && null != clusterConfig.getHeartbeat()) {
-            Collection<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
-            facadeConfigurations.add(clusterConfig);
+        ClusterConfiguration clusterConfiguration = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
+        if (null != clusterConfiguration && null != clusterConfiguration.getHeartbeat()) {
+            List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
+            facadeConfigurations.add(clusterConfiguration);
             new ControlPanelFacadeEngine().init(facadeConfigurations);
         }
     }
@@ -203,7 +208,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     }
     
     /**
-     * Renew rule configuration.
+     * Renew sharding rule.
      *
      * @param ruleConfigurationsChangedEvent rule configurations changed event
      */
@@ -218,7 +223,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     }
     
     /**
-     * Renew data sources.
+     * Renew sharding data source.
      *
      * @param dataSourceChangedEvent data source changed event
      */
@@ -278,18 +283,6 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         }
     }
     
-    /**
-     * Heart beat detect.
-     *
-     * @param event heart beat detect notice event
-     */
-    @Subscribe
-    public synchronized void heartbeat(final HeartbeatDetectNoticeEvent event) {
-        if (ClusterInitFacade.isEnabled()) {
-            ClusterFacade.getInstance().detectHeartbeat(dataSource.getSchemaContexts().getSchemaContexts());
-        }
-    }
-    
     private synchronized Map<String, DataSource> getChangedDataSources(final Map<String, DataSource> oldDataSources, final Map<String, DataSourceConfiguration> newDataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(oldDataSources);
         Map<String, DataSourceConfiguration> modifiedDataSources = getModifiedDataSources(newDataSources);
@@ -320,8 +313,19 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     
     private ShardingSphereSchema getChangedSchema(final ShardingSphereSchema oldSchema, final RuleSchemaMetaData newRuleSchemaMetaData) {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(oldSchema.getMetaData().getDataSources(), newRuleSchemaMetaData);
-        return new ShardingSphereSchema(oldSchema.getDatabaseType(), oldSchema.getConfigurations(),
-                oldSchema.getRules(), oldSchema.getDataSources(), metaData);
+        return new ShardingSphereSchema(oldSchema.getDatabaseType(), oldSchema.getConfigurations(), oldSchema.getRules(), oldSchema.getDataSources(), metaData);
+    }
+    
+    /**
+     * Heart beat detect.
+     *
+     * @param event heart beat detect notice event
+     */
+    @Subscribe
+    public synchronized void heartbeat(final HeartbeatDetectNoticeEvent event) {
+        if (ClusterInitFacade.isEnabled()) {
+            ClusterFacade.getInstance().detectHeartbeat(dataSource.getSchemaContexts().getSchemaContexts());
+        }
     }
     
     @Override
