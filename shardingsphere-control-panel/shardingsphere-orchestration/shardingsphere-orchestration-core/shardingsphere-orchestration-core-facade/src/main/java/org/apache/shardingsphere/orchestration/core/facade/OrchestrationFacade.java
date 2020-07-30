@@ -81,19 +81,19 @@ public final class OrchestrationFacade implements AutoCloseable {
      * @param authentication authentication
      * @param props properties
      */
-    public void initConfigurations(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurationMap, 
-                                   final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final Authentication authentication, final Properties props) {
+    public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurationMap,
+                               final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final Authentication authentication, final Properties props) {
         configCenter.persistGlobalConfiguration(authentication, props, isOverwrite);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigurationMap.entrySet()) {
             configCenter.persistConfigurations(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), isOverwrite);
         }
-        initConfigurations();
+        onlineInstance();
     }
     
     /**
-     * Initialize configurations of orchestration.
+     * Online instance.
      */
-    public void initConfigurations() {
+    public void onlineInstance() {
         registryCenter.persistInstanceOnline();
         registryCenter.persistDataSourcesNode();
         listenerManager.init();
