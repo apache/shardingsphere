@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.jdbc.queryresult;
 
+import java.sql.Array;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
 import org.junit.Test;
 
@@ -148,6 +149,14 @@ public final class StreamQueryResultTest {
         Clob value = mock(Clob.class);
         when(resultSet.getClob(1)).thenReturn(value);
         assertThat(new StreamQueryResult(resultSet).getValue(1, Clob.class), is(value));
+    }
+    
+    @Test
+    public void assertGetValueByArray() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        Array value = mock(Array.class);
+        when(resultSet.getArray(1)).thenReturn(value);
+        assertThat(new StreamQueryResult(resultSet).getValue(1, Array.class), is(value));
     }
     
     @Test

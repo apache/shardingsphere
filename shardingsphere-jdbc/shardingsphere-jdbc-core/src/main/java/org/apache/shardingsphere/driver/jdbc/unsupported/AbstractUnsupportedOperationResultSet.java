@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
 import java.io.Reader;
-import java.sql.Array;
 import java.sql.NClob;
 import java.sql.Ref;
 import java.sql.RowId;
@@ -179,16 +178,6 @@ public abstract class AbstractUnsupportedOperationResultSet extends AbstractUnsu
     @Override
     public final Ref getRef(final String columnLabel) throws SQLException {
         throw new SQLFeatureNotSupportedException("getRef");
-    }
-    
-    @Override
-    public final Array getArray(final int columnIndex) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getArray");
-    }
-    
-    @Override
-    public final Array getArray(final String columnLabel) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getArray");
     }
     
     @Override
