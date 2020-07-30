@@ -639,3 +639,28 @@ DEC
 END
     : E N D
     ;
+
+ABORT
+    : A B O R T
+    ;
+
+WORK
+    : W O R K
+    ;
+
+TRANSACTION
+    : T R A N S A C T I O N
+    ;
+
+NO
+    : N O
+    ;
+
+CHAIN
+    : C H A I N
+    ;
+
+AGGREGATE
+    : A G G R E G A T E
+    ;
+

@@ -1380,3 +1380,19 @@ VERBOSE
 PARAM
     : P A R A M
     ;
+
+ALLOW_CONNECTIONS
+    : A L L O W UL_ C O N N E C T I O N S
+    ;
+
+TYPES_P
+    : T Y P E S UL_ P
+    ;
+
+IS_TEMPLATE
+    : I S UL_ T E M P L A T E
+    ;
+
+PUBLIC
+    : P U B L I C
+    ;

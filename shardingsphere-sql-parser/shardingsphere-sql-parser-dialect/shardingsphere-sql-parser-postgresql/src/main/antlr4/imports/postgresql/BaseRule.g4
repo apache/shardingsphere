@@ -316,6 +316,7 @@ unreservedWord
     | PROCEDURE
     | PROCEDURES
     | PROGRAM
+    | PUBLIC
     | PUBLICATION
     | QUOTE
     | RANGE
@@ -451,6 +452,58 @@ typeFuncNameKeyword
     | VERBOSE
     ;
 
+colNameKeyword
+    : BETWEEN
+    | BIGINT
+    | BIT
+    | BOOLEAN
+    | CHAR
+    | CHARACTER
+    | COALESCE
+    | DEC
+    | DECIMAL
+    | EXISTS
+    | EXTRACT
+    | FLOAT
+    | GREATEST
+    | GROUPING
+    | INOUT
+    | INT
+    | INTEGER
+    | INTERVAL
+    | LEAST
+    | NATIONAL
+    | NCHAR
+    | NONE
+    | NULLIF
+    | NUMERIC
+    | OUT
+    | OVERLAY
+    | POSITION
+    | PRECISION
+    | REAL
+    | ROW
+    | SETOF
+    | SMALLINT
+    | SUBSTRING
+    | TIME
+    | TIMESTAMP
+    | TREAT
+    | TRIM
+    | VALUES
+    | VARCHAR
+    | XMLATTRIBUTES
+    | XMLCONCAT
+    | XMLELEMENT
+    | XMLEXISTS
+    | XMLFOREST
+    | XMLNAMESPACES
+    | XMLPARSE
+    | XMLPI
+    | XMLROOT
+    | XMLSERIALIZE
+    | XMLTABLE
+	;
 schemaName
     : identifier
     ;
@@ -1350,4 +1403,171 @@ ignoredIdentifier_
 
 ignoredIdentifiers_
     : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
+    ;
+
+nonReservedWord
+    : unreservedWord
+    | colNameKeyword
+    | typeFuncNameKeyword
+    ;
+
+aggregateName
+    : name
+    ;
+
+databaseName
+    : colId
+    ;
+
+optBoolean
+    : TRUE | FALSE
+    ;
+
+varName
+    : colId
+    | varName DOT_ colId
+    ;
+
+varList
+    : varValue
+    | varList COMMA_ varValue
+    ;
+
+varValue
+    : identifier
+    ;
+
+roleSpec
+    : identifier
+    | nonReservedWord
+    | CURRENT_USER
+    | SESSION_USER
+    ;
+
+columnElem
+    : colId
+    ;
+
+columnList
+    : columnElem
+    | columnList COMMA_ columnElem
+    ;
+
+accessMethod
+    : colId
+    ;
+
+funcArgs
+    : LP_ funcArgList RP_
+    | LP_ RP_
+    ;
+
+numericOnly
+    : NUMBER_
+    | PLUS_ NUMBER_
+    | MINUS_ NUMBER_
+    ;
+
+zoneValue
+    : STRING_
+    | identifier
+    | INTERVAL STRING_ optInterval
+    | INTERVAL LP_ INT_ RP_ STRING_
+    | numericOnly
+    | DEFAULT
+    | LOCAL
+    ;
+
+funcArg
+    : argClass paramName funcType
+    | paramName argClass funcType
+    | paramName funcType
+    | argClass funcType
+    | funcType
+    ;
+
+argClass
+    : IN
+    | OUT
+    | INOUT
+    | IN OUT
+    | VARIADIC
+    ;
+
+funcArgsList
+    : funcArg
+    | funcArgsList COMMA_ funcArg
+    ;
+
+columnDef
+    : colId typeName create_generic_options colQualList
+    ;
+
+colQualList
+    : colConstraint*
+    ;
+
+colConstraint
+    : CONSTRAINT name colConstraintElem
+    | colConstraintElem
+    | constraintAttr
+    | COLLATE anyName
+    ;
+
+colConstraintElem
+    : NOT NULL
+    | NULL
+    | UNIQUE opt_definition OptConsTableSpace
+    | PRIMARY KEY opt_definition OptConsTableSpace
+    | CHECK LP_ aExpr RP_ opt_no_inherit
+    | DEFAULT bExpr
+    | GENERATED generated_when AS IDENTITY_P OptParenthesizedSeqOptList
+    | GENERATED generated_when AS LP_ aExpr RP_ STORED
+    | REFERENCES qualified_name opt_column_list key_match key_actions
+    ;
+
+opt_definition
+    : (WITH definition)?
+    ;
+
+definition
+    : LP_ def_list RP_
+    ;
+
+def_list
+    : def_elem
+    | def_list COMMA_ def_elem
+    ;
+
+def_elem
+    : colLabel  def_arg
+      				{
+      					$$ = makeDefElem($1, (Node *) $3, @1);
+      				}
+      			| ColLabel
+    ;
+
+colLabel
+    :
+    ;
+
+create_generic_options
+    : ( OPTIONS LP_ generic_option_list RP_ )?
+    ;
+
+generic_option_list
+    : generic_option_elem
+    | generic_option_list COMMA_ generic_option_elem
+    ;
+
+generic_option_elem
+    : generic_option_name generic_option_arg
+    ;
+
+generic_option_arg
+    : STRING_
+    ;
+
+generic_option_name
+    : colLable
     ;

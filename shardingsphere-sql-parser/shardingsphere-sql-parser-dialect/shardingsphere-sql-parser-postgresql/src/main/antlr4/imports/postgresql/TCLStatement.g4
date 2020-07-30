@@ -38,3 +38,9 @@ rollback
 savepoint
     : SAVEPOINT
     ;
+
+abort
+    : ABORT (WORK | TRANSACTION)? (AND (NO)? CHAIN)?
+    ;
+
+
