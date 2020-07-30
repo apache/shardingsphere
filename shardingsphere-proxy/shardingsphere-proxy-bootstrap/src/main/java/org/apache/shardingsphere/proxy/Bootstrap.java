@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy;
 
-import com.google.common.primitives.Ints;
-import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,10 +43,10 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDB
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
+import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.converter.ProxyConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.converter.ProxyConfigurationConverterFactory;
-import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
-import org.apache.shardingsphere.proxy.config.ShardingConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
 
@@ -62,6 +60,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -83,11 +82,11 @@ public final class Bootstrap {
     public static void main(final String[] args) throws Exception {
         int port = getPort(args);
         System.setProperty(Constants.PORT_KEY, String.valueOf(port));
-        ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load(getConfigPath(args));
-        logRuleConfigurationMap(getRuleConfigurations(shardingConfig.getRuleConfigurationMap()).values());
-        boolean isOrchestration = null != shardingConfig.getServerConfiguration().getOrchestration();
+        YamlProxyConfiguration yamlConfig = new ProxyConfigurationLoader().load(getConfigurationPath(args));
+        logRuleConfigurationMap(getRuleConfigurations(yamlConfig.getRuleConfigurations()).values());
+        boolean isOrchestration = null != yamlConfig.getServerConfiguration().getOrchestration();
         try (ProxyConfigurationConverter converter = ProxyConfigurationConverterFactory.newInstances(isOrchestration)) {
-            ProxyConfiguration proxyConfiguration = converter.convert(shardingConfig);
+            ProxyConfiguration proxyConfiguration = converter.convert(yamlConfig);
             initialize(proxyConfiguration, port, converter);
         }
     }
@@ -96,15 +95,15 @@ public final class Bootstrap {
         if (0 == args.length) {
             return Constants.DEFAULT_PORT;
         }
-        Integer port = Ints.tryParse(args[0]);
-        return port == null ? Constants.DEFAULT_PORT : port;
+        try {
+            return Integer.parseInt(args[0]);
+        } catch (final NumberFormatException ex) {
+            throw new IllegalArgumentException(String.format("Invalid port `%s`.", args[0]));
+        }
     }
     
-    private static String getConfigPath(final String[] args) {
-        if (args.length < 2) {
-            return DEFAULT_CONFIG_PATH;
-        }
-        return paddingWithSlash(args[1]);
+    private static String getConfigurationPath(final String[] args) {
+        return args.length < 2 ? DEFAULT_CONFIG_PATH : paddingWithSlash(args[1]);
     }
     
     private static String paddingWithSlash(final String arg) {

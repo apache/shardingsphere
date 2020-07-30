@@ -31,7 +31,7 @@ import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
+import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.converter.AbstractConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.util.DataSourceConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
@@ -54,24 +54,24 @@ public final class OrchestrationConfigurationConverter extends AbstractConfigura
     private final OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance();
     
     @Override
-    public ProxyConfiguration convert(final ShardingConfiguration shardingConfiguration) {
-        YamlOrchestrationConfiguration orchestration = shardingConfiguration.getServerConfiguration().getOrchestration();
-        Set<String> schemaNames = shardingConfiguration.getRuleConfigurationMap().keySet();
-        ProxyConfiguration proxyConfiguration = new ProxyConfiguration();
-        orchestrationFacade.init(new OrchestrationConfigurationYamlSwapper().swapToObject(orchestration), schemaNames);
-        initOrchestrationConfigurations(shardingConfiguration.getServerConfiguration(), shardingConfiguration.getRuleConfigurationMap(), orchestrationFacade);
+    public ProxyConfiguration convert(final YamlProxyConfiguration yamlProxyConfiguration) {
+        YamlOrchestrationConfiguration orchestrationConfig = yamlProxyConfiguration.getServerConfiguration().getOrchestration();
+        Set<String> schemaNames = yamlProxyConfiguration.getRuleConfigurations().keySet();
+        ProxyConfiguration result = new ProxyConfiguration();
+        orchestrationFacade.init(new OrchestrationConfigurationYamlSwapper().swapToObject(orchestrationConfig), schemaNames);
+        initOrchestrationConfigurations(yamlProxyConfiguration.getServerConfiguration(), yamlProxyConfiguration.getRuleConfigurations(), orchestrationFacade);
         Authentication authentication = orchestrationFacade.getConfigCenter().loadAuthentication();
         Properties properties = orchestrationFacade.getConfigCenter().loadProperties();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(orchestrationFacade);
         Map<String, Collection<RuleConfiguration>> schemaRules = getSchemaRules(orchestrationFacade);
         ClusterConfiguration clusterConfiguration = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
-        proxyConfiguration.setAuthentication(authentication);
-        proxyConfiguration.setProps(properties);
-        proxyConfiguration.setSchemaDataSources(schemaDataSources);
-        proxyConfiguration.setSchemaRules(schemaRules);
-        proxyConfiguration.setCluster(clusterConfiguration);
-        proxyConfiguration.setMetrics(getMetricsConfiguration(shardingConfiguration.getServerConfiguration().getMetrics()));
-        return proxyConfiguration;
+        result.setAuthentication(authentication);
+        result.setProps(properties);
+        result.setSchemaDataSources(schemaDataSources);
+        result.setSchemaRules(schemaRules);
+        result.setCluster(clusterConfiguration);
+        result.setMetrics(getMetricsConfiguration(yamlProxyConfiguration.getServerConfiguration().getMetrics()));
+        return result;
     }
     
     @Override

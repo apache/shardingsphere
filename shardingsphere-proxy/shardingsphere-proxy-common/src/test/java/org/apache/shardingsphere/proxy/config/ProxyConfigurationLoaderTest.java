@@ -37,16 +37,16 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ShardingConfigurationLoaderTest {
+public final class ProxyConfigurationLoaderTest {
     
     @Test
     public void assertLoad() throws IOException {
-        ShardingConfiguration actual = new ShardingConfigurationLoader().load("/conf/");
+        YamlProxyConfiguration actual = new ProxyConfigurationLoader().load("/conf/");
         assertThat(actual.getServerConfiguration().getOrchestration().getRegistryCenter().getServerLists(), is("localhost:2181"));
-        assertThat(actual.getRuleConfigurationMap().size(), is(3));
-        assertShardingRuleConfiguration(actual.getRuleConfigurationMap().get("sharding_db"));
-        assertMasterSlaveRuleConfiguration(actual.getRuleConfigurationMap().get("master_slave_db"));
-        assertEncryptRuleConfiguration(actual.getRuleConfigurationMap().get("encrypt_db"));
+        assertThat(actual.getRuleConfigurations().size(), is(3));
+        assertShardingRuleConfiguration(actual.getRuleConfigurations().get("sharding_db"));
+        assertMasterSlaveRuleConfiguration(actual.getRuleConfigurations().get("master_slave_db"));
+        assertEncryptRuleConfiguration(actual.getRuleConfigurations().get("encrypt_db"));
     }
     
     private void assertShardingRuleConfiguration(final YamlProxyRuleConfiguration actual) {
