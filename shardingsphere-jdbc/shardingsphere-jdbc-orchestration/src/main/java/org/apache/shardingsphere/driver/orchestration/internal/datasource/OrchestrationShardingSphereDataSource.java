@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.orchestration.internal.datasource;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
@@ -46,7 +45,6 @@ import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
@@ -57,6 +55,7 @@ import org.apache.shardingsphere.orchestration.core.metadata.event.MetaDataChang
 import org.apache.shardingsphere.orchestration.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.schema.OrchestrationSchema;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -132,11 +131,10 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     }
     
     private ShardingSphereDataSource loadDataSource() throws SQLException {
-        ConfigCenter configService = orchestrationFacade.getConfigCenter();
-        Collection<RuleConfiguration> configurations = configService.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
-        Preconditions.checkState(!configurations.isEmpty(), "Missing rule configuration on registry center");
-        Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
-        return new ShardingSphereDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations), configurations, configService.loadProperties());
+        ConfigCenter configCenter = orchestrationFacade.getConfigCenter();
+        Map<String, DataSourceConfiguration> dataSourceConfigurations = configCenter.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
+        Collection<RuleConfiguration> ruleConfigurations = configCenter.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
+        return new ShardingSphereDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations), ruleConfigurations, configCenter.loadProperties());
     }
     
     private void initWithOrchestrationCenter(final ClusterConfiguration clusterConfiguration) {
