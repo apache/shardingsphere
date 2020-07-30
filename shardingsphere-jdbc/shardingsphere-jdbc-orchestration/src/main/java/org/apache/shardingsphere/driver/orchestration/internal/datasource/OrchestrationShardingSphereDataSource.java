@@ -134,7 +134,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     private ShardingSphereDataSource loadDataSource() throws SQLException {
         ConfigCenter configService = orchestrationFacade.getConfigCenter();
         Collection<RuleConfiguration> configurations = configService.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
-        Preconditions.checkState(!configurations.isEmpty(), "Missing the sharding rule configuration on registry center");
+        Preconditions.checkState(!configurations.isEmpty(), "Missing rule configuration on registry center");
         Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
         return new ShardingSphereDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations), configurations, configService.loadProperties());
     }
@@ -176,16 +176,16 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         });
     }
     
-    private void persistMetaData(final RuleSchemaMetaData ruleSchemaMetaData) {
-        OrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(DefaultSchema.LOGIC_NAME, ruleSchemaMetaData);
+    private void persistMetaData(final RuleSchemaMetaData metaData) {
+        OrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(DefaultSchema.LOGIC_NAME, metaData);
     }
     
     // TODO decouple ClusterConfiguration
     private void initCluster() {
-        ClusterConfiguration clusterConfiguration = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
-        if (null != clusterConfiguration && null != clusterConfiguration.getHeartbeat()) {
+        ClusterConfiguration clusterConfig = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
+        if (null != clusterConfig && null != clusterConfig.getHeartbeat()) {
             List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
-            facadeConfigurations.add(clusterConfiguration);
+            facadeConfigurations.add(clusterConfig);
             new ControlPanelFacadeEngine().init(facadeConfigurations);
         }
     }
@@ -208,7 +208,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     }
     
     /**
-     * Renew sharding rule.
+     * Renew rule configuration.
      *
      * @param ruleConfigurationsChangedEvent rule configurations changed event
      */
@@ -223,7 +223,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     }
     
     /**
-     * Renew sharding data source.
+     * Renew data sources.
      *
      * @param dataSourceChangedEvent data source changed event
      */

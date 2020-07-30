@@ -72,7 +72,7 @@ public final class OrchestrationFacade implements AutoCloseable {
     }
     
     /**
-     * Initialize configurations of orchestration.
+     * Online instance.
      *
      * @param dataSourceConfigurationMap schema data source configuration map
      * @param schemaRuleMap schema rule map
