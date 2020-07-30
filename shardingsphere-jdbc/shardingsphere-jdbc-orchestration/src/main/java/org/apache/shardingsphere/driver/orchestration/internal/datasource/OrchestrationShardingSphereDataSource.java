@@ -148,20 +148,20 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     }
     
     private void initWithLocalConfiguration(final ClusterConfiguration clusterConfiguration) {
-        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap());
+        Map<String, DataSourceConfiguration> dataSourceConfigurations = DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap());
         Collection<RuleConfiguration> ruleConfigurations = dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations();
         Properties props = dataSource.getSchemaContexts().getProps().getProps();
         orchestrationFacade.onlineInstance(
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigurationMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), null, props);
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigurations), Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), null, props);
         if (null != clusterConfiguration) {
             orchestrationFacade.initClusterConfiguration(clusterConfiguration);
         }
-        this.dataSourceConfigurations.putAll(dataSourceConfigurationMap);
+        this.dataSourceConfigurations.putAll(dataSourceConfigurations);
     }
     
     // TODO decouple masterslave rule
     private void disableDataSources() {
-        Collection<String> disabledDataSources = OrchestrationFacade.getInstance().getRegistryCenter().loadDisabledDataSources();
+        Collection<String> disabledDataSources = orchestrationFacade.getRegistryCenter().loadDisabledDataSources();
         if (!disabledDataSources.isEmpty()) {
             dataSource.getSchemaContexts().getSchemaContexts().forEach((key, value)
                 -> value.getSchema().getRules().stream().filter(each -> each instanceof MasterSlaveRule).forEach(e -> disableDataSources((MasterSlaveRule) e, disabledDataSources, key)));
@@ -177,7 +177,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     }
     
     private void persistMetaData(final RuleSchemaMetaData metaData) {
-        OrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(DefaultSchema.LOGIC_NAME, metaData);
+        orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(DefaultSchema.LOGIC_NAME, metaData);
     }
     
     // TODO decouple ClusterConfiguration
