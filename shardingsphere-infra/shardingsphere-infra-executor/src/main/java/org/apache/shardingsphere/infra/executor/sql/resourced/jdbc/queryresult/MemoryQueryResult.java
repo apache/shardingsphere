@@ -107,6 +107,8 @@ public final class MemoryQueryResult implements QueryResult {
             case Types.VARBINARY:
             case Types.LONGVARBINARY:
                 return resultSet.getBlob(columnIndex);
+            case Types.ARRAY:
+                return resultSet.getArray(columnIndex);
             default:
                 return resultSet.getObject(columnIndex);
         }

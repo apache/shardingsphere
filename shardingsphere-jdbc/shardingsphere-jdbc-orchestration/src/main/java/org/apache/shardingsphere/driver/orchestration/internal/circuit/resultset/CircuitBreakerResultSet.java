@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.orchestration.internal.circuit.resultset;
 
+import java.sql.Array;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 
 import java.io.InputStream;
@@ -335,6 +336,16 @@ public final class CircuitBreakerResultSet extends AbstractUnsupportedOperationR
     
     @Override
     public Statement getStatement() {
+        return null;
+    }
+    
+    @Override
+    public Array getArray(final int columnIndex) {
+        return null;
+    }
+    
+    @Override
+    public Array getArray(final String columnLabel) {
         return null;
     }
     

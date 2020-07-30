@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
@@ -111,6 +112,16 @@ public abstract class AbstractUnsupportedDatabaseMetaDataResultSet extends Abstr
     @Override
     public final Statement getStatement() throws SQLException {
         throw new SQLFeatureNotSupportedException("getStatement");
+    }
+    
+    @Override
+    public final Array getArray(final int columnIndex) throws SQLException {
+        throw new SQLFeatureNotSupportedException("getArray");
+    }
+    
+    @Override
+    public final Array getArray(final String columnLabel) throws SQLException {
+        throw new SQLFeatureNotSupportedException("getArray");
     }
     
     @Override

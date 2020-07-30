@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult;
 
+import java.sql.Array;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 
 import java.io.InputStream;
@@ -87,6 +88,8 @@ public final class StreamQueryResult implements QueryResult {
             return resultSet.getBlob(columnIndex);
         } else if (Clob.class == type) {
             return resultSet.getClob(columnIndex);
+        } else if (Array.class == type) {
+            return resultSet.getArray(columnIndex);
         } else {
             return resultSet.getObject(columnIndex);
         }

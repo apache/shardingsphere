@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.unsupported;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
+import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
@@ -104,6 +105,16 @@ public abstract class AbstractUnsupportedGeneratedKeysResultSet extends Abstract
     @Override
     public final Timestamp getTimestamp(final String columnLabel, final Calendar cal) throws SQLException {
         throw new SQLFeatureNotSupportedException("getTimestamp");
+    }
+    
+    @Override
+    public final Array getArray(final int columnIndex) throws SQLException {
+        throw new SQLFeatureNotSupportedException("getArray");
+    }
+    
+    @Override
+    public final Array getArray(final String columnLabel) throws SQLException {
+        throw new SQLFeatureNotSupportedException("getArray");
     }
     
     @Override
