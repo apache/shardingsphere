@@ -28,6 +28,7 @@ public interface Position<T> extends Comparable<T>, Serializable {
     
     /**
      * To json element.
+     *
      * @return json element
      */
     JsonElement toJson();
