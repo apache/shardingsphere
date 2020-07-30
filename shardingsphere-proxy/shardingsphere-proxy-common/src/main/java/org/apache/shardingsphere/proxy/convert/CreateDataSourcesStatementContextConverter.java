@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.generator;
+package org.apache.shardingsphere.proxy.convert;
 
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStatementContext;
-import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStatementContext.DataSourceContext;
+import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStatementContext.DataSourceConnectionUrl;
+import org.apache.shardingsphere.rdl.parser.binder.generator.SQLStatementContextConverter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Yaml dataSource configuration generator.
+ * Create dataSource statement context converter.
  */
-public class YamlDataSourceConfigurationGenerator implements YamlConfigurationGenerator<CreateDataSourcesStatementContext, Map<String, YamlDataSourceParameter>> {
+public class CreateDataSourcesStatementContextConverter implements SQLStatementContextConverter<CreateDataSourcesStatementContext, Map<String, YamlDataSourceParameter>> {
     
     @Override
-    public Map<String, YamlDataSourceParameter> generate(final CreateDataSourcesStatementContext sqlStatement) {
+    public Map<String, YamlDataSourceParameter> convert(final CreateDataSourcesStatementContext sqlStatement) {
         Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>();
-        for (DataSourceContext each : sqlStatement.getDataSourceContexts()) {
+        for (DataSourceConnectionUrl each : sqlStatement.getUrls()) {
             YamlDataSourceParameter dataSource = new YamlDataSourceParameter();
             dataSource.setUrl(each.getUrl());
             dataSource.setUsername(each.getUserName());

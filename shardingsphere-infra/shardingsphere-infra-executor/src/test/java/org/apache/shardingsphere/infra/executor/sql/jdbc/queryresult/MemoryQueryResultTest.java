@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.jdbc.queryresult;
 
+import java.sql.Array;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.MemoryQueryResult;
 import org.hamcrest.core.Is;
@@ -303,6 +304,17 @@ public final class MemoryQueryResultTest {
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Blob.class), is(value));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByArray() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.ARRAY);
+        Array value = mock(Array.class);
+        when(resultSet.getArray(1)).thenReturn(value);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Array.class), is(value));
         assertFalse(actual.next());
     }
     

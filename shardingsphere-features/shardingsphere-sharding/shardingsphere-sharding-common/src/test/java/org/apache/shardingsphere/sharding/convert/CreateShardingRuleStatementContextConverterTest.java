@@ -1,19 +1,3 @@
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.generator;
-
-import org.apache.shardingsphere.rdl.parser.binder.context.CreateShardingRuleStatementContext;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.Properties;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -31,7 +15,23 @@ import static org.mockito.Mockito.when;
  * limitations under the License.
  */
 
-public class YamlShardingRuleConfigurationGeneratorTest {
+package org.apache.shardingsphere.sharding.convert;
+
+import org.apache.shardingsphere.rdl.parser.binder.context.CreateShardingRuleStatementContext;
+import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class CreateShardingRuleStatementContextConverterTest {
     
     private CreateShardingRuleStatementContext context;
     
@@ -49,7 +49,7 @@ public class YamlShardingRuleConfigurationGeneratorTest {
     
     @Test
     public void generate() {
-        YamlShardingRuleConfiguration rule = new YamlShardingRuleConfigurationGenerator().generate(context);
+        YamlShardingRuleConfiguration rule = new CreateShardingRuleStatementContextConverter().convert(context);
         assertTrue(rule.getTables().isEmpty());
         assertThat(rule.getAutoTables().size(), is(1));
         assertThat(rule.getAutoTables().get(context.getLogicTable()).getActualDataSources(), is("ds0,ds1"));

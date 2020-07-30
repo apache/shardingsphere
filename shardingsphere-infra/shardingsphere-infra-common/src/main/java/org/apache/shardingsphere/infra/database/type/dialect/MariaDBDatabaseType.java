@@ -36,8 +36,8 @@ public final class MariaDBDatabaseType implements BranchDatabaseType {
     }
     
     @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.emptyList();
+    public Collection<String> getJdbcUrlPrefixes() {
+        return Collections.singleton(String.format("jdbc:%s:", getName().toLowerCase()));
     }
     
     @Override
