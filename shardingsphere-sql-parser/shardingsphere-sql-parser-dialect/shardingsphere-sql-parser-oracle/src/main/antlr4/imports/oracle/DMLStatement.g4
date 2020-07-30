@@ -109,7 +109,7 @@ unionClause
     ;
 
 selectClause
-    : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause?
+    : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause? lockClause?
     ;
 
 duplicateSpecification
@@ -175,4 +175,8 @@ havingClause
 
 subquery
     : LP_ unionClause RP_
+    ;
+        
+lockClause
+    : FOR UPDATE 
     ;
