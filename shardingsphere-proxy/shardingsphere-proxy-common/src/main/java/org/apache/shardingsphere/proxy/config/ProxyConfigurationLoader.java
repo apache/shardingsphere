@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.proxy.config;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameterMerger;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,6 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -52,21 +51,13 @@ public final class ProxyConfigurationLoader {
      * @return configuration of ShardingSphere-Proxy
      * @throws IOException IO exception
      */
-    public ShardingConfiguration load(final String path) throws IOException {
+    public YamlProxyConfiguration load(final String path) throws IOException {
         Collection<String> schemaNames = new HashSet<>();
         YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(path + "/" + SERVER_CONFIG_FILE));
         File configPath = getResourceFile(path);
-        Collection<YamlProxyRuleConfiguration> ruleConfigurations = new LinkedList<>();
-        for (File each : findRuleConfigurationFiles(configPath)) {
-            loadRuleConfiguration(each).ifPresent(yamlProxyRuleConfiguration -> {
-                Preconditions.checkState(
-                        schemaNames.add(yamlProxyRuleConfiguration.getSchemaName()), "Schema name `%s` must unique at all rule configurations.", yamlProxyRuleConfiguration.getSchemaName());
-                ruleConfigurations.add(yamlProxyRuleConfiguration);
-            });
-        }
+        Collection<YamlProxyRuleConfiguration> ruleConfigurations = loadRuleConfigurations(schemaNames, configPath);
         Preconditions.checkState(!ruleConfigurations.isEmpty() || null != serverConfig.getOrchestration(), "Can not find any sharding rule configuration file in path `%s`.", configPath.getPath());
-        Map<String, YamlProxyRuleConfiguration> ruleConfigurationMap = ruleConfigurations.stream().collect(Collectors.toMap(YamlProxyRuleConfiguration::getSchemaName, each -> each));
-        return new ShardingConfiguration(serverConfig, ruleConfigurationMap);
+        return new YamlProxyConfiguration(serverConfig, ruleConfigurations.stream().collect(Collectors.toMap(YamlProxyRuleConfiguration::getSchemaName, each -> each)));
     }
     
     private File getResourceFile(final String path) {
@@ -81,6 +72,17 @@ public final class ProxyConfigurationLoader {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
         Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
         Preconditions.checkState(null != result.getAuthentication() || null != result.getOrchestration(), "Authority configuration is invalid.");
+        return result;
+    }
+    
+    private Collection<YamlProxyRuleConfiguration> loadRuleConfigurations(final Collection<String> schemaNames, final File configPath) throws IOException {
+        Collection<YamlProxyRuleConfiguration> result = new LinkedList<>();
+        for (File each : findRuleConfigurationFiles(configPath)) {
+            loadRuleConfiguration(each).ifPresent(yamlProxyRuleConfig -> {
+                Preconditions.checkState(schemaNames.add(yamlProxyRuleConfig.getSchemaName()), "Schema name `%s` must unique at all rule configurations.", yamlProxyRuleConfig.getSchemaName());
+                result.add(yamlProxyRuleConfig);
+            });
+        }
         return result;
     }
     

@@ -41,7 +41,7 @@ public final class ProxyConfigurationLoaderTest {
     
     @Test
     public void assertLoad() throws IOException {
-        ShardingConfiguration actual = new ProxyConfigurationLoader().load("/conf/");
+        YamlProxyConfiguration actual = new ProxyConfigurationLoader().load("/conf/");
         assertThat(actual.getServerConfiguration().getOrchestration().getRegistryCenter().getServerLists(), is("localhost:2181"));
         assertThat(actual.getRuleConfigurations().size(), is(3));
         assertShardingRuleConfiguration(actual.getRuleConfigurations().get("sharding_db"));

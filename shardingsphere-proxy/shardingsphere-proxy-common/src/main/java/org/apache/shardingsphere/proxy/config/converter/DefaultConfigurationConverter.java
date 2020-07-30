@@ -27,7 +27,7 @@ import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
+import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -40,7 +40,7 @@ import java.util.Optional;
 public final class DefaultConfigurationConverter extends AbstractConfigurationConverter {
     
     @Override
-    public ProxyConfiguration convert(final ShardingConfiguration shardingConfiguration) {
+    public ProxyConfiguration convert(final YamlProxyConfiguration shardingConfiguration) {
         ProxyConfiguration proxyConfiguration = new ProxyConfiguration();
         Authentication authentication = new AuthenticationYamlSwapper().swapToObject(shardingConfiguration.getServerConfiguration().getAuthentication());
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(shardingConfiguration.getRuleConfigurations());

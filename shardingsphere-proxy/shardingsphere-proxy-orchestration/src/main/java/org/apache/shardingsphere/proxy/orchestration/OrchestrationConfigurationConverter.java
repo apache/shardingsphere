@@ -31,7 +31,7 @@ import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
+import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.converter.AbstractConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.util.DataSourceConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
@@ -54,7 +54,7 @@ public final class OrchestrationConfigurationConverter extends AbstractConfigura
     private final OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance();
     
     @Override
-    public ProxyConfiguration convert(final ShardingConfiguration shardingConfiguration) {
+    public ProxyConfiguration convert(final YamlProxyConfiguration shardingConfiguration) {
         YamlOrchestrationConfiguration orchestrationConfig = shardingConfiguration.getServerConfiguration().getOrchestration();
         Set<String> schemaNames = shardingConfiguration.getRuleConfigurations().keySet();
         ProxyConfiguration proxyConfiguration = new ProxyConfiguration();

@@ -43,7 +43,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDB
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
+import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.converter.ProxyConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.converter.ProxyConfigurationConverterFactory;
@@ -82,7 +82,7 @@ public final class Bootstrap {
     public static void main(final String[] args) throws Exception {
         int port = getPort(args);
         System.setProperty(Constants.PORT_KEY, String.valueOf(port));
-        ShardingConfiguration shardingConfig = new ProxyConfigurationLoader().load(getConfigurationPath(args));
+        YamlProxyConfiguration shardingConfig = new ProxyConfigurationLoader().load(getConfigurationPath(args));
         logRuleConfigurationMap(getRuleConfigurations(shardingConfig.getRuleConfigurations()).values());
         boolean isOrchestration = null != shardingConfig.getServerConfiguration().getOrchestration();
         try (ProxyConfigurationConverter converter = ProxyConfigurationConverterFactory.newInstances(isOrchestration)) {
