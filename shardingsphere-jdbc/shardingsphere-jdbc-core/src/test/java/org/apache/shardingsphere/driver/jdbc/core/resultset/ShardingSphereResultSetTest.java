@@ -17,11 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
-import java.sql.Array;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.driver.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -37,6 +33,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
@@ -46,6 +43,8 @@ import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -68,8 +67,6 @@ public final class ShardingSphereResultSetTest {
     @Before
     public void setUp() throws SQLException {
         mergeResultSet = mock(MergedResult.class);
-        RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        when(runtimeContext.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         shardingSphereResultSet = new ShardingSphereResultSet(getResultSets(), mergeResultSet, getShardingSphereStatement(), createExecutionContext());
     }
     

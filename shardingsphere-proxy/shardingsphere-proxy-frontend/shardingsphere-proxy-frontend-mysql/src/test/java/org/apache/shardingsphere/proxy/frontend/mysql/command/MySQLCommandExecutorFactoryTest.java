@@ -39,7 +39,7 @@ import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepa
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.reset.MySQLComStmtResetExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.fieldlist.MySQLComFieldListPacketExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor;
-import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.junit.Test;
 
@@ -60,7 +60,7 @@ public final class MySQLCommandExecutorFactoryTest {
         SchemaContext schemaContext = mock(SchemaContext.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        SQLParserEngine sqlParserEngine = mock(SQLParserEngine.class);
+        ShardingSphereSQLParserEngine sqlParserEngine = mock(ShardingSphereSQLParserEngine.class);
         when(sqlParserEngine.parse(anyString(), anyBoolean())).thenReturn(mock(SQLStatement.class));
         when(runtimeContext.getSqlParserEngine()).thenReturn(sqlParserEngine);
         when(schema.getRules()).thenReturn(Collections.emptyList());
