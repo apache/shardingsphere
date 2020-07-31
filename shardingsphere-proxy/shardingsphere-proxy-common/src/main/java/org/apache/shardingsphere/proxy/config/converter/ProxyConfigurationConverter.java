@@ -32,10 +32,10 @@ public interface ProxyConfigurationConverter extends AutoCloseable {
     /**
      * Convert proxy configuration.
      *
-     * @param yamlProxyConfiguration YAML proxy configuration
+     * @param yamlConfig YAML proxy configuration
      * @return proxy configuration
      */
-    ProxyConfiguration convert(YamlProxyConfiguration yamlProxyConfiguration);
+    ProxyConfiguration convert(YamlProxyConfiguration yamlConfig);
     
     /**
      * Build contexts aware.

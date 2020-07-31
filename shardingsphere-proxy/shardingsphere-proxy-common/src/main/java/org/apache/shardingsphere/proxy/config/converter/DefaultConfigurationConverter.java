@@ -42,13 +42,13 @@ import java.util.Properties;
 public final class DefaultConfigurationConverter extends AbstractConfigurationConverter {
     
     @Override
-    public ProxyConfiguration convert(final YamlProxyConfiguration yamlProxyConfiguration) {
-        Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(yamlProxyConfiguration.getRuleConfigurations());
-        Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(yamlProxyConfiguration.getRuleConfigurations());
-        Authentication authentication = new AuthenticationYamlSwapper().swapToObject(yamlProxyConfiguration.getServerConfiguration().getAuthentication());
-        ClusterConfiguration clusterConfig = getClusterConfiguration(yamlProxyConfiguration.getServerConfiguration().getCluster());
-        MetricsConfiguration metricsConfig = getMetricsConfiguration(yamlProxyConfiguration.getServerConfiguration().getMetrics());
-        Properties props = yamlProxyConfiguration.getServerConfiguration().getProps();
+    public ProxyConfiguration convert(final YamlProxyConfiguration yamlConfig) {
+        Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(yamlConfig.getRuleConfigurations());
+        Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(yamlConfig.getRuleConfigurations());
+        Authentication authentication = new AuthenticationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getAuthentication());
+        ClusterConfiguration clusterConfig = getClusterConfiguration(yamlConfig.getServerConfiguration().getCluster());
+        MetricsConfiguration metricsConfig = getMetricsConfiguration(yamlConfig.getServerConfiguration().getMetrics());
+        Properties props = yamlConfig.getServerConfiguration().getProps();
         return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, clusterConfig, metricsConfig, props);
     }
     
