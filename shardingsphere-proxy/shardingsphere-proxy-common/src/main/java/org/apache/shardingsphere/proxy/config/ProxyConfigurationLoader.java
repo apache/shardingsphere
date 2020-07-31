@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.config;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameterMerger;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
@@ -36,6 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Proxy configuration loader.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyConfigurationLoader {
     
     private static final String DEFAULT_DATASOURCE_NAME = "dataSource";
@@ -51,7 +54,7 @@ public final class ProxyConfigurationLoader {
      * @return configuration of ShardingSphere-Proxy
      * @throws IOException IO exception
      */
-    public YamlProxyConfiguration load(final String path) throws IOException {
+    public static YamlProxyConfiguration load(final String path) throws IOException {
         Collection<String> schemaNames = new HashSet<>();
         YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(path + "/" + SERVER_CONFIG_FILE));
         File configPath = getResourceFile(path);
@@ -60,7 +63,7 @@ public final class ProxyConfigurationLoader {
         return new YamlProxyConfiguration(serverConfig, ruleConfigurations.stream().collect(Collectors.toMap(YamlProxyRuleConfiguration::getSchemaName, each -> each)));
     }
     
-    private File getResourceFile(final String path) {
+    private static File getResourceFile(final String path) {
         URL url = ProxyConfigurationLoader.class.getResource(path);
         if (null != url) {
             return new File(url.getFile());
@@ -68,14 +71,14 @@ public final class ProxyConfigurationLoader {
         return new File(path);
     }
     
-    private YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
+    private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
         Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
         Preconditions.checkState(null != result.getAuthentication() || null != result.getOrchestration(), "Authority configuration is invalid.");
         return result;
     }
     
-    private Collection<YamlProxyRuleConfiguration> loadRuleConfigurations(final Collection<String> schemaNames, final File configPath) throws IOException {
+    private static Collection<YamlProxyRuleConfiguration> loadRuleConfigurations(final Collection<String> schemaNames, final File configPath) throws IOException {
         Collection<YamlProxyRuleConfiguration> result = new LinkedList<>();
         for (File each : findRuleConfigurationFiles(configPath)) {
             loadRuleConfiguration(each).ifPresent(yamlProxyRuleConfig -> {
@@ -86,7 +89,7 @@ public final class ProxyConfigurationLoader {
         return result;
     }
     
-    private Optional<YamlProxyRuleConfiguration> loadRuleConfiguration(final File yamlFile) throws IOException {
+    private static Optional<YamlProxyRuleConfiguration> loadRuleConfiguration(final File yamlFile) throws IOException {
         YamlProxyRuleConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyRuleConfiguration.class);
         if (null == result) {
             return Optional.empty();
@@ -101,7 +104,7 @@ public final class ProxyConfigurationLoader {
         return Optional.of(result);
     }
     
-    private File[] findRuleConfigurationFiles(final File path) {
+    private static File[] findRuleConfigurationFiles(final File path) {
         return path.listFiles(pathname -> RULE_CONFIG_FILE_PATTERN.matcher(pathname.getName()).matches());
     }
 }

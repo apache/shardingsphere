@@ -39,12 +39,13 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
+import org.apache.shardingsphere.proxy.arg.BootstrapArguments;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCRawBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
+import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.converter.ProxyConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.converter.ProxyConfigurationConverterFactory;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
@@ -71,8 +72,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class Bootstrap {
     
-    private static final String DEFAULT_CONFIG_PATH = "/conf/";
-    
     /**
      * Main entrance.
      *
@@ -80,35 +79,26 @@ public final class Bootstrap {
      * @throws Exception exception
      */
     public static void main(final String[] args) throws Exception {
-        int port = getPort(args);
+        BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
+        int port = bootstrapArgs.getPort();
         System.setProperty(Constants.PORT_KEY, String.valueOf(port));
-        YamlProxyConfiguration yamlConfig = new ProxyConfigurationLoader().load(getConfigurationPath(args));
-        logRuleConfigurationMap(getRuleConfigurations(yamlConfig.getRuleConfigurations()).values());
-        boolean isOrchestration = null != yamlConfig.getServerConfiguration().getOrchestration();
-        try (ProxyConfigurationConverter converter = ProxyConfigurationConverterFactory.newInstances(isOrchestration)) {
+        YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
+        logRuleConfigurations(getRuleConfigurations(yamlConfig.getRuleConfigurations()).values());
+        try (ProxyConfigurationConverter converter = ProxyConfigurationConverterFactory.newInstances(null != yamlConfig.getServerConfiguration().getOrchestration())) {
             ProxyConfiguration proxyConfiguration = converter.convert(yamlConfig);
             initialize(proxyConfiguration, port, converter);
         }
     }
     
-    private static int getPort(final String[] args) {
-        if (0 == args.length) {
-            return Constants.DEFAULT_PORT;
-        }
-        try {
-            return Integer.parseInt(args[0]);
-        } catch (final NumberFormatException ex) {
-            throw new IllegalArgumentException(String.format("Invalid port `%s`.", args[0]));
+    private static void logRuleConfigurations(final Collection<Collection<RuleConfiguration>> ruleConfigurations) {
+        if (CollectionUtils.isNotEmpty(ruleConfigurations)) {
+            ruleConfigurations.forEach(ConfigurationLogger::log);
         }
     }
     
-    private static String getConfigurationPath(final String[] args) {
-        return args.length < 2 ? DEFAULT_CONFIG_PATH : paddingWithSlash(args[1]);
-    }
-    
-    private static String paddingWithSlash(final String arg) {
-        String path = arg.endsWith("/") ? arg : (arg + "/");
-        return path.startsWith("/") ? path : ("/" + path);
+    private static Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
+        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
+        return localRuleConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
     }
     
     private static void initialize(final ProxyConfiguration proxyConfiguration, final int port, final ProxyConfigurationConverter converter) throws SQLException {
@@ -120,43 +110,15 @@ public final class Bootstrap {
         updateServerInfo();
         ShardingSphereProxy.getInstance().start(port);
     }
-
-    private static void updateServerInfo() {
-        List<String> schemaNames = ProxySchemaContexts.getInstance().getSchemaNames();
-        if (CollectionUtils.isEmpty(schemaNames)) {
-            return;
-        }
-        Map<String, DataSource> dataSources = Objects.requireNonNull(ProxySchemaContexts.getInstance().getSchema(schemaNames.get(0))).getSchema().getDataSources();
-        DataSource singleDataSource = dataSources.values().iterator().next();
-        try (Connection connection = singleDataSource.getConnection()) {
-            DatabaseMetaData databaseMetaData = connection.getMetaData();
-            String databaseName = databaseMetaData.getDatabaseProductName();
-            String databaseVersion = databaseMetaData.getDatabaseProductVersion();
-            log.info("database name {} , database version {}", databaseName, databaseVersion);
-            MySQLServerInfo.setServerVersion(databaseVersion);
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException("Get database server info failed", ex);
-        }
-    }
-    
-    private static void initControlPanelFacade(final MetricsConfiguration metricsConfiguration, final ClusterConfiguration clusterConfiguration) {
-        List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
-        if (null != metricsConfiguration && metricsConfiguration.getEnable()) {
-            facadeConfigurations.add(metricsConfiguration);
-        }
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
-            facadeConfigurations.add(new OpenTracingConfiguration());
-        }
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
-            facadeConfigurations.add(clusterConfiguration);
-        }
-        new ControlPanelFacadeEngine().init(facadeConfigurations);
+    private static void log(final Authentication authentication, final Properties properties) {
+        ConfigurationLogger.log(authentication);
+        ConfigurationLogger.log(properties);
     }
     
     private static void initProxySchemaContexts(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, Collection<RuleConfiguration>> schemaRules,
                                                 final Authentication authentication, final Properties properties, final ProxyConfigurationConverter converter) throws SQLException {
         // TODO Consider loading from configuration.
-        DatabaseType databaseType = schemaDataSources.isEmpty() ? new MySQLDatabaseType() 
+        DatabaseType databaseType = schemaDataSources.isEmpty() ? new MySQLDatabaseType()
                 : DatabaseTypes.getActualDatabaseType(
                 JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType());
         SchemaContextsBuilder schemaContextsBuilder =
@@ -182,24 +144,35 @@ public final class Bootstrap {
         return result;
     }
     
-    private static void log(final Authentication authentication, final Properties properties) {
-        ConfigurationLogger.log(authentication);
-        ConfigurationLogger.log(properties);
+    private static void initControlPanelFacade(final MetricsConfiguration metricsConfiguration, final ClusterConfiguration clusterConfiguration) {
+        List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
+        if (null != metricsConfiguration && metricsConfiguration.getEnable()) {
+            facadeConfigurations.add(metricsConfiguration);
+        }
+        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
+            facadeConfigurations.add(new OpenTracingConfiguration());
+        }
+        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
+            facadeConfigurations.add(clusterConfiguration);
+        }
+        new ControlPanelFacadeEngine().init(facadeConfigurations);
     }
     
-    private static Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
-        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
-        return localRuleConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
-    }
-    
-    /**
-     * Log rule configurations.
-     *
-     * @param ruleConfigurations log rule configurations
-     */
-    private static void logRuleConfigurationMap(final Collection<Collection<RuleConfiguration>> ruleConfigurations) {
-        if (CollectionUtils.isNotEmpty(ruleConfigurations)) {
-            ruleConfigurations.forEach(ConfigurationLogger::log);
+    private static void updateServerInfo() {
+        List<String> schemaNames = ProxySchemaContexts.getInstance().getSchemaNames();
+        if (CollectionUtils.isEmpty(schemaNames)) {
+            return;
+        }
+        Map<String, DataSource> dataSources = Objects.requireNonNull(ProxySchemaContexts.getInstance().getSchema(schemaNames.get(0))).getSchema().getDataSources();
+        DataSource singleDataSource = dataSources.values().iterator().next();
+        try (Connection connection = singleDataSource.getConnection()) {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            String databaseName = databaseMetaData.getDatabaseProductName();
+            String databaseVersion = databaseMetaData.getDatabaseProductVersion();
+            log.info("database name {} , database version {}", databaseName, databaseVersion);
+            MySQLServerInfo.setServerVersion(databaseVersion);
+        } catch (final SQLException ex) {
+            throw new ShardingSphereException("Get database server info failed", ex);
         }
     }
 }
