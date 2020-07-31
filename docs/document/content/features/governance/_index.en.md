@@ -27,9 +27,9 @@ Finally, for the requirements of manageability and observability, we need to imp
 
 For the governance function, the goals are as follows:
 
-- Realize the configuration center: support Zookeeper/Etcd/Apollo/Nacos, manage the configuration of data sources, rules and policies.
-- Realize the registration center: support Zookeeper/Etcd, manage the status of each Proxy example.
-- Implement metadata center: support Zookeeper/Etcd, manage metadata of LogicSchema.
+- Realize the configuration center: support Zookeeper/etcd/Apollo/Nacos, manage the configuration of data sources, rules and policies.
+- Realize the registration center: support Zookeeper/etcd, manage the status of each Proxy example.
+- Implement metadata center: support Zookeeper/etcd, manage metadata of LogicSchema.
 
 For the cluster management function, the goals are as follows:
 
