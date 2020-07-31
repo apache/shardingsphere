@@ -35,7 +35,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
@@ -48,7 +47,6 @@ import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.converter.ProxyConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.converter.ProxyConfigurationConverterFactory;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
 
 import javax.sql.DataSource;
@@ -83,36 +81,29 @@ public final class Bootstrap {
         int port = bootstrapArgs.getPort();
         System.setProperty(Constants.PORT_KEY, String.valueOf(port));
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        logRuleConfigurations(getRuleConfigurations(yamlConfig.getRuleConfigurations()).values());
         try (ProxyConfigurationConverter converter = ProxyConfigurationConverterFactory.newInstances(null != yamlConfig.getServerConfiguration().getOrchestration())) {
             ProxyConfiguration proxyConfiguration = converter.convert(yamlConfig);
+            log(proxyConfiguration);
             initialize(proxyConfiguration, port, converter);
         }
     }
     
-    private static void logRuleConfigurations(final Collection<Collection<RuleConfiguration>> ruleConfigurations) {
+    private static void log(final ProxyConfiguration proxyConfiguration) {
+        Collection<Collection<RuleConfiguration>> ruleConfigurations = proxyConfiguration.getSchemaRules().values();
         if (CollectionUtils.isNotEmpty(ruleConfigurations)) {
             ruleConfigurations.forEach(ConfigurationLogger::log);
         }
-    }
-    
-    private static Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
-        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
-        return localRuleConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
+        ConfigurationLogger.log(proxyConfiguration.getAuthentication());
+        ConfigurationLogger.log(proxyConfiguration.getProps());
     }
     
     private static void initialize(final ProxyConfiguration proxyConfiguration, final int port, final ProxyConfigurationConverter converter) throws SQLException {
         Authentication authentication = proxyConfiguration.getAuthentication();
         Properties props = proxyConfiguration.getProps();
-        log(authentication, props);
         initProxySchemaContexts(proxyConfiguration.getSchemaDataSources(), proxyConfiguration.getSchemaRules(), authentication, props, converter);
         initControlPanelFacade(proxyConfiguration.getMetrics(), proxyConfiguration.getCluster());
         updateServerInfo();
         ShardingSphereProxy.getInstance().start(port);
-    }
-    private static void log(final Authentication authentication, final Properties properties) {
-        ConfigurationLogger.log(authentication);
-        ConfigurationLogger.log(properties);
     }
     
     private static void initProxySchemaContexts(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, Collection<RuleConfiguration>> schemaRules,
