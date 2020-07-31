@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.constant;
 /**
  * ShardingSphere of constants.
  */
+@Deprecated
+// TODO remove the class, ref #6546
 public final class Constants {
     
     /**
