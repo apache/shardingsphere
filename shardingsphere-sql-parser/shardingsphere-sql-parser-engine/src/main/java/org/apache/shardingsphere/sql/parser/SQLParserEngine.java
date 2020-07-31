@@ -32,7 +32,7 @@ import java.util.Optional;
  * SQL parser engine.
  */
 @RequiredArgsConstructor
-public final class SQLParserEngine {
+public final class SQLParserEngine implements QuerySQLParserEngine {
     
     private final String databaseTypeName;
     
@@ -47,13 +47,7 @@ public final class SQLParserEngine {
      *
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      */
-    /**
-     * Parse SQL.
-     *
-     * @param sql SQL
-     * @param useCache use cache or not
-     * @return SQL statement
-     */
+    @Override
     public SQLStatement parse(final String sql, final boolean useCache) {
         parsingHookRegistry.start(sql);
         try {
