@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,4 +40,10 @@ public final class ExpectedConstraintDefinition extends AbstractExpectedSQLSegme
     
     @XmlElement(name = "primary-key-column")
     private List<ExpectedColumn> primaryKeyColumns = new LinkedList<>();
+    
+    @XmlElement(name = "index-column")
+    private List<ExpectedColumn> indexColumns = new LinkedList<>();
+    
+    @XmlAttribute(name = "index-name")
+    private String indexName;
 }

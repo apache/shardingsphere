@@ -538,7 +538,9 @@
     
     <alter-table sql-case-id="alter_table_add_unique_key">
         <table name="t_order" start-index="12" stop-index="18" />
-        <add-constraint start-index="24" stop-index="63"/>
+        <add-constraint start-index="24" stop-index="63" >
+            <index-column name="order_id" start-index="55" stop-index="62"/>
+        </add-constraint>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_foreign_key">
@@ -553,7 +555,9 @@
         <add-constraint start-index="29" stop-index="50">
             <primary-key-column name="order_id" start-index="42" stop-index="49" />
         </add-constraint>
-        <add-constraint start-index="56" stop-index="72"/>
+        <add-constraint start-index="56" stop-index="72" >
+            <index-column name="order_id" start-index="64" stop-index="71"/>
+        </add-constraint>
         <add-constraint start-index="79" stop-index="166">
             <referenced-table name="t_order" start-index="113" stop-index="119" />
         </add-constraint>
@@ -630,7 +634,7 @@
     
     <alter-table sql-case-id="alter_table_add_check">
         <table name="t_order" start-index="12" stop-index="18" />
-        <add-constraint start-index="24" stop-index="67"/>
+        <add-constraint index-name="chk_order_id" start-index="24" stop-index="67"/>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_columns_oracle">

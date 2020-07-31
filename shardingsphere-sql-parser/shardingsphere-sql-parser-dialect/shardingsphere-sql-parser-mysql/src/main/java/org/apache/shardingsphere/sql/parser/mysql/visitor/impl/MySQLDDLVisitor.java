@@ -21,9 +21,6 @@ import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConstraintDefinitionOptionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyPart_Context;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyParts_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterSpecificationContext;
@@ -48,6 +45,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropVie
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FirstOrAfterColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ForeignKeyOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GeneratedOptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexDefinition_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyPart_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyParts_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReferenceDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameColumnSpecificationContext;
@@ -67,6 +67,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.Colu
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.DropPrimaryKeySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
@@ -82,6 +83,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -124,13 +126,16 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
         CreateTableStatement result = new CreateTableStatement((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
+            LinkedList<IndexSegment> indexs = new LinkedList<>();
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
                 if (each instanceof ColumnDefinitionSegment) {
                     result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
                 } else if (each instanceof ConstraintDefinitionSegment) {
                     result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    indexs.add(((ConstraintDefinitionSegment) each).getIndexName());
                 }
             }
+            indexs.stream().filter(index -> null != index).map(e -> result.getIndexes().add(e));
         }
         return result;
     }
@@ -148,6 +153,20 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
             if (null != each.checkConstraintDefinition()) {
                 result.getValue().add((ConstraintDefinitionSegment) visit(each.checkConstraintDefinition()));
             }
+            if (null != each.indexDefinition_()) {
+                result.getValue().add((ConstraintDefinitionSegment) visit(each.indexDefinition_()));
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitIndexDefinition_(final IndexDefinition_Context ctx) {
+        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(ctx.keyParts_());
+        result.getIndexColumns().addAll(columnSegments.getValue());
+        if (null != ctx.indexName()) {
+            result.setIndexName((IndexSegment) visit(ctx.indexName()));
         }
         return result;
     }
@@ -270,15 +289,18 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitConstraintDefinition(final ConstraintDefinitionContext ctx) {
         ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        for (ConstraintDefinitionOptionContext each : ctx.constraintDefinitionOption()) {
-            if (null != each.primaryKeyOption()) {
-                result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(each.primaryKeyOption().keyParts_())).getValue());
-            }
-            if (null != each.foreignKeyOption()) {
-                result.setReferencedTable((SimpleTableSegment) visit(each.foreignKeyOption().referenceDefinition()));
-            }
-            if (null != each.uniqueOption_()) {
-                result.getUnionKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(each.uniqueOption_())).getValue());
+        if (null != ctx.primaryKeyOption()) {
+            result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.primaryKeyOption().keyParts_())).getValue());
+        }
+        if (null != ctx.foreignKeyOption()) {
+            result.setReferencedTable((SimpleTableSegment) visit(ctx.foreignKeyOption()));
+        }
+        if (null != ctx.uniqueOption_()) {
+            CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(ctx.uniqueOption_().keyParts_());
+            result.getIndexColumns().addAll(columnSegments.getValue());
+            if (null != ctx.uniqueOption_().indexName()) {
+                result.setIndexName(new IndexSegment(ctx.uniqueOption_().indexName().start.getStartIndex(), ctx.uniqueOption_().indexName().stop.getStopIndex(),
+                        (IdentifierValue) visit(ctx.uniqueOption_().indexName())));
             }
         }
         return result;
