@@ -26,10 +26,11 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.OrchestrationConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.converter.AbstractConfigurationConverter;
@@ -57,30 +58,19 @@ public final class OrchestrationConfigurationConverter extends AbstractConfigura
     public ProxyConfiguration convert(final YamlProxyConfiguration yamlProxyConfiguration) {
         YamlOrchestrationConfiguration orchestrationConfig = yamlProxyConfiguration.getServerConfiguration().getOrchestration();
         Set<String> schemaNames = yamlProxyConfiguration.getRuleConfigurations().keySet();
-        ProxyConfiguration result = new ProxyConfiguration();
         orchestrationFacade.init(new OrchestrationConfigurationYamlSwapper().swapToObject(orchestrationConfig), schemaNames);
         initOrchestrationConfigurations(yamlProxyConfiguration.getServerConfiguration(), yamlProxyConfiguration.getRuleConfigurations(), orchestrationFacade);
-        Authentication authentication = orchestrationFacade.getConfigCenter().loadAuthentication();
-        Properties properties = orchestrationFacade.getConfigCenter().loadProperties();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(orchestrationFacade);
         Map<String, Collection<RuleConfiguration>> schemaRules = getSchemaRules(orchestrationFacade);
-        ClusterConfiguration clusterConfiguration = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
-        result.setAuthentication(authentication);
-        result.setProps(properties);
-        result.setSchemaDataSources(schemaDataSources);
-        result.setSchemaRules(schemaRules);
-        result.setCluster(clusterConfiguration);
-        result.setMetrics(getMetricsConfiguration(yamlProxyConfiguration.getServerConfiguration().getMetrics()));
-        return result;
+        Authentication authentication = orchestrationFacade.getConfigCenter().loadAuthentication();
+        ClusterConfiguration clusterConfig = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
+        MetricsConfiguration metricsConfig = getMetricsConfiguration(yamlProxyConfiguration.getServerConfiguration().getMetrics());
+        Properties props = orchestrationFacade.getConfigCenter().loadProperties();
+        return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, clusterConfig, metricsConfig, props);
     }
     
-    @Override
-    public SchemaContextsAware contextsAware(final SchemaContextsBuilder builder) throws SQLException {
-        return new ProxyOrchestrationSchemaContexts(builder.build());
-    }
-    
-    private void initOrchestrationConfigurations(
-            final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final OrchestrationFacade orchestrationFacade) {
+    private void initOrchestrationConfigurations(final YamlProxyServerConfiguration serverConfig, 
+                                                 final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final OrchestrationFacade orchestrationFacade) {
         if (isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
             orchestrationFacade.onlineInstance();
         } else {
@@ -117,6 +107,11 @@ public final class OrchestrationConfigurationConverter extends AbstractConfigura
             result.put(each, orchestrationFacade.getConfigCenter().loadRuleConfigurations(each));
         }
         return result;
+    }
+    
+    @Override
+    public SchemaContextsAware contextsAware(final SchemaContextsBuilder builder) throws SQLException {
+        return new ProxyOrchestrationSchemaContexts(builder.build());
     }
     
     @Override

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 
@@ -33,6 +34,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Default configuration converter.
@@ -41,17 +43,13 @@ public final class DefaultConfigurationConverter extends AbstractConfigurationCo
     
     @Override
     public ProxyConfiguration convert(final YamlProxyConfiguration yamlProxyConfiguration) {
-        ProxyConfiguration result = new ProxyConfiguration();
-        Authentication authentication = new AuthenticationYamlSwapper().swapToObject(yamlProxyConfiguration.getServerConfiguration().getAuthentication());
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(yamlProxyConfiguration.getRuleConfigurations());
         Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(yamlProxyConfiguration.getRuleConfigurations());
-        result.setAuthentication(authentication);
-        result.setProps(yamlProxyConfiguration.getServerConfiguration().getProps());
-        result.setSchemaDataSources(schemaDataSources);
-        result.setSchemaRules(schemaRules);
-        result.setCluster(getClusterConfiguration(yamlProxyConfiguration.getServerConfiguration().getCluster()));
-        result.setMetrics(getMetricsConfiguration(yamlProxyConfiguration.getServerConfiguration().getMetrics()));
-        return result;
+        Authentication authentication = new AuthenticationYamlSwapper().swapToObject(yamlProxyConfiguration.getServerConfiguration().getAuthentication());
+        ClusterConfiguration clusterConfig = getClusterConfiguration(yamlProxyConfiguration.getServerConfiguration().getCluster());
+        MetricsConfiguration metricsConfig = getMetricsConfiguration(yamlProxyConfiguration.getServerConfiguration().getMetrics());
+        Properties props = yamlProxyConfiguration.getServerConfiguration().getProps();
+        return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, clusterConfig, metricsConfig, props);
     }
     
     @Override
