@@ -83,36 +83,37 @@ public final class Bootstrap {
         int port = bootstrapArgs.getPort();
         System.setProperty(Constants.PORT_KEY, String.valueOf(port));
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        logRuleConfigurations(getRuleConfigurations(yamlConfig.getRuleConfigurations()).values());
         try (ProxyConfigurationConverter converter = ProxyConfigurationConverterFactory.newInstances(null != yamlConfig.getServerConfiguration().getOrchestration())) {
             ProxyConfiguration proxyConfiguration = converter.convert(yamlConfig);
+            log(getRuleConfigurations(yamlConfig.getRuleConfigurations()).values());
+            log(proxyConfiguration.getAuthentication(), proxyConfiguration.getProps());
             initialize(proxyConfiguration, port, converter);
         }
     }
     
-    private static void logRuleConfigurations(final Collection<Collection<RuleConfiguration>> ruleConfigurations) {
+    private static void log(final Collection<Collection<RuleConfiguration>> ruleConfigurations) {
         if (CollectionUtils.isNotEmpty(ruleConfigurations)) {
             ruleConfigurations.forEach(ConfigurationLogger::log);
         }
     }
     
-    private static Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
+    private static void log(final Authentication authentication, final Properties properties) {
+        ConfigurationLogger.log(authentication);
+        ConfigurationLogger.log(properties);
+    }
+    
+    private static Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> yamlRuleConfigurations) {
         YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
-        return localRuleConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
+        return yamlRuleConfigurations.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
     }
     
     private static void initialize(final ProxyConfiguration proxyConfiguration, final int port, final ProxyConfigurationConverter converter) throws SQLException {
         Authentication authentication = proxyConfiguration.getAuthentication();
         Properties props = proxyConfiguration.getProps();
-        log(authentication, props);
         initProxySchemaContexts(proxyConfiguration.getSchemaDataSources(), proxyConfiguration.getSchemaRules(), authentication, props, converter);
         initControlPanelFacade(proxyConfiguration.getMetrics(), proxyConfiguration.getCluster());
         updateServerInfo();
         ShardingSphereProxy.getInstance().start(port);
-    }
-    private static void log(final Authentication authentication, final Properties properties) {
-        ConfigurationLogger.log(authentication);
-        ConfigurationLogger.log(properties);
     }
     
     private static void initProxySchemaContexts(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, Collection<RuleConfiguration>> schemaRules,
