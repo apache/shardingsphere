@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.admin.BroadcastBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.ShowDatabasesBackendHandler;
@@ -30,8 +31,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLBackendHandl
 import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.proxy.backend.text.transaction.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
@@ -66,7 +66,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (trimSQL.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
             return ShardingCTLBackendHandlerFactory.newInstance(trimSQL, backendConnection);
         }
-        SQLStatement sqlStatement = new SQLParserEngine(databaseType.getName()).parse(sql, false);
+        SQLStatement sqlStatement = SQLParserEngineFactory.getSQLParserEngine(databaseType.getName()).parse(sql, false);
         if (sqlStatement instanceof TCLStatement) {
             return createTCLBackendHandler(sql, (TCLStatement) sqlStatement, backendConnection);
         }

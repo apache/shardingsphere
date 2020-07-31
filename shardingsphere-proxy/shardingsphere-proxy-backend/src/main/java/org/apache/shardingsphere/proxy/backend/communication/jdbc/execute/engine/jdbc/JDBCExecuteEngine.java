@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.jdbc;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLE
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.callback.ProxySQLExecutorCallback;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.proxy.backend.executor.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;

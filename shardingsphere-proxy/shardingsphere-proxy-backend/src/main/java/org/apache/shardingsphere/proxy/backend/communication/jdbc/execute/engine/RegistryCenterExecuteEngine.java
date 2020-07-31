@@ -15,28 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.callback.orchestration.DataSourceCallback;
 import org.apache.shardingsphere.infra.callback.orchestration.RuleCallback;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
-import org.apache.shardingsphere.proxy.convert.CreateDataSourcesStatementContextConverter;
-import org.apache.shardingsphere.sharding.convert.CreateShardingRuleStatementContextConverter;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.config.util.DataSourceConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.proxy.convert.CreateDataSourcesStatementContextConverter;
 import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStatementContext;
 import org.apache.shardingsphere.rdl.parser.binder.context.CreateShardingRuleStatementContext;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.sharding.convert.CreateShardingRuleStatementContextConverter;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -57,11 +61,18 @@ public class RegistryCenterExecuteEngine implements SQLExecuteEngine {
     
     @Override
     public final ExecutionContext execute(final String sql) {
-        return new ExecutionContext(new CommonSQLStatementContext(sqlStatement), new LinkedList<>());
+        DatabaseType databaseType = ProxySchemaContexts.getInstance().getSchemaContexts().getSchemaContexts().get(schemaName).getSchema().getDatabaseType();
+        SQLStatementContext context = sqlStatement instanceof CreateDataSourcesStatement
+                ? new CreateDataSourcesStatementContext((CreateDataSourcesStatement) sqlStatement, databaseType)
+                : new CreateShardingRuleStatementContext((CreateShardingRuleStatement) sqlStatement);
+        return new ExecutionContext(context, new LinkedList<>());
     }
     
     @Override
     public final BackendResponse execute(final ExecutionContext executionContext) {
+        if (!isRegistryCenterExisted()) {
+            return new ErrorResponse(new SQLException("No Registry center to execute `%s` SQL", executionContext.getSqlStatementContext().getClass().getSimpleName()));
+        }
         if (executionContext.getSqlStatementContext() instanceof CreateDataSourcesStatementContext) {
             return execute((CreateDataSourcesStatementContext) executionContext.getSqlStatementContext());
         }
@@ -69,9 +80,6 @@ public class RegistryCenterExecuteEngine implements SQLExecuteEngine {
     }
     
     private BackendResponse execute(final CreateDataSourcesStatementContext context) {
-        if (!isRegistryCenterExisted()) {
-            return new ErrorResponse(new SQLException("No Registry center to execute `%s` SQL", context.getClass().getSimpleName()));
-        }
         Map<String, YamlDataSourceParameter> parameters = new CreateDataSourcesStatementContextConverter().convert(context);
         Map<String, DataSourceConfiguration> dataSources = DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(parameters));
         // TODO Need to get the executed feedback from registry center for returning.
@@ -82,9 +90,6 @@ public class RegistryCenterExecuteEngine implements SQLExecuteEngine {
     }
     
     private BackendResponse execute(final CreateShardingRuleStatementContext context) {
-        if (!isRegistryCenterExisted()) {
-            return new ErrorResponse(new SQLException("No Registry center to execute `%s` SQL", context.getClass().getSimpleName()));
-        }
         YamlShardingRuleConfiguration configurations = new CreateShardingRuleStatementContextConverter().convert(context);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(configurations));
         // TODO Need to get the executed feedback from registry center for returning.
