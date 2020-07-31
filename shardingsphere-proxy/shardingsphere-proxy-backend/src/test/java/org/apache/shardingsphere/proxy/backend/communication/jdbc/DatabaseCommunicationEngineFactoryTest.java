@@ -23,7 +23,7 @@ import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +47,7 @@ public final class DatabaseCommunicationEngineFactoryTest {
         schemaContext = mock(SchemaContext.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        SQLParserEngine sqlParserEngine = mock(SQLParserEngine.class);
+        ShardingSphereSQLParserEngine sqlParserEngine = mock(ShardingSphereSQLParserEngine.class);
         when(sqlParserEngine.parse(anyString(), anyBoolean())).thenReturn(mock(SQLStatement.class));
         when(runtimeContext.getSqlParserEngine()).thenReturn(sqlParserEngine);
         when(schema.getRules()).thenReturn(Collections.emptyList());

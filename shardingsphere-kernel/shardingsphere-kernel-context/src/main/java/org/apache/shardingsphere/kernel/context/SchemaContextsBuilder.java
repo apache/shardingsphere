@@ -37,7 +37,7 @@ import org.apache.shardingsphere.kernel.context.runtime.CachedDatabaseMetaData;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngineFactory;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
 import javax.sql.DataSource;
@@ -110,7 +110,7 @@ public final class SchemaContextsBuilder {
     private SchemaContext createSchemaContext(final String schemaName) throws SQLException {
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
         RuntimeContext runtimeContext = new RuntimeContext(createCachedDatabaseMetaData(dataSources),
-                executorKernel, SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)), createShardingTransactionManagerEngine(dataSources));
+                executorKernel, ShardingSphereSQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)), createShardingTransactionManagerEngine(dataSources));
         return new SchemaContext(schemaName, createShardingSphereSchema(schemaName), runtimeContext);
     }
     
