@@ -20,7 +20,7 @@ package org.apache.shardingsphere.kernel.context.runtime;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.sql.parser.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
 /**

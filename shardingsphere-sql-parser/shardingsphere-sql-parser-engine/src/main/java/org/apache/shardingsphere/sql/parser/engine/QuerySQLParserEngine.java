@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser;
+package org.apache.shardingsphere.sql.parser.engine;
 
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 

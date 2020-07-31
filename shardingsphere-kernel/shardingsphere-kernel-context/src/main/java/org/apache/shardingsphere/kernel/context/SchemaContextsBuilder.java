@@ -37,7 +37,7 @@ import org.apache.shardingsphere.kernel.context.runtime.CachedDatabaseMetaData;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
 import javax.sql.DataSource;
