@@ -27,7 +27,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +57,7 @@ public class MySQLComStmtExecuteExecutorTest {
         BackendConnection backendConnection = mock(BackendConnection.class);
         SchemaContext schema = mock(SchemaContext.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        SQLParserEngine sqlParserEngine = mock(SQLParserEngine.class);
+        ShardingSphereSQLParserEngine sqlParserEngine = mock(ShardingSphereSQLParserEngine.class);
         when(runtimeContext.getSqlParserEngine()).thenReturn(sqlParserEngine);
         when(schema.getRuntimeContext()).thenReturn(runtimeContext);
         when(backendConnection.getSchema()).thenReturn(schema);
@@ -75,7 +75,7 @@ public class MySQLComStmtExecuteExecutorTest {
         BackendConnection backendConnection = mock(BackendConnection.class);
         SchemaContext schema = mock(SchemaContext.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        SQLParserEngine sqlParserEngine = mock(SQLParserEngine.class);
+        ShardingSphereSQLParserEngine sqlParserEngine = mock(ShardingSphereSQLParserEngine.class);
         when(runtimeContext.getSqlParserEngine()).thenReturn(sqlParserEngine);
         when(schema.getRuntimeContext()).thenReturn(runtimeContext);
         when(backendConnection.getSchema()).thenReturn(schema);
@@ -92,7 +92,7 @@ public class MySQLComStmtExecuteExecutorTest {
         BackendConnection backendConnection = mock(BackendConnection.class);
         SchemaContext schema = mock(SchemaContext.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        SQLParserEngine sqlParserEngine = mock(SQLParserEngine.class);
+        ShardingSphereSQLParserEngine sqlParserEngine = mock(ShardingSphereSQLParserEngine.class);
         when(runtimeContext.getSqlParserEngine()).thenReturn(sqlParserEngine);
         when(schema.getRuntimeContext()).thenReturn(runtimeContext);
         when(backendConnection.getSchema()).thenReturn(schema);
