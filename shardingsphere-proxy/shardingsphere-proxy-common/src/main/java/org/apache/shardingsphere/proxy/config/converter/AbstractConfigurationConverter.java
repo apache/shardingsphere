@@ -36,33 +36,15 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractConfigurationConverter implements ProxyConfigurationConverter {
     
-    /**
-     * Get rule configurations.
-     *
-     * @param localRuleConfigs rule configs for YAML
-     * @return rule configurations
-     */
     protected Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
         YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
         return localRuleConfigs.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
     }
     
-    /**
-     * Get data source parameters map.
-     *
-     * @param localRuleConfigs rule configs for YAML
-     * @return data source parameters map
-     */
     protected Map<String, Map<String, DataSourceParameter>> getDataSourceParametersMap(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
         return localRuleConfigs.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> DataSourceConverter.getDataSourceParameterMap2(entry.getValue().getDataSources())));
     }
     
-    /**
-     * Get metrics configuration.
-     *
-     * @param yamlMetricsConfiguration metrics configuration for YAML
-     * @return metrics configuration
-     */
     protected MetricsConfiguration getMetricsConfiguration(final YamlMetricsConfiguration yamlMetricsConfiguration) {
         return Optional.ofNullable(yamlMetricsConfiguration).map(new MetricsConfigurationYamlSwapper()::swapToObject).orElse(null);
     }
