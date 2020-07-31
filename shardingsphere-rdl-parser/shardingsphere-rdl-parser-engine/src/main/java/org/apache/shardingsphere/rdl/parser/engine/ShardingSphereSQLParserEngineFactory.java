@@ -19,8 +19,8 @@ package org.apache.shardingsphere.rdl.parser.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
 
 /**
  * SQL parser engine factory.

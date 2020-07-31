@@ -23,7 +23,7 @@ import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.sql.parser.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.integrate.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.sql.SQLCaseType;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.sql.loader.SQLCasesLoader;
