@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Data source parameters for YAML.
+ * Data source parameters.
  */
 @Getter
 @Setter
