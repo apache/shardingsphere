@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.proxy.config.converter;
 
-import java.util.Optional;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.singleton.SingletonServiceLoader;
+
+import java.util.Optional;
 
 /**
  * Proxy configuration converter factory.
@@ -27,17 +28,13 @@ import org.apache.shardingsphere.infra.spi.singleton.SingletonServiceLoader;
 public final class ProxyConfigurationConverterFactory {
     
     /**
-     * New proxy configuration converter instances.
+     * Create new proxy configuration converter instances.
      *
-     * @param isOrchestration is orchestration
+     * @param enableOrchestration enable orchestration or not
      * @return proxy configuration converter
      */
-    public static ProxyConfigurationConverter newInstances(final boolean isOrchestration) {
-        if (isOrchestration) {
-            return loadConverter();
-        } else {
-            return new DefaultConfigurationConverter();
-        }
+    public static ProxyConfigurationConverter newInstances(final boolean enableOrchestration) {
+        return enableOrchestration ? loadConverter() : new DefaultConfigurationConverter();
     }
     
     private static ProxyConfigurationConverter loadConverter() {
