@@ -84,7 +84,7 @@ public final class Bootstrap {
         try (ProxyConfigurationConverter converter = ProxyConfigurationConverterFactory.newInstances(null != yamlConfig.getServerConfiguration().getOrchestration())) {
             ProxyConfiguration proxyConfiguration = converter.convert(yamlConfig);
             log(proxyConfiguration);
-            initialize(proxyConfiguration, port, converter);
+            init(proxyConfiguration, port, converter);
         }
     }
     
@@ -97,7 +97,7 @@ public final class Bootstrap {
         ConfigurationLogger.log(proxyConfiguration.getProps());
     }
     
-    private static void initialize(final ProxyConfiguration proxyConfiguration, final int port, final ProxyConfigurationConverter converter) throws SQLException {
+    private static void init(final ProxyConfiguration proxyConfiguration, final int port, final ProxyConfigurationConverter converter) throws SQLException {
         Authentication authentication = proxyConfiguration.getAuthentication();
         Properties props = proxyConfiguration.getProps();
         initProxySchemaContexts(proxyConfiguration.getSchemaDataSources(), proxyConfiguration.getSchemaRules(), authentication, props, converter);
