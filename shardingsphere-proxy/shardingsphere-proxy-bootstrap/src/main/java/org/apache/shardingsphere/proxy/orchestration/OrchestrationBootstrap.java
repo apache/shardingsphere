@@ -39,6 +39,7 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -80,7 +81,7 @@ public final class OrchestrationBootstrap {
     
     private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
         Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>();
-        for (Map.Entry<String, YamlProxyRuleConfiguration> entry : ruleConfigs.entrySet()) {
+        for (Entry<String, YamlProxyRuleConfiguration> entry : ruleConfigs.entrySet()) {
             result.put(entry.getKey(), DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(entry.getValue().getDataSources())));
         }
         return result;
