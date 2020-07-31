@@ -25,10 +25,8 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.Tabl
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.definition.ExpectedConstraintDefinition;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.hamcrest.core.IsNull;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
