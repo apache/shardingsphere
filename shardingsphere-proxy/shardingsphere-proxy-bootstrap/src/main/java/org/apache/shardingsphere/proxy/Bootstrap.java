@@ -84,35 +84,33 @@ public final class Bootstrap {
         int port = bootstrapArgs.getPort();
         System.setProperty(Constants.PORT_KEY, String.valueOf(port));
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        ProxyConfiguration proxyConfiguration;
-        if (null != yamlConfig.getServerConfiguration().getOrchestration()) {
-            OrchestrationBootstrap orchestrationBootstrap = new OrchestrationBootstrap();
-            orchestrationBootstrap.init(yamlConfig);
-            proxyConfiguration = orchestrationBootstrap.loadProxyConfiguration(yamlConfig);
+        if (null == yamlConfig.getServerConfiguration().getOrchestration()) {
+            ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
+            init(proxyConfig, port);
         } else {
-            proxyConfiguration = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        }
-        log(proxyConfiguration);
-        init(proxyConfiguration, port);
-        // TODO use try with resource
-        if (null != OrchestrationFacade.getInstance()) {
-            OrchestrationFacade.getInstance().close();
+            try (OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance()) {
+                OrchestrationBootstrap orchestrationBootstrap = new OrchestrationBootstrap(orchestrationFacade);
+                orchestrationBootstrap.init(yamlConfig);
+                ProxyConfiguration proxyConfig = orchestrationBootstrap.loadProxyConfiguration(yamlConfig);
+                init(proxyConfig, port);
+            }
         }
     }
     
-    private static void log(final ProxyConfiguration proxyConfiguration) {
-        proxyConfiguration.getSchemaRules().values().forEach(ConfigurationLogger::log);
-        ConfigurationLogger.log(proxyConfiguration.getAuthentication());
-        ConfigurationLogger.log(proxyConfiguration.getProps());
-    }
-    
-    private static void init(final ProxyConfiguration proxyConfiguration, final int port) throws SQLException {
-        Authentication authentication = proxyConfiguration.getAuthentication();
-        Properties props = proxyConfiguration.getProps();
-        initProxySchemaContexts(proxyConfiguration.getSchemaDataSources(), proxyConfiguration.getSchemaRules(), authentication, props);
-        initControlPanelFacade(proxyConfiguration.getMetrics(), proxyConfiguration.getCluster());
+    private static void init(final ProxyConfiguration proxyConfig, final int port) throws SQLException {
+        log(proxyConfig);
+        Authentication authentication = proxyConfig.getAuthentication();
+        Properties props = proxyConfig.getProps();
+        initProxySchemaContexts(proxyConfig.getSchemaDataSources(), proxyConfig.getSchemaRules(), authentication, props);
+        initControlPanelFacade(proxyConfig.getMetrics(), proxyConfig.getCluster());
         updateServerInfo();
         ShardingSphereProxy.getInstance().start(port);
+    }
+    
+    private static void log(final ProxyConfiguration proxyConfig) {
+        proxyConfig.getSchemaRules().values().forEach(ConfigurationLogger::log);
+        ConfigurationLogger.log(proxyConfig.getAuthentication());
+        ConfigurationLogger.log(proxyConfig.getProps());
     }
     
     private static void initProxySchemaContexts(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, Collection<RuleConfiguration>> schemaRules,
@@ -123,8 +121,7 @@ public final class Bootstrap {
                 JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType());
         SchemaContextsBuilder schemaContextsBuilder =
                 new SchemaContextsBuilder(createDataSourcesMap(schemaDataSources), schemaDataSources, authentication, databaseType, schemaRules, properties);
-        SchemaContextsAware schemaContexts = createSchemaContextsAware(schemaContextsBuilder);
-        ProxySchemaContexts.getInstance().init(schemaContexts);
+        ProxySchemaContexts.getInstance().init(createSchemaContextsAware(schemaContextsBuilder));
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {

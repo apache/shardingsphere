@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.orchestration;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -45,9 +46,10 @@ import java.util.stream.Collectors;
 /**
  * Orchestration bootstrap.
  */
+@RequiredArgsConstructor
 public final class OrchestrationBootstrap {
     
-    private final OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance();
+    private final OrchestrationFacade orchestrationFacade;
     
     /**
      * initialize orchestration facade.
