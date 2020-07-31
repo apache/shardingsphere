@@ -110,6 +110,17 @@ public final class Bootstrap {
         return path.startsWith("/") ? path : ("/" + path);
     }
     
+    private static void logRuleConfigurationMap(final Collection<Collection<RuleConfiguration>> ruleConfigurations) {
+        if (CollectionUtils.isNotEmpty(ruleConfigurations)) {
+            ruleConfigurations.forEach(ConfigurationLogger::log);
+        }
+    }
+    
+    private static Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
+        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
+        return localRuleConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
+    }
+    
     private static void initialize(final ProxyConfiguration proxyConfiguration, final int port, final ProxyConfigurationConverter converter) throws SQLException {
         Authentication authentication = proxyConfiguration.getAuthentication();
         Properties props = proxyConfiguration.getProps();
@@ -119,43 +130,15 @@ public final class Bootstrap {
         updateServerInfo();
         ShardingSphereProxy.getInstance().start(port);
     }
-
-    private static void updateServerInfo() {
-        List<String> schemaNames = ProxySchemaContexts.getInstance().getSchemaNames();
-        if (CollectionUtils.isEmpty(schemaNames)) {
-            return;
-        }
-        Map<String, DataSource> dataSources = Objects.requireNonNull(ProxySchemaContexts.getInstance().getSchema(schemaNames.get(0))).getSchema().getDataSources();
-        DataSource singleDataSource = dataSources.values().iterator().next();
-        try (Connection connection = singleDataSource.getConnection()) {
-            DatabaseMetaData databaseMetaData = connection.getMetaData();
-            String databaseName = databaseMetaData.getDatabaseProductName();
-            String databaseVersion = databaseMetaData.getDatabaseProductVersion();
-            log.info("database name {} , database version {}", databaseName, databaseVersion);
-            MySQLServerInfo.setServerVersion(databaseVersion);
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException("Get database server info failed", ex);
-        }
-    }
-    
-    private static void initControlPanelFacade(final MetricsConfiguration metricsConfiguration, final ClusterConfiguration clusterConfiguration) {
-        List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
-        if (null != metricsConfiguration && metricsConfiguration.getEnable()) {
-            facadeConfigurations.add(metricsConfiguration);
-        }
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
-            facadeConfigurations.add(new OpenTracingConfiguration());
-        }
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
-            facadeConfigurations.add(clusterConfiguration);
-        }
-        new ControlPanelFacadeEngine().init(facadeConfigurations);
+    private static void log(final Authentication authentication, final Properties properties) {
+        ConfigurationLogger.log(authentication);
+        ConfigurationLogger.log(properties);
     }
     
     private static void initProxySchemaContexts(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, Collection<RuleConfiguration>> schemaRules,
                                                 final Authentication authentication, final Properties properties, final ProxyConfigurationConverter converter) throws SQLException {
         // TODO Consider loading from configuration.
-        DatabaseType databaseType = schemaDataSources.isEmpty() ? new MySQLDatabaseType() 
+        DatabaseType databaseType = schemaDataSources.isEmpty() ? new MySQLDatabaseType()
                 : DatabaseTypes.getActualDatabaseType(
                 JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType());
         SchemaContextsBuilder schemaContextsBuilder =
@@ -181,24 +164,35 @@ public final class Bootstrap {
         return result;
     }
     
-    private static void log(final Authentication authentication, final Properties properties) {
-        ConfigurationLogger.log(authentication);
-        ConfigurationLogger.log(properties);
+    private static void initControlPanelFacade(final MetricsConfiguration metricsConfiguration, final ClusterConfiguration clusterConfiguration) {
+        List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
+        if (null != metricsConfiguration && metricsConfiguration.getEnable()) {
+            facadeConfigurations.add(metricsConfiguration);
+        }
+        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
+            facadeConfigurations.add(new OpenTracingConfiguration());
+        }
+        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
+            facadeConfigurations.add(clusterConfiguration);
+        }
+        new ControlPanelFacadeEngine().init(facadeConfigurations);
     }
     
-    private static Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
-        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
-        return localRuleConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
-    }
-    
-    /**
-     * Log rule configurations.
-     *
-     * @param ruleConfigurations log rule configurations
-     */
-    private static void logRuleConfigurationMap(final Collection<Collection<RuleConfiguration>> ruleConfigurations) {
-        if (CollectionUtils.isNotEmpty(ruleConfigurations)) {
-            ruleConfigurations.forEach(ConfigurationLogger::log);
+    private static void updateServerInfo() {
+        List<String> schemaNames = ProxySchemaContexts.getInstance().getSchemaNames();
+        if (CollectionUtils.isEmpty(schemaNames)) {
+            return;
+        }
+        Map<String, DataSource> dataSources = Objects.requireNonNull(ProxySchemaContexts.getInstance().getSchema(schemaNames.get(0))).getSchema().getDataSources();
+        DataSource singleDataSource = dataSources.values().iterator().next();
+        try (Connection connection = singleDataSource.getConnection()) {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            String databaseName = databaseMetaData.getDatabaseProductName();
+            String databaseVersion = databaseMetaData.getDatabaseProductVersion();
+            log.info("database name {} , database version {}", databaseName, databaseVersion);
+            MySQLServerInfo.setServerVersion(databaseVersion);
+        } catch (final SQLException ex) {
+            throw new ShardingSphereException("Get database server info failed", ex);
         }
     }
 }
