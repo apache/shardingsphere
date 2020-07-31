@@ -95,6 +95,9 @@ public final class SQLUtil {
     
     private static int getParenthesesOffset(final String value) {
         int result = 0;
+        if (Strings.isNullOrEmpty(value)) {
+            return result;
+        }
         while (Paren.PARENTHESES.getLeftParen() == value.charAt(result)) {
             result++;
         }
