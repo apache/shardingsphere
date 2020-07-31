@@ -17,48 +17,19 @@
 
 package org.apache.shardingsphere.proxy.config.converter;
 
-import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
-import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
-import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
-import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Default configuration converter.
  */
-public final class DefaultConfigurationConverter extends AbstractConfigurationConverter {
-    
-    @Override
-    public ProxyConfiguration convert(final YamlProxyConfiguration yamlConfig) {
-        Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(yamlConfig.getRuleConfigurations());
-        Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(yamlConfig.getRuleConfigurations());
-        Authentication authentication = new AuthenticationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getAuthentication());
-        ClusterConfiguration clusterConfig = getClusterConfiguration(yamlConfig.getServerConfiguration().getCluster());
-        MetricsConfiguration metricsConfig = getMetricsConfiguration(yamlConfig.getServerConfiguration().getMetrics());
-        Properties props = yamlConfig.getServerConfiguration().getProps();
-        return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, clusterConfig, metricsConfig, props);
-    }
+public final class DefaultConfigurationConverter implements ProxyConfigurationConverter {
     
     @Override
     public SchemaContextsAware contextsAware(final SchemaContextsBuilder builder) throws SQLException {
         return builder.build();
-    }
-    
-    private ClusterConfiguration getClusterConfiguration(final YamlClusterConfiguration yamlClusterConfiguration) {
-        return Optional.ofNullable(yamlClusterConfiguration).map(new ClusterConfigurationYamlSwapper()::swapToObject).orElse(null);
     }
     
     @Override

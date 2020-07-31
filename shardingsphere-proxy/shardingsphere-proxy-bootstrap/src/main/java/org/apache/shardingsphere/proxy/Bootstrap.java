@@ -46,9 +46,9 @@ import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.converter.DefaultConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.converter.ProxyConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.converter.ProxyConfigurationConverterFactory;
+import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.orchestration.OrchestrationBootstrap;
 
@@ -90,7 +90,7 @@ public final class Bootstrap {
             orchestrationBootstrap.init(yamlConfig);
             proxyConfiguration = orchestrationBootstrap.loadProxyConfiguration(yamlConfig);
         } else {
-            proxyConfiguration = new DefaultConfigurationConverter().convert(yamlConfig);
+            proxyConfiguration = new YamlProxyConfigurationSwapper().swap(yamlConfig);
         }
         log(proxyConfiguration);
         try (ProxyConfigurationConverter converter = ProxyConfigurationConverterFactory.newInstances(null != yamlConfig.getServerConfiguration().getOrchestration())) {
