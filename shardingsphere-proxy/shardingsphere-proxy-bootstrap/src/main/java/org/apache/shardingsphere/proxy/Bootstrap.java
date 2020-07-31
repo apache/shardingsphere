@@ -82,7 +82,7 @@ public final class Bootstrap {
     public static void main(final String[] args) throws Exception {
         int port = getPort(args);
         System.setProperty(Constants.PORT_KEY, String.valueOf(port));
-        YamlProxyConfiguration yamlConfig = new ProxyConfigurationLoader().load(getConfigurationPath(args));
+        YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(getConfigurationPath(args));
         logRuleConfigurationMap(getRuleConfigurations(yamlConfig.getRuleConfigurations()).values());
         try (ProxyConfigurationConverter converter = ProxyConfigurationConverterFactory.newInstances(null != yamlConfig.getServerConfiguration().getOrchestration())) {
             ProxyConfiguration proxyConfiguration = converter.convert(yamlConfig);
