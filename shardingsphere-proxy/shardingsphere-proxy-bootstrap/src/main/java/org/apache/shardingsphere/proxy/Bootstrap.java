@@ -89,10 +89,7 @@ public final class Bootstrap {
     }
     
     private static void log(final ProxyConfiguration proxyConfiguration) {
-        Collection<Collection<RuleConfiguration>> ruleConfigurations = proxyConfiguration.getSchemaRules().values();
-        if (CollectionUtils.isNotEmpty(ruleConfigurations)) {
-            ruleConfigurations.forEach(ConfigurationLogger::log);
-        }
+        proxyConfiguration.getSchemaRules().values().forEach(ConfigurationLogger::log);
         ConfigurationLogger.log(proxyConfiguration.getAuthentication());
         ConfigurationLogger.log(proxyConfiguration.getProps());
     }
