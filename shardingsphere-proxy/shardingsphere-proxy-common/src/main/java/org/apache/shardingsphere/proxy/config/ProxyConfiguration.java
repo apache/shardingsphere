@@ -39,15 +39,15 @@ public final class ProxyConfiguration implements Serializable {
     
     private static final long serialVersionUID = 2258701685899056191L;
     
-    private Authentication authentication;
-    
-    private Properties props;
-    
     private Map<String, Map<String, DataSourceParameter>> schemaDataSources;
     
     private Map<String, Collection<RuleConfiguration>> schemaRules;
     
-    private MetricsConfiguration metrics;
+    private Authentication authentication;
     
     private ClusterConfiguration cluster;
+    
+    private MetricsConfiguration metrics;
+    
+    private Properties props;
 }

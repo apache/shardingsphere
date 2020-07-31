@@ -36,13 +36,13 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractConfigurationConverter implements ProxyConfigurationConverter {
     
-    protected final Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
+    protected final Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> yamlRuleConfigurations) {
         YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
-        return localRuleConfigs.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
+        return yamlRuleConfigurations.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
     }
     
-    protected final Map<String, Map<String, DataSourceParameter>> getDataSourceParametersMap(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
-        return localRuleConfigs.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> DataSourceConverter.getDataSourceParameterMap2(entry.getValue().getDataSources())));
+    protected final Map<String, Map<String, DataSourceParameter>> getDataSourceParametersMap(final Map<String, YamlProxyRuleConfiguration> yamlRuleConfigurations) {
+        return yamlRuleConfigurations.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> DataSourceConverter.getDataSourceParameterMap2(entry.getValue().getDataSources())));
     }
     
     protected final MetricsConfiguration getMetricsConfiguration(final YamlMetricsConfiguration yamlMetricsConfiguration) {

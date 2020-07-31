@@ -34,13 +34,13 @@ import java.util.Properties;
 @Setter
 public final class YamlProxyServerConfiguration implements YamlConfiguration {
     
-    private YamlMetricsConfiguration metrics;
-    
     private YamlAuthenticationConfiguration authentication;
     
     private YamlOrchestrationConfiguration orchestration;
     
     private YamlClusterConfiguration cluster;
+    
+    private YamlMetricsConfiguration metrics;
     
     private Properties props = new Properties();
 }
