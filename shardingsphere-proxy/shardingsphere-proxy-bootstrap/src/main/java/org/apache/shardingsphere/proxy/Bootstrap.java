@@ -80,18 +80,19 @@ public final class Bootstrap {
         int port = bootstrapArgs.getPort();
         System.setProperty(Constants.PORT_KEY, String.valueOf(port));
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        if (null == yamlConfig.getServerConfiguration().getOrchestration()) {
-            init(new YamlProxyConfigurationSwapper().swap(yamlConfig), port);
-        } else {
+        boolean orchestrationEnabled = null != yamlConfig.getServerConfiguration().getOrchestration();
+        if (orchestrationEnabled) {
             try (OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance()) {
-                init(new OrchestrationBootstrap(orchestrationFacade).init(yamlConfig), port);
+                init(new OrchestrationBootstrap(orchestrationFacade).init(yamlConfig), port, true);
             }
+        } else {
+            init(new YamlProxyConfigurationSwapper().swap(yamlConfig), port, false);
         }
     }
     
-    private static void init(final ProxyConfiguration proxyConfig, final int port) throws SQLException {
+    private static void init(final ProxyConfiguration proxyConfig, final int port, final boolean orchestrationEnabled) throws SQLException {
         log(proxyConfig);
-        initProxySchemaContexts(proxyConfig);
+        initProxySchemaContexts(proxyConfig, orchestrationEnabled);
         initControlPanelFacade(proxyConfig.getMetrics(), proxyConfig.getCluster());
         updateServerInfo();
         ShardingSphereProxy.getInstance().start(port);
@@ -103,13 +104,13 @@ public final class Bootstrap {
         ConfigurationLogger.log(proxyConfig.getProps());
     }
     
-    private static void initProxySchemaContexts(final ProxyConfiguration proxyConfig) throws SQLException {
+    private static void initProxySchemaContexts(final ProxyConfiguration proxyConfig, final boolean orchestrationEnabled) throws SQLException {
         // TODO Consider loading from configuration.
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = proxyConfig.getSchemaDataSources();
         DatabaseType databaseType = schemaDataSources.isEmpty() ? new MySQLDatabaseType() : DatabaseTypes.getActualDatabaseType(getDatabaseTypeName(schemaDataSources));
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(
                 createDataSourcesMap(schemaDataSources), schemaDataSources, proxyConfig.getAuthentication(), databaseType, proxyConfig.getSchemaRules(), proxyConfig.getProps());
-        ProxySchemaContexts.getInstance().init(createSchemaContextsAware(schemaContextsBuilder));
+        ProxySchemaContexts.getInstance().init(createSchemaContextsAware(schemaContextsBuilder, orchestrationEnabled));
     }
     
     private static String getDatabaseTypeName(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
@@ -134,8 +135,8 @@ public final class Bootstrap {
         return result;
     }
     
-    private static SchemaContextsAware createSchemaContextsAware(final SchemaContextsBuilder schemaContextsBuilder) throws SQLException {
-        return null == OrchestrationFacade.getInstance() ? schemaContextsBuilder.build() : new ProxyOrchestrationSchemaContexts(schemaContextsBuilder.build());
+    private static SchemaContextsAware createSchemaContextsAware(final SchemaContextsBuilder schemaContextsBuilder, final boolean orchestrationEnabled) throws SQLException {
+        return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts(schemaContextsBuilder.build()) : schemaContextsBuilder.build();
     }
     
     private static void initControlPanelFacade(final MetricsConfiguration metricsConfiguration, final ClusterConfiguration clusterConfiguration) {
