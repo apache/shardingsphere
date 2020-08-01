@@ -401,6 +401,39 @@ GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `
 
 `最新版本`中保留一个最新的版本。
 
+### 发布Docker
+
+#### 准备工作
+
+本地安装Docker，并将Docker服务启动起来
+
+#### 编译Docker镜像
+
+```shell
+cd ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/
+mvn clean package -Prelease,docker
+```
+
+#### 给本地Docker镜像打标记
+
+通过`docker images`查看到IMAGE ID，例如为：e9ea51023687
+
+```shell
+docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:latest
+docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:${RELEASE.VERSION}
+```
+
+#### 发布Docker镜像
+
+```shell
+docker push apache/shardingsphere-elasticjob-cloud-scheduler:latest
+docker push apache/shardingsphere-elasticjob-cloud-scheduler:${RELEASE_VERSION}
+```
+
+#### 确认发布成功
+
+登录[Docker Hub](https://hub.docker.com/r/apache/shardingsphere-elasticjob-cloud-scheduler/)查看是否有发布的镜像
+
 ### GitHub版本发布
 
 在[GitHub Releases](https://github.com/apache/shardingsphere-elasticjob/releases)页面的`${RELEASE_VERSION}`版本上点击`Edit`
