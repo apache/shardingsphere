@@ -17,70 +17,56 @@
 
 package org.apache.shardingsphere.proxy.orchestration;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
-import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
-import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.OrchestrationConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.converter.AbstractConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.util.DataSourceConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.proxy.orchestration.schema.ProxyOrchestrationSchemaContexts;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * Orchestration configuration converter.
+ * Orchestration bootstrap.
  */
-public final class OrchestrationConfigurationConverter extends AbstractConfigurationConverter {
+@RequiredArgsConstructor
+public final class OrchestrationBootstrap {
     
-    private final OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance();
+    private final OrchestrationFacade orchestrationFacade;
     
-    @Override
-    public ProxyConfiguration convert(final YamlProxyConfiguration yamlProxyConfiguration) {
-        YamlOrchestrationConfiguration orchestrationConfig = yamlProxyConfiguration.getServerConfiguration().getOrchestration();
-        Set<String> schemaNames = yamlProxyConfiguration.getRuleConfigurations().keySet();
-        ProxyConfiguration result = new ProxyConfiguration();
-        orchestrationFacade.init(new OrchestrationConfigurationYamlSwapper().swapToObject(orchestrationConfig), schemaNames);
-        initOrchestrationConfigurations(yamlProxyConfiguration.getServerConfiguration(), yamlProxyConfiguration.getRuleConfigurations(), orchestrationFacade);
-        Authentication authentication = orchestrationFacade.getConfigCenter().loadAuthentication();
-        Properties properties = orchestrationFacade.getConfigCenter().loadProperties();
-        Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(orchestrationFacade);
-        Map<String, Collection<RuleConfiguration>> schemaRules = getSchemaRules(orchestrationFacade);
-        ClusterConfiguration clusterConfiguration = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
-        result.setAuthentication(authentication);
-        result.setProps(properties);
-        result.setSchemaDataSources(schemaDataSources);
-        result.setSchemaRules(schemaRules);
-        result.setCluster(clusterConfiguration);
-        result.setMetrics(getMetricsConfiguration(yamlProxyConfiguration.getServerConfiguration().getMetrics()));
-        return result;
+    /**
+     * Initialize orchestration.
+     * 
+     * @param yamlConfig YAML proxy configuration
+     * @return proxy configuration
+     */
+    public ProxyConfiguration init(final YamlProxyConfiguration yamlConfig) {
+        orchestrationFacade.init(new OrchestrationConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getOrchestration()), yamlConfig.getRuleConfigurations().keySet());
+        initConfigurations(yamlConfig);
+        return loadProxyConfiguration();
     }
     
-    @Override
-    public SchemaContextsAware contextsAware(final SchemaContextsBuilder builder) throws SQLException {
-        return new ProxyOrchestrationSchemaContexts(builder.build());
-    }
-    
-    private void initOrchestrationConfigurations(
-            final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final OrchestrationFacade orchestrationFacade) {
+    private void initConfigurations(final YamlProxyConfiguration yamlConfig) {
+        YamlProxyServerConfiguration serverConfig = yamlConfig.getServerConfiguration();
+        Map<String, YamlProxyRuleConfiguration> ruleConfigs = yamlConfig.getRuleConfigurations();
         if (isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
             orchestrationFacade.onlineInstance();
         } else {
@@ -97,13 +83,28 @@ public final class OrchestrationConfigurationConverter extends AbstractConfigura
     
     private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
         Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>();
-        for (Map.Entry<String, YamlProxyRuleConfiguration> entry : ruleConfigs.entrySet()) {
+        for (Entry<String, YamlProxyRuleConfiguration> entry : ruleConfigs.entrySet()) {
             result.put(entry.getKey(), DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(entry.getValue().getDataSources())));
         }
         return result;
     }
     
-    private Map<String, Map<String, DataSourceParameter>> getDataSourceParametersMap(final OrchestrationFacade orchestrationFacade) {
+    private Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> yamlRuleConfigurations) {
+        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
+        return yamlRuleConfigurations.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
+    }
+    
+    private ProxyConfiguration loadProxyConfiguration() {
+        Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap();
+        Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules();
+        Authentication authentication = orchestrationFacade.getConfigCenter().loadAuthentication();
+        ClusterConfiguration clusterConfig = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
+        MetricsConfiguration metricsConfig = orchestrationFacade.getConfigCenter().loadMetricsConfiguration();
+        Properties props = orchestrationFacade.getConfigCenter().loadProperties();
+        return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, clusterConfig, metricsConfig, props);
+    }
+    
+    private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap() {
         Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
         for (String each : orchestrationFacade.getConfigCenter().getAllSchemaNames()) {
             result.put(each, DataSourceConverter.getDataSourceParameterMap(orchestrationFacade.getConfigCenter().loadDataSourceConfigurations(each)));
@@ -111,18 +112,11 @@ public final class OrchestrationConfigurationConverter extends AbstractConfigura
         return result;
     }
     
-    private Map<String, Collection<RuleConfiguration>> getSchemaRules(final OrchestrationFacade orchestrationFacade) {
+    private Map<String, Collection<RuleConfiguration>> loadSchemaRules() {
         Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>();
         for (String each : orchestrationFacade.getConfigCenter().getAllSchemaNames()) {
             result.put(each, orchestrationFacade.getConfigCenter().loadRuleConfigurations(each));
         }
         return result;
-    }
-    
-    @Override
-    public void close() {
-        if (null != orchestrationFacade) {
-            orchestrationFacade.close();
-        }
     }
 }
