@@ -494,10 +494,6 @@ git push --delete origin ${RELEASE.VERSION}-release
 
 Update `${PREVIOUS.RELEASE.VERSION}` to `${RELEASE.VERSION}` in README.md and README_ZH.md
 
-Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` for `CURRENT_VERSION` in `Dockerfile`
-
-Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` for `imageName` in Maven `Docker` plugin
-
 Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` for `SERVER_VERSION` in `MySQLServerInfo.java`
 
 ### Update the download page
