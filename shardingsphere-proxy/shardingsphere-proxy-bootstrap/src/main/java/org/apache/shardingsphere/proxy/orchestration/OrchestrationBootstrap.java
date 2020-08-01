@@ -53,13 +53,15 @@ public final class OrchestrationBootstrap {
     private final OrchestrationFacade orchestrationFacade;
     
     /**
-     * initialize orchestration facade.
+     * Initialize orchestration.
      * 
      * @param yamlConfig YAML proxy configuration
+     * @return proxy configuration
      */
-    public void init(YamlProxyConfiguration yamlConfig) {
+    public ProxyConfiguration init(YamlProxyConfiguration yamlConfig) {
         orchestrationFacade.init(new OrchestrationConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getOrchestration()), yamlConfig.getRuleConfigurations().keySet());
         initConfigurations(yamlConfig);
+        return loadProxyConfiguration();
     }
     
     private void initConfigurations(YamlProxyConfiguration yamlConfig) {
@@ -92,24 +94,17 @@ public final class OrchestrationBootstrap {
         return yamlRuleConfigurations.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
     }
     
-    /**
-     * Get proxy configuration.
-     * 
-     * @param yamlConfig YAML proxy configuration
-     * @return proxy configuration
-     */
-    public ProxyConfiguration loadProxyConfiguration(YamlProxyConfiguration yamlConfig) {
-        Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap();
-        Map<String, Collection<RuleConfiguration>> schemaRules = getSchemaRules();
+    private ProxyConfiguration loadProxyConfiguration() {
+        Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap();
+        Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules();
         Authentication authentication = orchestrationFacade.getConfigCenter().loadAuthentication();
         ClusterConfiguration clusterConfig = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
-        // TODO why cannot load from config center?
-        MetricsConfiguration metricsConfig = Optional.ofNullable(yamlConfig.getServerConfiguration().getMetrics()).map(new MetricsConfigurationYamlSwapper()::swapToObject).orElse(null);
+        MetricsConfiguration metricsConfig = orchestrationFacade.getConfigCenter().loadMetricsConfiguration();
         Properties props = orchestrationFacade.getConfigCenter().loadProperties();
         return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, clusterConfig, metricsConfig, props);
     }
     
-    private Map<String, Map<String, DataSourceParameter>> getDataSourceParametersMap() {
+    private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap() {
         Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
         for (String each : orchestrationFacade.getConfigCenter().getAllSchemaNames()) {
             result.put(each, DataSourceConverter.getDataSourceParameterMap(orchestrationFacade.getConfigCenter().loadDataSourceConfigurations(each)));
@@ -117,7 +112,7 @@ public final class OrchestrationBootstrap {
         return result;
     }
     
-    private Map<String, Collection<RuleConfiguration>> getSchemaRules() {
+    private Map<String, Collection<RuleConfiguration>> loadSchemaRules() {
         Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>();
         for (String each : orchestrationFacade.getConfigCenter().getAllSchemaNames()) {
             result.put(each, orchestrationFacade.getConfigCenter().loadRuleConfigurations(each));

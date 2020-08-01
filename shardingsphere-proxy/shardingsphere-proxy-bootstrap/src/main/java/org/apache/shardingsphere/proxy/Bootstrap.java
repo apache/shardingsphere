@@ -88,9 +88,7 @@ public final class Bootstrap {
             init(new YamlProxyConfigurationSwapper().swap(yamlConfig), port);
         } else {
             try (OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance()) {
-                OrchestrationBootstrap orchestrationBootstrap = new OrchestrationBootstrap(orchestrationFacade);
-                orchestrationBootstrap.init(yamlConfig);
-                init(orchestrationBootstrap.loadProxyConfiguration(yamlConfig), port);
+                init(new OrchestrationBootstrap(orchestrationFacade).init(yamlConfig), port);
             }
         }
     }
