@@ -58,13 +58,13 @@ public final class OrchestrationBootstrap {
      * @param yamlConfig YAML proxy configuration
      * @return proxy configuration
      */
-    public ProxyConfiguration init(YamlProxyConfiguration yamlConfig) {
+    public ProxyConfiguration init(final YamlProxyConfiguration yamlConfig) {
         orchestrationFacade.init(new OrchestrationConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getOrchestration()), yamlConfig.getRuleConfigurations().keySet());
         initConfigurations(yamlConfig);
         return loadProxyConfiguration();
     }
     
-    private void initConfigurations(YamlProxyConfiguration yamlConfig) {
+    private void initConfigurations(final YamlProxyConfiguration yamlConfig) {
         YamlProxyServerConfiguration serverConfig = yamlConfig.getServerConfiguration();
         Map<String, YamlProxyRuleConfiguration> ruleConfigs = yamlConfig.getRuleConfigurations();
         if (isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
