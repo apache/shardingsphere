@@ -26,8 +26,6 @@ import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
 import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.constant.Constants;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -56,14 +54,12 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -84,20 +80,19 @@ public final class Bootstrap {
         int port = bootstrapArgs.getPort();
         System.setProperty(Constants.PORT_KEY, String.valueOf(port));
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        if (null == yamlConfig.getServerConfiguration().getOrchestration()) {
-            init(new YamlProxyConfigurationSwapper().swap(yamlConfig), port);
-        } else {
+        boolean orchestrationEnabled = null != yamlConfig.getServerConfiguration().getOrchestration();
+        if (orchestrationEnabled) {
             try (OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance()) {
-                init(new OrchestrationBootstrap(orchestrationFacade).init(yamlConfig), port);
+                init(new OrchestrationBootstrap(orchestrationFacade).init(yamlConfig), port, true);
             }
+        } else {
+            init(new YamlProxyConfigurationSwapper().swap(yamlConfig), port, false);
         }
     }
     
-    private static void init(final ProxyConfiguration proxyConfig, final int port) throws SQLException {
+    private static void init(final ProxyConfiguration proxyConfig, final int port, final boolean orchestrationEnabled) throws SQLException {
         log(proxyConfig);
-        Authentication authentication = proxyConfig.getAuthentication();
-        Properties props = proxyConfig.getProps();
-        initProxySchemaContexts(proxyConfig.getSchemaDataSources(), proxyConfig.getSchemaRules(), authentication, props);
+        initProxySchemaContexts(proxyConfig, orchestrationEnabled);
         initControlPanelFacade(proxyConfig.getMetrics(), proxyConfig.getCluster());
         updateServerInfo();
         ShardingSphereProxy.getInstance().start(port);
@@ -109,19 +104,21 @@ public final class Bootstrap {
         ConfigurationLogger.log(proxyConfig.getProps());
     }
     
-    private static void initProxySchemaContexts(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, Collection<RuleConfiguration>> schemaRules,
-                                                final Authentication authentication, final Properties properties) throws SQLException {
+    private static void initProxySchemaContexts(final ProxyConfiguration proxyConfig, final boolean orchestrationEnabled) throws SQLException {
         // TODO Consider loading from configuration.
-        DatabaseType databaseType = schemaDataSources.isEmpty() ? new MySQLDatabaseType()
-                : DatabaseTypes.getActualDatabaseType(
-                JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType());
-        SchemaContextsBuilder schemaContextsBuilder =
-                new SchemaContextsBuilder(createDataSourcesMap(schemaDataSources), schemaDataSources, authentication, databaseType, schemaRules, properties);
-        ProxySchemaContexts.getInstance().init(createSchemaContextsAware(schemaContextsBuilder));
+        Map<String, Map<String, DataSourceParameter>> schemaDataSources = proxyConfig.getSchemaDataSources();
+        DatabaseType databaseType = schemaDataSources.isEmpty() ? new MySQLDatabaseType() : DatabaseTypes.getActualDatabaseType(getDatabaseTypeName(schemaDataSources));
+        SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(
+                createDataSourcesMap(schemaDataSources), schemaDataSources, proxyConfig.getAuthentication(), databaseType, proxyConfig.getSchemaRules(), proxyConfig.getProps());
+        ProxySchemaContexts.getInstance().init(createSchemaContextsAware(schemaContextsBuilder, orchestrationEnabled));
+    }
+    
+    private static String getDatabaseTypeName(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
+        return JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType();
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
-        return schemaDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> createDataSources(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
+        return schemaDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> createDataSources(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private static Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) {
@@ -138,8 +135,8 @@ public final class Bootstrap {
         return result;
     }
     
-    private static SchemaContextsAware createSchemaContextsAware(final SchemaContextsBuilder schemaContextsBuilder) throws SQLException {
-        return null == OrchestrationFacade.getInstance() ? schemaContextsBuilder.build() : new ProxyOrchestrationSchemaContexts(schemaContextsBuilder.build());
+    private static SchemaContextsAware createSchemaContextsAware(final SchemaContextsBuilder schemaContextsBuilder, final boolean orchestrationEnabled) throws SQLException {
+        return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts(schemaContextsBuilder.build()) : schemaContextsBuilder.build();
     }
     
     private static void initControlPanelFacade(final MetricsConfiguration metricsConfiguration, final ClusterConfiguration clusterConfiguration) {
