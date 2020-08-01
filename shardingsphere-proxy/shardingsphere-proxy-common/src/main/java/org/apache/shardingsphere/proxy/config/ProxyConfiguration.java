@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
@@ -35,9 +34,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ProxyConfiguration implements Serializable {
-    
-    private static final long serialVersionUID = 2258701685899056191L;
+public final class ProxyConfiguration {
     
     private final Map<String, Map<String, DataSourceParameter>> schemaDataSources;
     
