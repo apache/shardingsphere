@@ -395,6 +395,72 @@ GPG signatures and hashes (SHA* etc) should use URL start with `https://download
 
 Keep one latest versions in `Latest releases`.
 
+### Docker Release (cloud-ui)
+
+#### Preparation
+
+Install docker locally and start the docker service
+
+#### Compile Docker Image
+
+```shell
+cd ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-cloud-ui-bin-distribution/
+mvn clean package -Prelease,docker
+```
+
+#### Tag the local Docker Image
+
+Check the image ID through `docker images`, for example: e9ea51023687
+
+```shell
+docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-ui:latest
+docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-ui:${RELEASE.VERSION}
+```
+
+#### Publish Docker Image
+
+```shell
+docker push apache/shardingsphere-elasticjob-cloud-ui:latest
+docker push apache/shardingsphere-elasticjob-cloud-ui:${RELEASE_VERSION}
+```
+
+#### Confirm the successful release
+
+Login [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-elasticjob-cloud-ui/) to check whether there are published images
+
+### Docker Release (lite-ui)
+
+#### Preparation
+
+Install docker locally and start the docker service
+
+#### Compile Docker Image
+
+```shell
+cd ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-lite-ui-bin-distribution/
+mvn clean package -Prelease,docker
+```
+
+#### Tag the local Docker Image
+
+Check the image ID through `docker images`, for example: e9ea51023687
+
+```shell
+docker tag e9ea51023687 apache/shardingsphere-elasticjob-lite-ui:latest
+docker tag e9ea51023687 apache/shardingsphere-elasticjob-lite-ui:${RELEASE.VERSION}
+```
+
+#### Publish Docker Image
+
+```shell
+docker push apache/shardingsphere-elasticjob-lite-ui:latest
+docker push apache/shardingsphere-elasticjob-lite-ui:${RELEASE_VERSION}
+```
+
+#### Confirm the successful release
+
+Login [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-elasticjob-lite-ui/) to check whether there are published images
+
 ### Publish release in GitHub
 
 Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere-elasticjob-ui/releases)'s `shardingsphere-elasticjob-ui-${RELEASE_VERSION}` version
