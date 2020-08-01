@@ -408,6 +408,39 @@ GPG signatures and hashes (SHA* etc) should use URL start with `https://download
 
 Keep one latest versions in `Latest releases`.
 
+### Docker Release
+
+#### Preparation
+
+Install docker locally and start the docker service
+
+#### Compile Docker Image
+
+```shell
+cd ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/
+mvn clean package -Prelease,docker
+```
+
+#### Tag the local Docker Image
+
+Check the image ID through `docker images`, for example: e9ea51023687
+
+```shell
+docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:latest
+docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:${RELEASE.VERSION}
+```
+
+#### Publish Docker Image
+
+```shell
+docker push apache/shardingsphere-elasticjob-cloud-scheduler:latest
+docker push apache/shardingsphere-elasticjob-cloud-scheduler:${RELEASE_VERSION}
+```
+
+#### Confirm the successful release
+
+Login [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-elasticjob-cloud-scheduler/) to check whether there are published images
+
 ### Publish release in GitHub
 
 Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere-elasticjob/releases)'s `${RELEASE_VERSION}` version
