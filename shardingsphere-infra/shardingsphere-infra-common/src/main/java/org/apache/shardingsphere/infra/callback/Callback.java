@@ -22,12 +22,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 
 /**
- * Call back.
+ * Callback.
  */
 public abstract class Callback<T> {
-
+    
     private final List<BiConsumer<String, T>> consumers = new CopyOnWriteArrayList<>();
-
+    
     /**
      * Register big consumer.
      *
@@ -36,7 +36,7 @@ public abstract class Callback<T> {
     public void register(final BiConsumer<String, T> consumer) {
         consumers.add(consumer);
     }
-
+    
     /**
      * Run of biConsumer.
      *
