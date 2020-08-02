@@ -59,7 +59,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Configuration service.
+ * Config center.
  */
 public final class ConfigCenter {
     
