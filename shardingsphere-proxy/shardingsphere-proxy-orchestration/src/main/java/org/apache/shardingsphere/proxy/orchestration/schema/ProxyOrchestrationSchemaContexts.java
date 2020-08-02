@@ -48,8 +48,7 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
     @Override
     public Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
         Map<String, DataSourceParameter> newDataSourceParameters = DataSourceConverter.getDataSourceParameterMap(newDataSources);
-        Map<String, DataSourceParameter> parameters = 
-                Maps.filterEntries(newDataSourceParameters, input -> !oldSchemaContext.getSchema().getDataSourceParameters().containsKey(input.getKey()));
+        Map<String, DataSourceParameter> parameters = Maps.filterKeys(newDataSourceParameters, each -> !oldSchemaContext.getSchema().getDataSources().containsKey(each));
         return createDataSources(parameters);
     }
     
@@ -58,15 +57,15 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
         Map<String, DataSourceParameter> newDataSourceParameters = DataSourceConverter.getDataSourceParameterMap(newDataSources);
         Map<String, DataSourceParameter> parameters = new LinkedHashMap<>();
         for (Entry<String, DataSourceParameter> entry : newDataSourceParameters.entrySet()) {
-            if (isModifiedDataSource(oldSchemaContext.getSchema().getDataSourceParameters(), entry)) {
+            if (isModifiedDataSource(oldSchemaContext.getSchema().getDataSources(), entry)) {
                 parameters.put(entry.getKey(), entry.getValue());
             }
         }
         return createDataSources(parameters);
     }
     
-    private synchronized boolean isModifiedDataSource(final Map<String, DataSourceParameter> oldDataSourceParameters, final Entry<String, DataSourceParameter> target) {
-        return oldDataSourceParameters.containsKey(target.getKey()) && !oldDataSourceParameters.get(target.getKey()).equals(target.getValue());
+    private synchronized boolean isModifiedDataSource(final Map<String, DataSource> oldDataSources, final Entry<String, DataSourceParameter> target) {
+        return oldDataSources.containsKey(target.getKey()) && !DataSourceConverter.getDataSourceParameter(oldDataSources.get(target.getKey())).equals(target.getValue());
     }
     
     @Override
@@ -78,19 +77,19 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
         return result;
     }
     
+    private Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> parameters) throws Exception {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        for (Entry<String, DataSourceParameter> entry: parameters.entrySet()) {
+            result.put(entry.getKey(), backendDataSourceFactory.build(entry.getKey(), entry.getValue()));
+        }
+        return result;
+    }
+    
     @Override
     public Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
         Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesMap.entrySet()) {
             result.put(entry.getKey(), DataSourceConverter.getDataSourceParameterMap(entry.getValue()));
-        }
-        return result;
-    }
-    
-    private Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> parameters) throws Exception {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, DataSourceParameter> entry: parameters.entrySet()) {
-            result.put(entry.getKey(), backendDataSourceFactory.build(entry.getKey(), entry.getValue()));
         }
         return result;
     }
