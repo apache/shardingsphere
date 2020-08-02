@@ -56,15 +56,15 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
         Map<String, DataSourceParameter> newDataSourceParameters = DataSourceConverter.getDataSourceParameterMap(newDataSources);
         Map<String, DataSourceParameter> parameters = new LinkedHashMap<>();
         for (Entry<String, DataSourceParameter> entry : newDataSourceParameters.entrySet()) {
-            if (isModifiedDataSource(oldSchemaContext.getSchema().getDataSources(), entry)) {
+            if (isModifiedDataSource(oldSchemaContext.getSchema().getDataSources(), entry.getKey(), entry.getValue())) {
                 parameters.put(entry.getKey(), entry.getValue());
             }
         }
         return createDataSources(parameters);
     }
     
-    private synchronized boolean isModifiedDataSource(final Map<String, DataSource> oldDataSources, final Entry<String, DataSourceParameter> target) {
-        return oldDataSources.containsKey(target.getKey()) && !DataSourceConverter.getDataSourceParameter(oldDataSources.get(target.getKey())).equals(target.getValue());
+    private synchronized boolean isModifiedDataSource(final Map<String, DataSource> oldDataSources, final String newDataSourceName, final DataSourceParameter newDataSourceParameter) {
+        return oldDataSources.containsKey(newDataSourceName) && !DataSourceConverter.getDataSourceParameter(oldDataSources.get(newDataSourceName)).equals(newDataSourceParameter);
     }
     
     @Override
