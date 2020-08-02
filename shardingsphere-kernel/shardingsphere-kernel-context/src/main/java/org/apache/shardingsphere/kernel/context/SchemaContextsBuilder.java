@@ -61,9 +61,9 @@ public final class SchemaContextsBuilder {
     
     private final Map<String, Collection<RuleConfiguration>> ruleConfigurations;
     
-    private final ConfigurationProperties props;
-    
     private final Authentication authentication;
+    
+    private final ConfigurationProperties props;
     
     private final ExecutorKernel executorKernel;
     
