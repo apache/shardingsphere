@@ -84,7 +84,7 @@ public final class Bootstrap {
     
     private static void init(final ProxyConfiguration proxyConfig, final int port, final boolean orchestrationEnabled) throws SQLException {
         log(proxyConfig);
-        initProxySchemaContexts(proxyConfig, orchestrationEnabled);
+        initSchemaContexts(proxyConfig, orchestrationEnabled);
         initControlPanelFacade(proxyConfig.getMetrics(), proxyConfig.getCluster());
         updateServerInfo();
         ShardingSphereProxy.getInstance().start(port);
@@ -96,7 +96,7 @@ public final class Bootstrap {
         ConfigurationLogger.log(proxyConfig.getProps());
     }
     
-    private static void initProxySchemaContexts(final ProxyConfiguration proxyConfig, final boolean orchestrationEnabled) throws SQLException {
+    private static void initSchemaContexts(final ProxyConfiguration proxyConfig, final boolean orchestrationEnabled) throws SQLException {
         ProxyDataSourceContext dataSourceContext = new ProxyDataSourceContext(proxyConfig.getSchemaDataSources());
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(
                 dataSourceContext.getDataSourcesMap(), dataSourceContext.getDatabaseType(), proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
