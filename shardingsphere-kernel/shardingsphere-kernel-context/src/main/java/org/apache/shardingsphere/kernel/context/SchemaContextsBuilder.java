@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
@@ -80,7 +79,6 @@ public final class SchemaContextsBuilder {
         this.authentication = authentication;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
         executorKernel = new ExecutorKernel(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
-        log(ruleConfigurations, props);
     }
     
     /**
@@ -142,10 +140,5 @@ public final class SchemaContextsBuilder {
             }
         }
         return result;
-    }
-    
-    private void log(final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
-        configurations.values().forEach(ConfigurationLogger::log);
-        ConfigurationLogger.log(props);
     }
 }
