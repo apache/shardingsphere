@@ -42,7 +42,7 @@ public final class MySQLServerInfo {
     
     private static final String SERVER_VERSION_PATTERN = "%s-ShardingSphere-Proxy %s";
     
-    private volatile static String serverVersion;
+    private static volatile String serverVersion;
     
     /**
      * Set server version.

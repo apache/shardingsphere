@@ -24,6 +24,7 @@ import java.util.function.BiConsumer;
 /**
  * Callback.
  */
+// TODO rename schema based Callback
 public abstract class Callback<T> {
     
     private final List<BiConsumer<String, T>> consumers = new CopyOnWriteArrayList<>();
