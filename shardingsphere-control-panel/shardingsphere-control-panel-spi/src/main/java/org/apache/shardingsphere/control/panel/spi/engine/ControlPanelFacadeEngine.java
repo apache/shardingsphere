@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.control.panel.spi.engine;
 
-import org.apache.shardingsphere.control.panel.spi.ControlPanelFacade;
 import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
+import org.apache.shardingsphere.control.panel.spi.ControlPanelFacade;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -42,8 +42,8 @@ public final class ControlPanelFacadeEngine {
      */
     @SuppressWarnings("rawtypes")
     public void init(final Collection<ControlPanelConfiguration> controlPanelConfigs) {
-        Collection<Class<?>> facadeClassTypes = controlPanelConfigs.stream().map(ControlPanelConfiguration::getClass).collect(Collectors.toList());
-        for (Map.Entry<Class<?>, ControlPanelFacade> entry : OrderedSPIRegistry.getRegisteredServicesByClass(facadeClassTypes, ControlPanelFacade.class).entrySet()) {
+        Collection<Class<?>> controlPanelConfigClass = controlPanelConfigs.stream().map(ControlPanelConfiguration::getClass).collect(Collectors.toList());
+        for (Entry<Class<?>, ControlPanelFacade> entry : OrderedSPIRegistry.getRegisteredServicesByClass(controlPanelConfigClass, ControlPanelFacade.class).entrySet()) {
             doInit(controlPanelConfigs, entry.getKey(), entry.getValue());
         }
     }
