@@ -44,14 +44,14 @@ public final class ControlPanelFacadeEngine {
     public void init(final Collection<ControlPanelConfiguration> controlPanelConfigs) {
         Collection<Class<?>> controlPanelConfigClass = controlPanelConfigs.stream().map(ControlPanelConfiguration::getClass).collect(Collectors.toList());
         for (Entry<Class<?>, ControlPanelFacade> entry : OrderedSPIRegistry.getRegisteredServicesByClass(controlPanelConfigClass, ControlPanelFacade.class).entrySet()) {
-            doInit(controlPanelConfigs, entry.getKey(), entry.getValue());
+            init(controlPanelConfigs, entry.getKey(), entry.getValue());
         }
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void doInit(final Collection<ControlPanelConfiguration> controlPanelConfigs, final Class<?> configurationType, final ControlPanelFacade facade) {
+    private void init(final Collection<ControlPanelConfiguration> controlPanelConfigs, final Class<?> controlPanelConfigClass, final ControlPanelFacade facade) {
         for (ControlPanelConfiguration each : controlPanelConfigs) {
-            if (each.getClass().equals(configurationType)) {
+            if (each.getClass().equals(controlPanelConfigClass)) {
                 facade.init(each);
             }
         }
