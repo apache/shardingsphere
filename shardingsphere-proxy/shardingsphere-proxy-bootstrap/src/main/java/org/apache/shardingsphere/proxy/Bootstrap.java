@@ -115,9 +115,9 @@ public final class Bootstrap {
     }
     
     private static void setDatabaseServerInfo() {
-        Optional<DataSource> dataSource = ProxySchemaContexts.getInstance().getDataSourceSample();
-        if (dataSource.isPresent()) {
-            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSource.get());
+        Optional<DataSource> dataSourceSample = ProxySchemaContexts.getInstance().getDataSourceSample();
+        if (dataSourceSample.isPresent()) {
+            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample.get());
             log.info(databaseServerInfo.toString());
             MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
         }
