@@ -77,13 +77,14 @@ import java.util.Map.Entry;
  */
 public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     
-    private final OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance();
+    private final OrchestrationFacade orchestrationFacade;
     
     private volatile SchemaContexts schemaContexts;
     
-    public OrchestrationSchemaContexts(final SchemaContexts schemaContexts) {
-        OrchestrationEventBus.getInstance().register(this);
+    public OrchestrationSchemaContexts(final SchemaContexts schemaContexts, final OrchestrationFacade orchestrationFacade) {
+        this.orchestrationFacade = orchestrationFacade;
         this.schemaContexts = schemaContexts;
+        OrchestrationEventBus.getInstance().register(this);
         disableDataSources();
         persistMetaData();
     }

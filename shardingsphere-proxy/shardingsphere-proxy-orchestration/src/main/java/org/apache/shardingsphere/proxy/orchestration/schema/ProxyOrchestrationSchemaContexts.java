@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.schema.OrchestrationSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCRawBackendDataSourceFactory;
@@ -40,8 +41,8 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
     
     private final JDBCBackendDataSourceFactory backendDataSourceFactory;
     
-    public ProxyOrchestrationSchemaContexts(final SchemaContexts schemaContexts) {
-        super(schemaContexts);
+    public ProxyOrchestrationSchemaContexts(final SchemaContexts schemaContexts, final OrchestrationFacade orchestrationFacade) {
+        super(schemaContexts, orchestrationFacade);
         backendDataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
     }
     

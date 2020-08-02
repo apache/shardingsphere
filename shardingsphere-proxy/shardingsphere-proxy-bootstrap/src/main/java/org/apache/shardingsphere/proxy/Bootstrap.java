@@ -103,7 +103,7 @@ public final class Bootstrap {
     }
     
     private static SchemaContexts createSchemaContexts(final SchemaContexts schemaContexts, final boolean orchestrationEnabled) {
-        return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts(schemaContexts) : schemaContexts;
+        return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts(schemaContexts, OrchestrationFacade.getInstance()) : schemaContexts;
     }
     
     private static void initControlPanelFacade(final MetricsConfiguration metricsConfiguration, final ClusterConfiguration clusterConfiguration) {
