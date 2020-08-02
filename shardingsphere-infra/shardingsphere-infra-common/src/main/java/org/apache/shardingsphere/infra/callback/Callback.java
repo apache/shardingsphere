@@ -29,7 +29,7 @@ public abstract class Callback<T> {
     private final List<BiConsumer<String, T>> consumers = new CopyOnWriteArrayList<>();
     
     /**
-     * Register big consumer.
+     * Register consumer.
      *
      * @param consumer consumer
      */
@@ -38,9 +38,9 @@ public abstract class Callback<T> {
     }
     
     /**
-     * Run of biConsumer.
+     * Run consumer.
      *
-     * @param schemaName schemaName
+     * @param schemaName schema name
      * @param args args
      */
     public void run(final String schemaName, final T args) {

@@ -41,9 +41,9 @@ import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.DataSourceConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
