@@ -80,13 +80,12 @@ public final class Bootstrap {
         int port = bootstrapArgs.getPort();
         System.setProperty(Constants.PORT_KEY, String.valueOf(port));
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        boolean orchestrationEnabled = null != yamlConfig.getServerConfiguration().getOrchestration();
-        if (orchestrationEnabled) {
+        if (null == yamlConfig.getServerConfiguration().getOrchestration()) {
+            init(new YamlProxyConfigurationSwapper().swap(yamlConfig), port, false);
+        } else {
             try (OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance()) {
                 init(new OrchestrationBootstrap(orchestrationFacade).init(yamlConfig), port, true);
             }
-        } else {
-            init(new YamlProxyConfigurationSwapper().swap(yamlConfig), port, false);
         }
     }
     

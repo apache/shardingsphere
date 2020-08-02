@@ -389,7 +389,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     }
     
     private Collection<String> getDeletedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
-        Collection<String> result = new LinkedList<>(oldSchemaContext.getSchema().getDataSourceParameters().keySet());
+        Collection<String> result = new LinkedList<>(oldSchemaContext.getSchema().getDataSources().keySet());
         result.removeAll(newDataSources.keySet());
         return result;
     }
