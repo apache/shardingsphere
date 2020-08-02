@@ -23,6 +23,7 @@ import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.facade.init.ClusterInitFacade;
 import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
 import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -32,15 +33,14 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
@@ -71,6 +71,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Control panel subscriber.
@@ -92,7 +93,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     }
     
     private void disableMasterSlaveRules() {
-        Map<String, Collection<MasterSlaveRule>> masterSlaveRules = schemaContexts.getRules(MasterSlaveRule.class);
+        Map<String, Collection<MasterSlaveRule>> masterSlaveRules = findMasterSlaveRule();
         if (masterSlaveRules.isEmpty()) {
             return;
         }
@@ -107,13 +108,22 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         }
     }
     
-    private static void disableMasterSlaveRules(final MasterSlaveRule masterSlaveRule,
-                                           final Collection<String> disabledDataSources, final String schemaName) {
+    private static void disableMasterSlaveRules(final MasterSlaveRule masterSlaveRule, final Collection<String> disabledDataSources, final String schemaName) {
         masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames().forEach(each -> {
             if (disabledDataSources.contains(Joiner.on(".").join(schemaName, each))) {
                 masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true));
             }
         });
+    }
+    
+    private  <T extends ShardingSphereRule> Map<String, Collection<T>> findMasterSlaveRule() {
+        return schemaContexts.getSchemaContexts().entrySet().stream().collect(
+                Collectors.toMap(Entry::getKey, entry -> findMasterSlaveRule(entry.getValue()), (key, value) -> value, LinkedHashMap::new));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T extends ShardingSphereRule> Collection<T> findMasterSlaveRule(final SchemaContext schemaContext) {
+        return schemaContext.getSchema().getRules().stream().filter(each -> MasterSlaveRule.class == each.getClass()).map(each -> (T) each).collect(Collectors.toList());
     }
     
     @Override

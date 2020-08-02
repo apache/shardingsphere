@@ -63,7 +63,7 @@ public final class ProxySchemaContexts {
     /**
      * Initialize proxy schema contexts.
      *
-     * @param schemaContexts  schema contexts
+     * @param schemaContexts schema contexts
      */
     public void init(final SchemaContexts schemaContexts) {
         this.schemaContexts = schemaContexts;

@@ -22,15 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Standard schema contexts.
@@ -53,22 +48,6 @@ public final class StandardSchemaContexts implements SchemaContexts {
     
     public StandardSchemaContexts(final Map<String, SchemaContext> schemaContexts, final Authentication authentication, final ConfigurationProperties props) {
         this(schemaContexts, authentication, props, false);
-    }
-    
-    /**
-     * Get rules.
-     *
-     * @param ruleType rule type
-     * @param <T> type of rule
-     * @return rules
-     */
-    public <T extends ShardingSphereRule> Map<String, Collection<T>> getRules(final Class<T> ruleType) {
-        return schemaContexts.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> getRules(entry.getValue(), ruleType), (key, value) -> value, LinkedHashMap::new));
-    }
-    
-    @SuppressWarnings("unchecked")
-    private <T extends ShardingSphereRule> Collection<T> getRules(final SchemaContext schemaContext, final Class<T> ruleType) {
-        return schemaContext.getSchema().getRules().stream().filter(each -> ruleType == each.getClass()).map(each -> (T) each).collect(Collectors.toList());
     }
     
     @Override
