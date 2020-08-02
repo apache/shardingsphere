@@ -114,7 +114,7 @@ public final class ProxySchemaContexts {
     }
     
     public final class JDBCBackendDataSource implements BackendDataSource {
-    
+        
         /**
          * Get connection.
          *
@@ -126,7 +126,7 @@ public final class ProxySchemaContexts {
         public Connection getConnection(final String schemaName, final String dataSourceName) throws SQLException {
             return getConnections(schemaName, dataSourceName, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
         }
-    
+        
         /**
          * Get connections.
          *
@@ -140,7 +140,7 @@ public final class ProxySchemaContexts {
         public List<Connection> getConnections(final String schemaName, final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
             return getConnections(schemaName, dataSourceName, connectionSize, connectionMode, TransactionType.LOCAL);
         }
-    
+        
         /**
          * Get connections.
          *
@@ -166,7 +166,7 @@ public final class ProxySchemaContexts {
                 return createConnections(schemaName, dataSourceName, dataSource, connectionSize, transactionType);
             }
         }
-    
+        
         private List<Connection> createConnections(final String schemaName, final String dataSourceName, 
                                                    final DataSource dataSource, final int connectionSize, final TransactionType transactionType) throws SQLException {
             List<Connection> result = new ArrayList<>(connectionSize);
@@ -182,13 +182,13 @@ public final class ProxySchemaContexts {
             }
             return result;
         }
-    
+        
         private Connection createConnection(final String schemaName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
             ShardingTransactionManager shardingTransactionManager = 
                     schemaContexts.getSchemaContexts().get(schemaName).getRuntimeContext().getTransactionManagerEngine().getTransactionManager(transactionType);
             return isInShardingTransaction(shardingTransactionManager) ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
         }
-    
+        
         private boolean isInShardingTransaction(final ShardingTransactionManager shardingTransactionManager) {
             return null != shardingTransactionManager && shardingTransactionManager.isInTransaction();
         }
