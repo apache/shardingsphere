@@ -104,6 +104,12 @@ public final class SchemaContextsBuilder {
         return new SchemaContext(schemaName, createShardingSphereSchema(schemaName), runtimeContext);
     }
     
+    private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
+        try (Connection connection = dataSources.values().iterator().next().getConnection()) {
+            return new CachedDatabaseMetaData(connection.getMetaData());
+        }
+    }
+    
     private ShardingTransactionManagerEngine createShardingTransactionManagerEngine(final Map<String, DataSource> dataSources) {
         ShardingTransactionManagerEngine result = new ShardingTransactionManagerEngine();
         result.init(databaseType, dataSources);
@@ -112,9 +118,9 @@ public final class SchemaContextsBuilder {
     
     private ShardingSphereSchema createShardingSphereSchema(final String schemaName) throws SQLException {
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
-        Collection<RuleConfiguration> configurations = this.ruleConfigurations.get(schemaName);
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(configurations, dataSources.keySet());
-        return new ShardingSphereSchema(databaseType, configurations, rules, dataSources, createMetaData(dataSources, rules));
+        Collection<RuleConfiguration> ruleConfigurations = this.ruleConfigurations.get(schemaName);
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigurations, dataSources.keySet());
+        return new ShardingSphereSchema(databaseType, ruleConfigurations, rules, dataSources, createMetaData(dataSources, rules));
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
@@ -136,12 +142,6 @@ public final class SchemaContextsBuilder {
             }
         }
         return result;
-    }
-    
-    private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
-            return new CachedDatabaseMetaData(connection.getMetaData());
-        }
     }
     
     private void log(final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
