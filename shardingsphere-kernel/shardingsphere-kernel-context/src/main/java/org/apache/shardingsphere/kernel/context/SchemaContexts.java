@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.kernel.context;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -25,19 +26,20 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Schema contexts.
  */
+@RequiredArgsConstructor
 @Getter
 public final class SchemaContexts implements SchemaContextsAware {
     
-    private final Map<String, SchemaContext> schemaContexts = new HashMap<>();
+    private final Map<String, SchemaContext> schemaContexts;
     
     private final Authentication authentication;
     
@@ -53,33 +55,20 @@ public final class SchemaContexts implements SchemaContextsAware {
         this(schemaContexts, authentication, props, false);
     }
     
-    public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final Authentication authentication, final ConfigurationProperties props, final boolean isCircuitBreak) {
-        this.schemaContexts.putAll(schemaContexts);
-        this.authentication = authentication;
-        this.props = props;
-        this.isCircuitBreak = isCircuitBreak;
-    }
-    
     /**
-     * Get sharding sphere rules.
+     * Get rules.
      *
      * @param ruleType rule type
-     * @param <T> rule
+     * @param <T> type of rule
      * @return rules
      */
-    @SuppressWarnings("unchecked")
     public <T extends ShardingSphereRule> Map<String, Collection<T>> getRules(final Class<T> ruleType) {
-        Map<String, Collection<T>> result = new LinkedHashMap<>();
-        for (Map.Entry<String, SchemaContext> entry : schemaContexts.entrySet()) {
-            Collection<T> rules = new LinkedList<>();
-            for (ShardingSphereRule each : entry.getValue().getSchema().getRules()) {
-                if (each.getClass() == ruleType) {
-                    rules.add((T) each);
-                }
-            }
-            result.put(entry.getKey(), rules);
-        }
-        return result;
+        return schemaContexts.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> getRules(entry.getValue(), ruleType), (key, value) -> value, LinkedHashMap::new));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T extends ShardingSphereRule> Collection<T> getRules(final SchemaContext schemaContext, final Class<T> ruleType) {
+        return schemaContext.getSchema().getRules().stream().filter(each -> ruleType == each.getClass()).map(each -> (T) each).collect(Collectors.toList());
     }
     
     @Override
@@ -89,8 +78,6 @@ public final class SchemaContexts implements SchemaContextsAware {
     
     @Override
     public void close() {
-        for (SchemaContext each : schemaContexts.values()) {
-            each.getRuntimeContext().getExecutorKernel().close();
-        }
+        schemaContexts.values().forEach(each -> each.getRuntimeContext().getExecutorKernel().close());
     }
 }

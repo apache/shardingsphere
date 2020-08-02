@@ -38,8 +38,8 @@ public final class OrchestrationSchemaContextsFixture implements SchemaContextsA
     }
     
     @Override
-    public ConfigurationProperties getProps() {
-        return new ConfigurationProperties(new Properties());
+    public SchemaContext getDefaultSchemaContext() {
+        return mock(SchemaContext.class);
     }
     
     @Override
@@ -48,8 +48,8 @@ public final class OrchestrationSchemaContextsFixture implements SchemaContextsA
     }
     
     @Override
-    public SchemaContext getDefaultSchemaContext() {
-        return mock(SchemaContext.class);
+    public ConfigurationProperties getProps() {
+        return new ConfigurationProperties(new Properties());
     }
     
     @Override

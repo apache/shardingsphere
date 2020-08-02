@@ -35,11 +35,11 @@ public interface SchemaContextsAware extends AutoCloseable {
     Map<String, SchemaContext> getSchemaContexts();
     
     /**
-     * Get configuration properties.
-     * 
-     * @return configuration properties
+     * Get default schema context.
+     *
+     * @return default schema context
      */
-    ConfigurationProperties getProps();
+    SchemaContext getDefaultSchemaContext();
     
     /**
      * Get authentication.
@@ -49,11 +49,11 @@ public interface SchemaContextsAware extends AutoCloseable {
     Authentication getAuthentication();
     
     /**
-     * Get default schema context.
+     * Get configuration properties.
      *
-     * @return default schema context
+     * @return configuration properties
      */
-    SchemaContext getDefaultSchemaContext();
+    ConfigurationProperties getProps();
     
     /**
      * iS CircuitBreak.

@@ -122,8 +122,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     }
     
     @Override
-    public final ConfigurationProperties getProps() {
-        return schemaContexts.getProps();
+    public final SchemaContext getDefaultSchemaContext() {
+        return schemaContexts.getDefaultSchemaContext();
     }
     
     @Override
@@ -132,8 +132,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     }
     
     @Override
-    public final SchemaContext getDefaultSchemaContext() {
-        return schemaContexts.getDefaultSchemaContext();
+    public final ConfigurationProperties getProps() {
+        return schemaContexts.getProps();
     }
     
     @Override
