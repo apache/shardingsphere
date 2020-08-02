@@ -20,14 +20,12 @@ package org.apache.shardingsphere.proxy;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
 import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.constant.Constants;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
@@ -39,19 +37,16 @@ import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
+import org.apache.shardingsphere.proxy.db.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.orchestration.OrchestrationBootstrap;
 import org.apache.shardingsphere.proxy.orchestration.schema.ProxyOrchestrationSchemaContexts;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 
 /**
  * ShardingSphere-Proxy Bootstrap.
@@ -120,20 +115,11 @@ public final class Bootstrap {
     }
     
     private static void setDatabaseServerInfo() {
-        List<String> schemaNames = ProxySchemaContexts.getInstance().getSchemaNames();
-        if (CollectionUtils.isEmpty(schemaNames)) {
-            return;
-        }
-        Map<String, DataSource> dataSources = Objects.requireNonNull(ProxySchemaContexts.getInstance().getSchema(schemaNames.get(0))).getSchema().getDataSources();
-        DataSource singleDataSource = dataSources.values().iterator().next();
-        try (Connection connection = singleDataSource.getConnection()) {
-            DatabaseMetaData databaseMetaData = connection.getMetaData();
-            String databaseName = databaseMetaData.getDatabaseProductName();
-            String databaseVersion = databaseMetaData.getDatabaseProductVersion();
-            log.info("database name {} , database version {}", databaseName, databaseVersion);
-            MySQLServerInfo.setServerVersion(databaseVersion);
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException("Get database server info failed", ex);
+        Optional<DataSource> dataSource = ProxySchemaContexts.getInstance().getDataSourceSample();
+        if (dataSource.isPresent()) {
+            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSource.get());
+            log.info(databaseServerInfo.toString());
+            MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
         }
     }
 }

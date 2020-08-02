@@ -21,8 +21,8 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.BackendDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -34,12 +34,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Proxy schema contexts.
- * 
  */
-
 @Getter
 public final class ProxySchemaContexts {
     
@@ -96,6 +97,20 @@ public final class ProxySchemaContexts {
      */
     public List<String> getSchemaNames() {
         return new LinkedList<>(schemaContexts.getSchemaContexts().keySet());
+    }
+    
+    /**
+     * Get data source sample.
+     * 
+     * @return data source sample
+     */
+    public Optional<DataSource> getDataSourceSample() {
+        List<String> schemaNames = getSchemaNames();
+        if (schemaNames.isEmpty()) {
+            return Optional.empty();
+        }
+        Map<String, DataSource> dataSources =  Objects.requireNonNull(getSchema(schemaNames.get(0))).getSchema().getDataSources();
+        return Optional.of(dataSources.values().iterator().next());
     }
     
     public final class JDBCBackendDataSource implements BackendDataSource {
