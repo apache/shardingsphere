@@ -63,9 +63,9 @@ public final class SchemaContextsBuilder {
     
     private final ConfigurationProperties props;
     
-    private final ExecutorKernel executorKernel;
-    
     private final Authentication authentication;
+    
+    private final ExecutorKernel executorKernel;
     
     public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
                                  final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
