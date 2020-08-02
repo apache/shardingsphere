@@ -153,7 +153,7 @@ public final class MySQLProtocolFrontendEngineTest {
     }
     
     private SchemaContexts getSchemaContexts(final Authentication authentication) {
-        return new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), authentication);
+        return new SchemaContexts(getSchemaContextMap(), authentication, new ConfigurationProperties(new Properties()));
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {

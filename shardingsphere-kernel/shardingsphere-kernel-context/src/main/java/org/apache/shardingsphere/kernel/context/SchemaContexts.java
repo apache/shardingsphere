@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -38,29 +39,24 @@ public final class SchemaContexts implements SchemaContextsAware {
     
     private final Map<String, SchemaContext> schemaContexts = new HashMap<>();
     
-    private final ConfigurationProperties props;
-    
     private final Authentication authentication;
+    
+    private final ConfigurationProperties props;
     
     private final boolean isCircuitBreak;
     
     public SchemaContexts() {
-        props = new ConfigurationProperties(new Properties());
-        authentication = new Authentication();
-        isCircuitBreak = false;
+        this(Collections.emptyMap(), new Authentication(), new ConfigurationProperties(new Properties()), false);
     }
     
-    public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final ConfigurationProperties props, final Authentication authentication) {
-        this.schemaContexts.putAll(schemaContexts);
-        this.props = props;
-        this.authentication = authentication;
-        isCircuitBreak = false;
+    public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final Authentication authentication, final ConfigurationProperties props) {
+        this(schemaContexts, authentication, props, false);
     }
     
-    public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final ConfigurationProperties props, final Authentication authentication, final boolean isCircuitBreak) {
+    public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final Authentication authentication, final ConfigurationProperties props, final boolean isCircuitBreak) {
         this.schemaContexts.putAll(schemaContexts);
-        this.props = props;
         this.authentication = authentication;
+        this.props = props;
         this.isCircuitBreak = isCircuitBreak;
     }
     

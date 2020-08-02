@@ -81,7 +81,7 @@ public final class BackendConnectionTest {
     private void setSchemaContexts() throws NoSuchFieldException, IllegalAccessException {
         Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        field.set(ProxySchemaContexts.getInstance(), new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication()));
+        field.set(ProxySchemaContexts.getInstance(), new SchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties())));
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {

@@ -18,11 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.auth;
 
 import com.google.common.primitives.Bytes;
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
@@ -36,6 +31,12 @@ import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -118,7 +119,7 @@ public final class MySQLAuthenticationHandlerTest {
     }
     
     private SchemaContexts getSchemaContexts(final Authentication authentication) {
-        return new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), authentication);
+        return new SchemaContexts(getSchemaContextMap(), authentication, new ConfigurationProperties(new Properties()));
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {

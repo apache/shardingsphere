@@ -202,7 +202,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         SchemaContext oldSchemaContext = dataSource.getSchemaContexts().getSchemaContexts().get(DefaultSchema.LOGIC_NAME);
         schemaContexts.put(DefaultSchema.LOGIC_NAME, new SchemaContext(oldSchemaContext.getName(),
                 getChangedSchema(oldSchemaContext.getSchema(), event.getRuleSchemaMetaData()), oldSchemaContext.getRuntimeContext()));
-        dataSource = new ShardingSphereDataSource(new SchemaContexts(schemaContexts, dataSource.getSchemaContexts().getProps(), dataSource.getSchemaContexts().getAuthentication()));
+        dataSource = new ShardingSphereDataSource(new SchemaContexts(schemaContexts, dataSource.getSchemaContexts().getAuthentication(), dataSource.getSchemaContexts().getProps()));
     }
     
     /**
@@ -260,7 +260,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent event) {
         SchemaContexts oldSchemaContexts = dataSource.getSchemaContexts();
-        SchemaContexts schemaContexts = new SchemaContexts(oldSchemaContexts.getSchemaContexts(), oldSchemaContexts.getProps(), oldSchemaContexts.getAuthentication(), event.isCircuitBreak());
+        SchemaContexts schemaContexts = new SchemaContexts(oldSchemaContexts.getSchemaContexts(), oldSchemaContexts.getAuthentication(), oldSchemaContexts.getProps(), event.isCircuitBreak());
         dataSource = new ShardingSphereDataSource(schemaContexts);
     }
     

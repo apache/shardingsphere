@@ -68,7 +68,7 @@ public final class BroadcastBackendHandlerTest {
     public void setUp() {
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(), new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication()));
+        schemaContexts.set(ProxySchemaContexts.getInstance(), new SchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties())));
         when(backendConnection.getSchema()).thenReturn(ProxySchemaContexts.getInstance().getSchema("schema_0"));
     }
     

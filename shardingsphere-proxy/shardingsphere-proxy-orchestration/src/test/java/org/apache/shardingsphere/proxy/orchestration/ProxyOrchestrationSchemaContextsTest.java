@@ -70,7 +70,7 @@ public final class ProxyOrchestrationSchemaContextsTest {
     
     private ProxyOrchestrationSchemaContexts getProxyOrchestrationSchemaContexts() {
         ProxyOrchestrationSchemaContexts result = new ProxyOrchestrationSchemaContexts(new SchemaContexts());
-        SchemaContexts schemaContexts = new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication());
+        SchemaContexts schemaContexts = new SchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()));
         result.getSchemaContexts().putAll(schemaContexts.getSchemaContexts());
         return result;
     }

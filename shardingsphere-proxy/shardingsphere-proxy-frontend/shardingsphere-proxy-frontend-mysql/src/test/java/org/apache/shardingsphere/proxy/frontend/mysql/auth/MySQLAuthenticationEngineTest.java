@@ -133,7 +133,7 @@ public final class MySQLAuthenticationEngineTest {
         Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
         field.set(ProxySchemaContexts.getInstance(), 
-                new SchemaContexts(Collections.singletonMap("sharding_db", mock(SchemaContext.class)), new ConfigurationProperties(new Properties()), new Authentication()));
+                new SchemaContexts(Collections.singletonMap("sharding_db", mock(SchemaContext.class)), new Authentication(), new ConfigurationProperties(new Properties())));
     }
     
     private MySQLPacketPayload getPayload(final String userName, final String database, final byte[] authResponse) {

@@ -59,7 +59,7 @@ public final class ShowDatabasesBackendHandlerTest {
         showDatabasesBackendHandler = new ShowDatabasesBackendHandler(backendConnection);
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(), new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), getAuthentication()));
+        schemaContexts.set(ProxySchemaContexts.getInstance(), new SchemaContexts(getSchemaContextMap(), getAuthentication(), new ConfigurationProperties(new Properties())));
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {

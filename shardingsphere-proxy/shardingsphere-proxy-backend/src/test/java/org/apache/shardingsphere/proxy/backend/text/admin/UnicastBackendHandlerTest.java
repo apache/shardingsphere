@@ -62,7 +62,7 @@ public final class UnicastBackendHandlerTest {
     public void setUp() {
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(), new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication()));
+        schemaContexts.set(ProxySchemaContexts.getInstance(), new SchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties())));
         setUnderlyingHandler(new UpdateResponse());
     }
     
