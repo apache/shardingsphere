@@ -20,17 +20,18 @@ package org.apache.shardingsphere.orchestration.core.config;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.constant.Constants;
+import org.apache.shardingsphere.orchestration.core.common.utils.IpUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.constant.Constants;
-import org.apache.shardingsphere.orchestration.core.common.utils.IpUtils;
 
 /**
- * Configuration node.
+ * Config center node.
  */
 @RequiredArgsConstructor
 public final class ConfigCenterNode {
