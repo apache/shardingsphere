@@ -108,7 +108,7 @@ public final class Bootstrap {
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = proxyConfig.getSchemaDataSources();
         DatabaseType databaseType = schemaDataSources.isEmpty() ? new MySQLDatabaseType() : DatabaseTypes.getActualDatabaseType(getDatabaseTypeName(schemaDataSources));
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(
-                createDataSourcesMap(schemaDataSources), schemaDataSources, proxyConfig.getAuthentication(), databaseType, proxyConfig.getSchemaRules(), proxyConfig.getProps());
+                createDataSourcesMap(schemaDataSources), proxyConfig.getAuthentication(), databaseType, proxyConfig.getSchemaRules(), proxyConfig.getProps());
         ProxySchemaContexts.getInstance().init(createSchemaContextsAware(schemaContextsBuilder, orchestrationEnabled));
     }
     

@@ -44,8 +44,6 @@ public final class ShardingSphereSchema {
     
     private final Map<String, DataSource> dataSources = new LinkedHashMap<>();
     
-    private final Map<String, DataSourceParameter> dataSourceParameters = new LinkedHashMap<>();
-    
     private final ShardingSphereMetaData metaData;
     
     public ShardingSphereSchema(final DatabaseType databaseType, final Collection<RuleConfiguration> configurations, final Collection<ShardingSphereRule> rules, 
@@ -57,12 +55,6 @@ public final class ShardingSphereSchema {
         metaData = shardingSphereMetaData;
     }
     
-    public ShardingSphereSchema(final DatabaseType databaseType, final Collection<RuleConfiguration> configurations, final Collection<ShardingSphereRule> rules,
-                                final Map<String, DataSource> dataSourceMap, final Map<String, DataSourceParameter> dataSourceParameters, final ShardingSphereMetaData shardingSphereMetaData) {
-        this(databaseType, configurations, rules, dataSourceMap, shardingSphereMetaData);
-        this.dataSourceParameters.putAll(dataSourceParameters);
-    }
-    
     /**
      * Close data sources.
      * @param dataSources data sources
@@ -70,7 +62,6 @@ public final class ShardingSphereSchema {
     public void closeDataSources(final Collection<String> dataSources) {
         for (String each :dataSources) {
             close(this.dataSources.get(each));
-            dataSourceParameters.remove(each);
         }
     }
     

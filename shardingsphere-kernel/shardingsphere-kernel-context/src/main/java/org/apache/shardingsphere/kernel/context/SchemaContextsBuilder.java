@@ -35,7 +35,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.kernel.context.runtime.CachedDatabaseMetaData;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
-import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngineFactory;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -60,8 +59,6 @@ public final class SchemaContextsBuilder {
     
     private final Map<String, Map<String, DataSource>> dataSources;
     
-    private final Map<String, Map<String, DataSourceParameter>> dataSourceParameters = new LinkedHashMap<>();
-    
     private final Map<String, Collection<RuleConfiguration>> configurations;
     
     private final ConfigurationProperties props;
@@ -81,14 +78,13 @@ public final class SchemaContextsBuilder {
         log(configurations, props);
     }
     
-    public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, final Map<String, Map<String, DataSourceParameter>> dataSourceParameters, final Authentication authentication, 
+    public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, final Authentication authentication, 
                                  final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
         this.dataSources = dataSources;
         this.databaseType = databaseType;
         this.configurations = configurations;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
         executorKernel = new ExecutorKernel(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
-        this.dataSourceParameters.putAll(dataSourceParameters);
         this.authentication = authentication;
         log(configurations, props);
     }
@@ -124,10 +120,7 @@ public final class SchemaContextsBuilder {
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
         Collection<RuleConfiguration> configurations = this.configurations.get(schemaName);
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(configurations, dataSources.keySet());
-        if (dataSourceParameters.isEmpty()) {
-            return new ShardingSphereSchema(databaseType, configurations, rules, dataSources, createMetaData(dataSources, rules));
-        }
-        return new ShardingSphereSchema(databaseType, configurations, rules, dataSources, dataSourceParameters.get(schemaName), createMetaData(dataSources, rules));
+        return new ShardingSphereSchema(databaseType, configurations, rules, dataSources, createMetaData(dataSources, rules));
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
