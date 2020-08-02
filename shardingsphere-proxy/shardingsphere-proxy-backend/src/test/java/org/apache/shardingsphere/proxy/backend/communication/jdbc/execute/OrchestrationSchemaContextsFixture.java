@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
+import org.apache.shardingsphere.kernel.context.SchemaContexts;
 
 import java.util.Collections;
 import java.util.Map;
@@ -30,7 +30,7 @@ import java.util.Properties;
 import static org.mockito.Mockito.mock;
 
 @Getter
-public final class OrchestrationSchemaContextsFixture implements SchemaContextsAware {
+public final class OrchestrationSchemaContextsFixture implements SchemaContexts {
     
     @Override
     public Map<String, SchemaContext> getSchemaContexts() {

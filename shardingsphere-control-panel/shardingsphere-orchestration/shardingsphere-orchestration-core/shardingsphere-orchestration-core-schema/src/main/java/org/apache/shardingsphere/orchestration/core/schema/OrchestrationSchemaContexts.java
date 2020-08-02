@@ -38,8 +38,8 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
-import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
@@ -76,11 +76,11 @@ import java.util.Map.Entry;
  * Control panel subscriber.
  * 
  */
-public abstract class OrchestrationSchemaContexts implements SchemaContextsAware {
+public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     
-    private volatile SchemaContexts schemaContexts;
+    private volatile StandardSchemaContexts schemaContexts;
     
-    public OrchestrationSchemaContexts(final SchemaContexts schemaContexts) {
+    public OrchestrationSchemaContexts(final StandardSchemaContexts schemaContexts) {
         OrchestrationEventBus.getInstance().register(this);
         this.schemaContexts = schemaContexts;
         persistMetaData();
@@ -157,7 +157,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
         String schemaName = schemaAddedEvent.getShardingSchemaName();
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContexts());
         schemas.put(schemaName, getAddedSchemaContext(schemaAddedEvent));
-        schemaContexts = new SchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps());
+        schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps());
         OrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.getSchemaContexts().get(schemaName).getSchema().getMetaData().getSchema());
     }
     
@@ -170,7 +170,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     public synchronized void renew(final SchemaDeletedEvent schemaDeletedEvent) {
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContexts());
         schemas.remove(schemaDeletedEvent.getShardingSchemaName());
-        schemaContexts = new SchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps());
+        schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps());
     }
     
     /**
@@ -182,7 +182,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     public synchronized void renew(final PropertiesChangedEvent event) {
         ConfigurationLogger.log(event.getProps());
         ConfigurationProperties props = new ConfigurationProperties(event.getProps());
-        schemaContexts = new SchemaContexts(getChangedSchemaContexts(props), schemaContexts.getAuthentication(), props);
+        schemaContexts = new StandardSchemaContexts(getChangedSchemaContexts(props), schemaContexts.getAuthentication(), props);
     }
     
     /**
@@ -193,7 +193,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     @Subscribe
     public synchronized void renew(final AuthenticationChangedEvent event) {
         ConfigurationLogger.log(event.getAuthentication());
-        schemaContexts = new SchemaContexts(schemaContexts.getSchemaContexts(), event.getAuthentication(), schemaContexts.getProps());
+        schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemaContexts(), event.getAuthentication(), schemaContexts.getProps());
     }
     
     /**
@@ -227,7 +227,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
                 schemaContexts.put(entry.getKey(), entry.getValue());
             }
         }
-        this.schemaContexts = new SchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps());
+        this.schemaContexts = new StandardSchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps());
     }
     
     /**
@@ -242,7 +242,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
         String schemaName = ruleConfigurationsChangedEvent.getShardingSchemaName();
         schemaContexts.remove(schemaName);
         schemaContexts.put(schemaName, getChangedSchemaContext(this.schemaContexts.getSchemaContexts().get(schemaName), ruleConfigurationsChangedEvent.getRuleConfigurations()));
-        this.schemaContexts = new SchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps());
+        this.schemaContexts = new StandardSchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps());
         OrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.get(schemaName).getSchema().getMetaData().getSchema());
     }
     
@@ -274,7 +274,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
         Map<String, SchemaContext> schemaContexts = new HashMap<>(this.schemaContexts.getSchemaContexts());
         schemaContexts.remove(schemaName);
         schemaContexts.put(schemaName, getChangedSchemaContext(this.schemaContexts.getSchemaContexts().get(schemaName), dataSourceChangedEvent.getDataSourceConfigurations()));
-        this.schemaContexts = new SchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps());
+        this.schemaContexts = new StandardSchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps());
     }
     
     /**
@@ -284,7 +284,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
      */
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent event) {
-        this.schemaContexts = new SchemaContexts(schemaContexts.getSchemaContexts(), schemaContexts.getAuthentication(), schemaContexts.getProps(), event.isCircuitBreak());
+        this.schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemaContexts(), schemaContexts.getAuthentication(), schemaContexts.getProps(), event.isCircuitBreak());
     }
     
     /**

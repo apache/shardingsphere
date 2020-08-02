@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
@@ -100,6 +100,6 @@ public class RegistryCenterExecuteEngine implements SQLExecuteEngine {
     }
     
     private boolean isRegistryCenterExisted() {
-        return !(ProxySchemaContexts.getInstance().getSchemaContexts() instanceof SchemaContexts);
+        return !(ProxySchemaContexts.getInstance().getSchemaContexts() instanceof StandardSchemaContexts);
     }
 }

@@ -17,67 +17,48 @@
 
 package org.apache.shardingsphere.kernel.context;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Schema contexts.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SchemaContexts implements SchemaContextsAware {
-    
-    private final Map<String, SchemaContext> schemaContexts;
-    
-    private final Authentication authentication;
-    
-    private final ConfigurationProperties props;
-    
-    private final boolean isCircuitBreak;
-    
-    public SchemaContexts() {
-        this(new HashMap<>(), new Authentication(), new ConfigurationProperties(new Properties()), false);
-    }
-    
-    public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final Authentication authentication, final ConfigurationProperties props) {
-        this(schemaContexts, authentication, props, false);
-    }
+public interface SchemaContexts extends AutoCloseable {
     
     /**
-     * Get rules.
-     *
-     * @param ruleType rule type
-     * @param <T> type of rule
-     * @return rules
+     * Get schema contexts.
+     * 
+     * @return schema contexts
      */
-    public <T extends ShardingSphereRule> Map<String, Collection<T>> getRules(final Class<T> ruleType) {
-        return schemaContexts.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> getRules(entry.getValue(), ruleType), (key, value) -> value, LinkedHashMap::new));
-    }
+    Map<String, SchemaContext> getSchemaContexts();
     
-    @SuppressWarnings("unchecked")
-    private <T extends ShardingSphereRule> Collection<T> getRules(final SchemaContext schemaContext, final Class<T> ruleType) {
-        return schemaContext.getSchema().getRules().stream().filter(each -> ruleType == each.getClass()).map(each -> (T) each).collect(Collectors.toList());
-    }
+    /**
+     * Get default schema context.
+     *
+     * @return default schema context
+     */
+    SchemaContext getDefaultSchemaContext();
     
-    @Override
-    public SchemaContext getDefaultSchemaContext() {
-        return schemaContexts.get(DefaultSchema.LOGIC_NAME);
-    }
+    /**
+     * Get authentication.
+     * 
+     * @return authentication
+     */
+    Authentication getAuthentication();
     
-    @Override
-    public void close() {
-        schemaContexts.values().forEach(each -> each.getRuntimeContext().getExecutorKernel().close());
-    }
+    /**
+     * Get configuration properties.
+     *
+     * @return configuration properties
+     */
+    ConfigurationProperties getProps();
+    
+    /**
+     * Is circuit break or not.
+     * 
+     * @return is circuit break or not
+     */
+    boolean isCircuitBreak();
 }

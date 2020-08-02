@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
@@ -69,8 +70,8 @@ public final class ProxyOrchestrationSchemaContextsTest {
     }
     
     private ProxyOrchestrationSchemaContexts getProxyOrchestrationSchemaContexts() {
-        ProxyOrchestrationSchemaContexts result = new ProxyOrchestrationSchemaContexts(new SchemaContexts());
-        SchemaContexts schemaContexts = new SchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()));
+        ProxyOrchestrationSchemaContexts result = new ProxyOrchestrationSchemaContexts(new StandardSchemaContexts());
+        SchemaContexts schemaContexts = new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()));
         result.getSchemaContexts().putAll(schemaContexts.getSchemaContexts());
         return result;
     }

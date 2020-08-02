@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.orchestration.schema;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.orchestration.core.schema.OrchestrationSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSourceFactory;
@@ -40,7 +40,7 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
     
     private final JDBCBackendDataSourceFactory backendDataSourceFactory;
     
-    public ProxyOrchestrationSchemaContexts(final SchemaContexts schemaContexts) {
+    public ProxyOrchestrationSchemaContexts(final StandardSchemaContexts schemaContexts) {
         super(schemaContexts);
         backendDataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
     }
@@ -85,9 +85,9 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
     }
     
     @Override
-    public Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
+    public Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSources) {
         Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesMap.entrySet()) {
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSources.entrySet()) {
             result.put(entry.getKey(), DataSourceConverter.getDataSourceParameterMap(entry.getValue()));
         }
         return result;

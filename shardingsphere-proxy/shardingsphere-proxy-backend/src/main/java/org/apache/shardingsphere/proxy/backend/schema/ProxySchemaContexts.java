@@ -21,8 +21,8 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
-import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.proxy.backend.BackendDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -45,7 +45,7 @@ public final class ProxySchemaContexts {
     
     private static final ProxySchemaContexts INSTANCE = new ProxySchemaContexts();
     
-    private SchemaContextsAware schemaContexts = new SchemaContexts();
+    private SchemaContexts schemaContexts = new StandardSchemaContexts();
     
     private final JDBCBackendDataSource backendDataSource = new JDBCBackendDataSource();
     
@@ -65,7 +65,7 @@ public final class ProxySchemaContexts {
      *
      * @param schemaContexts  schema contexts
      */
-    public void init(final SchemaContextsAware schemaContexts) {
+    public void init(final SchemaContexts schemaContexts) {
         this.schemaContexts = schemaContexts;
     }
     

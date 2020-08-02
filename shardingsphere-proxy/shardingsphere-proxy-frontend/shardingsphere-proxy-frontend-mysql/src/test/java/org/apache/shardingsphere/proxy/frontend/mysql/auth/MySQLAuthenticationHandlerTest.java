@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
@@ -119,7 +120,7 @@ public final class MySQLAuthenticationHandlerTest {
     }
     
     private SchemaContexts getSchemaContexts(final Authentication authentication) {
-        return new SchemaContexts(getSchemaContextMap(), authentication, new ConfigurationProperties(new Properties()));
+        return new StandardSchemaContexts(getSchemaContextMap(), authentication, new ConfigurationProperties(new Properties()));
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {

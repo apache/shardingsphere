@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
@@ -60,7 +60,7 @@ public final class UseDatabaseBackendHandlerTest {
         when(backendConnection.getUserName()).thenReturn("root");
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(), new SchemaContexts(getSchemaContextMap(), getAuthentication(), new ConfigurationProperties(new Properties())));
+        schemaContexts.set(ProxySchemaContexts.getInstance(), new StandardSchemaContexts(getSchemaContextMap(), getAuthentication(), new ConfigurationProperties(new Properties())));
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
