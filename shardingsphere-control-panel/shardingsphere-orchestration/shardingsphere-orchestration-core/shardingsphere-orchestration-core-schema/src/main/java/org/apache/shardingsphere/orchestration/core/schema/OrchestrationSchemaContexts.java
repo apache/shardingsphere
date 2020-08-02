@@ -23,7 +23,6 @@ import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.facade.init.ClusterInitFacade;
 import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
 import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -71,7 +70,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Control panel subscriber.
@@ -79,36 +77,27 @@ import java.util.stream.Collectors;
  */
 public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     
+    private final OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance();
+    
     private volatile SchemaContexts schemaContexts;
     
     public OrchestrationSchemaContexts(final SchemaContexts schemaContexts) {
         OrchestrationEventBus.getInstance().register(this);
         this.schemaContexts = schemaContexts;
+        disableDataSources();
         persistMetaData();
-        disableMasterSlaveRules();
     }
     
-    private void persistMetaData() {
-        schemaContexts.getSchemaContexts().forEach((key, value) -> MetaDataCallback.getInstance().run(key, value.getSchema().getMetaData().getSchema()));
-    }
-    
-    private void disableMasterSlaveRules() {
-        Map<String, Collection<MasterSlaveRule>> masterSlaveRules = findMasterSlaveRule();
-        if (masterSlaveRules.isEmpty()) {
-            return;
-        }
-        Collection<String> disabledDataSources = OrchestrationFacade.getInstance().getRegistryCenter().loadDisabledDataSources();
-        if (disabledDataSources.isEmpty()) {
-            return;
-        }
-        for (Entry<String, Collection<MasterSlaveRule>> entry : masterSlaveRules.entrySet()) {
-            for (MasterSlaveRule each : entry.getValue()) {
-                disableMasterSlaveRules(each, disabledDataSources, entry.getKey());
-            }
+    // TODO decouple masterslave rule
+    private void disableDataSources() {
+        Collection<String> disabledDataSources = orchestrationFacade.getRegistryCenter().loadDisabledDataSources();
+        if (!disabledDataSources.isEmpty()) {
+            schemaContexts.getSchemaContexts().forEach((key, value)
+                    -> value.getSchema().getRules().stream().filter(each -> each instanceof MasterSlaveRule).forEach(each -> disableDataSources((MasterSlaveRule) each, disabledDataSources, key)));
         }
     }
     
-    private static void disableMasterSlaveRules(final MasterSlaveRule masterSlaveRule, final Collection<String> disabledDataSources, final String schemaName) {
+    private void disableDataSources(final MasterSlaveRule masterSlaveRule, final Collection<String> disabledDataSources, final String schemaName) {
         masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames().forEach(each -> {
             if (disabledDataSources.contains(Joiner.on(".").join(schemaName, each))) {
                 masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true));
@@ -116,14 +105,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         });
     }
     
-    private  <T extends ShardingSphereRule> Map<String, Collection<T>> findMasterSlaveRule() {
-        return schemaContexts.getSchemaContexts().entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> findMasterSlaveRule(entry.getValue()), (key, value) -> value, LinkedHashMap::new));
-    }
-    
-    @SuppressWarnings("unchecked")
-    private <T extends ShardingSphereRule> Collection<T> findMasterSlaveRule(final SchemaContext schemaContext) {
-        return schemaContext.getSchema().getRules().stream().filter(each -> MasterSlaveRule.class == each.getClass()).map(each -> (T) each).collect(Collectors.toList());
+    private void persistMetaData() {
+        schemaContexts.getSchemaContexts().forEach((key, value) -> orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(key, value.getSchema().getMetaData().getSchema()));
     }
     
     @Override
