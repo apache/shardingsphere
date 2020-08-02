@@ -51,6 +51,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -121,7 +122,7 @@ public final class Bootstrap {
     }
     
     private static void updateServerInfo() {
-        Collection<String> schemaNames = ProxySchemaContexts.getInstance().getSchemaNames();
+        List<String> schemaNames = ProxySchemaContexts.getInstance().getSchemaNames();
         if (CollectionUtils.isEmpty(schemaNames)) {
             return;
         }
