@@ -204,12 +204,12 @@ public final class ConfigCenter {
         if (!isOverwrite) {
             return;
         }
-        String shardingSchemaNames = repository.get(node.getSchemaPath());
-        if (Strings.isNullOrEmpty(shardingSchemaNames)) {
+        String schemaNames = repository.get(node.getSchemaPath());
+        if (Strings.isNullOrEmpty(schemaNames)) {
             repository.persist(node.getSchemaPath(), shardingSchemaName);
             return;
         }
-        List<String> schemaNameList = Splitter.on(",").splitToList(shardingSchemaNames);
+        List<String> schemaNameList = Splitter.on(",").splitToList(schemaNames);
         if (schemaNameList.contains(shardingSchemaName)) {
             return;
         }
