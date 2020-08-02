@@ -46,14 +46,14 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
     }
     
     @Override
-    public Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
+    protected Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
         Map<String, DataSourceParameter> newDataSourceParameters = DataSourceConverter.getDataSourceParameterMap(newDataSources);
         Map<String, DataSourceParameter> parameters = Maps.filterKeys(newDataSourceParameters, each -> !oldSchemaContext.getSchema().getDataSources().containsKey(each));
         return createDataSources(parameters);
     }
     
     @Override
-    public Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
+    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
         Map<String, DataSourceParameter> newDataSourceParameters = DataSourceConverter.getDataSourceParameterMap(newDataSources);
         Map<String, DataSourceParameter> parameters = new LinkedHashMap<>();
         for (Entry<String, DataSourceParameter> entry : newDataSourceParameters.entrySet()) {
@@ -69,7 +69,7 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
     }
     
     @Override
-    public Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) throws Exception {
+    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) throws Exception {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>();
         for (Entry<String, Map<String, DataSourceParameter>> entry : createDataSourceParametersMap(dataSourcesMap).entrySet()) {
             result.put(entry.getKey(), createDataSources(entry.getValue()));

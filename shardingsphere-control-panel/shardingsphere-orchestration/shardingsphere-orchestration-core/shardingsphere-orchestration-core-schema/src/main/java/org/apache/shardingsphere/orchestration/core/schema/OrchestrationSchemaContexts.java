@@ -391,34 +391,11 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
         return result;
     }
     
-    /**
-     * Get added data sources.
-     * 
-     * @param oldSchemaContext old schema context
-     * @param newDataSources new data sources
-     * @return added data sources
-     * @throws Exception exception
-     */
-    public abstract Map<String, DataSource> getAddedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSources) throws Exception;
+    protected abstract Map<String, DataSource> getAddedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSources) throws Exception;
     
-    /**
-     * Get modified data sources.
-     * 
-     * @param oldSchemaContext old schema context
-     * @param newDataSources new data sources
-     * @return modified data sources
-     * @throws Exception exception
-     */
-    public abstract Map<String, DataSource> getModifiedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSources) throws Exception;
+    protected abstract Map<String, DataSource> getModifiedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSources) throws Exception;
     
-    /**
-     * Create data sources map.
-     * 
-     * @param dataSourcesMap data source map
-     * @return data sources map
-     * @throws Exception exception
-     */
-    public abstract Map<String, Map<String, DataSource>> createDataSourcesMap(Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) throws Exception;
+    protected abstract Map<String, Map<String, DataSource>> createDataSourcesMap(Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) throws Exception;
     
     /**
      * Create data source parameters map.
