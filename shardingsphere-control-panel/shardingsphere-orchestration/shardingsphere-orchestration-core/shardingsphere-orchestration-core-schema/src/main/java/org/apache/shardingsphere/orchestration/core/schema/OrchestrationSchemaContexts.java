@@ -79,9 +79,9 @@ import java.util.stream.Collectors;
  */
 public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     
-    private volatile StandardSchemaContexts schemaContexts;
+    private volatile SchemaContexts schemaContexts;
     
-    public OrchestrationSchemaContexts(final StandardSchemaContexts schemaContexts) {
+    public OrchestrationSchemaContexts(final SchemaContexts schemaContexts) {
         OrchestrationEventBus.getInstance().register(this);
         this.schemaContexts = schemaContexts;
         persistMetaData();
@@ -152,7 +152,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     }
     
     @Override
-    public final void close() {
+    public final void close() throws Exception {
         schemaContexts.close();
     }
     

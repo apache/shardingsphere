@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.constant.Constants;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
-import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
@@ -104,7 +103,7 @@ public final class Bootstrap {
     }
     
     private static SchemaContexts createSchemaContexts(final SchemaContexts schemaContexts, final boolean orchestrationEnabled) {
-        return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts((StandardSchemaContexts) schemaContexts) : schemaContexts;
+        return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts(schemaContexts) : schemaContexts;
     }
     
     private static void initControlPanelFacade(final MetricsConfiguration metricsConfiguration, final ClusterConfiguration clusterConfiguration) {
