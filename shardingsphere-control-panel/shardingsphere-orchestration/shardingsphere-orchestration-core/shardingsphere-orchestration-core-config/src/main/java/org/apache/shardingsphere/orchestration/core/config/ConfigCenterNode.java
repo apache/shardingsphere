@@ -136,13 +136,13 @@ public final class ConfigCenterNode {
     }
     
     /**
-     * Split sharding schema name.
+     * Split schema name.
      * 
-     * @param shardingSchemaNames sharding schema names
-     * @return sharding schema names
+     * @param schemaNames schema names
+     * @return schema names
      */
-    public Collection<String> splitShardingSchemaName(final String shardingSchemaNames) {
-        return Strings.isNullOrEmpty(shardingSchemaNames) ? Collections.emptyList() : Splitter.on(COMMA_SEPARATOR).splitToList(shardingSchemaNames);
+    public Collection<String> splitSchemaName(final String schemaNames) {
+        return Strings.isNullOrEmpty(schemaNames) ? Collections.emptyList() : Splitter.on(COMMA_SEPARATOR).splitToList(schemaNames);
     }
     
     /**

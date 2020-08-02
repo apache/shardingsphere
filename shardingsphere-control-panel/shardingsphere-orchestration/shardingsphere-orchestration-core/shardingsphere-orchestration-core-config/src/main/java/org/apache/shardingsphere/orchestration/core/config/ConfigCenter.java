@@ -87,7 +87,7 @@ public final class ConfigCenter {
         persistDataSourceConfiguration(schemaName, dataSourceConfigs, isOverwrite);
         persistRuleConfigurations(schemaName, ruleConfigurations, isOverwrite);
         // TODO Consider removing the following one.
-        persistShardingSchemaName(schemaName, isOverwrite);
+        persistSchemaName(schemaName, isOverwrite);
     }
     
     /**
@@ -102,24 +102,24 @@ public final class ConfigCenter {
         persistProperties(props, isOverwrite);
     }
     
-    private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
+    private void persistDataSourceConfiguration(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
         if (isOverwrite) {
-            persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigurations);
+            persistDataSourceConfiguration(schemaName, dataSourceConfigurations);
         }
     }
     
-    private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
+    private void persistDataSourceConfiguration(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data source in `%s` for orchestration.", schemaName);
         Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToYamlConfiguration(entry.getValue())));
-        repository.persist(node.getDataSourcePath(shardingSchemaName), YamlEngine.marshal(yamlDataSourceConfigurations));
+        repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(yamlDataSourceConfigurations));
     }
     
-    private void persistRuleConfigurations(final String shardingSchemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
+    private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
         if (ruleConfigurations.isEmpty() || !isOverwrite) {
             return;
         }
-        persistRuleConfigurations(shardingSchemaName, ruleConfigurations);
+        persistRuleConfigurations(schemaName, ruleConfigurations);
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
@@ -200,21 +200,21 @@ public final class ConfigCenter {
         }
     }
     
-    private void persistShardingSchemaName(final String shardingSchemaName, final boolean isOverwrite) {
+    private void persistSchemaName(final String schemaName, final boolean isOverwrite) {
         if (!isOverwrite) {
             return;
         }
         String schemaNames = repository.get(node.getSchemaPath());
         if (Strings.isNullOrEmpty(schemaNames)) {
-            repository.persist(node.getSchemaPath(), shardingSchemaName);
+            repository.persist(node.getSchemaPath(), schemaName);
             return;
         }
         List<String> schemaNameList = Splitter.on(",").splitToList(schemaNames);
-        if (schemaNameList.contains(shardingSchemaName)) {
+        if (schemaNameList.contains(schemaName)) {
             return;
         }
         List<String> newArrayList = new ArrayList<>(schemaNameList);
-        newArrayList.add(shardingSchemaName);
+        newArrayList.add(schemaName);
         repository.persist(node.getSchemaPath(), Joiner.on(",").join(newArrayList));
     }
     
@@ -291,7 +291,7 @@ public final class ConfigCenter {
      */
     public Collection<String> getAllSchemaNames() {
         String schemaNames = repository.get(node.getSchemaPath());
-        return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : node.splitShardingSchemaName(schemaNames);
+        return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : node.splitSchemaName(schemaNames);
     }
     
     /**
@@ -307,11 +307,11 @@ public final class ConfigCenter {
     /**
      * Judge whether schema has data source configuration.
      *
-     * @param shardingSchemaName shading schema name
+     * @param schemaName schema name
      * @return has data source configuration or not
      */
-    public boolean hasDataSourceConfiguration(final String shardingSchemaName) {
-        return !Strings.isNullOrEmpty(repository.get(node.getDataSourcePath(shardingSchemaName)));
+    public boolean hasDataSourceConfiguration(final String schemaName) {
+        return !Strings.isNullOrEmpty(repository.get(node.getDataSourcePath(schemaName)));
     }
     
     private boolean hasAuthentication() {

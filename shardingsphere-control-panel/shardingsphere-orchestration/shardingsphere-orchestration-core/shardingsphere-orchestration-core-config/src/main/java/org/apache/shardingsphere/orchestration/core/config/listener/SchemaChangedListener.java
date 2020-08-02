@@ -84,7 +84,7 @@ public final class SchemaChangedListener extends PostOrchestrationRepositoryEven
     }
     
     private OrchestrationEvent createSchemaNamesUpdatedEvent(final String shardingSchemaNames) {
-        Collection<String> persistShardingSchemaNames = configurationNode.splitShardingSchemaName(shardingSchemaNames);
+        Collection<String> persistShardingSchemaNames = configurationNode.splitSchemaName(shardingSchemaNames);
         Set<String> addedSchemaNames = SetUtils.difference(new HashSet<>(persistShardingSchemaNames), new HashSet<>(existedSchemaNames));
         if (!addedSchemaNames.isEmpty()) {
             return createUpdatedEventForNewSchema(addedSchemaNames.iterator().next());
