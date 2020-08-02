@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
 import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.proxy.arg.BootstrapArguments;
 import org.apache.shardingsphere.proxy.backend.schema.ProxyDataSourceContext;
@@ -85,8 +83,8 @@ public final class Bootstrap {
     private static void init(final ProxyConfiguration proxyConfig, final int port, final boolean orchestrationEnabled) throws SQLException {
         log(proxyConfig);
         initSchemaContexts(proxyConfig, orchestrationEnabled);
-        initControlPanelFacade(proxyConfig.getMetrics(), proxyConfig.getCluster());
-        updateServerInfo();
+        initControlPanelFacade(proxyConfig);
+        setDatabaseServerInfo();
         ShardingSphereProxy.getInstance().start(port);
     }
     
@@ -107,21 +105,21 @@ public final class Bootstrap {
         return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts(schemaContexts, OrchestrationFacade.getInstance()) : schemaContexts;
     }
     
-    private static void initControlPanelFacade(final MetricsConfiguration metricsConfiguration, final ClusterConfiguration clusterConfiguration) {
+    private static void initControlPanelFacade(final ProxyConfiguration proxyConfig) {
         Collection<ControlPanelConfiguration> controlPanelConfigs = new LinkedList<>();
-        if (null != metricsConfiguration && metricsConfiguration.getEnable()) {
-            controlPanelConfigs.add(metricsConfiguration);
+        if (null != proxyConfig.getMetrics() && proxyConfig.getMetrics().getEnable()) {
+            controlPanelConfigs.add(proxyConfig.getMetrics());
         }
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
             controlPanelConfigs.add(new OpenTracingConfiguration());
         }
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
-            controlPanelConfigs.add(clusterConfiguration);
+            controlPanelConfigs.add(proxyConfig.getCluster());
         }
         new ControlPanelFacadeEngine().init(controlPanelConfigs);
     }
     
-    private static void updateServerInfo() {
+    private static void setDatabaseServerInfo() {
         List<String> schemaNames = ProxySchemaContexts.getInstance().getSchemaNames();
         if (CollectionUtils.isEmpty(schemaNames)) {
             return;
