@@ -41,11 +41,11 @@ public abstract class Callback<T> {
      * Run consumer.
      *
      * @param schemaName schema name
-     * @param args args
+     * @param arg another argument
      */
-    public void run(final String schemaName, final T args) {
+    public void run(final String schemaName, final T arg) {
         for (BiConsumer<String, T> each : consumers) {
-            each.accept(schemaName, args);
+            each.accept(schemaName, arg);
         }
     }
 }
