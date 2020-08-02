@@ -318,10 +318,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
         checkClosed();
-        if (!columnLabelIndexMap.containsKey(columnLabel)) {
-            throw new SQLException(String.format("Can not find columnLabel %s", columnLabel));
-        }
-        return columnLabelIndexMap.get(columnLabel);
+        return resultSet.findColumn(columnLabel);
     }
     
     @Override

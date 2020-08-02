@@ -106,6 +106,12 @@ public final class DatabaseMetaDataResultSetTest {
         when(result.next()).thenReturn(true, true, false);
         when(result.getFetchDirection()).thenReturn(ResultSet.FETCH_FORWARD);
         when(result.getFetchSize()).thenReturn(3);
+        when(result.findColumn(TABLE_NAME_COLUMN_LABEL)).thenReturn(1);
+        when(result.findColumn(NON_TABLE_NAME_COLUMN_LABEL)).thenReturn(2);
+        when(result.findColumn(NUMBER_COLUMN_LABEL)).thenReturn(3);
+        when(result.findColumn(BYTES_COLUMN_LABEL)).thenReturn(4);
+        when(result.findColumn(DATE_COLUMN_LABEL)).thenReturn(5);
+        when(result.findColumn(INDEX_NAME_COLUMN_LABEL)).thenReturn(6);
         return result;
     }
     
