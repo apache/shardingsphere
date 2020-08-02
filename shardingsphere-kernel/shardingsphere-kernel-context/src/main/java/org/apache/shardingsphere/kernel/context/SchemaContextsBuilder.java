@@ -69,23 +69,17 @@ public final class SchemaContextsBuilder {
     
     public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
                                  final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
-        this.dataSources = dataSources;
-        this.databaseType = databaseType;
-        this.configurations = configurations;
-        this.props = new ConfigurationProperties(null == props ? new Properties() : props);
-        executorKernel = new ExecutorKernel(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
-        authentication = new Authentication();
-        log(configurations, props);
+        this(dataSources, databaseType, configurations, new Authentication(), props);
     }
     
-    public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, final Authentication authentication, 
-                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
+    public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, 
+                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Authentication authentication, final Properties props) {
         this.dataSources = dataSources;
         this.databaseType = databaseType;
         this.configurations = configurations;
+        this.authentication = authentication;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
         executorKernel = new ExecutorKernel(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
-        this.authentication = authentication;
         log(configurations, props);
     }
     

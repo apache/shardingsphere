@@ -327,9 +327,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
         Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap = createDataSourceParametersMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
         DatabaseType databaseType = getDatabaseType(dataSourceParametersMap.values().iterator().next().values().iterator().next());
-        SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(
-                dataSourcesMap, schemaContexts.getAuthentication(), 
-                databaseType, Collections.singletonMap(schemaName, schemaAddedEvent.getRuleConfigurations()), schemaContexts.getProps().getProps());
+        SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(dataSourcesMap, databaseType, 
+                Collections.singletonMap(schemaName, schemaAddedEvent.getRuleConfigurations()), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
         return schemaContextsBuilder.build().getSchemaContexts().get(schemaName);
     }
     
@@ -359,7 +358,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Collection<RuleConfiguration> configurations) throws SQLException {
         ShardingSphereSchema oldSchema = oldSchemaContext.getSchema();
         SchemaContextsBuilder builder = new SchemaContextsBuilder(Collections.singletonMap(oldSchemaContext.getName(), oldSchema.getDataSources()),
-                schemaContexts.getAuthentication(), oldSchema.getDatabaseType(), Collections.singletonMap(oldSchemaContext.getName(), configurations), schemaContexts.getProps().getProps());
+                oldSchema.getDatabaseType(), Collections.singletonMap(oldSchemaContext.getName(), configurations), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
         return builder.build().getSchemaContexts().values().iterator().next();
     }
     
@@ -371,9 +370,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
         oldSchemaContext.getRuntimeContext().getTransactionManagerEngine().close();
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldSchemaContext.getName(), getNewDataSources(oldSchemaContext.getSchema().getDataSources(), 
                 deletedDataSources, getAddedDataSources(oldSchemaContext, newDataSources), modifiedDataSources));
-        Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap = createDataSourceParametersMap(Collections.singletonMap(oldSchemaContext.getName(), newDataSources));
-        return new SchemaContextsBuilder(dataSourcesMap, schemaContexts.getAuthentication(), oldSchemaContext.getSchema().getDatabaseType(), 
-                Collections.singletonMap(oldSchemaContext.getName(), oldSchemaContext.getSchema().getConfigurations()), 
+        return new SchemaContextsBuilder(dataSourcesMap, oldSchemaContext.getSchema().getDatabaseType(), 
+                Collections.singletonMap(oldSchemaContext.getName(), oldSchemaContext.getSchema().getConfigurations()), schemaContexts.getAuthentication(), 
                 schemaContexts.getProps().getProps()).build().getSchemaContexts().get(oldSchemaContext.getName());
     }
     
@@ -394,7 +392,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     }
     
     /**
-     * Get added dataSources.
+     * Get added data sources.
      * 
      * @param oldSchemaContext old schema context
      * @param newDataSources new data sources
@@ -404,7 +402,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     public abstract Map<String, DataSource> getAddedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSources) throws Exception;
     
     /**
-     * Get modified dataSources.
+     * Get modified data sources.
      * 
      * @param oldSchemaContext old schema context
      * @param newDataSources new data sources
