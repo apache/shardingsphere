@@ -33,6 +33,7 @@ import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPositionMan
 
 import java.io.Closeable;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -70,8 +71,8 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
         }
         log.info("resume inventory position from {} = {}", taskPath, data);
         InventoryPosition inventoryPosition = InventoryPosition.fromJson(data);
-        Map<String, PrimaryKeyPosition> unfinish = inventoryPosition.getUnfinish();
-        for (Map.Entry<String, PrimaryKeyPosition> entry : unfinish.entrySet()) {
+        Map<String, PrimaryKeyPosition> unfinished = inventoryPosition.getUnfinish();
+        for (Entry<String, PrimaryKeyPosition> entry : unfinished.entrySet()) {
             getInventoryPositionManagerMap().put(entry.getKey(), new PrimaryKeyPositionManager(entry.getValue()));
         }
         for (String each : inventoryPosition.getFinished()) {
@@ -85,30 +86,30 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
         }
         log.info("resume incremental position from {} = {}", taskPath, data);
         Map<String, Object> incrementalPosition = GSON.fromJson(data, Map.class);
-        for (Map.Entry<String, Object> entry : incrementalPosition.entrySet()) {
+        for (Entry<String, Object> entry : incrementalPosition.entrySet()) {
             getIncrementalPositionManagerMap().put(entry.getKey(), PositionManagerFactory.newInstance(databaseType, entry.getValue().toString()));
         }
     }
     
     protected String getInventoryPositionData() {
         JsonObject result = new JsonObject();
-        JsonObject unfinish = new JsonObject();
+        JsonObject unfinished = new JsonObject();
         Set<String> finished = Sets.newHashSet();
-        for (Map.Entry<String, PositionManager<PrimaryKeyPosition>> entry : getInventoryPositionManagerMap().entrySet()) {
+        for (Entry<String, PositionManager<PrimaryKeyPosition>> entry : getInventoryPositionManagerMap().entrySet()) {
             if (entry.getValue().getCurrentPosition() instanceof PrimaryKeyPosition.FinishedPosition) {
                 finished.add(entry.getKey());
                 continue;
             }
-            unfinish.add(entry.getKey(), entry.getValue().getCurrentPosition().toJson());
+            unfinished.add(entry.getKey(), entry.getValue().getCurrentPosition().toJson());
         }
-        result.add("unfinish", unfinish);
+        result.add("unfinish", unfinished);
         result.add("finished", GSON.toJsonTree(finished));
         return result.toString();
     }
     
     protected String getIncrementalPositionData() {
         JsonObject result = new JsonObject();
-        for (Map.Entry<String, PositionManager> entry : getIncrementalPositionManagerMap().entrySet()) {
+        for (Entry<String, PositionManager> entry : getIncrementalPositionManagerMap().entrySet()) {
             result.add(entry.getKey(), entry.getValue().getCurrentPosition().toJson());
         }
         return result.toString();
@@ -136,8 +137,8 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
         public static InventoryPosition fromJson(final String data) {
             InventoryPosition result = new InventoryPosition();
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();
-            Map<String, Object> unfinish = GSON.fromJson(json.getAsJsonObject("unfinish"), Map.class);
-            result.setUnfinish(unfinish.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> PrimaryKeyPosition.fromJson(entry.getValue().toString()))));
+            Map<String, Object> unfinished = GSON.fromJson(json.getAsJsonObject("unfinish"), Map.class);
+            result.setUnfinish(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> PrimaryKeyPosition.fromJson(entry.getValue().toString()))));
             result.setFinished(GSON.fromJson(json.getAsJsonArray("finished"), Set.class));
             return result;
         }
