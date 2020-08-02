@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.control.panel.spi.engine;
 
 import org.apache.shardingsphere.control.panel.spi.ControlPanelFacade;
-import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 
@@ -38,19 +38,19 @@ public final class ControlPanelFacadeEngine {
     /**
      * Initialize control panel facade.
      *
-     * @param facadeConfigurations facade configurations
+     * @param controlPanelConfigs control panel configurations
      */
     @SuppressWarnings("rawtypes")
-    public void init(final Collection<FacadeConfiguration> facadeConfigurations) {
-        Collection<Class<?>> facadeClassTypes = facadeConfigurations.stream().map(FacadeConfiguration::getClass).collect(Collectors.toList());
+    public void init(final Collection<ControlPanelConfiguration> controlPanelConfigs) {
+        Collection<Class<?>> facadeClassTypes = controlPanelConfigs.stream().map(ControlPanelConfiguration::getClass).collect(Collectors.toList());
         for (Map.Entry<Class<?>, ControlPanelFacade> entry : OrderedSPIRegistry.getRegisteredServicesByClass(facadeClassTypes, ControlPanelFacade.class).entrySet()) {
-            doInit(facadeConfigurations, entry.getKey(), entry.getValue());
+            doInit(controlPanelConfigs, entry.getKey(), entry.getValue());
         }
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void doInit(final Collection<FacadeConfiguration> facadeConfigurations, final Class<?> configurationType, final ControlPanelFacade facade) {
-        for (FacadeConfiguration each : facadeConfigurations) {
+    private void doInit(final Collection<ControlPanelConfiguration> controlPanelConfigs, final Class<?> configurationType, final ControlPanelFacade facade) {
+        for (ControlPanelConfiguration each : controlPanelConfigs) {
             if (each.getClass().equals(configurationType)) {
                 facade.init(each);
             }

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.cluster.configuration.config.ClusterConfigurati
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.facade.init.ClusterInitFacade;
 import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
-import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
 import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -183,9 +183,9 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     private void initCluster() {
         ClusterConfiguration clusterConfig = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
         if (null != clusterConfig && null != clusterConfig.getHeartbeat()) {
-            Collection<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
-            facadeConfigurations.add(clusterConfig);
-            new ControlPanelFacadeEngine().init(facadeConfigurations);
+            Collection<ControlPanelConfiguration> controlPanelConfigs = new LinkedList<>();
+            controlPanelConfigs.add(clusterConfig);
+            new ControlPanelFacadeEngine().init(controlPanelConfigs);
         }
     }
     

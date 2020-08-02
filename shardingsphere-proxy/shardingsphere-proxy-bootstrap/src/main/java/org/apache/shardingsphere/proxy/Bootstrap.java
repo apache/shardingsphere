@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
-import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
 import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
@@ -49,8 +49,8 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -107,21 +107,21 @@ public final class Bootstrap {
     }
     
     private static void initControlPanelFacade(final MetricsConfiguration metricsConfiguration, final ClusterConfiguration clusterConfiguration) {
-        List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
+        Collection<ControlPanelConfiguration> controlPanelConfigs = new LinkedList<>();
         if (null != metricsConfiguration && metricsConfiguration.getEnable()) {
-            facadeConfigurations.add(metricsConfiguration);
+            controlPanelConfigs.add(metricsConfiguration);
         }
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
-            facadeConfigurations.add(new OpenTracingConfiguration());
+            controlPanelConfigs.add(new OpenTracingConfiguration());
         }
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
-            facadeConfigurations.add(clusterConfiguration);
+            controlPanelConfigs.add(clusterConfiguration);
         }
-        new ControlPanelFacadeEngine().init(facadeConfigurations);
+        new ControlPanelFacadeEngine().init(controlPanelConfigs);
     }
     
     private static void updateServerInfo() {
-        List<String> schemaNames = ProxySchemaContexts.getInstance().getSchemaNames();
+        Collection<String> schemaNames = ProxySchemaContexts.getInstance().getSchemaNames();
         if (CollectionUtils.isEmpty(schemaNames)) {
             return;
         }
