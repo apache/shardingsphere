@@ -28,7 +28,8 @@ import org.junit.Test;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class AbstractResumablePositionManagerTest {
     
@@ -50,20 +51,20 @@ public final class AbstractResumablePositionManagerTest {
     @Test
     public void assertResumeIncrementalPosition() {
         resumablePositionManager.resumeIncrementalPosition(incrementalPosition);
-        assertEquals(2, resumablePositionManager.getIncrementalPositionManagerMap().size());
+        assertThat(resumablePositionManager.getIncrementalPositionManagerMap().size(), is(2));
     }
     
     @Test
     public void assertResumeInventoryPosition() {
         resumablePositionManager.resumeInventoryPosition(inventoryPosition);
-        assertEquals(4, resumablePositionManager.getInventoryPositionManagerMap().size());
+        assertThat(resumablePositionManager.getInventoryPositionManagerMap().size(), is(4));
     }
     
     @Test
     public void assertGetIncrementalPositionData() {
         resumablePositionManager.getIncrementalPositionManagerMap().put("ds0", new MySQLPositionManager("{\"filename\":\"mysql-bin.000001\",\"position\":4}"));
         resumablePositionManager.getIncrementalPositionManagerMap().put("ds1", new MySQLPositionManager("{\"filename\":\"mysql-bin.000002\",\"position\":4}"));
-        assertEquals(incrementalPosition, resumablePositionManager.getIncrementalPositionData());
+        assertThat(resumablePositionManager.getIncrementalPositionData(), is(incrementalPosition));
     }
     
     @Test
@@ -72,6 +73,6 @@ public final class AbstractResumablePositionManagerTest {
         resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_1#1", new PrimaryKeyPositionManager(new PrimaryKeyPosition.FinishedPosition()));
         resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_2", new PrimaryKeyPositionManager(new PrimaryKeyPosition.PlaceholderPosition()));
         resumablePositionManager.getInventoryPositionManagerMap().put("ds1.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 200)));
-        assertEquals(inventoryPosition, resumablePositionManager.getInventoryPositionData());
+        assertThat(resumablePositionManager.getInventoryPositionData(), is(inventoryPosition));
     }
 }

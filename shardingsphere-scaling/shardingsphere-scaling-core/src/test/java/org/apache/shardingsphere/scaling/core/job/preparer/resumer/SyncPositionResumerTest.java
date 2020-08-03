@@ -37,7 +37,9 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -69,8 +71,8 @@ public final class SyncPositionResumerTest {
         resumablePositionManager.getInventoryPositionManagerMap().put("ds0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 100)));
         resumablePositionManager.getIncrementalPositionManagerMap().put("ds0.t_order", mockPositionManager());
         syncPositionResumer.resumePosition(shardingScalingJob, new DataSourceManager(), resumablePositionManager);
-        assertEquals(1, shardingScalingJob.getIncrementalDataTasks().size());
-        assertEquals(0, shardingScalingJob.getInventoryDataTasks().size());
+        assertThat(shardingScalingJob.getIncrementalDataTasks().size(), is(1));
+        assertTrue(shardingScalingJob.getInventoryDataTasks().isEmpty());
     }
     
     @Test
@@ -83,6 +85,7 @@ public final class SyncPositionResumerTest {
     
     private PositionManager mockPositionManager() {
         return new PositionManager() {
+            
             @Override
             public Position getCurrentPosition() {
                 return null;
@@ -90,7 +93,6 @@ public final class SyncPositionResumerTest {
             
             @Override
             public void updateCurrentPosition(final Position newPosition) {
-            
             }
         };
     }
@@ -100,8 +102,7 @@ public final class SyncPositionResumerTest {
         RdbmsConfiguration importerConfig = new RdbmsConfiguration();
         Map<String, String> tableMap = new HashMap<>();
         tableMap.put("t_order", "t_order");
-        return new SyncConfiguration(3, tableMap,
-                dumperConfig, importerConfig);
+        return new SyncConfiguration(3, tableMap, dumperConfig, importerConfig);
     }
     
     private RdbmsConfiguration mockDumperConfig() {
