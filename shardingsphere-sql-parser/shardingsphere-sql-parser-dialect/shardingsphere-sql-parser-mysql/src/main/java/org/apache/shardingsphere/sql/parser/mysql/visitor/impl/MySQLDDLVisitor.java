@@ -126,13 +126,11 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
         CreateTableStatement result = new CreateTableStatement((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
-            LinkedList<IndexSegment> indexs = new LinkedList<>();
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
                 if (each instanceof ColumnDefinitionSegment) {
                     result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
                 } else if (each instanceof ConstraintDefinitionSegment) {
                     result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
-                    indexs.add(((ConstraintDefinitionSegment) each).getIndexName());
                 }
             }
         }
