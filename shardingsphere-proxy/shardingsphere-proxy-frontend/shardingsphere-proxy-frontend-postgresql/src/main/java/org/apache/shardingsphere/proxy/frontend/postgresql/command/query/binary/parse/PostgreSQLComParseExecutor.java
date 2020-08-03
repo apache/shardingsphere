@@ -48,7 +48,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     }
     
     @Override
-    public Collection<DatabasePacket> execute() {
+    public Collection<DatabasePacket<?>> execute() {
         if (!packet.getSql().isEmpty()) {
             SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
             binaryStatementRegistry.register(packet.getStatementId(), packet.getSql(), sqlStatement.getParameterCount(), packet.getBinaryStatementParameterTypes());

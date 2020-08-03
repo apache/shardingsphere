@@ -35,7 +35,7 @@ public final class MySQLComStmtResetExecutor implements CommandExecutor {
     private final MySQLComStmtResetPacket packet;
     
     @Override
-    public Collection<DatabasePacket> execute() {
+    public Collection<DatabasePacket<?>> execute() {
         // TODO we should implement the stmt reset after supporting COM_STMT_SEND_LONG_DATA
         return Collections.singletonList(new MySQLOKPacket(1));
     }

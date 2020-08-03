@@ -40,7 +40,7 @@ public final class MySQLComStmtResetExecutorTest {
     @Test
     public void assertExecute() {
         MySQLComStmtResetExecutor mysqlComStmtResetExecutor = new MySQLComStmtResetExecutor(packet);
-        Collection<DatabasePacket> actual = mysqlComStmtResetExecutor.execute();
+        Collection<DatabasePacket<?>> actual = mysqlComStmtResetExecutor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(MySQLOKPacket.class));
     }

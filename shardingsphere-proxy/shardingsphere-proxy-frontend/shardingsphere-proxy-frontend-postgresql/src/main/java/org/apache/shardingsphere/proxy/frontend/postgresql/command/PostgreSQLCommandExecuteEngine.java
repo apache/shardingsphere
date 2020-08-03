@@ -62,14 +62,14 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     }
     
     @Override
-    public DatabasePacket getErrorPacket(final Exception cause) {
+    public DatabasePacket<?> getErrorPacket(final Exception cause) {
         PostgreSQLErrorResponsePacket errorResponsePacket = new PostgreSQLErrorResponsePacket();
         errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
         return errorResponsePacket;
     }
     
     @Override
-    public Optional<DatabasePacket> getOtherPacket() {
+    public Optional<DatabasePacket<?>> getOtherPacket() {
         return Optional.of(new PostgreSQLReadyForQueryPacket());
     }
     
@@ -94,7 +94,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
                 context.flush();
                 backendConnection.getResourceSynchronizer().doAwaitUntil();
             }
-            DatabasePacket resultValue = queryCommandExecutor.getQueryData();
+            DatabasePacket<?> resultValue = queryCommandExecutor.getQueryData();
             context.write(resultValue);
             if (proxyFrontendFlushThreshold == count) {
                 context.flush();
