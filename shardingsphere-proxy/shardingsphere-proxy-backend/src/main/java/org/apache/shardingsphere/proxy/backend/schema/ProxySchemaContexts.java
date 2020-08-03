@@ -109,7 +109,7 @@ public final class ProxySchemaContexts {
         if (schemaNames.isEmpty()) {
             return Optional.empty();
         }
-        Map<String, DataSource> dataSources =  Objects.requireNonNull(getSchema(schemaNames.get(0))).getSchema().getDataSources();
+        Map<String, DataSource> dataSources = Objects.requireNonNull(getSchema(schemaNames.get(0))).getSchema().getDataSources();
         return Optional.of(dataSources.values().iterator().next());
     }
     

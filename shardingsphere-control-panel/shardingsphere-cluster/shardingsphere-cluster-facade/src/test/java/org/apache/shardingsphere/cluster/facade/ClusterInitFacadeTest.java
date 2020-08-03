@@ -39,13 +39,13 @@ public final class ClusterInitFacadeTest {
     
     @Before
     public void setUp() {
-        HeartbeatConfiguration heartBeatConfiguration = new HeartbeatConfiguration();
-        heartBeatConfiguration.setSql("select 1");
-        heartBeatConfiguration.setInterval(60);
-        heartBeatConfiguration.setRetryEnable(true);
-        heartBeatConfiguration.setRetryMaximum(3);
+        HeartbeatConfiguration heartBeatConfig = new HeartbeatConfiguration();
+        heartBeatConfig.setSql("select 1");
+        heartBeatConfig.setInterval(60);
+        heartBeatConfig.setRetryEnable(true);
+        heartBeatConfig.setRetryMaximum(3);
         ClusterConfiguration clusterConfiguration = new ClusterConfiguration();
-        clusterConfiguration.setHeartbeat(heartBeatConfiguration);
+        clusterConfiguration.setHeartbeat(heartBeatConfig);
         List<ControlPanelConfiguration> controlPanelConfigs = new LinkedList<>();
         controlPanelConfigs.add(clusterConfiguration);
         new ControlPanelFacadeEngine().init(controlPanelConfigs);
