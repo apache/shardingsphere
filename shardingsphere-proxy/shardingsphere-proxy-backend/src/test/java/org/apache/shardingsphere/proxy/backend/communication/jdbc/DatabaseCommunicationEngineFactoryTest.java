@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 public final class DatabaseCommunicationEngineFactoryTest {
     
     private SchemaContext schemaContext;
-    
+
     @Before
     public void setUp() {
         schemaContext = mock(SchemaContext.class);
@@ -60,7 +60,11 @@ public final class DatabaseCommunicationEngineFactoryTest {
         DatabaseCommunicationEngineFactory factory = DatabaseCommunicationEngineFactory.getInstance();
         assertNotNull(factory);
         assertNotNull(schemaContext);
-        DatabaseCommunicationEngine engine = factory.newTextProtocolInstance(schemaContext, "schemaName", mock(BackendConnection.class));
+        assertNotNull(schemaContext.getRuntimeContext());
+        assertNotNull(schemaContext.getRuntimeContext().getSqlParserEngine());
+        BackendConnection backendConnection = mock(BackendConnection.class);
+        assertNotNull(backendConnection);
+        DatabaseCommunicationEngine engine = factory.newTextProtocolInstance(schemaContext, "schemaName", backendConnection);
         assertNotNull(engine);
         assertThat(engine, instanceOf(JDBCDatabaseCommunicationEngine.class));
     }
