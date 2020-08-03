@@ -36,7 +36,7 @@ public final class AbstractResumablePositionManagerTest {
     
     private final String incrementalPosition = "{\"ds0\":{\"filename\":\"mysql-bin.000001\",\"position\":4},\"ds1\":{\"filename\":\"mysql-bin.000002\",\"position\":4}}";
     
-    private final String inventoryPosition = "{\"unfinished\":{\"ds1.t_order_1#0\":[0,200],\"ds0.t_order_1#0\":[0,100]},\"finished\":[\"ds0.t_order_1#1\"]}";
+    private final String inventoryPosition = "{\"unfinished\":{\"ds1.t_order_1#0\":[0,200],\"ds0.t_order_1#0\":[0,100],\"ds0.t_order_2\":[]},\"finished\":[\"ds0.t_order_1#1\"]}";
     
     @Before
     public void setUp() throws Exception {
@@ -56,7 +56,7 @@ public final class AbstractResumablePositionManagerTest {
     @Test
     public void assertResumeInventoryPosition() {
         resumablePositionManager.resumeInventoryPosition(inventoryPosition);
-        assertEquals(3, resumablePositionManager.getInventoryPositionManagerMap().size());
+        assertEquals(4, resumablePositionManager.getInventoryPositionManagerMap().size());
     }
     
     @Test
@@ -70,6 +70,7 @@ public final class AbstractResumablePositionManagerTest {
     public void assertGetInventoryPositionData() {
         resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 100)));
         resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_1#1", new PrimaryKeyPositionManager(new PrimaryKeyPosition.FinishedPosition()));
+        resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_2", new PrimaryKeyPositionManager(new PrimaryKeyPosition.PlaceholderPosition()));
         resumablePositionManager.getInventoryPositionManagerMap().put("ds1.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 200)));
         assertEquals(inventoryPosition, resumablePositionManager.getInventoryPositionData());
     }
