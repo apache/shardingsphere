@@ -48,8 +48,8 @@ public final class ServerVersion {
     /**
      * Greater than or equal to current version.
      *
-     * @param major  the major
-     * @param minor  the minor
+     * @param major the major
+     * @param minor the minor
      * @param series the series
      * @return the boolean
      */
