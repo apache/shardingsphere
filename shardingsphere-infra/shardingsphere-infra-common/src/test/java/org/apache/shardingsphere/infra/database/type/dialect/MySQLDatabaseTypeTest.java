@@ -18,28 +18,28 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 
-/**
- * Database type of MySQL.
- */
-public final class MySQLDatabaseType implements DatabaseType {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MySQLDatabaseTypeTest {
     
-    @Override
-    public String getName() {
-        return "MySQL";
+    @Test
+    public void assertGetName() {
+        assertThat(new MySQLDatabaseType().getName(), is("MySQL"));
     }
     
-    @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:");
+    @Test
+    public void assertGetJdbcUrlPrefixes() {
+        assertThat(new MySQLDatabaseType().getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:")));
     }
     
-    @Override
-    public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new MySQLDataSourceMetaData(url);
+    @Test
+    public void assertGetDataSourceMetaData() {
+        assertThat(new MySQLDatabaseType().getDataSourceMetaData("jdbc:mysql://127.0.0.1/ds", "root"), instanceOf(MySQLDataSourceMetaData.class));
     }
 }
