@@ -70,7 +70,7 @@ public final class ShardingTransactionManagerEngine {
     
     private Collection<ResourceDataSource> getResourceDataSources(final Map<String, DataSource> dataSourceMap) {
         List<ResourceDataSource> result = new LinkedList<>();
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             result.add(new ResourceDataSource(entry.getKey(), entry.getValue()));
         }
         return result;

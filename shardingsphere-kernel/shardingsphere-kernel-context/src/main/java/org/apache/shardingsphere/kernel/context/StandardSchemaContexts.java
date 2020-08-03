@@ -15,49 +15,48 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
+package org.apache.shardingsphere.kernel.context;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.mockito.Mockito.mock;
-
+/**
+ * Standard schema contexts.
+ */
+@RequiredArgsConstructor
 @Getter
-public final class OrchestrationSchemaContextsFixture implements SchemaContexts {
+public final class StandardSchemaContexts implements SchemaContexts {
     
-    @Override
-    public Map<String, SchemaContext> getSchemaContexts() {
-        return Collections.emptyMap();
+    private final Map<String, SchemaContext> schemaContexts;
+    
+    private final Authentication authentication;
+    
+    private final ConfigurationProperties props;
+    
+    private final boolean isCircuitBreak;
+    
+    public StandardSchemaContexts() {
+        this(new HashMap<>(), new Authentication(), new ConfigurationProperties(new Properties()), false);
+    }
+    
+    public StandardSchemaContexts(final Map<String, SchemaContext> schemaContexts, final Authentication authentication, final ConfigurationProperties props) {
+        this(schemaContexts, authentication, props, false);
     }
     
     @Override
     public SchemaContext getDefaultSchemaContext() {
-        return mock(SchemaContext.class);
-    }
-    
-    @Override
-    public Authentication getAuthentication() {
-        return new Authentication();
-    }
-    
-    @Override
-    public ConfigurationProperties getProps() {
-        return new ConfigurationProperties(new Properties());
-    }
-    
-    @Override
-    public boolean isCircuitBreak() {
-        return false;
+        return schemaContexts.get(DefaultSchema.LOGIC_NAME);
     }
     
     @Override
     public void close() {
+        schemaContexts.values().forEach(each -> each.getRuntimeContext().getExecutorKernel().close());
     }
 }

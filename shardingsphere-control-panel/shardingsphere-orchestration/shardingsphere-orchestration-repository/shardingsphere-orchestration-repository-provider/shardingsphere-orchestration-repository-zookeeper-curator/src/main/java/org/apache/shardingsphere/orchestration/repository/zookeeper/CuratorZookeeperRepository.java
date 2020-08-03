@@ -46,6 +46,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -131,7 +132,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     }
     
     private TreeCache findTreeCache(final String key) {
-        return caches.entrySet().stream().filter(entry -> key.startsWith(entry.getKey())).findFirst().map(Map.Entry::getValue).orElse(null);
+        return caches.entrySet().stream().filter(entry -> key.startsWith(entry.getKey())).findFirst().map(Entry::getValue).orElse(null);
     }
     
     @Override

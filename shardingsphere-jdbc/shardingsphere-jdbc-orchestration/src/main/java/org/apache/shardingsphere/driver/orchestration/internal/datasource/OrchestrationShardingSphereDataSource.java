@@ -27,7 +27,7 @@ import org.apache.shardingsphere.cluster.configuration.config.ClusterConfigurati
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.facade.init.ClusterInitFacade;
 import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
-import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
 import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -43,6 +43,7 @@ import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
@@ -182,9 +183,9 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     private void initCluster() {
         ClusterConfiguration clusterConfig = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
         if (null != clusterConfig && null != clusterConfig.getHeartbeat()) {
-            Collection<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
-            facadeConfigurations.add(clusterConfig);
-            new ControlPanelFacadeEngine().init(facadeConfigurations);
+            Collection<ControlPanelConfiguration> controlPanelConfigs = new LinkedList<>();
+            controlPanelConfigs.add(clusterConfig);
+            new ControlPanelFacadeEngine().init(controlPanelConfigs);
         }
     }
     
@@ -202,7 +203,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         SchemaContext oldSchemaContext = dataSource.getSchemaContexts().getSchemaContexts().get(DefaultSchema.LOGIC_NAME);
         schemaContexts.put(DefaultSchema.LOGIC_NAME, new SchemaContext(oldSchemaContext.getName(),
                 getChangedSchema(oldSchemaContext.getSchema(), event.getRuleSchemaMetaData()), oldSchemaContext.getRuntimeContext()));
-        dataSource = new ShardingSphereDataSource(new SchemaContexts(schemaContexts, dataSource.getSchemaContexts().getProps(), dataSource.getSchemaContexts().getAuthentication()));
+        dataSource = new ShardingSphereDataSource(new StandardSchemaContexts(schemaContexts, dataSource.getSchemaContexts().getAuthentication(), dataSource.getSchemaContexts().getProps()));
     }
     
     /**
@@ -260,7 +261,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent event) {
         SchemaContexts oldSchemaContexts = dataSource.getSchemaContexts();
-        SchemaContexts schemaContexts = new SchemaContexts(oldSchemaContexts.getSchemaContexts(), oldSchemaContexts.getProps(), oldSchemaContexts.getAuthentication(), event.isCircuitBreak());
+        SchemaContexts schemaContexts = new StandardSchemaContexts(oldSchemaContexts.getSchemaContexts(), oldSchemaContexts.getAuthentication(), oldSchemaContexts.getProps(), event.isCircuitBreak());
         dataSource = new ShardingSphereDataSource(schemaContexts);
     }
     
@@ -342,7 +343,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     }
     
     @Override
-    public void close() {
+    public void close() throws Exception {
         dataSource.close();
         orchestrationFacade.close();
     }

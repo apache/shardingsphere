@@ -17,19 +17,20 @@
 
 package org.apache.shardingsphere.infra.callback.orchestration;
 
-import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.callback.Callback;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+
+import java.util.Map;
 
 /**
  * Data source callback.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceCallback extends Callback<Map<String, DataSourceConfiguration>> {
     
     private static final DataSourceCallback INSTANCE = new DataSourceCallback();
-    
-    private DataSourceCallback() {
-    }
     
     /**
      * Get instance.

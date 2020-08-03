@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
 
 /**
- * Sharding tracer object container.
+ * OpenTracing tracer object container.
  */
-public final class ShardingTracer implements ControlPanelFacade<OpenTracingConfiguration> {
+public final class OpenTracingTracer implements ControlPanelFacade<OpenTracingConfiguration> {
     
     private static final String OPENTRACING_TRACER_CLASS_NAME = "org.apache.shardingsphere.opentracing.tracer.class";
     

@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.metrics.facade;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.Supplier;
-import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
 import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Supplier;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -65,9 +66,8 @@ public final class MetricsTrackerHandlerFacadeTest {
     
     private void init() {
         MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, 0, false, true, 8, null);
-        List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
-        facadeConfigurations.add(metricsConfiguration);
-        new ControlPanelFacadeEngine().init(facadeConfigurations);
+        List<ControlPanelConfiguration> controlPanelConfigs = new LinkedList<>();
+        controlPanelConfigs.add(metricsConfiguration);
+        new ControlPanelFacadeEngine().init(controlPanelConfigs);
     }
 }
-
