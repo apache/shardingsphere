@@ -15,31 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.type.dialect;
+package org.apache.shardingsphere.infra.config.fixture;
 
-import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.Properties;
 
-/**
- * Database type of MySQL.
- */
-public final class MySQLDatabaseType implements DatabaseType {
+@Getter
+@Setter
+public class WithoutInitAlgorithm implements ShardingSphereAlgorithm {
+    
+    private Properties props;
     
     @Override
-    public String getName() {
-        return "MySQL";
-    }
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:");
-    }
-    
-    @Override
-    public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new MySQLDataSourceMetaData(url);
+    public String getType() {
+        return "WITHOUT_INIT";
     }
 }

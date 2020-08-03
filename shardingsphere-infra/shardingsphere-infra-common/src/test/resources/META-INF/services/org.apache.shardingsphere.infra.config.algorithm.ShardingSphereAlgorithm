@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.dbtest.fixture.ConstantKeyGenerateAlgorithm
+org.apache.shardingsphere.infra.config.fixture.WithInitAlgorithm
+org.apache.shardingsphere.infra.config.fixture.WithoutInitAlgorithm
