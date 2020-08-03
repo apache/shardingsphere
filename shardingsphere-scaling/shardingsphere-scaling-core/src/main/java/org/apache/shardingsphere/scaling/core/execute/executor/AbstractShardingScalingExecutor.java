@@ -25,31 +25,23 @@ import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 /**
  * Abstract sharding scaling executor.
  */
+@Setter
+@Getter
 public abstract class AbstractShardingScalingExecutor implements ShardingScalingExecutor {
-
+    
     @Setter(AccessLevel.PROTECTED)
     @Getter(AccessLevel.PROTECTED)
     private boolean running;
     
-    @Setter
-    @Getter
     private String taskId;
     
-    @Setter
-    @Getter
     private PositionManager positionManager;
-
-    /**
-     * Generic start implement.
-     */
+    
     @Override
     public void start() {
         running = true;
     }
-
-    /**
-     * Generic stop implement.
-     */
+    
     @Override
     public void stop() {
         running = false;

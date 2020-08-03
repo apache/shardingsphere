@@ -55,6 +55,7 @@ public class PrimaryKeyPosition implements Position {
      * @param json json data
      * @return primary key position
      */
+    @SuppressWarnings("unchecked")
     public static PrimaryKeyPosition fromJson(final String json) {
         List<Double> values = GSON.fromJson(json, List.class);
         if (2 == values.size()) {
@@ -72,7 +73,6 @@ public class PrimaryKeyPosition implements Position {
      * Finish flag position for inventory task finished.
      */
     public static class FinishedPosition extends PrimaryKeyPosition {
-    
     }
     
     /**
