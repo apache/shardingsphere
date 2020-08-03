@@ -135,7 +135,6 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
                     indexs.add(((ConstraintDefinitionSegment) each).getIndexName());
                 }
             }
-            indexs.stream().filter(index -> null != index).map(e -> result.getIndexes().add(e));
         }
         return result;
     }
