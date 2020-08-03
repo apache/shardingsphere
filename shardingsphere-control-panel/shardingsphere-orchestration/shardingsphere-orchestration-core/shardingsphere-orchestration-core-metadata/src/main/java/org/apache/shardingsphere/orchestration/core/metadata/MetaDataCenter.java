@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import java.util.Optional;
 
 /**
- * Read and write meta data from center repository.
+ * Meta data center.
  */
 public final class MetaDataCenter {
     

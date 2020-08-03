@@ -19,14 +19,14 @@ package org.apache.shardingsphere.cluster.configuration.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
 
 /**
  * Cluster configuration.
  */
 @Getter
 @Setter
-public final class ClusterConfiguration implements FacadeConfiguration {
+public final class ClusterConfiguration implements ControlPanelConfiguration {
 
     private HeartbeatConfiguration heartbeat;
 }

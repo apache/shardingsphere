@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.infra.callback.orchestration;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.callback.Callback;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 
 /**
  * Meta data call back.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetaDataCallback extends Callback<RuleSchemaMetaData> {
     
     private static final MetaDataCallback INSTANCE = new MetaDataCallback();
-
-    private MetaDataCallback() {
-    }
     
     /**
      * Get instance.

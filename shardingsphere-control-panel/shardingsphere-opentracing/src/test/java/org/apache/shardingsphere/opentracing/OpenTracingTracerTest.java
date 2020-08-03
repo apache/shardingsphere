@@ -20,17 +20,17 @@ package org.apache.shardingsphere.opentracing;
 import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
-import java.util.Collections;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.opentracing.fixture.FooTracer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.isA;
@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class ShardingTracerTest {
+public final class OpenTracingTracerTest {
     
     @Before
     public void setUp() {
@@ -53,35 +53,35 @@ public final class ShardingTracerTest {
     
     @Test
     public void assertDuplicatedLoading() {
-        ShardingTracer.init(mock(Tracer.class));
-        Tracer tracer = ShardingTracer.get();
-        ShardingTracer.init();
-        assertThat(ShardingTracer.get(), is(tracer));
-        ShardingTracer.init(mock(Tracer.class));
-        assertThat(ShardingTracer.get(), is(tracer));
+        OpenTracingTracer.init(mock(Tracer.class));
+        Tracer tracer = OpenTracingTracer.get();
+        OpenTracingTracer.init();
+        assertThat(OpenTracingTracer.get(), is(tracer));
+        OpenTracingTracer.init(mock(Tracer.class));
+        assertThat(OpenTracingTracer.get(), is(tracer));
     }
     
     @Test
     public void assertTracer() {
-        ShardingTracer.init();
-        assertThat((GlobalTracer) ShardingTracer.get(), isA(GlobalTracer.class));
+        OpenTracingTracer.init();
+        assertThat((GlobalTracer) OpenTracingTracer.get(), isA(GlobalTracer.class));
         assertTrue(GlobalTracer.isRegistered());
-        assertThat(ShardingTracer.get(), is(ShardingTracer.get()));
+        assertThat(OpenTracingTracer.get(), is(OpenTracingTracer.get()));
     }
     
     @Test
     public void assertTracerSpiLoad() {
         OpenTracingConfiguration openTracingConfiguration = new OpenTracingConfiguration();
         new ControlPanelFacadeEngine().init(Collections.singleton(openTracingConfiguration));
-        assertThat((GlobalTracer) ShardingTracer.get(), isA(GlobalTracer.class));
+        assertThat((GlobalTracer) OpenTracingTracer.get(), isA(GlobalTracer.class));
         assertTrue(GlobalTracer.isRegistered());
-        assertThat(ShardingTracer.get(), is(ShardingTracer.get()));
+        assertThat(OpenTracingTracer.get(), is(OpenTracingTracer.get()));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertTracerClassError() {
         System.setProperty("org.apache.shardingsphere.opentracing.tracer.class", "com.foo.FooTracer");
-        ShardingTracer.init();
+        OpenTracingTracer.init();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

@@ -74,16 +74,16 @@ public final class OrchestrationFacade implements AutoCloseable {
     /**
      * Online instance.
      *
-     * @param dataSourceConfigurationMap schema data source configuration map
+     * @param dataSourceConfigMap schema data source configuration map
      * @param schemaRuleMap schema rule map
      * @param authentication authentication
      * @param props properties
      */
-    public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurationMap,
+    public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigMap,
                                final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final Authentication authentication, final Properties props) {
         configCenter.persistGlobalConfiguration(authentication, props, isOverwrite);
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigurationMap.entrySet()) {
-            configCenter.persistConfigurations(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), isOverwrite);
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigMap.entrySet()) {
+            configCenter.persistConfigurations(entry.getKey(), dataSourceConfigMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), isOverwrite);
         }
         onlineInstance();
     }
@@ -100,19 +100,19 @@ public final class OrchestrationFacade implements AutoCloseable {
     /**
      * Initialize metrics configuration to config center.
      *
-     * @param metricsConfiguration metrics configuration
+     * @param metricsConfig metrics configuration
      */
-    public void initMetricsConfiguration(final MetricsConfiguration metricsConfiguration) {
-        configCenter.persistMetricsConfiguration(metricsConfiguration, isOverwrite);
+    public void initMetricsConfiguration(final MetricsConfiguration metricsConfig) {
+        configCenter.persistMetricsConfiguration(metricsConfig, isOverwrite);
     }
     
     /**
      * Initialize cluster configuration to config center.
      *
-     * @param clusterConfiguration cluster configuration
+     * @param clusterConfig cluster configuration
      */
-    public void initClusterConfiguration(final ClusterConfiguration clusterConfiguration) {
-        configCenter.persistClusterConfiguration(clusterConfiguration, isOverwrite);
+    public void initClusterConfiguration(final ClusterConfiguration clusterConfig) {
+        configCenter.persistClusterConfiguration(clusterConfig, isOverwrite);
     }
     
     @Override

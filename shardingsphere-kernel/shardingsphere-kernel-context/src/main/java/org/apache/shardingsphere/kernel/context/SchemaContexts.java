@@ -17,84 +17,48 @@
 
 package org.apache.shardingsphere.kernel.context;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Schema contexts.
  */
-@Getter
-public final class SchemaContexts implements SchemaContextsAware {
-    
-    private final Map<String, SchemaContext> schemaContexts = new HashMap<>();
-    
-    private final ConfigurationProperties props;
-    
-    private final Authentication authentication;
-    
-    private final boolean isCircuitBreak;
-    
-    public SchemaContexts() {
-        props = new ConfigurationProperties(new Properties());
-        authentication = new Authentication();
-        isCircuitBreak = false;
-    }
-    
-    public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final ConfigurationProperties props, final Authentication authentication) {
-        this.schemaContexts.putAll(schemaContexts);
-        this.props = props;
-        this.authentication = authentication;
-        isCircuitBreak = false;
-    }
-    
-    public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final ConfigurationProperties props, final Authentication authentication, final boolean isCircuitBreak) {
-        this.schemaContexts.putAll(schemaContexts);
-        this.props = props;
-        this.authentication = authentication;
-        this.isCircuitBreak = isCircuitBreak;
-    }
+public interface SchemaContexts extends AutoCloseable {
     
     /**
-     * Get sharding sphere rules.
-     *
-     * @param ruleType rule type
-     * @param <T> rule
-     * @return rules
+     * Get schema contexts.
+     * 
+     * @return schema contexts
      */
-    @SuppressWarnings("unchecked")
-    public <T extends ShardingSphereRule> Map<String, Collection<T>> getRules(final Class<T> ruleType) {
-        Map<String, Collection<T>> result = new LinkedHashMap<>();
-        for (Map.Entry<String, SchemaContext> entry : schemaContexts.entrySet()) {
-            Collection<T> rules = new LinkedList<>();
-            for (ShardingSphereRule each : entry.getValue().getSchema().getRules()) {
-                if (each.getClass() == ruleType) {
-                    rules.add((T) each);
-                }
-            }
-            result.put(entry.getKey(), rules);
-        }
-        return result;
-    }
+    Map<String, SchemaContext> getSchemaContexts();
     
-    @Override
-    public SchemaContext getDefaultSchemaContext() {
-        return schemaContexts.get(DefaultSchema.LOGIC_NAME);
-    }
+    /**
+     * Get default schema context.
+     *
+     * @return default schema context
+     */
+    SchemaContext getDefaultSchemaContext();
     
-    @Override
-    public void close() {
-        for (SchemaContext each : schemaContexts.values()) {
-            each.getRuntimeContext().getExecutorKernel().close();
-        }
-    }
+    /**
+     * Get authentication.
+     * 
+     * @return authentication
+     */
+    Authentication getAuthentication();
+    
+    /**
+     * Get configuration properties.
+     *
+     * @return configuration properties
+     */
+    ConfigurationProperties getProps();
+    
+    /**
+     * Is circuit break or not.
+     * 
+     * @return is circuit break or not
+     */
+    boolean isCircuitBreak();
 }

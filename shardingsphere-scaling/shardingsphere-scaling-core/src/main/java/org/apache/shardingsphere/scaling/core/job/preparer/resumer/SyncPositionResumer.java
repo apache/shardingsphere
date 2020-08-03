@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -48,8 +49,8 @@ public final class SyncPositionResumer {
     /**
      * Resume position from this position manager.
      *
-     * @param shardingScalingJob       sharding scaling job
-     * @param dataSourceManager        dataSource manager
+     * @param shardingScalingJob sharding scaling job
+     * @param dataSourceManager dataSource manager
      * @param resumablePositionManager which position manager resume from
      */
     public void resumePosition(final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager, final ResumablePositionManager resumablePositionManager) {
@@ -69,20 +70,19 @@ public final class SyncPositionResumer {
         List<ScalingTask> result = new LinkedList<>();
         for (SyncConfiguration each : shardingScalingJob.getSyncConfigurations()) {
             MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(each.getDumperConfiguration().getDataSourceConfiguration()));
-            for (Map.Entry<String, PositionManager<PrimaryKeyPosition>> entry : getInventoryPositionMap(each.getDumperConfiguration(), resumablePositionManager).entrySet()) {
+            for (Entry<String, PositionManager<PrimaryKeyPosition>> entry : getInventoryPositionMap(each.getDumperConfiguration(), resumablePositionManager).entrySet()) {
                 result.add(syncTaskFactory.createInventoryDataSyncTask(newSyncConfiguration(each, metaDataManager, entry)));
             }
         }
         return result;
     }
     
-    private SyncConfiguration newSyncConfiguration(
-            final SyncConfiguration syncConfiguration, final MetaDataManager metaDataManager, final Map.Entry<String, PositionManager<PrimaryKeyPosition>> entry) {
+    private SyncConfiguration newSyncConfiguration(final SyncConfiguration syncConfiguration, final MetaDataManager metaDataManager, final Entry<String, PositionManager<PrimaryKeyPosition>> entry) {
         String[] splitTable = entry.getKey().split("#");
         RdbmsConfiguration splitDumperConfig = RdbmsConfiguration.clone(syncConfiguration.getDumperConfiguration());
         splitDumperConfig.setTableName(splitTable[0].split("\\.")[1]);
         splitDumperConfig.setPositionManager(entry.getValue());
-        if (splitTable.length == 2) {
+        if (2 == splitTable.length) {
             splitDumperConfig.setSpiltNum(Integer.parseInt(splitTable[1]));
         }
         splitDumperConfig.setPrimaryKey(metaDataManager.getTableMetaData(splitDumperConfig.getTableName()).getPrimaryKeyColumns().get(0));
@@ -95,7 +95,7 @@ public final class SyncPositionResumer {
         Pattern pattern = Pattern.compile(String.format("%s\\.\\w+(#\\d+)?", dumperConfiguration.getDataSourceName()));
         return resumablePositionManager.getInventoryPositionManagerMap().entrySet().stream()
                 .filter(entry -> pattern.matcher(entry.getKey()).find())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toMap(Entry::getKey, Map.Entry::getValue));
     }
     
     private void resumeIncrementalPosition(final ShardingScalingJob shardingScalingJob, final ResumablePositionManager resumablePositionManager) {
@@ -108,7 +108,7 @@ public final class SyncPositionResumer {
     /**
      * Persist position when init sync job.
      *
-     * @param shardingScalingJob       sync job
+     * @param shardingScalingJob sync job
      * @param resumablePositionManager which position manager resume from
      */
     public void persistPosition(final ShardingScalingJob shardingScalingJob, final ResumablePositionManager resumablePositionManager) {

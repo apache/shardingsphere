@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.RegistryCenterExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
@@ -99,7 +99,7 @@ public final class RegistryCenterExecuteEngineTest {
         if (isOrchestration) {
             schemaContexts.set(ProxySchemaContexts.getInstance(), mock(OrchestrationSchemaContextsFixture.class));
         } else {
-            schemaContexts.set(ProxySchemaContexts.getInstance(), mock(SchemaContexts.class));
+            schemaContexts.set(ProxySchemaContexts.getInstance(), mock(StandardSchemaContexts.class));
         }
     }
     

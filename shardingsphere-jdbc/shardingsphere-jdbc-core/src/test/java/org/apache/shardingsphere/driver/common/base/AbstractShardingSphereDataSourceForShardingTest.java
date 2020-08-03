@@ -77,7 +77,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     }
     
     @AfterClass
-    public static void clear() {
+    public static void clear() throws Exception {
         if (null == shardingSphereDataSource) {
             return;
         }
