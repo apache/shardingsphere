@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -143,11 +144,11 @@ public final class IntegrateTestParameters {
     
     private static void printTestPlan(final Map<DatabaseType, Collection<Object[]>> availableCases, final Map<DatabaseType, Collection<Object[]>> disabledCases, final long factor) {
         Collection<String> activePlan = new LinkedList<>();
-        for (Map.Entry<DatabaseType, Collection<Object[]>> entry : availableCases.entrySet()) {
+        for (Entry<DatabaseType, Collection<Object[]>> entry : availableCases.entrySet()) {
             activePlan.add(String.format("%s(%s)", entry.getKey().getName(), entry.getValue().size() * factor));
         }
         Collection<String> disabledPlan = new LinkedList<>();
-        for (Map.Entry<DatabaseType, Collection<Object[]>> entry : disabledCases.entrySet()) {
+        for (Entry<DatabaseType, Collection<Object[]>> entry : disabledCases.entrySet()) {
             disabledPlan.add(String.format("%s(%s)", entry.getKey().getName(), entry.getValue().size() * factor));
         }
         System.out.println("[INFO] ======= Test Plan =======");

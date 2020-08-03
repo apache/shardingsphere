@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Data source checker for MySQL.
@@ -65,7 +66,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
                     return;
                 }
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new PrepareFailedException("Source datasource check privileges failed.", ex);
         }
         throw new PrepareFailedException("Source datasource is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges.");
@@ -84,15 +85,15 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     
     private void checkVariable(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
-            for (Map.Entry<String, String> entry : REQUIRED_VARIABLES.entrySet()) {
+            for (Entry<String, String> entry : REQUIRED_VARIABLES.entrySet()) {
                 checkVariable(connection, entry);
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new PrepareFailedException("Source datasource check variables failed.", ex);
         }
     }
     
-    private void checkVariable(final Connection connection, final Map.Entry<String, String> entry) throws SQLException {
+    private void checkVariable(final Connection connection, final Entry<String, String> entry) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format(SHOW_VARIABLES_SQL, entry.getKey()));
              ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
@@ -102,5 +103,4 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
             }
         }
     }
-    
 }

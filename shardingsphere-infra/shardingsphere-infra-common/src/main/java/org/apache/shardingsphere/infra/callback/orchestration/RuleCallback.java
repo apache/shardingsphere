@@ -17,19 +17,20 @@
 
 package org.apache.shardingsphere.infra.callback.orchestration;
 
-import java.util.Collection;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.callback.Callback;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+
+import java.util.Collection;
 
 /**
  * Rule callback.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuleCallback extends Callback<Collection<RuleConfiguration>> {
     
     private static final RuleCallback INSTANCE = new RuleCallback();
-    
-    private RuleCallback() {
-    }
     
     /**
      * Get instance.

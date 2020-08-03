@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.driver.executor;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
@@ -29,7 +31,6 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLE
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.impl.DefaultSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.MemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
-import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
@@ -52,6 +53,7 @@ import java.util.stream.Collectors;
 /**
  * Statement executor.
  */
+@RequiredArgsConstructor
 public final class StatementExecutor {
     
     private final Map<String, DataSource> dataSourceMap;
@@ -59,12 +61,6 @@ public final class StatementExecutor {
     private final SchemaContexts schemaContexts;
     
     private final SQLExecutor sqlExecutor;
-    
-    public StatementExecutor(final Map<String, DataSource> dataSourceMap, final SchemaContexts schemaContexts, final SQLExecutor sqlExecutor) {
-        this.dataSourceMap = dataSourceMap;
-        this.schemaContexts = schemaContexts;
-        this.sqlExecutor = sqlExecutor;
-    }
     
     /**
      * Execute query.

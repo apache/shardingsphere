@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Properties;
-import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
 
 /**
  * Metrics configuration.
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
 @Getter
 @Setter
 @AllArgsConstructor
-public final class MetricsConfiguration implements FacadeConfiguration {
+public final class MetricsConfiguration implements ControlPanelConfiguration {
     
     public static final int DEFAULT_PORT = 9190;
     

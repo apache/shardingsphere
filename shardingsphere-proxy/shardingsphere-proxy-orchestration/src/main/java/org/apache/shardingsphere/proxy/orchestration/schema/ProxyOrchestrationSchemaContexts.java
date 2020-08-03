@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.schema.OrchestrationSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCRawBackendDataSourceFactory;
@@ -40,36 +41,35 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
     
     private final JDBCBackendDataSourceFactory backendDataSourceFactory;
     
-    public ProxyOrchestrationSchemaContexts(final SchemaContexts schemaContexts) {
-        super(schemaContexts);
+    public ProxyOrchestrationSchemaContexts(final SchemaContexts schemaContexts, final OrchestrationFacade orchestrationFacade) {
+        super(schemaContexts, orchestrationFacade);
         backendDataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
     }
     
     @Override
-    public Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
-        Map<String, DataSourceParameter> newDataSourceParameters = DataSourceConverter.getDataSourceParameterMap(newDataSources);
-        Map<String, DataSourceParameter> parameters = Maps.filterKeys(newDataSourceParameters, each -> !oldSchemaContext.getSchema().getDataSources().containsKey(each));
-        return createDataSources(parameters);
+    protected Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
+        Map<String, DataSourceConfiguration> newDataSourceConfigs = Maps.filterKeys(newDataSources, each -> !oldSchemaContext.getSchema().getDataSources().containsKey(each));
+        return createDataSources(DataSourceConverter.getDataSourceParameterMap(newDataSourceConfigs));
     }
     
     @Override
-    public Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
+    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
         Map<String, DataSourceParameter> newDataSourceParameters = DataSourceConverter.getDataSourceParameterMap(newDataSources);
         Map<String, DataSourceParameter> parameters = new LinkedHashMap<>();
         for (Entry<String, DataSourceParameter> entry : newDataSourceParameters.entrySet()) {
-            if (isModifiedDataSource(oldSchemaContext.getSchema().getDataSources(), entry)) {
+            if (isModifiedDataSource(oldSchemaContext.getSchema().getDataSources(), entry.getKey(), entry.getValue())) {
                 parameters.put(entry.getKey(), entry.getValue());
             }
         }
         return createDataSources(parameters);
     }
     
-    private synchronized boolean isModifiedDataSource(final Map<String, DataSource> oldDataSources, final Entry<String, DataSourceParameter> target) {
-        return oldDataSources.containsKey(target.getKey()) && !DataSourceConverter.getDataSourceParameter(oldDataSources.get(target.getKey())).equals(target.getValue());
+    private synchronized boolean isModifiedDataSource(final Map<String, DataSource> oldDataSources, final String newDataSourceName, final DataSourceParameter newDataSourceParameter) {
+        return oldDataSources.containsKey(newDataSourceName) && !DataSourceConverter.getDataSourceParameter(oldDataSources.get(newDataSourceName)).equals(newDataSourceParameter);
     }
     
     @Override
-    public Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) throws Exception {
+    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) throws Exception {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>();
         for (Entry<String, Map<String, DataSourceParameter>> entry : createDataSourceParametersMap(dataSourcesMap).entrySet()) {
             result.put(entry.getKey(), createDataSources(entry.getValue()));
@@ -77,18 +77,18 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
         return result;
     }
     
-    private Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> parameters) throws Exception {
+    private Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) throws Exception {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, DataSourceParameter> entry: parameters.entrySet()) {
+        for (Entry<String, DataSourceParameter> entry: dataSourceParameters.entrySet()) {
             result.put(entry.getKey(), backendDataSourceFactory.build(entry.getKey(), entry.getValue()));
         }
         return result;
     }
     
     @Override
-    public Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
+    public Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSources) {
         Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesMap.entrySet()) {
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSources.entrySet()) {
             result.put(entry.getKey(), DataSourceConverter.getDataSourceParameterMap(entry.getValue()));
         }
         return result;

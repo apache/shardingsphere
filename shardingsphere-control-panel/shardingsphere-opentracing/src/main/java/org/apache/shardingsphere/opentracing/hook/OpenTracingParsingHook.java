@@ -21,7 +21,7 @@ import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.opentracing.ShardingTracer;
+import org.apache.shardingsphere.opentracing.OpenTracingTracer;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
 
 /**
@@ -35,7 +35,7 @@ public final class OpenTracingParsingHook implements ParsingHook {
     
     @Override
     public void start(final String sql) {
-        span = ShardingTracer.get().buildSpan(OPERATION_NAME)
+        span = OpenTracingTracer.get().buildSpan(OPERATION_NAME)
                 .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
                 .withTag(Tags.DB_STATEMENT.getKey(), sql).startManual();

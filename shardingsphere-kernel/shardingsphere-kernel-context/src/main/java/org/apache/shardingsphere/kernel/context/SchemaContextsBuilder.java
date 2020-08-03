@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
@@ -59,28 +58,27 @@ public final class SchemaContextsBuilder {
     
     private final Map<String, Map<String, DataSource>> dataSources;
     
-    private final Map<String, Collection<RuleConfiguration>> configurations;
-    
-    private final ConfigurationProperties props;
+    private final Map<String, Collection<RuleConfiguration>> ruleConfigurations;
     
     private final Authentication authentication;
+    
+    private final ConfigurationProperties props;
     
     private final ExecutorKernel executorKernel;
     
     public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
-                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
-        this(dataSources, databaseType, configurations, new Authentication(), props);
+                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> ruleConfigurations, final Properties props) {
+        this(dataSources, databaseType, ruleConfigurations, new Authentication(), props);
     }
     
-    public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, 
-                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Authentication authentication, final Properties props) {
+    public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
+                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> ruleConfigurations, final Authentication authentication, final Properties props) {
         this.dataSources = dataSources;
         this.databaseType = databaseType;
-        this.configurations = configurations;
+        this.ruleConfigurations = ruleConfigurations;
         this.authentication = authentication;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
         executorKernel = new ExecutorKernel(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
-        log(configurations, props);
     }
     
     /**
@@ -91,10 +89,10 @@ public final class SchemaContextsBuilder {
      */
     public SchemaContexts build() throws SQLException {
         Map<String, SchemaContext> schemaContexts = new LinkedHashMap<>();
-        for (String each : configurations.keySet()) {
+        for (String each : ruleConfigurations.keySet()) {
             schemaContexts.put(each, createSchemaContext(each));
         }
-        return new SchemaContexts(schemaContexts, props, authentication);
+        return new StandardSchemaContexts(schemaContexts, authentication, props);
     }
     
     private SchemaContext createSchemaContext(final String schemaName) throws SQLException {
@@ -102,6 +100,12 @@ public final class SchemaContextsBuilder {
         RuntimeContext runtimeContext = new RuntimeContext(createCachedDatabaseMetaData(dataSources),
                 executorKernel, ShardingSphereSQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)), createShardingTransactionManagerEngine(dataSources));
         return new SchemaContext(schemaName, createShardingSphereSchema(schemaName), runtimeContext);
+    }
+    
+    private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
+        try (Connection connection = dataSources.values().iterator().next().getConnection()) {
+            return new CachedDatabaseMetaData(connection.getMetaData());
+        }
     }
     
     private ShardingTransactionManagerEngine createShardingTransactionManagerEngine(final Map<String, DataSource> dataSources) {
@@ -112,9 +116,9 @@ public final class SchemaContextsBuilder {
     
     private ShardingSphereSchema createShardingSphereSchema(final String schemaName) throws SQLException {
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
-        Collection<RuleConfiguration> configurations = this.configurations.get(schemaName);
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(configurations, dataSources.keySet());
-        return new ShardingSphereSchema(databaseType, configurations, rules, dataSources, createMetaData(dataSources, rules));
+        Collection<RuleConfiguration> ruleConfigurations = this.ruleConfigurations.get(schemaName);
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigurations, dataSources.keySet());
+        return new ShardingSphereSchema(databaseType, ruleConfigurations, rules, dataSources, createMetaData(dataSources, rules));
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
@@ -136,16 +140,5 @@ public final class SchemaContextsBuilder {
             }
         }
         return result;
-    }
-    
-    private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
-            return new CachedDatabaseMetaData(connection.getMetaData());
-        }
-    }
-    
-    private void log(final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
-        configurations.values().forEach(ConfigurationLogger::log);
-        ConfigurationLogger.log(props);
     }
 }

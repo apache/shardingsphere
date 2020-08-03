@@ -22,7 +22,7 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
-import org.apache.shardingsphere.opentracing.ShardingTracer;
+import org.apache.shardingsphere.opentracing.OpenTracingTracer;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 
@@ -46,7 +46,7 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
         if (!isTrunkThread) {
             activeSpan = ((ActiveSpan.Continuation) shardingExecuteDataMap.get(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION)).activate();
         }
-        span = ShardingTracer.get().buildSpan(OPERATION_NAME)
+        span = OpenTracingTracer.get().buildSpan(OPERATION_NAME)
                 .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
                 .withTag(Tags.PEER_HOSTNAME.getKey(), dataSourceMetaData.getHostName())

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.control.panel.spi.opentracing;
 
-import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
 
 /**
  * Open tracing configuration.
  */
-public final class OpenTracingConfiguration implements FacadeConfiguration {
+public final class OpenTracingConfiguration implements ControlPanelConfiguration {
 }

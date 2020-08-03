@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
 /**
  * Control panel facade.
  */
-public interface ControlPanelFacade<T extends FacadeConfiguration> extends OrderedSPI<T> {
+public interface ControlPanelFacade<T extends ControlPanelConfiguration> extends OrderedSPI<T> {
     
     /**
      * Initialize facade.

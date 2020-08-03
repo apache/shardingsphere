@@ -27,16 +27,17 @@ import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenterNodeStatus;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 
@@ -106,7 +107,7 @@ public final class HeartbeatHandler {
                 e.cancel(true);
                 return new HashMap<String, HeartbeatResult>();
             }
-        }).flatMap(map -> map.entrySet().stream()).collect(Collectors.groupingBy(Map.Entry::getKey, HashMap::new, Collectors.mapping(Map.Entry::getValue, Collectors.toCollection(ArrayList::new))));
+        }).flatMap(map -> map.entrySet().stream()).collect(Collectors.groupingBy(Entry::getKey, HashMap::new, Collectors.mapping(Entry::getValue, Collectors.toCollection(ArrayList::new))));
         return new HeartbeatResponse(heartbeatResultMap);
     }
     
