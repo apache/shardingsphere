@@ -71,7 +71,7 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
         }
         log.info("resume inventory position from {} = {}", taskPath, data);
         InventoryPosition inventoryPosition = InventoryPosition.fromJson(data);
-        Map<String, PrimaryKeyPosition> unfinished = inventoryPosition.getUnfinish();
+        Map<String, PrimaryKeyPosition> unfinished = inventoryPosition.getUnfinished();
         for (Entry<String, PrimaryKeyPosition> entry : unfinished.entrySet()) {
             getInventoryPositionManagerMap().put(entry.getKey(), new PrimaryKeyPositionManager(entry.getValue()));
         }
@@ -102,7 +102,7 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
             }
             unfinished.add(entry.getKey(), entry.getValue().getCurrentPosition().toJson());
         }
-        result.add("unfinish", unfinished);
+        result.add("unfinished", unfinished);
         result.add("finished", GSON.toJsonTree(finished));
         return result.toString();
     }
@@ -124,7 +124,7 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
     @Setter
     private static final class InventoryPosition {
         
-        private Map<String, PrimaryKeyPosition> unfinish;
+        private Map<String, PrimaryKeyPosition> unfinished;
         
         private Set<String> finished;
         
@@ -137,8 +137,8 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
         public static InventoryPosition fromJson(final String data) {
             InventoryPosition result = new InventoryPosition();
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();
-            Map<String, Object> unfinished = GSON.fromJson(json.getAsJsonObject("unfinish"), Map.class);
-            result.setUnfinish(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> PrimaryKeyPosition.fromJson(entry.getValue().toString()))));
+            Map<String, Object> unfinished = GSON.fromJson(json.getAsJsonObject("unfinished"), Map.class);
+            result.setUnfinished(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> PrimaryKeyPosition.fromJson(entry.getValue().toString()))));
             result.setFinished(GSON.fromJson(json.getAsJsonArray("finished"), Set.class));
             return result;
         }
