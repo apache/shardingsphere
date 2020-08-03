@@ -23,8 +23,7 @@ chapter = true
     <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
     <li><a href="https://jf.10086.cn/" rel="nofollow">中移动金融科技</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">玖富数科</a></li>
-    <li><a href="https://www.haiercash.com/" rel="nofollow">海尔消费金融</a></li>         
-    <li><a href="https://www.xiaoniu88.com/" rel="nofollow">小牛在线</a></li>
+    <li><a href="https://www.haiercash.com/" rel="nofollow">海尔消费金融</a></li>        <li><a href="https://www.xiaoniu88.com/" rel="nofollow">小牛在线</a></li>
     <li><a href="https://www.huaxiafinance.com/" rel="nofollow">华夏信财</a></li>
     <li><a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a></li>
     <li><a href="https://www.51credit.com/" rel="nofollow">我爱卡</a></li>
@@ -75,10 +74,9 @@ chapter = true
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">公交云</a></li>
 </ul>
 
-### 出行与物流
+### 出行
 <ul>
     <li><a href="https://www.didiglobal.com/" rel="nofollow">滴滴小桔车服</a></li>
-    <li><a href="https://www.zto.com/" rel="nofollow">中通快递</a></li>
     <li><a href="https://www.helloglobal.com/" rel="nofollow">哈啰出行</a></li>
     <li><a href="https://www.guazi.com/" rel="nofollow">瓜子二手车</a></li>
     <li><a href="https://www.yiche.com/" rel="nofollow">易车网</a></li>
@@ -91,11 +89,16 @@ chapter = true
     <li><a href="https://4pyun.com/" rel="nofollow">P云+ | 行业知名的互联网停车开放平台</a></li>
     <li><a href="http://www.huochebang.com/" rel="nofollow">货车帮</a></li>
     <li><a href="https://www.01zhuanche.com/" rel="nofollow">首汽约车</a></li>
-    <li><a href="https://www.newbeescm.com/" rel="nofollow">蜂网</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">大搜车</a></li>
-    <li><a href="https://www.dianwoda.com/" rel="nofollow">点我达</a></li>
     <li><a href="https://www.supersoco.com/" rel="nofollow">速珂智能</a></li>
+</ul>
+
+### 物流
+<ul>
+    <li><a href="https://www.zto.com/" rel="nofollow">中通快递</a></li>
     <li><a href="http://www.yl-scm.com/" rel="nofollow">云路供应链</a></li>
+    <li><a href="https://www.newbeescm.com/" rel="nofollow">蜂网</a></li>
+    <li><a href="https://www.dianwoda.com/" rel="nofollow">点我达</a></li>   
     <li><a href="https://www.keking.com" rel="nofollow">凯京科技</a></li>
 </ul>
 
