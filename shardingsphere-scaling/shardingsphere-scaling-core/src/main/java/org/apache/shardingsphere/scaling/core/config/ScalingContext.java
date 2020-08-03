@@ -48,7 +48,7 @@ public final class ScalingContext {
     }
 
     /**
-     * Initialize  Scaling context.
+     * Initialize Scaling context.
      *
      * @param serverConfiguration serverConfiguration
      */

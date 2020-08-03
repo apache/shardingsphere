@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Sync position resumer.
+ * Synchronize position resumer.
  */
 public final class SyncPositionResumer {
     
@@ -108,7 +108,7 @@ public final class SyncPositionResumer {
     /**
      * Persist position when init sync job.
      *
-     * @param shardingScalingJob sync job
+     * @param shardingScalingJob sharding scaling job
      * @param resumablePositionManager which position manager resume from
      */
     public void persistPosition(final ShardingScalingJob shardingScalingJob, final ResumablePositionManager resumablePositionManager) {
