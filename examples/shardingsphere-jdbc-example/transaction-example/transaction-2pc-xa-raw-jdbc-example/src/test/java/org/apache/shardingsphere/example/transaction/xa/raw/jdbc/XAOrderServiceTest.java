@@ -33,7 +33,7 @@ public class XAOrderServiceTest {
     
     @Before
     public void setUp() throws IOException, SQLException {
-        orderService = new XAOrderService("/META-INF/sharding-databases-tables.yaml");
+        orderService = new XAOrderService("/META-INF/sharding-databases-tables-postgresql.yaml");
         orderService.init();
     }
     
