@@ -58,7 +58,7 @@ public final class SQLParserParameterizedTest {
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         // TODO resume me after all test cases passed 
-//        checkTestCases();
+        checkTestCases();
         return getSQLTestParameters();
     }
     
@@ -73,41 +73,12 @@ public final class SQLParserParameterizedTest {
     private static Collection<Object[]> getSQLTestParameters() {
         Collection<Object[]> result = new LinkedList<>();
         // TODO resume me after all test cases passed 
-//        for (Object[] each : SQL_CASES_LOADER.getSQLTestParameters()) {
-        for (Object[] each : getSQLTestParameters(SQL_CASES_LOADER.getSQLTestParameters())) {
+        for (Object[] each : SQL_CASES_LOADER.getSQLTestParameters()) {
             if (!isPlaceholderWithoutParameter(each)) {
                 result.add(each);
             }
         }
         return result;
-    }
-    
-    // TODO remove me after all test cases passed
-    private static Collection<Object[]> getSQLTestParameters(final Collection<Object[]> sqlTestParameters) {
-        Collection<Object[]> result = new LinkedList<>();
-        for (Object[] each : sqlTestParameters) {
-            if (!isPassedSqlCase(each[0].toString())) {
-                result.add(each);
-            }
-        }
-        return result;
-    }
-    
-    private static boolean isPassedSqlCase(final String sqlCaseId) {
-        Collection<String> sqlCases = new LinkedList<>();
-        sqlCases.add("show_index_with_indexes_with_table_and_database");
-        sqlCases.add("show_index_with_database_back_quotes");
-        sqlCases.add("show_index_with_table_back_quotes");
-        // TODO Alter statement needs new segment
-        sqlCases.add("alter_table_add_foreign_key");
-        sqlCases.add("alter_table_add_primary_foreign_key");
-        sqlCases.add("alter_table_add_constraints_sqlserver");
-        // TODO cannot parse create index behind pk in create table statement, and new segment is necessary
-        sqlCases.add("create_table_with_create_index");
-        sqlCases.add("create_table_with_exist_index");
-        // TODO cannot support insert all
-        sqlCases.add("insert_all_with_all_placeholders");
-        return sqlCases.contains(sqlCaseId);
     }
     
     private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParameter) {

@@ -28,6 +28,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -50,6 +52,19 @@ public final class ConstraintDefinitionAssert {
             ColumnAssert.assertIs(assertContext, each, expected.getPrimaryKeyColumns().get(count));
             count++;
         }
+        assertThat(assertContext.getText("Constraint definition index column size assertion error: "), actual.getIndexColumns().size(), is(expected.getIndexColumns().size()));
+        int indexCount = 0;
+        for (ColumnSegment each : actual.getIndexColumns()) {
+            ColumnAssert.assertIs(assertContext, each, expected.getIndexColumns().get(indexCount));
+            indexCount++;
+        }
+        if (null != expected.getIndexName()) {
+            assertNotNull(assertContext.getText("Actual index name should exist."), actual.getIndexName());
+            assertThat(assertContext.getText("Actual index name assertion error."), actual.getIndexName().getIdentifier().getValue(), is(expected.getIndexName()));
+        } else {
+            assertNull(assertContext.getText("Actual index name should not exist."), actual.getIndexName());
+        }
+        
         if (null != expected.getReferencedTable()) {
             assertTrue(assertContext.getText("Actual referenced table should exist."), actual.getReferencedTable().isPresent());
             TableAssert.assertIs(assertContext, actual.getReferencedTable().get(), expected.getReferencedTable());
