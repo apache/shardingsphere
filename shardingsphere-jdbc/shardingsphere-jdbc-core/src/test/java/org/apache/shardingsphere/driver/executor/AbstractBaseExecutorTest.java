@@ -27,8 +27,9 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
-import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -67,7 +68,7 @@ public abstract class AbstractBaseExecutorTest {
     }
     
     private void setConnection() throws SQLException {
-        SchemaContexts schemaContexts = mock(SchemaContexts.class);
+        SchemaContexts schemaContexts = mock(StandardSchemaContexts.class);
         SchemaContext schemaContext = mock(SchemaContext.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);

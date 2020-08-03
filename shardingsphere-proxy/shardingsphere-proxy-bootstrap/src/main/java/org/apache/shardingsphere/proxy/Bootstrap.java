@@ -20,19 +20,15 @@ package org.apache.shardingsphere.proxy;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
-import org.apache.shardingsphere.control.panel.spi.FacadeConfiguration;
+import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
 import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.constant.Constants;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
-import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
+import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.proxy.arg.BootstrapArguments;
 import org.apache.shardingsphere.proxy.backend.schema.ProxyDataSourceContext;
@@ -41,18 +37,16 @@ import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
+import org.apache.shardingsphere.proxy.db.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.orchestration.OrchestrationBootstrap;
 import org.apache.shardingsphere.proxy.orchestration.schema.ProxyOrchestrationSchemaContexts;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 
 /**
  * ShardingSphere-Proxy Bootstrap.
@@ -83,9 +77,9 @@ public final class Bootstrap {
     
     private static void init(final ProxyConfiguration proxyConfig, final int port, final boolean orchestrationEnabled) throws SQLException {
         log(proxyConfig);
-        initProxySchemaContexts(proxyConfig, orchestrationEnabled);
-        initControlPanelFacade(proxyConfig.getMetrics(), proxyConfig.getCluster());
-        updateServerInfo();
+        initSchemaContexts(proxyConfig, orchestrationEnabled);
+        initControlPanelFacade(proxyConfig);
+        setDatabaseServerInfo();
         ShardingSphereProxy.getInstance().start(port);
     }
     
@@ -95,46 +89,37 @@ public final class Bootstrap {
         ConfigurationLogger.log(proxyConfig.getProps());
     }
     
-    private static void initProxySchemaContexts(final ProxyConfiguration proxyConfig, final boolean orchestrationEnabled) throws SQLException {
+    private static void initSchemaContexts(final ProxyConfiguration proxyConfig, final boolean orchestrationEnabled) throws SQLException {
         ProxyDataSourceContext dataSourceContext = new ProxyDataSourceContext(proxyConfig.getSchemaDataSources());
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(
                 dataSourceContext.getDataSourcesMap(), dataSourceContext.getDatabaseType(), proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
-        ProxySchemaContexts.getInstance().init(createSchemaContextsAware(schemaContextsBuilder, orchestrationEnabled));
+        ProxySchemaContexts.getInstance().init(createSchemaContexts(schemaContextsBuilder.build(), orchestrationEnabled));
     }
     
-    private static SchemaContextsAware createSchemaContextsAware(final SchemaContextsBuilder schemaContextsBuilder, final boolean orchestrationEnabled) throws SQLException {
-        return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts(schemaContextsBuilder.build()) : schemaContextsBuilder.build();
+    private static SchemaContexts createSchemaContexts(final SchemaContexts schemaContexts, final boolean orchestrationEnabled) {
+        return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts(schemaContexts, OrchestrationFacade.getInstance()) : schemaContexts;
     }
     
-    private static void initControlPanelFacade(final MetricsConfiguration metricsConfiguration, final ClusterConfiguration clusterConfiguration) {
-        List<FacadeConfiguration> facadeConfigurations = new LinkedList<>();
-        if (null != metricsConfiguration && metricsConfiguration.getEnable()) {
-            facadeConfigurations.add(metricsConfiguration);
+    private static void initControlPanelFacade(final ProxyConfiguration proxyConfig) {
+        Collection<ControlPanelConfiguration> controlPanelConfigs = new LinkedList<>();
+        if (null != proxyConfig.getMetrics() && proxyConfig.getMetrics().getEnable()) {
+            controlPanelConfigs.add(proxyConfig.getMetrics());
         }
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
-            facadeConfigurations.add(new OpenTracingConfiguration());
+            controlPanelConfigs.add(new OpenTracingConfiguration());
         }
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
-            facadeConfigurations.add(clusterConfiguration);
+            controlPanelConfigs.add(proxyConfig.getCluster());
         }
-        new ControlPanelFacadeEngine().init(facadeConfigurations);
+        new ControlPanelFacadeEngine().init(controlPanelConfigs);
     }
     
-    private static void updateServerInfo() {
-        List<String> schemaNames = ProxySchemaContexts.getInstance().getSchemaNames();
-        if (CollectionUtils.isEmpty(schemaNames)) {
-            return;
-        }
-        Map<String, DataSource> dataSources = Objects.requireNonNull(ProxySchemaContexts.getInstance().getSchema(schemaNames.get(0))).getSchema().getDataSources();
-        DataSource singleDataSource = dataSources.values().iterator().next();
-        try (Connection connection = singleDataSource.getConnection()) {
-            DatabaseMetaData databaseMetaData = connection.getMetaData();
-            String databaseName = databaseMetaData.getDatabaseProductName();
-            String databaseVersion = databaseMetaData.getDatabaseProductVersion();
-            log.info("database name {} , database version {}", databaseName, databaseVersion);
-            MySQLServerInfo.setServerVersion(databaseVersion);
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException("Get database server info failed", ex);
+    private static void setDatabaseServerInfo() {
+        Optional<DataSource> dataSourceSample = ProxySchemaContexts.getInstance().getDataSourceSample();
+        if (dataSourceSample.isPresent()) {
+            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample.get());
+            log.info(databaseServerInfo.toString());
+            MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
         }
     }
 }

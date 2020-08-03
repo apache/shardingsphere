@@ -94,7 +94,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     }
     
     @AfterClass
-    public static void close() {
+    public static void close() throws Exception {
         if (null == encryptDataSource) {
             return;
         }

@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -62,7 +63,7 @@ public final class SyncConfigurationUtil {
         ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(scalingConfiguration.getRuleConfiguration().getSourceRule());
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDatasource.keySet());
         filterByShardingDataSourceTables(dataSourceTableNameMap, scalingConfiguration.getJobConfiguration());
-        for (Map.Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
+        for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
             RdbmsConfiguration dumperConfiguration = createDumperConfiguration(entry.getKey(), sourceDatasource.get(entry.getKey()));
             dumperConfiguration.setRetryTimes(scalingConfiguration.getJobConfiguration().getRetryTimes());
             RdbmsConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration, sourceRule);
@@ -77,7 +78,7 @@ public final class SyncConfigurationUtil {
         }
         Map<String, Set<String>> shardingDataSourceTableMap = toDataSourceTableNameMap(getShardingDataSourceTables(jobConfiguration));
         dataSourceTableNameMap.entrySet().removeIf(entry -> !shardingDataSourceTableMap.containsKey(entry.getKey()));
-        for (Map.Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
+        for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
             filterByShardingTables(entry.getValue(), shardingDataSourceTableMap.get(entry.getKey()));
         }
     }
@@ -116,7 +117,7 @@ public final class SyncConfigurationUtil {
     
     private static Map<String, Map<String, String>> toDataSourceTableNameMap(final TableRule tableRule) {
         Map<String, Map<String, String>> result = new HashMap<>();
-        for (Map.Entry<String, Collection<String>> each : tableRule.getDatasourceToTablesMap().entrySet()) {
+        for (Entry<String, Collection<String>> each : tableRule.getDatasourceToTablesMap().entrySet()) {
             Map<String, String> tableNameMap = result.get(each.getKey());
             if (null == tableNameMap) {
                 result.put(each.getKey(), toTableNameMap(tableRule.getLogicTable(), each.getValue()));
@@ -136,7 +137,7 @@ public final class SyncConfigurationUtil {
     }
     
     private static void mergeDataSourceTableNameMap(final Map<String, Map<String, String>> mergedResult, final Map<String, Map<String, String>> newDataSourceTableNameMap) {
-        for (Map.Entry<String, Map<String, String>> each : newDataSourceTableNameMap.entrySet()) {
+        for (Entry<String, Map<String, String>> each : newDataSourceTableNameMap.entrySet()) {
             Map<String, String> tableNameMap = mergedResult.get(each.getKey());
             if (null == tableNameMap) {
                 mergedResult.put(each.getKey(), each.getValue());

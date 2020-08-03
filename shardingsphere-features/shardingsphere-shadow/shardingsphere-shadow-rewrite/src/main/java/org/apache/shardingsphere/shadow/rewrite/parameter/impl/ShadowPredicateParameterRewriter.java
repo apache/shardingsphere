@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.shadow.rewrite.parameter.impl;
 
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.shadow.condition.ShadowConditionEngine;
 import org.apache.shardingsphere.shadow.rewrite.parameter.ShadowParameterRewriter;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Predicate parameter rewriter for shadow.
@@ -44,7 +45,7 @@ public final class ShadowPredicateParameterRewriter extends ShadowParameterRewri
     
     private void replaceShadowParameter(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes) {
         if (!positionIndexes.isEmpty()) {
-            for (Map.Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
+            for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
                 ((StandardParameterBuilder) parameterBuilder).addRemovedParameters(entry.getValue());
             }
         }

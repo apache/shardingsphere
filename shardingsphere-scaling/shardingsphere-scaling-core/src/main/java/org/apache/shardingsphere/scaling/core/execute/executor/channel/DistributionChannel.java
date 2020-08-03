@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -96,7 +97,7 @@ public final class DistributionChannel implements Channel {
     public void pushRecord(final Record record) throws InterruptedException {
         if (FinishedRecord.class.equals(record.getClass())) {
             // broadcast
-            for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {
+            for (Entry<String, MemoryChannel> entry : channels.entrySet()) {
                 entry.getValue().pushRecord(record);
             }
         } else if (DataRecord.class.equals(record.getClass())) {
@@ -149,7 +150,7 @@ public final class DistributionChannel implements Channel {
     }
     
     private void assignmentChannel(final String threadId) {
-        for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {
+        for (Entry<String, MemoryChannel> entry : channels.entrySet()) {
             if (!channelAssignment.containsValue(entry.getKey())) {
                 channelAssignment.put(threadId, entry.getKey());
             }
@@ -157,7 +158,7 @@ public final class DistributionChannel implements Channel {
     }
     
     private class SingleChannelAckCallback implements AckCallback {
-
+        
         @Override
         public void onAck(final List<Record> records) {
             for (Record record : records) {
