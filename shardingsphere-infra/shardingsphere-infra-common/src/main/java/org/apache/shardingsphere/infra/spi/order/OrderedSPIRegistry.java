@@ -70,8 +70,7 @@ public final class OrderedSPIRegistry {
         return result.values();
     }
     
-    private static boolean isSameTypeClass(final OrderedSPI orderedSPI, final Class typeClass) {
-        // FIXME orderedSPI.getType() == ((Class) type).getSuperclass(), should decouple extend between orchestration rule and sharding rule
-        return orderedSPI.getTypeClass() == typeClass || orderedSPI.getTypeClass() == typeClass.getSuperclass();
+    private static boolean isSameTypeClass(final OrderedSPI<?> orderedSPI, final Class<?> typeClass) {
+        return orderedSPI.getTypeClass() == typeClass;
     }
 }

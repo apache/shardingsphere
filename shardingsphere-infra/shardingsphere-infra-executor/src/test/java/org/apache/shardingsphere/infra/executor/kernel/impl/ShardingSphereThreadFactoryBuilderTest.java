@@ -29,16 +29,16 @@ public final class ShardingSphereThreadFactoryBuilderTest {
     @Test
     public void assertBuild() {
         ThreadFactory threadFactory = ShardingSphereThreadFactoryBuilder.build();
-        Thread thread0 = threadFactory.newThread(() -> {});
+        Thread thread0 = threadFactory.newThread(() -> { });
         assertThat(thread0.getName(), is("ShardingSphere-0"));
-        Thread thread1 = threadFactory.newThread(() -> {});
+        Thread thread1 = threadFactory.newThread(() -> { });
         assertThat(thread1.getName(), is("ShardingSphere-1"));
     }
     
     @Test
     public void assertBuildWithNameFormat() {
         ThreadFactory threadFactory = ShardingSphereThreadFactoryBuilder.build("test");
-        Thread thread = threadFactory.newThread(() -> {});
+        Thread thread = threadFactory.newThread(() -> { });
         assertThat(thread.getName(), is("ShardingSphere-test"));
     }
 }
