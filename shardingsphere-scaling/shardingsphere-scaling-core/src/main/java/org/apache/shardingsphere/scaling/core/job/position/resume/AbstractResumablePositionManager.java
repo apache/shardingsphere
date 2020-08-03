@@ -47,6 +47,10 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
     
     private static final Gson GSON = new Gson();
     
+    private static final String UNFINISHED = "unfinished";
+    
+    private static final String FINISHED = "finished";
+    
     private final Map<String, PositionManager<PrimaryKeyPosition>> inventoryPositionManagerMap = Maps.newConcurrentMap();
     
     private final Map<String, PositionManager> incrementalPositionManagerMap = Maps.newConcurrentMap();
@@ -102,8 +106,8 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
             }
             unfinished.add(entry.getKey(), entry.getValue().getCurrentPosition().toJson());
         }
-        result.add("unfinished", unfinished);
-        result.add("finished", GSON.toJsonTree(finished));
+        result.add(UNFINISHED, unfinished);
+        result.add(FINISHED, GSON.toJsonTree(finished));
         return result.toString();
     }
     
@@ -137,9 +141,9 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
         public static InventoryPosition fromJson(final String data) {
             InventoryPosition result = new InventoryPosition();
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();
-            Map<String, Object> unfinished = GSON.fromJson(json.getAsJsonObject("unfinished"), Map.class);
+            Map<String, Object> unfinished = GSON.fromJson(json.getAsJsonObject(UNFINISHED), Map.class);
             result.setUnfinished(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> PrimaryKeyPosition.fromJson(entry.getValue().toString()))));
-            result.setFinished(GSON.fromJson(json.getAsJsonArray("finished"), Set.class));
+            result.setFinished(GSON.fromJson(json.getAsJsonArray(FINISHED), Set.class));
             return result;
         }
     }
