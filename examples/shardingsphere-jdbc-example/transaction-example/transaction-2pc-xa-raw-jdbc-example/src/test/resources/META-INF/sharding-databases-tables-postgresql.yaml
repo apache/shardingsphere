@@ -21,7 +21,7 @@ dataSources:
     username: "sa"
     password: ""
   ds_1: !!com.zaxxer.hikari.HikariDataSource
-    jdbcUrl: jdbc:h2:mem:demo_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL
+    jdbcUrl: jdbc:h2:mem:demo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL
     username: "sa"
     password: ""
 
