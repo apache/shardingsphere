@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
-import org.apache.shardingsphere.infra.database.metadata.dialect.H2DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.metadata.dialect.MariaDBDataSourceMetaData;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -27,26 +26,26 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class H2DatabaseTypeTest {
+public class MariaDBDatabaseTypeTest {
 
     @Test
     public void assertGetName() {
-        assertThat(new H2DatabaseType().getName(), is("H2"));
+        assertThat(new MariaDBDatabaseType().getName(), is("MariaDB"));
     }
     
     @Test
     public void assertGetJdbcUrlPrefixes() {
-        assertThat(new H2DatabaseType().getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:h2:")));
+        assertThat(new MariaDBDatabaseType().getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:mariadb:")));
     }
     
     @Test
     public void assertGetDataSourceMetaData() {
-        assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:~:master_ds_0", "sa"), instanceOf(H2DataSourceMetaData.class));
-        assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:mem:master_ds_0", "sa"), instanceOf(H2DataSourceMetaData.class));
+        assertThat(new MariaDBDatabaseType().getDataSourceMetaData("jdbc:mysql://localhost:3306/demo_ds_0", "root"), instanceOf(MariaDBDataSourceMetaData.class));
+        assertThat(new MariaDBDatabaseType().getDataSourceMetaData("jdbc:mariadb://localhost:3306/demo_ds_0", "root"), instanceOf(MariaDBDataSourceMetaData.class));
     }
     
     @Test
     public void assertGetTrunkDatabaseType() {
-        assertThat(new H2DatabaseType().getTrunkDatabaseType().getName(), is("MySQL"));
+        assertThat(new MariaDBDatabaseType().getTrunkDatabaseType().getName(), is("MySQL"));
     }
 }
