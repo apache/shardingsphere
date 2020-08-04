@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
@@ -71,7 +72,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         String tableName = column.getTableName();
         switch (operator) {
             case EQUAL:
-                return Optional.of(new ListRouteValue<>(columnName, tableName, Collections.singletonList(comparable)));
+                return Optional.of(new ListRouteValue<>(columnName, tableName, Lists.newArrayList(comparable)));
             case GREATER_THAN:
                 return Optional.of(new RangeRouteValue<>(columnName, tableName, Range.greaterThan(comparable)));
             case LESS_THAN:
