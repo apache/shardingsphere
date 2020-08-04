@@ -40,6 +40,6 @@ public class OracleDatabaseTypeTest {
     
     @Test
     public void assertOracleDataSourceMetaData() {
-        assertThat(new OracleDatabaseType().getDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/ds_0", "root"), instanceOf(OracleDataSourceMetaData.class));
+        assertThat(new OracleDatabaseType().getDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/ds_0", "scott"), instanceOf(OracleDataSourceMetaData.class));
     }
 }
