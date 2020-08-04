@@ -58,8 +58,8 @@ public final class ShardingSphereVisitor extends ShardingSphereStatementBaseVisi
         result.setHostName(ctx.hostName().getText());
         result.setPort(ctx.port().getText());
         result.setDb(ctx.dbName().getText());
-        result.setUser(ctx.user().getText());
-        result.setPassword(ctx.password().getText());
+        result.setUser(null == ctx.user() ? "" : ctx.user().getText());
+        result.setPassword(null == ctx.password() ? "" : ctx.password().getText());
         return result;
     }
 }
