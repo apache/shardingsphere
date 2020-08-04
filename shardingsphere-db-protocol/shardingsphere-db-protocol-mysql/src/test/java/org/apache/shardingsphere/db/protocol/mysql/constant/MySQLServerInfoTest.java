@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class MySQLServerInfoTest {
+public final class MySQLServerInfoTest {
 
     @Test
     public void assertSetServerVersion() {
