@@ -36,54 +36,26 @@ public final class TestShardingRule implements DataNodeRoutedRule {
     
     private final Collection<TestTableRule> tableRules;
     
-    /**
-     * Get all data nodes.
-     *
-     * @return all data nodes map, key is logic table name, values are data node collection belong to the key
-     */
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
         return tableRules.stream().collect(Collectors.toMap(TestTableRule::getLogicTable, TestTableRule::getActualDataNodes));
     }
     
-    /**
-     * Get all actual tables.
-     *
-     * @return all actual tables
-     */
     @Override
     public Collection<String> getAllActualTables() {
         return tableRules.stream().flatMap(each -> each.getActualDataNodes().stream().map(DataNode::getTableName)).collect(Collectors.toSet());
     }
     
-    /**
-     * Find first actual table name.
-     *
-     * @param logicTable logic table name
-     * @return the first actual table name
-     */
     @Override
     public Optional<String> findFirstActualTable(final String logicTable) {
         return findTableRule(logicTable).map(tableRule -> tableRule.getActualDataNodes().get(0).getTableName());
     }
     
-    /**
-     * Is need accumulate.
-     *
-     * @param tables table names
-     * @return need accumulate
-     */
     @Override
     public boolean isNeedAccumulate(final Collection<String> tables) {
         return false;
     }
     
-    /**
-     * Find logic table name via actual table name.
-     *
-     * @param actualTable actual table name
-     * @return logic table name
-     */
     @Override
     public Optional<String> findLogicTableByActualTable(final String actualTable) {
         return Optional.empty();
