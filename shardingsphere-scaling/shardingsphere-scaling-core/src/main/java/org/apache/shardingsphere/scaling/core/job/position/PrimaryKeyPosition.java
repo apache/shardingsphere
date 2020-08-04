@@ -35,6 +35,8 @@ import java.util.List;
 @Setter
 public class PrimaryKeyPosition implements Position {
     
+    private static final long serialVersionUID = 8101879950564531329L;
+    
     private static final Gson GSON = new Gson();
     
     private long beginValue;
