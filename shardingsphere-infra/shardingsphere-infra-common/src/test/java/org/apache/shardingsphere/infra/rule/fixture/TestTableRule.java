@@ -31,10 +31,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
-
-/**
- * TestTableRule.
- */
 public class TestTableRule {
     
     private final String logicTable;
@@ -79,5 +75,4 @@ public class TestTableRule {
     private void addActualTable(final String datasourceName, final String tableName) {
         datasourceToTablesMap.computeIfAbsent(datasourceName, key -> new LinkedHashSet<>()).add(tableName);
     }
-    
 }

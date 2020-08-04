@@ -100,5 +100,4 @@ public final class DataNodesTest {
         }
         return result;
     }
-    
 }

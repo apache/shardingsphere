@@ -29,9 +29,6 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Getter
-/**
- * TestShardingRule.
- */
 public final class TestShardingRule implements DataNodeRoutedRule {
     
     private final Collection<TestTableRule> tableRules;
@@ -70,5 +67,4 @@ public final class TestShardingRule implements DataNodeRoutedRule {
     public Optional<TestTableRule> findTableRule(final String logicTableName) {
         return tableRules.stream().filter(each -> each.getLogicTable().equalsIgnoreCase(logicTableName)).findFirst();
     }
-    
 }
