@@ -54,7 +54,6 @@ public final class ProxySchemaContextsTest {
     @Test
     public void assertGetDataSourceSample() throws NoSuchFieldException, IllegalAccessException {
         assertThat(ProxySchemaContexts.getInstance().getDataSourceSample(), is(Optional.empty()));
-        
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
         schemaContexts.set(ProxySchemaContexts.getInstance(), new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties())));
@@ -73,5 +72,4 @@ public final class ProxySchemaContextsTest {
         when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
         return Collections.singletonMap("schema", schemaContext);
     }
-    
 }
