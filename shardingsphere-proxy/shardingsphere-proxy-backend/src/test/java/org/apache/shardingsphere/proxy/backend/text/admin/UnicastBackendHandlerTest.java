@@ -97,7 +97,7 @@ public final class UnicastBackendHandlerTest {
     private void setUnderlyingHandler(final BackendResponse backendResponse) {
         DatabaseCommunicationEngine databaseCommunicationEngine = mock(DatabaseCommunicationEngine.class);
         when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
-        when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
+        when(databaseCommunicationEngineFactory.newTextProtocolInstance(anyString(), any())).thenReturn(databaseCommunicationEngine);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
