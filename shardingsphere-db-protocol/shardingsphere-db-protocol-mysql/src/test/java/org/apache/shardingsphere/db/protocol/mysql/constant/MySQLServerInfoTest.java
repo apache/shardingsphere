@@ -15,37 +15,24 @@
  * limitations under the License.
  */
 
-lexer grammar Literals;
+package org.apache.shardingsphere.db.protocol.mysql.constant;
 
-import Alphabet, Symbol;
+import org.junit.Test;
 
-IDENTIFIER
-    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    | BQ ~'`'+ BQ
-    | (DQ ( '\\'. | '""' | ~('"'| '\\') )* DQ)
-    ;
-    
-STRING
-    : (DQ ( '\\'. | '""' | ~('"'| '\\') )* DQ)
-    | (SQ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ)
-    ;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-INT
-    : [0-9]+
-    ;
+public final class MySQLServerInfoTest {
 
-HEX
-    : [0-9a-fA-F]
-    ;
+    @Test
+    public void assertSetServerVersion() {
+        MySQLServerInfo.setServerVersion("5.1.47");
+        assertThat(MySQLServerInfo.getServerVersion(), is("5.1.47-ShardingSphere-Proxy 5.0.0-RC1"));
+    }
 
-NUMBER
-    : INT? DOT? INT (E (PLUS | MINUS)? INT)?
-    ;
-
-HEXDIGIT
-    : '0x' HEX+ | 'X' SQ HEX+ SQ
-    ;
-    
-BITNUM
-    : '0b' ('0' | '1')+ | B SQ ('0' | '1')+ SQ
-    ;
+    @Test
+    public void assertSetServerVersionForNull() {
+        MySQLServerInfo.setServerVersion(null);
+        assertThat(MySQLServerInfo.getServerVersion(), is("null-ShardingSphere-Proxy 5.0.0-RC1"));
+    }
+}

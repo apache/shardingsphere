@@ -63,26 +63,26 @@ strategyProp
     ;
 
 tableName
-    : IDENTIFIER UL* IDENTIFIER*
+    : IDENTIFIER
     ;
 
 columName
-    : IDENTIFIER UL* IDENTIFIER*
+    : IDENTIFIER
     ;
 
 hostName
-    : ip | IDENTIFIER
+    : IDENTIFIER | ip
     ;
 
 ip
-    : NUMBER+ INT
+    : NUMBER+
     ;
 port
     : INT
     ;
     
 dbName
-    : IDENTIFIER | NUMBER
+    : IDENTIFIER
     ;
 
 user
@@ -90,5 +90,5 @@ user
     ;
 
 password
-    : IDENTIFIER | NUMBER
+    : IDENTIFIER | NUMBER | STRING
     ;
