@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -149,7 +148,7 @@ public final class IntervalShardingAlgorithmTest {
         LocalDateTime localDateTime = LocalDateTime.parse(value.substring(0, inputFormat.length()), DateTimeFormatter.ofPattern(inputFormat));
         String tableNameShardedByQuarter = localDateTime.format(DateTimeFormatter.ofPattern(tableFormatByQuarter));
         String tableNameShardedByMonth = localDateTime.format(DateTimeFormatter.ofPattern(tableFormatByMonth));
-        assertEquals("202004", tableNameShardedByQuarter);
-        assertEquals("202010", tableNameShardedByMonth);
+        assertThat(tableNameShardedByQuarter, is("202004"));
+        assertThat(tableNameShardedByMonth, is("202010"));
     }
 }

@@ -35,13 +35,13 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 public final class EncryptDALResultDecorator implements ResultDecorator {
     
     @Override
-    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) {
+    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final SchemaMetaData schemaMetaData) {
         return isNeedMergeEncryptColumns(sqlStatementContext.getSqlStatement())
                 ? new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, schemaMetaData) : new TransparentMergedResult(queryResult);
     }
     
     @Override
-    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) {
+    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext<?> sqlStatementContext, final SchemaMetaData schemaMetaData) {
         return isNeedMergeEncryptColumns(sqlStatementContext.getSqlStatement()) ? new DecoratedEncryptColumnsMergedResult(mergedResult, sqlStatementContext, schemaMetaData) : mergedResult;
     }
     

@@ -46,7 +46,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -60,7 +59,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertThat(applicationContext.getBean("incrementAlgorithm"), instanceOf(KeyGenerateAlgorithm.class));
         KeyGenerateAlgorithm incrementKeyGenerateAlgorithm = (KeyGenerateAlgorithm) applicationContext.getBean("incrementAlgorithm");
         KeyGenerateAlgorithm directIncrementKeyGenerateAlgorithm = new IncrementKeyGenerateAlgorithm();
-        assertEquals(incrementKeyGenerateAlgorithm.generateKey(), directIncrementKeyGenerateAlgorithm.generateKey());
+        assertThat(directIncrementKeyGenerateAlgorithm.generateKey(), is(incrementKeyGenerateAlgorithm.generateKey()));
     }
     
     @Test

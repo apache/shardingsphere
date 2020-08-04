@@ -49,7 +49,7 @@ public class ShardingScalingExecuteEngine {
      * @param shardingScalingExecutor sharding scaling executor
      * @return execute future
      */
-    public Future submit(final ShardingScalingExecutor shardingScalingExecutor) {
+    public Future<?> submit(final ShardingScalingExecutor shardingScalingExecutor) {
         return executorService.submit(shardingScalingExecutor);
     }
     
@@ -60,8 +60,8 @@ public class ShardingScalingExecuteEngine {
      * @param executeCallback execute callback
      * @return execute future
      */
-    public Future submit(final ShardingScalingExecutor shardingScalingExecutor, final ExecuteCallback executeCallback) {
-        ListenableFuture result = executorService.submit(shardingScalingExecutor);
+    public Future<?> submit(final ShardingScalingExecutor shardingScalingExecutor, final ExecuteCallback executeCallback) {
+        ListenableFuture<?> result = executorService.submit(shardingScalingExecutor);
         Futures.addCallback(result, new ExecuteFutureCallback<>(executeCallback));
         return result;
     }
@@ -73,7 +73,7 @@ public class ShardingScalingExecuteEngine {
      * @param executeCallback execute callback
      * @return execute future of all
      */
-    public Future submitAll(final Collection<? extends ShardingScalingExecutor> shardingScalingExecutors, final ExecuteCallback executeCallback) {
+    public Future<?> submitAll(final Collection<? extends ShardingScalingExecutor> shardingScalingExecutors, final ExecuteCallback executeCallback) {
         Collection<ListenableFuture<Object>> listenableFutures = new ArrayList<>(shardingScalingExecutors.size());
         for (ShardingScalingExecutor each : shardingScalingExecutors) {
             ListenableFuture listenableFuture = executorService.submit(each);

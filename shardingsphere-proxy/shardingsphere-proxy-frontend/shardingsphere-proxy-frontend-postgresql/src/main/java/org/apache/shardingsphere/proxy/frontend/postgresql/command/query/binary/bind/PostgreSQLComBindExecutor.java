@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.bind;
 
-import java.sql.ResultSetMetaData;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
@@ -44,6 +43,7 @@ import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLErrPacketFactory;
 
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,11 +76,11 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     }
     
     @Override
-    public Collection<DatabasePacket> execute() {
+    public Collection<DatabasePacket<?>> execute() {
         if (ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new PostgreSQLErrorResponsePacket());
         }
-        List<DatabasePacket> result = new LinkedList<>();
+        List<DatabasePacket<?>> result = new LinkedList<>();
         result.add(new PostgreSQLBindCompletePacket());
         if (null == databaseCommunicationEngine) {
             return result;

@@ -84,6 +84,7 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
         }
     }
     
+    @SuppressWarnings("unchecked")
     protected void resumeIncrementalPosition(final String data) {
         if (Strings.isNullOrEmpty(data)) {
             return;
@@ -138,6 +139,7 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
          * @param data json data
          * @return inventory position
          */
+        @SuppressWarnings("unchecked")
         public static InventoryPosition fromJson(final String data) {
             InventoryPosition result = new InventoryPosition();
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();

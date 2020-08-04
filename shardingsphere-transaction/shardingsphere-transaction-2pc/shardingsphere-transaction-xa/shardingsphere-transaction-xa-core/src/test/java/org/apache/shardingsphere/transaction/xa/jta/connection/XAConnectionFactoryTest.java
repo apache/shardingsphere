@@ -66,7 +66,7 @@ public final class XAConnectionFactoryTest {
     @Test
     @Ignore("oracle jdbc driver is not import because of the limitations of license")
     public void assertCreateOracleXAConnection() throws ClassNotFoundException {
-        Class clazz = Class.forName("oracle.jdbc.xa.client.OracleXAConnection");
+        Class<?> clazz = Class.forName("oracle.jdbc.xa.client.OracleXAConnection");
         assertThat(XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("Oracle"), xaDataSource, connection), instanceOf(clazz));
     }
     

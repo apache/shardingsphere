@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.infra.callback;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.shardingsphere.infra.callback.orchestration.DataSourceCallback;
 import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
 import org.apache.shardingsphere.infra.callback.orchestration.RuleCallback;
@@ -29,8 +25,13 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public final class CallbackTest {
@@ -41,14 +42,14 @@ public final class CallbackTest {
     public void assertRun() {
         MetaDataCallback.getInstance().run(TEST, new RuleSchemaMetaData(null, null));
         MetaDataCallback.getInstance().register((schemaName, ruleSchemaMetaData) -> {
-            assertEquals(schemaName, TEST);
+            assertThat(schemaName, is(TEST));
             assertThat(ruleSchemaMetaData.getClass().getName(), is(RuleSchemaMetaData.class.getName()));
         });
         MetaDataCallback.getInstance().run(TEST, new RuleSchemaMetaData(null, null));
         
         DataSourceCallback.getInstance().run(TEST, new HashMap<>());
         DataSourceCallback.getInstance().register((schemaName, map) -> {
-            assertEquals(schemaName, TEST);
+            assertThat(schemaName, is(TEST));
             assertThat(map.size(), is(1));
             map.forEach((k, v) -> assertThat(v.getClass().getName(), is(DataSourceConfiguration.class.getName())));
         });
@@ -59,8 +60,8 @@ public final class CallbackTest {
         
         RuleCallback.getInstance().run(TEST, new ArrayList<>());
         RuleCallback.getInstance().register((schemaName, ruleConfigurations) -> {
-            assertEquals(schemaName, TEST);
-            assertThat(ruleConfigurations.isEmpty(), is(false));
+            assertThat(schemaName, is(TEST));
+            assertFalse(ruleConfigurations.isEmpty());
             ruleConfigurations.forEach(each -> assertThat(each.getClass().getName(), is(TestRuleConfiguration.class.getName())));
         });
         Collection<RuleConfiguration> ruleConfigurations = new ArrayList<>();
@@ -71,4 +72,3 @@ public final class CallbackTest {
     static class TestRuleConfiguration implements RuleConfiguration {
     }
 }
-
