@@ -726,7 +726,6 @@
                     <configLocation>src/resources/checkstyle_ci.xml</configLocation>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <excludes>**/autogen/**/*</excludes>
-                    <excludes>**/gen/*</excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -904,7 +903,6 @@
                     <configLocation>src/resources/checkstyle.xml</configLocation>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <excludes>**/autogen/**/*</excludes>
-                    <excludes>**/gen/*</excludes>
                 </configuration>
             </plugin>
             <plugin>
