@@ -50,7 +50,7 @@ public final class MySQLServerInfo {
      * @param serverVersion server version
      */
     public static synchronized void setServerVersion(final String serverVersion) {
-        MySQLServerInfo.serverVersion = String.format(SERVER_VERSION_PATTERN, serverVersion, PROXY_VERSION);
+        MySQLServerInfo.serverVersion = null == serverVersion ? null : String.format(SERVER_VERSION_PATTERN, serverVersion, PROXY_VERSION);
     }
     
     /**
