@@ -27,12 +27,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class OracleDatabaseTypeTest {
-
+    
     @Test
     public void assertGetName() {
         assertThat(new OracleDatabaseType().getName(), is("Oracle"));
     }
-
+    
     @Test
     public void assertGetJdbcUrlPrefixes() {
         assertThat(new OracleDatabaseType().getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:oracle:")));

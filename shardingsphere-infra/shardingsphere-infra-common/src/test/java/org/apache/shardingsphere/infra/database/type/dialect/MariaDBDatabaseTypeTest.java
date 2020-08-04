@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class MariaDBDatabaseTypeTest {
-
+    
     @Test
     public void assertGetName() {
         assertThat(new MariaDBDatabaseType().getName(), is("MariaDB"));
