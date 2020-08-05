@@ -85,5 +85,4 @@ public final class YamlEngineTest {
         actual.setName("test");
         assertThat(YamlEngine.marshal(actual), is("name: test\n"));
     }
-    
 }
