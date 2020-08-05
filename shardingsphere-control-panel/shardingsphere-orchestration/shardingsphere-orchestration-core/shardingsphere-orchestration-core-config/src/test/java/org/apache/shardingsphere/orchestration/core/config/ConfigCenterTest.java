@@ -30,14 +30,12 @@ import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.constant.Constants;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.orchestration.core.common.utils.IpUtils;
 import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -507,8 +505,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertLoadMetricsConfiguration() {
-        String metricsPath = "/test/config/metrics/" + IpUtils.getIp() + ":" + System.getProperty(Constants.PORT_KEY, String.valueOf(Constants.DEFAULT_PORT));
-        when(configurationRepository.get(metricsPath)).thenReturn(METRICS_YAML);
+        when(configurationRepository.get("/test/config/metrics")).thenReturn(METRICS_YAML);
         ConfigCenter configurationService = new ConfigCenter("test", configurationRepository);
         MetricsConfiguration actual = configurationService.loadMetricsConfiguration();
         assertNotNull(actual);

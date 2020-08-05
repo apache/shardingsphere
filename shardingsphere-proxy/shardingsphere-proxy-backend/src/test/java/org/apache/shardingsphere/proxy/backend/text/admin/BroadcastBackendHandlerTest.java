@@ -29,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,7 +76,7 @@ public final class BroadcastBackendHandlerTest {
     @Test
     public void assertExecuteSuccess() {
         mockDatabaseCommunicationEngine(new UpdateResponse());
-        BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);
+        BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", mock(SQLStatement.class), backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
         BackendResponse actual = broadcastBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));
@@ -96,7 +97,7 @@ public final class BroadcastBackendHandlerTest {
     public void assertExecuteFailure() {
         ErrorResponse errorResponse = new ErrorResponse(new SQLException("no reason", "X999", -1));
         mockDatabaseCommunicationEngine(errorResponse);
-        BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);
+        BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", mock(SQLStatement.class), backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
         assertThat(broadcastBackendHandler.execute(), instanceOf(ErrorResponse.class));
         verify(databaseCommunicationEngine, times(10)).execute();
@@ -104,7 +105,7 @@ public final class BroadcastBackendHandlerTest {
     
     private void mockDatabaseCommunicationEngine(final BackendResponse backendResponse) {
         when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
-        when(databaseCommunicationEngineFactory.newTextProtocolInstance(anyString(), any())).thenReturn(databaseCommunicationEngine);
+        when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

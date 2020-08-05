@@ -28,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -76,7 +77,7 @@ public final class UnicastBackendHandlerTest {
     
     @Test
     public void assertExecuteWhileSchemaIsNull() {
-        UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", backendConnection);
+        UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", mock(SQLStatement.class), backendConnection);
         backendConnection.setCurrentSchema("schema_8");
         setDatabaseCommunicationEngine(backendHandler);
         BackendResponse actual = backendHandler.execute();
@@ -87,7 +88,7 @@ public final class UnicastBackendHandlerTest {
     @Test
     public void assertExecuteWhileSchemaNotNull() {
         backendConnection.setCurrentSchema("schema_0");
-        UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", backendConnection);
+        UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", mock(SQLStatement.class), backendConnection);
         setDatabaseCommunicationEngine(backendHandler);
         BackendResponse actual = backendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));
@@ -97,7 +98,7 @@ public final class UnicastBackendHandlerTest {
     private void setUnderlyingHandler(final BackendResponse backendResponse) {
         DatabaseCommunicationEngine databaseCommunicationEngine = mock(DatabaseCommunicationEngine.class);
         when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
-        when(databaseCommunicationEngineFactory.newTextProtocolInstance(anyString(), any())).thenReturn(databaseCommunicationEngine);
+        when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
