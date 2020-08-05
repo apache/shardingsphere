@@ -19,6 +19,7 @@ package org.apache.shardingsphere.masterslave.rule;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.junit.Test;
@@ -62,5 +63,19 @@ public final class MasterSlaveRuleTest {
         assertThat(actual.getMasterDataSourceName(), is("master_db"));
         assertThat(actual.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
         assertThat(actual.getLoadBalancer().getType(), is("RANDOM"));
+    }
+    
+    @Test
+    public void assertUpdateRuleStatusWithNotExistDataSource() {
+        MasterSlaveRule masterSlaveRule = createMasterSlaveRule();
+        masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent("slave_db", true));
+        assertThat(masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
+    }
+    
+    @Test
+    public void assertUpdateRuleStatus() {
+        MasterSlaveRule masterSlaveRule = createMasterSlaveRule();
+        masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent("slave_db_0", true));
+        assertThat(masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames(), is(Arrays.asList("slave_db_1")));
     }
 }
