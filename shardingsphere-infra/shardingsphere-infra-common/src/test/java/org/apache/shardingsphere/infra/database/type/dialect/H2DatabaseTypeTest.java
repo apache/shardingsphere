@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.H2DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.junit.Test;
 
 import java.util.Collections;
