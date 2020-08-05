@@ -125,7 +125,7 @@ public final class EncryptConditionEngine {
         }
         return expressionSegments.isEmpty() ? Optional.empty()
                 : Optional.of(new EncryptInCondition(predicateSegment.getColumn().getIdentifier().getValue(), 
-                tableName, inRightValue.getPredicateBracketValue().getPredicateLeftBracketValue().getStartIndex(), predicateSegment.getStopIndex(), expressionSegments));
+                tableName, inRightValue.getStartIndex(), inRightValue.getStopIndex(), expressionSegments));
     }
     
     private boolean isSupportedOperator(final String operator) {

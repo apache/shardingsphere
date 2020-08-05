@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value;
 
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
  * Predicate right value.
  */
-public interface PredicateRightValue extends ASTNode {
+public interface PredicateRightValue extends SQLSegment {
 }

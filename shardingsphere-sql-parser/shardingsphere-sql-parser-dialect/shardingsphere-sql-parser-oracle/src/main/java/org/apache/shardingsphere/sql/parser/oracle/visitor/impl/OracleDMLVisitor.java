@@ -348,7 +348,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         }
         // FIXME :For DISTINCT()
         if (projection instanceof ColumnSegment) {
-            ExpressionProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+            ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) projection);
             result.setAlias(alias);
             return result;
         }

@@ -40,7 +40,6 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Fu
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FuncExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FunctionExprCommonSubexprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IdentifierContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OwnerContext;
@@ -54,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Un
 import org.apache.shardingsphere.sql.parser.sql.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateBuilder;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
@@ -71,11 +71,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrde
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateLeftBracketValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeSegment;
@@ -187,9 +183,9 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
             ASTNode left = visit(ctx.aExpr(0));
             if (left instanceof ColumnSegment) {
                 ColumnSegment columnSegment = (ColumnSegment) left;
-                ASTNode right = visit(ctx.aExpr(1));
+                SQLSegment right = (SQLSegment) visit(ctx.aExpr(1));
                 PredicateRightValue value = right instanceof ColumnSegment
-                        ? (PredicateRightValue) right : new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) right);
+                        ? (PredicateRightValue) right : new PredicateCompareRightValue(right.getStartIndex(), right.getStopIndex(), ctx.comparisonOperator().getText(), (ExpressionSegment) right);
                 return new PredicateSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegment, value);
             }
             visit(ctx.aExpr(1));
@@ -197,10 +193,6 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         }
         if (null != ctx.logicalOperator()) {
             return new PredicateBuilder(visit(ctx.aExpr(0)), visit(ctx.aExpr(1)), ctx.logicalOperator().getText()).mergePredicate();
-        }
-        
-        if (null != ctx.optIndirection()) {
-            return visit(ctx.aExpr(0));
         }
         super.visitAExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
@@ -221,6 +213,9 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
                 return new LiteralExpressionSegment(ctx.aexprConst().start.getStartIndex(), ctx.aexprConst().stop.getStopIndex(), ((LiteralValue) astNode).getValue());
             }
             return astNode;
+        }
+        if (null != ctx.aExpr()) {
+            return visit(ctx.aExpr());
         }
         super.visitCExpr(ctx);
         return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
@@ -257,27 +252,15 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     
     private PredicateSegment createInSegment(final AExprContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.aExpr(0).cExpr().columnref());
-        PredicateBracketValue predicateBracketValue = createBracketValue(ctx.inExpr());
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(predicateBracketValue, getExpressionSegments(ctx)));
+        ASTNode predicateInRightValue = visit(ctx.inExpr());
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, (PredicateRightValue) predicateInRightValue);
     }
     
-    private Collection<ExpressionSegment> getExpressionSegments(final AExprContext ctx) {
-        Collection<ExpressionSegment> result = new LinkedList<>();
-//        TODO deal with sqlExpressions in PredicateInRightValue
-        return result;
-    }
-    
-    private PredicateBracketValue createBracketValue(final InExprContext ctx) {
-        PredicateLeftBracketValue predicateLeftBracketValue = new PredicateLeftBracketValue(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex());
-        PredicateRightBracketValue predicateRightBracketValue = new PredicateRightBracketValue(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
-        visit(ctx);
-        return new PredicateBracketValue(predicateLeftBracketValue, predicateRightBracketValue);
-    }
-
     private PredicateSegment createBetweenSegment(final AExprContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.aExpr().get(0));
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue((ExpressionSegment) visit(ctx.bExpr()),
-                (ExpressionSegment) visit(ctx.aExpr(1))));
+        SQLSegment value = (SQLSegment) visit(ctx.bExpr());
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(value.getStartIndex(), value.getStopIndex(),
+                (ExpressionSegment) value, (ExpressionSegment) visit(ctx.aExpr(1))));
     }
     
     @Override

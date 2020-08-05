@@ -456,11 +456,18 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
             return result;
         }
         AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
-        if (null != ctx.columnName()) {
-            ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-            ColumnProjectionSegment result = new ColumnProjectionSegment(column);
-            result.setAlias(alias);
-            return result;
+        if (null != ctx.expr()) {
+            ASTNode exprProjection = visit(ctx.expr());
+            if (exprProjection instanceof ColumnSegment) {
+                ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) exprProjection);
+                result.setAlias(alias);
+                return result;
+            }
+            if (exprProjection instanceof SubquerySegment) {
+                SubqueryProjectionSegment result = new SubqueryProjectionSegment((SubquerySegment) exprProjection);
+                result.setAlias(alias);
+                return result;
+            }
         }
         return createProjection(ctx, alias);
     }

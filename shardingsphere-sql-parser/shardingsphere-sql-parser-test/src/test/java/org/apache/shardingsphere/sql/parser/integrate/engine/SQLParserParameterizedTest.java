@@ -87,6 +87,12 @@ public final class SQLParserParameterizedTest {
     
     @Test
     public void assertSupportedSQL() {
+        if ("PostgreSQL".equals(databaseType) && "select_distinct_function".equals(sqlCaseId)) {
+//            String sql1 = "select name,(select age from user limit 1) as age from user where age in (select age from user limit 10)";
+//            SQLStatement actual1 = SQLParserEngineFactory.getSQLParserEngine(databaseType).parse(sql1, false);
+            System.out.println("fasdfas");
+
+        }
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());

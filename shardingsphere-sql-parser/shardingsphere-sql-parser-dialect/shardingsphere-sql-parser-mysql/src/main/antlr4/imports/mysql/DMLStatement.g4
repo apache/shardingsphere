@@ -222,7 +222,7 @@ projections
     ;
 
 projection
-    : (columnName | expr) (AS? alias)? | qualifiedShorthand
+    : expr (AS? alias)? | qualifiedShorthand
     ;
 
 unqualifiedShorthand
