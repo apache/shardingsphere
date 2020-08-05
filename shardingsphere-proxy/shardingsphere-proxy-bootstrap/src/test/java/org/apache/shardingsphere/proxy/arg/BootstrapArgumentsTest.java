@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.proxy.arg;
 
-import lombok.NoArgsConstructor;
 import org.junit.Test;
 
-import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-@NoArgsConstructor
 public final class BootstrapArgumentsTest {
     
     @Test
