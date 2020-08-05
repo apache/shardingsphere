@@ -301,7 +301,6 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     
     private PredicateSegment createInSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
-//        PredicateBracketValue predicateBracketValue = createBracketValue(ctx);
         PredicateInRightValue predicateInRightValue = null != ctx.subquery() ? new PredicateInRightValue(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(),
                 getExpressionSegments(ctx))
                 : new PredicateInRightValue(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), getExpressionSegments(ctx));
@@ -320,16 +319,6 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         }
         return result;
     }
-    
-//    private PredicateBracketValue createBracketValue(final PredicateContext ctx) {
-//        PredicateLeftBracketValue predicateLeftBracketValue = null != ctx.subquery()
-//                ? new PredicateLeftBracketValue(ctx.subquery().LP_().getSymbol().getStartIndex(), ctx.subquery().LP_().getSymbol().getStopIndex())
-//                : new PredicateLeftBracketValue(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex());
-//        PredicateRightBracketValue predicateRightBracketValue = null != ctx.subquery()
-//                ? new PredicateRightBracketValue(ctx.subquery().RP_().getSymbol().getStartIndex(), ctx.subquery().RP_().getSymbol().getStopIndex())
-//                : new PredicateRightBracketValue(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
-//        return new PredicateBracketValue(predicateLeftBracketValue, predicateRightBracketValue);
-//    }
     
     private PredicateSegment createBetweenSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
