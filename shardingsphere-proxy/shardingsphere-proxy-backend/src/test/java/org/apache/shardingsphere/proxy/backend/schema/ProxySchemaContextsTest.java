@@ -25,7 +25,6 @@ import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.MockDataSource;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -53,15 +52,13 @@ public final class ProxySchemaContextsTest {
     }
     
     @Test
-    @Ignore
-    // FIXME #6628
     public void assertGetDataSourceSample() throws NoSuchFieldException, IllegalAccessException {
         assertThat(ProxySchemaContexts.getInstance().getDataSourceSample(), is(Optional.empty()));
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
         schemaContexts.set(ProxySchemaContexts.getInstance(), new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties())));
         Optional<DataSource> actual = ProxySchemaContexts.getInstance().getDataSourceSample();
-        assertThat(actual, is(Optional.of(mockDataSourceMap.entrySet().iterator().next().getValue())));
+        assertThat(actual, is(Optional.of(mockDataSourceMap.get("ds_1"))));
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
