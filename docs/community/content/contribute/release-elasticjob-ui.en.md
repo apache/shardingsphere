@@ -41,15 +41,15 @@ https://github.com/apache/shardingsphere-elasticjob-ui/blob/master/RELEASE-NOTES
 ### Create Release Branch
 
 Suppose ElasticJob-UI source codes downloaded from github is under `~/elasticjob-ui/` directory and the version to be released is `${RELEASE.VERSION}`. 
-Create `${RELEASE.VERSION}-release-ui` branch, where all the following operations are performed.
+Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
 
 ```shell
 ## ${name} is the properly branch, e.g. master, dev-4.x
 git clone --branch ${name} https://github.com/apache/shardingsphere-elasticjob-ui.git ~/elasticjob-ui
 cd ~/elasticjob-ui/
 git pull
-git checkout -b ${RELEASE.VERSION}-release-ui
-git push origin ${RELEASE.VERSION}-release-ui
+git checkout -b ${RELEASE.VERSION}-release
+git push origin ${RELEASE.VERSION}-release
 ```
 
 ### Pre-Release Check
@@ -88,7 +88,7 @@ It is basically the same as the previous rehearsal command, but deleting -DdryRu
 After making sure there is no mistake in local files, submit them to GitHub.
 
 ```shell
-git push origin ${RELEASE.VERSION}-release-ui
+git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
 
@@ -380,9 +380,9 @@ svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.a
 
 ```shell
 git checkout master
-git merge origin/${RELEASE.VERSION}-release-ui
+git merge origin/${RELEASE.VERSION}-release
 git push origin master
-git push --delete origin ${RELEASE.VERSION}-release-ui
+git push --delete origin ${RELEASE.VERSION}-release
 ```
 
 ### Update the download page
