@@ -25,8 +25,8 @@ import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManagerFactory;
-import org.apache.shardingsphere.scaling.core.job.position.resume.ResumablePositionManager;
-import org.apache.shardingsphere.scaling.core.job.position.resume.ResumablePositionManagerFactory;
+import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
+import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.resumer.SyncPositionResumer;
@@ -63,22 +63,22 @@ public final class ShardingScalingJobPreparer {
         String databaseType = shardingScalingJob.getSyncConfigurations().get(0).getDumperConfiguration().getDataSourceConfiguration().getDatabaseType().getName();
         try (DataSourceManager dataSourceManager = new DataSourceManager(shardingScalingJob.getSyncConfigurations())) {
             checkDatasources(databaseType, dataSourceManager);
-            ResumablePositionManager resumablePositionManager = getResumablePositionManager(databaseType, shardingScalingJob);
-            if (resumablePositionManager.isResumable()) {
-                syncPositionResumer.resumePosition(shardingScalingJob, dataSourceManager, resumablePositionManager);
+            ResumeBreakPointManager resumeBreakPointManager = getResumeBreakPointManager(databaseType, shardingScalingJob);
+            if (resumeBreakPointManager.isResumable()) {
+                syncPositionResumer.resumePosition(shardingScalingJob, dataSourceManager, resumeBreakPointManager);
                 return;
             }
             initIncrementalDataTasks(databaseType, shardingScalingJob, dataSourceManager);
             initInventoryDataTasks(shardingScalingJob, dataSourceManager);
-            syncPositionResumer.persistPosition(shardingScalingJob, resumablePositionManager);
+            syncPositionResumer.persistPosition(shardingScalingJob, resumeBreakPointManager);
         } catch (PrepareFailedException ex) {
             log.warn("Preparing sharding scaling job {} : {} failed", shardingScalingJob.getJobId(), shardingScalingJob.getJobName(), ex);
             shardingScalingJob.setStatus(SyncTaskControlStatus.PREPARING_FAILURE.name());
         }
     }
     
-    private ResumablePositionManager getResumablePositionManager(final String databaseType, final ShardingScalingJob shardingScalingJob) {
-        return ResumablePositionManagerFactory.newInstance(databaseType, String.format("/%s/item-%d", shardingScalingJob.getJobName(), shardingScalingJob.getShardingItem()));
+    private ResumeBreakPointManager getResumeBreakPointManager(final String databaseType, final ShardingScalingJob shardingScalingJob) {
+        return ResumeBreakPointManagerFactory.newInstance(databaseType, String.format("/%s/item-%d", shardingScalingJob.getJobName(), shardingScalingJob.getShardingItem()));
     }
     
     private void checkDatasources(final String databaseType, final DataSourceManager dataSourceManager) {
