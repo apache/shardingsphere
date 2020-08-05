@@ -1,6 +1,5 @@
 # maven ignore
 target/
-gen/
 *.class
 *.jar
 *.war
