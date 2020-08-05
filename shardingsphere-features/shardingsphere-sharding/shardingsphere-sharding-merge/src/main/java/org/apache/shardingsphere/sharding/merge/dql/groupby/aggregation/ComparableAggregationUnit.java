@@ -31,7 +31,7 @@ public final class ComparableAggregationUnit implements AggregationUnit {
     
     private Comparable<?> result;
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void merge(final List<Comparable<?>> values) {
         if (null == values || null == values.get(0)) {

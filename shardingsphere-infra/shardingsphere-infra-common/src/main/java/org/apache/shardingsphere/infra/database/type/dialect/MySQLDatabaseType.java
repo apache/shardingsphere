@@ -35,7 +35,7 @@ public final class MySQLDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList(String.format("jdbc:%s:", getName().toLowerCase()), "jdbc:mysqlx:");
+        return Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:");
     }
     
     @Override

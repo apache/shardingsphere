@@ -24,16 +24,16 @@ import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 
 /**
- * Rdbms configuration Util.
+ * Rdbms configuration utility.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RdbmsConfigurationUtil {
     
     /**
-     * Get sql where condition whit primary key.
+     * Get SQL where condition whit primary key.
      *
      * @param rdbmsConfiguration rdbms configuration
-     * @return sql where condition
+     * @return SQL where condition
      */
     public static String getWhereCondition(final RdbmsConfiguration rdbmsConfiguration) {
         return getWhereCondition(rdbmsConfiguration.getPrimaryKey(), rdbmsConfiguration.getPositionManager());

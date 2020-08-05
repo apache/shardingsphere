@@ -28,7 +28,8 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/datasource/dataSource.xml")
 public final class KeyGenerateAlgorithmTest extends AbstractJUnit4SpringContextTests {
@@ -50,6 +51,6 @@ public final class KeyGenerateAlgorithmTest extends AbstractJUnit4SpringContextT
         context.registerBeanDefinition("incrementAlgorithm", beanDefinition);
         KeyGenerateAlgorithm incrementKeyGenerateAlgorithm = (KeyGenerateAlgorithm) context.getBean("incrementAlgorithm");
         KeyGenerateAlgorithm directIncrementKeyGenerateAlgorithm = new IncrementKeyGenerateAlgorithm();
-        assertEquals(incrementKeyGenerateAlgorithm.generateKey(), directIncrementKeyGenerateAlgorithm.generateKey());
+        assertThat(directIncrementKeyGenerateAlgorithm.generateKey(), is(incrementKeyGenerateAlgorithm.generateKey()));
     }
 }

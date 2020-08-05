@@ -28,7 +28,8 @@ import org.junit.Test;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class AbstractResumablePositionManagerTest {
     
@@ -36,7 +37,7 @@ public final class AbstractResumablePositionManagerTest {
     
     private final String incrementalPosition = "{\"ds0\":{\"filename\":\"mysql-bin.000001\",\"position\":4},\"ds1\":{\"filename\":\"mysql-bin.000002\",\"position\":4}}";
     
-    private final String inventoryPosition = "{\"unfinished\":{\"ds1.t_order_1#0\":[0,200],\"ds0.t_order_1#0\":[0,100]},\"finished\":[\"ds0.t_order_1#1\"]}";
+    private final String inventoryPosition = "{\"unfinished\":{\"ds0.t_order_2\":[],\"ds1.t_order_1#0\":[0,200],\"ds0.t_order_1#0\":[0,100]},\"finished\":[\"ds0.t_order_1#1\"]}";
     
     @Before
     public void setUp() throws Exception {
@@ -50,27 +51,28 @@ public final class AbstractResumablePositionManagerTest {
     @Test
     public void assertResumeIncrementalPosition() {
         resumablePositionManager.resumeIncrementalPosition(incrementalPosition);
-        assertEquals(2, resumablePositionManager.getIncrementalPositionManagerMap().size());
+        assertThat(resumablePositionManager.getIncrementalPositionManagerMap().size(), is(2));
     }
     
     @Test
     public void assertResumeInventoryPosition() {
         resumablePositionManager.resumeInventoryPosition(inventoryPosition);
-        assertEquals(3, resumablePositionManager.getInventoryPositionManagerMap().size());
+        assertThat(resumablePositionManager.getInventoryPositionManagerMap().size(), is(4));
     }
     
     @Test
     public void assertGetIncrementalPositionData() {
         resumablePositionManager.getIncrementalPositionManagerMap().put("ds0", new MySQLPositionManager("{\"filename\":\"mysql-bin.000001\",\"position\":4}"));
         resumablePositionManager.getIncrementalPositionManagerMap().put("ds1", new MySQLPositionManager("{\"filename\":\"mysql-bin.000002\",\"position\":4}"));
-        assertEquals(incrementalPosition, resumablePositionManager.getIncrementalPositionData());
+        assertThat(resumablePositionManager.getIncrementalPositionData(), is(incrementalPosition));
     }
     
     @Test
     public void assertGetInventoryPositionData() {
         resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 100)));
         resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_1#1", new PrimaryKeyPositionManager(new PrimaryKeyPosition.FinishedPosition()));
+        resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_2", new PrimaryKeyPositionManager(new PrimaryKeyPosition.PlaceholderPosition()));
         resumablePositionManager.getInventoryPositionManagerMap().put("ds1.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 200)));
-        assertEquals(inventoryPosition, resumablePositionManager.getInventoryPositionData());
+        assertThat(resumablePositionManager.getInventoryPositionData(), is(inventoryPosition));
     }
 }

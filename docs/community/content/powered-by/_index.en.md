@@ -21,7 +21,8 @@ Total: 140 companies.
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
-    <li><a href="https://jf.10086.cn/" rel="nofollow">China Mobile Financial Technology</a></li>   
+    <li>China Mobile Financial Technology
+    <li><a href="https://www.9fgroup.com/" rel="nofollow">9fgroup</a></li>
     <li><a href="https://www.haiercash.com/" rel="nofollow">Haier Cash</a></li>
     <li><a href="https://www.xiaoniu88.com/" rel="nofollow">XiaoNiu88</a></li>
     <li><a href="https://www.huaxiafinance.com/" rel="nofollow">HuaXia Finance</a></li>
@@ -44,9 +45,10 @@ Total: 140 companies.
     <li><a href="https://www.vip.com/" rel="nofollow">VipShop</a></li>
     <li><a href="https://www.missfresh.cn/" rel="nofollow">MissFresh</a></li>
     <li><a href="http://www.pagoda.com.cn/" rel="nofollow">Pagoda</a></li>
-    <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
+    <li><a href="http://www.3songshu.com/" rel="nofollow">Three Squirrels</a></li>
     <li><a href="https://poizon.com/" rel="nofollow">Poizon</a></li>
     <li><a href="https://www.dayi35.com/" rel="nofollow">Dayi35</a></li>
+    <li><a href="https://www.xiaohongchun.com/" rel="nofollow">XiaoHongChun</a></li>
     <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">ZhuanZhuan</a></li>
     <li><a href="https://www.nanyiku.com/" rel="nofollow">NanYiKu</a></li>
     <li><a href="https://www.yiwugou.com/" rel="nofollow">YiWuGou</a></li>
@@ -61,9 +63,8 @@ Total: 140 companies.
 ### Digitalization and Cloud Services
 <ul>
     <li><a href="https://www.jddglobal.com/" rel="nofollow">JD Digits</a></li>
-    <li>JD’s Big Data and Intelligent Supply Chain Department</li>
+    <li>JD’s Big Data and Intelligent Supply Chain Department
     <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">JDCloud</a></li>
-    <li><a href="https://www.9fgroup.com/" rel="nofollow">9fgroup</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">ZhenXin Safe</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">Cloudansys</a></li>
     <li><a href="http://www.compasshz.com/" rel="nofollow">Compasshz</a></li>
@@ -74,16 +75,11 @@ Total: 140 companies.
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">Bus Cloud</a></li>
 </ul>
 
-### Travel and Logistics
+### Transportation
 <ul>
-    <li><a href="https://www.ctrip.com/" rel="nofollow">CTrip</a></li>
-    <li><a href="https://www.tujia.com/" rel="nofollow">TuJia</a></li>
-    <li><a href="https://www.mafengwo.cn/" rel="nofollow">MaFengWo</a></li>
     <li><a href="https://www.didiglobal.com/" rel="nofollow">DiDi Global</a></li>
-    <li><a href="https://www.zto.com/" rel="nofollow">ZTO Express</a></li>
     <li><a href="https://www.helloglobal.com/" rel="nofollow">HelloGlobal</a></li>
     <li><a href="https://www.guazi.com/" rel="nofollow">GuaZi</a></li>
-    <li><a href="https://www.autohome.com.cn/" rel="nofollow">AutoHome</a></li>
     <li><a href="https://www.yiche.com/" rel="nofollow">YiChe</a></li>
     <li><a href="http://www.f6car.com/" rel="nofollow">F6 Car</a></li>
     <li><a href="http://www.zcckj.com/" rel="nofollow">Zhong Ce Auto Space</a></li>
@@ -94,13 +90,25 @@ Total: 140 companies.
     <li><a href="https://4pyun.com/" rel="nofollow">4pyun</a></li>
     <li><a href="http://www.huochebang.com/" rel="nofollow">HuoCheBang</a></li>
     <li><a href="https://www.01zhuanche.com/" rel="nofollow">ShouQi</a></li>
-    <li><a href="https://www.newbeescm.com/" rel="nofollow">NewBeeScm</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">SouChe</a></li>
-    <li><a href="https://www.dianwoda.com/" rel="nofollow">DianWoDa</a></li>
     <li><a href="https://www.supersoco.com/" rel="nofollow">Super SOCO</a></li>
-    <li><a href="http://www.yl-scm.com/" rel="nofollow">YL-Scm</a></li>
-    <li><a href="https://www.keking.com" rel="nofollow">KeKing</a></li>
+</ul>
 
+### Logistics
+<ul>
+    <li><a href="https://www.zto.com/" rel="nofollow">ZTO Express</a></li>
+    <li><a href="http://www.yl-scm.com/" rel="nofollow">YL-Scm</a></li>
+    <li><a href="https://www.newbeescm.com/" rel="nofollow">NewBeeScm</a></li>
+    <li><a href="https://www.dianwoda.com/" rel="nofollow">DianWoDa</a></li>
+    <li><a href="https://www.keking.com" rel="nofollow">KeKing</a></li>
+</ul>
+
+### Travel
+<ul>
+    <li><a href="https://www.ctrip.com/" rel="nofollow">CTrip</a></li>
+    <li><a href="https://www.tujia.com/" rel="nofollow">TuJia</a></li>
+    <li><a href="https://www.mafengwo.cn/" rel="nofollow">MaFengWo</a></li>
+    <li><a href="https://www.fotoplace.cc/" rel="nofollow">Fotoplace</a></li>
 </ul>
 
 ### E-education
@@ -134,14 +142,17 @@ Total: 140 companies.
 <ul>
     <li><a href="https://ss.sohu.com/" rel="nofollow">Sohu News</a></li>
     <li><a href="https://www.tianya.cn/" rel="nofollow">TianYa</a></li>
-    <li><a href="https://bj.58.com/" rel="nofollow">58</a></li>
+    <li><a href="https://www.autohome.com.cn/" rel="nofollow">AutoHome</a></li>
     <li><a href="https://500px.me/" rel="nofollow">500px</a></li>
-    <li><a href="https://www.xiaohongchun.com/" rel="nofollow">XiaoHongChun</a></li>
-    <li><a href="https://www.fotoplace.cc/" rel="nofollow">Fotoplace</a></li>
     <li><a href="https://www.xiachufang.com/" rel="nofollow">XiaChuFang</a></li>
-    <li><a href="https://www.baixing.com/" rel="nofollow">BaiXing</a></li>
     <li><a href="https://www.yidianzixun.com/" rel="nofollow">YiDianZiXun</a></li>
     <li><a href="https://www.huobiinfo.com/" rel="nofollow">HuoBi Info</a></li>
+</ul>
+
+### O2O
+<ul>
+    <li><a href="https://bj.58.com/" rel="nofollow">58</a></li>
+    <li><a href="https://www.baixing.com/" rel="nofollow">BaiXing</a></li>
 </ul>
 
 ### Public Utilities

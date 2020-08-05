@@ -36,7 +36,7 @@ public final class MySQLUnsupportedCommandExecutor implements CommandExecutor {
     private final MySQLCommandPacketType type;
     
     @Override
-    public Collection<DatabasePacket> execute() {
+    public Collection<DatabasePacket<?>> execute() {
         return Collections.singletonList(new MySQLErrPacket(1, CommonErrorCode.UNSUPPORTED_COMMAND, type));
     }
 }

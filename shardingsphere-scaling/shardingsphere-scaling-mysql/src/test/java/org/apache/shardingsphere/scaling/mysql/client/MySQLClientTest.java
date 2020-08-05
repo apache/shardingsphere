@@ -51,16 +51,13 @@ public final class MySQLClientTest {
     @Mock
     private ChannelPipeline pipeline;
     
-    private InetSocketAddress inetSocketAddress;
-    
     private MySQLClient mysqlClient;
     
     @Before
     public void setUp() {
         mysqlClient = new MySQLClient(new ConnectInfo(1, "host", 3306, "username", "password"));
         when(channel.pipeline()).thenReturn(pipeline);
-        inetSocketAddress = new InetSocketAddress("host", 3306);
-        when(channel.localAddress()).thenReturn(inetSocketAddress);
+        when(channel.localAddress()).thenReturn(new InetSocketAddress("host", 3306));
     }
     
     @Test
@@ -119,7 +116,7 @@ public final class MySQLClientTest {
     private void mockChannelResponse(final Object response) {
         new Thread(() -> {
             while (true) {
-                Promise responseCallback = null;
+                Promise<Object> responseCallback = null;
                 try {
                     responseCallback = ReflectionUtil.getFieldValueFromClass(mysqlClient, "responseCallback", Promise.class);
                 } catch (final NoSuchFieldException ex) {

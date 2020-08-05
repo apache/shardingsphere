@@ -23,11 +23,8 @@ import static org.junit.Assert.assertNotNull;
 
 public final class ClusterStateInstanceTest {
     
-    private ClusterStateInstance clusterStateInstance;
-    
     @Test
     public void assertGetInstance() {
-        clusterStateInstance = ClusterStateInstance.getInstance();
-        assertNotNull(clusterStateInstance);
+        assertNotNull(ClusterStateInstance.getInstance());
     }
 }

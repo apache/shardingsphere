@@ -93,11 +93,11 @@ public final class DataNodeRouter {
     
     private RouteContext createRouteContext(final SQLStatement sqlStatement, final List<Object> parameters) {
         try {
-            SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema().getSchemaMetaData(), parameters, sqlStatement);
+            SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema().getSchemaMetaData(), parameters, sqlStatement);
             return new RouteContext(sqlStatementContext, parameters, new RouteResult());
             // TODO should pass parameters for master-slave
         } catch (final IndexOutOfBoundsException ex) {
-            return new RouteContext(new CommonSQLStatementContext(sqlStatement), parameters, new RouteResult());
+            return new RouteContext(new CommonSQLStatementContext<>(sqlStatement), parameters, new RouteResult());
         }
     }
 }

@@ -37,10 +37,10 @@ public final class OrderedSPIRegistry {
      * @param <T> type of ordered SPI class
      * @return registered services
      */
-    public static <T extends OrderedSPI> Map<Class<?>, T> getRegisteredServicesByClass(final Collection<Class<?>> types, final Class<T> orderedSPIClass) {
+    public static <T extends OrderedSPI<?>> Map<Class<?>, T> getRegisteredServicesByClass(final Collection<Class<?>> types, final Class<T> orderedSPIClass) {
         Map<Class<?>, T> result = new LinkedHashMap<>();
         for (T each : getRegisteredServices(orderedSPIClass)) {
-            types.stream().filter(type -> isSameTypeClass(each, type)).forEach(type -> result.put(type, each));
+            types.stream().filter(type -> ((OrderedSPI<?>) each).getTypeClass() == type).forEach(type -> result.put(type, each));
         }
         return result;
     }
@@ -54,24 +54,19 @@ public final class OrderedSPIRegistry {
      * @param <V> type of ordered SPI class
      * @return registered services
      */
-    public static <K, V extends OrderedSPI> Map<K, V> getRegisteredServices(final Collection<K> types, final Class<V> orderedSPIClass) {
+    public static <K, V extends OrderedSPI<?>> Map<K, V> getRegisteredServices(final Collection<K> types, final Class<V> orderedSPIClass) {
         Map<K, V> result = new LinkedHashMap<>();
         for (V each : getRegisteredServices(orderedSPIClass)) {
-            types.stream().filter(type -> isSameTypeClass(each, type.getClass())).forEach(type -> result.put(type, each));
+            types.stream().filter(type -> each.getTypeClass() == type.getClass()).forEach(type -> result.put(type, each));
         }
         return result;
     }
     
-    private static <T extends OrderedSPI> Collection<T> getRegisteredServices(final Class<T> orderedSPIClass) {
+    private static <T extends OrderedSPI<?>> Collection<T> getRegisteredServices(final Class<T> orderedSPIClass) {
         Map<Integer, T> result = new TreeMap<>();
         for (T each : ShardingSphereServiceLoader.newServiceInstances(orderedSPIClass)) {
             result.put(each.getOrder(), each);
         }
         return result.values();
-    }
-    
-    private static boolean isSameTypeClass(final OrderedSPI orderedSPI, final Class typeClass) {
-        // FIXME orderedSPI.getType() == ((Class) type).getSuperclass(), should decouple extend between orchestration rule and sharding rule
-        return orderedSPI.getTypeClass() == typeClass || orderedSPI.getTypeClass() == typeClass.getSuperclass();
     }
 }

@@ -33,5 +33,5 @@ public interface CommandExecutor {
      * @return database packets to be sent
      * @throws SQLException SQL exception
      */
-    Collection<DatabasePacket> execute() throws SQLException;
+    Collection<DatabasePacket<?>> execute() throws SQLException;
 }

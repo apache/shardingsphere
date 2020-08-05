@@ -35,9 +35,9 @@ import java.util.concurrent.ExecutionException;
 /**
  * Executor kernel.
  */
+@Getter
 public final class ExecutorKernel implements AutoCloseable {
     
-    @Getter
     private final ShardingSphereExecutorService executorService;
     
     public ExecutorKernel(final int executorSize) {
