@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * SQL parser for MySQL.
+ * SQL parser for RDL.
  */
 public final class ShardingSphereParser extends ShardingSphereStatementParser implements SQLParser {
     

@@ -54,7 +54,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     @Setter
     private Channel channel;
     
-    public AbstractJDBCImporter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    protected AbstractJDBCImporter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dataSourceManager = dataSourceManager;
         sqlBuilder = createSqlBuilder();
@@ -77,7 +77,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     public final void write() {
         while (isRunning()) {
             List<Record> records = channel.fetchRecords(100, 3);
-            if (null != records && records.size() > 0) {
+            if (null != records && !records.isEmpty()) {
                 flush(dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()), records);
                 if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
                     channel.ack();
@@ -100,7 +100,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
         List<Record> unflushed = buffer;
         do {
             unflushed = doFlush(dataSource, unflushed);
-        } while (isRunning() && unflushed.size() > 0 && retryTimes-- > 0);
+        } while (isRunning() && !unflushed.isEmpty() && retryTimes-- > 0);
         return unflushed.isEmpty();
     }
     
@@ -110,7 +110,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
             for (; i < buffer.size(); i++) {
                 execute(connection, buffer.get(i));
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             log.error("flush failed: {}", buffer.get(i), ex);
             return buffer.subList(i, buffer.size());
         }
@@ -146,7 +146,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
                 ps.setObject(i + 1, record.getColumn(i).getValue());
             }
             ps.execute();
-        } catch (SQLIntegrityConstraintViolationException ignored) {
+        } catch (final SQLIntegrityConstraintViolationException ignored) {
         }
     }
     

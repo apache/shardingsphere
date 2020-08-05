@@ -15,15 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position.resume;
+package org.apache.shardingsphere.infra.rule.fixture;
 
-/**
- * Fake resumable position manager as default.
- */
-public final class FakeResumablePositionManager extends AbstractResumablePositionManager implements ResumablePositionManager {
-    
-    public FakeResumablePositionManager(final String databaseType, final String taskPath) {
-        setDatabaseType(databaseType);
-        setTaskPath(taskPath);
-    }
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+
+public final class TestShardingSphereRule implements ShardingSphereRule {
 }

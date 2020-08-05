@@ -29,8 +29,8 @@ import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPositionManager;
-import org.apache.shardingsphere.scaling.core.job.position.resume.ResumablePositionManager;
-import org.apache.shardingsphere.scaling.core.job.position.resume.ResumablePositionManagerFactory;
+import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
+import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -53,7 +53,7 @@ public final class SyncPositionResumerTest {
     
     private ShardingScalingJob shardingScalingJob;
     
-    private ResumablePositionManager resumablePositionManager;
+    private ResumeBreakPointManager resumeBreakPointManager;
     
     private SyncPositionResumer syncPositionResumer;
     
@@ -62,25 +62,25 @@ public final class SyncPositionResumerTest {
         ScalingContext.getInstance().init(new ServerConfiguration());
         shardingScalingJob = new ShardingScalingJob("scalingTest", 0);
         shardingScalingJob.getSyncConfigurations().add(mockSyncConfiguration());
-        resumablePositionManager = ResumablePositionManagerFactory.newInstance("MySQL", "/scalingTest/item-0");
+        resumeBreakPointManager = ResumeBreakPointManagerFactory.newInstance("MySQL", "/scalingTest/item-0");
         syncPositionResumer = new SyncPositionResumer();
     }
     
     @Test
     public void assertResumePosition() {
-        resumablePositionManager.getInventoryPositionManagerMap().put("ds0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 100)));
-        resumablePositionManager.getIncrementalPositionManagerMap().put("ds0.t_order", mockPositionManager());
-        syncPositionResumer.resumePosition(shardingScalingJob, new DataSourceManager(), resumablePositionManager);
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 100)));
+        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0.t_order", mockPositionManager());
+        syncPositionResumer.resumePosition(shardingScalingJob, new DataSourceManager(), resumeBreakPointManager);
         assertThat(shardingScalingJob.getIncrementalDataTasks().size(), is(1));
         assertTrue(shardingScalingJob.getInventoryDataTasks().isEmpty());
     }
     
     @Test
     public void assertPersistPosition() {
-        ResumablePositionManager resumablePositionManager = mock(ResumablePositionManager.class);
-        syncPositionResumer.persistPosition(shardingScalingJob, resumablePositionManager);
-        verify(resumablePositionManager).persistIncrementalPosition();
-        verify(resumablePositionManager).persistInventoryPosition();
+        ResumeBreakPointManager resumeBreakPointManager = mock(ResumeBreakPointManager.class);
+        syncPositionResumer.persistPosition(shardingScalingJob, resumeBreakPointManager);
+        verify(resumeBreakPointManager).persistIncrementalPosition();
+        verify(resumeBreakPointManager).persistInventoryPosition();
     }
     
     private PositionManager mockPositionManager() {

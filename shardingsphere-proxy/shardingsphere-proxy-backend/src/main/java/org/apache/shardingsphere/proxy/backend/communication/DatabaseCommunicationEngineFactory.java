@@ -54,12 +54,12 @@ public final class DatabaseCommunicationEngineFactory {
     /**
      * Create new instance of text protocol backend handler.
      *
-     * @param schema ShardingSphere schema
      * @param sql SQL to be executed
      * @param backendConnection backend connection
      * @return instance of text protocol backend handler
      */
-    public DatabaseCommunicationEngine newTextProtocolInstance(final SchemaContext schema, final String sql, final BackendConnection backendConnection) {
+    public DatabaseCommunicationEngine newTextProtocolInstance(final String sql, final BackendConnection backendConnection) {
+        SchemaContext schema = backendConnection.getSchema();
         SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(sql, false);
         return new JDBCDatabaseCommunicationEngine(sql, backendConnection, createSQLExecuteEngine(schema, sqlStatement, backendConnection, new StatementExecutorWrapper(schema, sqlStatement)));
     }
@@ -67,13 +67,13 @@ public final class DatabaseCommunicationEngineFactory {
     /**
      * Create new instance of text protocol backend handler.
      *
-     * @param schema ShardingSphere schema
      * @param sql SQL to be executed
      * @param parameters SQL parameters
      * @param backendConnection backend connection
      * @return instance of text protocol backend handler
      */
-    public DatabaseCommunicationEngine newBinaryProtocolInstance(final SchemaContext schema, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
+    public DatabaseCommunicationEngine newBinaryProtocolInstance(final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
+        SchemaContext schema = backendConnection.getSchema();
         SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(sql, true);
         return new JDBCDatabaseCommunicationEngine(sql,
                 backendConnection, createSQLExecuteEngine(schema, sqlStatement, backendConnection, new PreparedStatementExecutorWrapper(schema, sqlStatement, parameters)));
