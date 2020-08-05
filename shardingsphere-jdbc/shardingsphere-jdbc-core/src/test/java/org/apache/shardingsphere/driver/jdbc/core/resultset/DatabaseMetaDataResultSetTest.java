@@ -101,6 +101,7 @@ public final class DatabaseMetaDataResultSetTest {
         when(result.getObject(4)).thenReturn(BYTES);
         when(result.getObject(5)).thenReturn(DATE);
         when(result.getString(6)).thenReturn(ACTUAL_INDEX_NAME);
+        when(result.getString(TABLE_NAME_COLUMN_LABEL)).thenReturn(ACTUAL_TABLE_NAME);
         when(result.getType()).thenReturn(ResultSet.TYPE_FORWARD_ONLY);
         when(result.getConcurrency()).thenReturn(ResultSet.CONCUR_READ_ONLY);
         when(result.next()).thenReturn(true, true, false);

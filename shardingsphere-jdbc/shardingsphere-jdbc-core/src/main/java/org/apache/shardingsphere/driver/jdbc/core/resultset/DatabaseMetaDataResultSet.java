@@ -30,11 +30,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -54,9 +52,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     private final Collection<ShardingSphereRule> rules;
     
     private final ResultSetMetaData resultSetMetaData;
-    
-    private final Map<String, Integer> columnLabelIndexMap;
-    
+
     private final Iterator<DatabaseMetaDataObject> databaseMetaDataObjectIterator;
     
     private final ResultSet resultSet;
@@ -71,25 +67,14 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         type = resultSet.getType();
         concurrency = resultSet.getConcurrency();
         resultSetMetaData = resultSet.getMetaData();
-        columnLabelIndexMap = initIndexMap();
         databaseMetaDataObjectIterator = initIterator(resultSet);
-    }
-    
-    private Map<String, Integer> initIndexMap() throws SQLException {
-        Map<String, Integer> result = new HashMap<>(resultSetMetaData.getColumnCount());
-        for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-            result.put(resultSetMetaData.getColumnLabel(i), i);
-        }
-        return result;
     }
     
     private Iterator<DatabaseMetaDataObject> initIterator(final ResultSet resultSet) throws SQLException {
         LinkedList<DatabaseMetaDataObject> result = new LinkedList<>();
         Set<DatabaseMetaDataObject> removeDuplicationSet = new HashSet<>();
-        int tableNameColumnIndex = columnLabelIndexMap.getOrDefault(TABLE_NAME, -1);
-        int indexNameColumnIndex = columnLabelIndexMap.getOrDefault(INDEX_NAME, -1);
         while (resultSet.next()) {
-            DatabaseMetaDataObject databaseMetaDataObject = generateDatabaseMetaDataObject(tableNameColumnIndex, indexNameColumnIndex, resultSet);
+            DatabaseMetaDataObject databaseMetaDataObject = generateDatabaseMetaDataObject(resultSet);
             if (!removeDuplicationSet.contains(databaseMetaDataObject)) {
                 result.add(databaseMetaDataObject);
                 removeDuplicationSet.add(databaseMetaDataObject);
@@ -98,16 +83,17 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         return result.iterator();
     }
     
-    private DatabaseMetaDataObject generateDatabaseMetaDataObject(final int tableNameColumnIndex, final int indexNameColumnIndex, final ResultSet resultSet) throws SQLException {
-        DatabaseMetaDataObject result = new DatabaseMetaDataObject(resultSetMetaData.getColumnCount());
+    private DatabaseMetaDataObject generateDatabaseMetaDataObject(final ResultSet resultSet) throws SQLException {
+        final int columnCount = resultSetMetaData.getColumnCount();
+        DatabaseMetaDataObject result = new DatabaseMetaDataObject(columnCount);
         Optional<DataNodeRoutedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
-        for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
-            if (tableNameColumnIndex == i) {
+        for (int i = 1; i <= columnCount; i++) {
+            if (TABLE_NAME.equals(resultSetMetaData.getColumnLabel(i))) {
                 String tableName = resultSet.getString(i);
                 Optional<String> logicTableName = dataNodeRoutedRule.isPresent() ? dataNodeRoutedRule.get().findLogicTableByActualTable(tableName) : Optional.empty();
                 result.addObject(logicTableName.orElse(tableName));
-            } else if (indexNameColumnIndex == i) {
-                String tableName = resultSet.getString(tableNameColumnIndex);
+            } else if (INDEX_NAME.equals(resultSetMetaData.getColumnLabel(i))) {
+                String tableName = resultSet.getString(TABLE_NAME);
                 String indexName = resultSet.getString(i);
                 result.addObject(null != indexName && indexName.endsWith(tableName) ? indexName.substring(0, indexName.indexOf(tableName) - 1) : indexName);
             } else {
