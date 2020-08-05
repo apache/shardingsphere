@@ -29,7 +29,7 @@ import java.util.Optional;
  * JDBC utility.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class JdbcUtil {
+public final class JdbcUtil {
     
     /**
      * Get schema.

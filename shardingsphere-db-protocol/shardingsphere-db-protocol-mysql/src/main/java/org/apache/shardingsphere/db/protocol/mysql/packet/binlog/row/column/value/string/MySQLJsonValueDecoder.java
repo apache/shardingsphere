@@ -238,7 +238,7 @@ public final class MySQLJsonValueDecoder {
     }
     
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    static class JsonValueTypes {
+    static final class JsonValueTypes {
         
         public static final byte SMALL_JSON_OBJECT = 0x00;
         

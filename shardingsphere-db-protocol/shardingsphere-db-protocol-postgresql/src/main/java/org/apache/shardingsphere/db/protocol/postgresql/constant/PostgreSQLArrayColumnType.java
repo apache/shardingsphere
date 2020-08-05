@@ -27,7 +27,7 @@ import java.util.Map;
  * Array column types for PostgreSQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostgreSQLArrayColumnType {
+public final class PostgreSQLArrayColumnType {
     
     private static final String ORIGINAL_RECORD_LINES =
         "_aclitem 1034\n"

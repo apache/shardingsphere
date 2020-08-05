@@ -61,7 +61,7 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
     
     @Override
     public Collection<IndexSegment> getIndexes() {
-        LinkedList<IndexSegment> result = new LinkedList<>();
+        Collection<IndexSegment> result = new LinkedList<>();
         Collection<ConstraintDefinitionSegment> constraintDefinitions = getSqlStatement().getConstraintDefinitions();
         for (ConstraintDefinitionSegment each : constraintDefinitions) {
             if (null != each.getIndexName()) {

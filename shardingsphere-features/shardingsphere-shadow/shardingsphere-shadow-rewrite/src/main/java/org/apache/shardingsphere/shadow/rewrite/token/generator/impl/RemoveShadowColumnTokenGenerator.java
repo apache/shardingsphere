@@ -18,16 +18,17 @@
 package org.apache.shardingsphere.shadow.rewrite.token.generator.impl;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
 import org.apache.shardingsphere.shadow.rewrite.token.generator.BaseShadowSQLTokenGenerator;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -49,7 +50,7 @@ public final class RemoveShadowColumnTokenGenerator extends BaseShadowSQLTokenGe
         Optional<InsertColumnsSegment> sqlSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(sqlSegment.isPresent());
         Collection<RemoveToken> result = new LinkedList<>();
-        LinkedList<ColumnSegment> columns = (LinkedList<ColumnSegment>) sqlSegment.get().getColumns();
+        List<ColumnSegment> columns = (LinkedList<ColumnSegment>) sqlSegment.get().getColumns();
         for (int i = 0; i < columns.size(); i++) {
             if (getShadowRule().getColumn().equals(columns.get(i).getIdentifier().getValue())) {
                 if (i == 0) {
