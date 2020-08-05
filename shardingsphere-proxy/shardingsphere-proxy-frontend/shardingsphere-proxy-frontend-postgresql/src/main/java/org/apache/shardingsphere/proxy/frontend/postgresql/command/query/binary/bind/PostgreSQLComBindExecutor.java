@@ -42,6 +42,7 @@ import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLErrPacketFactory;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -71,8 +72,13 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     public PostgreSQLComBindExecutor(final PostgreSQLComBindPacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
-        databaseCommunicationEngine = null == packet.getSql()
-                ? null : DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(backendConnection.getSchema(), packet.getSql(), packet.getParameters(), backendConnection);
+        if (null != packet.getSql()) {
+            SQLStatement sqlStatement = backendConnection.getSchema().getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
+            databaseCommunicationEngine =
+                    DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatement, packet.getSql(), packet.getParameters(), backendConnection);
+        } else {
+            databaseCommunicationEngine = null;
+        }
     }
     
     @Override

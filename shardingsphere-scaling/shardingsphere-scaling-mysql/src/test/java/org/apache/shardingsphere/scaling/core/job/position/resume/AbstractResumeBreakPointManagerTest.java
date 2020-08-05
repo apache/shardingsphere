@@ -31,9 +31,9 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class AbstractResumablePositionManagerTest {
+public final class AbstractResumeBreakPointManagerTest {
     
-    private AbstractResumablePositionManager resumablePositionManager;
+    private AbstractResumeBreakPointManager resumeBreakPointManager;
     
     private final String incrementalPosition = "{\"ds0\":{\"filename\":\"mysql-bin.000001\",\"position\":4},\"ds1\":{\"filename\":\"mysql-bin.000002\",\"position\":4}}";
     
@@ -41,38 +41,38 @@ public final class AbstractResumablePositionManagerTest {
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        resumablePositionManager = new AbstractResumablePositionManager() {
+        resumeBreakPointManager = new AbstractResumeBreakPointManager() {
         };
-        resumablePositionManager.setDatabaseType("MySQL");
-        resumablePositionManager.setTaskPath("/scalingTest/item-0");
+        resumeBreakPointManager.setDatabaseType("MySQL");
+        resumeBreakPointManager.setTaskPath("/scalingTest/item-0");
         ReflectionUtil.getFieldValueFromClass(new ScalingEntryLoader(), "SCALING_ENTRY_MAP", Map.class).put("MySQL", new MySQLScalingEntry());
     }
     
     @Test
     public void assertResumeIncrementalPosition() {
-        resumablePositionManager.resumeIncrementalPosition(incrementalPosition);
-        assertThat(resumablePositionManager.getIncrementalPositionManagerMap().size(), is(2));
+        resumeBreakPointManager.resumeIncrementalPosition(incrementalPosition);
+        assertThat(resumeBreakPointManager.getIncrementalPositionManagerMap().size(), is(2));
     }
     
     @Test
     public void assertResumeInventoryPosition() {
-        resumablePositionManager.resumeInventoryPosition(inventoryPosition);
-        assertThat(resumablePositionManager.getInventoryPositionManagerMap().size(), is(4));
+        resumeBreakPointManager.resumeInventoryPosition(inventoryPosition);
+        assertThat(resumeBreakPointManager.getInventoryPositionManagerMap().size(), is(4));
     }
     
     @Test
     public void assertGetIncrementalPositionData() {
-        resumablePositionManager.getIncrementalPositionManagerMap().put("ds0", new MySQLPositionManager("{\"filename\":\"mysql-bin.000001\",\"position\":4}"));
-        resumablePositionManager.getIncrementalPositionManagerMap().put("ds1", new MySQLPositionManager("{\"filename\":\"mysql-bin.000002\",\"position\":4}"));
-        assertThat(resumablePositionManager.getIncrementalPositionData(), is(incrementalPosition));
+        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0", new MySQLPositionManager("{\"filename\":\"mysql-bin.000001\",\"position\":4}"));
+        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds1", new MySQLPositionManager("{\"filename\":\"mysql-bin.000002\",\"position\":4}"));
+        assertThat(resumeBreakPointManager.getIncrementalPositionData(), is(incrementalPosition));
     }
     
     @Test
     public void assertGetInventoryPositionData() {
-        resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0L, 100L)));
-        resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_1#1", new PrimaryKeyPositionManager(new PrimaryKeyPosition.FinishedPosition()));
-        resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_2", new PrimaryKeyPositionManager(new PrimaryKeyPosition.PlaceholderPosition()));
-        resumablePositionManager.getInventoryPositionManagerMap().put("ds1.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0L, 200L)));
-        assertThat(resumablePositionManager.getInventoryPositionData(), is(inventoryPosition));
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0L, 100L)));
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#1", new PrimaryKeyPositionManager(new PrimaryKeyPosition.FinishedPosition()));
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_2", new PrimaryKeyPositionManager(new PrimaryKeyPosition.PlaceholderPosition()));
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds1.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0L, 200L)));
+        assertThat(resumeBreakPointManager.getInventoryPositionData(), is(inventoryPosition));
     }
 }

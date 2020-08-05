@@ -41,6 +41,7 @@ import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.MySQLErrPacketFactory;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -67,8 +68,9 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     private int currentSequenceId;
     
     public MySQLComStmtExecuteExecutor(final MySQLComStmtExecutePacket comStmtExecutePacket, final BackendConnection backendConnection) {
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
-                backendConnection.getSchema(), comStmtExecutePacket.getSql(), comStmtExecutePacket.getParameters(), backendConnection);
+        SQLStatement sqlStatement = backendConnection.getSchema().getRuntimeContext().getSqlParserEngine().parse(comStmtExecutePacket.getSql(), true);
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatement,
+                comStmtExecutePacket.getSql(), comStmtExecutePacket.getParameters(), backendConnection);
     }
     
     @Override

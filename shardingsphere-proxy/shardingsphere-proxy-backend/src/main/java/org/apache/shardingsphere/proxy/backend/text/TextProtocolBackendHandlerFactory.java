@@ -71,9 +71,9 @@ public final class TextProtocolBackendHandlerFactory {
             return createTCLBackendHandler(sql, (TCLStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof DALStatement) {
-            return createDALBackendHandler((DALStatement) sqlStatement, sql, backendConnection);
+            return createDALBackendHandler(sql, (DALStatement) sqlStatement, backendConnection);
         }
-        return new QueryBackendHandler(sql, backendConnection);
+        return new QueryBackendHandler(sql, sqlStatement, backendConnection);
     }
     
     private static TextProtocolBackendHandler createTCLBackendHandler(final String sql, final TCLStatement tclStatement, final BackendConnection backendConnection) {
@@ -92,10 +92,10 @@ public final class TextProtocolBackendHandlerFactory {
         if (tclStatement instanceof RollbackStatement) {
             return new TransactionBackendHandler(TransactionOperationType.ROLLBACK, backendConnection);
         }
-        return new BroadcastBackendHandler(sql, backendConnection);
+        return new BroadcastBackendHandler(sql, tclStatement, backendConnection);
     }
     
-    private static TextProtocolBackendHandler createDALBackendHandler(final DALStatement dalStatement, final String sql, final BackendConnection backendConnection) {
+    private static TextProtocolBackendHandler createDALBackendHandler(final String sql, final DALStatement dalStatement, final BackendConnection backendConnection) {
         if (dalStatement instanceof UseStatement) {
             return new UseDatabaseBackendHandler((UseStatement) dalStatement, backendConnection);
         }
@@ -104,8 +104,8 @@ public final class TextProtocolBackendHandlerFactory {
         }
         // FIXME: There are three SetStatement classes.
         if (dalStatement instanceof SetStatement) {
-            return new BroadcastBackendHandler(sql, backendConnection);
+            return new BroadcastBackendHandler(sql, dalStatement, backendConnection);
         }
-        return new UnicastBackendHandler(sql, backendConnection);
+        return new UnicastBackendHandler(sql, dalStatement, backendConnection);
     }
 }

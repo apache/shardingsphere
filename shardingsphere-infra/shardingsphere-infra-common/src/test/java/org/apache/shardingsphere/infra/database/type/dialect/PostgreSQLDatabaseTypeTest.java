@@ -15,47 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.transaction.xa.raw.jdbc;
+package org.apache.shardingsphere.infra.database.type.dialect;
 
-import org.junit.After;
-import org.junit.Before;
+import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.sql.SQLException;
+import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class XAOrderServiceTest {
+public final class PostgreSQLDatabaseTypeTest {
     
-    private XAOrderService orderService;
-    
-    @Before
-    public void setUp() throws IOException, SQLException {
-        orderService = new XAOrderService("/META-INF/sharding-databases-tables.yaml");
-        orderService.init();
-    }
-    
-    @After
-    public void cleanUp() throws SQLException {
-        orderService.cleanup();
+    @Test
+    public void assertGetName() {
+        assertThat(new PostgreSQLDatabaseType().getName(), is("PostgreSQL"));
     }
     
     @Test
-    public void assertInsertSuccess() throws SQLException {
-        orderService.insert();
-        assertThat(orderService.selectAll(), is(10));
+    public void assertGetJdbcUrlPrefixes() {
+        assertThat(new PostgreSQLDatabaseType().getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:postgresql:")));
     }
     
     @Test
-    public void assertInsertFailed() throws SQLException {
-        try {
-            orderService.insertFailed();
-        // CHECKSTYLE:OFF
-        } catch (final Exception ignore) {
-        // CHECKSTYLE:ON
-        }
-        assertThat(orderService.selectAll(), is(0));
+    public void assertGetDataSourceMetaData() {
+        assertThat(new PostgreSQLDatabaseType().getDataSourceMetaData("jdbc:postgresql://localhost:5432/demo_ds_0", "postgres"), instanceOf(PostgreSQLDataSourceMetaData.class));
     }
 }

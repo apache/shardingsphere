@@ -87,7 +87,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 将本地文件检查无误后，提交至github。
 
 ```shell
-git push
+git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
 
@@ -387,7 +387,7 @@ svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.a
 ```shell
 git checkout master
 git merge origin/${RELEASE.VERSION}-release
-git push
+git push origin master
 git push --delete origin ${RELEASE.VERSION}-release
 ```
 

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.core.schema;
 
-import com.google.common.base.Joiner;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.facade.init.ClusterInitFacade;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -43,7 +41,6 @@ import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.facade.MetricsTrackerManagerFacade;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
@@ -89,21 +86,22 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         persistMetaData();
     }
     
-    // TODO decouple masterslave rule
     private void disableDataSources() {
         Collection<String> disabledDataSources = orchestrationFacade.getRegistryCenter().loadDisabledDataSources();
         if (!disabledDataSources.isEmpty()) {
             schemaContexts.getSchemaContexts().forEach((key, value)
-                -> value.getSchema().getRules().stream().filter(each -> each instanceof MasterSlaveRule).forEach(each -> disableDataSources((MasterSlaveRule) each, disabledDataSources, key)));
+                -> value.getSchema().getRules().stream().filter(each -> each instanceof StatusContainedRule).forEach(each -> disableDataSources((StatusContainedRule) each, disabledDataSources, key)));
         }
     }
     
-    private void disableDataSources(final MasterSlaveRule masterSlaveRule, final Collection<String> disabledDataSources, final String schemaName) {
-        masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames().forEach(each -> {
-            if (disabledDataSources.contains(Joiner.on(".").join(schemaName, each))) {
-                masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true));
-            }
-        });
+    private void disableDataSources(final StatusContainedRule statusContainedRule, final Collection<String> disabledDataSources, final String schemaName) {
+        disabledDataSources.stream().filter(each -> each.startsWith(schemaName)).map(this::getDataSourceName).forEach(each ->
+                statusContainedRule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true))
+        );
+    }
+    
+    private String getDataSourceName(final String disableDataSource) {
+        return new OrchestrationSchema(disableDataSource).getDataSourceName();
     }
     
     private void persistMetaData() {
@@ -174,7 +172,6 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
-        ConfigurationLogger.log(event.getProps());
         ConfigurationProperties props = new ConfigurationProperties(event.getProps());
         schemaContexts = new StandardSchemaContexts(getChangedSchemaContexts(props), schemaContexts.getAuthentication(), props);
     }
@@ -186,7 +183,6 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final AuthenticationChangedEvent event) {
-        ConfigurationLogger.log(event.getAuthentication());
         schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemaContexts(), event.getAuthentication(), schemaContexts.getProps());
     }
     

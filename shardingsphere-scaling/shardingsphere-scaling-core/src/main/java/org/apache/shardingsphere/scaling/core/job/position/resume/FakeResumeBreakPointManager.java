@@ -15,22 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.constant;
+package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 /**
- * ShardingSphere of constants.
+ * Fake resume from break-point manager as default.
  */
-// TODO remove the class, ref #6546
-public final class Constants {
+public final class FakeResumeBreakPointManager extends AbstractResumeBreakPointManager implements ResumeBreakPointManager {
     
-    /**
-     * PORT_KEY.
-     */
-    public static final String PORT_KEY = "shardingsphere.port";
-    
-    /**
-     * DEFAULT_PORT.
-     */
-    public static final int DEFAULT_PORT = 3307;
+    public FakeResumeBreakPointManager(final String databaseType, final String taskPath) {
+        setDatabaseType(databaseType);
+        setTaskPath(taskPath);
+    }
 }
-
