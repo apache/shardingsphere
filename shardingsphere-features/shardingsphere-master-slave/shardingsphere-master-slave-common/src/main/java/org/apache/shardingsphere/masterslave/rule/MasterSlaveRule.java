@@ -106,11 +106,7 @@ public final class MasterSlaveRule implements DataSourceRoutedRule, StatusContai
     @Override
     public void updateRuleStatus(final RuleChangedEvent event) {
         if (event instanceof DataSourceNameDisabledEvent) {
-            String dataSourceName = ((DataSourceNameDisabledEvent) event).getDataSourceName();
             for (Entry<String, MasterSlaveDataSourceRule> entry : dataSourceRules.entrySet()) {
-                if (!entry.getValue().getSlaveDataSourceNames().contains(dataSourceName)) {
-                    continue;
-                }
                 entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getDataSourceName(), ((DataSourceNameDisabledEvent) event).isDisabled());
             }
         }
