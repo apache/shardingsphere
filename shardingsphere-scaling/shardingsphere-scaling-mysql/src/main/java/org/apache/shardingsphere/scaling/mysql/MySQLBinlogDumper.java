@@ -17,35 +17,36 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
+import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
-import org.apache.shardingsphere.scaling.mysql.client.ConnectInfo;
-import org.apache.shardingsphere.scaling.mysql.client.MySQLClient;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractRowsEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.DeleteRowsEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.PlaceholderEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.WriteRowsEvent;
+import org.apache.shardingsphere.scaling.mysql.client.ConnectInfo;
+import org.apache.shardingsphere.scaling.mysql.client.MySQLClient;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.Objects;
 import java.util.Random;
 
@@ -61,7 +62,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
     
     private final MetaDataManager metaDataManager;
     
-    private final Random random = new Random();
+    private final Random random = new SecureRandom();
     
     @Setter
     private Channel channel;
@@ -83,9 +84,9 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
     
     @Override
     public void dump(final Channel channel) {
-        JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration();
-        final JdbcUri uri = new JdbcUri(jdbcDataSourceConfiguration.getJdbcUrl());
-        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfiguration.getUsername(), jdbcDataSourceConfiguration.getPassword()));
+        JDBCDataSourceConfiguration jdbcDataSourceConfig = (JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration();
+        JdbcUri uri = new JdbcUri(jdbcDataSourceConfig.getJdbcUrl());
+        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfig.getUsername(), jdbcDataSourceConfig.getPassword()));
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         while (isRunning()) {
@@ -177,7 +178,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
     private void pushRecord(final Channel channel, final Record record) {
         try {
             channel.pushRecord(record);
-        } catch (InterruptedException ignored) {
+        } catch (final InterruptedException ignored) {
         }
     }
     

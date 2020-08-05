@@ -278,7 +278,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
      * Because of asynchronous processing, may cause client to close
      * first and cache has not yet closed the end.
      * Wait for new version of Curator to fix this.
-     * BUG address：https://issues.apache.org/jira/browse/CURATOR-157
+     * BUG address: https://issues.apache.org/jira/browse/CURATOR-157
      */
     private void waitForCacheClose() {
         try {

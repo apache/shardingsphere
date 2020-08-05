@@ -80,7 +80,7 @@ public final class XATransactionDataSource implements AutoCloseable {
         }
         Connection result = dataSource.getConnection();
         XAConnection xaConnection = XAConnectionFactory.createXAConnection(databaseType, xaDataSource, result);
-        final Transaction transaction = xaTransactionManager.getTransactionManager().getTransaction();
+        Transaction transaction = xaTransactionManager.getTransactionManager().getTransaction();
         if (!enlistedTransactions.get().contains(transaction)) {
             transaction.enlistResource(new SingleXAResource(resourceName, xaConnection.getXAResource()));
             transaction.registerSynchronization(new Synchronization() {

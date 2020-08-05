@@ -73,6 +73,6 @@ public final class RC4EncryptAlgorithmTest {
     
     @Test
     public void assertGetProperties() {
-        assertThat(encryptAlgorithm.getProps().get("rc4.key.value").toString(), is("test-sharding"));
+        assertThat(encryptAlgorithm.getProps().getProperty("rc4.key.value"), is("test-sharding"));
     }
 }

@@ -35,12 +35,12 @@ public final class LogicalReplication {
     /**
      *  Create PostgreSQL connection.
      *
-     * @param jdbcDataSourceConfiguration JDBC configuration
+     * @param jdbcDataSourceConfig JDBC data source configuration
      * @return PostgreSQL connection
      * @throws SQLException sql exception
      */
-    public PGConnection createPgConnection(final JDBCDataSourceConfiguration jdbcDataSourceConfiguration) throws SQLException {
-        return createConnection(jdbcDataSourceConfiguration);
+    public PGConnection createPgConnection(final JDBCDataSourceConfiguration jdbcDataSourceConfig) throws SQLException {
+        return createConnection(jdbcDataSourceConfig);
     }
     
     /**
@@ -63,13 +63,13 @@ public final class LogicalReplication {
                 .start();
     }
     
-    private PGConnection createConnection(final JDBCDataSourceConfiguration jdbcDataSourceConfiguration) throws SQLException {
+    private PGConnection createConnection(final JDBCDataSourceConfiguration jdbcDataSourceConfig) throws SQLException {
         Properties props = new Properties();
-        PGProperty.USER.set(props, jdbcDataSourceConfiguration.getUsername());
-        PGProperty.PASSWORD.set(props, jdbcDataSourceConfiguration.getPassword());
+        PGProperty.USER.set(props, jdbcDataSourceConfig.getUsername());
+        PGProperty.PASSWORD.set(props, jdbcDataSourceConfig.getPassword());
         PGProperty.ASSUME_MIN_SERVER_VERSION.set(props, "9.6");
         PGProperty.REPLICATION.set(props, "database");
         PGProperty.PREFER_QUERY_MODE.set(props, "simple");
-        return DriverManager.getConnection(jdbcDataSourceConfiguration.getJdbcUrl(), props).unwrap(PGConnection.class);
+        return DriverManager.getConnection(jdbcDataSourceConfig.getJdbcUrl(), props).unwrap(PGConnection.class);
     }
 }

@@ -96,7 +96,7 @@ public final class InventoryDataTaskSplitter {
             return false;
         }
         List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
-        if (null == primaryKeys || 0 == primaryKeys.size()) {
+        if (null == primaryKeys || primaryKeys.isEmpty()) {
             log.warn("Can't split range for table {}, reason: no primary key", rdbmsConfiguration.getTableName());
             return false;
         }
@@ -133,7 +133,7 @@ public final class InventoryDataTaskSplitter {
                 RdbmsConfiguration splitDumperConfig = RdbmsConfiguration.clone(dumperConfiguration);
                 if (i < concurrency - 1) {
                     splitDumperConfig.setPositionManager(new PrimaryKeyPositionManager(new PrimaryKeyPosition(min, min + step)));
-                    min = min + step + 1;
+                    min += step + 1;
                 } else {
                     splitDumperConfig.setPositionManager(new PrimaryKeyPositionManager(new PrimaryKeyPosition(min, max)));
                 }
@@ -141,7 +141,7 @@ public final class InventoryDataTaskSplitter {
                 result.add(new SyncConfiguration(concurrency, syncConfiguration.getTableNameMap(),
                     splitDumperConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration())));
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new PrepareFailedException(String.format("Split task for table %s by primary key %s error", dumperConfiguration.getTableName(), primaryKey), ex);
         }
         return result;

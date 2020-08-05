@@ -77,10 +77,10 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         InventoryPosition inventoryPosition = InventoryPosition.fromJson(data);
         Map<String, PrimaryKeyPosition> unfinished = inventoryPosition.getUnfinished();
         for (Entry<String, PrimaryKeyPosition> entry : unfinished.entrySet()) {
-            getInventoryPositionManagerMap().put(entry.getKey(), new PrimaryKeyPositionManager(entry.getValue()));
+            inventoryPositionManagerMap.put(entry.getKey(), new PrimaryKeyPositionManager(entry.getValue()));
         }
         for (String each : inventoryPosition.getFinished()) {
-            getInventoryPositionManagerMap().put(each, new PrimaryKeyPositionManager(new PrimaryKeyPosition.FinishedPosition()));
+            inventoryPositionManagerMap.put(each, new PrimaryKeyPositionManager(new PrimaryKeyPosition.FinishedPosition()));
         }
     }
     
@@ -100,7 +100,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         JsonObject result = new JsonObject();
         JsonObject unfinished = new JsonObject();
         Set<String> finished = Sets.newHashSet();
-        for (Entry<String, PositionManager<PrimaryKeyPosition>> entry : getInventoryPositionManagerMap().entrySet()) {
+        for (Entry<String, PositionManager<PrimaryKeyPosition>> entry : inventoryPositionManagerMap.entrySet()) {
             if (entry.getValue().getCurrentPosition() instanceof PrimaryKeyPosition.FinishedPosition) {
                 finished.add(entry.getKey());
                 continue;
@@ -114,7 +114,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
     
     protected String getIncrementalPositionData() {
         JsonObject result = new JsonObject();
-        for (Entry<String, PositionManager> entry : getIncrementalPositionManagerMap().entrySet()) {
+        for (Entry<String, PositionManager> entry : incrementalPositionManagerMap.entrySet()) {
             result.add(entry.getKey(), entry.getValue().getCurrentPosition().toJson());
         }
         return result.toString();
@@ -122,7 +122,6 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
     
     @Override
     public void close() {
-    
     }
     
     @Getter

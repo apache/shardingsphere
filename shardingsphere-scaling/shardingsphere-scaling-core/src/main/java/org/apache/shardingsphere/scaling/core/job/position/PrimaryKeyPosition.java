@@ -48,7 +48,7 @@ public class PrimaryKeyPosition implements Position {
         if (null == position) {
             return 1;
         }
-        return Long.compare(beginValue, ((PrimaryKeyPosition) position).getBeginValue());
+        return Long.compare(beginValue, ((PrimaryKeyPosition) position).beginValue);
     }
     
     /**

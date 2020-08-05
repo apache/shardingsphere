@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Array column types for PostgreSQL.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostgreSQLArrayColumnType {
     
     private static final String ORIGINAL_RECORD_LINES =

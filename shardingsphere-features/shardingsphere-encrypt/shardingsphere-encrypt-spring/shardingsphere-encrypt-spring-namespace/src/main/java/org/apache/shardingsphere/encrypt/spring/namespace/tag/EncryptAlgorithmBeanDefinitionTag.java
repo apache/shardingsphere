@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.encrypt.spring.namespace.tag;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Encrypt algorithm bean definition tag.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptAlgorithmBeanDefinitionTag {
     
     public static final String ROOT_TAG = "encrypt-algorithm";

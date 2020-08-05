@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class AbstractSQLTest {
@@ -61,7 +62,7 @@ public abstract class AbstractSQLTest {
     }
     
     private static void createDataSources(final String dbName, final DatabaseType databaseType) {
-        DATABASE_TYPE_MAP.computeIfAbsent(databaseType, k -> new LinkedHashMap<>()).put(dbName, buildDataSource(dbName, databaseType));
+        DATABASE_TYPE_MAP.computeIfAbsent(databaseType, key -> new LinkedHashMap<>()).put(dbName, buildDataSource(dbName, databaseType));
         createSchema(dbName, databaseType);
     }
     
@@ -79,10 +80,10 @@ public abstract class AbstractSQLTest {
     private static void createSchema(final String dbName, final DatabaseType databaseType) {
         try {
             Connection conn = DATABASE_TYPE_MAP.get(databaseType).get(dbName).getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_init.sql")));
+            RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_init.sql"))));
             conn.close();
         } catch (final SQLException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
 }
