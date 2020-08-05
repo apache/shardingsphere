@@ -86,7 +86,7 @@ public class SimpleShadowDataSourceRouterTest {
         WhereSegment whereSegment = new WhereSegment(0, 0);
         AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().addAll(Collections.singletonList(
-                new PredicateSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("shadow")), new PredicateCompareRightValue("=", new LiteralExpressionSegment(0, 0, true)))));
+                new PredicateSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("shadow")), new PredicateCompareRightValue(0, 0, "=", new LiteralExpressionSegment(0, 0, true)))));
         whereSegment.getAndPredicates().addAll(Collections.singletonList(andPredicate));
         selectStatement.setWhere(whereSegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
@@ -98,7 +98,7 @@ public class SimpleShadowDataSourceRouterTest {
         Assert.assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadowSQL());
         andPredicate.getPredicates().clear();
         andPredicate.getPredicates().addAll(Collections.singletonList(
-                new PredicateSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("shadow")), new PredicateCompareRightValue("=", new LiteralExpressionSegment(0, 0, false)))));
+                new PredicateSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("shadow")), new PredicateCompareRightValue(0, 0, "=", new LiteralExpressionSegment(0, 0, false)))));
         projectionsSegment.getProjections().clear();
         projectionsSegment.getProjections().addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "false")));
         Assert.assertFalse("should not be shadow", simpleShadowDataSourceRouter.isShadowSQL());

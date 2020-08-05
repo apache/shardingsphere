@@ -456,20 +456,18 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
             return result;
         }
         AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
-        if (null != ctx.expr()) {
-            ASTNode exprProjection = visit(ctx.expr());
-            if (exprProjection instanceof ColumnSegment) {
-                ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) exprProjection);
-                result.setAlias(alias);
-                return result;
-            }
-            if (exprProjection instanceof SubquerySegment) {
-                SubqueryProjectionSegment result = new SubqueryProjectionSegment((SubquerySegment) exprProjection);
-                result.setAlias(alias);
-                return result;
-            }
+        ASTNode exprProjection = visit(ctx.expr());
+        if (exprProjection instanceof ColumnSegment) {
+            ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) exprProjection);
+            result.setAlias(alias);
+            return result;
         }
-        return createProjection(ctx, alias);
+        if (exprProjection instanceof SubquerySegment) {
+            SubqueryProjectionSegment result = new SubqueryProjectionSegment((SubquerySegment) exprProjection);
+            result.setAlias(alias);
+            return result;
+        }
+        return createProjection(ctx, alias, exprProjection);
     }
     
     @Override
@@ -480,8 +478,8 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.STRING_().getText()));
     }
     
-    private ASTNode createProjection(final ProjectionContext ctx, final AliasSegment alias) {
-        ASTNode projection = visit(ctx.expr());
+    private ASTNode createProjection(final ProjectionContext ctx, final AliasSegment alias, final ASTNode projection) {
+//        ASTNode projection = visit(ctx.expr());
         if (projection instanceof AggregationProjectionSegment) {
             ((AggregationProjectionSegment) projection).setAlias(alias);
             return projection;

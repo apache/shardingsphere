@@ -41,7 +41,7 @@ public final class ConditionValueInOperatorGeneratorTest {
     
     @Test
     public void assertNowExpression() {
-        PredicateInRightValue inRightValue = new PredicateInRightValue(0,1, Collections.singletonList(new CommonExpressionSegment(0, 0, "now()")));
+        PredicateInRightValue inRightValue = new PredicateInRightValue(0, 1, Collections.singletonList(new CommonExpressionSegment(0, 0, "now()")));
         Optional<RouteValue> routeValue = generator.generate(inRightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertThat(((ListRouteValue) routeValue.get()).getValues().iterator().next(), instanceOf(Date.class));
