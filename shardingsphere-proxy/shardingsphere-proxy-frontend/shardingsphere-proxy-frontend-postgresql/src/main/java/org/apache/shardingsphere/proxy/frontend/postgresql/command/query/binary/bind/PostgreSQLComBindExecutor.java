@@ -72,7 +72,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     public PostgreSQLComBindExecutor(final PostgreSQLComBindPacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
         databaseCommunicationEngine = null == packet.getSql()
-                ? null : DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(backendConnection.getSchema(), packet.getSql(), packet.getParameters(), backendConnection);
+                ? null : DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(packet.getSql(), packet.getParameters(), backendConnection);
     }
     
     @Override

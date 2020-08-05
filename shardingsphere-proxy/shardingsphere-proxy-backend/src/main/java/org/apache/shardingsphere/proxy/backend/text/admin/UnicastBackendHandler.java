@@ -49,7 +49,7 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
         if (null == backendConnection.getSchema()) {
             return new ErrorResponse(new NoDatabaseSelectedException());
         }
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getSchema(), sql, backendConnection);
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sql, backendConnection);
         return databaseCommunicationEngine.execute();
     }
     
