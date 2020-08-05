@@ -43,6 +43,7 @@ chapter = true
 | 岳令   | yue530tom   |
 | 肖宇   | yu199195    |
 | 孟浩然 | menghaoranss|
+| 陆敬尚 | jingshanglu |
 
 ## 贡献者
 

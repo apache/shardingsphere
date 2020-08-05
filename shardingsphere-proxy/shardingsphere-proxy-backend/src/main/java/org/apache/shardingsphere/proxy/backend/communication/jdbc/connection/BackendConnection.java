@@ -86,7 +86,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     public BackendConnection(final TransactionType transactionType) {
         this.transactionType = transactionType;
-        this.supportHint = false;
+        supportHint = false;
     }
     
     public BackendConnection(final TransactionType transactionType, final boolean supportHint) {

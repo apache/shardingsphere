@@ -15,25 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.rdl.parser.sql.parser;
+package org.apache.shardingsphere.infra.rule.fixture;
 
-import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.rdl.parser.sql.autogen.ShardingSphereStatementParser;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-/**
- * SQL parser for RDL.
- */
-public final class ShardingSphereParser extends ShardingSphereStatementParser implements SQLParser {
-    
-    public ShardingSphereParser(final TokenStream input) {
-        super(input);
-    }
-    
-    @Override
-    public ASTNode parse() {
-        return new ParseASTNode(execute());
-    }
+public final class TestShardingSphereRule implements ShardingSphereRule {
 }

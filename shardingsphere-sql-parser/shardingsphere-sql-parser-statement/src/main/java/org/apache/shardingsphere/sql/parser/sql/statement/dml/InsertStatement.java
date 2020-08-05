@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -121,7 +122,7 @@ public final class InsertStatement extends DMLStatement {
     private List<String> getColumnNamesForInsertColumns() {
         List<String> result = new LinkedList<>();
         for (ColumnSegment each : getColumns()) {
-            result.add(each.getIdentifier().getValue().toLowerCase());
+            result.add(each.getIdentifier().getValue().toLowerCase(Locale.ENGLISH));
         }
         return result;
     }
@@ -129,7 +130,7 @@ public final class InsertStatement extends DMLStatement {
     private List<String> getColumnNamesForSetAssignment() {
         List<String> result = new LinkedList<>();
         for (AssignmentSegment each : setAssignment.getAssignments()) {
-            result.add(each.getColumn().getIdentifier().getValue().toLowerCase());
+            result.add(each.getColumn().getIdentifier().getValue().toLowerCase(Locale.ENGLISH));
         }
         return result;
     }
