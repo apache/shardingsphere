@@ -51,12 +51,10 @@ public final class AbstractDataSourceCheckerTest {
         dataSourceChecker = new AbstractDataSourceChecker() {
             @Override
             public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-
             }
-    
+            
             @Override
             public void checkVariable(final Collection<? extends DataSource> dataSources) {
-        
             }
         };
         dataSources = new ArrayList<>();
@@ -72,7 +70,7 @@ public final class AbstractDataSourceCheckerTest {
 
     @Test(expected = PrepareFailedException.class)
     public void assertCheckConnectionFailed() throws SQLException {
-        when(dataSource.getConnection()).thenThrow(new SQLException());
+        when(dataSource.getConnection()).thenThrow(new SQLException("error"));
         dataSourceChecker.checkConnection(dataSources);
     }
 }
