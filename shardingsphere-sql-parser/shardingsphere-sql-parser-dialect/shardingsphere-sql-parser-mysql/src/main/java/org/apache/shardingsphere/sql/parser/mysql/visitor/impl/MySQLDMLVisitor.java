@@ -479,7 +479,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     }
     
     private ASTNode createProjection(final ProjectionContext ctx, final AliasSegment alias, final ASTNode projection) {
-//        ASTNode projection = visit(ctx.expr());
         if (projection instanceof AggregationProjectionSegment) {
             ((AggregationProjectionSegment) projection).setAlias(alias);
             return projection;
