@@ -28,7 +28,7 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ShardingSphereRulesBuilderTest {
+public final class ShardingSphereRulesBuilderTest {
     
     @Test
     public void assertBuild() {

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
 
 import java.util.Collection;
 
-public class TestShardingSphereRuleBuilder implements ShardingSphereRuleBuilder {
+public final class TestShardingSphereRuleBuilder implements ShardingSphereRuleBuilder {
     
     @Getter
     private static ShardingSphereRule shardingSphereRule = new TestShardingSphereRule();
