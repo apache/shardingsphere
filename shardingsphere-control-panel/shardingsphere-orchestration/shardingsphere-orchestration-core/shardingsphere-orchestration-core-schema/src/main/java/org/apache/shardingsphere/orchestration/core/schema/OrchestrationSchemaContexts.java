@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -174,7 +173,6 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
-        ConfigurationLogger.log(event.getProps());
         ConfigurationProperties props = new ConfigurationProperties(event.getProps());
         schemaContexts = new StandardSchemaContexts(getChangedSchemaContexts(props), schemaContexts.getAuthentication(), props);
     }
@@ -186,7 +184,6 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final AuthenticationChangedEvent event) {
-        ConfigurationLogger.log(event.getAuthentication());
         schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemaContexts(), event.getAuthentication(), schemaContexts.getProps());
     }
     
