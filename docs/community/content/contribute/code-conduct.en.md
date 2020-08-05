@@ -31,7 +31,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Use meaningful class, method and variable names, avoid to use abbreviate. 
  - Return values are named with `result`; Variables in the loop structure are named with `each`; Replace `each` with `entry` in map.
  - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
- - Name property files with camel-case and lowercase first letters.
+ - Name property files with `Spinal Case`(a variant of `Snake Case` which uses hyphens `-` to separate words). 
  - Split codes that need to add notes with it into small methods, which are explained with method names.
  - Have constants on the left and variable on the right in `=` and `equals` conditional expressions; Have variable on the left and constants on the right in `greater than` and `less than` conditional expressions.
  - Beside using same names as input parameters and global fields in assign statement, avoid using `this` modifier.

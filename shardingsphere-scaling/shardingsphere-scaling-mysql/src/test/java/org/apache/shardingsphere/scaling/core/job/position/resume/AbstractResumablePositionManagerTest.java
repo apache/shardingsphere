@@ -40,7 +40,7 @@ public final class AbstractResumablePositionManagerTest {
     private final String inventoryPosition = "{\"unfinished\":{\"ds0.t_order_2\":[],\"ds1.t_order_1#0\":[0,200],\"ds0.t_order_1#0\":[0,100]},\"finished\":[\"ds0.t_order_1#1\"]}";
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         resumablePositionManager = new AbstractResumablePositionManager() {
         };
         resumablePositionManager.setDatabaseType("MySQL");
@@ -69,10 +69,10 @@ public final class AbstractResumablePositionManagerTest {
     
     @Test
     public void assertGetInventoryPositionData() {
-        resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 100)));
+        resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0L, 100L)));
         resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_1#1", new PrimaryKeyPositionManager(new PrimaryKeyPosition.FinishedPosition()));
         resumablePositionManager.getInventoryPositionManagerMap().put("ds0.t_order_2", new PrimaryKeyPositionManager(new PrimaryKeyPosition.PlaceholderPosition()));
-        resumablePositionManager.getInventoryPositionManagerMap().put("ds1.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 200)));
+        resumablePositionManager.getInventoryPositionManagerMap().put("ds1.t_order_1#0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0L, 200L)));
         assertThat(resumablePositionManager.getInventoryPositionData(), is(inventoryPosition));
     }
 }
