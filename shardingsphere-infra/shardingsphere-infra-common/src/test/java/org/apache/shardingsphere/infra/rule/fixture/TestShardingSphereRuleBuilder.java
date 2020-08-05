@@ -33,12 +33,12 @@ public final class TestShardingSphereRuleBuilder implements ShardingSphereRuleBu
     public ShardingSphereRule build(final RuleConfiguration ruleConfiguration, final Collection dataSourceNames) {
         return shardingSphereRule;
     }
-
+    
     @Override
     public int getOrder() {
         return 0;
     }
-
+    
     @Override
     public Class getTypeClass() {
         return TestRuleConfiguration.class;
