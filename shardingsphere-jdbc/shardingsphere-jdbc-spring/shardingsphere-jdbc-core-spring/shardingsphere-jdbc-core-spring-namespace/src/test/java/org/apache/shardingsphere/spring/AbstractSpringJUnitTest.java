@@ -37,12 +37,14 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @TestExecutionListeners(inheritListeners = false, listeners = {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class})
@@ -57,14 +59,14 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     @Before
     public void createSchema() throws SQLException {
         for (String each : getSchemaFiles()) {
-            RunScript.execute(createDataSource(each).getConnection(), new InputStreamReader(classLoader.getResourceAsStream(each)));
+            RunScript.execute(createDataSource(each).getConnection(), new InputStreamReader(Objects.requireNonNull(classLoader.getResourceAsStream(each)), StandardCharsets.UTF_8));
         }
         reInitMetaData();
     }
     
     private DataSource createDataSource(final String dataSetFile) {
         BasicDataSource result = new BasicDataSource();
-        result.setDriverClassName(org.h2.Driver.class.getName());
+        result.setDriverClassName("org.h2.Driver");
         result.setUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", getFileName(dataSetFile)));
         result.setUsername("sa");
         result.setPassword("");
@@ -114,7 +116,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
         while (!result.isPresent() && null != clazz) {
             try {
                 result = Optional.of(clazz.getDeclaredField(name));
-            } catch (NoSuchFieldException ignored) {
+            } catch (final NoSuchFieldException ignored) {
             }
             clazz = clazz.getSuperclass();
         }

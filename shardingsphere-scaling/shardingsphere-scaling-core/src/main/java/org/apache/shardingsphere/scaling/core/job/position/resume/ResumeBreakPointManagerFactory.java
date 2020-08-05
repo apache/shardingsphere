@@ -22,28 +22,28 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 /**
- * Resumable position manager factory.
+ * Resume from break-point manager factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ResumablePositionManagerFactory {
+public final class ResumeBreakPointManagerFactory {
     
-    private static Class<? extends ResumablePositionManager> clazz = FakeResumablePositionManager.class;
+    private static Class<? extends ResumeBreakPointManager> clazz = FakeResumeBreakPointManager.class;
     
     static {
-        if (ZookeeperResumablePositionManager.isAvailable()) {
-            clazz = ZookeeperResumablePositionManager.class;
+        if (ZookeeperResumeBreakPointManager.isAvailable()) {
+            clazz = ZookeeperResumeBreakPointManager.class;
         }
     }
     
     /**
-     * New resumable position manager instance.
+     * New resume from break-point manager instance.
      *
      * @param databaseType database type
      * @param taskPath task path for persist data.
-     * @return resumable position manager
+     * @return resume from break-point manager
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static ResumablePositionManager newInstance(final String databaseType, final String taskPath) {
+    public static ResumeBreakPointManager newInstance(final String databaseType, final String taskPath) {
         return clazz.getConstructor(String.class, String.class).newInstance(databaseType, taskPath);
     }
 }

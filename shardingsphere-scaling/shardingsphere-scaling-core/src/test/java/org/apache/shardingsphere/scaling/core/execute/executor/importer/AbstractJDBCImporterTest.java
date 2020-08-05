@@ -84,7 +84,7 @@ public final class AbstractJDBCImporterTest {
     private AbstractJDBCImporter jdbcImporter;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws SQLException {
         jdbcImporter = new AbstractJDBCImporter(getRdbmsConfiguration(), dataSourceManager) {
             
             @Override

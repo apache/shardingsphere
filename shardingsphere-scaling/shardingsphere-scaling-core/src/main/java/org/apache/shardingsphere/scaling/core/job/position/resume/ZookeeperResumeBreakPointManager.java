@@ -29,10 +29,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Depends on zookeeper to manager position.
+ * Depends on zookeeper resume from break-point manager.
  */
 @Slf4j
-public final class ZookeeperResumablePositionManager extends AbstractResumablePositionManager implements ResumablePositionManager {
+public final class ZookeeperResumeBreakPointManager extends AbstractResumeBreakPointManager implements ResumeBreakPointManager {
     
     private static final String INVENTORY = "/inventory";
     
@@ -52,12 +52,12 @@ public final class ZookeeperResumablePositionManager extends AbstractResumablePo
         ResumeConfiguration resumeConfiguration = ScalingContext.getInstance().getServerConfiguration().getResumeConfiguration();
         if (null != resumeConfiguration) {
             CURATOR_ZOOKEEPER_REPOSITORY.init(resumeConfiguration.getNamespace(), new OrchestrationCenterConfiguration("ZooKeeper", resumeConfiguration.getServerLists(), new Properties()));
-            log.info("zookeeper resumable position manager is available.");
+            log.info("zookeeper resume from break-point manager is available.");
             available = true;
         }
     }
     
-    public ZookeeperResumablePositionManager(final String databaseType, final String taskPath) {
+    public ZookeeperResumeBreakPointManager(final String databaseType, final String taskPath) {
         setDatabaseType(databaseType);
         setTaskPath(taskPath);
         inventoryPath = taskPath + INVENTORY;

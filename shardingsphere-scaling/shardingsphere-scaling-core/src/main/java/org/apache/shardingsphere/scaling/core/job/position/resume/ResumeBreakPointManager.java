@@ -23,9 +23,9 @@ import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import java.util.Map;
 
 /**
- * Resumable position manager interface.
+ * Resume from break-point manager interface.
  */
-public interface ResumablePositionManager {
+public interface ResumeBreakPointManager {
     
     /**
      * If has resumable data.

@@ -38,12 +38,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Abstract resumable position manager.
+ * Abstract resume from break-point manager.
  */
 @Getter
 @Setter
 @Slf4j
-public abstract class AbstractResumablePositionManager implements ResumablePositionManager, Closeable {
+public abstract class AbstractResumeBreakPointManager implements ResumeBreakPointManager, Closeable {
     
     private static final Gson GSON = new Gson();
     

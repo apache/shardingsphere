@@ -15,47 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.transaction.xa.raw.jdbc;
+package org.apache.shardingsphere.infra.database.type.dialect;
 
-import org.junit.After;
-import org.junit.Before;
+import org.apache.shardingsphere.infra.database.metadata.dialect.OracleDataSourceMetaData;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.sql.SQLException;
+import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class XAOrderServiceTest {
+public final class OracleDatabaseTypeTest {
     
-    private XAOrderService orderService;
-    
-    @Before
-    public void setUp() throws IOException, SQLException {
-        orderService = new XAOrderService("/META-INF/sharding-databases-tables.yaml");
-        orderService.init();
-    }
-    
-    @After
-    public void cleanUp() throws SQLException {
-        orderService.cleanup();
+    @Test
+    public void assertGetName() {
+        assertThat(new OracleDatabaseType().getName(), is("Oracle"));
     }
     
     @Test
-    public void assertInsertSuccess() throws SQLException {
-        orderService.insert();
-        assertThat(orderService.selectAll(), is(10));
+    public void assertGetJdbcUrlPrefixes() {
+        assertThat(new OracleDatabaseType().getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:oracle:")));
     }
     
     @Test
-    public void assertInsertFailed() throws SQLException {
-        try {
-            orderService.insertFailed();
-        // CHECKSTYLE:OFF
-        } catch (final Exception ignore) {
-        // CHECKSTYLE:ON
-        }
-        assertThat(orderService.selectAll(), is(0));
+    public void assertOracleDataSourceMetaData() {
+        assertThat(new OracleDatabaseType().getDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/ds_0", "scott"), instanceOf(OracleDataSourceMetaData.class));
     }
 }
