@@ -22,6 +22,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Arrays;
@@ -129,18 +131,18 @@ public final class GeneratedKeysResultSetTest {
     @Test
     public void assertGetFloat() {
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getFloat(1), is(1F));
+        assertThat(actualResultSet.getFloat(1), is(1.0F));
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getFloat("order_id"), is(2F));
+        assertThat(actualResultSet.getFloat("order_id"), is(2.0F));
         assertFalse(actualResultSet.next());
     }
     
     @Test
     public void assertGetDouble() {
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getDouble(1), is(1D));
+        assertThat(actualResultSet.getDouble(1), is(1.0D));
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getDouble("order_id"), is(2D));
+        assertThat(actualResultSet.getDouble("order_id"), is(2.0D));
         assertFalse(actualResultSet.next());
     }
     
@@ -148,19 +150,19 @@ public final class GeneratedKeysResultSetTest {
     public void assertGetBigDecimal() {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getBigDecimal(1), is(new BigDecimal("1")));
-        assertThat(actualResultSet.getBigDecimal(1, 2), is(new BigDecimal("1").setScale(BigDecimal.ROUND_CEILING, BigDecimal.ROUND_HALF_UP)));
+        assertThat(actualResultSet.getBigDecimal(1, 2), is(new BigDecimal("1").setScale(BigDecimal.ROUND_CEILING, RoundingMode.HALF_UP)));
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getBigDecimal("order_id"), is(new BigDecimal("2")));
-        assertThat(actualResultSet.getBigDecimal("order_id", 2), is(new BigDecimal("2").setScale(BigDecimal.ROUND_CEILING, BigDecimal.ROUND_HALF_UP)));
+        assertThat(actualResultSet.getBigDecimal("order_id", 2), is(new BigDecimal("2").setScale(BigDecimal.ROUND_CEILING, RoundingMode.HALF_UP)));
         assertFalse(actualResultSet.next());
     }
     
     @Test
     public void assertGetBytes() {
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getBytes(1), is("1".getBytes()));
+        assertThat(actualResultSet.getBytes(1), is("1".getBytes(StandardCharsets.UTF_8)));
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getBytes("order_id"), is("2".getBytes()));
+        assertThat(actualResultSet.getBytes("order_id"), is("2".getBytes(StandardCharsets.UTF_8)));
         assertFalse(actualResultSet.next());
     }
     
