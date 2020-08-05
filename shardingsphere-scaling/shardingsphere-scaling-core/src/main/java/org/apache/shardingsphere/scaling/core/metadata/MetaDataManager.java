@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.metadata;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
 
 import javax.sql.DataSource;
-
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-
-import lombok.RequiredArgsConstructor;
 
 /**
  * Meta data manager.
@@ -48,7 +46,7 @@ public final class MetaDataManager {
         if (!tableMetaDataMap.containsKey(tableName)) {
             try {
                 TableMetaDataLoader.load(dataSource, tableName, "").ifPresent(tableMetaData -> tableMetaDataMap.put(tableName, tableMetaData));
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 throw new RuntimeException(String.format("Load metaData for table %s failed", tableName), ex);
             }
         }

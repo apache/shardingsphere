@@ -118,7 +118,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (isSwitchFailed()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
-        this.schema = ProxySchemaContexts.getInstance().getSchema(schemaName);
+        schema = ProxySchemaContexts.getInstance().getSchema(schemaName);
     }
     
     @SneakyThrows(InterruptedException.class)

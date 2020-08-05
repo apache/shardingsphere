@@ -73,7 +73,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
             throw new UnsupportedOperationException("MySQLBinlogDumper only support JDBCDataSourceConfiguration");
         }
         this.rdbmsConfiguration = rdbmsConfiguration;
-        this.metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(rdbmsConfiguration.getDataSourceConfiguration()));
+        metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(rdbmsConfiguration.getDataSourceConfiguration()));
     }
     
     @Override

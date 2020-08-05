@@ -50,13 +50,13 @@ public enum QuoteCharacter {
      */
     public static QuoteCharacter getQuoteCharacter(final String value) {
         if (Strings.isNullOrEmpty(value)) {
-            return QuoteCharacter.NONE;
+            return NONE;
         }
-        for (QuoteCharacter each : QuoteCharacter.values()) {
-            if (QuoteCharacter.NONE != each && each.startDelimiter.charAt(0) == value.charAt(0)) {
+        for (QuoteCharacter each : values()) {
+            if (NONE != each && each.startDelimiter.charAt(0) == value.charAt(0)) {
                 return each;
             }
         }
-        return QuoteCharacter.NONE;
+        return NONE;
     }
 }

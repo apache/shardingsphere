@@ -163,6 +163,6 @@ public final class HintManager implements AutoCloseable {
     
     @Override
     public void close() {
-        HintManager.clear();
+        clear();
     }
 }

@@ -49,17 +49,17 @@ public final class MySQLComBinlogDumpCommandPacket extends MySQLCommandPacket {
     public MySQLComBinlogDumpCommandPacket(final int binlogPos, final int serverId, final String binlogFilename) {
         super(MySQLCommandPacketType.COM_BINLOG_DUMP);
         this.binlogPos = binlogPos;
-        this.flags = 0;
+        flags = 0;
         this.serverId = serverId;
         this.binlogFilename = binlogFilename;
     }
     
     public MySQLComBinlogDumpCommandPacket(final MySQLPacketPayload payload) {
         super(MySQLCommandPacketType.COM_BINLOG_DUMP);
-        this.binlogPos = payload.readInt4();
-        this.flags = payload.readInt2();
-        this.serverId = payload.readInt4();
-        this.binlogFilename = payload.readStringEOF();
+        binlogPos = payload.readInt4();
+        flags = payload.readInt2();
+        serverId = payload.readInt4();
+        binlogFilename = payload.readStringEOF();
     }
     
     @Override

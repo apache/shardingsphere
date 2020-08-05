@@ -62,7 +62,7 @@ public final class MySQLClientTest {
     
     @Test
     public void assertConnect() throws NoSuchFieldException, IllegalAccessException {
-        final ServerInfo expected = new ServerInfo();
+        ServerInfo expected = new ServerInfo();
         mockChannelResponse(expected);
         mysqlClient.connect();
         ServerInfo actual = ReflectionUtil.getFieldValueFromClass(mysqlClient, "serverInfo", ServerInfo.class);
@@ -121,7 +121,7 @@ public final class MySQLClientTest {
                     responseCallback = ReflectionUtil.getFieldValueFromClass(mysqlClient, "responseCallback", Promise.class);
                 } catch (final NoSuchFieldException ex) {
                     throw new RuntimeException(ex);
-                } catch (IllegalAccessException ex) {
+                } catch (final IllegalAccessException ex) {
                     Thread.currentThread().interrupt();
                 }
                 if (null != responseCallback) {

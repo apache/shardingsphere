@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.infra.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * ShardingSphere of constants.
  */
 // TODO remove the class, ref #6546
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Constants {
     
     /**

@@ -217,7 +217,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
                 client.delete().deletingChildrenIfNeeded().forPath(key);
             }
             // CHECKSTYLE:OFF
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
@@ -225,7 +225,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        final String path = key + "/";
+        String path = key + "/";
         if (!caches.containsKey(path)) {
             addCacheData(key);
         }

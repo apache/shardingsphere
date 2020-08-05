@@ -46,7 +46,7 @@ public final class BoundaryBasedRangeShardingAlgorithm extends AbstractRangeShar
         for (int i = 0; i < partitionRanges.size(); i++) {
             Long rangeValue = partitionRanges.get(i);
             if (i == 0) {
-                result.put(i, Range.lessThan(rangeValue));
+                result.put(0, Range.lessThan(rangeValue));
             } else {
                 Long previousRangeValue = partitionRanges.get(i - 1);
                 result.put(i, Range.closedOpen(previousRangeValue, rangeValue));

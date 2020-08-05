@@ -60,7 +60,7 @@ public final class XATransactionDataSource implements AutoCloseable {
         this.resourceName = resourceName;
         this.dataSource = dataSource;
         if (!CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
-            this.xaDataSource = XADataSourceFactory.build(databaseType, dataSource);
+            xaDataSource = XADataSourceFactory.build(databaseType, dataSource);
             this.xaTransactionManager = xaTransactionManager;
             xaTransactionManager.registerRecoveryResource(resourceName, xaDataSource);
         }

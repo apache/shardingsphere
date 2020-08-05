@@ -54,7 +54,7 @@ public final class RemoveShadowColumnTokenGenerator extends BaseShadowSQLTokenGe
         for (int i = 0; i < columns.size(); i++) {
             if (getShadowRule().getColumn().equals(columns.get(i).getIdentifier().getValue())) {
                 if (i == 0) {
-                    result.add(new RemoveToken(columns.get(i).getStartIndex(), columns.get(i + 1).getStartIndex() - 1));
+                    result.add(new RemoveToken(columns.get(0).getStartIndex(), columns.get(i + 1).getStartIndex() - 1));
                 } else {
                     result.add(new RemoveToken(columns.get(i - 1).getStopIndex() + 1, columns.get(i).getStopIndex()));
                 }

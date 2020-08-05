@@ -180,7 +180,6 @@ public final class SyncConfigurationUtil {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     private static Set<String> extractShardingColumns(final ShardingStrategyConfiguration shardingStrategy) {
         if (shardingStrategy instanceof StandardShardingStrategyConfiguration) {
             return Sets.newHashSet(((StandardShardingStrategyConfiguration) shardingStrategy).getShardingColumn());
@@ -188,6 +187,6 @@ public final class SyncConfigurationUtil {
         if (shardingStrategy instanceof ComplexShardingStrategyConfiguration) {
             return Sets.newHashSet(((ComplexShardingStrategyConfiguration) shardingStrategy).getShardingColumns().split(","));
         }
-        return Collections.EMPTY_SET;
+        return Collections.emptySet();
     }
 }

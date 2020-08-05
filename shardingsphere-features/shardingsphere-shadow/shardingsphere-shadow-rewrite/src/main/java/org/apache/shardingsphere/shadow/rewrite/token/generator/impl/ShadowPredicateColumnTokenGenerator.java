@@ -68,7 +68,7 @@ public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLToke
                 return result;
             }
             if (i == 0) {
-                int startIndex = predicates.get(i).getStartIndex();
+                int startIndex = predicates.get(0).getStartIndex();
                 int stopIndex = predicates.get(i + 1).getStartIndex() - 1;
                 result.add(new RemoveToken(startIndex, stopIndex));
                 return result;
