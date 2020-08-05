@@ -26,7 +26,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class SQL92DatabaseTypeTest {
+public final class SQL92DatabaseTypeTest {
     
     @Test
     public void assertGetName() {
