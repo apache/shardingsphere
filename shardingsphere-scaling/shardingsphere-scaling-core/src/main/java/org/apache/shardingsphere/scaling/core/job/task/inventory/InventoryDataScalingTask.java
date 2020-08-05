@@ -84,7 +84,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
         instanceDumper();
         Importer importer = ImporterFactory.newInstance(syncConfiguration.getImporterConfiguration(), dataSourceManager);
         instanceChannel(importer);
-        Future future = ScalingContext.getInstance().getImporterExecuteEngine().submit(importer, new ExecuteCallback() {
+        Future<?> future = ScalingContext.getInstance().getImporterExecuteEngine().submit(importer, new ExecuteCallback() {
             
             @Override
             public void onSuccess() {
@@ -138,7 +138,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
         importer.setChannel(channel);
     }
     
-    private void waitForResult(final Future future) {
+    private void waitForResult(final Future<?> future) {
         try {
             future.get();
         } catch (InterruptedException ignored) {

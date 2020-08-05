@@ -71,7 +71,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     }
     
     @Override
-    public Collection<DatabasePacket> execute() throws SQLException {
+    public Collection<DatabasePacket<?>> execute() throws SQLException {
         if (ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
         }
@@ -96,8 +96,8 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
     }
     
-    private Collection<DatabasePacket> createQueryPackets(final QueryResponse backendResponse) {
-        Collection<DatabasePacket> result = new LinkedList<>();
+    private Collection<DatabasePacket<?>> createQueryPackets(final QueryResponse backendResponse) {
+        Collection<DatabasePacket<?>> result = new LinkedList<>();
         List<QueryHeader> queryHeader = backendResponse.getQueryHeaders();
         result.add(new MySQLFieldCountPacket(++currentSequenceId, queryHeader.size()));
         for (QueryHeader each : queryHeader) {

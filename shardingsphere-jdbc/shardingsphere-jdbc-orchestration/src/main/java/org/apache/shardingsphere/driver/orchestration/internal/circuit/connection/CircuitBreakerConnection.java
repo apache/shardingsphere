@@ -25,7 +25,6 @@ import org.apache.shardingsphere.driver.orchestration.internal.circuit.statement
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
@@ -41,7 +40,6 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     
     @Override
     public void setReadOnly(final boolean readOnly) {
-        
     }
     
     @Override
@@ -51,7 +49,6 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     
     @Override
     public void setTransactionIsolation(final int level) {
-        
     }
     
     @Override
@@ -66,12 +63,10 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     
     @Override
     public void clearWarnings() {
-        
     }
     
     @Override
     public void setAutoCommit(final boolean autoCommit) {
-        
     }
     
     @Override
@@ -81,17 +76,14 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     
     @Override
     public void commit() {
-        
     }
     
     @Override
     public void rollback() {
-        
     }
     
     @Override
     public void setHoldability(final int holdability) {
-        
     }
     
     @Override
@@ -128,12 +120,12 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     public PreparedStatement prepareStatement(final String sql, final String[] columnNames) {
         return new CircuitBreakerPreparedStatement();
     }
-
+    
     @Override
-    public boolean isValid(final int timeout) throws SQLException {
+    public boolean isValid(final int timeout) {
         return true;
     }
-
+    
     @Override
     public Statement createStatement() {
         return new CircuitBreakerStatement();

@@ -21,9 +21,9 @@ chapter = true
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">中国电信翼支付（甜橙金融）</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
-    <li><a href="https://jf.10086.cn/" rel="nofollow">中移动金融科技</a></li>    
-    <li><a href="https://www.haiercash.com/" rel="nofollow">海尔消费金融</a></li>         
-    <li><a href="https://www.xiaoniu88.com/" rel="nofollow">小牛在线</a></li>
+    <li><a href="https://jf.10086.cn/" rel="nofollow">中移动金融科技</a></li>
+    <li><a href="https://www.9fgroup.com/" rel="nofollow">玖富数科</a></li>
+    <li><a href="https://www.haiercash.com/" rel="nofollow">海尔消费金融</a></li>        <li><a href="https://www.xiaoniu88.com/" rel="nofollow">小牛在线</a></li>
     <li><a href="https://www.huaxiafinance.com/" rel="nofollow">华夏信财</a></li>
     <li><a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a></li>
     <li><a href="https://www.51credit.com/" rel="nofollow">我爱卡</a></li>
@@ -47,6 +47,7 @@ chapter = true
     <li><a href="http://www.3songshu.com/" rel="nofollow">三只松鼠</a></li>
     <li><a href="https://poizon.com/" rel="nofollow">得物app</a></li>
     <li><a href="https://www.dayi35.com/" rel="nofollow">大易有塑</a></li>
+    <li><a href="https://www.xiaohongchun.com/" rel="nofollow">小红唇</a></li>
     <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">转转</a></li>
     <li><a href="https://www.nanyiku.com/" rel="nofollow">男衣库</a></li>
     <li><a href="https://www.yiwugou.com/" rel="nofollow">义乌购</a></li>
@@ -63,7 +64,6 @@ chapter = true
     <li><a href="https://www.jddglobal.com/" rel="nofollow">京东数科</a></li>
     <li>京东大数据与智能供应链</li>
     <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">京东云</a></li>
-    <li><a href="https://www.9fgroup.com/" rel="nofollow">玖富数科</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">真信认知科技</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">云庐科技</a></li>
     <li><a href="http://www.compasshz.com/" rel="nofollow">康帕斯科技</a></li>
@@ -74,16 +74,11 @@ chapter = true
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">公交云</a></li>
 </ul>
 
-### 出行与物流
+### 出行
 <ul>
-    <li><a href="https://www.ctrip.com/" rel="nofollow">携程旅游</a></li>
-    <li><a href="https://www.tujia.com/" rel="nofollow">途家民宿</a></li>
-    <li><a href="https://www.mafengwo.cn/" rel="nofollow">马蜂窝</a></li>
     <li><a href="https://www.didiglobal.com/" rel="nofollow">滴滴小桔车服</a></li>
-    <li><a href="https://www.zto.com/" rel="nofollow">中通快递</a></li>
     <li><a href="https://www.helloglobal.com/" rel="nofollow">哈啰出行</a></li>
     <li><a href="https://www.guazi.com/" rel="nofollow">瓜子二手车</a></li>
-    <li><a href="https://www.autohome.com.cn/" rel="nofollow">汽车之家</a></li>
     <li><a href="https://www.yiche.com/" rel="nofollow">易车网</a></li>
     <li><a href="http://www.f6car.com/" rel="nofollow">南京爱福路汽车科技</a></li>
     <li><a href="http://www.zcckj.com/" rel="nofollow">中策车空间</a></li>
@@ -94,12 +89,25 @@ chapter = true
     <li><a href="https://4pyun.com/" rel="nofollow">P云+ | 行业知名的互联网停车开放平台</a></li>
     <li><a href="http://www.huochebang.com/" rel="nofollow">货车帮</a></li>
     <li><a href="https://www.01zhuanche.com/" rel="nofollow">首汽约车</a></li>
-    <li><a href="https://www.newbeescm.com/" rel="nofollow">蜂网</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">大搜车</a></li>
-    <li><a href="https://www.dianwoda.com/" rel="nofollow">点我达</a></li>
     <li><a href="https://www.supersoco.com/" rel="nofollow">速珂智能</a></li>
+</ul>
+
+### 物流
+<ul>
+    <li><a href="https://www.zto.com/" rel="nofollow">中通快递</a></li>
     <li><a href="http://www.yl-scm.com/" rel="nofollow">云路供应链</a></li>
+    <li><a href="https://www.newbeescm.com/" rel="nofollow">蜂网</a></li>
+    <li><a href="https://www.dianwoda.com/" rel="nofollow">点我达</a></li>   
     <li><a href="https://www.keking.com" rel="nofollow">凯京科技</a></li>
+</ul>
+
+### 旅游服务
+<ul>
+    <li><a href="https://www.ctrip.com/" rel="nofollow">携程旅游</a></li>
+    <li><a href="https://www.tujia.com/" rel="nofollow">途家民宿</a></li>
+    <li><a href="https://www.mafengwo.cn/" rel="nofollow">马蜂窝</a></li>
+    <li><a href="https://www.fotoplace.cc/" rel="nofollow">足记</a></li>
 </ul>
 
 ### 互联网教育
@@ -133,14 +141,17 @@ chapter = true
 <ul>
     <li><a href="https://ss.sohu.com/" rel="nofollow">搜狐资讯</a></li>
     <li><a href="https://www.tianya.cn/" rel="nofollow">天涯社区</a></li>
-    <li><a href="https://bj.58.com/" rel="nofollow">58同城</a></li> 
+    <li><a href="https://www.autohome.com.cn/" rel="nofollow">汽车之家</a></li>
     <li><a href="https://500px.me/" rel="nofollow">视觉中国</a></li>
-    <li><a href="https://www.xiaohongchun.com/" rel="nofollow">小红唇</a></li>
-    <li><a href="https://www.fotoplace.cc/" rel="nofollow">足记</a></li>
     <li><a href="https://www.xiachufang.com/" rel="nofollow">下厨房</a></li>
-    <li><a href="https://www.baixing.com/" rel="nofollow">百姓网</a></li>
     <li><a href="https://www.yidianzixun.com/" rel="nofollow">一点资讯</a></li>
     <li><a href="https://www.huobiinfo.com/" rel="nofollow">火币资讯</a></li>
+</ul>
+
+### O2O
+<ul>
+    <li><a href="https://bj.58.com/" rel="nofollow">58同城</a></li> 
+    <li><a href="https://www.baixing.com/" rel="nofollow">百姓网</a></li>
 </ul>
 
 ### 公共事业
@@ -164,7 +175,6 @@ chapter = true
     <li><a href="http://www.jtkjbike.com/" rel="nofollow">金通科技集团</a></li>
     <li><a href="http://www.iotlead.com/" rel="nofollow">广州理德物联网科技有限公司</a></li>
 </ul>
-
 
 ### 软件开发及服务
 <ul>

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.narayana.manager.fixture.ReflectiveUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,16 +28,17 @@ import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
+import java.sql.SQLException;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DataSourceXAResourceRecoveryHelperTest {
+public final class DataSourceXAResourceRecoveryHelperTest {
     
     @Mock
     private XADataSource xaDataSource;
@@ -51,49 +51,44 @@ public class DataSourceXAResourceRecoveryHelperTest {
     
     private DataSourceXAResourceRecoveryHelper recoveryHelper;
     
-    @SneakyThrows
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         when(xaConnection.getXAResource()).thenReturn(xaResource);
         when(xaDataSource.getXAConnection()).thenReturn(xaConnection);
         recoveryHelper = new DataSourceXAResourceRecoveryHelper(xaDataSource);
     }
     
-    @SneakyThrows
     @Test
-    public void assertGetXAResourcesCreatingConnecting() {
+    public void assertGetXAResourcesCreatingConnecting() throws SQLException {
         recoveryHelper.getXAResources();
         XAResource[] xaResources = recoveryHelper.getXAResources();
-        assertEquals(1, xaResources.length);
+        assertThat(xaResources.length, is(1));
         assertThat(xaResources[0], sameInstance(recoveryHelper));
         verify(xaConnection, times(1)).getXAResource();
         verify(xaDataSource, times(1)).getXAConnection();
     }
     
-    @SneakyThrows
     @Test
-    public void assertGetXAResourcesWithoutConnecting() {
+    public void assertGetXAResourcesWithoutConnecting() throws SQLException {
         ReflectiveUtil.setProperty(recoveryHelper, "delegate", xaResource);
         recoveryHelper.getXAResources();
         XAResource[] xaResources = recoveryHelper.getXAResources();
-        assertEquals(1, xaResources.length);
+        assertThat(xaResources.length, is(1));
         assertThat(xaResources[0], sameInstance(recoveryHelper));
         verify(xaConnection, times(0)).getXAResource();
         verify(xaDataSource, times(0)).getXAConnection();
     }
     
-    @SneakyThrows
     @Test
-    public void assertDelegateRecover() {
+    public void assertDelegateRecover() throws XAException, SQLException {
         recoveryHelper.getXAResources();
         recoveryHelper.recover(XAResource.TMSTARTRSCAN);
         verify(xaResource, times(1)).recover(XAResource.TMSTARTRSCAN);
         verify(xaConnection, times(0)).close();
     }
     
-    @SneakyThrows
     @Test
-    public void assertDelegateRecoverAndCloseConnection() {
+    public void assertDelegateRecoverAndCloseConnection() throws XAException, SQLException {
         recoveryHelper.getXAResources();
         recoveryHelper.recover(XAResource.TMENDRSCAN);
         verify(xaResource).recover(XAResource.TMENDRSCAN);

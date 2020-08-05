@@ -51,11 +51,11 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     public MySQLComFieldListPacketExecutor(final MySQLComFieldListPacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
         schemaName = backendConnection.getSchema().getName();
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(backendConnection.getSchema(), getShowColumnsSQL(), backendConnection);
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(getShowColumnsSQL(), backendConnection);
     }
     
     @Override
-    public Collection<DatabasePacket> execute() throws SQLException {
+    public Collection<DatabasePacket<?>> execute() throws SQLException {
         BackendResponse backendResponse = databaseCommunicationEngine.execute();
         return backendResponse instanceof ErrorResponse ? Collections.singletonList(MySQLErrPacketFactory.newInstance(1, ((ErrorResponse) backendResponse).getCause())) 
                 : getColumnDefinition41Packets();
@@ -65,13 +65,12 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         return String.format(SQL, packet.getTable(), schemaName);
     }
     
-    private Collection<DatabasePacket> getColumnDefinition41Packets() throws SQLException {
-        Collection<DatabasePacket> result = new LinkedList<>();
+    private Collection<DatabasePacket<?>> getColumnDefinition41Packets() throws SQLException {
+        Collection<DatabasePacket<?>> result = new LinkedList<>();
         int currentSequenceId = 0;
         while (databaseCommunicationEngine.next()) {
             String columnName = databaseCommunicationEngine.getQueryData().getData().get(0).toString();
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId,
-                    schemaName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, schemaName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         result.add(new MySQLEofPacket(++currentSequenceId));
         return result;

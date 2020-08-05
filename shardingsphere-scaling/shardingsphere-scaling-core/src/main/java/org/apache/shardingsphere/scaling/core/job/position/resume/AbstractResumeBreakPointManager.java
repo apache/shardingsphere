@@ -38,14 +38,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Abstract resumable position manager.
+ * Abstract resume from break-point manager.
  */
 @Getter
 @Setter
 @Slf4j
-public abstract class AbstractResumablePositionManager implements ResumablePositionManager, Closeable {
+public abstract class AbstractResumeBreakPointManager implements ResumeBreakPointManager, Closeable {
     
     private static final Gson GSON = new Gson();
+    
+    private static final String UNFINISHED = "unfinished";
+    
+    private static final String FINISHED = "finished";
     
     private final Map<String, PositionManager<PrimaryKeyPosition>> inventoryPositionManagerMap = Maps.newConcurrentMap();
     
@@ -71,7 +75,7 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
         }
         log.info("resume inventory position from {} = {}", taskPath, data);
         InventoryPosition inventoryPosition = InventoryPosition.fromJson(data);
-        Map<String, PrimaryKeyPosition> unfinished = inventoryPosition.getUnfinish();
+        Map<String, PrimaryKeyPosition> unfinished = inventoryPosition.getUnfinished();
         for (Entry<String, PrimaryKeyPosition> entry : unfinished.entrySet()) {
             getInventoryPositionManagerMap().put(entry.getKey(), new PrimaryKeyPositionManager(entry.getValue()));
         }
@@ -80,6 +84,7 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
         }
     }
     
+    @SuppressWarnings("unchecked")
     protected void resumeIncrementalPosition(final String data) {
         if (Strings.isNullOrEmpty(data)) {
             return;
@@ -102,8 +107,8 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
             }
             unfinished.add(entry.getKey(), entry.getValue().getCurrentPosition().toJson());
         }
-        result.add("unfinish", unfinished);
-        result.add("finished", GSON.toJsonTree(finished));
+        result.add(UNFINISHED, unfinished);
+        result.add(FINISHED, GSON.toJsonTree(finished));
         return result.toString();
     }
     
@@ -124,7 +129,7 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
     @Setter
     private static final class InventoryPosition {
         
-        private Map<String, PrimaryKeyPosition> unfinish;
+        private Map<String, PrimaryKeyPosition> unfinished;
         
         private Set<String> finished;
         
@@ -134,12 +139,13 @@ public abstract class AbstractResumablePositionManager implements ResumablePosit
          * @param data json data
          * @return inventory position
          */
+        @SuppressWarnings("unchecked")
         public static InventoryPosition fromJson(final String data) {
             InventoryPosition result = new InventoryPosition();
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();
-            Map<String, Object> unfinished = GSON.fromJson(json.getAsJsonObject("unfinish"), Map.class);
-            result.setUnfinish(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> PrimaryKeyPosition.fromJson(entry.getValue().toString()))));
-            result.setFinished(GSON.fromJson(json.getAsJsonArray("finished"), Set.class));
+            Map<String, Object> unfinished = GSON.fromJson(json.getAsJsonObject(UNFINISHED), Map.class);
+            result.setUnfinished(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> PrimaryKeyPosition.fromJson(entry.getValue().toString()))));
+            result.setFinished(GSON.fromJson(json.getAsJsonArray(FINISHED), Set.class));
             return result;
         }
     }

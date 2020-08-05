@@ -57,25 +57,18 @@ public final class DatabaseCommunicationEngineFactoryTest {
     
     @Test
     public void assertNewTextProtocolInstance() {
-        DatabaseCommunicationEngineFactory factory = DatabaseCommunicationEngineFactory.getInstance();
-        assertNotNull(factory);
-        assertNotNull(schemaContext);
-        assertNotNull(schemaContext.getRuntimeContext());
-        assertNotNull(schemaContext.getRuntimeContext().getSqlParserEngine());
         BackendConnection backendConnection = mock(BackendConnection.class);
-        assertNotNull(backendConnection);
-        DatabaseCommunicationEngine engine = factory.newTextProtocolInstance(schemaContext, "schemaName", backendConnection);
+        when(backendConnection.getSchema()).thenReturn(schemaContext);
+        DatabaseCommunicationEngine engine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance("schemaName", backendConnection);
         assertNotNull(engine);
         assertThat(engine, instanceOf(JDBCDatabaseCommunicationEngine.class));
     }
     
     @Test
     public void assertNewBinaryProtocolInstance() {
-        DatabaseCommunicationEngineFactory factory = DatabaseCommunicationEngineFactory.getInstance();
-        assertNotNull(factory);
-        assertNotNull(schemaContext);
-        DatabaseCommunicationEngine engine = factory
-                .newBinaryProtocolInstance(schemaContext, "schemaName", Collections.emptyList(), mock(BackendConnection.class));
+        BackendConnection backendConnection = mock(BackendConnection.class);
+        when(backendConnection.getSchema()).thenReturn(schemaContext);
+        DatabaseCommunicationEngine engine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance("schemaName", Collections.emptyList(), backendConnection);
         assertNotNull(engine);
         assertThat(engine, instanceOf(JDBCDatabaseCommunicationEngine.class));
     }

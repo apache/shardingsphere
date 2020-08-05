@@ -431,7 +431,9 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="132" stop-index="171"/>
+        <constraint-definition start-index="132" stop-index="171">
+            <index-column name="order_id" start-index="163" stop-index="170"/>
+        </constraint-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_composite_unique_key">
@@ -454,7 +456,11 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="132" stop-index="188"/>
+        <constraint-definition start-index="132" stop-index="188">
+            <index-column name="order_id" start-index="163" stop-index="170" />
+            <index-column name="user_id" start-index="173" stop-index="179" />
+            <index-column name="status" start-index="182" stop-index="187" />
+        </constraint-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_foreign_key">
@@ -562,7 +568,9 @@
         <constraint-definition start-index="150" stop-index="170">
             <primary-key-column name="item_id" start-index="163" stop-index="169" />
         </constraint-definition>
-        <constraint-definition start-index="173" stop-index="188"/>
+        <constraint-definition start-index="173" stop-index="188">
+            <index-column name="item_id" start-index="181" stop-index="187"/>
+        </constraint-definition>
         <constraint-definition start-index="191" stop-index="278">
             <referenced-table name="t_order" start-index="225" stop-index="231" />
         </constraint-definition>
@@ -589,8 +597,9 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <!-- FIXME cannot parse index -->
-        <!--<index name="order_index" />-->
+        <constraint-definition index-name="order_index" stop-index="159" start-index="132">
+            <index-column name="order_id" start-index="151" stop-index="158" />
+        </constraint-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_composite_index">
@@ -613,8 +622,11 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <!-- FIXME cannot parse index -->
-        <!--<index name="order_index" />-->
+        <constraint-definition index-name="order_index" start-index="132" stop-index="176" >
+            <index-column name="order_id" start-index="151" stop-index="158" />
+            <index-column name="user_id" start-index="161" stop-index="167" />
+            <index-column name="status" start-index="170" stop-index="175" />
+        </constraint-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_btree_index">
@@ -637,8 +649,9 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <!-- FIXME cannot parse index name -->
-        <!--<index name="order_index" />-->
+        <constraint-definition index-name="order_index" start-index="132" stop-index="171">
+            <index-column name="order_id" start-index="151" stop-index="158"/>
+        </constraint-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_with_comment">
@@ -947,49 +960,46 @@
     
     <create-table sql-case-id="create_table_with_exist_index">
         <table name="t_order" start-index="13" stop-index="19" />
-        <column-definition type="NUMBER" primary-key="true">
+        <column-definition type="NUMBER" primary-key="true" start-index="22" stop-index="76">
             <column name="order_id" />
         </column-definition>
-        <column-definition type="NUMBER">
+        <column-definition type="NUMBER" start-index="79" stop-index="96">
             <column name="user_id" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="99" stop-index="117">
             <column name="status" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="120" stop-index="139">
             <column name="column1" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="142" stop-index="161">
             <column name="column2" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="164" stop-index="183">
             <column name="column3" />
         </column-definition>
-        <index name="order_index" />
     </create-table>
     
     <create-table sql-case-id="create_table_with_create_index">
         <table name="t_order" start-index="13" stop-index="19" />
-        <table name="t_order" start-index="95" stop-index="101" />
-        <column-definition type="NUMBER" primary-key="true">
+        <column-definition type="NUMBER" primary-key="true" start-index="22" stop-index="113">
             <column name="order_id" />
         </column-definition>
-        <column-definition type="NUMBER">
+        <column-definition type="NUMBER" start-index="116" stop-index="133">
             <column name="user_id" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="136" stop-index="154">
             <column name="status" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="157" stop-index="176">
             <column name="column1" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="179" stop-index="198">
             <column name="column2" />
         </column-definition>
-        <column-definition type="VARCHAR2">
+        <column-definition type="VARCHAR2" start-index="201" stop-index="220">
             <column name="column3" />
         </column-definition>
-        <index name="order_index" />
     </create-table>
     
     <create-table sql-case-id="create_table_with_partition_oracle">

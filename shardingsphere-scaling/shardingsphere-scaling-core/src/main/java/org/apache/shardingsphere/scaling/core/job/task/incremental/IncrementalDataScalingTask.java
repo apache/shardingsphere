@@ -66,7 +66,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
         dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), getPositionManager().getCurrentPosition());
         Collection<Importer> importers = instanceImporters();
         instanceChannel(importers);
-        Future future = ScalingContext.getInstance().getTaskExecuteEngine().submitAll(importers, new ExecuteCallback() {
+        Future<?> future = ScalingContext.getInstance().getTaskExecuteEngine().submitAll(importers, new ExecuteCallback() {
             
             @Override
             public void onSuccess() {
@@ -103,7 +103,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
         }
     }
     
-    private void waitForResult(final Future future) {
+    private void waitForResult(final Future<?> future) {
         try {
             future.get();
         } catch (InterruptedException ignored) {

@@ -104,7 +104,7 @@ public final class BroadcastBackendHandlerTest {
     
     private void mockDatabaseCommunicationEngine(final BackendResponse backendResponse) {
         when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
-        when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
+        when(databaseCommunicationEngineFactory.newTextProtocolInstance(anyString(), any())).thenReturn(databaseCommunicationEngine);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

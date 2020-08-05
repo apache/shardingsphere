@@ -32,7 +32,7 @@ public final class ImporterFactory {
      * New instance of importer.
      *
      * @param rdbmsConfiguration rdbms configuration
-     * @param dataSourceManager  data source factory
+     * @param dataSourceManager data source factory
      * @return importer
      */
     public static Importer newInstance(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
@@ -42,9 +42,9 @@ public final class ImporterFactory {
     /**
      * New instance of importer.
      *
-     * @param databaseType       database type
+     * @param databaseType database type
      * @param rdbmsConfiguration rdbms configuration
-     * @param dataSourceManager  data source factory
+     * @param dataSourceManager data source factory
      * @return importer
      */
     @SneakyThrows

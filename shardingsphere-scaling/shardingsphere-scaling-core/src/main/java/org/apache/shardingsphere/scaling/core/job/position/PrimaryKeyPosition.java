@@ -35,6 +35,8 @@ import java.util.List;
 @Setter
 public class PrimaryKeyPosition implements Position {
     
+    private static final long serialVersionUID = 8101879950564531329L;
+    
     private static final Gson GSON = new Gson();
     
     private long beginValue;
@@ -55,9 +57,10 @@ public class PrimaryKeyPosition implements Position {
      * @param json json data
      * @return primary key position
      */
+    @SuppressWarnings("unchecked")
     public static PrimaryKeyPosition fromJson(final String json) {
         List<Double> values = GSON.fromJson(json, List.class);
-        if (values.size() == 2) {
+        if (2 == values.size()) {
             return new PrimaryKeyPosition(values.get(0).longValue(), values.get(1).longValue());
         }
         return new PlaceholderPosition();
@@ -72,16 +75,16 @@ public class PrimaryKeyPosition implements Position {
      * Finish flag position for inventory task finished.
      */
     public static class FinishedPosition extends PrimaryKeyPosition {
-    
     }
     
     /**
      * Placeholder position for without primary key table.
      */
     public static class PlaceholderPosition extends PrimaryKeyPosition {
-    
-        public PlaceholderPosition() {
-            super(-1, -1);
+        
+        @Override
+        public JsonElement toJson() {
+            return GSON.toJsonTree(new long[0]);
         }
     }
 }

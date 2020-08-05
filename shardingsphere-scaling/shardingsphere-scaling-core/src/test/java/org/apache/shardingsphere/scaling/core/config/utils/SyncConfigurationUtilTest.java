@@ -21,13 +21,15 @@ import com.google.gson.Gson;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManagerTest;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class SyncConfigurationUtilTest {
     
@@ -43,7 +45,7 @@ public final class SyncConfigurationUtilTest {
     @Test
     public void assertFilterByShardingDataSourceTables() {
         List<SyncConfiguration> syncConfigurations = (List<SyncConfiguration>) SyncConfigurationUtil.toSyncConfigurations(scalingConfiguration);
-        Assert.assertEquals(syncConfigurations.get(0).getTableNameMap().size(), 1);
+        assertThat(syncConfigurations.get(0).getTableNameMap().size(), is(1));
     }
     
     private void initConfig(final String configFile) {

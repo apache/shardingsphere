@@ -59,13 +59,13 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     @Setter
     private Channel channel;
     
-    public AbstractJDBCDumper(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    protected AbstractJDBCDumper(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         if (!JDBCDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("AbstractJDBCDumper only support JDBCDataSourceConfiguration");
         }
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dataSourceManager = dataSourceManager;
-        this.tableMetaData = createTableMetaData();
+        tableMetaData = createTableMetaData();
     }
     
     private TableMetaData createTableMetaData() {
@@ -96,7 +96,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
                 pushRecord(record);
             }
             pushRecord(new FinishedRecord(new PrimaryKeyPosition.FinishedPosition()));
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             stop();
             channel.close();
             throw new SyncTaskExecuteException(ex);
@@ -112,24 +112,8 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
         return new PrimaryKeyPosition(rs.getLong(rdbmsConfiguration.getPrimaryKey()), ((PrimaryKeyPosition) rdbmsConfiguration.getPositionManager().getCurrentPosition()).getEndValue());
     }
     
-    /**
-     * Create prepared statement.
-     *
-     * @param connection connection
-     * @param sql prepared sql
-     * @return prepared statement
-     * @throws SQLException SQL exception
-     */
     protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;
     
-    /**
-     * Read value from {@code ResultSet}.
-     *
-     * @param resultSet result set
-     * @param index of read column
-     * @return value
-     * @throws SQLException sql exception
-     */
     protected Object readValue(final ResultSet resultSet, final int index) throws SQLException {
         return resultSet.getObject(index);
     }
@@ -137,7 +121,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     private void pushRecord(final Record record) {
         try {
             channel.pushRecord(record);
-        } catch (InterruptedException ignored) {
+        } catch (final InterruptedException ignored) {
         }
     }
 }
