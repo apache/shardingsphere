@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.H2DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -28,7 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class H2DatabaseTypeTest {
-
+    
     @Test
     public void assertGetName() {
         assertThat(new H2DatabaseType().getName(), is("H2"));
