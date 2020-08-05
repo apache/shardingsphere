@@ -57,5 +57,4 @@ public final class ScalingContext {
         this.taskExecuteEngine = new ShardingScalingExecuteEngine(serverConfiguration.getWorkerThread());
         this.importerExecuteEngine = new ShardingScalingExecuteEngine(serverConfiguration.getWorkerThread());
     }
-    
 }
