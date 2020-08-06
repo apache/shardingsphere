@@ -19,7 +19,7 @@ package org.apache.shardingsphere.example.core.api.entity;
 
 import java.io.Serializable;
 
-public final class ShadowUser implements Serializable {
+public class ShadowUser implements Serializable {
     
     private static final long serialVersionUID = 263434701950670170L;
     
