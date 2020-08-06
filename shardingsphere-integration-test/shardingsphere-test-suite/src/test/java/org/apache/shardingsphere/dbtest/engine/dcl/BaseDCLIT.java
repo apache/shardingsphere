@@ -108,7 +108,6 @@ public abstract class BaseDCLIT extends SingleIT {
 
     @Before
     public void insertData() throws SQLException, ParseException, IOException, JAXBException {
-        new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getRuleType()), getDataSourceMap()).initialize();
         authorityEnvironmentManager.initialize();
     }
     
