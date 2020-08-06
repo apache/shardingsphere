@@ -83,16 +83,16 @@ public final class SyncPositionResumerTest {
         verify(resumeBreakPointManager).persistInventoryPosition();
     }
     
-    private PositionManager mockPositionManager() {
-        return new PositionManager() {
+    private PositionManager<Position> mockPositionManager() {
+        return new PositionManager<Position>() {
             
             @Override
-            public Position getCurrentPosition() {
+            public Position getPosition() {
                 return null;
             }
             
             @Override
-            public void updateCurrentPosition(final Position newPosition) {
+            public void setPosition(final Position newPosition) {
             }
         };
     }

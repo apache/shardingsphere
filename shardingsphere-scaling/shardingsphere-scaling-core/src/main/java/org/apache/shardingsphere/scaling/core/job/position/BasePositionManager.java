@@ -17,24 +17,27 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 /**
- * Database itself data synchronize position manager.
- * Such as mysql binlog, postgreSQL wal.
- * Or use primary key as position.
+ * Base position manager.
+ *
+ * @param <T> Position
  */
-public interface PositionManager<T extends Position> {
+@NoArgsConstructor
+@AllArgsConstructor
+public class BasePositionManager<T extends Position> implements PositionManager<T> {
     
-    /**
-     * Get position.
-     *
-     * @return position
-     */
-    T getPosition();
+    private T position;
     
-    /**
-     * Set Position.
-     *
-     * @param position position.
-     */
-    void setPosition(T position);
+    @Override
+    public T getPosition() {
+        return position;
+    }
+    
+    @Override
+    public void setPosition(final T newPosition) {
+        position = newPosition;
+    }
 }

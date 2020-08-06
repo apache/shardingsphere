@@ -109,7 +109,7 @@ public final class ShardingScalingJobPreparer {
     @SuppressWarnings("rawtypes")
     private PositionManager instancePositionManager(final String databaseType, final DataSource dataSource) {
         PositionManager positionManager = PositionManagerFactory.newInstance(databaseType, dataSource);
-        positionManager.getCurrentPosition();
+        positionManager.getPosition();
         return positionManager;
     }
 }

@@ -17,23 +17,12 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import lombok.AllArgsConstructor;
-
 /**
  * Primary key position manager.
  */
-@AllArgsConstructor
-public final class PrimaryKeyPositionManager implements PositionManager<PrimaryKeyPosition> {
+public final class PrimaryKeyPositionManager extends BasePositionManager<PrimaryKeyPosition> implements PositionManager<PrimaryKeyPosition> {
     
-    private PrimaryKeyPosition position;
-    
-    @Override
-    public PrimaryKeyPosition getCurrentPosition() {
-        return position;
-    }
-    
-    @Override
-    public void updateCurrentPosition(final PrimaryKeyPosition newPosition) {
-        position = newPosition;
+    public PrimaryKeyPositionManager(final PrimaryKeyPosition position) {
+        super(position);
     }
 }

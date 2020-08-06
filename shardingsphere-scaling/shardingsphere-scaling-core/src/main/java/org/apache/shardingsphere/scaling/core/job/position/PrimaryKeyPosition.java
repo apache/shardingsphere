@@ -35,8 +35,6 @@ import java.util.List;
 @Setter
 public class PrimaryKeyPosition implements Position {
     
-    private static final long serialVersionUID = 8101879950564531329L;
-    
     private static final Gson GSON = new Gson();
     
     private long beginValue;
@@ -44,7 +42,7 @@ public class PrimaryKeyPosition implements Position {
     private long endValue;
     
     @Override
-    public int compareTo(final Object position) {
+    public int compareTo(final Position position) {
         if (null == position) {
             return 1;
         }
