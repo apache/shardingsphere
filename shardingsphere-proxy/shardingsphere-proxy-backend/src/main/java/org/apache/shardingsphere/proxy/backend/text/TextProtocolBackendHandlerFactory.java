@@ -62,6 +62,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (Strings.isNullOrEmpty(sql)) {
             return new SkipBackendHandler();
         }
+        // TODO : Parse sctl sql with Antlr.
         String trimSQL = SCTLUtils.trimComment(sql);
         if (trimSQL.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
             return ShardingCTLBackendHandlerFactory.newInstance(trimSQL, backendConnection);
