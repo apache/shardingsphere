@@ -31,7 +31,7 @@ public final class ConnectionStateHandlerTest {
     
     @Test
     public void assertWaitUntilConnectionReleaseForNoneTransaction() throws InterruptedException {
-        final AtomicBoolean flag = new AtomicBoolean(true);
+        AtomicBoolean flag = new AtomicBoolean(true);
         Thread waitThread = new Thread(() -> {
             connectionStateHandler.setStatus(ConnectionStatus.RUNNING);
             try {
@@ -60,7 +60,7 @@ public final class ConnectionStateHandlerTest {
     
     @Test
     public void assertWaitUntilConnectionReleaseForTransaction() throws InterruptedException {
-        final AtomicBoolean flag = new AtomicBoolean(true);
+        AtomicBoolean flag = new AtomicBoolean(true);
         Thread waitThread = new Thread(() -> {
             connectionStateHandler.setStatus(ConnectionStatus.TERMINATED);
             try {

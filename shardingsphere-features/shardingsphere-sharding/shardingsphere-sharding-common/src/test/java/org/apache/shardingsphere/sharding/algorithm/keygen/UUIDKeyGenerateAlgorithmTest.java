@@ -43,6 +43,6 @@ public final class UUIDKeyGenerateAlgorithmTest {
         Properties props = new Properties();
         props.setProperty("key1", "value1");
         uuidKeyGenerateAlgorithm.setProps(props);
-        assertThat(uuidKeyGenerateAlgorithm.getProps().get("key1"), is("value1"));
+        assertThat(uuidKeyGenerateAlgorithm.getProps().getProperty("key1"), is("value1"));
     }
 }

@@ -45,6 +45,6 @@ public final class DerivedProjection implements Projection {
     
     @Override
     public String getColumnLabel() {
-        return getAlias().orElse(getExpression());
+        return getAlias().orElse(expression);
     }
 }

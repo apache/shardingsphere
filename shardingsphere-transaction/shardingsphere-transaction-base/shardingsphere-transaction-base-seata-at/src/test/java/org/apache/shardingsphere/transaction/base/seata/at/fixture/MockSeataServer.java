@@ -93,8 +93,8 @@ public final class MockSeataServer {
     @SneakyThrows
     public void shutdown() {
         if (initialized.get()) {
-            this.bossGroup.shutdownGracefully();
-            this.workerGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
         }
     }
 }

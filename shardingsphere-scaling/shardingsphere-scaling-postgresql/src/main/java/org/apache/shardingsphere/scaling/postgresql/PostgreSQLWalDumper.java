@@ -87,14 +87,14 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
                     try {
                         Thread.sleep(10L);
                         continue;
-                    } catch (InterruptedException ignored) {
+                    } catch (final InterruptedException ignored) {
                     
                     }
                 }
                 AbstractWalEvent event = decodingPlugin.decode(msg, stream.getLastReceiveLSN());
                 pushRecord(channel, walEventConverter.convert(event));
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new SyncTaskExecuteException(ex);
         }
     }
@@ -102,8 +102,7 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
     private void pushRecord(final Channel channel, final Record record) {
         try {
             channel.pushRecord(record);
-        } catch (InterruptedException ignored) {
-        
+        } catch (final InterruptedException ignored) {
         }
     }
 }

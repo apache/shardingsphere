@@ -55,7 +55,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(getLongValue(shardingValue.getValue()) % shardingCount + "")) {
+            if (each.endsWith(String.valueOf(getLongValue(shardingValue.getValue()) % shardingCount))) {
                 return each;
             }
         }
@@ -76,7 +76,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         for (long i = getLongValue(shardingValue.getValueRange().lowerEndpoint()); i <= getLongValue(shardingValue.getValueRange().upperEndpoint()); i++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(i % shardingCount + "")) {
+                if (each.endsWith(String.valueOf(i % shardingCount))) {
                     result.add(each);
                 }
             }

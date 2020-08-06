@@ -58,7 +58,7 @@ public final class SingleXAResource implements XAResource {
     @Override
     public boolean isSameRM(final XAResource xaResource) {
         SingleXAResource singleXAResource = (SingleXAResource) xaResource;
-        return resourceName.equals(singleXAResource.getResourceName());
+        return resourceName.equals(singleXAResource.resourceName);
     }
     
     @Override

@@ -59,7 +59,7 @@ public final class ShardingTransactionTypeInterceptor implements MethodIntercept
     
     private ShardingTransactionType getMethodAnnotation(final MethodInvocation invocation, final Class<?> targetClass) {
         Method specificMethod = ClassUtils.getMostSpecificMethod(invocation.getMethod(), targetClass);
-        final Method userDeclaredMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
+        Method userDeclaredMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
         return userDeclaredMethod.getAnnotation(ShardingTransactionType.class);
     }
 }

@@ -34,7 +34,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotEquals;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 public final class SnowflakeKeyGenerateAlgorithmTest {
@@ -51,7 +51,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         keyGenerateAlgorithm.setProps(new Properties());
         keyGenerateAlgorithm.init();
-        Set<Comparable<?>> actual = new HashSet<>();
+        Set<Comparable<?>> actual = new HashSet<>(taskNumber, 1);
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit((Callable<Comparable<?>>) keyGenerateAlgorithm::generateKey).get());
         }
@@ -65,7 +65,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         keyGenerateAlgorithm.setProps(new Properties());
         keyGenerateAlgorithm.init();
         List<Comparable<?>> expected = Arrays.asList(0L, 4194305L, 4194306L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L);
-        List<Comparable<?>> actual = new ArrayList<>();
+        List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerateAlgorithm.generateKey());
         }
@@ -77,14 +77,14 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         SnowflakeKeyGenerateAlgorithm.setTimeService(new FixedTimeService(5));
         Properties props = new Properties();
-        props.setProperty("max.vibration.offset", String.valueOf(3));
+        props.setProperty("max.vibration.offset", "3");
         keyGenerateAlgorithm.setProps(props);
         keyGenerateAlgorithm.init();
-        assertThat(keyGenerateAlgorithm.generateKey(), is((Comparable) 0L));
-        assertThat(keyGenerateAlgorithm.generateKey(), is((Comparable) 1L));
-        assertThat(keyGenerateAlgorithm.generateKey(), is((Comparable) 2L));
-        assertThat(keyGenerateAlgorithm.generateKey(), is((Comparable) 3L));
-        assertThat(keyGenerateAlgorithm.generateKey(), is((Comparable) 4L));
+        assertThat(keyGenerateAlgorithm.generateKey(), is(0L));
+        assertThat(keyGenerateAlgorithm.generateKey(), is(1L));
+        assertThat(keyGenerateAlgorithm.generateKey(), is(2L));
+        assertThat(keyGenerateAlgorithm.generateKey(), is(3L));
+        assertThat(keyGenerateAlgorithm.generateKey(), is(4L));
     }
     
     @Test
@@ -95,20 +95,20 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         props.setProperty("max.vibration.offset", String.valueOf(3));
         keyGenerateAlgorithm.setProps(props);
         keyGenerateAlgorithm.init();
-        String actualGenerateKeyBinaryString0 = Long.toBinaryString(Long.parseLong(keyGenerateAlgorithm.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString0.substring(actualGenerateKeyBinaryString0.length() - 3), 2), is(0));
+        String actualGenerateKey0 = Long.toBinaryString(Long.parseLong(keyGenerateAlgorithm.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKey0.substring(actualGenerateKey0.length() - 3), 2), is(0));
         Thread.sleep(2L);
-        String actualGenerateKeyBinaryString1 = Long.toBinaryString(Long.parseLong(keyGenerateAlgorithm.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString1.substring(actualGenerateKeyBinaryString1.length() - 3), 2), is(1));
+        String actualGenerateKey1 = Long.toBinaryString(Long.parseLong(keyGenerateAlgorithm.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKey1.substring(actualGenerateKey1.length() - 3), 2), is(1));
         Thread.sleep(2L);
-        String actualGenerateKeyBinaryString2 = Long.toBinaryString(Long.parseLong(keyGenerateAlgorithm.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString2.substring(actualGenerateKeyBinaryString2.length() - 3), 2), is(2));
+        String actualGenerateKey2 = Long.toBinaryString(Long.parseLong(keyGenerateAlgorithm.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKey2.substring(actualGenerateKey2.length() - 3), 2), is(2));
         Thread.sleep(2L);
-        String actualGenerateKeyBinaryString3 = Long.toBinaryString(Long.parseLong(keyGenerateAlgorithm.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString3.substring(actualGenerateKeyBinaryString3.length() - 3), 2), is(3));
+        String actualGenerateKey3 = Long.toBinaryString(Long.parseLong(keyGenerateAlgorithm.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKey3.substring(actualGenerateKey3.length() - 3), 2), is(3));
         Thread.sleep(2L);
-        String actualGenerateKeyBinaryString4 = Long.toBinaryString(Long.parseLong(keyGenerateAlgorithm.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString4.substring(actualGenerateKeyBinaryString4.length() - 3), 2), is(0));
+        String actualGenerateKey4 = Long.toBinaryString(Long.parseLong(keyGenerateAlgorithm.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKey4.substring(actualGenerateKey4.length() - 3), 2), is(0));
     }
     
     @Test
@@ -120,7 +120,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         keyGenerateAlgorithm.init();
         setLastMilliseconds(keyGenerateAlgorithm, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L, 20971521L, 25165825L);
-        List<Comparable<?>> actual = new ArrayList<>();
+        List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerateAlgorithm.generateKey());
         }
@@ -137,16 +137,16 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         keyGenerateAlgorithm.setProps(props);
         keyGenerateAlgorithm.init();
         setLastMilliseconds(keyGenerateAlgorithm, timeService.getCurrentMillis() + 2);
-        List<Comparable<?>> actual = new ArrayList<>();
+        List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerateAlgorithm.generateKey());
         }
-        assertNotEquals(actual.size(), 10);
+        assertThat(actual.size(), not(10));
     }
     
     @Test
     public void assertGenerateKeyBeyondMaxSequencePerMilliSecond() {
-        final SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
+        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         TimeService timeService = new FixedTimeService(2);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
         keyGenerateAlgorithm.setProps(new Properties());
@@ -154,7 +154,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         setLastMilliseconds(keyGenerateAlgorithm, timeService.getCurrentMillis());
         setSequence(keyGenerateAlgorithm, (1 << DEFAULT_SEQUENCE_BITS) - 1);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 4194305L, 4194306L, 8388608L, 8388609L, 8388610L, 12582913L, 12582914L, 12582915L, 16777216L);
-        List<Comparable<?>> actual = new ArrayList<>();
+        List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerateAlgorithm.generateKey());
         }
@@ -225,7 +225,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         keyGenerateAlgorithm.init();
         Field field = keyGenerateAlgorithm.getClass().getDeclaredField("props");
         field.setAccessible(true);
-        assertThat(((Properties) field.get(keyGenerateAlgorithm)).get("worker.id"), is("1"));
+        assertThat(((Properties) field.get(keyGenerateAlgorithm)).getProperty("worker.id"), is("1"));
     }
     
     @Test
@@ -238,6 +238,6 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         keyGenerateAlgorithm.init();
         Field field = keyGenerateAlgorithm.getClass().getDeclaredField("props");
         field.setAccessible(true);
-        assertThat(((Properties) field.get(keyGenerateAlgorithm)).get("max.tolerate.time.difference.milliseconds"), is("1"));
+        assertThat(((Properties) field.get(keyGenerateAlgorithm)).getProperty("max.tolerate.time.difference.milliseconds"), is("1"));
     }
 }

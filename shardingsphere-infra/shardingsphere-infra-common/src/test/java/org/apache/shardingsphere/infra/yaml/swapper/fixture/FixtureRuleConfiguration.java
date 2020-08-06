@@ -15,22 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.constant;
+package org.apache.shardingsphere.infra.yaml.swapper.fixture;
 
-/**
- * ShardingSphere of constants.
- */
-// TODO remove the class, ref #6546
-public final class Constants {
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+
+@Getter
+@Setter
+public final class FixtureRuleConfiguration implements RuleConfiguration {
     
-    /**
-     * PORT_KEY.
-     */
-    public static final String PORT_KEY = "shardingsphere.port";
-    
-    /**
-     * DEFAULT_PORT.
-     */
-    public static final int DEFAULT_PORT = 3307;
+    private String name;
 }
-

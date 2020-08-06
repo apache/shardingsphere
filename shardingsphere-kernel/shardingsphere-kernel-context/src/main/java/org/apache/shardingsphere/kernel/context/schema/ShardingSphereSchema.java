@@ -51,7 +51,7 @@ public final class ShardingSphereSchema {
         this.databaseType = databaseType;
         this.configurations.addAll(configurations);
         this.rules.addAll(rules);
-        this.dataSources.putAll(dataSourceMap);
+        dataSources.putAll(dataSourceMap);
         metaData = shardingSphereMetaData;
     }
     

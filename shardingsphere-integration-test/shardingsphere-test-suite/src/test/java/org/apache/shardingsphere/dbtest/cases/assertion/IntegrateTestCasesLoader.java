@@ -93,7 +93,7 @@ public final class IntegrateTestCasesLoader {
     }
     
     private static List<String> getFiles(final URL url, final SQLType sqlType) throws IOException, URISyntaxException {
-        final List<String> result = new LinkedList<>();
+        List<String> result = new LinkedList<>();
         Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
             
             @Override

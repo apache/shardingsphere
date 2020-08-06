@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.job.position.resume;
 /**
  * Fake resume from break-point manager as default.
  */
-public final class FakeResumeBreakPointManager extends AbstractResumeBreakPointManager implements ResumeBreakPointManager {
+public final class FakeResumeBreakPointManager extends AbstractResumeBreakPointManager {
     
     public FakeResumeBreakPointManager(final String databaseType, final String taskPath) {
         setDatabaseType(databaseType);

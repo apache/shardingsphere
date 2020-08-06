@@ -24,7 +24,6 @@ import org.apache.shardingsphere.orchestration.repository.api.listener.DataChang
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEventListener;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -59,7 +58,7 @@ public final class PostOrchestrationRepositoryEventListenerTest {
             return mock(DataChangedEventListener.class);
         }).when(orchestrationRepository).watch(anyString(), any(DataChangedEventListener.class));
         postEventListener.watch(ChangedType.UPDATED);
-        verify(orchestrationRepository).watch(eq("test"), ArgumentMatchers.any());
+        verify(orchestrationRepository).watch(eq("test"), any());
     }
     
     @Test
@@ -77,7 +76,7 @@ public final class PostOrchestrationRepositoryEventListenerTest {
             return mock(DataChangedEventListener.class);
         }).when(orchestrationRepository).watch(anyString(), any(DataChangedEventListener.class));
         postEventListener.watch(ChangedType.UPDATED, ChangedType.DELETED);
-        verify(orchestrationRepository).watch(eq("test"), ArgumentMatchers.any());
-        verify(orchestrationRepository).watch(eq("dev"), ArgumentMatchers.any());
+        verify(orchestrationRepository).watch(eq("test"), any());
+        verify(orchestrationRepository).watch(eq("dev"), any());
     }
 }

@@ -38,8 +38,9 @@ public abstract class AbstractSQLRewriterParameterizedTest {
     
     private final SQLRewriteEngineTestParameters testParameters;
     
+    @SuppressWarnings("JUnitTestMethodInProductSource")
     @Test
-    public void assertRewrite() throws IOException {
+    public final void assertRewrite() throws IOException {
         Collection<SQLRewriteUnit> actual = createSQLRewriteUnits();
         assertThat(actual.size(), is(testParameters.getOutputSQLs().size()));
         int count = 0;

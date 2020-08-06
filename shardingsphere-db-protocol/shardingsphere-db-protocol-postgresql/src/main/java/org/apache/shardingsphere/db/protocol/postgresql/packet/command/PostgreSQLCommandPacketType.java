@@ -135,7 +135,7 @@ public enum PostgreSQLCommandPacketType implements CommandPacketType {
      * @return command packet type enum
      */
     public static PostgreSQLCommandPacketType valueOf(final int value) {
-        for (PostgreSQLCommandPacketType each : PostgreSQLCommandPacketType.values()) {
+        for (PostgreSQLCommandPacketType each : values()) {
             if (value == each.value) {
                 return each;
             }

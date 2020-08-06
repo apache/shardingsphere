@@ -76,6 +76,6 @@ public final class AESEncryptAlgorithmTest {
     
     @Test
     public void assertGetProperties() {
-        assertThat(encryptAlgorithm.getProps().get("aes.key.value").toString(), is("test"));
+        assertThat(encryptAlgorithm.getProps().getProperty("aes.key.value"), is("test"));
     }
 }

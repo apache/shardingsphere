@@ -30,7 +30,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = {"databaseType"})
+@EqualsAndHashCode(exclude = "databaseType")
 public final class JDBCDataSourceConfiguration implements DataSourceConfiguration {
     
     private String jdbcUrl;

@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.orchestration.core.facade;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
@@ -129,6 +131,7 @@ public final class OrchestrationFacade implements AutoCloseable {
         return OrchestrationFacadeHolder.INSTANCE;
     }
     
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class OrchestrationFacadeHolder {
         
         public static final OrchestrationFacade INSTANCE = new OrchestrationFacade();

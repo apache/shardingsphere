@@ -42,7 +42,7 @@ public final class ComparableAggregationUnit implements AggregationUnit {
             return;
         }
         int comparedValue = ((Comparable) values.get(0)).compareTo(result);
-        if (asc && comparedValue < 0 || !asc && comparedValue > 0) {
+        if (asc ? comparedValue < 0 : comparedValue > 0) {
             result = values.get(0);
         }
     }

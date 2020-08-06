@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.spi.order;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
@@ -27,6 +29,7 @@ import java.util.TreeMap;
 /**
  * Ordered SPI registry.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrderedSPIRegistry {
     
     /**

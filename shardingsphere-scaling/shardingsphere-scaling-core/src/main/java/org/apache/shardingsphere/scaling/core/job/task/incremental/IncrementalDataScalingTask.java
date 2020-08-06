@@ -55,7 +55,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     
     public IncrementalDataScalingTask(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
-        this.dataSourceManager = new DataSourceManager();
+        dataSourceManager = new DataSourceManager();
         setTaskId(syncConfiguration.getDumperConfiguration().getDataSourceName());
         setPositionManager(syncConfiguration.getDumperConfiguration().getPositionManager());
     }
@@ -106,8 +106,8 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     private void waitForResult(final Future<?> future) {
         try {
             future.get();
-        } catch (InterruptedException ignored) {
-        } catch (ExecutionException ex) {
+        } catch (final InterruptedException ignored) {
+        } catch (final ExecutionException ex) {
             throw new SyncTaskExecuteException(String.format("Task %s execute failed ", getTaskId()), ex.getCause());
         }
     }

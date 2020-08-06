@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.masterslave.route.engine.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Master data source visited manager.
  * 
  * <p>Trace master data source visited or not in current thread.</p>
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MasterVisitedManager {
     
     private static final ThreadLocal<Boolean> MASTER_VISITED = ThreadLocal.withInitial(() -> false);

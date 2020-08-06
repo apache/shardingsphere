@@ -48,6 +48,6 @@ public final class MD5EncryptAlgorithmTest {
         Properties props = new Properties();
         props.setProperty("key1", "value1");
         encryptAlgorithm.setProps(props);
-        assertThat(encryptAlgorithm.getProps().get("key1").toString(), is("value1"));
+        assertThat(encryptAlgorithm.getProps().getProperty("key1"), is("value1"));
     }
 }
