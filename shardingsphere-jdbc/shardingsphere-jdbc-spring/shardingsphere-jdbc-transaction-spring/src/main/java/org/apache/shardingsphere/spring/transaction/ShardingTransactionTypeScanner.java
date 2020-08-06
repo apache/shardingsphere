@@ -28,6 +28,6 @@ public final class ShardingTransactionTypeScanner extends AbstractAdvisingBeanPo
     
     public ShardingTransactionTypeScanner() {
         setBeforeExistingAdvisors(true);
-        this.advisor = new ShardingTransactionTypeAdvisor();
+        advisor = new ShardingTransactionTypeAdvisor();
     }
 }

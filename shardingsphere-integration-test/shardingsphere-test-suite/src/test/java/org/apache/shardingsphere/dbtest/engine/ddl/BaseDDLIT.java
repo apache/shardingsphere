@@ -91,7 +91,7 @@ public abstract class BaseDDLIT extends SingleIT {
     
     protected final void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
         if (null == assertion.getExpectedDataFile()) {
-            log.warn("Have empty expectedDataFile `{}`", super.getSql());
+            log.warn("Have empty expectedDataFile `{}`", getSql());
             return;
         }
         DataSet expected;
@@ -109,7 +109,7 @@ public abstract class BaseDDLIT extends SingleIT {
         try {
             assertMetadata(actualColumns, actualIndexes, expected.findMetadata(tableName));
         } catch (final AssertionError ex) {
-            System.out.println(String.format("[ERROR] SQL::%s, Parameter::[%s], Expect::%s", getOriginalSQL(), getAssertion().getParameters(), getAssertion().getExpectedDataFile()));
+            log.error("[ERROR] SQL::{}, Parameter::{}, Expect::{}", getOriginalSQL(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
             throw ex;
         }
     }

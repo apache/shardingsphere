@@ -20,8 +20,8 @@ package org.apache.shardingsphere.example.transaction.xa.spring.namspace;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ImportResource;
 
-@ImportResource(locations = {"/META-INF/application-sharding-databases-tables.xml"})
-public class ExampleMain {
+@ImportResource(locations = "/META-INF/application-sharding-databases-tables.xml")
+public final class ExampleMain {
     
     public static void main(final String[] args) {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(ExampleMain.class);

@@ -55,7 +55,7 @@ public abstract class AbstractHeartbeatDetect implements Callable<Map<String, He
     protected abstract Map<String, HeartbeatResult> buildResult(boolean result);
     
     @Override
-    public Map<String, HeartbeatResult> call() {
+    public final Map<String, HeartbeatResult> call() {
         if (!needDetect) {
             return buildResult(false);
         }
@@ -65,8 +65,8 @@ public abstract class AbstractHeartbeatDetect implements Callable<Map<String, He
                     return buildResult(true);
                 }
                 try {
-                    Thread.sleep(retryInterval * 1000);
-                } catch (InterruptedException ex) {
+                    Thread.sleep(retryInterval * 1000L);
+                } catch (final InterruptedException ex) {
                     log.warn("Retry heart beat detect sleep error", ex);
                 }
             }

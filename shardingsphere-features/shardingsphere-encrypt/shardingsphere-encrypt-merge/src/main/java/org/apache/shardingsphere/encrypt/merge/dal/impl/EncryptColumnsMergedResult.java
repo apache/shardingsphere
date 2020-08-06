@@ -93,7 +93,7 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
     @Override
     public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (1 == columnIndex) {
-            String columnName = getOriginalValue(columnIndex, type).toString();
+            String columnName = getOriginalValue(1, type).toString();
             Optional<String> logicColumn = getLogicColumnOfCipher(columnName);
             return logicColumn.orElse(columnName);
         }

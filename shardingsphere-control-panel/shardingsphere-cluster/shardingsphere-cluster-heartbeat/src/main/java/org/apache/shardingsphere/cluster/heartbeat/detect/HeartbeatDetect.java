@@ -49,7 +49,7 @@ public final class HeartbeatDetect extends AbstractHeartbeatDetect {
     public HeartbeatDetect(final String schemaName, final String dataSourceName, final DataSource dataSource,
                            final HeartbeatConfiguration configuration, final Boolean dataSourceDisabled) {
         super(configuration.isRetryEnable(), configuration.getRetryMaximum(), configuration.getRetryInterval(), !dataSourceDisabled);
-        this.sql = configuration.getSql();
+        sql = configuration.getSql();
         this.schemaName = schemaName;
         this.dataSourceName = dataSourceName;
         this.dataSource = dataSource;
@@ -63,7 +63,7 @@ public final class HeartbeatDetect extends AbstractHeartbeatDetect {
             try (ResultSet result = preparedStatement.executeQuery()) {
                 return Objects.nonNull(result) && result.next();
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             log.error("Heart beat detect error", ex);
         }
         return Boolean.FALSE;

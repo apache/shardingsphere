@@ -31,6 +31,6 @@ public abstract class SQLToken implements Comparable<SQLToken> {
     
     @Override
     public final int compareTo(final SQLToken sqlToken) {
-        return startIndex - sqlToken.getStartIndex();
+        return startIndex - sqlToken.startIndex;
     }
 }

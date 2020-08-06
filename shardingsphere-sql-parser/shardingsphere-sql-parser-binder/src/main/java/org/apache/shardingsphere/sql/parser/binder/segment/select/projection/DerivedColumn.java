@@ -47,7 +47,7 @@ public enum DerivedColumn {
      * @return alias of derived column
      */
     public String getDerivedColumnAlias(final int derivedColumnCount) {
-        return String.format(pattern + "%s", derivedColumnCount);
+        return pattern + derivedColumnCount;
     }
     
     /**
@@ -57,7 +57,7 @@ public enum DerivedColumn {
      * @return is derived column name or not
      */
     public static boolean isDerivedColumnName(final String columnName) {
-        for (DerivedColumn each : DerivedColumn.values()) {
+        for (DerivedColumn each : values()) {
             if (columnName.startsWith(each.pattern)) {
                 return true;
             }
@@ -81,8 +81,8 @@ public enum DerivedColumn {
     }
     
     private static Collection<DerivedColumn> getValues() {
-        Collection<DerivedColumn> result = new ArrayList<>(Arrays.asList(DerivedColumn.values()));
-        result.remove(DerivedColumn.AGGREGATION_DISTINCT_DERIVED);
+        Collection<DerivedColumn> result = new ArrayList<>(Arrays.asList(values()));
+        result.remove(AGGREGATION_DISTINCT_DERIVED);
         return result;
     }
 }

@@ -109,7 +109,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
         if (null == rdbmsConfiguration.getPrimaryKey()) {
             return new PrimaryKeyPosition.PlaceholderPosition();
         }
-        return new PrimaryKeyPosition(rs.getLong(rdbmsConfiguration.getPrimaryKey()), ((PrimaryKeyPosition) rdbmsConfiguration.getPositionManager().getCurrentPosition()).getEndValue());
+        return new PrimaryKeyPosition(rs.getLong(rdbmsConfiguration.getPrimaryKey()), ((PrimaryKeyPosition) rdbmsConfiguration.getPositionManager().getPosition()).getEndValue());
     }
     
     protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;

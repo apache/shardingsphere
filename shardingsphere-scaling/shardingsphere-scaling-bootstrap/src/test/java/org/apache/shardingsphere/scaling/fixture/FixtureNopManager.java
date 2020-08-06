@@ -18,22 +18,19 @@
 package org.apache.shardingsphere.scaling.fixture;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 
 import javax.sql.DataSource;
 
 @RequiredArgsConstructor
-public final class FixtureNopManager implements PositionManager<NopPosition> {
+public final class FixtureNopManager extends BasePositionManager<NopPosition> implements PositionManager<NopPosition> {
     
     private final DataSource dataSource;
     
     @Override
-    public NopPosition getCurrentPosition() {
+    public NopPosition getPosition() {
         return new NopPosition();
-    }
-    
-    @Override
-    public void updateCurrentPosition(final NopPosition newPosition) {
     }
 }

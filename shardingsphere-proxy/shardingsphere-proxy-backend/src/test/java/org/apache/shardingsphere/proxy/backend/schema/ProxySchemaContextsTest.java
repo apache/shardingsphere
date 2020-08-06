@@ -24,8 +24,6 @@ import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.MockDataSource;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -43,28 +41,24 @@ import static org.mockito.Mockito.when;
 
 public final class ProxySchemaContextsTest {
     
-    private Map<String, DataSource> mockDataSourceMap;
-    
-    @Before
-    public void setUp() {
-        mockDataSourceMap = new HashMap<>(2, 1);
-        mockDataSourceMap.put("ds_1", new MockDataSource());
-        mockDataSourceMap.put("ds_2", new MockDataSource());
+    @Test
+    public void assertGetDataSourceSampleEmpty() {
+        assertThat(ProxySchemaContexts.getInstance().getDataSourceSample(), is(Optional.empty()));
     }
     
     @Test
-    @Ignore
-    // FIXME #6628
     public void assertGetDataSourceSample() throws NoSuchFieldException, IllegalAccessException {
-        assertThat(ProxySchemaContexts.getInstance().getDataSourceSample(), is(Optional.empty()));
+        Map<String, DataSource> mockDataSourceMap = new HashMap<>(2, 1);
+        mockDataSourceMap.put("ds_1", new MockDataSource());
+        mockDataSourceMap.put("ds_2", new MockDataSource());
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(), new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties())));
+        schemaContexts.set(ProxySchemaContexts.getInstance(), new StandardSchemaContexts(getSchemaContextMap(mockDataSourceMap), new Authentication(), new ConfigurationProperties(new Properties())));
         Optional<DataSource> actual = ProxySchemaContexts.getInstance().getDataSourceSample();
-        assertThat(actual, is(Optional.of(mockDataSourceMap.entrySet().iterator().next().getValue())));
+        assertThat(actual, is(Optional.of(mockDataSourceMap.get("ds_1"))));
     }
     
-    private Map<String, SchemaContext> getSchemaContextMap() {
+    private Map<String, SchemaContext> getSchemaContextMap(final Map<String, DataSource> mockDataSourceMap) {
         SchemaContext schemaContext = mock(SchemaContext.class);
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);

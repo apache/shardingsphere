@@ -30,7 +30,7 @@ public interface HistogramMetricsTracker extends MetricsTracker {
      * @param labelValues label values
      * @return histogram metrics tracker delegate
      */
-    default HistogramMetricsTrackerDelegate startTimer(String... labelValues) {
+    default HistogramMetricsTrackerDelegate startTimer(final String... labelValues) {
         return new NoneHistogramMetricsTrackerDelegate();
     }
     
@@ -39,7 +39,7 @@ public interface HistogramMetricsTracker extends MetricsTracker {
      *
      * @param amount amount
      */
-    default void observer(long amount) {
+    default void observer(final long amount) {
     }
     
     /**

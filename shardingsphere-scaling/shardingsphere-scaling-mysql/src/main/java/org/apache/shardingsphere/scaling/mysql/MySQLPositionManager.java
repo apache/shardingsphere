@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.mysql;
 
 import com.google.gson.Gson;
+import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 
@@ -30,47 +31,53 @@ import java.sql.SQLException;
 /**
  * MySQL position manager, based on binlog mechanism.
  */
-public final class MySQLPositionManager implements PositionManager<BinlogPosition> {
+public final class MySQLPositionManager extends BasePositionManager<BinlogPosition> implements PositionManager<BinlogPosition> {
     
     private static final Gson GSON = new Gson();
     
     private DataSource dataSource;
-    
-    private BinlogPosition currentPosition;
     
     public MySQLPositionManager(final DataSource dataSource) {
         this.dataSource = dataSource;
     }
     
     public MySQLPositionManager(final String position) {
-        currentPosition = GSON.fromJson(position, BinlogPosition.class);
+        setPosition(GSON.fromJson(position, BinlogPosition.class));
     }
     
     @Override
-    public BinlogPosition getCurrentPosition() {
-        if (null == currentPosition) {
-            getCurrentPositionFromSource();
+    public BinlogPosition getPosition() {
+        BinlogPosition position = super.getPosition();
+        if (null != position) {
+            return position;
         }
-        return currentPosition;
+        initPosition();
+        return super.getPosition();
     }
     
-    private void getCurrentPositionFromSource() {
+    private void initPosition() {
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement("SHOW MASTER STATUS");
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            currentPosition = new BinlogPosition(resultSet.getString(1), resultSet.getLong(2));
-            preparedStatement = connection.prepareStatement("SHOW VARIABLES LIKE 'server_id'");
-            resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            currentPosition.setServerId(resultSet.getLong(2));
+            BinlogPosition binlogPosition = getBinlogPosition(connection);
+            binlogPosition.setServerId(getServerId(connection));
+            setPosition(binlogPosition);
         } catch (final SQLException ex) {
             throw new RuntimeException("markPosition error", ex);
         }
     }
     
-    @Override
-    public void updateCurrentPosition(final BinlogPosition newPosition) {
-        this.currentPosition = newPosition;
+    private BinlogPosition getBinlogPosition(final Connection connection) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SHOW MASTER STATUS");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            resultSet.next();
+            return new BinlogPosition(resultSet.getString(1), resultSet.getLong(2));
+        }
+    }
+    
+    private long getServerId(final Connection connection) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SHOW VARIABLES LIKE 'server_id'");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            resultSet.next();
+            return resultSet.getLong(2);
+        }
     }
 }

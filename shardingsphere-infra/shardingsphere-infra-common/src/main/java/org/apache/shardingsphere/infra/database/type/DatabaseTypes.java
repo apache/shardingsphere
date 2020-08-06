@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.type;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.util.HashMap;
@@ -27,6 +29,7 @@ import java.util.ServiceLoader;
 /**
  * Database types.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseTypes {
     
     private static final Map<String, DatabaseType> DATABASE_TYPES = new HashMap<>();

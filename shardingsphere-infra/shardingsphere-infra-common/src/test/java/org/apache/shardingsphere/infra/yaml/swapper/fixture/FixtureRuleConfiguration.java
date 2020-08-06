@@ -15,21 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine;
+package org.apache.shardingsphere.infra.yaml.swapper.fixture;
 
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
-/**
- * Query SQL parser engine.
- */
-public interface QuerySQLParserEngine {
+@Getter
+@Setter
+public final class FixtureRuleConfiguration implements RuleConfiguration {
     
-    /**
-     * Parse SQL.
-     *
-     * @param sql SQL
-     * @param useCache use cache or not
-     * @return SQL statement
-     */
-    SQLStatement parse(String sql, boolean useCache);
+    private String name;
 }

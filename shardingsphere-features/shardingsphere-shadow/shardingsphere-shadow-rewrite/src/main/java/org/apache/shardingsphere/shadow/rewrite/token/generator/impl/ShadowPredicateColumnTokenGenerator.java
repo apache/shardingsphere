@@ -19,18 +19,19 @@ package org.apache.shardingsphere.shadow.rewrite.token.generator.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.shadow.rewrite.token.generator.BaseShadowSQLTokenGenerator;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
+import org.apache.shardingsphere.shadow.rewrite.token.generator.BaseShadowSQLTokenGenerator;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Predicate column token generator for shadow.
@@ -55,7 +56,7 @@ public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLToke
     
     private Collection<SQLToken> generateSQLTokens(final WhereSegment whereSegment, final AndPredicate andPredicate) {
         Collection<SQLToken> result = new LinkedList<>();
-        LinkedList<PredicateSegment> predicates = (LinkedList<PredicateSegment>) andPredicate.getPredicates();
+        List<PredicateSegment> predicates = (LinkedList<PredicateSegment>) andPredicate.getPredicates();
         for (int i = 0; i < predicates.size(); i++) {
             if (!getShadowRule().getColumn().equals(predicates.get(i).getColumn().getIdentifier().getValue())) {
                 continue;
@@ -67,7 +68,7 @@ public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLToke
                 return result;
             }
             if (i == 0) {
-                int startIndex = predicates.get(i).getStartIndex();
+                int startIndex = predicates.get(0).getStartIndex();
                 int stopIndex = predicates.get(i + 1).getStartIndex() - 1;
                 result.add(new RemoveToken(startIndex, stopIndex));
                 return result;

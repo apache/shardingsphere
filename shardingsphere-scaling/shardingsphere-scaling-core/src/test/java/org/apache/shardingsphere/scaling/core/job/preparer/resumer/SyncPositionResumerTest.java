@@ -25,8 +25,7 @@ import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
@@ -69,7 +68,7 @@ public final class SyncPositionResumerTest {
     @Test
     public void assertResumePosition() {
         resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 100)));
-        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0.t_order", mockPositionManager());
+        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0.t_order", new BasePositionManager<>());
         syncPositionResumer.resumePosition(shardingScalingJob, new DataSourceManager(), resumeBreakPointManager);
         assertThat(shardingScalingJob.getIncrementalDataTasks().size(), is(1));
         assertTrue(shardingScalingJob.getInventoryDataTasks().isEmpty());
@@ -81,20 +80,6 @@ public final class SyncPositionResumerTest {
         syncPositionResumer.persistPosition(shardingScalingJob, resumeBreakPointManager);
         verify(resumeBreakPointManager).persistIncrementalPosition();
         verify(resumeBreakPointManager).persistInventoryPosition();
-    }
-    
-    private PositionManager mockPositionManager() {
-        return new PositionManager() {
-            
-            @Override
-            public Position getCurrentPosition() {
-                return null;
-            }
-            
-            @Override
-            public void updateCurrentPosition(final Position newPosition) {
-            }
-        };
     }
     
     private SyncConfiguration mockSyncConfiguration() {

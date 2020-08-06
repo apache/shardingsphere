@@ -78,13 +78,13 @@ public final class StatementExecutor {
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return createQueryResult(sql, statement, connectionMode);
             }
+            
+            private QueryResult createQueryResult(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                ResultSet resultSet = statement.executeQuery(sql);
+                return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
+            }
         };
         return sqlExecutor.execute(inputGroups, sqlExecutorCallback);
-    }
-    
-    private QueryResult createQueryResult(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-        ResultSet resultSet = statement.executeQuery(sql);
-        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     
     /**

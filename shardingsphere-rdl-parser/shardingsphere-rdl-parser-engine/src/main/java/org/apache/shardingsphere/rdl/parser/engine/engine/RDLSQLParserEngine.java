@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.rdl.parser.engine.executor.RDLSQLParserExecutor;
 import org.apache.shardingsphere.rdl.parser.sql.visitor.ShardingSphereVisitor;
-import org.apache.shardingsphere.sql.parser.engine.QuerySQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.cache.SQLParseResultCache;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -32,7 +32,7 @@ import java.util.Optional;
  * RDL SQL parser engine.
  */
 @RequiredArgsConstructor
-public final class RDLSQLParserEngine implements QuerySQLParserEngine {
+public final class RDLSQLParserEngine implements SQLParserEngine {
     
     private final SQLParseResultCache cache = new SQLParseResultCache();
     

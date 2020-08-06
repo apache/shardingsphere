@@ -17,15 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * JDBC util.
+ * JDBC utility.
  */
-public class JdbcUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class JdbcUtil {
     
     /**
      * Get schema.

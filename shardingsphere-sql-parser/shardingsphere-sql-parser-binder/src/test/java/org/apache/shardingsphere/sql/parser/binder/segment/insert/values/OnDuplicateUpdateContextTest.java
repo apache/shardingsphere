@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralE
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -118,8 +117,8 @@ public final class OnDuplicateUpdateContextTest {
         Throwable targetException = null;
         try {
             getParameterIndexMethod.invoke(onDuplicateUpdateContext, notExistsExpressionSegment);
-        } catch (InvocationTargetException e) {
-            targetException = e.getTargetException();
+        } catch (final InvocationTargetException ex) {
+            targetException = ex.getTargetException();
         }
         assertTrue("expected throw IllegalArgumentException", targetException instanceof IllegalArgumentException);
     }
@@ -131,6 +130,6 @@ public final class OnDuplicateUpdateContextTest {
         List<Object> parameters = Collections.emptyList();
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, 0);
         ColumnSegment column = onDuplicateUpdateContext.getColumn(0);
-        Assert.assertThat(column, is(assignments.iterator().next().getColumn()));
+        assertThat(column, is(assignments.iterator().next().getColumn()));
     }
 }

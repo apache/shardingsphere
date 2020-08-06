@@ -30,8 +30,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLDataSourceCheckerTest {
+public final class MySQLDataSourceCheckerTest {
 
     @Mock
     private Connection connection;
@@ -60,7 +60,7 @@ public class MySQLDataSourceCheckerTest {
     public void setUp() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(connection);
-        dataSources = new ArrayList<>();
+        dataSources = new LinkedList<>();
         dataSources.add(dataSource);
         dataSourceChecker = new MySQLDataSourceChecker();
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
@@ -88,8 +88,8 @@ public class MySQLDataSourceCheckerTest {
         when(resultSet.next()).thenReturn(false);
         try {
             dataSourceChecker.checkPrivilege(dataSources);
-        } catch (PrepareFailedException checkFailedEx) {
-            assertThat(checkFailedEx.getMessage(), is("Source datasource is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges."));
+        } catch (final PrepareFailedException ex) {
+            assertThat(ex.getMessage(), is("Source datasource is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges."));
         }
     }
     
@@ -107,7 +107,7 @@ public class MySQLDataSourceCheckerTest {
         when(resultSet.getString(2)).thenReturn("OFF", "ROW");
         try {
             dataSourceChecker.checkVariable(dataSources);
-        } catch (PrepareFailedException checkFailedEx) {
+        } catch (final PrepareFailedException checkFailedEx) {
             assertThat(checkFailedEx.getMessage(), is("Source datasource required LOG_BIN = ON, now is OFF"));
         }
     }

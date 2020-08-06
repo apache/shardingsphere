@@ -45,10 +45,10 @@ public final class TestJndiInitialContextFactory implements InitialContextFactor
     }
     
     private static JndiContext getContext() {
-        if (context == null) {
+        if (null == context) {
             try {
                 context = new JndiContext();
-            } catch (NamingException ex) {
+            } catch (final NamingException ex) {
                 throw new IllegalStateException(ex);
             }
         }
@@ -65,12 +65,12 @@ public final class TestJndiInitialContextFactory implements InitialContextFactor
         
         @Override
         public void bind(final String name, final Object obj) {
-            this.bindings.put(name, obj);
+            bindings.put(name, obj);
         }
         
         @Override
         public Object lookup(final String name) {
-            return this.bindings.get(name);
+            return bindings.get(name);
         }
         
         @Override

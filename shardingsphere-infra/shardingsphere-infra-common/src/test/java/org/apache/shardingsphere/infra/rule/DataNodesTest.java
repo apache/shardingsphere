@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.rule.fixture.TestTableRule;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -32,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class DataNodesTest {
@@ -41,9 +41,9 @@ public final class DataNodesTest {
     
     private final String logicTableName2 = "dept";
     
-    private final List<String> dataSourceNames1 = Arrays.asList("master_db_1", "master_db_2", "slave_db_1", "slave_db_2");
+    private final Collection<String> dataSourceNames1 = Arrays.asList("master_db_1", "master_db_2", "slave_db_1", "slave_db_2");
     
-    private final List<String> dataSourceNames2 = Arrays.asList("master_db_3", "slave_db_3");
+    private final Collection<String> dataSourceNames2 = Arrays.asList("master_db_3", "slave_db_3");
     
     @Test(expected = NullPointerException.class)
     public void assertWrongTable() {
@@ -53,22 +53,21 @@ public final class DataNodesTest {
     
     @Test
     public void assertGetEmpty() {
-        DataNodes nonRoutedRuleDataNodes = getNonRoutedRuleDataNodes();
-        assertThat(nonRoutedRuleDataNodes.getDataNodes("tableName"), is(Collections.emptyList()));
+        assertThat(getNonRoutedRuleDataNodes().getDataNodes("tableName"), is(Collections.emptyList()));
     }
     
     @Test
     public void assertGetDataNodes() {
         DataNodes dataNodes = getRoutedRuleDataNodes();
-        assertEquals(dataNodes.getDataNodes(logicTableName1), getExpectedDataNodes(dataSourceNames1, logicTableName1));
-        assertEquals(dataNodes.getDataNodes(logicTableName2), getExpectedDataNodes(dataSourceNames2, logicTableName2));
+        assertThat(dataNodes.getDataNodes(logicTableName1), is(getExpectedDataNodes(dataSourceNames1, logicTableName1)));
+        assertThat(dataNodes.getDataNodes(logicTableName2), is(getExpectedDataNodes(dataSourceNames2, logicTableName2)));
     }
     
     @Test
     public void assertGetDataNodeGroups() {
         DataNodes dataNodes = getRoutedRuleDataNodes();
-        assertEquals(dataNodes.getDataNodeGroups(logicTableName1), getExpectedDataNodeGroups(dataSourceNames1, logicTableName1));
-        assertEquals(dataNodes.getDataNodeGroups(logicTableName2), getExpectedDataNodeGroups(dataSourceNames2, logicTableName2));
+        assertThat(dataNodes.getDataNodeGroups(logicTableName1), is(getExpectedDataNodeGroups(dataSourceNames1, logicTableName1)));
+        assertThat(dataNodes.getDataNodeGroups(logicTableName2), is(getExpectedDataNodeGroups(dataSourceNames2, logicTableName2)));
     }
     
     private DataNodes getRoutedRuleDataNodes() {
@@ -83,18 +82,18 @@ public final class DataNodesTest {
         return new DataNodes(Collections.singleton(new TestShardingSphereRule()));
     }
     
-    private LinkedList<DataNode> getExpectedDataNodes(final List<String> dataSourceNames, final String logicTableName) {
-        LinkedList<DataNode> result = new LinkedList<>();
+    private Collection<DataNode> getExpectedDataNodes(final Collection<String> dataSourceNames, final String logicTableName) {
+        Collection<DataNode> result = new LinkedList<>();
         for (String each : dataSourceNames) {
             result.add(new DataNode(each, logicTableName));
         }
         return result;
     }
     
-    private Map<String, List<DataNode>> getExpectedDataNodeGroups(final List<String> dataSourceNames, final String logicTableName) {
-        Map<String, List<DataNode>> result = new LinkedHashMap<>(dataSourceNames.size(), 1);
+    private Map<String, Collection<DataNode>> getExpectedDataNodeGroups(final Collection<String> dataSourceNames, final String logicTableName) {
+        Map<String, Collection<DataNode>> result = new LinkedHashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
-            LinkedList<DataNode> self = new LinkedList<>();
+            Collection<DataNode> self = new LinkedList<>();
             self.add(new DataNode(each, logicTableName));
             result.put(each, self);
         }
