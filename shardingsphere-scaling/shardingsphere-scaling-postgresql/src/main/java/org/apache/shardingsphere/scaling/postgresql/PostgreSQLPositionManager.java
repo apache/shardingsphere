@@ -65,7 +65,7 @@ public final class PostgreSQLPositionManager extends BasePositionManager<WalPosi
             // Need to create slot first, hold oldest wal event.
             createIfNotExists(connection);
             setPosition(getWalPosition(connection));
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new RuntimeException("markPosition error", ex);
         }
     }
@@ -73,7 +73,7 @@ public final class PostgreSQLPositionManager extends BasePositionManager<WalPosi
     private void createIfNotExists(final Connection connection) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement(String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", SLOT_NAME, DECODE_PLUGIN))) {
             ps.execute();
-        } catch (PSQLException ex) {
+        } catch (final PSQLException ex) {
             if (!DUPLICATE_OBJECT_ERROR_CODE.equals(ex.getSQLState())) {
                 throw ex;
             }
