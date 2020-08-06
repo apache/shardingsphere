@@ -35,9 +35,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Setter
 @Getter
-public class BinlogPosition implements Position<BinlogPosition> {
-    
-    private static final long serialVersionUID = -4917415481787093677L;
+public class BinlogPosition implements Position {
     
     private static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     
@@ -50,12 +48,12 @@ public class BinlogPosition implements Position<BinlogPosition> {
     private long serverId;
     
     @Override
-    public final int compareTo(final BinlogPosition binlogPosition) {
-        if (null == binlogPosition) {
+    public final int compareTo(final Position position) {
+        if (null == position) {
             return 1;
         }
         long o1 = toLong();
-        long o2 = binlogPosition.toLong();
+        long o2 = ((BinlogPosition) position).toLong();
         return Long.compare(o1, o2);
     }
     

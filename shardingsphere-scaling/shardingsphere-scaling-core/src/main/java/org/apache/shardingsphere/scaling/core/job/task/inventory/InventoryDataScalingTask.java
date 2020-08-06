@@ -128,7 +128,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
                     count++;
                 } else if (record instanceof FinishedRecord) {
                     if (record.getPosition() instanceof PrimaryKeyPosition) {
-                        getPositionManager().updateCurrentPosition(record.getPosition());
+                        getPositionManager().setPosition(record.getPosition());
                     }
                 }
             }

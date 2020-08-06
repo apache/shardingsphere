@@ -70,7 +70,7 @@ public final class PostgreSQLPositionManagerTest {
         PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(6);
-        WalPosition actual = postgreSQLPositionManager.getCurrentPosition();
+        WalPosition actual = postgreSQLPositionManager.getPosition();
         assertThat(actual.getLogSequenceNumber(), is(LogSequenceNumber.valueOf(POSTGRESQL_96_LSN)));
     }
     
@@ -78,7 +78,7 @@ public final class PostgreSQLPositionManagerTest {
     public void assertGetCurrentPositionOnPostgreSQL10() throws SQLException {
         PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(10);
-        WalPosition actual = postgreSQLPositionManager.getCurrentPosition();
+        WalPosition actual = postgreSQLPositionManager.getPosition();
         assertThat(actual.getLogSequenceNumber(), is(LogSequenceNumber.valueOf(POSTGRESQL_10_LSN)));
     }
     
@@ -87,15 +87,15 @@ public final class PostgreSQLPositionManagerTest {
         PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(4);
-        postgreSQLPositionManager.getCurrentPosition();
+        postgreSQLPositionManager.getPosition();
     }
     
     @Test
     public void assertUpdateCurrentPosition() {
         PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
         WalPosition expected = new WalPosition(LogSequenceNumber.valueOf(POSTGRESQL_96_LSN));
-        postgreSQLPositionManager.updateCurrentPosition(expected);
-        assertThat(postgreSQLPositionManager.getCurrentPosition(), is(expected));
+        postgreSQLPositionManager.setPosition(expected);
+        assertThat(postgreSQLPositionManager.getPosition(), is(expected));
     }
     
     private PreparedStatement mockPostgreSQL96Lsn() throws SQLException {

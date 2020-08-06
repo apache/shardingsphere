@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
+import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPositionManager;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
-import org.apache.shardingsphere.scaling.mysql.MySQLPositionManager;
 import org.apache.shardingsphere.scaling.mysql.MySQLScalingEntry;
+import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.apache.shardingsphere.scaling.utils.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,8 +63,8 @@ public final class AbstractResumeBreakPointManagerTest {
     
     @Test
     public void assertGetIncrementalPositionData() {
-        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0", new MySQLPositionManager("{\"filename\":\"mysql-bin.000001\",\"position\":4}"));
-        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds1", new MySQLPositionManager("{\"filename\":\"mysql-bin.000002\",\"position\":4}"));
+        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0", new BasePositionManager<>(new BinlogPosition("mysql-bin.000001", 4L)));
+        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds1", new BasePositionManager<>(new BinlogPosition("mysql-bin.000002", 4L)));
         assertThat(resumeBreakPointManager.getIncrementalPositionData(), is(incrementalPosition));
     }
     

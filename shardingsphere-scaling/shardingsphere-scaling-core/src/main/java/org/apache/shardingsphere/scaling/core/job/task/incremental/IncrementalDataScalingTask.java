@@ -63,7 +63,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     @Override
     public void start() {
         syncConfiguration.getDumperConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
-        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), getPositionManager().getCurrentPosition());
+        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), getPositionManager().getPosition());
         Collection<Importer> importers = instanceImporters();
         instanceChannel(importers);
         Future<?> future = ScalingContext.getInstance().getTaskExecuteEngine().submitAll(importers, new ExecuteCallback() {
@@ -94,7 +94,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     private void instanceChannel(final Collection<Importer> importers) {
         DistributionChannel channel = new DistributionChannel(importers.size(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
-            getPositionManager().updateCurrentPosition(lastHandledRecord.getPosition());
+            getPositionManager().setPosition(lastHandledRecord.getPosition());
             delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();
         });
         dumper.setChannel(channel);
@@ -122,7 +122,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     
     @Override
     public SyncProgress getProgress() {
-        return new IncrementalDataSyncTaskProgress(getTaskId(), delayMillisecond, getPositionManager().getCurrentPosition());
+        return new IncrementalDataSyncTaskProgress(getTaskId(), delayMillisecond, getPositionManager().getPosition());
     }
     
 }

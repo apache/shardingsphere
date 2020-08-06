@@ -43,7 +43,7 @@ public final class RdbmsConfigurationUtil {
         if (null == primaryKey || null == positionManager) {
             return "";
         }
-        PrimaryKeyPosition position = positionManager.getCurrentPosition();
+        PrimaryKeyPosition position = positionManager.getPosition();
         return String.format("WHERE %s BETWEEN %d AND %d", primaryKey, position.getBeginValue(), position.getEndValue());
     }
 }

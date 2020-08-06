@@ -26,6 +26,7 @@ import com.google.gson.JsonParser;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManagerFactory;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
@@ -53,7 +54,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
     
     private final Map<String, PositionManager<PrimaryKeyPosition>> inventoryPositionManagerMap = Maps.newConcurrentMap();
     
-    private final Map<String, PositionManager> incrementalPositionManagerMap = Maps.newConcurrentMap();
+    private final Map<String, PositionManager<Position>> incrementalPositionManagerMap = Maps.newConcurrentMap();
     
     private boolean resumable;
     
@@ -101,11 +102,11 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         JsonObject unfinished = new JsonObject();
         Set<String> finished = Sets.newHashSet();
         for (Entry<String, PositionManager<PrimaryKeyPosition>> entry : inventoryPositionManagerMap.entrySet()) {
-            if (entry.getValue().getCurrentPosition() instanceof PrimaryKeyPosition.FinishedPosition) {
+            if (entry.getValue().getPosition() instanceof PrimaryKeyPosition.FinishedPosition) {
                 finished.add(entry.getKey());
                 continue;
             }
-            unfinished.add(entry.getKey(), entry.getValue().getCurrentPosition().toJson());
+            unfinished.add(entry.getKey(), entry.getValue().getPosition().toJson());
         }
         result.add(UNFINISHED, unfinished);
         result.add(FINISHED, GSON.toJsonTree(finished));
@@ -114,8 +115,8 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
     
     protected String getIncrementalPositionData() {
         JsonObject result = new JsonObject();
-        for (Entry<String, PositionManager> entry : incrementalPositionManagerMap.entrySet()) {
-            result.add(entry.getKey(), entry.getValue().getCurrentPosition().toJson());
+        for (Entry<String, PositionManager<Position>> entry : incrementalPositionManagerMap.entrySet()) {
+            result.add(entry.getKey(), entry.getValue().getPosition().toJson());
         }
         return result.toString();
     }
