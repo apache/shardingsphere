@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.scaling.core.job.position;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Base position manager.
@@ -27,17 +29,9 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class BasePositionManager<T extends Position> implements PositionManager<T> {
     
     private T position;
-    
-    @Override
-    public T getPosition() {
-        return position;
-    }
-    
-    @Override
-    public void setPosition(final T newPosition) {
-        position = newPosition;
-    }
 }
