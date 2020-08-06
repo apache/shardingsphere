@@ -149,9 +149,9 @@ public final class MySQLClient {
     private void registerSlave() {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         InetSocketAddress localAddress = (InetSocketAddress) channel.localAddress();
-        MySQLComRegisterSlaveCommandPacket registerSlaveCommandPacket = new MySQLComRegisterSlaveCommandPacket(
+        MySQLComRegisterSlaveCommandPacket packet = new MySQLComRegisterSlaveCommandPacket(
                 connectInfo.getServerId(), localAddress.getHostName(), connectInfo.getUsername(), connectInfo.getPassword(), localAddress.getPort());
-        channel.writeAndFlush(registerSlaveCommandPacket);
+        channel.writeAndFlush(packet);
         waitExpectedResponse(MySQLOKPacket.class);
     }
     
@@ -167,7 +167,7 @@ public final class MySQLClient {
             case "CRC32":
                 return 4;
             default:
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException(checksumType);
         }
     }
     
@@ -188,7 +188,7 @@ public final class MySQLClient {
     public synchronized AbstractBinlogEvent poll() {
         try {
             return blockingEventQueue.poll(100, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException ignored) {
+        } catch (final InterruptedException ignored) {
             return null;
         }
     }
@@ -207,12 +207,12 @@ public final class MySQLClient {
                 throw new RuntimeException(((MySQLErrPacket) response).getErrorMessage());
             }
             throw new RuntimeException("unexpected response type");
-        } catch (InterruptedException | ExecutionException ex) {
+        } catch (final InterruptedException | ExecutionException ex) {
             throw new RuntimeException(ex);
         }
     }
     
-    private class MySQLCommandResponseHandler extends ChannelInboundHandlerAdapter {
+    private final class MySQLCommandResponseHandler extends ChannelInboundHandlerAdapter {
         
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
@@ -230,7 +230,7 @@ public final class MySQLClient {
         }
     }
     
-    private class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
+    private final class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
         
         private AbstractBinlogEvent lastBinlogEvent;
         
@@ -264,7 +264,7 @@ public final class MySQLClient {
         private void closeOldChannel() {
             try {
                 channel.closeFuture().sync();
-            } catch (InterruptedException ignored) {
+            } catch (final InterruptedException ignored) {
             }
         }
     }

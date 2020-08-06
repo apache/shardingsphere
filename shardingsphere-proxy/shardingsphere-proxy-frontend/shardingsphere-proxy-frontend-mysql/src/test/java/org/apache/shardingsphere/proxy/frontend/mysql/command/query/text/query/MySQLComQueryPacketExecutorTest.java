@@ -53,7 +53,6 @@ public class MySQLComQueryPacketExecutorTest {
     @SneakyThrows
     public void assertIsErrorResponse() {
         FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
-        when(sqlException.getCause()).thenReturn(new Exception());
         when(textProtocolBackendHandler.execute()).thenReturn(new ErrorResponse(sqlException));
         mysqlComQueryPacketExecutor.execute();
         assertThat(mysqlComQueryPacketExecutor.isErrorResponse(), Matchers.is(true));

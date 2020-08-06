@@ -94,7 +94,7 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
     private boolean isShadowSQL(final RouteContext routeContext, final ShadowRule shadowRule) {
         List<Object> parameters = routeContext.getParameters();
         SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
-        ShadowDataSourceRouter shadowDataSourceRouter = parameters.size() == 0 ? new SimpleShadowDataSourceRouter(shadowRule, sqlStatementContext)
+        ShadowDataSourceRouter shadowDataSourceRouter = parameters.isEmpty() ? new SimpleShadowDataSourceRouter(shadowRule, sqlStatementContext)
                 : new PreparedShadowDataSourceRouter(shadowRule, sqlStatementContext, parameters);
         return shadowDataSourceRouter.isShadowSQL();
     }

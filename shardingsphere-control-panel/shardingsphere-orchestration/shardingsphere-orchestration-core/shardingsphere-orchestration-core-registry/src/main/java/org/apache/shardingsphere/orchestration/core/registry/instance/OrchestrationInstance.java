@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.registry.instance;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.constant.Constants;
+import com.google.common.base.Joiner;
 import org.apache.shardingsphere.orchestration.core.common.utils.IpUtils;
 
 import java.lang.management.ManagementFactory;
@@ -30,17 +29,15 @@ import java.util.UUID;
 public final class OrchestrationInstance {
     
     private static final String DELIMITER = "@";
-
+    
     private static final OrchestrationInstance INSTANCE = new OrchestrationInstance();
     
     private final String instanceId;
-
+    
     private OrchestrationInstance() {
-        String tag = Strings.isNullOrEmpty(System.getProperty(Constants.PORT_KEY))
-                ? ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] : System.getProperty(Constants.PORT_KEY);
-        instanceId = IpUtils.getIp() + DELIMITER + tag + DELIMITER + UUID.randomUUID().toString();
+        instanceId = Joiner.on(DELIMITER).join(IpUtils.getIp(), ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], UUID.randomUUID().toString());
     }
-
+    
     /**
      * Getter for instanceId.
      *
@@ -49,7 +46,7 @@ public final class OrchestrationInstance {
     public String getInstanceId() {
         return instanceId;
     }
-
+    
     /**
      * Get instance.
      *
@@ -58,5 +55,4 @@ public final class OrchestrationInstance {
     public static OrchestrationInstance getInstance() {
         return INSTANCE;
     }
-
 }

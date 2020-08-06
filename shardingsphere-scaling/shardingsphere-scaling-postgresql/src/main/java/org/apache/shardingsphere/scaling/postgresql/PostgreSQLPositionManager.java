@@ -48,7 +48,7 @@ public final class PostgreSQLPositionManager implements PositionManager<WalPosit
     }
     
     public PostgreSQLPositionManager(final String position) {
-        this.currentPosition = new WalPosition(LogSequenceNumber.valueOf(position));
+        currentPosition = new WalPosition(LogSequenceNumber.valueOf(position));
     }
     
     @Override
@@ -64,7 +64,7 @@ public final class PostgreSQLPositionManager implements PositionManager<WalPosit
             // Need to create slot first, hold oldest wal event.
             createIfNotExists(connection);
             currentPosition = getCurrentLsn(connection);
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new RuntimeException("markPosition error", ex);
         }
     }
@@ -73,7 +73,7 @@ public final class PostgreSQLPositionManager implements PositionManager<WalPosit
         try {
             PreparedStatement ps = connection.prepareStatement(String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", SLOT_NAME, DECODE_PLUGIN));
             ps.execute();
-        } catch (PSQLException ex) {
+        } catch (final PSQLException ex) {
             if (!DUPLICATE_OBJECT_ERROR_CODE.equals(ex.getSQLState())) {
                 throw ex;
             }

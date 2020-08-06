@@ -71,7 +71,7 @@ public final class ShardingScalingJobPreparer {
             initIncrementalDataTasks(databaseType, shardingScalingJob, dataSourceManager);
             initInventoryDataTasks(shardingScalingJob, dataSourceManager);
             syncPositionResumer.persistPosition(shardingScalingJob, resumeBreakPointManager);
-        } catch (PrepareFailedException ex) {
+        } catch (final PrepareFailedException ex) {
             log.warn("Preparing sharding scaling job {} : {} failed", shardingScalingJob.getJobId(), shardingScalingJob.getJobName(), ex);
             shardingScalingJob.setStatus(SyncTaskControlStatus.PREPARING_FAILURE.name());
         }

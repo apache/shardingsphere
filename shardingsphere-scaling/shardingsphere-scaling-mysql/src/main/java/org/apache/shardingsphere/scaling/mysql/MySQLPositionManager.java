@@ -71,6 +71,6 @@ public final class MySQLPositionManager implements PositionManager<BinlogPositio
     
     @Override
     public void updateCurrentPosition(final BinlogPosition newPosition) {
-        this.currentPosition = newPosition;
+        currentPosition = newPosition;
     }
 }

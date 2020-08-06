@@ -17,13 +17,17 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.record;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Record util.
+ * Record utility.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RecordUtil {
     
     /**

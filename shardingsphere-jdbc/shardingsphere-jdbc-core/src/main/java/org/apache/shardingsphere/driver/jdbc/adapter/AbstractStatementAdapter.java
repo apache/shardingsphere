@@ -79,7 +79,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setFetchSize(final int rows) throws SQLException {
-        this.fetchSize = rows;
+        fetchSize = rows;
         recordMethodInvocation(targetClass, "setFetchSize", new Class[] {int.class}, new Object[] {rows});
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setFetchSize(rows));
     }

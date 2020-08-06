@@ -124,7 +124,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             super.setAutoCommit(autoCommit);
             return;
         }
-        if (autoCommit && !shardingTransactionManager.isInTransaction() || !autoCommit && shardingTransactionManager.isInTransaction()) {
+        if (autoCommit != shardingTransactionManager.isInTransaction()) {
             return;
         }
         if (autoCommit && shardingTransactionManager.isInTransaction()) {

@@ -39,7 +39,7 @@ public final class MySQLNullBitmap {
     }
     
     public MySQLNullBitmap(final int columnNumbers, final MySQLPacketPayload payload) {
-        this.offset = 0;
+        offset = 0;
         nullBitmap = new int[calculateLength(columnNumbers, 0)];
         fillBitmap(payload);
     }

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.MetaDataConnection;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.util.JdbcUtil;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -41,7 +42,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import org.apache.shardingsphere.sql.parser.binder.metadata.util.JdbcUtil;
 
 /**
  * Schema meta data loader.
@@ -84,7 +84,7 @@ public final class SchemaMetaDataLoader {
             tableNames.removeAll(excludedTableNames);
         }
         log.info("Loading {} tables' meta data.", tableNames.size());
-        if (0 == tableNames.size()) {
+        if (tableNames.isEmpty()) {
             return new SchemaMetaData(Collections.emptyMap());
         }
         List<List<String>> tableGroups = Lists.partition(tableNames, Math.max(tableNames.size() / maxConnectionCount, 1));
@@ -95,7 +95,7 @@ public final class SchemaMetaDataLoader {
     
     private static Map<String, TableMetaData> load(final Connection con, final Collection<String> tables, final String databaseType) throws SQLException {
         try (MetaDataConnection connection = new MetaDataConnection(con)) {
-            Map<String, TableMetaData> result = new LinkedHashMap<>();
+            Map<String, TableMetaData> result = new LinkedHashMap<>(tables.size(), 1);
             for (String each : tables) {
                 result.put(each, new TableMetaData(ColumnMetaDataLoader.load(connection, each, databaseType), IndexMetaDataLoader.load(connection, each, databaseType)));
             }

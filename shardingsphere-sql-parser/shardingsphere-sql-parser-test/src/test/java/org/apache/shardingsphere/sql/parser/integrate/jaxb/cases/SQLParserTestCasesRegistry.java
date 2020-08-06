@@ -81,7 +81,7 @@ public final class SQLParserTestCasesRegistry {
     private Map<String, SQLParserTestCase> getSQLParserTestCases(final File file) {
         try {
             return ((SQLParserTestCases) JAXBContext.newInstance(SQLParserTestCases.class).createUnmarshaller().unmarshal(file)).getAllSQLParserTestCases();
-        } catch (JAXBException ex) {
+        } catch (final JAXBException ex) {
             throw new RuntimeException(ex);
         }
     }

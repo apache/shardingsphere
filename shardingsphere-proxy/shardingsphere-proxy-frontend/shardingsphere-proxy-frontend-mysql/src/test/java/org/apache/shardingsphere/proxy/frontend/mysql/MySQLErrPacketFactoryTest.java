@@ -28,6 +28,8 @@ import org.junit.Test;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.junit.Assert.assertThat;
 
 public final class MySQLErrPacketFactoryTest {
@@ -40,14 +42,23 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSqlState(), is("XXX"));
         assertThat(actual.getErrorMessage(), is("No reason"));
     }
-    
+
     @Test
     public void assertNewInstanceWithSQLExceptionOfNullSqlState() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLException(new RuntimeException("No reason")));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1815));
         assertThat(actual.getSqlState(), is("HY000"));
-        assertThat(actual.getErrorMessage(), is("Internal error: No reason"));
+        assertThat(actual.getErrorMessage(), endsWith("No reason"));
+    }
+
+    @Test
+    public void assertNewInstanceWithSQLExceptionOfNullParam() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLException());
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(1815));
+        assertThat(actual.getSqlState(), is("HY000"));
+        assertThat(actual.getErrorMessage(), startsWith("Internal error"));
     }
     
     @Test

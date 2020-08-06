@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
@@ -29,8 +31,9 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 
 /**
- * Mock backend connection Util.
+ * Mock backend connection utility.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MockConnectionUtil {
     
     /**

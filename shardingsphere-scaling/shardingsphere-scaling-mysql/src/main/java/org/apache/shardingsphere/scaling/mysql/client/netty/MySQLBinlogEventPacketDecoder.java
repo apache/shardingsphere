@@ -84,7 +84,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 payload.skipReserved(payload.getByteBuf().readableBytes());
         }
         if (in.isReadable()) {
-            throw new UnsupportedOperationException(String.format("Do not parse binlog event fully, eventHeader: %s, remaining packet %s", binlogEventHeader.toString(), readRemainPacket(payload)));
+            throw new UnsupportedOperationException(String.format("Do not parse binlog event fully, eventHeader: %s, remaining packet %s", binlogEventHeader, readRemainPacket(payload)));
         }
     }
     

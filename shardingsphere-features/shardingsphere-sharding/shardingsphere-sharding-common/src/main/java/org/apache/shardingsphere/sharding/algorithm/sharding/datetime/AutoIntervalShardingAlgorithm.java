@@ -78,7 +78,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     private long getShardingSeconds() {
         Preconditions.checkArgument(props.containsKey(SHARDING_SECONDS_KEY), "%s cannot be null.", SHARDING_SECONDS_KEY);
-        return Long.parseLong(props.get(SHARDING_SECONDS_KEY).toString());
+        return Long.parseLong(props.getProperty(SHARDING_SECONDS_KEY));
     }
     
     @Override

@@ -54,7 +54,7 @@ public final class IntegrateTestEnvironment {
         try {
             prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream(isProxyEnvironment() ? "integrate/env-proxy.properties" : "integrate/env.properties"));
         } catch (final IOException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
         runAdditionalTestCases = Boolean.parseBoolean(prop.getProperty("run.additional.cases"));
         ruleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("rule.types"));
@@ -95,7 +95,7 @@ public final class IntegrateTestEnvironment {
         try {
             prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("integrate/profile.properties"));
         } catch (final IOException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
         return prop.getProperty("mode");
     }

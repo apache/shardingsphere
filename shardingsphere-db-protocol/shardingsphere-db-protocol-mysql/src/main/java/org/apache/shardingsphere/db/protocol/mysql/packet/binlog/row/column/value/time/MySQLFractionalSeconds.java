@@ -31,7 +31,7 @@ public final class MySQLFractionalSeconds {
     private final int fractionalSecondsPrecision;
     
     public MySQLFractionalSeconds(final int columnMeta, final MySQLPacketPayload payload) {
-        this.fractionalSecondsPrecision = columnMeta;
+        fractionalSecondsPrecision = columnMeta;
         fraction = readFraction(payload);
     }
     
@@ -61,6 +61,6 @@ public final class MySQLFractionalSeconds {
             result.append("0");
         }
         result.setLength(fractionalSecondsPrecision);
-        return "." + result.toString();
+        return "." + result;
     }
 }

@@ -82,7 +82,7 @@ public final class PreparedShadowDataSourceRouter implements ShadowDataSourceRou
                 Preconditions.checkArgument(each.getRightValue() instanceof PredicateCompareRightValue, "must be PredicateCompareRightValue");
                 PredicateCompareRightValue rightValue = (PredicateCompareRightValue) each.getRightValue();
                 int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) rightValue.getExpression()).getParameterMarkerIndex();
-                final Object value = parameters.get(parameterMarkerIndex);
+                Object value = parameters.get(parameterMarkerIndex);
                 return isShadowField(value);
             }
         }

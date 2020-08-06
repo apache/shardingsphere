@@ -39,8 +39,7 @@ public class ShardingScalingExecuteEngine {
     private final ListeningExecutorService executorService;
     
     public ShardingScalingExecuteEngine(final int maxWorkerNumber) {
-        this.executorService = MoreExecutors.listeningDecorator(
-                Executors.newFixedThreadPool(maxWorkerNumber, ShardingSphereThreadFactoryBuilder.build("ShardingScaling-execute-%d")));
+        executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkerNumber, ShardingSphereThreadFactoryBuilder.build("ShardingScaling-execute-%d")));
     }
     
     /**

@@ -33,8 +33,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Database meta data result set.
@@ -71,8 +71,8 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     }
     
     private Iterator<DatabaseMetaDataObject> initIterator(final ResultSet resultSet) throws SQLException {
-        LinkedList<DatabaseMetaDataObject> result = new LinkedList<>();
-        Set<DatabaseMetaDataObject> removeDuplicationSet = new HashSet<>();
+        Collection<DatabaseMetaDataObject> result = new LinkedList<>();
+        Collection<DatabaseMetaDataObject> removeDuplicationSet = new HashSet<>();
         while (resultSet.next()) {
             DatabaseMetaDataObject databaseMetaDataObject = generateDatabaseMetaDataObject(resultSet);
             if (!removeDuplicationSet.contains(databaseMetaDataObject)) {
@@ -359,7 +359,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     @EqualsAndHashCode
     private static final class DatabaseMetaDataObject {
         
-        private final ArrayList<Object> objects;
+        private final List<Object> objects;
         
         private DatabaseMetaDataObject(final int columnCount) {
             objects = new ArrayList<>(columnCount);
