@@ -106,7 +106,7 @@ public abstract class BaseDCLIT extends SingleIT {
     }
 
     @Before
-    public void insertData() throws SQLException, ParseException, IOException, JAXBException {
+    public void insertData() throws SQLException {
         authorityEnvironmentManager.initialize();
     }
     
