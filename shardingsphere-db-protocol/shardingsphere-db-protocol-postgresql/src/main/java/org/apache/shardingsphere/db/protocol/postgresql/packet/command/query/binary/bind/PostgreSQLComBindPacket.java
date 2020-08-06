@@ -70,7 +70,11 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         int parametersCount = payload.readInt2();
         List<Object> result = new ArrayList<>(parametersCount);
         for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
-            payload.readInt4();
+            int paramValueLen = payload.readInt4();
+            if (-1 == paramValueLen) {
+                result.add(null);
+                continue;
+            }
             PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(parameterTypes.get(parameterIndex).getColumnType());
             result.add(binaryProtocolValue.read(payload));
         }
