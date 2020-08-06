@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +50,11 @@ public final class StandardSchemaContexts implements SchemaContexts {
     
     public StandardSchemaContexts(final Map<String, SchemaContext> schemaContexts, final Authentication authentication, final ConfigurationProperties props) {
         this(schemaContexts, authentication, props, false);
+    }
+    
+    @Override
+    public DatabaseType getDatabaseType() {
+        return schemaContexts.isEmpty() ? new MySQLDatabaseType() : schemaContexts.values().iterator().next().getSchema().getDatabaseType();
     }
     
     @Override
