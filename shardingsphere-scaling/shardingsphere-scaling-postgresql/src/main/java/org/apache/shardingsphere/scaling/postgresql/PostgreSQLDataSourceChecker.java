@@ -46,7 +46,7 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
                     connection.prepareStatement(String.format("SELECT * FROM %s LIMIT 1", tableName)).executeQuery();
                 }
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new PrepareFailedException("Datasources check failed!", ex);
         }
     }

@@ -19,6 +19,8 @@ package org.apache.shardingsphere.cluster.heartbeat.detect;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
@@ -126,6 +128,7 @@ public final class HeartbeatHandler {
                 .equals(OrchestrationFacade.getInstance().getRegistryCenter().getDataSourcesNodeData(schemaDataSourceName));
     }
     
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class HeartbeatHandlerHolder {
         
         public static final HeartbeatHandler INSTANCE = new HeartbeatHandler();

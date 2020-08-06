@@ -45,8 +45,8 @@ public class OrderByStreamMergedResult extends StreamMergedResult {
     private boolean isFirstNext;
     
     public OrderByStreamMergedResult(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
-        this.orderByItems = selectStatementContext.getOrderByContext().getItems();
-        this.orderByValuesQueue = new PriorityQueue<>(queryResults.size());
+        orderByItems = selectStatementContext.getOrderByContext().getItems();
+        orderByValuesQueue = new PriorityQueue<>(queryResults.size());
         orderResultSetsToQueue(queryResults, selectStatementContext, schemaMetaData);
         isFirstNext = true;
     }

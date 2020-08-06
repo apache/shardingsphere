@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.explain.ShardingCTLExplainBackendHandler;
@@ -27,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.show.ShardingCTLShowBac
 /**
  * Sharding CTL backend handler factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingCTLBackendHandlerFactory {
     
     public static final String SCTL = "SCTL:";

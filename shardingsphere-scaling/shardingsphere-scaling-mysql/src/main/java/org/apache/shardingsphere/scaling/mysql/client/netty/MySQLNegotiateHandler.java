@@ -85,6 +85,6 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     @SneakyThrows(NoSuchAlgorithmException.class)
     private byte[] generateAuthResponse(final byte[] authPluginData) {
-        return (null == password || 0 == password.length()) ? new byte[0] : MySQLPasswordEncryptor.encryptWithMySQL41(password.getBytes(), authPluginData);
+        return (null == password || password.isEmpty()) ? new byte[0] : MySQLPasswordEncryptor.encryptWithMySQL41(password.getBytes(), authPluginData);
     }
 }

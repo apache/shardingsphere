@@ -27,13 +27,13 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  */
 public final class PostgreSQLReadyForQueryPacket implements PostgreSQLPacket {
     
+    private static final char STATUS = 'I';
+    
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.READY_FOR_QUERY.getValue();
     
-    private final char status = 'I';
-    
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        payload.writeInt1(status);
+        payload.writeInt1(STATUS);
     }
 }

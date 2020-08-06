@@ -25,7 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class YamlRangeDataSourceFactory {
+public final class YamlRangeDataSourceFactory {
     
     public static DataSource newInstance(final ShardingType shardingType) throws SQLException, IOException {
         switch (shardingType) {

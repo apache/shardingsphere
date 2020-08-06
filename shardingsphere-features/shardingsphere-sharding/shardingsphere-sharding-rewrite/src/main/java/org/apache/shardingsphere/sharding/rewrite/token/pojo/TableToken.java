@@ -52,9 +52,9 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
     public TableToken(final int startIndex, final int stopIndex, final SimpleTableSegment tableSegment, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.tableName = tableSegment.getTableName().getIdentifier();
+        tableName = tableSegment.getTableName().getIdentifier();
         this.sqlStatementContext = sqlStatementContext;
-        this.owner = tableSegment.getOwner().isPresent() ? tableSegment.getOwner().get().getIdentifier() : null;
+        owner = tableSegment.getOwner().isPresent() ? tableSegment.getOwner().get().getIdentifier() : null;
         this.shardingRule = shardingRule;
     }
     

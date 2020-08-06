@@ -274,7 +274,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent event) {
-        this.schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemaContexts(), schemaContexts.getAuthentication(), schemaContexts.getProps(), event.isCircuitBreak());
+        schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemaContexts(), schemaContexts.getAuthentication(), schemaContexts.getProps(), event.isCircuitBreak());
     }
     
     /**
@@ -331,7 +331,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     
     private Map<String, SchemaContext> getChangedSchemaContexts(final ConfigurationProperties props) {
         Map<String, SchemaContext> result = new HashMap<>(schemaContexts.getSchemaContexts().size());
-        for (Entry<String, SchemaContext> entry : this.schemaContexts.getSchemaContexts().entrySet()) {
+        for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContexts().entrySet()) {
             RuntimeContext runtimeContext = entry.getValue().getRuntimeContext();
             result.put(entry.getKey(), new SchemaContext(entry.getValue().getName(), entry.getValue().getSchema(), new RuntimeContext(runtimeContext.getCachedDatabaseMetaData(),
                     new ExecutorKernel(props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE)), runtimeContext.getSqlParserEngine(), runtimeContext.getTransactionManagerEngine())));

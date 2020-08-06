@@ -22,7 +22,6 @@ import org.apache.shardingsphere.orchestration.repository.api.config.Orchestrati
 import org.apache.shardingsphere.orchestration.repository.api.exception.OrchestrationException;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -35,6 +34,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public final class CuratorZookeeperRepositoryTest {
@@ -78,7 +78,7 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     @Test
-    public void assertWatchUpdatedChangedType() throws Exception {
+    public void assertWatchUpdatedChangedType() throws InterruptedException {
         REPOSITORY.persist("/test/children_updated/1", "value1");
         AtomicReference<DataChangedEvent> dataChangedEventActual = new AtomicReference<>();
         REPOSITORY.watch("/test/children_updated", dataChangedEventActual::set);
@@ -129,12 +129,12 @@ public final class CuratorZookeeperRepositoryTest {
     
     @Test
     public void assertBuildCuratorClientWithCustomConfig() {
-        final CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000");
         props.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1");
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000");
+        CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         OrchestrationCenterConfiguration config = new OrchestrationCenterConfiguration(repository.getType(), serverLists, new Properties());
         repository.setProps(props);
         repository.init("orchestration", config);
@@ -148,9 +148,9 @@ public final class CuratorZookeeperRepositoryTest {
     
     @Test
     public void assertBuildCuratorClientWithTimeToLiveSecondsEqualsZero() {
-        final CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
+        CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         OrchestrationCenterConfiguration config = new OrchestrationCenterConfiguration(repository.getType(), serverLists, new Properties());
         repository.setProps(props);
         repository.init("orchestration", config);
@@ -161,9 +161,9 @@ public final class CuratorZookeeperRepositoryTest {
     
     @Test
     public void assertBuildCuratorClientWithOperationTimeoutMillisecondsEqualsZero() {
-        final CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
+        CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         OrchestrationCenterConfiguration config = new OrchestrationCenterConfiguration(repository.getType(), serverLists, new Properties());
         repository.setProps(props);
         repository.init("orchestration", config);
@@ -174,9 +174,9 @@ public final class CuratorZookeeperRepositoryTest {
     
     @Test
     public void assertBuildCuratorClientWithDigest() {
-        final CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
+        CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
         OrchestrationCenterConfiguration config = new OrchestrationCenterConfiguration(repository.getType(), serverLists, new Properties());
         repository.setProps(props);
         repository.init("orchestration", config);
@@ -211,7 +211,7 @@ public final class CuratorZookeeperRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            Assert.assertTrue(ex instanceof OrchestrationException);
+            assertTrue(ex instanceof OrchestrationException);
         }
         try {
             repository.persist("/test/children/01", "value1");
@@ -219,7 +219,7 @@ public final class CuratorZookeeperRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            Assert.assertTrue(ex instanceof OrchestrationException);
+            assertTrue(ex instanceof OrchestrationException);
         }
         try {
             repository.delete("/test/children/02");
@@ -227,7 +227,7 @@ public final class CuratorZookeeperRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            Assert.assertTrue(ex instanceof OrchestrationException);
+            assertTrue(ex instanceof OrchestrationException);
         }
         try {
             repository.persistEphemeral("/test/children/03", "value1");
@@ -235,7 +235,7 @@ public final class CuratorZookeeperRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            Assert.assertTrue(ex instanceof OrchestrationException);
+            assertTrue(ex instanceof OrchestrationException);
         }
         try {
             repository.getChildrenKeys("/test/children");
@@ -243,7 +243,7 @@ public final class CuratorZookeeperRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            Assert.assertTrue(ex instanceof OrchestrationException);
+            assertTrue(ex instanceof OrchestrationException);
         }
     }
 }

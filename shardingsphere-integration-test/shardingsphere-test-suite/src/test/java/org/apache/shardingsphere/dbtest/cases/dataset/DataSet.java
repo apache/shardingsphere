@@ -42,10 +42,10 @@ public final class DataSet {
     private int updateCount;
     
     @XmlElement(name = "metadata")
-    private List<DataSetMetadata> metadataList = new LinkedList<>();
+    private final List<DataSetMetadata> metadataList = new LinkedList<>();
     
     @XmlElement(name = "row")
-    private List<DataSetRow> rows = new LinkedList<>();
+    private final List<DataSetRow> rows = new LinkedList<>();
     
     /**
      * Find data set meta data via table name.
@@ -74,7 +74,7 @@ public final class DataSet {
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Cannot find data node: %s", dataNode.toString()));
+        throw new IllegalArgumentException(String.format("Cannot find data node: %s", dataNode));
     }
     
     private boolean contains(final List<String> dataNodes, final DataNode dataNode) {

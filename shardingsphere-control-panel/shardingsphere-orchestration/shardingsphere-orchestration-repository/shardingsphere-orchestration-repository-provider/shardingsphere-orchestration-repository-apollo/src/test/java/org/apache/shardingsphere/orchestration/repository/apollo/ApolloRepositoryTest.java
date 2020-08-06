@@ -108,7 +108,7 @@ public final class ApolloRepositoryTest {
     }
     
     private void assertWatchUpdateChangedType(final String path, final String key, final String newValue) throws InterruptedException, ExecutionException, TimeoutException {
-        final SettableFuture<DataChangedEvent> future = SettableFuture.create();
+        SettableFuture<DataChangedEvent> future = SettableFuture.create();
         REPOSITORY.watch(path, future::set);
         embeddedApollo.addOrModifyProperty("orchestration", key, newValue);
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
@@ -123,7 +123,7 @@ public final class ApolloRepositoryTest {
     }
     
     private void assertWatchDeletedChangedType(final String path, final String key) throws InterruptedException, ExecutionException, TimeoutException {
-        final SettableFuture<DataChangedEvent> future = SettableFuture.create();
+        SettableFuture<DataChangedEvent> future = SettableFuture.create();
         REPOSITORY.watch(path, future::set);
         embeddedApollo.deleteProperty("orchestration", key);
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);

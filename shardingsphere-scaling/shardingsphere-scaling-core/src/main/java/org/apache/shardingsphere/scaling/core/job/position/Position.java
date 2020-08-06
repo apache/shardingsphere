@@ -24,6 +24,7 @@ import java.io.Serializable;
 /**
  * Position interface.
  */
+// TODO check Serializable is needed
 public interface Position<T> extends Comparable<T>, Serializable {
     
     /**

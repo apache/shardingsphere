@@ -26,13 +26,13 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  */
 public final class PostgreSQLSSLNegativePacket implements PostgreSQLPacket {
     
+    private static final char STATUS_CODE = 'N';
+    
     @Getter
     private final char messageType = '\0';
     
-    private final char statusCode = 'N';
-    
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        payload.writeInt1(statusCode);
+        payload.writeInt1(STATUS_CODE);
     }
 }

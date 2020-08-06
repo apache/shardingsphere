@@ -52,13 +52,13 @@ public final class MySQLBinlogTableMapEventPacket extends AbstractMySQLBinlogEve
     
     public MySQLBinlogTableMapEventPacket(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
         super(binlogEventHeader);
-        this.tableId = payload.readInt6();
-        this.flags = payload.readInt2();
-        this.schemaName = payload.readStringFix(payload.readInt1());
+        tableId = payload.readInt6();
+        flags = payload.readInt2();
+        schemaName = payload.readStringFix(payload.readInt1());
         payload.skipReserved(1);
-        this.tableName = payload.readStringFix(payload.readInt1());
+        tableName = payload.readStringFix(payload.readInt1());
         payload.skipReserved(1);
-        this.columnCount = (int) payload.readIntLenenc();
+        columnCount = (int) payload.readIntLenenc();
         columnDefs = new LinkedList<>();
         readColumnDefs(payload);
         readColumnMetaDefs(payload);

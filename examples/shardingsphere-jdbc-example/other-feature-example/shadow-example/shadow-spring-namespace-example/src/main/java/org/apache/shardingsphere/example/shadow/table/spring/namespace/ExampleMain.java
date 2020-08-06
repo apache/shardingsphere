@@ -24,7 +24,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
 
-public class ExampleMain {
+public final class ExampleMain {
     
     private static final String CONFIG_FILE = "META-INF/application-shadow-databases.xml";
 //    private static final String CONFIG_FILE = "META-INF/application-sharding-shadow-databases.xml";

@@ -76,7 +76,7 @@ public abstract class AbstractSqlBuilder {
         }
         columnsLiteral.setLength(columnsLiteral.length() - 1);
         holder.setLength(holder.length() - 1);
-        return String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), columnsLiteral.toString(), holder.toString());
+        return String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), columnsLiteral, holder);
     }
     
     /**
@@ -96,7 +96,7 @@ public abstract class AbstractSqlBuilder {
             updatedColumnString.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each.getName(), getRightIdentifierQuoteString()));
         }
         updatedColumnString.setLength(updatedColumnString.length() - 1);
-        return String.format(sqlCacheMap.get(sqlCacheKey), updatedColumnString.toString());
+        return String.format(sqlCacheMap.get(sqlCacheKey), updatedColumnString);
     }
     
     private String buildUpdateSQLInternal(final String tableName, final Collection<Column> conditionColumns) {

@@ -186,7 +186,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         if (databaseShardingValues.isEmpty()) {
             return tableRule.getActualDatasourceNames();
         }
-        Collection<String> result = new LinkedHashSet<>(shardingRule.getDatabaseShardingStrategy(tableRule).doSharding(tableRule.getActualDatasourceNames(), databaseShardingValues, this.properties));
+        Collection<String> result = new LinkedHashSet<>(shardingRule.getDatabaseShardingStrategy(tableRule).doSharding(tableRule.getActualDatasourceNames(), databaseShardingValues, properties));
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         Preconditions.checkState(tableRule.getActualDatasourceNames().containsAll(result), 
                 "Some routed data sources do not belong to configured data sources. routed data sources: `%s`, configured data sources: `%s`", result, tableRule.getActualDatasourceNames());
@@ -196,7 +196,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private Collection<DataNode> routeTables(final ShardingRule shardingRule, final TableRule tableRule, final String routedDataSource, final List<RouteValue> tableShardingValues) {
         Collection<String> availableTargetTables = tableRule.getActualTableNames(routedDataSource);
         Collection<String> routedTables = new LinkedHashSet<>(tableShardingValues.isEmpty() ? availableTargetTables
-                : shardingRule.getTableShardingStrategy(tableRule).doSharding(availableTargetTables, tableShardingValues, this.properties));
+                : shardingRule.getTableShardingStrategy(tableRule).doSharding(availableTargetTables, tableShardingValues, properties));
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedTables) {
             result.add(new DataNode(routedDataSource, each));

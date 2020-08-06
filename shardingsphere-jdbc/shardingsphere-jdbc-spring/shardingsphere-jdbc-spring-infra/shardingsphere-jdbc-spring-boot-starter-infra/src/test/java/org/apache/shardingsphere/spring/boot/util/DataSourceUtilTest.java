@@ -36,7 +36,7 @@ public final class DataSourceUtilTest {
     public void assertDataSourceForDBCPAndCamel() throws ReflectiveOperationException {
         BasicDataSource actual = (BasicDataSource) DataSourceUtil
             .getDataSource(BasicDataSource.class.getName(), getDataSourcePoolProperties("driverClassName", "url", "username"));
-        assertThat(actual.getDriverClassName(), is(org.h2.Driver.class.getName()));
+        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
         assertThat(actual.getUrl(), is("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("sa"));
     }
@@ -44,7 +44,7 @@ public final class DataSourceUtilTest {
     @Test
     public void assertDataSourceForDBCPAndHyphen() throws ReflectiveOperationException {
         BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), getDataSourcePoolProperties("driver-class-name", "url", "username"));
-        assertThat(actual.getDriverClassName(), is(org.h2.Driver.class.getName()));
+        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
         assertThat(actual.getUrl(), is("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("sa"));
     }
@@ -52,7 +52,7 @@ public final class DataSourceUtilTest {
     @Test
     public void assertDataSourceForHikariCPAndCamel() throws ReflectiveOperationException {
         HikariDataSource actual = (HikariDataSource) DataSourceUtil.getDataSource(HikariDataSource.class.getName(), getDataSourcePoolProperties("driverClassName", "jdbcUrl", "username"));
-        assertThat(actual.getDriverClassName(), is(org.h2.Driver.class.getName()));
+        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("sa"));
     }
@@ -60,14 +60,14 @@ public final class DataSourceUtilTest {
     @Test
     public void assertDataSourceForHikariCPAndHyphen() throws ReflectiveOperationException {
         HikariDataSource actual = (HikariDataSource) DataSourceUtil.getDataSource(HikariDataSource.class.getName(), getDataSourcePoolProperties("driver-class-name", "jdbc-url", "username"));
-        assertThat(actual.getDriverClassName(), is(org.h2.Driver.class.getName()));
+        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("sa"));
     }
     
     private Map<String, Object> getDataSourcePoolProperties(final String driverClassName, final String url, final String username) {
         Map<String, Object> result = new HashMap<>(3, 1);
-        result.put(driverClassName, org.h2.Driver.class.getName());
+        result.put(driverClassName, "org.h2.Driver");
         result.put(url, "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         result.put(username, "sa");
         return result;

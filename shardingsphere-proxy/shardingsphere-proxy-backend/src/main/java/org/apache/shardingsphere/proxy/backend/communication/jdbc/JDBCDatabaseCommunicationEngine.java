@@ -75,7 +75,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     public JDBCDatabaseCommunicationEngine(final String sql, final BackendConnection backendConnection, final SQLExecuteEngine sqlExecuteEngine) {
         this.sql = sql;
         connection = backendConnection;
-        this.executeEngine = sqlExecuteEngine;
+        executeEngine = sqlExecuteEngine;
         schema = backendConnection.getSchema();
     }
     

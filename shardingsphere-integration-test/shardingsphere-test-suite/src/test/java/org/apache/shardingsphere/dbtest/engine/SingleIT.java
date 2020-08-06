@@ -49,7 +49,7 @@ public abstract class SingleIT extends BaseIT {
         super(ruleType, databaseType);
         this.assertion = assertion;
         this.caseType = caseType;
-        this.originalSQL = sql;
+        originalSQL = sql;
         this.sql = convert(sql);
         expectedDataFile = getExpectedDataFile(path, ruleType, databaseType, null != assertion ? assertion.getExpectedDataFile() : null);
     }

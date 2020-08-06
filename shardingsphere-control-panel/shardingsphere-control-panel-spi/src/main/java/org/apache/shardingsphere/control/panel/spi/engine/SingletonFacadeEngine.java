@@ -17,13 +17,17 @@
 
 package org.apache.shardingsphere.control.panel.spi.engine;
 
-import java.util.Optional;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.control.panel.spi.metrics.MetricsHandlerFacade;
 import org.apache.shardingsphere.infra.spi.singleton.SingletonServiceLoader;
+
+import java.util.Optional;
 
 /**
  * Singleton facade engine.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SingletonFacadeEngine {
     
     /**

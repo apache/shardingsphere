@@ -32,7 +32,7 @@ public final class ShardingScalingExecuteEngineTest {
             for (int i = 0; i < 5; i++) {
                 executeEngine.submit(mockShardingScalingExecutor());
             }
-        } catch (RejectedExecutionException ex) {
+        } catch (final RejectedExecutionException ex) {
             Assert.fail();
         }
     }
@@ -42,20 +42,17 @@ public final class ShardingScalingExecuteEngineTest {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ignored) {
-                
+                    Thread.sleep(100L);
+                } catch (final InterruptedException ignored) {
                 }
             }
             
             @Override
             public void start() {
-            
             }
             
             @Override
             public void stop() {
-            
             }
         };
     }

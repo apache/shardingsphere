@@ -51,6 +51,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private final SchemaContexts schemaContexts;
     
+    @SuppressWarnings("UseOfSystemOutOrSystemErr")
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
     

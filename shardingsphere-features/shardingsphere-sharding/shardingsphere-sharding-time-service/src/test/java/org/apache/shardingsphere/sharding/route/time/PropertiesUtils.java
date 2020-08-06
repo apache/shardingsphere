@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.sharding.route.time;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PropertiesUtils {
     
     private static final File FILE = new File(PropertiesUtils.class.getResource("/").getPath() + "time-service.properties");
@@ -35,18 +39,18 @@ public final class PropertiesUtils {
     public static void createProperties(final String driverClassName, final String sql) {
         try {
             Properties props = new Properties();
-            props.put("dataSourceType", "com.zaxxer.hikari.HikariDataSource");
-            props.put("jdbcUrl", "jdbc:test");
-            props.put("username", "root");
-            props.put("password", "root");
-            props.put("driverClassName", driverClassName);
+            props.setProperty("dataSourceType", "com.zaxxer.hikari.HikariDataSource");
+            props.setProperty("jdbcUrl", "jdbc:test");
+            props.setProperty("username", "root");
+            props.setProperty("password", "root");
+            props.setProperty("driverClassName", driverClassName);
             if (null != sql) {
-                props.put("sql", sql);
+                props.setProperty("sql", sql);
             }
             FileOutputStream stream = new FileOutputStream(FILE);
             props.store(stream, null);
             stream.close();
-        } catch (IOException ignore) {
+        } catch (final IOException ignore) {
         }
     }
     

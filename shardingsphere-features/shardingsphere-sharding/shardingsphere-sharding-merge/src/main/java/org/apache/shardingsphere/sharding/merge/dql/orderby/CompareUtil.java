@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 
 /**
  * Compare util.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CompareUtil {
     
     /**

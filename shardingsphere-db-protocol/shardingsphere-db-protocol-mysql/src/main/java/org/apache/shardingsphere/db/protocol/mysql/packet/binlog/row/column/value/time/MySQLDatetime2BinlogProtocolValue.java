@@ -46,7 +46,7 @@ public final class MySQLDatetime2BinlogProtocolValue implements MySQLBinlogProto
     
     private Serializable readDatetime(final MySQLBinlogColumnDef columnDef, final long datetime, final MySQLPacketPayload payload) {
         long datetimeWithoutSign = datetime & (0x8000000000L - 1);
-        return String.format("%s %s%s", readDate(datetimeWithoutSign >> 17), readTime(datetimeWithoutSign % (1 << 17)), new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload).toString());
+        return String.format("%s %s%s", readDate(datetimeWithoutSign >> 17), readTime(datetimeWithoutSign % (1 << 17)), new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload));
     }
     
     private String readDate(final long date) {
