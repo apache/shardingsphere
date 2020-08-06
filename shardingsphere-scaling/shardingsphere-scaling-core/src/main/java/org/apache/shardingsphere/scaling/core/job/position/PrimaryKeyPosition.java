@@ -55,9 +55,8 @@ public class PrimaryKeyPosition implements Position {
      * @param json json data
      * @return primary key position
      */
-    @SuppressWarnings("unchecked")
     public static PrimaryKeyPosition fromJson(final String json) {
-        List<Double> values = GSON.fromJson(json, List.class);
+        List<Double> values = GSON.<List<Double>>fromJson(json, List.class);
         if (2 == values.size()) {
             return new PrimaryKeyPosition(values.get(0).longValue(), values.get(1).longValue());
         }

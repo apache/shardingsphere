@@ -91,7 +91,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
             return;
         }
         log.info("resume incremental position from {} = {}", taskPath, data);
-        Map<String, Object> incrementalPosition = GSON.fromJson(data, Map.class);
+        Map<String, Object> incrementalPosition = GSON.<Map<String, Object>>fromJson(data, Map.class);
         for (Entry<String, Object> entry : incrementalPosition.entrySet()) {
             getIncrementalPositionManagerMap().put(entry.getKey(), PositionManagerFactory.newInstance(databaseType, entry.getValue().toString()));
         }
@@ -139,13 +139,12 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
          * @param data json data
          * @return inventory position
          */
-        @SuppressWarnings("unchecked")
         public static InventoryPosition fromJson(final String data) {
             InventoryPosition result = new InventoryPosition();
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();
-            Map<String, Object> unfinished = GSON.fromJson(json.getAsJsonObject(UNFINISHED), Map.class);
+            Map<String, Object> unfinished = GSON.<Map<String, Object>>fromJson(json.getAsJsonObject(UNFINISHED), Map.class);
             result.setUnfinished(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> PrimaryKeyPosition.fromJson(entry.getValue().toString()))));
-            result.setFinished(GSON.fromJson(json.getAsJsonArray(FINISHED), Set.class));
+            result.setFinished(GSON.<Set<String>>fromJson(json.getAsJsonArray(FINISHED), Set.class));
             return result;
         }
     }
