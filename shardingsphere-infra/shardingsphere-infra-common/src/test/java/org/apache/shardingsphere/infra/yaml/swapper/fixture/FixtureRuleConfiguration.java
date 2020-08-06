@@ -26,5 +26,4 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 public final class FixtureRuleConfiguration implements RuleConfiguration {
     
     private String name;
-    
 }

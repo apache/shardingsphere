@@ -50,5 +50,4 @@ public final class YamlShardingSphereAlgorithmConfigurationTest {
         result.setProperty("key", "value");
         return result;
     }
-    
 }
