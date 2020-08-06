@@ -68,7 +68,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
         Preconditions.checkArgument(protocolVersion == payload.readInt1());
         serverVersion = payload.readStringNul();
         connectionId = payload.readInt4();
-        byte[] authPluginDataPart1 = payload.readStringNulByBytes();
+        final byte[] authPluginDataPart1 = payload.readStringNulByBytes();
         capabilityFlagsLower = payload.readInt2();
         characterSet = payload.readInt1();
         statusFlag = MySQLStatusFlag.valueOf(payload.readInt2());
