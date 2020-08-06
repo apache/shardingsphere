@@ -35,3 +35,4 @@ public class BasePositionManager<T extends Position> implements PositionManager<
     
     private T position;
 }
+
