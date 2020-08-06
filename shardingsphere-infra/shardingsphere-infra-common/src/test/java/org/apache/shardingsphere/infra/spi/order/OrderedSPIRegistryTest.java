@@ -17,19 +17,16 @@
 
 package org.apache.shardingsphere.infra.spi.order;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.fixture.TestShardingSphereRule;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterface;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterfaceImpl;
 import org.apache.shardingsphere.infra.spi.fixture.OrderedSPIFixture;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -52,9 +49,9 @@ public final class OrderedSPIRegistryTest {
     
     @Test
     public void assertGetRegisteredServices() {
-        Collection<ShardingSphereRule> collection = new LinkedList<>();
-        collection.add(new TestShardingSphereRule());
-        Map<ShardingSphereRule, OrderedSPIFixture> actual = OrderedSPIRegistry.getRegisteredServices(collection, OrderedSPIFixture.class);
+        Collection<FixtureCustomInterface> collection = new LinkedList<>();
+        collection.add(new FixtureCustomInterfaceImpl());
+        Map<FixtureCustomInterface, OrderedSPIFixture> actual = OrderedSPIRegistry.getRegisteredServices(collection, OrderedSPIFixture.class);
         assertThat(actual.size(), is(1));
     }
 }
