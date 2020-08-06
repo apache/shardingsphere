@@ -17,30 +17,30 @@
 
 package org.apache.shardingsphere.rdl.parser.engine;
 
-import org.apache.shardingsphere.sql.parser.engine.QuerySQLParserEngine;
-import org.apache.shardingsphere.rdl.parser.engine.engine.RDLSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
+import org.apache.shardingsphere.rdl.parser.engine.engine.RDLSQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
  * Sharding sphere SQL parser engine.
  */
-public final class ShardingSphereSQLParserEngine implements QuerySQLParserEngine {
+public final class ShardingSphereSQLParserEngine implements SQLParserEngine {
     
     private final RDLSQLParserEngine rdlsqlParserEngine;
     
-    private final SQLParserEngine sqlParserEngine;
+    private final StandardSQLParserEngine standardSqlParserEngine;
     
-    public ShardingSphereSQLParserEngine(final SQLParserEngine sqlParserEngine) {
+    public ShardingSphereSQLParserEngine(final StandardSQLParserEngine standardSqlParserEngine) {
         rdlsqlParserEngine = new RDLSQLParserEngine();
-        this.sqlParserEngine = sqlParserEngine;
+        this.standardSqlParserEngine = standardSqlParserEngine;
     }
     
     @Override
     public SQLStatement parse(final String sql, final boolean useCache) {
         SQLStatement result;
         try {
-            result = sqlParserEngine.parse(sql, useCache);
+            result = standardSqlParserEngine.parse(sql, useCache);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.rdl.parser.engine.engine;
+package org.apache.shardingsphere.sql.parser.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.rdl.parser.engine.executor.RDLSQLParserExecutor;
-import org.apache.shardingsphere.rdl.parser.sql.visitor.ShardingSphereVisitor;
-import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.cache.SQLParseResultCache;
+import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
+import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
+import org.apache.shardingsphere.sql.parser.core.visitor.VisitorRule;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.util.Optional;
 
 /**
- * RDL SQL parser engine.
+ * Standard SQL parser engine.
  */
 @RequiredArgsConstructor
-public final class RDLSQLParserEngine implements SQLParserEngine {
+public final class StandardSQLParserEngine implements SQLParserEngine {
+    
+    private final String databaseTypeName;
     
     private final SQLParseResultCache cache = new SQLParseResultCache();
     
@@ -67,8 +69,8 @@ public final class RDLSQLParserEngine implements SQLParserEngine {
                 return cachedSQLStatement.get();
             }
         }
-        ParseTree parseTree = new RDLSQLParserExecutor(sql).execute().getRootNode();
-        SQLStatement result = (SQLStatement) new ShardingSphereVisitor().visit(parseTree);
+        ParseTree parseTree = new SQLParserExecutor(databaseTypeName, sql).execute().getRootNode();
+        SQLStatement result = (SQLStatement) ParseTreeVisitorFactory.newInstance(databaseTypeName, VisitorRule.valueOf(parseTree.getClass())).visit(parseTree);
         if (useCache) {
             cache.put(sql, result);
         }
