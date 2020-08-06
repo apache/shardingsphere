@@ -99,7 +99,7 @@ public final class RegistryCenterExecuteEngineTest {
         if (isOrchestration) {
             schemaContexts.set(ProxySchemaContexts.getInstance(), mock(OrchestrationSchemaContextsFixture.class));
         } else {
-            schemaContexts.set(ProxySchemaContexts.getInstance(), mock(StandardSchemaContexts.class));
+            schemaContexts.set(ProxySchemaContexts.getInstance(), new StandardSchemaContexts());
         }
     }
     
