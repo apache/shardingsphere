@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import java.util.Optional;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -42,5 +42,4 @@ public final class SingletonServiceLoaderTest {
         Optional<TypedSPIFixture> actual = SingletonServiceLoader.getServiceLoader(TypedSPIFixture.class).newServiceInstances();
         assertThat(actual.isPresent(), is(true));
     }
-    
 }

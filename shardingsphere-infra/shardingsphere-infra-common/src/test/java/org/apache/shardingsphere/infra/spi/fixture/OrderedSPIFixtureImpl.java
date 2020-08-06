@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.spi.fixture;
 
-
 public final class OrderedSPIFixtureImpl implements OrderedSPIFixture<FixtureCustomInterfaceImpl> {
     
     @Override

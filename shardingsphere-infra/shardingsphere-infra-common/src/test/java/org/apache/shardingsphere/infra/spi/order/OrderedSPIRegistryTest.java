@@ -31,7 +31,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class OrderedSPIRegistryTest {
@@ -52,7 +52,8 @@ public final class OrderedSPIRegistryTest {
     
     @Test
     public void assertGetRegisteredServices() {
-        Collection<ShardingSphereRule> collection = new LinkedList<>(); collection.add(new TestShardingSphereRule());
+        Collection<ShardingSphereRule> collection = new LinkedList<>();
+        collection.add(new TestShardingSphereRule());
         Map<ShardingSphereRule, OrderedSPIFixture> actual = OrderedSPIRegistry.getRegisteredServices(collection, OrderedSPIFixture.class);
         assertThat(actual.size(), is(1));
     }
