@@ -65,7 +65,7 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
         try {
             payload.writeInt4(((SQLXML) data).getString().getBytes().length);
             payload.writeStringEOF(((SQLXML) data).getString());
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             log.error("PostgreSQL DataRowPacket write SQLXML type exception", ex);
         }
     }

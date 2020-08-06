@@ -42,6 +42,6 @@ public final class OrderByItem {
             return false;
         }
         OrderByItem orderByItem = (OrderByItem) obj;
-        return segment.getOrderDirection() == orderByItem.getSegment().getOrderDirection() && index == orderByItem.getIndex();
+        return segment.getOrderDirection() == orderByItem.segment.getOrderDirection() && index == orderByItem.index;
     }
 }

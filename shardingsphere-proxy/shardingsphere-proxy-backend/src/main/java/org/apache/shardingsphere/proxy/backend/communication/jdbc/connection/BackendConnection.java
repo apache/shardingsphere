@@ -77,7 +77,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
     
-    private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
+    private final Collection<MethodInvocation> methodInvocations = new LinkedList<>();
     
     @Getter
     private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
@@ -118,7 +118,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (isSwitchFailed()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
-        this.schema = ProxySchemaContexts.getInstance().getSchema(schemaName);
+        schema = ProxySchemaContexts.getInstance().getSchema(schemaName);
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -326,7 +326,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (exceptions.isEmpty()) {
             return;
         }
-        SQLException ex = new SQLException();
+        SQLException ex = new SQLException("");
         for (SQLException each : exceptions) {
             ex.setNextException(each);
         }

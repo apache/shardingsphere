@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * Depends on zookeeper resume from break-point manager.
  */
 @Slf4j
-public final class ZookeeperResumeBreakPointManager extends AbstractResumeBreakPointManager implements ResumeBreakPointManager {
+public final class ZookeeperResumeBreakPointManager extends AbstractResumeBreakPointManager {
     
     private static final String INVENTORY = "/inventory";
     

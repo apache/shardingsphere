@@ -430,7 +430,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             return projection;
         }
         if (null != expr.cExpr() && null != expr.cExpr().funcExpr()) {
-            super.visit(expr.cExpr().funcExpr());
+            visit(expr.cExpr().funcExpr());
             ProjectionSegment projection = generateProjectFromFuncExpr(expr.cExpr().funcExpr());
             AliasSegment alias = null != ctx.identifier()
                     ? new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())) : null;

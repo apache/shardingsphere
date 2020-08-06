@@ -35,8 +35,7 @@ public final class OrchestrationInstance {
     private final String instanceId;
     
     private OrchestrationInstance() {
-        instanceId = Joiner.on(DELIMITER).join(IpUtils.getIp(), ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0],
-                UUID.randomUUID().toString());
+        instanceId = Joiner.on(DELIMITER).join(IpUtils.getIp(), ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], UUID.randomUUID().toString());
     }
     
     /**

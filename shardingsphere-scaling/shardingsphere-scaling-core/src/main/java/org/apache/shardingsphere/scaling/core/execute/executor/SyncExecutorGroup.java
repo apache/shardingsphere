@@ -56,7 +56,7 @@ public final class SyncExecutorGroup {
      * @param syncExecutors collection of sync executors
      */
     public void addAllSyncExecutor(final Collection<? extends ShardingScalingExecutor> syncExecutors) {
-        this.shardingScalingExecutors.addAll(syncExecutors);
+        shardingScalingExecutors.addAll(syncExecutors);
     }
     
     /**

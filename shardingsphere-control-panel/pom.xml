@@ -30,7 +30,6 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>shardingsphere-control-panel-core</module>
         <module>shardingsphere-cluster</module>
         <module>shardingsphere-orchestration</module>
         <module>shardingsphere-opentracing</module>

@@ -31,7 +31,7 @@ public abstract class AbstractPrometheusCollectorRegistry {
     
     @Before
     public void setupCollectorRegistry() {
-        this.collectorRegistry = CollectorRegistry.defaultRegistry;
+        collectorRegistry = CollectorRegistry.defaultRegistry;
     }
 }
 

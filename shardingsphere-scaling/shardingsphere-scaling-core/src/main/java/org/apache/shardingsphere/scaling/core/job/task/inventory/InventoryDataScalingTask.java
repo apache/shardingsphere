@@ -110,7 +110,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
                     .executeQuery();
             resultSet.next();
             estimatedRows = resultSet.getInt(1);
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new SyncTaskExecuteException("get estimated rows error.", ex);
         }
     }
@@ -128,7 +128,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
                     count++;
                 } else if (record instanceof FinishedRecord) {
                     if (record.getPosition() instanceof PrimaryKeyPosition) {
-                        getPositionManager().updateCurrentPosition(record.getPosition());
+                        getPositionManager().setPosition(record.getPosition());
                     }
                 }
             }
@@ -141,8 +141,8 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
     private void waitForResult(final Future<?> future) {
         try {
             future.get();
-        } catch (InterruptedException ignored) {
-        } catch (ExecutionException ex) {
+        } catch (final InterruptedException ignored) {
+        } catch (final ExecutionException ex) {
             throw new SyncTaskExecuteException(String.format("Task %s execute failed ", getTaskId()), ex.getCause());
         }
     }

@@ -43,7 +43,7 @@ public final class SetVariableStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SetStatement actual, final SetVariableStatementTestCase expected) {
         assertThat(assertContext.getText("variableAssign size assertion error: "), actual.getVariableAssigns().size(), is(expected.getValueAssigns().size()));
-        if (0 != expected.getValueAssigns().size()) {
+        if (!expected.getValueAssigns().isEmpty()) {
             for (int i = 0; i < expected.getValueAssigns().size(); i++) {
                 assertVariable(assertContext, actual.getVariableAssigns().get(i).getVariable(), expected.getValueAssigns().get(i).getVariable());
                 assertThat(assertContext.getText("variableAssign assert error."), actual.getVariableAssigns().get(i).getAssignValue(), is(expected.getValueAssigns().get(i).getValue()));

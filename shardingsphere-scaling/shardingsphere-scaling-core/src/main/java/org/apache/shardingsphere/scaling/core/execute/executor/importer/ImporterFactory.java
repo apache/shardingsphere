@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
@@ -26,6 +28,7 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 /**
  * Importer factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ImporterFactory {
     
     /**

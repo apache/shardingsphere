@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.orchestration.core.metadata;
 
-public final class MetaDataTest {
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MetaDataJson {
     
     public static final String META_DATA = "configuredSchemaMetaData:\n"
             + "  tables:\n"
