@@ -43,7 +43,7 @@ import java.sql.SQLException;
 /**
  * PostgreSQL WAL dumper.
  */
-public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor implements LogDumper {
+public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<WalPosition> implements LogDumper {
     
     private final WalPosition walPosition;
     

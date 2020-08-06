@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.config.utils.RdbmsConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
@@ -31,8 +32,10 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
@@ -47,7 +50,7 @@ import java.sql.SQLException;
  * Abstract JDBC dumper implement.
  */
 @Slf4j
-public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor implements JDBCDumper {
+public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor<InventoryPosition> implements JDBCDumper {
     
     @Getter(AccessLevel.PROTECTED)
     private final RdbmsConfiguration rdbmsConfiguration;
@@ -87,7 +90,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
             while (isRunning() && rs.next()) {
-                DataRecord record = new DataRecord(newPrimaryKeyPosition(rs), metaData.getColumnCount());
+                DataRecord record = new DataRecord(newInventoryPosition(rs), metaData.getColumnCount());
                 record.setType("BOOTSTRAP-INSERT");
                 record.setTableName(rdbmsConfiguration.getTableNameMap().get(rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
@@ -95,7 +98,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
                 }
                 pushRecord(record);
             }
-            pushRecord(new FinishedRecord(new PrimaryKeyPosition.FinishedPosition()));
+            pushRecord(new FinishedRecord(new FinishedPosition()));
         } catch (final SQLException ex) {
             stop();
             channel.close();
@@ -105,9 +108,9 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
         }
     }
     
-    private PrimaryKeyPosition newPrimaryKeyPosition(final ResultSet rs) throws SQLException {
+    private InventoryPosition newInventoryPosition(final ResultSet rs) throws SQLException {
         if (null == rdbmsConfiguration.getPrimaryKey()) {
-            return new PrimaryKeyPosition.PlaceholderPosition();
+            return new PlaceholderPosition();
         }
         return new PrimaryKeyPosition(rs.getLong(rdbmsConfiguration.getPrimaryKey()), ((PrimaryKeyPosition) rdbmsConfiguration.getPositionManager().getPosition()).getEndValue());
     }

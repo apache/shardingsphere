@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.LinkedList;
@@ -42,9 +44,9 @@ public final class ShardingScalingJob {
     
     private final transient List<SyncConfiguration> syncConfigurations = new LinkedList<>();
     
-    private final transient List<ScalingTask> inventoryDataTasks = new LinkedList<>();
+    private final transient List<ScalingTask<InventoryPosition>> inventoryDataTasks = new LinkedList<>();
     
-    private final transient List<ScalingTask> incrementalDataTasks = new LinkedList<>();
+    private final transient List<ScalingTask<IncrementalPosition>> incrementalDataTasks = new LinkedList<>();
     
     private final String jobName;
     

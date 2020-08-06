@@ -54,7 +54,7 @@ import java.util.Random;
  * MySQL binlog dumper.
  */
 @Slf4j
-public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor implements LogDumper {
+public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<BinlogPosition> implements LogDumper {
     
     private final BinlogPosition binlogPosition;
     
