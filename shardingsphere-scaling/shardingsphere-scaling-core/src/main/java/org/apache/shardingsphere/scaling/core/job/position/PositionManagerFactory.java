@@ -38,10 +38,11 @@ public final class PositionManagerFactory {
      * @param dataSource data source
      * @return position manager
      */
+    @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    public static PositionManager newInstance(final String databaseType, final DataSource dataSource) {
+    public static PositionManager<IncrementalPosition> newInstance(final String databaseType, final DataSource dataSource) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getPositionManager().getConstructor(DataSource.class).newInstance(dataSource);
+        return (PositionManager<IncrementalPosition>) scalingEntry.getPositionManager().getConstructor(DataSource.class).newInstance(dataSource);
     }
     
     /**
@@ -51,9 +52,10 @@ public final class PositionManagerFactory {
      * @param position position
      * @return position manager
      */
+    @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    public static PositionManager newInstance(final String databaseType, final String position) {
+    public static PositionManager<IncrementalPosition> newInstance(final String databaseType, final String position) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getPositionManager().getConstructor(String.class).newInstance(position);
+        return (PositionManager<IncrementalPosition>) scalingEntry.getPositionManager().getConstructor(String.class).newInstance(position);
     }
 }

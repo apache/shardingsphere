@@ -26,11 +26,13 @@ import com.google.gson.JsonParser;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
+import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManagerFactory;
-import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.utils.InventoryPositionUtil;
 
 import java.io.Closeable;
 import java.util.Map;
@@ -52,9 +54,9 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
     
     private static final String FINISHED = "finished";
     
-    private final Map<String, PositionManager<PrimaryKeyPosition>> inventoryPositionManagerMap = Maps.newConcurrentMap();
+    private final Map<String, PositionManager<InventoryPosition>> inventoryPositionManagerMap = Maps.newConcurrentMap();
     
-    private final Map<String, PositionManager<Position>> incrementalPositionManagerMap = Maps.newConcurrentMap();
+    private final Map<String, PositionManager<IncrementalPosition>> incrementalPositionManagerMap = Maps.newConcurrentMap();
     
     private boolean resumable;
     
@@ -75,17 +77,16 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
             return;
         }
         log.info("resume inventory position from {} = {}", taskPath, data);
-        InventoryPosition inventoryPosition = InventoryPosition.fromJson(data);
-        Map<String, PrimaryKeyPosition> unfinished = inventoryPosition.getUnfinished();
-        for (Entry<String, PrimaryKeyPosition> entry : unfinished.entrySet()) {
-            inventoryPositionManagerMap.put(entry.getKey(), new PrimaryKeyPositionManager(entry.getValue()));
+        InventoryPositions inventoryPositions = InventoryPositions.fromJson(data);
+        Map<String, InventoryPosition> unfinished = inventoryPositions.getUnfinished();
+        for (Entry<String, InventoryPosition> entry : unfinished.entrySet()) {
+            inventoryPositionManagerMap.put(entry.getKey(), new InventoryPositionManager<>(entry.getValue()));
         }
-        for (String each : inventoryPosition.getFinished()) {
-            inventoryPositionManagerMap.put(each, new PrimaryKeyPositionManager(new PrimaryKeyPosition.FinishedPosition()));
+        for (String each : inventoryPositions.getFinished()) {
+            inventoryPositionManagerMap.put(each, new InventoryPositionManager<>(new FinishedPosition()));
         }
     }
     
-    @SuppressWarnings("unchecked")
     protected void resumeIncrementalPosition(final String data) {
         if (Strings.isNullOrEmpty(data)) {
             return;
@@ -101,8 +102,8 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         JsonObject result = new JsonObject();
         JsonObject unfinished = new JsonObject();
         Set<String> finished = Sets.newHashSet();
-        for (Entry<String, PositionManager<PrimaryKeyPosition>> entry : inventoryPositionManagerMap.entrySet()) {
-            if (entry.getValue().getPosition() instanceof PrimaryKeyPosition.FinishedPosition) {
+        for (Entry<String, PositionManager<InventoryPosition>> entry : inventoryPositionManagerMap.entrySet()) {
+            if (entry.getValue().getPosition() instanceof FinishedPosition) {
                 finished.add(entry.getKey());
                 continue;
             }
@@ -115,7 +116,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
     
     protected String getIncrementalPositionData() {
         JsonObject result = new JsonObject();
-        for (Entry<String, PositionManager<Position>> entry : incrementalPositionManagerMap.entrySet()) {
+        for (Entry<String, PositionManager<IncrementalPosition>> entry : incrementalPositionManagerMap.entrySet()) {
             result.add(entry.getKey(), entry.getValue().getPosition().toJson());
         }
         return result.toString();
@@ -127,9 +128,9 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
     
     @Getter
     @Setter
-    private static final class InventoryPosition {
+    private static final class InventoryPositions {
         
-        private Map<String, PrimaryKeyPosition> unfinished;
+        private Map<String, InventoryPosition> unfinished;
         
         private Set<String> finished;
         
@@ -139,11 +140,11 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
          * @param data json data
          * @return inventory position
          */
-        public static InventoryPosition fromJson(final String data) {
-            InventoryPosition result = new InventoryPosition();
+        public static InventoryPositions fromJson(final String data) {
+            InventoryPositions result = new InventoryPositions();
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();
             Map<String, Object> unfinished = GSON.<Map<String, Object>>fromJson(json.getAsJsonObject(UNFINISHED), Map.class);
-            result.setUnfinished(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> PrimaryKeyPosition.fromJson(entry.getValue().toString()))));
+            result.setUnfinished(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> InventoryPositionUtil.fromJson(entry.getValue().toString()))));
             result.setFinished(GSON.<Set<String>>fromJson(json.getAsJsonArray(FINISHED), Set.class));
             return result;
         }

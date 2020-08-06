@@ -44,6 +44,7 @@ public final class RdbmsConfiguration implements Cloneable {
     
     private String primaryKey;
     
+    @SuppressWarnings("rawtypes")
     private PositionManager positionManager;
     
     private Integer spiltNum;

@@ -17,38 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 /**
- * Use primary key as position.
+ * Incremental position interface.
  */
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-public class PrimaryKeyPosition implements InventoryPosition {
-    
-    private static final Gson GSON = new Gson();
-    
-    private long beginValue;
-    
-    private long endValue;
-    
-    @Override
-    public int compareTo(final Position position) {
-        if (null == position) {
-            return 1;
-        }
-        return Long.compare(beginValue, ((PrimaryKeyPosition) position).beginValue);
-    }
-    
-    @Override
-    public JsonElement toJson() {
-        return GSON.toJsonTree(new long[]{beginValue, endValue});
-    }
+public interface IncrementalPosition extends Position {
 }

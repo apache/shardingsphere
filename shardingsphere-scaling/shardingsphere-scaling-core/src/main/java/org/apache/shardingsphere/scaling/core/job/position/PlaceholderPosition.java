@@ -15,36 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.task;
+package org.apache.shardingsphere.scaling.core.job.position;
 
-import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
-import org.apache.shardingsphere.scaling.core.job.SyncProgress;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 
 /**
- * Sync task interface.
+ * Placeholder position.
  */
-public interface ScalingTask<T extends Position> extends ShardingScalingExecutor {
+public final class PlaceholderPosition implements InventoryPosition {
     
-    /**
-     * Get synchronize progress.
-     *
-     * @return migrate progress
-     */
-    SyncProgress getProgress();
+    @Override
+    public JsonElement toJson() {
+        return new JsonArray();
+    }
     
-    /**
-     * Get position manager.
-     *
-     * @return position manager
-     */
-    PositionManager<T> getPositionManager();
-    
-    /**
-     * Get task id.
-     *
-     * @return task id
-     */
-    String getTaskId();
+    @Override
+    public int compareTo(final Position o) {
+        return 0;
+    }
 }
