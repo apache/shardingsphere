@@ -50,7 +50,7 @@ public final class OrchestrationRepositoryFacade implements AutoCloseable {
         OrchestrationCenterConfiguration registryCenterConfig = config.getRegistryCenterConfiguration();
         Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");
         RegistryRepository result = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
-        result.init(config.getNamespace(), registryCenterConfig);
+        result.init(config.getName(), registryCenterConfig);
         return result;
     }
     
@@ -58,7 +58,7 @@ public final class OrchestrationRepositoryFacade implements AutoCloseable {
         if (config.getAdditionalConfigCenterConfiguration().isPresent()) {
             OrchestrationCenterConfiguration additionalConfigCenterConfig = config.getAdditionalConfigCenterConfiguration().get();
             ConfigurationRepository result = TypedSPIRegistry.getRegisteredService(ConfigurationRepository.class, additionalConfigCenterConfig.getType(), additionalConfigCenterConfig.getProps());
-            result.init(config.getNamespace(), additionalConfigCenterConfig);
+            result.init(config.getName(), additionalConfigCenterConfig);
             return result;
         }
         if (registryRepository instanceof ConfigurationRepository) {

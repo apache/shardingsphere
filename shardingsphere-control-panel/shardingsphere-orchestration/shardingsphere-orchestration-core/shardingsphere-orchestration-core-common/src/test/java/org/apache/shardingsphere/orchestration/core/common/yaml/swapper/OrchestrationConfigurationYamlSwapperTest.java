@@ -36,7 +36,7 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     public void assertSwapToYamlOrchestrationConfigurationWithoutAdditionalConfigCenterConfiguration() {
         OrchestrationConfiguration expected = createOrchestrationConfigurationWithoutAdditionalConfigCenterConfiguration();
         YamlOrchestrationConfiguration actual = new OrchestrationConfigurationYamlSwapper().swapToYamlConfiguration(expected);
-        assertThat(actual.getNamespace(), is(expected.getNamespace()));
+        assertThat(actual.getName(), is(expected.getName()));
         assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
         assertThat(actual.getRegistryCenter().getType(), is(expected.getRegistryCenterConfiguration().getType()));
         assertThat(actual.getRegistryCenter().getServerLists(), is(expected.getRegistryCenterConfiguration().getServerLists()));
@@ -52,7 +52,7 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     public void assertSwapToYamlOrchestrationConfigurationWithAdditionalConfigCenterConfiguration() {
         OrchestrationConfiguration expected = createOrchestrationConfigurationWithAdditionalConfigCenterConfiguration();
         YamlOrchestrationConfiguration actual = new OrchestrationConfigurationYamlSwapper().swapToYamlConfiguration(expected);
-        assertThat(actual.getNamespace(), is(expected.getNamespace()));
+        assertThat(actual.getName(), is(expected.getName()));
         assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
         assertThat(actual.getRegistryCenter().getType(), is(expected.getRegistryCenterConfiguration().getType()));
         assertThat(actual.getRegistryCenter().getServerLists(), is(expected.getRegistryCenterConfiguration().getServerLists()));
@@ -72,7 +72,7 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     public void assertSwapToOrchestrationConfigurationWithoutAdditionalConfigCenterConfiguration() {
         YamlOrchestrationConfiguration expected = createYamlOrchestrationConfigurationWithoutAdditionalConfigCenterConfiguration();
         OrchestrationConfiguration actual = new OrchestrationConfigurationYamlSwapper().swapToObject(expected);
-        assertThat(actual.getNamespace(), is(expected.getNamespace()));
+        assertThat(actual.getName(), is(expected.getName()));
         assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
         assertThat(actual.getRegistryCenterConfiguration().getType(), is(expected.getRegistryCenter().getType()));
         assertThat(actual.getRegistryCenterConfiguration().getServerLists(), is(expected.getRegistryCenter().getServerLists()));
@@ -82,7 +82,7 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     
     private YamlOrchestrationConfiguration createYamlOrchestrationConfigurationWithoutAdditionalConfigCenterConfiguration() {
         YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();
-        result.setNamespace("logic_schema");
+        result.setName("logic_schema");
         result.setRegistryCenter(createYamlRegistryCenterConfiguration());
         return result;
     }
@@ -91,7 +91,7 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     public void assertSwapToOrchestrationConfigurationWithAdditionalConfigCenterConfiguration() {
         YamlOrchestrationConfiguration expected = createYamlOrchestrationConfigurationWithAdditionalConfigCenterConfiguration();
         OrchestrationConfiguration actual = new OrchestrationConfigurationYamlSwapper().swapToObject(expected);
-        assertThat(actual.getNamespace(), is(expected.getNamespace()));
+        assertThat(actual.getName(), is(expected.getName()));
         assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
         assertThat(actual.getRegistryCenterConfiguration().getType(), is(expected.getRegistryCenter().getType()));
         assertThat(actual.getRegistryCenterConfiguration().getServerLists(), is(expected.getRegistryCenter().getServerLists()));
@@ -104,7 +104,7 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     
     private YamlOrchestrationConfiguration createYamlOrchestrationConfigurationWithAdditionalConfigCenterConfiguration() {
         YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();
-        result.setNamespace("logic_schema");
+        result.setName("logic_schema");
         result.setRegistryCenter(createYamlRegistryCenterConfiguration());
         result.setAdditionalConfigCenter(createYamlAdditionalConfigCenterConfiguration());
         return result;
