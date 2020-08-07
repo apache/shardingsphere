@@ -70,8 +70,8 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
         }
 
         Optional<TableRule> tableRuleOptional = shardingRule.findTableRule(tableName);
-        if(tableRuleOptional.isPresent()){
-            if(tableRuleOptional.get().isForceShardingColumn() && !hasShardingColumn){
+        if (tableRuleOptional.isPresent()) {
+            if (tableRuleOptional.get().isForceShardingColumn() && !hasShardingColumn) {
                 throw new ShardingSphereException("Must have sharding column, logic table: [%s]", tableName);
             }
         }
