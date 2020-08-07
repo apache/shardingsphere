@@ -123,16 +123,16 @@ public final class PreparedStatementAdapterTest extends AbstractShardingSphereDa
     @Test
     public void assertSetFloat() throws SQLException {
         for (PreparedStatement each : preparedStatements) {
-            each.setFloat(1, 0F);
-            assertParameter(each, 1, 0F);
+            each.setFloat(1, 0.0F);
+            assertParameter(each, 1, 0.0F);
         }
     }
     
     @Test
     public void assertSetDouble() throws SQLException {
         for (PreparedStatement each : preparedStatements) {
-            each.setDouble(1, 0D);
-            assertParameter(each, 1, 0D);
+            each.setDouble(1, 0.0D);
+            assertParameter(each, 1, 0.0D);
         }
     }
     

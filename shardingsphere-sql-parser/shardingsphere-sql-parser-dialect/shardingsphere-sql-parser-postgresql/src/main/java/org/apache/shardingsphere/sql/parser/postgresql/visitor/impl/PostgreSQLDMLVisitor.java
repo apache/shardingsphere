@@ -53,7 +53,6 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Se
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetClauseListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTargetContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTargetListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SimpleSelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TargetElContext;
@@ -285,11 +284,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     public ASTNode visitSetClauseList(final SetClauseListContext ctx) {
         Collection<AssignmentSegment> assignments = generateAssignmentSegments(ctx);
         return new SetAssignmentSegment(ctx.start.getStartIndex() - 4, ctx.stop.getStopIndex(), assignments);
-    }
-    
-    @Override
-    public ASTNode visitSetTargetList(final SetTargetListContext ctx) {
-        return super.visitSetTargetList(ctx);
     }
     
     @Override

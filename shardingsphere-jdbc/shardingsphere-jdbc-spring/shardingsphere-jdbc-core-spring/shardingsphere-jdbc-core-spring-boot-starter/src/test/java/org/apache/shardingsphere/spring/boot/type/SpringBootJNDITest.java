@@ -83,9 +83,9 @@ public class SpringBootJNDITest {
     }
     
     private void assertDatasource(final DataSource actualDatasource, final String expectedJDBCUrl) throws SQLException {
-        String expectedJDBCUrlWithoutParameters = expectedJDBCUrl.substring(0, expectedJDBCUrl.indexOf(";"));
+        String expected = expectedJDBCUrl.substring(0, expectedJDBCUrl.indexOf(';'));
         try (Connection connection = actualDatasource.getConnection()) {
-            assertThat(connection.getMetaData().getURL(), is(expectedJDBCUrlWithoutParameters));
+            assertThat(connection.getMetaData().getURL(), is(expected));
         }
     }
 }

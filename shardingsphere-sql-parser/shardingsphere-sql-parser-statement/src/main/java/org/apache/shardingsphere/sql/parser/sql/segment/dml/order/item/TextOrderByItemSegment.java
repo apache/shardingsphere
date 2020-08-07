@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
  */
 public abstract class TextOrderByItemSegment extends OrderByItemSegment {
     
-    public TextOrderByItemSegment(final int startIndex, final int stopIndex, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
+    protected TextOrderByItemSegment(final int startIndex, final int stopIndex, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
         super(startIndex, stopIndex, orderDirection, nullOrderDirection);
     }
     

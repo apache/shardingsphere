@@ -38,7 +38,7 @@ public final class StandardModuloShardingDatabaseAlgorithm implements StandardSh
     @Override
     public String doSharding(final Collection<String> databaseNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : databaseNames) {
-            if (each.endsWith(shardingValue.getValue() % 2 + "")) {
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
                 return each;
             }
         }

@@ -106,9 +106,9 @@ public final class ResultSetUtil {
             case "long":
                 return 0L;
             case "float":
-                return 0F;
+                return 0.0F;
             case "double":
-                return 0D;
+                return 0.0D;
             default:
                 return null;
         }

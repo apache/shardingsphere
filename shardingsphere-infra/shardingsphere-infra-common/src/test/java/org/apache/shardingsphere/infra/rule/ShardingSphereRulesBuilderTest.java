@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.fixture.TestShardingSphereRuleBuilder;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -33,7 +33,7 @@ public final class ShardingSphereRulesBuilderTest {
     @Test
     public void assertBuild() {
         RuleConfiguration ruleConfiguration = new TestRuleConfiguration();
-        Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.build(Arrays.asList(ruleConfiguration), Arrays.asList(""));
-        assertThat(shardingSphereRules, is(Arrays.asList(TestShardingSphereRuleBuilder.getShardingSphereRule())));
+        Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.build(Collections.singletonList(ruleConfiguration), Collections.singletonList(""));
+        assertThat(shardingSphereRules, is(Collections.singletonList(TestShardingSphereRuleBuilder.getShardingSphereRule())));
     }
 }

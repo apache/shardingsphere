@@ -37,7 +37,7 @@ public final class RecordUtil {
      * @return primary columns
      */
     public static List<Column> extractPrimaryColumns(final DataRecord dataRecord) {
-        List<Column> result = new ArrayList<>();
+        List<Column> result = new ArrayList<>(dataRecord.getColumns().size());
         for (Column each : dataRecord.getColumns()) {
             if (each.isPrimaryKey()) {
                 result.add(each);
@@ -54,7 +54,7 @@ public final class RecordUtil {
      * @return condition columns
      */
     public static List<Column> extractConditionColumns(final DataRecord dataRecord, final Set<String> shardingColumns) {
-        List<Column> result = new ArrayList<>();
+        List<Column> result = new ArrayList<>(dataRecord.getColumns().size());
         for (Column each : dataRecord.getColumns()) {
             if (each.isPrimaryKey() || shardingColumns.contains(each.getName())) {
                 result.add(each);
@@ -70,7 +70,7 @@ public final class RecordUtil {
      * @return updated columns
      */
     public static List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
-        List<Column> result = new ArrayList<>();
+        List<Column> result = new ArrayList<>(dataRecord.getColumns().size());
         for (Column each : dataRecord.getColumns()) {
             if (each.isUpdated()) {
                 result.add(each);

@@ -58,7 +58,7 @@ public class BinlogPosition implements IncrementalPosition {
     }
     
     private long toLong() {
-        return Long.parseLong(filename.substring(filename.lastIndexOf(".") + 1)) << 32 | position;
+        return Long.parseLong(filename.substring(filename.lastIndexOf('.') + 1)) << 32 | position;
     }
     
     @Override
