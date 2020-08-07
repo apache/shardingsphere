@@ -44,9 +44,9 @@ public final class ShardingDeleteStatementValidator implements ShardingStatement
         String tableName = sqlStatement.getTables().iterator().next().getTableName().getIdentifier().getValue();
         if (sqlStatement.getWhere().isPresent()) {
             for (AndPredicate each : sqlStatement.getWhere().get().getAndPredicates()) {
-                hasShardingColumn = each.getPredicates().stream().anyMatch(predicate->{
+                hasShardingColumn = each.getPredicates().stream().anyMatch(predicate ->{
                     String columnName = predicate.getColumn().getIdentifier().getValue();
-                    return shardingRule.isShardingColumn(columnName,tableName);
+                    return shardingRule.isShardingColumn(columnName, tableName);
                 });
                 if (hasShardingColumn) {
                     break;
