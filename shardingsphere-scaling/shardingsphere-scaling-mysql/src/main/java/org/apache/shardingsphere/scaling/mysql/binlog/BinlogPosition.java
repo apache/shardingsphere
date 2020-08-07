@@ -21,12 +21,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.Expose;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 /**
  * Binlog Position.
@@ -35,7 +35,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Setter
 @Getter
-public class BinlogPosition implements Position {
+public class BinlogPosition implements IncrementalPosition {
     
     private static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     
@@ -58,7 +58,7 @@ public class BinlogPosition implements Position {
     }
     
     private long toLong() {
-        return Long.parseLong(filename.substring(filename.lastIndexOf(".") + 1)) << 32 | position;
+        return Long.parseLong(filename.substring(filename.lastIndexOf('.') + 1)) << 32 | position;
     }
     
     @Override

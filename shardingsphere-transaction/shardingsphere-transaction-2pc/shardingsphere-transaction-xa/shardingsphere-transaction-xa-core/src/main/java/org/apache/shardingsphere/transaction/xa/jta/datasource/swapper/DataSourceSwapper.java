@@ -97,7 +97,7 @@ public final class DataSourceSwapper {
     }
     
     private Map<String, Object> getDatabaseAccessConfiguration(final DataSource dataSource) {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(3, 1);
         DataSourcePropertyProvider provider = DataSourcePropertyProviderLoader.getProvider(dataSource);
         try {
             result.put("url", findGetterMethod(dataSource, provider.getURLPropertyName()).invoke(dataSource));

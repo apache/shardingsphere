@@ -51,7 +51,7 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
     
     @Override
     public final String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
-        return availableTargetNames.stream().filter(each -> each.endsWith(getPartition(shardingValue.getValue()) + "")).findFirst().orElse(null);
+        return availableTargetNames.stream().filter(each -> each.endsWith(String.valueOf(getPartition(shardingValue.getValue())))).findFirst().orElse(null);
     }
     
     @Override
@@ -61,7 +61,7 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
         int lastPartition = getLastPartition(shardingValue.getValueRange());
         for (int partition = firstPartition; partition <= lastPartition; partition++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(partition + "")) {
+                if (each.endsWith(String.valueOf(partition))) {
                     result.add(each);
                 }
             }

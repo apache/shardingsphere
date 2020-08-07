@@ -79,7 +79,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     
     private volatile SchemaContexts schemaContexts;
     
-    public OrchestrationSchemaContexts(final SchemaContexts schemaContexts, final OrchestrationFacade orchestrationFacade) {
+    protected OrchestrationSchemaContexts(final SchemaContexts schemaContexts, final OrchestrationFacade orchestrationFacade) {
         this.orchestrationFacade = orchestrationFacade;
         this.schemaContexts = schemaContexts;
         OrchestrationEventBus.getInstance().register(this);

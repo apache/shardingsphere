@@ -30,10 +30,12 @@ weight = 3
 ## Configure Rule
 
 ```properties
-spring.shardingsphere.orchestration.spring_boot_ds.type=Zookeeper
-spring.shardingsphere.orchestration.spring_boot_ds.server-lists=localhost:2181
-spring.shardingsphere.orchestration.spring_boot_ds.namespace=orchestration-spring-boot-shardingsphere-test
-spring.shardingsphere.orchestration.spring_boot_ds.properties.overwrite=true
+spring.shardingsphere.orchestration.name=orchestration-spring-boot-shardingsphere-test
+spring.shardingsphere.orchestration.registryCenter.type=Zookeeper
+spring.shardingsphere.orchestration.registryCenter.server-lists=localhost:2181
+spring.shardingsphere.orchestration.additionalConfigCenter.type=Zookeeper
+spring.shardingsphere.orchestration.additionalConfigCenter.server-lists=localhost:2182
+spring.shardingsphere.orchestration.overwrite=true
 ```
 
 ## Use OrchestrationShardingSphereDataSource in Spring

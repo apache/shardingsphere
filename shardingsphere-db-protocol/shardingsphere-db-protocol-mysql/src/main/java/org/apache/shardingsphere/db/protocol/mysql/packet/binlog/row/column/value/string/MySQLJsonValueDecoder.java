@@ -89,7 +89,7 @@ public final class MySQLJsonValueDecoder {
                     outputString(decodeString(byteBuf.slice()), result);
                     break;
                 default:
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException(String.valueOf(type));
             }
         } finally {
             byteBuf.readerIndex(oldOffset);
@@ -140,7 +140,7 @@ public final class MySQLJsonValueDecoder {
         return new String(data);
     }
     
-    private static void decodeValueEntry(final boolean isSmall, final ByteBuf byteBuf, final StringBuilder result) {
+    private static void decodeValueEntry(final boolean isSmall, final ByteBuf byteBuf, final StringBuilder stringBuilder) {
         int type = byteBuf.readUnsignedByte() & 0xff;
         switch (type) {
             case JsonValueTypes.SMALL_JSON_OBJECT:
@@ -151,36 +151,36 @@ public final class MySQLJsonValueDecoder {
             case JsonValueTypes.UINT64:
             case JsonValueTypes.DOUBLE:
             case JsonValueTypes.STRING:
-                decodeValue(type, getIntBasedObjectSize(byteBuf, isSmall), byteBuf, result);
+                decodeValue(type, getIntBasedObjectSize(byteBuf, isSmall), byteBuf, stringBuilder);
                 break;
             case JsonValueTypes.INT16:
-                result.append(byteBuf.readShortLE());
+                stringBuilder.append(byteBuf.readShortLE());
                 if (!isSmall) {
                     byteBuf.skipBytes(2);
                 }
                 break;
             case JsonValueTypes.UINT16:
-                result.append(getIntBasedObjectSize(byteBuf, isSmall));
+                stringBuilder.append(getIntBasedObjectSize(byteBuf, isSmall));
                 break;
             case JsonValueTypes.INT32:
                 if (isSmall) {
-                    decodeValue(type, byteBuf.readUnsignedShortLE(), byteBuf, result);
+                    decodeValue(type, byteBuf.readUnsignedShortLE(), byteBuf, stringBuilder);
                 } else {
-                    result.append(byteBuf.readIntLE());
+                    stringBuilder.append(byteBuf.readIntLE());
                 }
                 break;
             case JsonValueTypes.UINT32:
                 if (isSmall) {
-                    decodeValue(type, byteBuf.readUnsignedShortLE(), byteBuf, result);
+                    decodeValue(type, byteBuf.readUnsignedShortLE(), byteBuf, stringBuilder);
                 } else {
-                    result.append(byteBuf.readUnsignedIntLE());
+                    stringBuilder.append(byteBuf.readUnsignedIntLE());
                 }
                 break;
             case JsonValueTypes.LITERAL:
-                outputLiteral(getIntBasedObjectSize(byteBuf, isSmall), result);
+                outputLiteral(getIntBasedObjectSize(byteBuf, isSmall), stringBuilder);
                 break;
             default:
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException(String.valueOf(type));
         }
     }
     
@@ -200,7 +200,7 @@ public final class MySQLJsonValueDecoder {
                 out.append("false");
                 break;
             default:
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException(String.valueOf(inlineValue));
         }
     }
     

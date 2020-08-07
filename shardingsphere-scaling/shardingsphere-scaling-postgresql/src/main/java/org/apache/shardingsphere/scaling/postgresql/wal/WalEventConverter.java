@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.postgresql.wal;
 
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
@@ -92,14 +93,14 @@ public final class WalEventConverter {
     
     private DataRecord handleWriteRowsEvent(final WriteRowEvent writeRowEvent) {
         DataRecord record = createDataRecord(writeRowEvent, writeRowEvent.getAfterRow().size());
-        record.setType("INSERT");
+        record.setType(ScalingConstant.INSERT);
         putColumnsIntoDataRecord(record, metaDataManager.getTableMetaData(writeRowEvent.getTableName()), writeRowEvent.getAfterRow());
         return record;
     }
     
     private DataRecord handleUpdateRowsEvent(final UpdateRowEvent updateRowEvent) {
         DataRecord record = createDataRecord(updateRowEvent, updateRowEvent.getAfterRow().size());
-        record.setType("UPDATE");
+        record.setType(ScalingConstant.UPDATE);
         putColumnsIntoDataRecord(record, metaDataManager.getTableMetaData(updateRowEvent.getTableName()), updateRowEvent.getAfterRow());
         return record;
     }
@@ -107,7 +108,7 @@ public final class WalEventConverter {
     private DataRecord handleDeleteRowsEvent(final DeleteRowEvent event) {
         //TODO completion columns
         DataRecord record = createDataRecord(event, event.getPrimaryKeys().size());
-        record.setType("DELETE");
+        record.setType(ScalingConstant.DELETE);
         List<String> primaryKeyColumns = metaDataManager.getTableMetaData(event.getTableName()).getPrimaryKeyColumns();
         for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
             record.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), true, true));

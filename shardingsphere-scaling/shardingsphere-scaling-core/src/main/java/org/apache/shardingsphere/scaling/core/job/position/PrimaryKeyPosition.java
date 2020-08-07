@@ -24,8 +24,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 /**
  * Use primary key as position.
  */
@@ -33,7 +31,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class PrimaryKeyPosition implements Position {
+public class PrimaryKeyPosition implements InventoryPosition {
     
     private static final Gson GSON = new Gson();
     
@@ -49,40 +47,8 @@ public class PrimaryKeyPosition implements Position {
         return Long.compare(beginValue, ((PrimaryKeyPosition) position).beginValue);
     }
     
-    /**
-     * Transform primary key position from json to object.
-     *
-     * @param json json data
-     * @return primary key position
-     */
-    @SuppressWarnings("unchecked")
-    public static PrimaryKeyPosition fromJson(final String json) {
-        List<Double> values = GSON.fromJson(json, List.class);
-        if (2 == values.size()) {
-            return new PrimaryKeyPosition(values.get(0).longValue(), values.get(1).longValue());
-        }
-        return new PlaceholderPosition();
-    }
-    
     @Override
     public JsonElement toJson() {
         return GSON.toJsonTree(new long[]{beginValue, endValue});
-    }
-    
-    /**
-     * Finish flag position for inventory task finished.
-     */
-    public static class FinishedPosition extends PrimaryKeyPosition {
-    }
-    
-    /**
-     * Placeholder position for without primary key table.
-     */
-    public static class PlaceholderPosition extends PrimaryKeyPosition {
-        
-        @Override
-        public JsonElement toJson() {
-            return GSON.toJsonTree(new long[0]);
-        }
     }
 }

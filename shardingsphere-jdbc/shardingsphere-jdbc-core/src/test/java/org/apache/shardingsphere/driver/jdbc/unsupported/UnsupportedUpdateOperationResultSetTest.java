@@ -36,16 +36,16 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedList;
 
 public final class UnsupportedUpdateOperationResultSetTest extends AbstractShardingSphereDataSourceForShardingTest {
     
-    private final List<ShardingSphereConnection> shardingSphereConnections = new ArrayList<>();
+    private final Collection<ShardingSphereConnection> shardingSphereConnections = new LinkedList<>();
     
-    private final List<Statement> statements = new ArrayList<>();
+    private final Collection<Statement> statements = new LinkedList<>();
     
-    private final List<ResultSet> resultSets = new ArrayList<>();
+    private final Collection<ResultSet> resultSets = new LinkedList<>();
     
     @Before
     public void init() throws SQLException {
@@ -157,28 +157,28 @@ public final class UnsupportedUpdateOperationResultSetTest extends AbstractShard
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertUpdateFloatForColumnIndex() throws SQLException {
         for (ResultSet each : resultSets) {
-            each.updateFloat(1, 1F);
+            each.updateFloat(1, 1.0F);
         }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertUpdateFloatForColumnLabel() throws SQLException {
         for (ResultSet each : resultSets) {
-            each.updateFloat("label", 1F);
+            each.updateFloat("label", 1.0F);
         }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertUpdateDoubleForColumnIndex() throws SQLException {
         for (ResultSet each : resultSets) {
-            each.updateDouble(1, 1D);
+            each.updateDouble(1, 1.0D);
         }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertUpdateDoubleForColumnLabel() throws SQLException {
         for (ResultSet each : resultSets) {
-            each.updateDouble("label", 1D);
+            each.updateDouble("label", 1.0D);
         }
     }
     

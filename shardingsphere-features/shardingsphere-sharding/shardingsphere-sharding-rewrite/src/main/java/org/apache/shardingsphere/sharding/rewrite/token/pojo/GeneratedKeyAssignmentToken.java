@@ -27,7 +27,7 @@ public abstract class GeneratedKeyAssignmentToken extends SQLToken implements At
     
     private final String columnName;
     
-    public GeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
+    protected GeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
         super(startIndex);
         this.columnName = columnName;
     }

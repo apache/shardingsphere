@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.jdbc.queryresult;
 
-import java.sql.Array;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.MemoryQueryResult;
 import org.hamcrest.core.Is;
@@ -28,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
+import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
@@ -175,20 +175,20 @@ public final class MemoryQueryResultTest {
     @Test
     public void assertGetValueByFloat() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.FLOAT);
-        when(resultSet.getDouble(1)).thenReturn(1D);
+        when(resultSet.getDouble(1)).thenReturn(1.0D);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, double.class), is(1D));
+        assertThat(actual.getValue(1, double.class), is(1.0D));
         assertFalse(actual.next());
     }
     
     @Test
     public void assertGetValueByDouble() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.DOUBLE);
-        when(resultSet.getDouble(1)).thenReturn(1D);
+        when(resultSet.getDouble(1)).thenReturn(1.0D);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, double.class), is(1D));
+        assertThat(actual.getValue(1, double.class), is(1.0D));
         assertFalse(actual.next());
     }
     

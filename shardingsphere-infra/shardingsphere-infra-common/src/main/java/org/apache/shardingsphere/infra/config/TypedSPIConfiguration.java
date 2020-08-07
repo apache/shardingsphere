@@ -33,7 +33,7 @@ public abstract class TypedSPIConfiguration {
     
     private final Properties props;
     
-    public TypedSPIConfiguration(final String type, final Properties props) {
+    protected TypedSPIConfiguration(final String type, final Properties props) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
         this.type = type;
         this.props = null == props ? new Properties() : props;

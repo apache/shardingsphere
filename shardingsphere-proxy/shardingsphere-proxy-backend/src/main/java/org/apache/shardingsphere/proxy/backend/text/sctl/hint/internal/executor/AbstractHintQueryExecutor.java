@@ -39,7 +39,7 @@ public abstract class AbstractHintQueryExecutor<T extends HintCommand> implement
     private MergedResult mergedResult;
     
     @Override
-    public final BackendResponse execute(final T command) {
+    public final BackendResponse execute(final T hintCommand) {
         queryHeaders = createQueryHeaders();
         mergedResult = createMergedResult();
         return new QueryResponse(queryHeaders);

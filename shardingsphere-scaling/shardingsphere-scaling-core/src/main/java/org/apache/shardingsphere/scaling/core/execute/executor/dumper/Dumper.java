@@ -31,11 +31,4 @@ public interface Dumper extends ShardingScalingExecutor {
      * @param channel channel
      */
     void setChannel(Channel channel);
-    
-    /**
-     * Read Record to channel.
-     *
-     * @param channel channel
-     */
-    void dump(Channel channel);
 }

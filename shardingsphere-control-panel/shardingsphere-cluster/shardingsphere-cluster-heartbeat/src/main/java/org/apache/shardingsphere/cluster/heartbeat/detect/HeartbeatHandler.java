@@ -101,12 +101,12 @@ public final class HeartbeatHandler {
     }
     
     private HeartbeatResponse buildHeartbeatResponse(final List<Future<Map<String, HeartbeatResult>>> futureTasks) {
-        Map<String, Collection<HeartbeatResult>> heartbeatResultMap = futureTasks.stream().map(e -> {
+        Map<String, Collection<HeartbeatResult>> heartbeatResultMap = futureTasks.stream().map(each -> {
             try {
-                return e.get();
+                return each.get();
             } catch (InterruptedException | ExecutionException ex) {
                 log.error("Heartbeat report error", ex);
-                e.cancel(true);
+                each.cancel(true);
                 return new HashMap<String, HeartbeatResult>();
             }
         }).flatMap(map -> map.entrySet().stream()).collect(Collectors.groupingBy(Entry::getKey, HashMap::new, Collectors.mapping(Entry::getValue, Collectors.toCollection(ArrayList::new))));
