@@ -52,6 +52,90 @@ public class YamlProxyConfigurationSwapperTest {
     @Test
     public void assertSwap() {
 
+        YamlProxyConfiguration yamlProxyConfiguration = getYamlProxyConfiguration();
+
+        //swap
+        ProxyConfiguration proxyConfiguration = new YamlProxyConfigurationSwapper().swap(yamlProxyConfiguration);
+
+        //test for authentication
+        Authentication authentication = proxyConfiguration.getAuthentication();
+        Assert.assertNotNull(authentication);
+        Map<String, ProxyUser> proxyUserMap = authentication.getUsers();
+        Assert.assertEquals(1, proxyUserMap.size());
+        ProxyUser proxyUser = proxyUserMap.get("user1");
+        Assert.assertNotNull(proxyUser);
+        Assert.assertEquals("pass", proxyUser.getPassword());
+        Collection<String> authorizedSchemas = proxyUser.getAuthorizedSchemas();
+        Assert.assertNotNull(authentication);
+        Assert.assertEquals(1, authorizedSchemas.size());
+        Assert.assertTrue(authorizedSchemas.contains("db1"));
+
+        //test for orchestration
+
+        //test for cluster
+        ClusterConfiguration clusterConfiguration = proxyConfiguration.getCluster();
+        Assert.assertNotNull(clusterConfiguration);
+        HeartbeatConfiguration heartbeatConfiguration = clusterConfiguration.getHeartbeat();
+        Assert.assertNotNull(heartbeatConfiguration);
+        Assert.assertEquals("select 1;", heartbeatConfiguration.getSql());
+        Assert.assertEquals(1, heartbeatConfiguration.getInterval());
+        Assert.assertTrue(heartbeatConfiguration.isRetryEnable());
+        Assert.assertEquals(3, heartbeatConfiguration.getRetryMaximum());
+        Assert.assertEquals(2, heartbeatConfiguration.getRetryInterval());
+        Assert.assertEquals(4, heartbeatConfiguration.getThreadCount());
+
+        //test for metrics
+        MetricsConfiguration metricsConfiguration = proxyConfiguration.getMetrics();
+        Assert.assertNotNull(metricsConfiguration);
+        Assert.assertEquals("name1", metricsConfiguration.getMetricsName());
+        Assert.assertEquals("host1", metricsConfiguration.getHost());
+        Assert.assertEquals(111, metricsConfiguration.getPort());
+        Assert.assertEquals(true, metricsConfiguration.getAsync());
+        Assert.assertEquals(true, metricsConfiguration.getEnable());
+        Assert.assertEquals(4, metricsConfiguration.getThreadCount());
+        Properties metricsProperties = metricsConfiguration.getProps();
+        Assert.assertNotNull(metricsProperties);
+        Assert.assertEquals(1, metricsProperties.size());
+        Assert.assertEquals("value3", metricsProperties.getProperty("key3"));
+
+        //test for props
+        Properties proxyConfigurationProps = proxyConfiguration.getProps();
+        Assert.assertNotNull(proxyConfigurationProps);
+        Assert.assertEquals(1, proxyConfigurationProps.size());
+        Assert.assertEquals("value4", proxyConfigurationProps.getProperty("key4"));
+
+        Map<String, Map<String, DataSourceParameter>> schemaDataSources = proxyConfiguration.getSchemaDataSources();
+        Assert.assertNotNull(schemaDataSources);
+        Assert.assertEquals(1, schemaDataSources.size());
+        Assert.assertTrue(schemaDataSources.containsKey("yamlProxyRule1"));
+        Map<String, DataSourceParameter> dataSourceParameterMap = schemaDataSources.get("yamlProxyRule1");
+        Assert.assertTrue(dataSourceParameterMap.containsKey("ds1"));
+
+        DataSourceParameter dataSourceParameter = dataSourceParameterMap.get("ds1");
+        Assert.assertNotNull(dataSourceParameter);
+        Assert.assertEquals("url1", dataSourceParameter.getUrl());
+        Assert.assertEquals("username1", dataSourceParameter.getUsername());
+        Assert.assertEquals("password1", dataSourceParameter.getPassword());
+        Assert.assertEquals(1, dataSourceParameter.getConnectionTimeoutMilliseconds());
+        Assert.assertEquals(2, dataSourceParameter.getIdleTimeoutMilliseconds());
+        Assert.assertEquals(3, dataSourceParameter.getMaxLifetimeMilliseconds());
+        Assert.assertEquals(4, dataSourceParameter.getMaxPoolSize());
+        Assert.assertEquals(5, dataSourceParameter.getMinPoolSize());
+        Assert.assertEquals(6, dataSourceParameter.getMaintenanceIntervalMilliseconds());
+        Assert.assertTrue(dataSourceParameter.isReadOnly());
+
+        Map<String, Collection<RuleConfiguration>> schemaRules = proxyConfiguration.getSchemaRules();
+        Assert.assertNotNull(schemaRules);
+        Assert.assertEquals(1, schemaRules.size());
+        Collection<RuleConfiguration> ruleConfigurationCollection = schemaRules.get("yamlProxyRule1");
+        Assert.assertNotNull(ruleConfigurationCollection);
+        Assert.assertEquals(1, ruleConfigurationCollection.size());
+        RuleConfiguration ruleConfiguration = ruleConfigurationCollection.iterator().next();
+        Assert.assertNotNull(ruleConfiguration);
+        Assert.assertTrue(ruleConfiguration instanceof MasterSlaveRuleConfiguration);
+    }
+
+    private YamlProxyConfiguration getYamlProxyConfiguration() {
         YamlProxyConfiguration yamlProxyConfiguration = mock(YamlProxyConfiguration.class);
 
         //serverConfiguration
@@ -165,85 +249,6 @@ public class YamlProxyConfigurationSwapperTest {
         YamlRuleConfiguration testRuleConfiguration = new YamlMasterSlaveRuleConfiguration();
         rules.add(testRuleConfiguration);
         when(yamlProxyRuleConfiguration.getRules()).thenReturn(rules);
-
-        //swap
-        ProxyConfiguration proxyConfiguration = new YamlProxyConfigurationSwapper().swap(yamlProxyConfiguration);
-
-        //test for authentication
-        Authentication authentication = proxyConfiguration.getAuthentication();
-        Assert.assertNotNull(authentication);
-        Map<String, ProxyUser> proxyUserMap = authentication.getUsers();
-        Assert.assertEquals(1, proxyUserMap.size());
-        ProxyUser proxyUser = proxyUserMap.get("user1");
-        Assert.assertNotNull(proxyUser);
-        Assert.assertEquals("pass", proxyUser.getPassword());
-        Collection<String> authorizedSchemas = proxyUser.getAuthorizedSchemas();
-        Assert.assertNotNull(authentication);
-        Assert.assertEquals(1, authorizedSchemas.size());
-        Assert.assertTrue(authorizedSchemas.contains("db1"));
-
-        //test for orchestration
-
-        //test for cluster
-        ClusterConfiguration clusterConfiguration = proxyConfiguration.getCluster();
-        Assert.assertNotNull(clusterConfiguration);
-        HeartbeatConfiguration heartbeatConfiguration = clusterConfiguration.getHeartbeat();
-        Assert.assertNotNull(heartbeatConfiguration);
-        Assert.assertEquals("select 1;", heartbeatConfiguration.getSql());
-        Assert.assertEquals(1, heartbeatConfiguration.getInterval());
-        Assert.assertTrue(heartbeatConfiguration.isRetryEnable());
-        Assert.assertEquals(3, heartbeatConfiguration.getRetryMaximum());
-        Assert.assertEquals(2, heartbeatConfiguration.getRetryInterval());
-        Assert.assertEquals(4, heartbeatConfiguration.getThreadCount());
-
-        //test for metrics
-        MetricsConfiguration metricsConfiguration = proxyConfiguration.getMetrics();
-        Assert.assertNotNull(metricsConfiguration);
-        Assert.assertEquals("name1", metricsConfiguration.getMetricsName());
-        Assert.assertEquals("host1", metricsConfiguration.getHost());
-        Assert.assertEquals(111, metricsConfiguration.getPort());
-        Assert.assertEquals(true, metricsConfiguration.getAsync());
-        Assert.assertEquals(true, metricsConfiguration.getEnable());
-        Assert.assertEquals(4, metricsConfiguration.getThreadCount());
-        Properties metricsProperties = metricsConfiguration.getProps();
-        Assert.assertNotNull(metricsProperties);
-        Assert.assertEquals(1, metricsProperties.size());
-        Assert.assertEquals("value3", metricsProperties.getProperty("key3"));
-
-        //test for props
-        Properties proxyConfigurationProps = proxyConfiguration.getProps();
-        Assert.assertNotNull(proxyConfigurationProps);
-        Assert.assertEquals(1, proxyConfigurationProps.size());
-        Assert.assertEquals("value4", proxyConfigurationProps.getProperty("key4"));
-
-        Map<String, Map<String, DataSourceParameter>> schemaDataSources = proxyConfiguration.getSchemaDataSources();
-        Assert.assertNotNull(schemaDataSources);
-        Assert.assertEquals(1, schemaDataSources.size());
-        Assert.assertTrue(schemaDataSources.containsKey("yamlProxyRule1"));
-        Map<String, DataSourceParameter> dataSourceParameterMap = schemaDataSources.get("yamlProxyRule1");
-        Assert.assertTrue(dataSourceParameterMap.containsKey("ds1"));
-
-        DataSourceParameter dataSourceParameter = dataSourceParameterMap.get("ds1");
-        Assert.assertNotNull(dataSourceParameter);
-        Assert.assertEquals("url1", dataSourceParameter.getUrl());
-        Assert.assertEquals("username1", dataSourceParameter.getUsername());
-        Assert.assertEquals("password1", dataSourceParameter.getPassword());
-        Assert.assertEquals(1, dataSourceParameter.getConnectionTimeoutMilliseconds());
-        Assert.assertEquals(2, dataSourceParameter.getIdleTimeoutMilliseconds());
-        Assert.assertEquals(3, dataSourceParameter.getMaxLifetimeMilliseconds());
-        Assert.assertEquals(4, dataSourceParameter.getMaxPoolSize());
-        Assert.assertEquals(5, dataSourceParameter.getMinPoolSize());
-        Assert.assertEquals(6, dataSourceParameter.getMaintenanceIntervalMilliseconds());
-        Assert.assertTrue(dataSourceParameter.isReadOnly());
-
-        Map<String, Collection<RuleConfiguration>> schemaRules = proxyConfiguration.getSchemaRules();
-        Assert.assertNotNull(schemaRules);
-        Assert.assertEquals(1, schemaRules.size());
-        Collection<RuleConfiguration> ruleConfigurationCollection = schemaRules.get("yamlProxyRule1");
-        Assert.assertNotNull(ruleConfigurationCollection);
-        Assert.assertEquals(1, ruleConfigurationCollection.size());
-        RuleConfiguration ruleConfiguration = ruleConfigurationCollection.iterator().next();
-        Assert.assertNotNull(ruleConfiguration);
-        Assert.assertTrue(ruleConfiguration instanceof MasterSlaveRuleConfiguration);
+        return yamlProxyConfiguration;
     }
 }
