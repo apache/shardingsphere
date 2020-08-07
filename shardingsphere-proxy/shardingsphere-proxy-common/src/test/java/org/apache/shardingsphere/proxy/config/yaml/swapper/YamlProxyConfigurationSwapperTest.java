@@ -59,7 +59,7 @@ public class YamlProxyConfigurationSwapperTest {
         when(yamlProxyConfiguration.getServerConfiguration()).thenReturn(yamlProxyServerConfiguration);
 
         //prepare for authentication
-        YamlAuthenticationConfiguration yamlAuthenticationConfiguration = mock(YamlAuthenticationConfiguration.class);
+        final YamlAuthenticationConfiguration yamlAuthenticationConfiguration = mock(YamlAuthenticationConfiguration.class);
         Map<String, YamlProxyUserConfiguration> yamlProxyUserConfigurationMap = new HashMap<>();
         YamlProxyUserConfiguration yamlProxyUserConfiguration = mock(YamlProxyUserConfiguration.class);
         when(yamlProxyUserConfiguration.getPassword()).thenReturn("pass");
@@ -67,7 +67,6 @@ public class YamlProxyConfigurationSwapperTest {
         yamlProxyUserConfigurationMap.put("user1", yamlProxyUserConfiguration);
         when(yamlAuthenticationConfiguration.getUsers()).thenReturn(yamlProxyUserConfigurationMap);
         when(yamlProxyServerConfiguration.getAuthentication()).thenReturn(yamlAuthenticationConfiguration);
-
 
         //prepare for orchestration
         YamlOrchestrationConfiguration yamlOrchestrationConfiguration = mock(YamlOrchestrationConfiguration.class);
@@ -96,7 +95,6 @@ public class YamlProxyConfigurationSwapperTest {
 
         when(yamlOrchestrationConfiguration.getAdditionalConfigCenter()).thenReturn(additionalConfigCenterConfiguration);
         when(yamlOrchestrationConfiguration.isOverwrite()).thenReturn(true);
-
 
         //prepare for cluster
         YamlClusterConfiguration yamlClusterConfiguration = mock(YamlClusterConfiguration.class);
@@ -127,7 +125,6 @@ public class YamlProxyConfigurationSwapperTest {
         Properties properties = new Properties();
         properties.put("key4", "value4");
         when(yamlProxyServerConfiguration.getProps()).thenReturn(properties);
-
 
         //ruleConfigurations
         Map<String, YamlProxyRuleConfiguration> yamlProxyRuleConfigurationMap = new HashMap<>();
@@ -185,9 +182,7 @@ public class YamlProxyConfigurationSwapperTest {
         Assert.assertEquals(1, authorizedSchemas.size());
         Assert.assertTrue(authorizedSchemas.contains("db1"));
 
-
         //test for orchestration
-
 
         //test for cluster
         ClusterConfiguration clusterConfiguration = proxyConfiguration.getCluster();
@@ -220,7 +215,6 @@ public class YamlProxyConfigurationSwapperTest {
         Assert.assertNotNull(proxyConfigurationProps);
         Assert.assertEquals(1, proxyConfigurationProps.size());
         Assert.assertEquals("value4", proxyConfigurationProps.getProperty("key4"));
-
 
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = proxyConfiguration.getSchemaDataSources();
         Assert.assertNotNull(schemaDataSources);
