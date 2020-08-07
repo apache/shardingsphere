@@ -44,6 +44,7 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper implements Yaml
         if (null != data.getKeyGenerateStrategy()) {
             result.setKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToYamlConfiguration(data.getKeyGenerateStrategy()));
         }
+        result.setForceShardingColumn(data.isForceShardingColumn());
         return result;
     }
     
