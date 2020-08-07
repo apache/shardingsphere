@@ -103,6 +103,9 @@ public final class SchemaContextsBuilder {
     }
     
     private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
+        if (dataSources.isEmpty()) {
+            return null;
+        }
         try (Connection connection = dataSources.values().iterator().next().getConnection()) {
             return new CachedDatabaseMetaData(connection.getMetaData());
         }

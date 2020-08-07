@@ -17,12 +17,21 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 /**
- * Primary key position manager.
+ * Finished position.
  */
-public final class PrimaryKeyPositionManager extends BasePositionManager<PrimaryKeyPosition> implements PositionManager<PrimaryKeyPosition> {
+public final class FinishedPosition implements InventoryPosition {
     
-    public PrimaryKeyPositionManager(final PrimaryKeyPosition position) {
-        super(position);
+    @Override
+    public JsonElement toJson() {
+        return new JsonObject();
+    }
+    
+    @Override
+    public int compareTo(final Position o) {
+        return 0;
     }
 }

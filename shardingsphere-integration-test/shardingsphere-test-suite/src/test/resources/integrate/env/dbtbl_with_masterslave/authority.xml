@@ -39,6 +39,7 @@
     </sqlset>
     <sqlset db-types="MySQL">
         <user-create>
+            <sql>CREATE ROLE default_role</sql>
             <sql>CREATE USER user_dev@localhost</sql>
             <sql>GRANT select,update,insert,delete on master_db_0.* to user_dev@localhost</sql>
             <sql>GRANT select,update,insert,delete on master_db_1.* to user_dev@localhost</sql>
@@ -152,6 +153,9 @@
             <sql>GRANT select,update,insert,delete on master_db_9.t_order_9 to user_dev@localhost</sql>
         </user-create>
         <user-drop>
+            <sql>DROP ROLE default_role</sql>
+            <sql>DROP ROLE role_dev</sql>
+            <sql>DROP ROLE role_dev_new</sql>
             <sql>DROP USER user_dev@localhost</sql>
             <sql>DROP USER user_dev_new@localhost</sql>
             <sql>DROP USER user_dev@127.0.0.1</sql>

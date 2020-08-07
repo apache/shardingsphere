@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.execute.executor.dumper;
-
-import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
-import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
+package org.apache.shardingsphere.scaling.core.constant;
 
 /**
- * Dumper interface.
+ * Scaling constants.
  */
-public interface Dumper extends ShardingScalingExecutor {
+public final class ScalingConstant {
     
     /**
-     * Set channel.
-     *
-     * @param channel channel
+     * Insert flag.
      */
-    void setChannel(Channel channel);
+    public static final String INSERT = "INSERT";
+    
+    /**
+     * Update flag.
+     */
+    public static final String UPDATE = "UPDATE";
+    
+    /**
+     * Delete flag.
+     */
+    public static final String DELETE = "DELETE";
 }
