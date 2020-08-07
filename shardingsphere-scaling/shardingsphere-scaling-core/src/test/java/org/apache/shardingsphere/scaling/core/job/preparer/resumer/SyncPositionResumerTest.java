@@ -25,19 +25,20 @@ import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPositionManager;
-import org.apache.shardingsphere.scaling.core.job.position.resume.ResumablePositionManager;
-import org.apache.shardingsphere.scaling.core.job.position.resume.ResumablePositionManagerFactory;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
+import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -51,7 +52,7 @@ public final class SyncPositionResumerTest {
     
     private ShardingScalingJob shardingScalingJob;
     
-    private ResumablePositionManager resumablePositionManager;
+    private ResumeBreakPointManager resumeBreakPointManager;
     
     private SyncPositionResumer syncPositionResumer;
     
@@ -60,39 +61,25 @@ public final class SyncPositionResumerTest {
         ScalingContext.getInstance().init(new ServerConfiguration());
         shardingScalingJob = new ShardingScalingJob("scalingTest", 0);
         shardingScalingJob.getSyncConfigurations().add(mockSyncConfiguration());
-        resumablePositionManager = ResumablePositionManagerFactory.newInstance("MySQL", "/scalingTest/item-0");
+        resumeBreakPointManager = ResumeBreakPointManagerFactory.newInstance("MySQL", "/scalingTest/item-0");
         syncPositionResumer = new SyncPositionResumer();
     }
     
     @Test
     public void assertResumePosition() {
-        resumablePositionManager.getInventoryPositionManagerMap().put("ds0", new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 100)));
-        resumablePositionManager.getIncrementalPositionManagerMap().put("ds0.t_order", mockPositionManager());
-        syncPositionResumer.resumePosition(shardingScalingJob, new DataSourceManager(), resumablePositionManager);
-        assertEquals(1, shardingScalingJob.getIncrementalDataTasks().size());
-        assertEquals(0, shardingScalingJob.getInventoryDataTasks().size());
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0", new InventoryPositionManager(new PrimaryKeyPosition(0, 100)));
+        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0.t_order", new BasePositionManager<>());
+        syncPositionResumer.resumePosition(shardingScalingJob, new DataSourceManager(), resumeBreakPointManager);
+        assertThat(shardingScalingJob.getIncrementalDataTasks().size(), is(1));
+        assertTrue(shardingScalingJob.getInventoryDataTasks().isEmpty());
     }
     
     @Test
     public void assertPersistPosition() {
-        ResumablePositionManager resumablePositionManager = mock(ResumablePositionManager.class);
-        syncPositionResumer.persistPosition(shardingScalingJob, resumablePositionManager);
-        verify(resumablePositionManager).persistIncrementalPosition();
-        verify(resumablePositionManager).persistInventoryPosition();
-    }
-    
-    private PositionManager mockPositionManager() {
-        return new PositionManager() {
-            @Override
-            public Position getCurrentPosition() {
-                return null;
-            }
-            
-            @Override
-            public void updateCurrentPosition(final Position newPosition) {
-            
-            }
-        };
+        ResumeBreakPointManager resumeBreakPointManager = mock(ResumeBreakPointManager.class);
+        syncPositionResumer.persistPosition(shardingScalingJob, resumeBreakPointManager);
+        verify(resumeBreakPointManager).persistIncrementalPosition();
+        verify(resumeBreakPointManager).persistInventoryPosition();
     }
     
     private SyncConfiguration mockSyncConfiguration() {
@@ -100,8 +87,7 @@ public final class SyncPositionResumerTest {
         RdbmsConfiguration importerConfig = new RdbmsConfiguration();
         Map<String, String> tableMap = new HashMap<>();
         tableMap.put("t_order", "t_order");
-        return new SyncConfiguration(3, tableMap,
-                dumperConfig, importerConfig);
+        return new SyncConfiguration(3, tableMap, dumperConfig, importerConfig);
     }
     
     private RdbmsConfiguration mockDumperConfig() {

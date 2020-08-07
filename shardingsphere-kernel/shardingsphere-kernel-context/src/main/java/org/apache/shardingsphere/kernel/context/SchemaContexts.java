@@ -19,6 +19,7 @@ package org.apache.shardingsphere.kernel.context;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.util.Map;
 
@@ -26,6 +27,13 @@ import java.util.Map;
  * Schema contexts.
  */
 public interface SchemaContexts extends AutoCloseable {
+    
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    DatabaseType getDatabaseType();
     
     /**
      * Get schema contexts.

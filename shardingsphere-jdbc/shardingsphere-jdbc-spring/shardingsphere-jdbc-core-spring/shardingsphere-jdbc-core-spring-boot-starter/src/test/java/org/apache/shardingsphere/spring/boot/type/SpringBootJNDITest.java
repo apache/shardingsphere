@@ -46,15 +46,11 @@ import static org.junit.Assert.assertTrue;
 @ActiveProfiles("jndi")
 public class SpringBootJNDITest {
     
-    private static final String TEST_DATASOURCE_URL = "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL";
+    private static final String TEST_DATA_SOURCE_URL = "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL";
     
-    private static final String JNDI_DATASOURCE_0 = "java:comp/env/jdbc/jndi0";
+    private static final String JNDI_DATA_SOURCE_0 = "java:comp/env/jdbc/jndi0";
     
-    private static final String JNDI_DATASOURCE_1 = "java:comp/env/jdbc/jndi1";
-    
-    private static DataSource dataSource0;
-    
-    private static DataSource dataSource1;
+    private static final String JNDI_DATA_SOURCE_1 = "java:comp/env/jdbc/jndi1";
     
     @Resource
     private DataSource dataSource;
@@ -62,15 +58,13 @@ public class SpringBootJNDITest {
     @BeforeClass
     public static void setUpBeforeClass() {
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, TestJndiInitialContextFactory.class.getName());
-        dataSource0 = createNewDataSource("jndi0");
-        dataSource1 = createNewDataSource("jndi1");
-        TestJndiInitialContextFactory.bind(JNDI_DATASOURCE_0, dataSource0);
-        TestJndiInitialContextFactory.bind(JNDI_DATASOURCE_1, dataSource1);
+        TestJndiInitialContextFactory.bind(JNDI_DATA_SOURCE_0, createNewDataSource("jndi0"));
+        TestJndiInitialContextFactory.bind(JNDI_DATA_SOURCE_1, createNewDataSource("jndi1"));
     }
     
     private static DataSource createNewDataSource(final String dsName) {
         BasicDataSource result = new BasicDataSource();
-        result.setUrl(String.format(TEST_DATASOURCE_URL, dsName));
+        result.setUrl(String.format(TEST_DATA_SOURCE_URL, dsName));
         result.setUsername("sa");
         result.setPassword("");
         result.setDriverClassName("org.h2.Driver");
@@ -84,8 +78,8 @@ public class SpringBootJNDITest {
         assertThat(dataSourceMap.size(), is(2));
         assertTrue(dataSourceMap.containsKey("jndi0"));
         assertTrue(dataSourceMap.containsKey("jndi1"));
-        assertDatasource(dataSourceMap.get("jndi0"), String.format(TEST_DATASOURCE_URL, "jndi0"));
-        assertDatasource(dataSourceMap.get("jndi1"), String.format(TEST_DATASOURCE_URL, "jndi1"));
+        assertDatasource(dataSourceMap.get("jndi0"), String.format(TEST_DATA_SOURCE_URL, "jndi0"));
+        assertDatasource(dataSourceMap.get("jndi1"), String.format(TEST_DATA_SOURCE_URL, "jndi1"));
     }
     
     private void assertDatasource(final DataSource actualDatasource, final String expectedJDBCUrl) throws SQLException {

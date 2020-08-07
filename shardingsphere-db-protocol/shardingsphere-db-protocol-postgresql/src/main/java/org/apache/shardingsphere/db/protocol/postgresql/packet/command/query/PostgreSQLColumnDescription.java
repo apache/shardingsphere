@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLArrayColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
+
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  * Column description for PostgreSQL.
@@ -56,9 +57,9 @@ public final class PostgreSQLColumnDescription {
             } catch (final SQLException ex) {
                 log.error("getColumnTypeName failed, columnName={}, columnIndex={}", columnName, columnIndex, ex);
             }
-            this.typeOID = PostgreSQLArrayColumnType.getTypeOidByColumnTypeName(columnTypeName);
+            typeOID = PostgreSQLArrayColumnType.getTypeOidByColumnTypeName(columnTypeName);
         } else {
-            this.typeOID = PostgreSQLColumnType.valueOfJDBCType(columnType).getValue();
+            typeOID = PostgreSQLColumnType.valueOfJDBCType(columnType).getValue();
         }
         this.columnLength = columnLength;
     }

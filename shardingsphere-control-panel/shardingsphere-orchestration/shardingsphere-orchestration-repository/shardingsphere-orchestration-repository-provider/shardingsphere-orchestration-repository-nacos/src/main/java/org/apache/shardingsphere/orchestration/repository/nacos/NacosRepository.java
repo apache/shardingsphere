@@ -63,8 +63,8 @@ public final class NacosRepository implements ConfigurationRepository {
         try {
             nacosProperties = new NacosProperties(props);
             Properties props = new Properties();
-            props.put(PropertyKeyConst.SERVER_ADDR, config.getServerLists());
-            props.put(PropertyKeyConst.NAMESPACE, null == namespace ? "" : namespace);
+            props.setProperty(PropertyKeyConst.SERVER_ADDR, config.getServerLists());
+            props.setProperty(PropertyKeyConst.NAMESPACE, null == namespace ? "" : namespace);
             configService = NacosFactory.createConfigService(props);
         } catch (final NacosException ex) {
             log.error("Init nacos config center exception for: {}", ex.toString());

@@ -79,7 +79,7 @@ public class ShadowUser implements Serializable {
         return shadow;
     }
     
-    public void setShadow(boolean shadow) {
+    public void setShadow(final boolean shadow) {
         this.shadow = shadow;
     }
     

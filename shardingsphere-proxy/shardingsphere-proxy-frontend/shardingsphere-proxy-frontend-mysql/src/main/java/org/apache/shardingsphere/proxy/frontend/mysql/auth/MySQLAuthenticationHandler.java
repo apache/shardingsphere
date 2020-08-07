@@ -88,7 +88,7 @@ public final class MySQLAuthenticationHandler {
     }
     
     private byte[] xor(final byte[] input, final byte[] secret) {
-        final byte[] result = new byte[input.length];
+        byte[] result = new byte[input.length];
         for (int i = 0; i < input.length; ++i) {
             result[i] = (byte) (input[i] ^ secret[i]);
         }

@@ -82,13 +82,13 @@ public final class PreparedStatementExecutor {
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException { 
                 return createQueryResult(statement, connectionMode);
             }
+            
+            private QueryResult createQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                PreparedStatement preparedStatement = (PreparedStatement) statement;
+                ResultSet resultSet = preparedStatement.executeQuery();
+                return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
+            }
         };
-    }
-    
-    private QueryResult createQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-        PreparedStatement preparedStatement = (PreparedStatement) statement;
-        ResultSet resultSet = preparedStatement.executeQuery();
-        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     
     /**

@@ -35,7 +35,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
-import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import javax.sql.DataSource;
@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Table slice execute task.
  */
 @Slf4j
-public final class InventoryDataScalingTask extends AbstractShardingScalingExecutor implements ScalingTask {
+public final class InventoryDataScalingTask extends AbstractShardingScalingExecutor<InventoryPosition> implements ScalingTask<InventoryPosition> {
     
     private final SyncConfiguration syncConfiguration;
     
@@ -66,6 +66,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
         this(syncConfiguration, new DataSourceManager());
     }
     
+    @SuppressWarnings("unchecked")
     public InventoryDataScalingTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = dataSourceManager;
@@ -84,7 +85,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
         instanceDumper();
         Importer importer = ImporterFactory.newInstance(syncConfiguration.getImporterConfiguration(), dataSourceManager);
         instanceChannel(importer);
-        Future future = ScalingContext.getInstance().getImporterExecuteEngine().submit(importer, new ExecuteCallback() {
+        Future<?> future = ScalingContext.getInstance().getImporterExecuteEngine().submit(importer, new ExecuteCallback() {
             
             @Override
             public void onSuccess() {
@@ -110,7 +111,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
                     .executeQuery();
             resultSet.next();
             estimatedRows = resultSet.getInt(1);
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new SyncTaskExecuteException("get estimated rows error.", ex);
         }
     }
@@ -126,10 +127,8 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
             for (Record record : records) {
                 if (record instanceof DataRecord) {
                     count++;
-                } else if (record instanceof FinishedRecord) {
-                    if (record.getPosition() instanceof PrimaryKeyPosition) {
-                        getPositionManager().updateCurrentPosition(record.getPosition());
-                    }
+                } else if (record instanceof FinishedRecord && record.getPosition() instanceof InventoryPosition) {
+                    getPositionManager().setPosition((InventoryPosition) record.getPosition());
                 }
             }
             syncedRows.addAndGet(count);
@@ -138,11 +137,11 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
         importer.setChannel(channel);
     }
     
-    private void waitForResult(final Future future) {
+    private void waitForResult(final Future<?> future) {
         try {
             future.get();
-        } catch (InterruptedException ignored) {
-        } catch (ExecutionException ex) {
+        } catch (final InterruptedException ignored) {
+        } catch (final ExecutionException ex) {
             throw new SyncTaskExecuteException(String.format("Task %s execute failed ", getTaskId()), ex.getCause());
         }
     }

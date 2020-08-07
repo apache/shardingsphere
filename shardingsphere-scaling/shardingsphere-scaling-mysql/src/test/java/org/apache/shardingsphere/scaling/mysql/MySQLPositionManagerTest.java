@@ -62,7 +62,7 @@ public final class MySQLPositionManagerTest {
     @Test
     public void assertGetCurrentPosition() {
         MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(dataSource);
-        BinlogPosition actual = mysqlPositionManager.getCurrentPosition();
+        BinlogPosition actual = mysqlPositionManager.getPosition();
         assertThat(actual.getServerId(), is(SERVER_ID));
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));
@@ -72,8 +72,8 @@ public final class MySQLPositionManagerTest {
     public void assertUpdateCurrentPosition() {
         MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(dataSource);
         BinlogPosition expected = new BinlogPosition(LOG_FILE_NAME, LOG_POSITION, SERVER_ID);
-        mysqlPositionManager.updateCurrentPosition(expected);
-        assertThat(mysqlPositionManager.getCurrentPosition(), is(expected));
+        mysqlPositionManager.setPosition(expected);
+        assertThat(mysqlPositionManager.getPosition(), is(expected));
     }
     
     private PreparedStatement mockPositionStatement() throws SQLException {

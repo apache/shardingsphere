@@ -34,7 +34,7 @@ public final class SetParameterMethodInvocation extends JdbcMethodInvocation {
     
     public SetParameterMethodInvocation(final Method method, final Object[] arguments, final Object value) {
         super(method, arguments);
-        this.index = (int) arguments[0];
+        index = (int) arguments[0];
         this.value = value;
     }
     

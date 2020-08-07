@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class JDBCDriverURLRecognizerEngineTest {
@@ -61,8 +61,8 @@ public final class JDBCDriverURLRecognizerEngineTest {
     @Test
     public void assertGetJDBCDriverURLRecognizerForP6spy() {
         JDBCDriverURLRecognizer driverURLRecognizer = JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer("jdbc:p6spy:mysql:xxx");
-        assertEquals(driverURLRecognizer.getDatabaseType(), new MySQLDatabaseType().getName());
-        assertEquals(driverURLRecognizer.getDriverClassName(), "com.p6spy.engine.spy.P6SpyDriver");
+        assertThat(driverURLRecognizer.getDatabaseType(), is(new MySQLDatabaseType().getName()));
+        assertThat(driverURLRecognizer.getDriverClassName(), is("com.p6spy.engine.spy.P6SpyDriver"));
     }
     
     @Test(expected = ShardingSphereException.class)

@@ -81,7 +81,7 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
     public MySQLColumnDefinition41Packet(final int sequenceId, final int flags, final String schema, final String table, final String orgTable,
                                          final String name, final String orgName, final int columnLength, final MySQLColumnType columnType, final int decimals) {
         this.sequenceId = sequenceId;
-        this.characterSet = MySQLServerInfo.CHARSET;
+        characterSet = MySQLServerInfo.CHARSET;
         this.flags = flags;
         this.schema = schema;
         this.table = table;

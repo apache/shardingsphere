@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.scaling.postgresql;
 
 import lombok.Setter;
-
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalEventConverter;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
@@ -44,7 +43,7 @@ import java.sql.SQLException;
 /**
  * PostgreSQL WAL dumper.
  */
-public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor implements LogDumper {
+public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<WalPosition> implements LogDumper {
     
     private final WalPosition walPosition;
     
@@ -87,14 +86,14 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
                     try {
                         Thread.sleep(10L);
                         continue;
-                    } catch (InterruptedException ignored) {
+                    } catch (final InterruptedException ignored) {
                     
                     }
                 }
                 AbstractWalEvent event = decodingPlugin.decode(msg, stream.getLastReceiveLSN());
                 pushRecord(channel, walEventConverter.convert(event));
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new SyncTaskExecuteException(ex);
         }
     }
@@ -102,8 +101,7 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
     private void pushRecord(final Channel channel, final Record record) {
         try {
             channel.pushRecord(record);
-        } catch (InterruptedException ignored) {
-        
+        } catch (final InterruptedException ignored) {
         }
     }
 }

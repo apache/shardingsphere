@@ -67,8 +67,8 @@ public final class DataNode {
             return false;
         }
         DataNode dataNode = (DataNode) object;
-        return Objects.equal(this.dataSourceName.toUpperCase(), dataNode.dataSourceName.toUpperCase())
-            && Objects.equal(this.tableName.toUpperCase(), dataNode.tableName.toUpperCase());
+        return Objects.equal(dataSourceName.toUpperCase(), dataNode.dataSourceName.toUpperCase())
+            && Objects.equal(tableName.toUpperCase(), dataNode.tableName.toUpperCase());
     }
     
     @Override

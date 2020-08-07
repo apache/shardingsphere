@@ -96,8 +96,8 @@ public abstract class AbstractBaseExecutorTest {
         return result;
     }
 
-    protected final SQLStatementContext getSQLStatementContext() {
-        SQLStatementContext result = mock(SQLStatementContext.class);
+    protected final SQLStatementContext<?> getSQLStatementContext() {
+        SQLStatementContext<?> result = mock(SQLStatementContext.class);
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getTableNames()).thenReturn(Collections.singleton("table_x"));
         when(result.getTablesContext()).thenReturn(tablesContext);

@@ -29,7 +29,7 @@ import java.util.Collections;
 public final class PostgreSQLComSyncExecutor implements CommandExecutor {
     
     @Override
-    public Collection<DatabasePacket> execute() {
+    public Collection<DatabasePacket<?>> execute() {
         return Collections.emptyList();
     }
 }

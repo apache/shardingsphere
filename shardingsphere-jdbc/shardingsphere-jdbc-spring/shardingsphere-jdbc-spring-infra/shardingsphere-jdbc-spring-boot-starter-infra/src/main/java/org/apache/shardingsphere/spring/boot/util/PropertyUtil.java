@@ -38,7 +38,7 @@ public final class PropertyUtil {
     static {
         try {
             Class.forName("org.springframework.boot.bind.RelaxedPropertyResolver");
-        } catch (ClassNotFoundException ignored) {
+        } catch (final ClassNotFoundException ignored) {
             springBootVersion = 2;
         }
     }
@@ -85,18 +85,18 @@ public final class PropertyUtil {
         String prefixParam = prefix.endsWith(".") ? prefix : prefix + ".";
         Method getPropertyMethod = resolverClass.getDeclaredMethod("getProperty", String.class);
         Map<String, Object> dataSourceProps = (Map<String, Object>) getSubPropertiesMethod.invoke(resolverObject, prefixParam);
-        Map<String, Object> propertiesWithPlaceholderResolved = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(dataSourceProps.size(), 1);
         for (Entry<String, Object> entry : dataSourceProps.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
             if (handlePlaceholder && value instanceof String && ((String) value).contains(PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_PREFIX)) {
                 String resolvedValue = (String) getPropertyMethod.invoke(resolverObject, prefixParam + key);
-                propertiesWithPlaceholderResolved.put(key, resolvedValue);
+                result.put(key, resolvedValue);
             } else {
-                propertiesWithPlaceholderResolved.put(key, value);
+                result.put(key, value);
             }
         }
-        return propertiesWithPlaceholderResolved;
+        return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

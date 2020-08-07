@@ -25,6 +25,7 @@ import org.springframework.core.env.Environment;
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * DBCP datasource properties setter.
@@ -41,12 +42,12 @@ public abstract class AbstractDbcp2DataSourcePropertiesSetter implements DataSou
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public void propertiesSet(final Environment environment, final String prefix, final String dataSourceName, final DataSource dataSource) {
-        String datasourcePropertiesPrefix = prefix + dataSourceName.trim() + ".connection-properties";
-        if (PropertyUtil.containPropertyPrefix(environment, datasourcePropertiesPrefix)) {
-            Map datasourceProperties = PropertyUtil.handle(environment, datasourcePropertiesPrefix, Map.class);
+        String datasourcePropPrefix = prefix + dataSourceName.trim() + ".connection-properties";
+        if (PropertyUtil.containPropertyPrefix(environment, datasourcePropPrefix)) {
+            Map<?, ?> datasourceProperties = PropertyUtil.handle(environment, datasourcePropPrefix, Map.class);
             Method method = dataSource.getClass().getMethod("addConnectionProperty", String.class, String.class);
-            for (Object each : datasourceProperties.keySet()) {
-                method.invoke(dataSource, each, datasourceProperties.get(each));
+            for (final Entry<?, ?> entry : datasourceProperties.entrySet()) {
+                method.invoke(dataSource, entry.getKey(), entry.getValue());
             }
         }
     }

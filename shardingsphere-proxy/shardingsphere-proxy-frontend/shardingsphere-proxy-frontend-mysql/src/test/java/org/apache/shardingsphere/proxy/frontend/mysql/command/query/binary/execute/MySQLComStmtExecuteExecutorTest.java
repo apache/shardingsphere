@@ -63,7 +63,6 @@ public class MySQLComStmtExecuteExecutorTest {
         when(backendConnection.getSchema()).thenReturn(schema);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
-        when(sqlException.getCause()).thenReturn(new Exception());
         when(databaseCommunicationEngine.execute()).thenReturn(new ErrorResponse(sqlException));
         mysqlComStmtExecuteExecutor.execute();
         assertThat(mysqlComStmtExecuteExecutor.isErrorResponse(), Matchers.is(true));

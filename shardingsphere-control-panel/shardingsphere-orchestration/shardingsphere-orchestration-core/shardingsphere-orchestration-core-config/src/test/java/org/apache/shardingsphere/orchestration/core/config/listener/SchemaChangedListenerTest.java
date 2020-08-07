@@ -108,8 +108,8 @@ public final class SchemaChangedListenerTest {
         RuleConfigurationsChangedEvent event = (RuleConfigurationsChangedEvent) actual;
         assertThat(event.getShardingSchemaName(), is("masterslave_db"));
         assertThat(event.getRuleConfigurations().iterator().next(), instanceOf(MasterSlaveRuleConfiguration.class));
-        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = (MasterSlaveRuleConfiguration) event.getRuleConfigurations().iterator().next();
-        assertThat(masterSlaveRuleConfiguration.getDataSources().iterator().next().getMasterDataSourceName(), is("master_ds"));
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = (MasterSlaveRuleConfiguration) event.getRuleConfigurations().iterator().next();
+        assertThat(masterSlaveRuleConfig.getDataSources().iterator().next().getMasterDataSourceName(), is("master_ds"));
     }
     
     @Test
@@ -121,11 +121,11 @@ public final class SchemaChangedListenerTest {
         RuleConfigurationsChangedEvent event = (RuleConfigurationsChangedEvent) actual;
         assertThat(event.getShardingSchemaName(), is("encrypt_db"));
         assertThat(event.getRuleConfigurations().iterator().next(), instanceOf(EncryptRuleConfiguration.class));
-        EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) event.getRuleConfigurations().iterator().next();
-        assertThat(encryptRuleConfiguration.getEncryptors().size(), is(1));
-        ShardingSphereAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptors().get("order_encryptor");
-        assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
-        assertThat(encryptAlgorithmConfiguration.getProps().get("aes.key.value").toString(), is("123456"));
+        EncryptRuleConfiguration encryptRuleConfig = (EncryptRuleConfiguration) event.getRuleConfigurations().iterator().next();
+        assertThat(encryptRuleConfig.getEncryptors().size(), is(1));
+        ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = encryptRuleConfig.getEncryptors().get("order_encryptor");
+        assertThat(encryptAlgorithmConfig.getType(), is("AES"));
+        assertThat(encryptAlgorithmConfig.getProps().get("aes.key.value"), is(123456));
     }
     
     @Test
@@ -133,7 +133,7 @@ public final class SchemaChangedListenerTest {
         when(configurationRepository.get("/test/config/schema/logic_db/datasource")).thenReturn("");
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/rule", "rule", ChangedType.UPDATED);
         OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
-        assertThat(actual, instanceOf(IgnoredOrchestrationEvent.class));
+        assertThat(actual, instanceOf(SchemaAddedEvent.class));
     }
     
     @Test

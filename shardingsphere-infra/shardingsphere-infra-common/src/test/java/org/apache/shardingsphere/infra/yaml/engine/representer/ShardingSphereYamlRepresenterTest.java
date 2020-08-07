@@ -20,15 +20,26 @@ package org.apache.shardingsphere.infra.yaml.engine.representer;
 import org.apache.shardingsphere.infra.yaml.engine.fixture.DefaultYamlRepresenterFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.introspector.MethodProperty;
+import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.NodeTuple;
+import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.nodes.SequenceNode;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereYamlRepresenterTest {
     
@@ -60,5 +71,20 @@ public final class ShardingSphereYamlRepresenterTest {
         assertThat(expected, containsString("collection:\n- value1\n- value2\n"));
         assertThat(expected, containsString("map:\n  key1: value1\n  key2: value2\n"));
         assertThat(expected, containsString("value: value\n"));
+    }
+    
+    @Test
+    public void assertRepresentJavaBeanProperty() throws IntrospectionException {
+        ShardingSphereYamlRepresenter shardingSphereYamlRepresenter = new ShardingSphereYamlRepresenter();
+        DefaultYamlRepresenterFixture javaBean = new DefaultYamlRepresenterFixture();
+        PropertyDescriptor propertyDescriptor = new PropertyDescriptor("collection", DefaultYamlRepresenterFixture.class);
+        MethodProperty methodProperty = new MethodProperty(propertyDescriptor);
+        List<String> propertyValue = new ArrayList<>(2);
+        propertyValue.add("value1");
+        propertyValue.add("value2");
+        NodeTuple actual = shardingSphereYamlRepresenter.representJavaBeanProperty(javaBean, methodProperty, propertyValue, null);
+        List<Node> nodes = ((SequenceNode) actual.getValueNode()).getValue();
+        assertThat(nodes.size(), is(2));
+        assertTrue(nodes.stream().map(node -> ((ScalarNode) node).getValue()).collect(Collectors.toList()).containsAll(propertyValue));
     }
 }

@@ -20,7 +20,7 @@ lexer grammar Literals;
 import Alphabet, Symbol;
 
 IDENTIFIER
-    : [A-Za-z$0-9]*?[A-Za-z$]+?[A-Za-z$0-9]*
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
     | BQ ~'`'+ BQ
     | (DQ ( '\\'. | '""' | ~('"'| '\\') )* DQ)
     ;

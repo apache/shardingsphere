@@ -22,8 +22,8 @@ import com.ctrip.framework.apollo.enums.PropertyChangeType;
 import com.ctrip.framework.apollo.mockserver.EmbeddedApollo;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import com.google.common.util.concurrent.SettableFuture;
-import org.apache.shardingsphere.orchestration.repository.apollo.ApolloProperties;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.apollo.ApolloProperties;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -31,7 +31,9 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.util.Collections;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -61,8 +63,8 @@ public final class ApolloConfigWrapperTest {
     }
     
     @Test
-    public void assertAddChangeListener() throws Exception {
-        final SettableFuture<ConfigChangeEvent> future = SettableFuture.create();
+    public void assertAddChangeListener() throws InterruptedException, TimeoutException, ExecutionException {
+        SettableFuture<ConfigChangeEvent> future = SettableFuture.create();
         ConfigChangeListener listener = future::set;
         configWrapper.addChangeListener(listener, Collections.singleton("test.children.2"));
         embeddedApollo.addOrModifyProperty("orchestration", "test.children.2", "value3");
@@ -74,8 +76,8 @@ public final class ApolloConfigWrapperTest {
     }
     
     @Test
-    public void assertAddChangeListenerWithInterestedKeyPrefixes() throws Exception {
-        final SettableFuture<ConfigChangeEvent> future = SettableFuture.create();
+    public void assertAddChangeListenerWithInterestedKeyPrefixes() throws InterruptedException, TimeoutException, ExecutionException {
+        SettableFuture<ConfigChangeEvent> future = SettableFuture.create();
         ConfigChangeListener listener = future::set;
         configWrapper.addChangeListener(listener, Collections.singleton("test.children.1"), Collections.singleton("test.children.2"));
         embeddedApollo.addOrModifyProperty("orchestration", "test.children.2.1", "value4");

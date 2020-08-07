@@ -56,8 +56,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     }
     
     @Override
-    public Collection<DatabasePacket> execute() {
-        Collection<DatabasePacket> result = new LinkedList<>();
+    public Collection<DatabasePacket<?>> execute() {
+        Collection<DatabasePacket<?>> result = new LinkedList<>();
         int currentSequenceId = 0;
         SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {

@@ -58,7 +58,7 @@ public final class SimpleShadowDataSourceRouter implements ShadowDataSourceRoute
                 return false;
             }
             List<Object> values = shadowCondition.get().getValues(Collections.emptyList());
-            return values.size() != 0 && isShadowField(values.get(0));
+            return !values.isEmpty() && isShadowField(values.get(0));
         }
         return false;
     }

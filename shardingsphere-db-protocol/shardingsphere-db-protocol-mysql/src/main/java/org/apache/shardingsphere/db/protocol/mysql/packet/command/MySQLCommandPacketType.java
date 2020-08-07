@@ -260,8 +260,8 @@ public enum MySQLCommandPacketType implements CommandPacketType {
     private final int value;
     
     static {
-        for (MySQLCommandPacketType each : MySQLCommandPacketType.values()) {
-            MYSQL_COMMAND_PACKET_TYPE_CACHE.put(each.getValue(), each);
+        for (MySQLCommandPacketType each : values()) {
+            MYSQL_COMMAND_PACKET_TYPE_CACHE.put(each.value, each);
         }
     }
     

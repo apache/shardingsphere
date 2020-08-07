@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -43,7 +44,7 @@ public final class DistinctAverageAggregationUnit implements AggregationUnit {
         if (null == values || null == values.get(0) || null == values.get(1)) {
             return;
         }
-        if (this.countValues.add(values.get(0)) && this.sumValues.add(values.get(0))) {
+        if (countValues.add(values.get(0)) && sumValues.add(values.get(0))) {
             if (null == count) {
                 count = new BigDecimal("0");
             }
@@ -61,6 +62,6 @@ public final class DistinctAverageAggregationUnit implements AggregationUnit {
             return count;
         }
         // TODO use metadata to fetch float number precise for database field
-        return sum.divide(count, 4, BigDecimal.ROUND_HALF_UP);
+        return sum.divide(count, 4, RoundingMode.HALF_UP);
     }
 }

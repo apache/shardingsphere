@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.transaction.core;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Hold transaction type for current thread.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TransactionTypeHolder {
     
     private static final ThreadLocal<TransactionType> CONTEXT = ThreadLocal.withInitial(() -> TransactionType.LOCAL);

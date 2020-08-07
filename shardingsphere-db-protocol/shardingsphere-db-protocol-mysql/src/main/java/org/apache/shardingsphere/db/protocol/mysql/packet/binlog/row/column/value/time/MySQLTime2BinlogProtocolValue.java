@@ -41,6 +41,6 @@ public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolV
             return MySQLTimeValueUtil.ZERO_OF_TIME;
         }
         MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-        return String.format("%02d:%02d:%02d%s", (time >> 12) % (1 << 10), (time >> 6) % (1 << 6), time % (1 << 6), fractionalSeconds.toString());
+        return String.format("%02d:%02d:%02d%s", (time >> 12) % (1 << 10), (time >> 6) % (1 << 6), time % (1 << 6), fractionalSeconds);
     }
 }

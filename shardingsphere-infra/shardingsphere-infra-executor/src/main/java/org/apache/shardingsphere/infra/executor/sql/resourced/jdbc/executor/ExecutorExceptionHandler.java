@@ -39,7 +39,7 @@ public final class ExecutorExceptionHandler {
      * @param isExceptionThrown throw exception if error occur or not
      */
     public static void setExceptionThrown(final boolean isExceptionThrown) {
-        ExecutorExceptionHandler.IS_EXCEPTION_THROWN.set(isExceptionThrown);
+        IS_EXCEPTION_THROWN.set(isExceptionThrown);
     }
     
     /**

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
+import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 
 /**
  * PostgreSQL scaling entry.
@@ -40,7 +41,7 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends PositionManager> getPositionManager() {
+    public Class<? extends PositionManager<WalPosition>> getPositionManager() {
         return PostgreSQLPositionManager.class;
     }
     

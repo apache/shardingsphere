@@ -98,7 +98,7 @@ public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
      * @param mysqlAuthenticationMethod MySQL authentication method
      */
     public void setAuthPluginName(final MySQLAuthenticationMethod mysqlAuthenticationMethod) {
-        this.authPluginName = mysqlAuthenticationMethod.getMethodName();
+        authPluginName = mysqlAuthenticationMethod.getMethodName();
         capabilityFlags |= MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue();
     }
     
