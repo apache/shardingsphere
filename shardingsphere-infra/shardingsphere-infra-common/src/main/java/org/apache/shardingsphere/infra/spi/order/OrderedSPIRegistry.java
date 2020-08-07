@@ -41,8 +41,9 @@ public final class OrderedSPIRegistry {
      * @return registered services
      */
     public static <T extends OrderedSPI<?>> Map<Class<?>, T> getRegisteredServicesByClass(final Collection<Class<?>> types, final Class<T> orderedSPIClass) {
-        Map<Class<?>, T> result = new LinkedHashMap<>();
-        for (T each : getRegisteredServices(orderedSPIClass)) {
+        Collection<T> registeredServices = getRegisteredServices(orderedSPIClass);
+        Map<Class<?>, T> result = new LinkedHashMap<>(registeredServices.size(), 1);
+        for (T each : registeredServices) {
             types.stream().filter(type -> ((OrderedSPI<?>) each).getTypeClass() == type).forEach(type -> result.put(type, each));
         }
         return result;
@@ -58,8 +59,9 @@ public final class OrderedSPIRegistry {
      * @return registered services
      */
     public static <K, V extends OrderedSPI<?>> Map<K, V> getRegisteredServices(final Collection<K> types, final Class<V> orderedSPIClass) {
-        Map<K, V> result = new LinkedHashMap<>();
-        for (V each : getRegisteredServices(orderedSPIClass)) {
+        Collection<V> registeredServices = getRegisteredServices(orderedSPIClass);
+        Map<K, V> result = new LinkedHashMap<>(registeredServices.size(), 1);
+        for (V each : registeredServices) {
             types.stream().filter(type -> each.getTypeClass() == type.getClass()).forEach(type -> result.put(type, each));
         }
         return result;
