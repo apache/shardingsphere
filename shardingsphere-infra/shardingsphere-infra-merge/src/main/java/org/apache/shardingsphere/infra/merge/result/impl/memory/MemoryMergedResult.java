@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.merge.result.impl.memory;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -40,7 +39,6 @@ import java.util.List;
  *
  * @param <T> type of rule
  */
-@RequiredArgsConstructor
 public abstract class MemoryMergedResult<T extends ShardingSphereRule> implements MergedResult {
     
     private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
@@ -71,7 +69,7 @@ public abstract class MemoryMergedResult<T extends ShardingSphereRule> implement
     @Override
     public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
-            throw new SQLFeatureNotSupportedException();
+            throw new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName()));
         }
         Object result = currentResultSetRow.getCell(columnIndex);
         wasNull = null == result;
@@ -88,7 +86,7 @@ public abstract class MemoryMergedResult<T extends ShardingSphereRule> implement
     
     @Override
     public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        throw new SQLFeatureNotSupportedException(String.format("Get input stream from `%s`", type));
     }
     
     @Override

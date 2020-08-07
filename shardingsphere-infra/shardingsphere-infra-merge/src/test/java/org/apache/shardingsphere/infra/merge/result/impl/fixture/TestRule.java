@@ -19,8 +19,5 @@ package org.apache.shardingsphere.infra.merge.result.impl.fixture;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-/**
- * Rule for test.
- */
 public final class TestRule implements ShardingSphereRule {
 }
