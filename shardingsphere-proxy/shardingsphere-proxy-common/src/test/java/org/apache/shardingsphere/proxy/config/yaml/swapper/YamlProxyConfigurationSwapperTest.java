@@ -159,7 +159,7 @@ public class YamlProxyConfigurationSwapperTest {
         //prepare for orchestration
         YamlOrchestrationConfiguration yamlOrchestrationConfiguration = mock(YamlOrchestrationConfiguration.class);
         when(yamlProxyServerConfiguration.getOrchestration()).thenReturn(yamlOrchestrationConfiguration);
-        when(yamlOrchestrationConfiguration.getNamespace()).thenReturn("test1");
+        when(yamlOrchestrationConfiguration.getName()).thenReturn("test1");
 
         //registryCenter
         YamlOrchestrationCenterConfiguration registryCenterConfiguration = mock(YamlOrchestrationCenterConfiguration.class);
