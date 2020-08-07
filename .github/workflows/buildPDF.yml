@@ -2,7 +2,7 @@ name: build docs PDF
 on:
   push:
     branches:
-    - caystemp
+    - master
     paths:
     - 'docs/document/content/**'
 jobs:
