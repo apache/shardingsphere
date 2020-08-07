@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.update.ExecuteUpdateResult;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -80,5 +81,28 @@ public final class RawJDBCExecutorTest {
         RawJDBCExecutor executor = new RawJDBCExecutor(kernel, true);
         int actual = executor.executeUpdate(null, null);
         assertThat(actual, is(4));
+    }
+    
+    @Test
+    @SneakyThrows(value = SQLException.class)
+    public void assertExecuteNotThrownSQLException() {
+        ExecutorKernel kernel = mock(ExecutorKernel.class);
+        when(kernel.execute(any(), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
+        RawJDBCExecutor rawJDBCExecutor = new RawJDBCExecutor(kernel, false);
+        ExecutorExceptionHandler.setExceptionThrown(false);
+        boolean actual = rawJDBCExecutor.execute(Collections.EMPTY_LIST, null);
+        assertThat(actual, is(false));
+    }
+    
+    @Test
+    public void assertExecuteSQLException() {
+        try {
+            ExecutorKernel kernel = mock(ExecutorKernel.class);
+            when(kernel.execute(any(), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
+            RawJDBCExecutor rawJDBCExecutor = new RawJDBCExecutor(kernel, false);
+            rawJDBCExecutor.execute(Collections.EMPTY_LIST, null);
+        } catch (SQLException e) {
+            assertThat(e.getMessage(), is("TestSQLException"));
+        }
     }
 }

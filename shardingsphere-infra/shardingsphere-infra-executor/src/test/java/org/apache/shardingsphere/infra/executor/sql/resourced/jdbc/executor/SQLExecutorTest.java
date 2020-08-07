@@ -58,4 +58,15 @@ public final class SQLExecutorTest {
             assertThat(e.getMessage(), is("TestSQLException"));
         }
     }
+    
+    @Test
+    @SneakyThrows(value = SQLException.class)
+    public void assertExecuteNotThrownSQLException() {
+        ExecutorKernel kernel = mock(ExecutorKernel.class);
+        when(kernel.execute(anyCollection(), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
+        SQLExecutor sqlExecutor = new SQLExecutor(kernel, false);
+        ExecutorExceptionHandler.setExceptionThrown(false);
+        List actual = sqlExecutor.execute(Collections.EMPTY_LIST, null);
+        assertThat(actual, is(Collections.EMPTY_LIST));
+    }
 }
