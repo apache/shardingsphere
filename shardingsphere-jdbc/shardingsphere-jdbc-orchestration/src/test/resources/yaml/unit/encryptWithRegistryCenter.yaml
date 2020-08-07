@@ -16,7 +16,7 @@
 #
 
 orchestration:
-  namespace: test_encrypt_registry_name
+  name: test_encrypt_registry_name
   registryCenter:
     type: REG_TEST
     serverLists: localhost:3181
