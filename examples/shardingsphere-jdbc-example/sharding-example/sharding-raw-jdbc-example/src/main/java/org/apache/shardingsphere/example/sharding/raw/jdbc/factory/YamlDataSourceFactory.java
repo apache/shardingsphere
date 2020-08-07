@@ -33,6 +33,8 @@ public final class YamlDataSourceFactory {
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases.yaml"));
             case SHARDING_TABLES:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-tables.yaml"));
+            case SHARDING_TABLES_POSTGRESQL:
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-tables-postgresql.yaml"));
             case SHARDING_DATABASES_AND_TABLES:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables.yaml"));
             case MASTER_SLAVE:

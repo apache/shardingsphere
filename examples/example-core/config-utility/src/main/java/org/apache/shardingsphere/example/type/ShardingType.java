@@ -23,6 +23,8 @@ public enum ShardingType {
     
     SHARDING_TABLES,
     
+    SHARDING_TABLES_POSTGRESQL,
+    
     SHARDING_DATABASES_AND_TABLES,
     
     SHARDING_SHADOW_DATABASES,
