@@ -28,7 +28,7 @@ public final class ScalingConstant {
     public static final String INSERT = "INSERT";
     
     /**
-     * update flag.
+     * Update flag.
      */
     public static final String UPDATE = "UPDATE";
     

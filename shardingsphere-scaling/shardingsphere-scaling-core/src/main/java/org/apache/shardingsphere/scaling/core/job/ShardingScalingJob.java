@@ -24,12 +24,11 @@ import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
+import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus.RUNNING;
 
 /**
  * Sharding scaling out job.
@@ -53,5 +52,5 @@ public final class ShardingScalingJob {
     
     private final int shardingItem;
     
-    private String status = RUNNING.name();
+    private String status = SyncTaskControlStatus.RUNNING.name();
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.postgresql.wal.decode;
 
 import lombok.AllArgsConstructor;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
@@ -35,15 +36,11 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.DELETE;
-import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.INSERT;
-import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.UPDATE;
-
 /**
- * Default decoding plugin.
+ * Test decoding plugin.
  */
 @AllArgsConstructor
-public final class DefaultDecodingPlugin implements DecodingPlugin {
+public final class TestDecodingPlugin implements DecodingPlugin {
     
     private final TimestampUtils timestampUtils;
     
@@ -69,13 +66,13 @@ public final class DefaultDecodingPlugin implements DecodingPlugin {
         String tableName = readTableName(data);
         String rowEventType = readRowEventType(data);
         switch (rowEventType) {
-            case INSERT:
+            case ScalingConstant.INSERT:
                 result = readWriteRowEvent(data);
                 break;
-            case UPDATE:
+            case ScalingConstant.UPDATE:
                 result = readUpdateRowEvent(data);
                 break;
-            case DELETE:
+            case ScalingConstant.DELETE:
                 result = readDeleteRowEvent(data);
                 break;
             default:

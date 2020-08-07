@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
@@ -39,10 +40,6 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.DELETE;
-import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.INSERT;
-import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.UPDATE;
 
 /**
  * Abstract JDBC importer implementation.
@@ -126,13 +123,13 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
         if (DataRecord.class.equals(record.getClass())) {
             DataRecord dataRecord = (DataRecord) record;
             switch (dataRecord.getType()) {
-                case INSERT:
+                case ScalingConstant.INSERT:
                     executeInsert(connection, dataRecord);
                     break;
-                case UPDATE:
+                case ScalingConstant.UPDATE:
                     executeUpdate(connection, dataRecord);
                     break;
-                case DELETE:
+                case ScalingConstant.DELETE:
                     executeDelete(connection, dataRecord);
                     break;
                 default:

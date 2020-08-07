@@ -21,6 +21,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
@@ -49,10 +50,6 @@ import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.Objects;
 import java.util.Random;
-
-import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.DELETE;
-import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.INSERT;
-import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.UPDATE;
 
 /**
  * MySQL binlog dumper.
@@ -86,7 +83,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
         dump();
     }
     
-    public void dump() {
+    private void dump() {
         JDBCDataSourceConfiguration jdbcDataSourceConfig = (JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration();
         JdbcUri uri = new JdbcUri(jdbcDataSourceConfig.getJdbcUrl());
         MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfig.getUsername(), jdbcDataSourceConfig.getPassword()));
@@ -121,7 +118,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getAfterRows()) {
             DataRecord record = createDataRecord(event, each.length);
-            record.setType(INSERT);
+            record.setType(ScalingConstant.INSERT);
             for (int i = 0; i < each.length; i++) {
                 record.addColumn(new Column(tableMetaData.getColumnMetaData(i).getName(), each[i], true, tableMetaData.isPrimaryKey(i)));
             }
@@ -139,7 +136,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
             Serializable[] beforeValues = event.getBeforeRows().get(i);
             Serializable[] afterValues = event.getAfterRows().get(i);
             DataRecord record = createDataRecord(event, beforeValues.length);
-            record.setType(UPDATE);
+            record.setType(ScalingConstant.UPDATE);
             for (int j = 0; j < beforeValues.length; j++) {
                 Object oldValue = beforeValues[j];
                 Object newValue = afterValues[j];
@@ -157,7 +154,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getBeforeRows()) {
             DataRecord record = createDataRecord(event, each.length);
-            record.setType(DELETE);
+            record.setType(ScalingConstant.DELETE);
             for (int i = 0; i < each.length; i++) {
                 record.addColumn(new Column(tableMetaData.getColumnMetaData(i).getName(), each[i], true, tableMetaData.isPrimaryKey(i)));
             }

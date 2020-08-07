@@ -30,7 +30,7 @@ import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalEventConverter;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.DecodingPlugin;
-import org.apache.shardingsphere.scaling.postgresql.wal.decode.DefaultDecodingPlugin;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.TestDecodingPlugin;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
 import org.postgresql.PGConnection;
 import org.postgresql.jdbc.PgConnection;
@@ -71,10 +71,10 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<W
         dump();
     }
     
-    public void dump() {
+    private void dump() {
         try {
             PGConnection pgConnection = logicalReplication.createPgConnection((JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration());
-            DecodingPlugin decodingPlugin = new DefaultDecodingPlugin(((Connection) pgConnection).unwrap(PgConnection.class).getTimestampUtils());
+            DecodingPlugin decodingPlugin = new TestDecodingPlugin(((Connection) pgConnection).unwrap(PgConnection.class).getTimestampUtils());
             PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection,
                     PostgreSQLPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
             while (isRunning()) {
