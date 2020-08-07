@@ -271,3 +271,5 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 回答:
 
 1. 需要在spring-boot的引导类中添加 `@SpringBootApplication(exclude = JtaAutoConfiguration.class)`。
+
+   
