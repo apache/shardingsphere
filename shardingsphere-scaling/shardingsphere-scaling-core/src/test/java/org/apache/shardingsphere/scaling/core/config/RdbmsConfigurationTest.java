@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
-import org.apache.shardingsphere.scaling.core.config.utils.RdbmsConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.RdbmsConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.junit.Test;

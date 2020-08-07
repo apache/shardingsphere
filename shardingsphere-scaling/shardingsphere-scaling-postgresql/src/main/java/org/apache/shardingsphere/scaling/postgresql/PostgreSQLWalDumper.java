@@ -30,7 +30,7 @@ import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalEventConverter;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.DecodingPlugin;
-import org.apache.shardingsphere.scaling.postgresql.wal.decode.TestDecodingPlugin;
+import org.apache.shardingsphere.scaling.postgresql.wal.decode.DefaultDecodingPlugin;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
 import org.postgresql.PGConnection;
 import org.postgresql.jdbc.PgConnection;
@@ -48,8 +48,6 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<W
     private final WalPosition walPosition;
     
     private final RdbmsConfiguration rdbmsConfiguration;
-    
-    private DecodingPlugin decodingPlugin;
     
     private final LogicalReplication logicalReplication = new LogicalReplication();
     
@@ -70,35 +68,37 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<W
     @Override
     public void start() {
         super.start();
-        dump(channel);
+        dump();
     }
     
-    @Override
-    public void dump(final Channel channel) {
+    public void dump() {
         try {
             PGConnection pgConnection = logicalReplication.createPgConnection((JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration());
-            decodingPlugin = new TestDecodingPlugin(((Connection) pgConnection).unwrap(PgConnection.class).getTimestampUtils());
+            DecodingPlugin decodingPlugin = new DefaultDecodingPlugin(((Connection) pgConnection).unwrap(PgConnection.class).getTimestampUtils());
             PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection,
                     PostgreSQLPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
             while (isRunning()) {
                 ByteBuffer msg = stream.readPending();
                 if (msg == null) {
-                    try {
-                        Thread.sleep(10L);
-                        continue;
-                    } catch (final InterruptedException ignored) {
-                    
-                    }
+                    sleep();
+                    continue;
                 }
                 AbstractWalEvent event = decodingPlugin.decode(msg, stream.getLastReceiveLSN());
-                pushRecord(channel, walEventConverter.convert(event));
+                pushRecord(walEventConverter.convert(event));
             }
         } catch (final SQLException ex) {
             throw new SyncTaskExecuteException(ex);
         }
     }
     
-    private void pushRecord(final Channel channel, final Record record) {
+    private void sleep() {
+        try {
+            Thread.sleep(10L);
+        } catch (final InterruptedException ignored) {
+        }
+    }
+    
+    private void pushRecord(final Record record) {
         try {
             channel.pushRecord(record);
         } catch (final InterruptedException ignored) {

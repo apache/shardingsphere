@@ -40,6 +40,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.DELETE;
+import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.INSERT;
+import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.UPDATE;
+
 /**
  * Abstract JDBC importer implementation.
  */
@@ -122,14 +126,13 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
         if (DataRecord.class.equals(record.getClass())) {
             DataRecord dataRecord = (DataRecord) record;
             switch (dataRecord.getType()) {
-                case "BOOTSTRAP-INSERT":
-                case "INSERT":
+                case INSERT:
                     executeInsert(connection, dataRecord);
                     break;
-                case "UPDATE":
+                case UPDATE:
                     executeUpdate(connection, dataRecord);
                     break;
-                case "DELETE":
+                case DELETE:
                     executeDelete(connection, dataRecord);
                     break;
                 default:

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManagerFactory;
-import org.apache.shardingsphere.scaling.core.job.position.utils.InventoryPositionUtil;
+import org.apache.shardingsphere.scaling.core.utils.InventoryPositionUtil;
 
 import java.io.Closeable;
 import java.util.Map;

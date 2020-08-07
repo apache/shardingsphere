@@ -35,11 +35,15 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.DELETE;
+import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.INSERT;
+import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.UPDATE;
+
 /**
- * Test decoding plugin.
+ * Default decoding plugin.
  */
 @AllArgsConstructor
-public final class TestDecodingPlugin implements DecodingPlugin {
+public final class DefaultDecodingPlugin implements DecodingPlugin {
     
     private final TimestampUtils timestampUtils;
     
@@ -65,13 +69,13 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         String tableName = readTableName(data);
         String rowEventType = readRowEventType(data);
         switch (rowEventType) {
-            case "INSERT":
+            case INSERT:
                 result = readWriteRowEvent(data);
                 break;
-            case "UPDATE":
+            case UPDATE:
                 result = readUpdateRowEvent(data);
                 break;
-            case "DELETE":
+            case DELETE:
                 result = readDeleteRowEvent(data);
                 break;
             default:

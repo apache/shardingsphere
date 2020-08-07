@@ -23,7 +23,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.scaling.core.config.utils.RdbmsConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
@@ -38,6 +37,7 @@ import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
+import org.apache.shardingsphere.scaling.core.utils.RdbmsConfigurationUtil;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import java.sql.Connection;
@@ -45,6 +45,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+
+import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.INSERT;
 
 /**
  * Abstract JDBC dumper implement.
@@ -79,11 +81,10 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     @Override
     public final void start() {
         super.start();
-        dump(channel);
+        dump();
     }
     
-    @Override
-    public final void dump(final Channel channel) {
+    public final void dump() {
         try (Connection conn = dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()).getConnection()) {
             String sql = String.format("SELECT * FROM %s %s", rdbmsConfiguration.getTableName(), RdbmsConfigurationUtil.getWhereCondition(rdbmsConfiguration));
             PreparedStatement ps = createPreparedStatement(conn, sql);
@@ -91,7 +92,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
             ResultSetMetaData metaData = rs.getMetaData();
             while (isRunning() && rs.next()) {
                 DataRecord record = new DataRecord(newInventoryPosition(rs), metaData.getColumnCount());
-                record.setType("BOOTSTRAP-INSERT");
+                record.setType(INSERT);
                 record.setTableName(rdbmsConfiguration.getTableNameMap().get(rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
                     record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i)));

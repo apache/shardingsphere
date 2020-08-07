@@ -36,6 +36,10 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import java.util.List;
 
+import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.DELETE;
+import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.INSERT;
+import static org.apache.shardingsphere.scaling.core.constant.ScalingConstant.UPDATE;
+
 /**
  * Convert wal event to {@code Record}.
  */
@@ -92,14 +96,14 @@ public final class WalEventConverter {
     
     private DataRecord handleWriteRowsEvent(final WriteRowEvent writeRowEvent) {
         DataRecord record = createDataRecord(writeRowEvent, writeRowEvent.getAfterRow().size());
-        record.setType("INSERT");
+        record.setType(INSERT);
         putColumnsIntoDataRecord(record, metaDataManager.getTableMetaData(writeRowEvent.getTableName()), writeRowEvent.getAfterRow());
         return record;
     }
     
     private DataRecord handleUpdateRowsEvent(final UpdateRowEvent updateRowEvent) {
         DataRecord record = createDataRecord(updateRowEvent, updateRowEvent.getAfterRow().size());
-        record.setType("UPDATE");
+        record.setType(UPDATE);
         putColumnsIntoDataRecord(record, metaDataManager.getTableMetaData(updateRowEvent.getTableName()), updateRowEvent.getAfterRow());
         return record;
     }
@@ -107,7 +111,7 @@ public final class WalEventConverter {
     private DataRecord handleDeleteRowsEvent(final DeleteRowEvent event) {
         //TODO completion columns
         DataRecord record = createDataRecord(event, event.getPrimaryKeys().size());
-        record.setType("DELETE");
+        record.setType(DELETE);
         List<String> primaryKeyColumns = metaDataManager.getTableMetaData(event.getTableName()).getPrimaryKeyColumns();
         for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
             record.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), true, true));
