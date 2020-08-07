@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.postgresql.wal.decode;
 
 import lombok.AllArgsConstructor;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
@@ -65,13 +66,13 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         String tableName = readTableName(data);
         String rowEventType = readRowEventType(data);
         switch (rowEventType) {
-            case "INSERT":
+            case ScalingConstant.INSERT:
                 result = readWriteRowEvent(data);
                 break;
-            case "UPDATE":
+            case ScalingConstant.UPDATE:
                 result = readUpdateRowEvent(data);
                 break;
-            case "DELETE":
+            case ScalingConstant.DELETE:
                 result = readDeleteRowEvent(data);
                 break;
             default:

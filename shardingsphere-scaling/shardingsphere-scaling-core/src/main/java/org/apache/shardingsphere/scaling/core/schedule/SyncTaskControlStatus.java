@@ -28,6 +28,11 @@ import lombok.RequiredArgsConstructor;
 public enum SyncTaskControlStatus {
     
     /**
+     * Task is in running status.
+     */
+    RUNNING(false),
+    
+    /**
      * Task is in prepare status.
      */
     PREPARING(false),

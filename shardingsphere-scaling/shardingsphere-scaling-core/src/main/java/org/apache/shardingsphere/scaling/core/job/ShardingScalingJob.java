@@ -20,11 +20,11 @@ package org.apache.shardingsphere.scaling.core.job;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
+import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -52,5 +52,5 @@ public final class ShardingScalingJob {
     
     private final int shardingItem;
     
-    private String status = "RUNNING";
+    private String status = SyncTaskControlStatus.RUNNING.name();
 }
