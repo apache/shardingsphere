@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.merge.result.impl.decorator;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -29,7 +30,7 @@ import java.util.Calendar;
  * Decorator merged result.
  */
 @RequiredArgsConstructor
-@Getter
+@Getter(AccessLevel.PROTECTED)
 public abstract class DecoratorMergedResult implements MergedResult {
     
     private final MergedResult mergedResult;
