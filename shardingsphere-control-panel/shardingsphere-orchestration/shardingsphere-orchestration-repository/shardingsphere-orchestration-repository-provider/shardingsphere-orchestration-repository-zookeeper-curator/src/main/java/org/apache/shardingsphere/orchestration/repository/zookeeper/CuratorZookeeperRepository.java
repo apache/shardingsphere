@@ -64,9 +64,9 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     private Properties props = new Properties();
     
     @Override
-    public void init(final String namespace, final OrchestrationCenterConfiguration config) {
+    public void init(final String name, final OrchestrationCenterConfiguration config) {
         ZookeeperProperties zookeeperProperties = new ZookeeperProperties(props);
-        client = buildCuratorClient(namespace, config, zookeeperProperties);
+        client = buildCuratorClient(name, config, zookeeperProperties);
         initCuratorClient(zookeeperProperties);
     }
     

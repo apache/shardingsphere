@@ -32,7 +32,7 @@ public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<
     @Override
     public YamlOrchestrationConfiguration swapToYamlConfiguration(final OrchestrationConfiguration data) {
         YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();
-        result.setNamespace(data.getNamespace());
+        result.setName(data.getName());
         result.setRegistryCenter(orchestrationCenterConfigurationSwapper.swapToYamlConfiguration(data.getRegistryCenterConfiguration()));
         if (data.getAdditionalConfigCenterConfiguration().isPresent()) {
             result.setAdditionalConfigCenter(orchestrationCenterConfigurationSwapper.swapToYamlConfiguration(data.getAdditionalConfigCenterConfiguration().get()));
@@ -44,9 +44,9 @@ public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<
     public OrchestrationConfiguration swapToObject(final YamlOrchestrationConfiguration yamlConfig) {
         OrchestrationCenterConfiguration registryCenter = orchestrationCenterConfigurationSwapper.swapToObject(yamlConfig.getRegistryCenter());
         if (null == yamlConfig.getAdditionalConfigCenter()) {
-            return new OrchestrationConfiguration(yamlConfig.getNamespace(), registryCenter, yamlConfig.isOverwrite());
+            return new OrchestrationConfiguration(yamlConfig.getName(), registryCenter, yamlConfig.isOverwrite());
         }
         OrchestrationCenterConfiguration additionalConfigCenter = orchestrationCenterConfigurationSwapper.swapToObject(yamlConfig.getAdditionalConfigCenter());
-        return new OrchestrationConfiguration(yamlConfig.getNamespace(), registryCenter, additionalConfigCenter, yamlConfig.isOverwrite());
+        return new OrchestrationConfiguration(yamlConfig.getName(), registryCenter, additionalConfigCenter, yamlConfig.isOverwrite());
     }
 }

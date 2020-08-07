@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.rewrite.impl;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,17 +32,17 @@ public final class GroupedParameterBuilderTest {
     
     @Test
     public void assertGetParameters() {
-        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), new ArrayList<>());
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), new LinkedList<>());
         assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
     }
-
+    
     @Test
     public void assertGetParametersWithOnDuplicateKeyParameters() {
         GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createOnDuplicateKeyUpdateParameters());
         assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
         assertThat(actual.getOnDuplicateKeyUpdateParametersBuilder().getParameters(), is(Arrays.<Object>asList(7, 8)));
     }
-
+    
     @Test
     public void assertGetOnDuplicateKeyParametersWithModify() {
         GroupedParameterBuilder actual = new GroupedParameterBuilder(new LinkedList<>(), createOnDuplicateKeyUpdateParameters());
@@ -54,7 +53,7 @@ public final class GroupedParameterBuilderTest {
         actual.getOnDuplicateKeyUpdateParametersBuilder().addRemovedParameters(1);
         assertThat(actual.getOnDuplicateKeyUpdateParametersBuilder().getParameters(), is(Arrays.<Object>asList(66, 77, 88, 99, 110)));
     }
-
+    
     @Test
     public void assertGetDerivedColumnName() {
         GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createOnDuplicateKeyUpdateParameters());
@@ -62,11 +61,11 @@ public final class GroupedParameterBuilderTest {
         actual.setDerivedColumnName(derivedColumnName);
         assertThat(actual.getDerivedColumnName(), is(Optional.of(derivedColumnName)));
     }
-
+    
     private List<Object> createOnDuplicateKeyUpdateParameters() {
         return new LinkedList<>(Arrays.asList(7, 8));
     }
-
+    
     private List<List<Object>> createGroupedParameters() {
         List<List<Object>> result = new LinkedList<>();
         result.add(Arrays.asList(3, 4));

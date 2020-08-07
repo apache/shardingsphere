@@ -30,14 +30,14 @@ import java.util.Properties;
 /**
  * Typed properties with a specified enum.
  */
-public abstract class TypedProperties<E extends Enum & TypedPropertyKey> {
+public abstract class TypedProperties<E extends Enum<?> & TypedPropertyKey> {
     
     @Getter
     private final Properties props;
     
     private final Map<E, TypedPropertyValue> cache;
     
-    public TypedProperties(final Class<E> keyClass, final Properties props) {
+    protected TypedProperties(final Class<E> keyClass, final Properties props) {
         this.props = props;
         cache = preload(keyClass);
     }
@@ -69,7 +69,7 @@ public abstract class TypedProperties<E extends Enum & TypedPropertyKey> {
      * @return property value
      */
     @SuppressWarnings("unchecked")
-    public <T> T getValue(final E key) {
+    public final <T> T getValue(final E key) {
         return (T) cache.get(key).getValue();
     }
 }
