@@ -78,6 +78,8 @@ public final class TableRule {
     private final Collection<String> actualDatasourceNames = new LinkedHashSet<>();
     
     private final Map<String, Collection<String>> datasourceToTablesMap = new HashMap<>();
+
+    private final boolean forceShardingColumn;
     
     public TableRule(final Collection<String> dataSourceNames, final String logicTableName) {
         logicTable = logicTableName.toLowerCase();
@@ -88,6 +90,7 @@ public final class TableRule {
         tableShardingStrategy = null;
         generateKeyColumn = null;
         keyGeneratorName = null;
+        forceShardingColumn = false;
     }
     
     public TableRule(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, 
@@ -102,6 +105,7 @@ public final class TableRule {
         KeyGenerateStrategyConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGenerateStrategy();
         generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
         keyGeneratorName = null == keyGeneratorConfiguration ? null : keyGeneratorConfiguration.getKeyGeneratorName();
+        forceShardingColumn = tableRuleConfig.isForceShardingColumn();
         checkRule(dataNodes);
     }
     
@@ -119,6 +123,7 @@ public final class TableRule {
         KeyGenerateStrategyConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGenerateStrategy();
         generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
         keyGeneratorName = null == keyGeneratorConfiguration ? null : keyGeneratorConfiguration.getKeyGeneratorName();
+        forceShardingColumn = tableRuleConfig.isForceShardingColumn();
         checkRule(dataNodes);
     }
     

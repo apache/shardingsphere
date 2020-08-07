@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
@@ -48,11 +49,13 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
         if (1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
+        boolean hasShardingColumn = false;
         UpdateStatement sqlStatement = sqlStatementContext.getSqlStatement();
         String tableName = sqlStatement.getTables().iterator().next().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
             String shardingColumn = each.getColumn().getIdentifier().getValue();
             if (shardingRule.isShardingColumn(shardingColumn, tableName)) {
+                hasShardingColumn = true;
                 Optional<Object> shardingColumnSetAssignmentValue = getShardingColumnSetAssignmentValue(each, parameters);
                 Optional<Object> shardingValue = Optional.empty();
                 Optional<WhereSegment> whereSegmentOptional = sqlStatement.getWhere();
@@ -65,6 +68,15 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
                 throw new ShardingSphereException("Can not update sharding key, logic table: [%s], column: [%s].", tableName, each);
             }
         }
+
+        Optional<TableRule> tableRuleOptional = shardingRule.findTableRule(tableName);
+        if(tableRuleOptional.isPresent()){
+            if(tableRuleOptional.get().isForceShardingColumn() && !hasShardingColumn){
+                throw new ShardingSphereException("Must have sharding column, logic table: [%s]", tableName);
+            }
+
+        }
+
     }
     
     private Optional<Object> getShardingColumnSetAssignmentValue(final AssignmentSegment assignmentSegment, final List<Object> parameters) {

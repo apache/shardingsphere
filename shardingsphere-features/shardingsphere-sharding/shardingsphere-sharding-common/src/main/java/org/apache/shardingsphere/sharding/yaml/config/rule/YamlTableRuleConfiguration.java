@@ -39,4 +39,6 @@ public final class YamlTableRuleConfiguration implements YamlConfiguration {
     private YamlShardingStrategyConfiguration tableStrategy;
     
     private YamlKeyGenerateStrategyConfiguration keyGenerateStrategy;
+
+    private boolean forceShardingColumn;
 }

@@ -37,4 +37,6 @@ public final class YamlShardingAutoTableRuleConfiguration implements YamlConfigu
     private YamlShardingStrategyConfiguration shardingStrategy;
     
     private YamlKeyGenerateStrategyConfiguration keyGenerateStrategy;
+
+    private boolean forceShardingColumn;
 }

@@ -63,6 +63,9 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         ShardingStatementValidatorFactory.newInstance(
                 sqlStatement).ifPresent(validator -> validator.validate(shardingRule, sqlStatementContext, parameters));
         ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, metaData.getSchema().getConfiguredSchemaMetaData(), shardingRule);
+
+//        shardingRule.findTableRule(sqlStatementContext.getTablesContext().)
+
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext, shardingRule);
         if (sqlStatement instanceof DMLStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(sqlStatementContext, shardingRule, shardingConditions);

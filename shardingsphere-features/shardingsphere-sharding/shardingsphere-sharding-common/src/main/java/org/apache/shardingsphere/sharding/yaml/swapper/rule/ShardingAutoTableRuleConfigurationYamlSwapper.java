@@ -51,6 +51,7 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper implements Yaml
     public ShardingAutoTableRuleConfiguration swapToObject(final YamlShardingAutoTableRuleConfiguration yamlConfig) {
         Preconditions.checkNotNull(yamlConfig.getLogicTable(), "Logic table cannot be null.");
         ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration(yamlConfig.getLogicTable(), yamlConfig.getActualDataSources());
+        result.setForceShardingColumn(yamlConfig.isForceShardingColumn());
         if (null != yamlConfig.getShardingStrategy()) {
             result.setShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfig.getShardingStrategy()));
         }
