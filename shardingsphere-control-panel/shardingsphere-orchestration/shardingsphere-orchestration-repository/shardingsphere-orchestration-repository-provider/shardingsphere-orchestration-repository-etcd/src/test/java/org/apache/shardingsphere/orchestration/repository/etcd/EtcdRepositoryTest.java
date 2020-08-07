@@ -40,9 +40,9 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
@@ -281,14 +281,14 @@ public final class EtcdRepositoryTest {
     
     @SneakyThrows({NoSuchFieldException.class, SecurityException.class})
     private WatchResponse buildWatchResponse(final WatchEvent.EventType eventType) {
-        WatchResponse watchResponse = new WatchResponse(mock(io.etcd.jetcd.api.WatchResponse.class), ByteSequence.EMPTY);
-        List<WatchEvent> events = new ArrayList<>();
+        WatchResponse result = new WatchResponse(mock(io.etcd.jetcd.api.WatchResponse.class), ByteSequence.EMPTY);
+        List<WatchEvent> events = new LinkedList<>();
         io.etcd.jetcd.api.KeyValue keyValue1 = io.etcd.jetcd.api.KeyValue.newBuilder()
                 .setKey(ByteString.copyFromUtf8("key1"))
                 .setValue(ByteString.copyFromUtf8("value1")).build();
         KeyValue keyValue = new KeyValue(keyValue1, ByteSequence.EMPTY);
         events.add(new WatchEvent(keyValue, mock(KeyValue.class), eventType));
-        FieldSetter.setField(watchResponse, watchResponse.getClass().getDeclaredField("events"), events);
-        return watchResponse;
+        FieldSetter.setField(result, result.getClass().getDeclaredField("events"), events);
+        return result;
     }
 }

@@ -150,16 +150,16 @@ public abstract class AbstractRoutingEngineTest {
         return result;
     }
     
-    private ShardingTableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes, final ShardingStrategyConfiguration dsShardingStrategyConfiguration, 
-                                                                         final ShardingStrategyConfiguration tableShardingStrategyConfiguration) {
+    private ShardingTableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes, 
+                                                                 final ShardingStrategyConfiguration dsShardingStrategyConfig, final ShardingStrategyConfiguration tableShardingStrategyConfig) {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(tableName, actualDataNodes);
-        result.setDatabaseShardingStrategy(dsShardingStrategyConfiguration);
-        result.setTableShardingStrategy(tableShardingStrategyConfiguration);
+        result.setDatabaseShardingStrategy(dsShardingStrategyConfig);
+        result.setTableShardingStrategy(tableShardingStrategyConfig);
         return result;
     }
     
     protected final ShardingConditions createShardingConditions(final String tableName) {
-        List<ShardingCondition> result = new ArrayList<>();
+        List<ShardingCondition> result = new ArrayList<>(1);
         RouteValue shardingValue1 = new ListRouteValue<>("user_id", tableName, Collections.singleton(1L));
         RouteValue shardingValue2 = new ListRouteValue<>("order_id", tableName, Collections.singleton(1L));
         ShardingCondition shardingCondition = new ShardingCondition();

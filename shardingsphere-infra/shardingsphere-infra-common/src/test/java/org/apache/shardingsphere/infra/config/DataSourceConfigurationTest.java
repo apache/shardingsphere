@@ -73,35 +73,35 @@ public final class DataSourceConfigurationTest {
 
     @Test
     public void assertEquals() {
-        DataSourceConfiguration originalDataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
+        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         DataSourceConfiguration targetDataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
-        assertThat(originalDataSourceConfiguration.equals(originalDataSourceConfiguration), is(true));
-        assertThat(originalDataSourceConfiguration.equals(targetDataSourceConfiguration), is(true));
-        originalDataSourceConfiguration.getProps().put("username", "root");
+        assertThat(originalDataSourceConfig.equals(originalDataSourceConfig), is(true));
+        assertThat(originalDataSourceConfig.equals(targetDataSourceConfiguration), is(true));
+        originalDataSourceConfig.getProps().put("username", "root");
         targetDataSourceConfiguration.getProps().put("username", "root");
-        assertThat(originalDataSourceConfiguration.equals(targetDataSourceConfiguration), is(true));
+        assertThat(originalDataSourceConfig.equals(targetDataSourceConfiguration), is(true));
         targetDataSourceConfiguration.getProps().put("password", "root");
-        assertThat(originalDataSourceConfiguration.equals(targetDataSourceConfiguration), is(true));
-        originalDataSourceConfiguration.getProps().put("username", "root");
-        originalDataSourceConfiguration.getProps().put("url", "jdbcUrl");
-        assertThat(originalDataSourceConfiguration.equals(targetDataSourceConfiguration), is(false));
+        assertThat(originalDataSourceConfig.equals(targetDataSourceConfiguration), is(true));
+        originalDataSourceConfig.getProps().put("username", "root");
+        originalDataSourceConfig.getProps().put("url", "jdbcUrl");
+        assertThat(originalDataSourceConfig.equals(targetDataSourceConfiguration), is(false));
     }
 
     @Test
     public void assertHashCode() {
-        DataSourceConfiguration originalDataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
-        DataSourceConfiguration targetDataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
-        assertThat(originalDataSourceConfiguration.hashCode(), is(targetDataSourceConfiguration.hashCode()));
-        originalDataSourceConfiguration.getProps().put("username", "root");
-        originalDataSourceConfiguration.getProps().put("password", "root");
-        targetDataSourceConfiguration.getProps().put("username", "root");
-        targetDataSourceConfiguration.getProps().put("password", "root");
-        assertThat(originalDataSourceConfiguration.hashCode(), is(targetDataSourceConfiguration.hashCode()));
-        originalDataSourceConfiguration.getProps().put("url", "jdbcUrl");
-        assertThat(originalDataSourceConfiguration.hashCode(), not(targetDataSourceConfiguration.hashCode()));
-        originalDataSourceConfiguration.getProps().clear();
-        targetDataSourceConfiguration = new DataSourceConfiguration(BasicDataSource.class.getName());
-        assertThat(originalDataSourceConfiguration.hashCode(), not(targetDataSourceConfiguration.hashCode()));
+        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        assertThat(originalDataSourceConfig.hashCode(), is(targetDataSourceConfig.hashCode()));
+        originalDataSourceConfig.getProps().put("username", "root");
+        originalDataSourceConfig.getProps().put("password", "root");
+        targetDataSourceConfig.getProps().put("username", "root");
+        targetDataSourceConfig.getProps().put("password", "root");
+        assertThat(originalDataSourceConfig.hashCode(), is(targetDataSourceConfig.hashCode()));
+        originalDataSourceConfig.getProps().put("url", "jdbcUrl");
+        assertThat(originalDataSourceConfig.hashCode(), not(targetDataSourceConfig.hashCode()));
+        originalDataSourceConfig.getProps().clear();
+        targetDataSourceConfig = new DataSourceConfiguration(BasicDataSource.class.getName());
+        assertThat(originalDataSourceConfig.hashCode(), not(targetDataSourceConfig.hashCode()));
     }
 
     @Test

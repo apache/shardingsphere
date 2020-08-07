@@ -173,26 +173,26 @@ public final class ShardingSphereResultSetTest {
     
     @Test
     public void assertGetFloatWithColumnIndex() throws SQLException {
-        when(mergeResultSet.getValue(1, float.class)).thenReturn(1F);
-        assertThat(shardingSphereResultSet.getFloat(1), is(1F));
+        when(mergeResultSet.getValue(1, float.class)).thenReturn(1.0F);
+        assertThat(shardingSphereResultSet.getFloat(1), is(1.0F));
     }
     
     @Test
     public void assertGetFloatWithColumnLabel() throws SQLException {
-        when(mergeResultSet.getValue(1, float.class)).thenReturn(1F);
-        assertThat(shardingSphereResultSet.getFloat("label"), is(1F));
+        when(mergeResultSet.getValue(1, float.class)).thenReturn(1.0F);
+        assertThat(shardingSphereResultSet.getFloat("label"), is(1.0F));
     }
     
     @Test
     public void assertGetDoubleWithColumnIndex() throws SQLException {
-        when(mergeResultSet.getValue(1, double.class)).thenReturn(1D);
-        assertThat(shardingSphereResultSet.getDouble(1), is(1D));
+        when(mergeResultSet.getValue(1, double.class)).thenReturn(1.0D);
+        assertThat(shardingSphereResultSet.getDouble(1), is(1.0D));
     }
     
     @Test
     public void assertGetDoubleWithColumnLabel() throws SQLException {
-        when(mergeResultSet.getValue(1, double.class)).thenReturn(1D);
-        assertThat(shardingSphereResultSet.getDouble("label"), is(1D));
+        when(mergeResultSet.getValue(1, double.class)).thenReturn(1.0D);
+        assertThat(shardingSphereResultSet.getDouble("label"), is(1.0D));
     }
     
     @Test

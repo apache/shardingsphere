@@ -42,15 +42,16 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -148,7 +149,7 @@ public final class BackendConnectionTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setMethodInvocation() {
         MethodInvocation invocation = mock(MethodInvocation.class);
-        Collection<MethodInvocation> methodInvocations = new ArrayList<>();
+        Collection<MethodInvocation> methodInvocations = new LinkedList<>();
         methodInvocations.add(invocation);
         Field field = backendConnection.getClass().getDeclaredField("methodInvocations");
         field.setAccessible(true);
@@ -229,7 +230,7 @@ public final class BackendConnectionTest {
         } catch (final SQLException ex) {
             assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
         }
-        assert actual != null;
+        assertNotNull(actual);
         assertThat(actual.getConnectionSize(), is(0));
         assertTrue(actual.getCachedConnections().isEmpty());
         assertTrue(actual.getCachedResultSets().isEmpty());

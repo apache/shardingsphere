@@ -49,7 +49,7 @@ public final class LocalMasterSlaveConfiguration implements ExampleConfiguration
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>();
+        Map<String, DataSource> result = new HashMap<>(3, 1);
         result.put("demo_ds_master", DataSourceUtil.createDataSource("demo_ds_master"));
         result.put("demo_ds_slave_0", DataSourceUtil.createDataSource("demo_ds_slave_0"));
         result.put("demo_ds_slave_1", DataSourceUtil.createDataSource("demo_ds_slave_1"));

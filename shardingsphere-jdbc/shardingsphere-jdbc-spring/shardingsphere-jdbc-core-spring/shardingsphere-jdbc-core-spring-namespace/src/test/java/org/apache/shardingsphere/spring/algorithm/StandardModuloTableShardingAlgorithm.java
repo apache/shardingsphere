@@ -40,7 +40,7 @@ public final class StandardModuloTableShardingAlgorithm implements StandardShard
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(shardingValue.getValue() % 4 + "")) {
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % 4))) {
                 return each;
             }
         }
@@ -52,7 +52,7 @@ public final class StandardModuloTableShardingAlgorithm implements StandardShard
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         for (Integer i = shardingValue.getValueRange().lowerEndpoint(); i <= shardingValue.getValueRange().upperEndpoint(); i++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(i % 4 + "")) {
+                if (each.endsWith(String.valueOf(i % 4))) {
                     result.add(each);
                 }
             }

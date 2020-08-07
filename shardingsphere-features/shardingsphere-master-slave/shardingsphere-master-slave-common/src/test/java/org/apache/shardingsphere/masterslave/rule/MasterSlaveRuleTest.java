@@ -83,7 +83,7 @@ public final class MasterSlaveRuleTest {
     public void assertUpdateRuleStatusWithEnable() {
         MasterSlaveRule masterSlaveRule = createMasterSlaveRule();
         masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent("slave_db_0", true));
-        assertThat(masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames(), is(Arrays.asList("slave_db_1")));
+        assertThat(masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames(), is(Collections.singletonList("slave_db_1")));
         masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent("slave_db_0", false));
         assertThat(masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
     }

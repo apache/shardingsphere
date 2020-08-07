@@ -50,7 +50,7 @@ public abstract class ResourceManagedExecuteGroupEngine
     
     private final O option;
     
-    public ResourceManagedExecuteGroupEngine(final int maxConnectionsSizePerQuery, final E executionConnection, final O option, final Collection<ShardingSphereRule> rules) {
+    protected ResourceManagedExecuteGroupEngine(final int maxConnectionsSizePerQuery, final E executionConnection, final O option, final Collection<ShardingSphereRule> rules) {
         super(rules);
         this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
         this.executionConnection = executionConnection;

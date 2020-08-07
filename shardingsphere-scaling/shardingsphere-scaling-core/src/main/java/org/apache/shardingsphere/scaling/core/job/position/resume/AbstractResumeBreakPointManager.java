@@ -94,7 +94,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         log.info("resume incremental position from {} = {}", taskPath, data);
         Map<String, Object> incrementalPosition = GSON.<Map<String, Object>>fromJson(data, Map.class);
         for (Entry<String, Object> entry : incrementalPosition.entrySet()) {
-            getIncrementalPositionManagerMap().put(entry.getKey(), PositionManagerFactory.newInstance(databaseType, entry.getValue().toString()));
+            incrementalPositionManagerMap.put(entry.getKey(), PositionManagerFactory.newInstance(databaseType, entry.getValue().toString()));
         }
     }
     
