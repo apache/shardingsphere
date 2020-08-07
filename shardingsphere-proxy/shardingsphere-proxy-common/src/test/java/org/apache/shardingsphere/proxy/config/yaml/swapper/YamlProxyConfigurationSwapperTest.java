@@ -48,16 +48,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class YamlProxyConfigurationSwapperTest {
-
+    
     @Test
     public void assertSwap() {
-
+        
         YamlProxyConfiguration yamlProxyConfiguration = mock(YamlProxyConfiguration.class);
-
+        
         //serverConfiguration
         YamlProxyServerConfiguration yamlProxyServerConfiguration = mock(YamlProxyServerConfiguration.class);
         when(yamlProxyConfiguration.getServerConfiguration()).thenReturn(yamlProxyServerConfiguration);
-
+        
         //prepare for authentication
         YamlAuthenticationConfiguration yamlAuthenticationConfiguration = mock(YamlAuthenticationConfiguration.class);
         Map<String, YamlProxyUserConfiguration> yamlProxyUserConfigurationMap = new HashMap<>();
@@ -67,23 +67,22 @@ public class YamlProxyConfigurationSwapperTest {
         yamlProxyUserConfigurationMap.put("user1", yamlProxyUserConfiguration);
         when(yamlAuthenticationConfiguration.getUsers()).thenReturn(yamlProxyUserConfigurationMap);
         when(yamlProxyServerConfiguration.getAuthentication()).thenReturn(yamlAuthenticationConfiguration);
-
-
+        
+        
         //prepare for orchestration
         YamlOrchestrationConfiguration yamlOrchestrationConfiguration = mock(YamlOrchestrationConfiguration.class);
         when(yamlProxyServerConfiguration.getOrchestration()).thenReturn(yamlOrchestrationConfiguration);
         when(yamlOrchestrationConfiguration.getNamespace()).thenReturn("test1");
-
+        
         //registryCenter
         YamlOrchestrationCenterConfiguration registryCenterConfiguration = mock(YamlOrchestrationCenterConfiguration.class);
         when(yamlOrchestrationConfiguration.getRegistryCenter()).thenReturn(registryCenterConfiguration);
         when(registryCenterConfiguration.getType()).thenReturn("typeOne");
         when(registryCenterConfiguration.getServerLists()).thenReturn("serverLists1");
-        Properties registryCenterProperties = new Properties();
-        registryCenterProperties.put("key1", "value1");
+        Properties registryCenterProperties = new Properties(); registryCenterProperties.put("key1", "value1");
         when(registryCenterConfiguration.getProps()).thenReturn(registryCenterProperties);
         when(yamlOrchestrationConfiguration.getRegistryCenter()).thenReturn(registryCenterConfiguration);
-
+        
         //additionalConfigCenter
         YamlOrchestrationCenterConfiguration additionalConfigCenterConfiguration = mock(YamlOrchestrationCenterConfiguration.class);
         when(yamlOrchestrationConfiguration.getAdditionalConfigCenter()).thenReturn(additionalConfigCenterConfiguration);
@@ -93,11 +92,11 @@ public class YamlProxyConfigurationSwapperTest {
         additionalConfigCenterProperties.put("key2", "value2");
         when(additionalConfigCenterConfiguration.getProps()).thenReturn(additionalConfigCenterProperties);
         when(yamlOrchestrationConfiguration.getAdditionalConfigCenter()).thenReturn(additionalConfigCenterConfiguration);
-
+        
         when(yamlOrchestrationConfiguration.getAdditionalConfigCenter()).thenReturn(additionalConfigCenterConfiguration);
         when(yamlOrchestrationConfiguration.isOverwrite()).thenReturn(true);
-
-
+        
+        
         //prepare for cluster
         YamlClusterConfiguration yamlClusterConfiguration = mock(YamlClusterConfiguration.class);
         YamlHeartbeatConfiguration yamlHeartbeatConfiguration = mock(YamlHeartbeatConfiguration.class);
@@ -109,7 +108,7 @@ public class YamlProxyConfigurationSwapperTest {
         when(yamlHeartbeatConfiguration.getRetryInterval()).thenReturn(2);
         when(yamlHeartbeatConfiguration.getThreadCount()).thenReturn(4);
         when(yamlProxyServerConfiguration.getCluster()).thenReturn(yamlClusterConfiguration);
-
+        
         //prepare for metrics
         YamlMetricsConfiguration yamlMetricsConfiguration = mock(YamlMetricsConfiguration.class);
         when(yamlProxyServerConfiguration.getMetrics()).thenReturn(yamlMetricsConfiguration);
@@ -119,31 +118,29 @@ public class YamlProxyConfigurationSwapperTest {
         when(yamlMetricsConfiguration.getAsync()).thenReturn(true);
         when(yamlMetricsConfiguration.getEnable()).thenReturn(true);
         when(yamlMetricsConfiguration.getThreadCount()).thenReturn(4);
-        Properties yamlMetricsProperties = new Properties();
-        yamlMetricsProperties.put("key3", "value3");
+        Properties yamlMetricsProperties = new Properties(); yamlMetricsProperties.put("key3", "value3");
         when(yamlMetricsConfiguration.getProps()).thenReturn(yamlMetricsProperties);
-
+        
         //prepare for props
-        Properties properties = new Properties();
-        properties.put("key4", "value4");
+        Properties properties = new Properties(); properties.put("key4", "value4");
         when(yamlProxyServerConfiguration.getProps()).thenReturn(properties);
-
-
+        
+        
         //ruleConfigurations
         Map<String, YamlProxyRuleConfiguration> yamlProxyRuleConfigurationMap = new HashMap<>();
         when(yamlProxyConfiguration.getRuleConfigurations()).thenReturn(yamlProxyRuleConfigurationMap);
-
+        
         //prepare  for ruleConfigurations
         YamlProxyRuleConfiguration yamlProxyRuleConfiguration = mock(YamlProxyRuleConfiguration.class);
         yamlProxyRuleConfigurationMap.put("yamlProxyRule1", yamlProxyRuleConfiguration);
-
+        
         //schemaName
         when(yamlProxyRuleConfiguration.getSchemaName()).thenReturn("ruleConfigSchema1");
-
+        
         //dataSourceCommon
         Map<String, Object> dataSourceCommon = new HashMap<>();
         when(yamlProxyRuleConfiguration.getDataSourceCommon()).thenReturn(dataSourceCommon);
-
+        
         //dataSource
         YamlDataSourceParameter yamlDataSourceParameter = mock(YamlDataSourceParameter.class);
         when(yamlProxyRuleConfiguration.getDataSource()).thenReturn(yamlDataSourceParameter);
@@ -157,81 +154,69 @@ public class YamlProxyConfigurationSwapperTest {
         when(yamlDataSourceParameter.getMinPoolSize()).thenReturn(5);
         when(yamlDataSourceParameter.getMaintenanceIntervalMilliseconds()).thenReturn(6L);
         when(yamlDataSourceParameter.isReadOnly()).thenReturn(true);
-
+        
         //dataSources
         Map<String, YamlDataSourceParameter> dataSources = new HashMap<>();
         dataSources.put("ds1", yamlDataSourceParameter);
         when(yamlProxyRuleConfiguration.getDataSources()).thenReturn(dataSources);
-
+        
         //rules
         Collection<YamlRuleConfiguration> rules = new ArrayList<>();
         YamlRuleConfiguration testRuleConfiguration = new YamlMasterSlaveRuleConfiguration();
-        rules.add(testRuleConfiguration);
-        when(yamlProxyRuleConfiguration.getRules()).thenReturn(rules);
-
+        rules.add(testRuleConfiguration); when(yamlProxyRuleConfiguration.getRules()).thenReturn(rules);
+        
         //swap
         ProxyConfiguration proxyConfiguration = new YamlProxyConfigurationSwapper().swap(yamlProxyConfiguration);
-
+        
         //test for authentication
-        Authentication authentication = proxyConfiguration.getAuthentication();
-        Assert.assertNotNull(authentication);
-        Map<String, ProxyUser> proxyUserMap = authentication.getUsers();
-        Assert.assertEquals(1, proxyUserMap.size());
-        ProxyUser proxyUser = proxyUserMap.get("user1");
-        Assert.assertNotNull(proxyUser);
+        Authentication authentication = proxyConfiguration.getAuthentication(); Assert.assertNotNull(authentication);
+        Map<String, ProxyUser> proxyUserMap = authentication.getUsers(); Assert.assertEquals(1, proxyUserMap.size());
+        ProxyUser proxyUser = proxyUserMap.get("user1"); Assert.assertNotNull(proxyUser);
         Assert.assertEquals("pass", proxyUser.getPassword());
-        Collection<String> authorizedSchemas = proxyUser.getAuthorizedSchemas();
-        Assert.assertNotNull(authentication);
-        Assert.assertEquals(1, authorizedSchemas.size());
-        Assert.assertTrue(authorizedSchemas.contains("db1"));
-
-
+        Collection<String> authorizedSchemas = proxyUser.getAuthorizedSchemas(); Assert.assertNotNull(authentication);
+        Assert.assertEquals(1, authorizedSchemas.size()); Assert.assertTrue(authorizedSchemas.contains("db1"));
+        
+        
         //test for orchestration
-
-
+        
+        
         //test for cluster
         ClusterConfiguration clusterConfiguration = proxyConfiguration.getCluster();
         Assert.assertNotNull(clusterConfiguration);
         HeartbeatConfiguration heartbeatConfiguration = clusterConfiguration.getHeartbeat();
-        Assert.assertNotNull(heartbeatConfiguration);
-        Assert.assertEquals("select 1;", heartbeatConfiguration.getSql());
+        Assert.assertNotNull(heartbeatConfiguration); Assert.assertEquals("select 1;", heartbeatConfiguration.getSql());
         Assert.assertEquals(1, heartbeatConfiguration.getInterval());
         Assert.assertTrue(heartbeatConfiguration.isRetryEnable());
         Assert.assertEquals(3, heartbeatConfiguration.getRetryMaximum());
         Assert.assertEquals(2, heartbeatConfiguration.getRetryInterval());
         Assert.assertEquals(4, heartbeatConfiguration.getThreadCount());
-
+        
         //test for metrics
         MetricsConfiguration metricsConfiguration = proxyConfiguration.getMetrics();
-        Assert.assertNotNull(metricsConfiguration);
-        Assert.assertEquals("name1", metricsConfiguration.getMetricsName());
+        Assert.assertNotNull(metricsConfiguration); Assert.assertEquals("name1", metricsConfiguration.getMetricsName());
         Assert.assertEquals("host1", metricsConfiguration.getHost());
         Assert.assertEquals(111, metricsConfiguration.getPort());
         Assert.assertEquals(true, metricsConfiguration.getAsync());
         Assert.assertEquals(true, metricsConfiguration.getEnable());
         Assert.assertEquals(4, metricsConfiguration.getThreadCount());
-        Properties metricsProperties = metricsConfiguration.getProps();
-        Assert.assertNotNull(metricsProperties);
+        Properties metricsProperties = metricsConfiguration.getProps(); Assert.assertNotNull(metricsProperties);
         Assert.assertEquals(1, metricsProperties.size());
         Assert.assertEquals("value3", metricsProperties.getProperty("key3"));
-
+        
         //test for props
         Properties proxyConfigurationProps = proxyConfiguration.getProps();
-        Assert.assertNotNull(proxyConfigurationProps);
-        Assert.assertEquals(1, proxyConfigurationProps.size());
+        Assert.assertNotNull(proxyConfigurationProps); Assert.assertEquals(1, proxyConfigurationProps.size());
         Assert.assertEquals("value4", proxyConfigurationProps.getProperty("key4"));
-
-
+        
+        
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = proxyConfiguration.getSchemaDataSources();
-        Assert.assertNotNull(schemaDataSources);
-        Assert.assertEquals(1, schemaDataSources.size());
+        Assert.assertNotNull(schemaDataSources); Assert.assertEquals(1, schemaDataSources.size());
         Assert.assertTrue(schemaDataSources.containsKey("yamlProxyRule1"));
         Map<String, DataSourceParameter> dataSourceParameterMap = schemaDataSources.get("yamlProxyRule1");
         Assert.assertTrue(dataSourceParameterMap.containsKey("ds1"));
-
+        
         DataSourceParameter dataSourceParameter = dataSourceParameterMap.get("ds1");
-        Assert.assertNotNull(dataSourceParameter);
-        Assert.assertEquals("url1", dataSourceParameter.getUrl());
+        Assert.assertNotNull(dataSourceParameter); Assert.assertEquals("url1", dataSourceParameter.getUrl());
         Assert.assertEquals("username1", dataSourceParameter.getUsername());
         Assert.assertEquals("password1", dataSourceParameter.getPassword());
         Assert.assertEquals(1, dataSourceParameter.getConnectionTimeoutMilliseconds());
@@ -241,16 +226,14 @@ public class YamlProxyConfigurationSwapperTest {
         Assert.assertEquals(5, dataSourceParameter.getMinPoolSize());
         Assert.assertEquals(6, dataSourceParameter.getMaintenanceIntervalMilliseconds());
         Assert.assertTrue(dataSourceParameter.isReadOnly());
-
+        
         Map<String, Collection<RuleConfiguration>> schemaRules = proxyConfiguration.getSchemaRules();
-        Assert.assertNotNull(schemaRules);
-        Assert.assertEquals(1, schemaRules.size());
+        Assert.assertNotNull(schemaRules); Assert.assertEquals(1, schemaRules.size());
         Collection<RuleConfiguration> ruleConfigurationCollection = schemaRules.get("yamlProxyRule1");
-        Assert.assertNotNull(ruleConfigurationCollection);
-        Assert.assertEquals(1, ruleConfigurationCollection.size());
+        Assert.assertNotNull(ruleConfigurationCollection); Assert.assertEquals(1, ruleConfigurationCollection.size());
         RuleConfiguration ruleConfiguration = ruleConfigurationCollection.iterator().next();
         Assert.assertNotNull(ruleConfiguration);
         Assert.assertTrue(ruleConfiguration instanceof MasterSlaveRuleConfiguration);
     }
-
+    
 }
