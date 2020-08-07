@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine;
-
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+package org.apache.shardingsphere.scaling.core.constant;
 
 /**
- * Query SQL parser engine.
+ * Scaling constants.
  */
-public interface QuerySQLParserEngine {
+public final class ScalingConstant {
     
     /**
-     * Parse SQL.
-     *
-     * @param sql SQL
-     * @param useCache use cache or not
-     * @return SQL statement
+     * Insert flag.
      */
-    SQLStatement parse(String sql, boolean useCache);
+    public static final String INSERT = "INSERT";
+    
+    /**
+     * Update flag.
+     */
+    public static final String UPDATE = "UPDATE";
+    
+    /**
+     * Delete flag.
+     */
+    public static final String DELETE = "DELETE";
 }

@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.execute.executor.dumper;
+package org.apache.shardingsphere.scaling.core.job.position;
 
-import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
-import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 
 /**
- * Dumper interface.
+ * Placeholder position.
  */
-public interface Dumper extends ShardingScalingExecutor {
+public final class PlaceholderPosition implements InventoryPosition {
     
-    /**
-     * Set channel.
-     *
-     * @param channel channel
-     */
-    void setChannel(Channel channel);
+    @Override
+    public JsonElement toJson() {
+        return new JsonArray();
+    }
+    
+    @Override
+    public int compareTo(final Position o) {
+        return 0;
+    }
 }

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
@@ -106,6 +107,19 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     
     private void persistMetaData() {
         schemaContexts.getSchemaContexts().forEach((key, value) -> orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(key, value.getSchema().getMetaData().getSchema()));
+    }
+    
+    @Override
+    public DatabaseType getDatabaseType() {
+        return schemaContexts.getSchemaContexts().isEmpty() ? new MySQLDatabaseType()
+                : schemaContexts.getSchemaContexts().values().iterator().next().getSchema().getDatabaseType();
+    }
+    
+    private DatabaseType getDatabaseType(final Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap) {
+        if (dataSourceParametersMap.isEmpty() || dataSourceParametersMap.values().iterator().next().values().isEmpty()) {
+            schemaContexts.getDatabaseType();
+        }
+        return DatabaseTypes.getDatabaseTypeByURL(dataSourceParametersMap.values().iterator().next().values().iterator().next().getUrl());
     }
     
     @Override
@@ -316,17 +330,10 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         String schemaName = schemaAddedEvent.getShardingSchemaName();
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
         Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap = createDataSourceParametersMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
-        DatabaseType databaseType = getDatabaseType(dataSourceParametersMap.values().iterator().next().values().iterator().next());
+        DatabaseType databaseType = getDatabaseType(dataSourceParametersMap);
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(dataSourcesMap, databaseType, 
                 Collections.singletonMap(schemaName, schemaAddedEvent.getRuleConfigurations()), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
         return schemaContextsBuilder.build().getSchemaContexts().get(schemaName);
-    }
-    
-    private DatabaseType getDatabaseType(final DataSourceParameter parameter) {
-        if (!schemaContexts.getSchemaContexts().isEmpty()) {
-            schemaContexts.getSchemaContexts().values().iterator().next().getSchema().getDatabaseType();
-        }
-        return DatabaseTypes.getDatabaseTypeByURL(parameter.getUrl());
     }
     
     private Map<String, SchemaContext> getChangedSchemaContexts(final ConfigurationProperties props) {

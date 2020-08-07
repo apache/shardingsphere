@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config.utils;
+package org.apache.shardingsphere.scaling.core.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -35,6 +35,7 @@ public final class RdbmsConfigurationUtil {
      * @param rdbmsConfiguration rdbms configuration
      * @return SQL where condition
      */
+    @SuppressWarnings("unchecked")
     public static String getWhereCondition(final RdbmsConfiguration rdbmsConfiguration) {
         return getWhereCondition(rdbmsConfiguration.getPrimaryKey(), rdbmsConfiguration.getPositionManager());
     }

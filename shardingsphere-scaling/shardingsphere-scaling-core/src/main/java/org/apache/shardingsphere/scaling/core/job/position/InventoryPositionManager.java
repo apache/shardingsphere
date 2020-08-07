@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.execute.executor.dumper;
-
-import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
-import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
+package org.apache.shardingsphere.scaling.core.job.position;
 
 /**
- * Dumper interface.
+ * Inventory position manager.
  */
-public interface Dumper extends ShardingScalingExecutor {
+public final class InventoryPositionManager<T extends InventoryPosition> extends BasePositionManager<T> implements PositionManager<T> {
     
-    /**
-     * Set channel.
-     *
-     * @param channel channel
-     */
-    void setChannel(Channel channel);
+    public InventoryPositionManager(final T position) {
+        super(position);
+    }
 }

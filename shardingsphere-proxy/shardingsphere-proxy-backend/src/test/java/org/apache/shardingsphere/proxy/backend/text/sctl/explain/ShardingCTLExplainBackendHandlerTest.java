@@ -6,7 +6,7 @@ import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,7 +48,7 @@ public class ShardingCTLExplainBackendHandlerTest {
     }
     
     private SchemaContext createSchemaContext() {
-        RuntimeContext runtimeContext = new RuntimeContext(null, null, new ShardingSphereSQLParserEngine(new SQLParserEngine("MySQL")), null);
+        RuntimeContext runtimeContext = new RuntimeContext(null, null, new ShardingSphereSQLParserEngine(new StandardSQLParserEngine("MySQL")), null);
         ShardingSphereSchema schema = new ShardingSphereSchema(new MySQLDatabaseType(), Collections.emptyList(),
                 Collections.emptyList(), Collections.singletonMap("ds0", mock(DataSource.class)), null);
         return new SchemaContext("c1", schema, runtimeContext);

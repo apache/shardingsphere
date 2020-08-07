@@ -15,40 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.core.utils;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
+
+import java.util.List;
 
 /**
- * Use primary key as position.
+ * Inventory position util.
  */
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-public class PrimaryKeyPosition implements InventoryPosition {
+public final class InventoryPositionUtil {
     
     private static final Gson GSON = new Gson();
     
-    private long beginValue;
-    
-    private long endValue;
-    
-    @Override
-    public int compareTo(final Position position) {
-        if (null == position) {
-            return 1;
+    /**
+     * Transform primary key position from json to object.
+     *
+     * @param json json data
+     * @return primary key position
+     */
+    public static InventoryPosition fromJson(final String json) {
+        List<Double> values = GSON.<List<Double>>fromJson(json, List.class);
+        if (2 == values.size()) {
+            return new PrimaryKeyPosition(values.get(0).longValue(), values.get(1).longValue());
         }
-        return Long.compare(beginValue, ((PrimaryKeyPosition) position).beginValue);
-    }
-    
-    @Override
-    public JsonElement toJson() {
-        return GSON.toJsonTree(new long[]{beginValue, endValue});
+        return new PlaceholderPosition();
     }
 }

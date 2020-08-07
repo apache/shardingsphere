@@ -133,7 +133,7 @@ public final class SchemaChangedListenerTest {
         when(configurationRepository.get("/test/config/schema/logic_db/datasource")).thenReturn("");
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/rule", "rule", ChangedType.UPDATED);
         OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
-        assertThat(actual, instanceOf(IgnoredOrchestrationEvent.class));
+        assertThat(actual, instanceOf(SchemaAddedEvent.class));
     }
     
     @Test

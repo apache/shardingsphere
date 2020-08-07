@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.postgresql.replication.LogSequenceNumber;
 
@@ -29,7 +30,7 @@ import org.postgresql.replication.LogSequenceNumber;
  */
 @RequiredArgsConstructor
 @Getter
-public final class WalPosition implements Position {
+public final class WalPosition implements IncrementalPosition {
     
     private static final Gson GSON = new Gson();
     
