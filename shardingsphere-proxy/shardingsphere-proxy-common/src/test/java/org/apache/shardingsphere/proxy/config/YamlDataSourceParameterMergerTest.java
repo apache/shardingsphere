@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 public final class YamlDataSourceParameterMergerTest {
     
     @Test
-    public void assertMergedParameterAll() {
+    public void assertParameterAllMerged() {
         YamlDataSourceParameter parameterAll = new YamlDataSourceParameter();
         Map<String, Object> commonProps = generateCommonProps();
         parameterAll.setUrl("jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
