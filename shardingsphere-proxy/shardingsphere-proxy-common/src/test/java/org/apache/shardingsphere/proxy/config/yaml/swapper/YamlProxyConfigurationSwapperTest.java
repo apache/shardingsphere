@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ArrayList;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -97,7 +98,7 @@ public class YamlProxyConfigurationSwapperTest {
         assertThat(ruleConfigurationCollection.size(), is(1));
         RuleConfiguration ruleConfiguration = ruleConfigurationCollection.iterator().next();
         assertNotNull(ruleConfiguration);
-        assertTrue(ruleConfiguration instanceof MasterSlaveRuleConfiguration);
+        assertThat(ruleConfiguration, instanceOf(MasterSlaveRuleConfiguration.class));
     }
 
     private void assertProxyConfigurationProps(final ProxyConfiguration proxyConfiguration) {
