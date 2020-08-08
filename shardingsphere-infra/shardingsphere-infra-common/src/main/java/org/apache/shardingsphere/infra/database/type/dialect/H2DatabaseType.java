@@ -29,22 +29,22 @@ import java.util.Collections;
  * Database type of H2.
  */
 public final class H2DatabaseType implements BranchDatabaseType {
-    
+
     @Override
     public String getName() {
         return "H2";
     }
-    
+
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton(String.format("jdbc:%s:", getName().toLowerCase()));
     }
-    
+
     @Override
     public H2DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new H2DataSourceMetaData(url,username);
+        return new H2DataSourceMetaData(url, username);
     }
-    
+
     @Override
     public DatabaseType getTrunkDatabaseType() {
         return DatabaseTypes.getActualDatabaseType("MySQL");
