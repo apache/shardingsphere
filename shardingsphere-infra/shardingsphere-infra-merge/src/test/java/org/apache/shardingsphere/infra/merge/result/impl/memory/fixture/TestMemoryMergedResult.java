@@ -41,7 +41,8 @@ public final class TestMemoryMergedResult extends MemoryMergedResult<Independent
     }
     
     @Override
-    protected List<MemoryQueryResultRow> init(final IndependentRuleFixture rule, final SchemaMetaData schemaMetaData, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
+    protected List<MemoryQueryResultRow> init(final IndependentRuleFixture rule, 
+                                              final SchemaMetaData schemaMetaData, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
         memoryQueryResultRow = mock(MemoryQueryResultRow.class);
         return Collections.singletonList(memoryQueryResultRow);
     }
