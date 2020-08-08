@@ -97,6 +97,7 @@ public final class DataSourceMetasTest {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
         assertThat(dataSourceMetas.getDataSourceMetaData("ds_0").getSchema(), is("test"));
     }
+
     @Test
     public void assertGetActualSchemaNameForShardingRuleForH2() {
         Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
