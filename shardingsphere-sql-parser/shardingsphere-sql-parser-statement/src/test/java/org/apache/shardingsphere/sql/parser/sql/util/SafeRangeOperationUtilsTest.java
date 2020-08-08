@@ -25,7 +25,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class SafeRangeOperationUtilsTest {
     
@@ -140,36 +142,36 @@ public class SafeRangeOperationUtilsTest {
     @Test
     public void assertSafeContainsForInteger() {
         Range<Comparable<?>> range = Range.closed(12, 100);
-        assertThat(SafeRangeOperationUtils.safeContains(range, 500), is(false));
+        assertFalse(SafeRangeOperationUtils.safeContains(range, 500));
     }
     
     @Test
     public void assertSafeContainsForLong() {
         Range<Comparable<?>> range = Range.closed(12L, 1000L);
-        assertThat(SafeRangeOperationUtils.safeContains(range, 500), is(true));
+        assertTrue(SafeRangeOperationUtils.safeContains(range, 500));
     }
     
     @Test
     public void assertSafeContainsForBigInteger() {
         Range<Comparable<?>> range = Range.closed(new BigInteger("123"), new BigInteger("1000"));
-        assertThat(SafeRangeOperationUtils.safeContains(range, 510), is(true));
+        assertTrue(SafeRangeOperationUtils.safeContains(range, 510));
     }
     
     @Test
     public void assertSafeContainsForFloat() {
         Range<Comparable<?>> range = Range.closed(123.11F, 9999.123F);
-        assertThat(SafeRangeOperationUtils.safeContains(range, 510.12), is(true));
+        assertTrue(SafeRangeOperationUtils.safeContains(range, 510.12));
     }
     
     @Test
     public void assertSafeContainsForDouble() {
         Range<Comparable<?>> range = Range.closed(11.11, 9999.99);
-        assertThat(SafeRangeOperationUtils.safeContains(range, new BigDecimal("510.12")), is(true));
+        assertTrue(SafeRangeOperationUtils.safeContains(range, new BigDecimal("510.12")));
     }
     
     @Test
     public void assertSafeContainsForBigDecimal() {
         Range<Comparable<?>> range = Range.closed(new BigDecimal("123.11"), new BigDecimal("9999.123"));
-        assertThat(SafeRangeOperationUtils.safeContains(range, 510.12), is(true));
+        assertTrue(SafeRangeOperationUtils.safeContains(range, 510.12));
     }
 }

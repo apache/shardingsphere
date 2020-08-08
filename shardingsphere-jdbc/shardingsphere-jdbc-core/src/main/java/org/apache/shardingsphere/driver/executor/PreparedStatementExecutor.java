@@ -99,7 +99,7 @@ public final class PreparedStatementExecutor {
      * @return effected records count
      * @throws SQLException SQL exception
      */
-    public int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext sqlStatementContext) throws SQLException {
+    public int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Integer> sqlExecutorCallback = createDefaultSQLExecutorCallbackWithInteger(isExceptionThrown);
         List<Integer> results = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
@@ -119,7 +119,7 @@ public final class PreparedStatementExecutor {
         };
     }
     
-    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
+    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
         return rules.stream().anyMatch(each -> ((DataNodeRoutedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
     }
     
@@ -139,7 +139,7 @@ public final class PreparedStatementExecutor {
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext sqlStatementContext) throws SQLException {
+    public boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Boolean> sqlExecutorCallback = createDefaultSQLExecutorCallbackWithBoolean(isExceptionThrown);
         List<Boolean> result = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
@@ -161,7 +161,7 @@ public final class PreparedStatementExecutor {
     }
     
     @SuppressWarnings("unchecked")
-    private void refreshTableMetaData(final SchemaContext schemaContext, final SQLStatementContext sqlStatementContext) throws SQLException {
+    private void refreshTableMetaData(final SchemaContext schemaContext, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         if (null == sqlStatementContext) {
             return;
         }

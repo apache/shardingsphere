@@ -82,14 +82,14 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetBooleanForColumnIndex() throws SQLException {
         for (ResultSet each : resultSets.values()) {
-            assertThat(each.getBoolean(1), is(true));
+            assertTrue(each.getBoolean(1));
         }
     }
     
     @Test
     public void assertGetBooleanForColumnLabel() throws SQLException {
         for (ResultSet each : resultSets.values()) {
-            assertThat(each.getBoolean(columnName), is(true));
+            assertTrue(each.getBoolean(columnName));
         }
     }
     
