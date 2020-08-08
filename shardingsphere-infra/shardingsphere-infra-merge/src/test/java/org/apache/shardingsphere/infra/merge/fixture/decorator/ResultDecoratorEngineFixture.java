@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.merge.engine.decorator;
+package org.apache.shardingsphere.infra.merge.fixture.decorator;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
+import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecoratorEngine;
+import org.apache.shardingsphere.infra.merge.fixture.rule.DecoratorRuleFixture;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
-/**
- * Result decorator engine.
- *
- * @param <T> type of rule
- */
-public interface ResultDecoratorEngine<T extends ShardingSphereRule> extends ResultProcessEngine<T> {
+public final class ResultDecoratorEngineFixture implements ResultDecoratorEngine<DecoratorRuleFixture> {
     
-    /**
-     * Create new instance of result decorator.
-     * 
-     * @param databaseType database type
-     * @param schemaMetaData schema meta data
-     * @param rule rule
-     * @param props ShardingSphere properties
-     * @param sqlStatementContext SQL statement context
-     * @return new instance of result decorator
-     */
-    ResultDecorator newInstance(DatabaseType databaseType, SchemaMetaData schemaMetaData, T rule, ConfigurationProperties props, SQLStatementContext<?> sqlStatementContext);
+    @Override
+    public ResultDecorator newInstance(final DatabaseType databaseType,
+                                       final SchemaMetaData schemaMetaData, final DecoratorRuleFixture rule, final ConfigurationProperties props, final SQLStatementContext<?> sqlStatementContext) {
+        return new ResultDecoratorFixture();
+    }
+    
+    @Override
+    public int getOrder() {
+        return 1;
+    }
+    
+    @Override
+    public Class<DecoratorRuleFixture> getTypeClass() {
+        return DecoratorRuleFixture.class;
+    }
 }

@@ -33,7 +33,7 @@ import java.util.Calendar;
 public abstract class DecoratorMergedResult implements MergedResult {
     
     private final MergedResult mergedResult;
-        
+    
     @Override
     public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         return mergedResult.getValue(columnIndex, type);

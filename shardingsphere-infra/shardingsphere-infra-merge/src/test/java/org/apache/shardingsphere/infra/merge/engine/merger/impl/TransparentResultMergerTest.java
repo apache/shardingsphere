@@ -15,35 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.merge.result.impl.memory.fixture;
+package org.apache.shardingsphere.infra.merge.engine.merger.impl;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.infra.merge.fixture.rule.IndependentRuleFixture;
-import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
-import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.List;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@Getter
-public final class TestMemoryMergedResult extends MemoryMergedResult<IndependentRuleFixture> {
+public final class TransparentResultMergerTest {
     
-    private MemoryQueryResultRow memoryQueryResultRow;
-    
-    public TestMemoryMergedResult() throws SQLException {
-        super(null, null, null, Collections.emptyList());
-    }
-    
-    @Override
-    protected List<MemoryQueryResultRow> init(final IndependentRuleFixture rule, 
-                                              final SchemaMetaData schemaMetaData, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
-        memoryQueryResultRow = mock(MemoryQueryResultRow.class);
-        return Collections.singletonList(memoryQueryResultRow);
+    @Test
+    public void assertMerge() throws SQLException {
+        QueryResult queryResult = mock(QueryResult.class);
+        when(queryResult.next()).thenReturn(true);
+        TransparentResultMerger merger = new TransparentResultMerger();
+        MergedResult actual = merger.merge(Collections.singletonList(queryResult), mock(SQLStatementContext.class), mock(SchemaMetaData.class));
+        assertTrue(actual.next());
     }
 }

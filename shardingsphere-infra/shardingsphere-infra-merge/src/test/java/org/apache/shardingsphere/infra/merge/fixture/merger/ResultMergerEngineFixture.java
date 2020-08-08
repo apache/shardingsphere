@@ -15,31 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.merge.engine.decorator;
+package org.apache.shardingsphere.infra.merge.fixture.merger;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
+import org.apache.shardingsphere.infra.merge.engine.merger.ResultMergerEngine;
+import org.apache.shardingsphere.infra.merge.fixture.rule.MergerRuleFixture;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
-/**
- * Result decorator engine.
- *
- * @param <T> type of rule
- */
-public interface ResultDecoratorEngine<T extends ShardingSphereRule> extends ResultProcessEngine<T> {
+public final class ResultMergerEngineFixture implements ResultMergerEngine<MergerRuleFixture> {
     
-    /**
-     * Create new instance of result decorator.
-     * 
-     * @param databaseType database type
-     * @param schemaMetaData schema meta data
-     * @param rule rule
-     * @param props ShardingSphere properties
-     * @param sqlStatementContext SQL statement context
-     * @return new instance of result decorator
-     */
-    ResultDecorator newInstance(DatabaseType databaseType, SchemaMetaData schemaMetaData, T rule, ConfigurationProperties props, SQLStatementContext<?> sqlStatementContext);
+    @Override
+    public ResultMerger newInstance(final DatabaseType databaseType, final MergerRuleFixture rule, final ConfigurationProperties props, final SQLStatementContext<?> sqlStatementContext) {
+        return new ResultMergerFixture();
+    }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
+    
+    @Override
+    public Class<MergerRuleFixture> getTypeClass() {
+        return MergerRuleFixture.class;
+    }
 }
