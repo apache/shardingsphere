@@ -30,19 +30,10 @@ import static org.junit.Assert.assertThat;
 public final class YamlDataSourceParameterMergerTest {
 
     @Test
-    public void assertMerged() {
-        Map<String, Object> commonProps = new HashMap<>();
-        commonProps.put("username", "root");
-        commonProps.put("password", "123456");
-        commonProps.put("connectionTimeoutMilliseconds", 30000L);
-        commonProps.put("maxLifetimeMilliseconds", 30000L);
-        commonProps.put("maxPoolSize", 30);
-        commonProps.put("minPoolSize", 1);
-        commonProps.put("readOnly", false);
-
+    public void assertParameterAllMerged() {
         YamlDataSourceParameter parameterAll = new YamlDataSourceParameter();
+        Map<String, Object> commonProps = generateCommonProps();
         parameterAll.setUrl("jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
-
         YamlDataSourceParameterMerger.merged(parameterAll, commonProps);
 
         assertThat(parameterAll.getUsername(), is("root"));
@@ -53,15 +44,12 @@ public final class YamlDataSourceParameterMergerTest {
         assertThat(parameterAll.getMinPoolSize(), is(1));
         assertThat(parameterAll.isReadOnly(), is(false));
         assertThat(parameterAll.getMaintenanceIntervalMilliseconds(), is(0L));
+    }
 
-        YamlDataSourceParameter parameterPartMerged = new YamlDataSourceParameter();
-        parameterPartMerged.setUrl("jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
-        parameterPartMerged.setUsername("sharding");
-        parameterPartMerged.setPassword("admin");
-        parameterPartMerged.setMaxPoolSize(100);
-        parameterPartMerged.setMinPoolSize(10);
-        parameterPartMerged.setReadOnly(true);
-
+    @Test
+    public void assertParameterPartMerged() {
+        Map<String, Object> commonProps = generateCommonProps();
+        YamlDataSourceParameter parameterPartMerged = generateYamlDataSourceParameter();
         YamlDataSourceParameterMerger.merged(parameterPartMerged, commonProps);
 
         assertThat(parameterPartMerged.getUsername(), is("sharding"));
@@ -72,5 +60,28 @@ public final class YamlDataSourceParameterMergerTest {
         assertThat(parameterPartMerged.getMinPoolSize(), is(10));
         assertThat(parameterPartMerged.isReadOnly(), is(true));
         assertThat(parameterPartMerged.getMaintenanceIntervalMilliseconds(), is(0L));
+    }
+
+    private Map<String, Object> generateCommonProps() {
+        Map<String, Object> commonProps = new HashMap<>();
+        commonProps.put("username", "root");
+        commonProps.put("password", "123456");
+        commonProps.put("connectionTimeoutMilliseconds", 30000L);
+        commonProps.put("maxLifetimeMilliseconds", 30000L);
+        commonProps.put("maxPoolSize", 30);
+        commonProps.put("minPoolSize", 1);
+        commonProps.put("readOnly", false);
+        return commonProps;
+    }
+
+    private YamlDataSourceParameter generateYamlDataSourceParameter() {
+        YamlDataSourceParameter parameterPartMerged = new YamlDataSourceParameter();
+        parameterPartMerged.setUrl("jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
+        parameterPartMerged.setUsername("sharding");
+        parameterPartMerged.setPassword("admin");
+        parameterPartMerged.setMaxPoolSize(100);
+        parameterPartMerged.setMinPoolSize(10);
+        parameterPartMerged.setReadOnly(true);
+        return parameterPartMerged;
     }
 }
