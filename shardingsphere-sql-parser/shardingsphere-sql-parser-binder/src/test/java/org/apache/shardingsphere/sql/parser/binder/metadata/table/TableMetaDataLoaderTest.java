@@ -17,6 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata.table;
 
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -26,17 +35,10 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Map;
 import java.util.Optional;
-import javax.sql.DataSource;
-import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -109,14 +111,14 @@ public final class TableMetaDataLoaderTest {
     @Test
     public void assertLoad() throws SQLException {
         Optional<TableMetaData> actual = TableMetaDataLoader.load(dataSource, TEST_TABLE, "");
-        assertThat(actual.isPresent(), is(true));
+        assertTrue(actual.isPresent());
         Map<String, ColumnMetaData> columnMetaDataMap = actual.get().getColumns();
         assertThat(columnMetaDataMap.size(), is(2));
         assertColumnMetaData(columnMetaDataMap.get("pk_col"), "pk_col", Types.INTEGER, "INT", true, true);
         assertColumnMetaData(columnMetaDataMap.get("col"), "col", Types.VARCHAR, "VARCHAR", false, false);
         Map<String, IndexMetaData> indexMetaDataMap = actual.get().getIndexes();
         assertThat(indexMetaDataMap.size(), is(1));
-        assertThat(indexMetaDataMap.containsKey("my_index"), is(true));
+        assertTrue(indexMetaDataMap.containsKey("my_index"));
     }
     
     @Test

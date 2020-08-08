@@ -31,6 +31,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class MetricsTrackerHandlerTest {
     
@@ -67,7 +68,7 @@ public final class MetricsTrackerHandlerTest {
     @Test
     public void assertHistogram() {
         Optional<HistogramMetricsTrackerDelegate> histogramDelegate = handler.histogramStartTimer(METRICS_LABEL);
-        assertThat(histogramDelegate.isPresent(), is(true));
+        assertTrue(histogramDelegate.isPresent());
         histogramDelegate.ifPresent(delegate -> {
             handler.histogramObserveDuration(delegate);
             assertThat(delegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName()));
@@ -75,7 +76,7 @@ public final class MetricsTrackerHandlerTest {
         });
         FieldUtil.setField(handler, "async", false);
         Optional<HistogramMetricsTrackerDelegate> syncHistogram = handler.histogramStartTimer(METRICS_LABEL);
-        assertThat(syncHistogram.isPresent(), is(true));
+        assertTrue(syncHistogram.isPresent());
         syncHistogram.ifPresent(delegate -> {
             assertThat(delegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName()));
             handler.histogramObserveDuration(delegate);
@@ -85,7 +86,7 @@ public final class MetricsTrackerHandlerTest {
     @Test
     public void summary() {
         Optional<SummaryMetricsTrackerDelegate> summaryDelegate = handler.summaryStartTimer(METRICS_LABEL);
-        assertThat(summaryDelegate.isPresent(), is(true));
+        assertTrue(summaryDelegate.isPresent());
         summaryDelegate.ifPresent(delegate -> {
             handler.summaryObserveDuration(delegate);
             assertThat(delegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
@@ -94,7 +95,7 @@ public final class MetricsTrackerHandlerTest {
         
         FieldUtil.setField(handler, "async", false);
         Optional<SummaryMetricsTrackerDelegate> syncSummary = handler.summaryStartTimer(METRICS_LABEL);
-        assertThat(syncSummary.isPresent(), is(true));
+        assertTrue(syncSummary.isPresent());
         syncSummary.ifPresent(delegate -> {
             assertThat(delegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
             handler.summaryObserveDuration(delegate);
@@ -104,7 +105,7 @@ public final class MetricsTrackerHandlerTest {
     @After
     public void assertClose() {
         handler.close();
-        assertThat(handler.getExecutorService().isShutdown(), is(true));
+        assertTrue(handler.getExecutorService().isShutdown());
     }
 }
 

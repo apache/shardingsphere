@@ -94,16 +94,16 @@ public final class DataSourceConfigurationTest {
     public void assertEquals() {
         DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         DataSourceConfiguration targetDataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
-        assertThat(originalDataSourceConfig.equals(originalDataSourceConfig), is(true));
-        assertThat(originalDataSourceConfig.equals(targetDataSourceConfiguration), is(true));
+        assertThat(originalDataSourceConfig, is(originalDataSourceConfig));
+        assertThat(originalDataSourceConfig, is(targetDataSourceConfiguration));
         originalDataSourceConfig.getProps().put("username", "root");
         targetDataSourceConfiguration.getProps().put("username", "root");
-        assertThat(originalDataSourceConfig.equals(targetDataSourceConfiguration), is(true));
+        assertThat(originalDataSourceConfig, is(targetDataSourceConfiguration));
         targetDataSourceConfiguration.getProps().put("password", "root");
-        assertThat(originalDataSourceConfig.equals(targetDataSourceConfiguration), is(true));
+        assertThat(originalDataSourceConfig, is(targetDataSourceConfiguration));
         originalDataSourceConfig.getProps().put("username", "root");
         originalDataSourceConfig.getProps().put("url", "jdbcUrl");
-        assertThat(originalDataSourceConfig.equals(targetDataSourceConfiguration), is(false));
+        assertThat(originalDataSourceConfig, not(targetDataSourceConfiguration));
     }
     
     @Test

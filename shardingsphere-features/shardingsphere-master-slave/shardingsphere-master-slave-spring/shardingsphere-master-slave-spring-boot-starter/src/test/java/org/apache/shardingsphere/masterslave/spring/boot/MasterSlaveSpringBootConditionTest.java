@@ -29,6 +29,7 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,7 +57,7 @@ public final class MasterSlaveSpringBootConditionTest {
         when(context.getEnvironment()).thenReturn(mockEnvironment);
         MasterSlaveSpringBootCondition condition = new MasterSlaveSpringBootCondition();
         ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
-        assertThat(matchOutcome.isMatch(), is(true));
+        assertTrue(matchOutcome.isMatch());
     }
 }
 

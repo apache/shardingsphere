@@ -24,6 +24,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class MetricsConfigurationYamlSwapperTest {
     
@@ -35,15 +36,15 @@ public final class MetricsConfigurationYamlSwapperTest {
         yaml.setName("prometheus");
         MetricsConfiguration metricsConfiguration = swapper.swapToObject(yaml);
         assertThat(metricsConfiguration.getPort(), is(9190));
-        assertThat(metricsConfiguration.getAsync(), is(true));
-        assertThat(metricsConfiguration.getEnable(), is(true));
+        assertTrue(metricsConfiguration.getAsync());
+        assertTrue(metricsConfiguration.getEnable());
         assertThat(metricsConfiguration.getThreadCount(), is(Runtime.getRuntime().availableProcessors() << 1));
         YamlMetricsConfiguration yamlSwap = swapper.swapToYamlConfiguration(metricsConfiguration);
         assertNotNull(yamlSwap);
         assertThat(yamlSwap.getPort(), is(9190));
         assertThat(yamlSwap.getName(), is("prometheus"));
         assertThat(yamlSwap.getHost(), is("127.0.0.1"));
-        assertThat(yamlSwap.getAsync(), is(true));
+        assertTrue(yamlSwap.getAsync());
         assertThat(yamlSwap.getThreadCount(), is(Runtime.getRuntime().availableProcessors() << 1));
     }
     

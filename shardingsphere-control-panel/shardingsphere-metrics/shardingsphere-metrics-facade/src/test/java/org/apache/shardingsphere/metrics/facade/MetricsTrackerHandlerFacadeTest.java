@@ -30,6 +30,7 @@ import java.util.function.Supplier;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MetricsTrackerHandlerFacadeTest {
@@ -59,9 +60,9 @@ public final class MetricsTrackerHandlerFacadeTest {
         assertThat(summaryDelegate.get(), is(false));
         init();
         Supplier<Boolean> emptyHistogram = metricsTrackerHandlerFacade.histogramStartTimer("request");
-        assertThat(emptyHistogram.get(), is(true));
+        assertTrue(emptyHistogram.get());
         Supplier<Boolean> empty = metricsTrackerHandlerFacade.summaryStartTimer("request");
-        assertThat(empty.get(), is(true));
+        assertTrue(empty.get());
     }
     
     private void init() {
