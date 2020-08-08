@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.merge.result.impl.fixture;
+package org.apache.shardingsphere.infra.merge.fixture.rule;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-public final class TestRule implements ShardingSphereRule {
+public final class DecoratorRuleFixture implements ShardingSphereRule {
 }

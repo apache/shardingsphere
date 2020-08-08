@@ -15,34 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.merge.result.impl.memory.fixture;
+package org.apache.shardingsphere.infra.merge.fixture.merger;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.infra.merge.fixture.rule.IndependentRuleFixture;
-import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
-import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
+import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@Getter
-public final class TestMemoryMergedResult extends MemoryMergedResult<IndependentRuleFixture> {
-    
-    private MemoryQueryResultRow memoryQueryResultRow;
-    
-    public TestMemoryMergedResult() throws SQLException {
-        super(null, null, null, Collections.emptyList());
-    }
+public final class ResultMergerFixture implements ResultMerger {
     
     @Override
-    protected List<MemoryQueryResultRow> init(final IndependentRuleFixture rule, final SchemaMetaData schemaMetaData, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
-        memoryQueryResultRow = mock(MemoryQueryResultRow.class);
-        return Collections.singletonList(memoryQueryResultRow);
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getString(1)).thenReturn("merged_value");
+        QueryResult queryResult = new StreamQueryResult(resultSet);
+        return new TransparentMergedResult(queryResult);
     }
 }
