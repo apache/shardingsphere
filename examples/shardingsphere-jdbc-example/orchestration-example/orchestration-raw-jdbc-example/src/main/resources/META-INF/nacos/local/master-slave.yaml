@@ -44,7 +44,7 @@ props:
   sql.show: true
 
 orchestration:
-  namespace: demo_zookeeper_yaml_ds_ms
+  name: demo_zookeeper_yaml_ds_ms
   registryCenter:
     type: ZooKeeper
     serverLists: localhost:2181

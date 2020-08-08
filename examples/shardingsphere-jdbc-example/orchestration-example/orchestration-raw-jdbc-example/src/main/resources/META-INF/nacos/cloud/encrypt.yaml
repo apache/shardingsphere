@@ -16,7 +16,7 @@
 #
 
 orchestration:
-  namespace: demo_zookeeper_yaml_ds_encrypt
+  name: demo_zookeeper_yaml_ds_encrypt
   registryCenter:
     type: ZooKeeper
     serverLists: localhost:2181

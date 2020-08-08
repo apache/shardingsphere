@@ -22,7 +22,7 @@
 ######################################################################################################
 
 #orchestration:
-#  namespace: orchestration_ds
+#  name: orchestration_ds
 #  registryCenter:
 #    type: ZooKeeper
 #    serverLists: localhost:2181
