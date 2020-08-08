@@ -71,7 +71,7 @@ public final class YamlDataSourceParameterMergerTest {
         commonProps.put("maxPoolSize", 30);
         commonProps.put("minPoolSize", 1);
         commonProps.put("readOnly", false);
-        return generateCommonProps();
+        return commonProps;
     }
     
     private YamlDataSourceParameter generateYamlDataSourceParameter() {
