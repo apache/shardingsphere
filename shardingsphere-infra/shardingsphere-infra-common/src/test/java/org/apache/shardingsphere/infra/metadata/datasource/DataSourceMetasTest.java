@@ -29,8 +29,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 
 public final class DataSourceMetasTest {
 
@@ -48,21 +46,6 @@ public final class DataSourceMetasTest {
 
     @Test
     public void assertGetAllInstanceDataSourceNamesBySameDataSource() {
-
-    @Test
-    public void assertGetAllInstanceDataSourceNamesForShardingRuleByDifferentDataSource() {
-        Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
-        databaseAccessConfigurationMap.put("ds_0", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_0", "test", null));
-        databaseAccessConfigurationMap.put("ds_1", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3307/db_1", "test", null));
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
-        Collection<String> allInstanceDataSourceNames = dataSourceMetas.getAllInstanceDataSourceNames();
-        assertNotNull(allInstanceDataSourceNames);
-        assertThat(allInstanceDataSourceNames.size(), is(2));
-        assertTrue(allInstanceDataSourceNames.contains("ds_0") && allInstanceDataSourceNames.contains("ds_1"));
-    }
-
-    @Test
-    public void assertGetAllInstanceDataSourceNamesForShardingRuleBySameDataSource() {
         Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
         databaseAccessConfigurationMap.put("ds_0", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_0", "test", null));
         databaseAccessConfigurationMap.put("ds_1", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_1", "test", null));
@@ -83,11 +66,6 @@ public final class DataSourceMetasTest {
         assertNotNull(allInstanceDataSourceNames);
         assertThat(allInstanceDataSourceNames.size(), is(2));
         assertTrue(allInstanceDataSourceNames.contains("ds_0") && allInstanceDataSourceNames.contains("ds_1"));
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
-        Collection<String> allInstanceDataSourceNames = dataSourceMetas.getAllInstanceDataSourceNames();
-        assertNotNull(allInstanceDataSourceNames);
-        assertThat(allInstanceDataSourceNames.size(), is(1));
-        assertTrue(allInstanceDataSourceNames.contains("ds_0") || allInstanceDataSourceNames.contains("ds_1"));
     }
 
     @Test
@@ -101,7 +79,6 @@ public final class DataSourceMetasTest {
         assertThat(allInstanceDataSourceNames.size(), is(1));
         assertTrue(allInstanceDataSourceNames.contains("ds_0") || allInstanceDataSourceNames.contains("ds_1"));
     }
-
 
     @Test
     public void assertGetActualCatalogForShardingRule() {
@@ -127,10 +104,5 @@ public final class DataSourceMetasTest {
         databaseAccessConfigurationMap.put("ds_1", new DatabaseAccessConfiguration("jdbc:h2:mem:test", "test1", null));
         DataSourceMetas dataSourceMetas = new DataSourceMetas(DatabaseTypes.getActualDatabaseType("H2"), databaseAccessConfigurationMap);
         assertThat(dataSourceMetas.getDataSourceMetaData("ds_0").getSchema(), is("test"));
-        Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
-        databaseAccessConfigurationMap.put("ds_0", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_0", "test", null));
-        databaseAccessConfigurationMap.put("ds_1", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_1", "test", null));
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
-        assertNull(dataSourceMetas.getDataSourceMetaData("ds_0").getSchema());
     }
 }
