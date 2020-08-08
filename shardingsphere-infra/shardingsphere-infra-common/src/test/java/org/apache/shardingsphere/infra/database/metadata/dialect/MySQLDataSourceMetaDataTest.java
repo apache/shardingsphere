@@ -21,39 +21,38 @@ import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURL
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class MySQLDataSourceMetaDataTest {
     
     @Test
     public void assertNewConstructorWithPort() {
-        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
+        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false","test");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("ds_0"));
-        assertNull(actual.getSchema());
+        assertThat(actual.getSchema(),is("test"));
     }
     
     @Test
     public void assertNewConstructorWithDefaultPort() {
-        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql:loadbalance://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
+        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql:loadbalance://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false","test");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3306));
-        assertNull(actual.getSchema());
+        assertThat(actual.getSchema(),is("test"));
     }
     
     @Test
     public void assertMultipleDatabases() {
-        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1:9999,127.0.0.1:3306,127.0.0.1:3307/ds_0?serverTimezone=UTC&useSSL=false");
+        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1:9999,127.0.0.1:3306,127.0.0.1:3307/ds_0?serverTimezone=UTC&useSSL=false","test");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("ds_0"));
-        assertNull(actual.getSchema());
+        assertThat(actual.getSchema(),is("test"));
     }
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertNewConstructorFailure() {
-        new MySQLDataSourceMetaData("jdbc:mysql:xxxxxxxx");
+        new MySQLDataSourceMetaData("jdbc:mysql:xxxxxxxx","test");
     }
 }

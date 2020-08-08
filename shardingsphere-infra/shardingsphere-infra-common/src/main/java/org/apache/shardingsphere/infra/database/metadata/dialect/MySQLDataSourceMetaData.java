@@ -41,9 +41,9 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     
     private final String schema;
     
-    private final Pattern pattern = Pattern.compile("jdbc:(mysql|mysqlx)(:loadbalance|:replication)?:(\\w*:)?//([\\w\\-\\.]+):?([0-9]*),?.*?/([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
+    private final Pattern pattern = Pattern.compile("jdbc:(mysql|mysqlx)(:loadbalance|:replication)?:(\\w*:)?//([\\w\\-.]+):?([0-9]*),?.*?/([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
     
-    public MySQLDataSourceMetaData(final String url) {
+    public MySQLDataSourceMetaData(final String url, final String username) {
         Matcher matcher = pattern.matcher(url);
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
@@ -51,6 +51,6 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
         hostName = matcher.group(4);
         port = Strings.isNullOrEmpty(matcher.group(5)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(5));
         catalog = matcher.group(6);
-        schema = null;
+        schema = username;
     }
 }

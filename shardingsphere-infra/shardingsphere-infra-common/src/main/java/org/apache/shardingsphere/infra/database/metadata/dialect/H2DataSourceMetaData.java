@@ -42,7 +42,7 @@ public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
     
     private final Pattern pattern = Pattern.compile("jdbc:h2:(mem|~)[:/]([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
     
-    public H2DataSourceMetaData(final String url) {
+    public H2DataSourceMetaData(final String url,final String username) {
         Matcher matcher = pattern.matcher(url);
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
@@ -50,6 +50,6 @@ public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
         hostName = "";
         port = DEFAULT_PORT;
         catalog = matcher.group(2);
-        schema = null;
+        schema = username;
     }
 }
