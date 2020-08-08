@@ -44,8 +44,8 @@ public abstract class SingleIT extends BaseIT {
     
     private final String originalSQL;
     
-    public SingleIT(final String path, final IntegrateTestCaseAssertion assertion, final String ruleType,
-                    final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+    protected SingleIT(final String path, final IntegrateTestCaseAssertion assertion, final String ruleType, 
+                       final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(ruleType, databaseType);
         this.assertion = assertion;
         this.caseType = caseType;

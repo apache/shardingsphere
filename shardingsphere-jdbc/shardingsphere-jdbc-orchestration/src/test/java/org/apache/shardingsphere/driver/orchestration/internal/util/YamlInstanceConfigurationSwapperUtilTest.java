@@ -40,7 +40,7 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
     
     private YamlOrchestrationConfiguration createExpectedYamlOrchestrationConfiguration() {
         YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();
-        result.setNamespace("test");
+        result.setName("test");
         result.setRegistryCenter(createYamlOrchestrationRepositoryConfiguration());
         return result;
     }

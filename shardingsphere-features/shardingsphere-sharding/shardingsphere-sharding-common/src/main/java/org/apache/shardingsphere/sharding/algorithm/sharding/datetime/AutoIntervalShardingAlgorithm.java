@@ -84,7 +84,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(doSharding(parseDate(shardingValue.getValue())) + "")) {
+            if (each.endsWith(String.valueOf(doSharding(parseDate(shardingValue.getValue()))))) {
                 return each;
             }
         }
@@ -98,7 +98,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
         int lastPartition = getLastPartition(shardingValue.getValueRange());
         for (int i = firstPartition; i <= lastPartition; i++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(i + "")) {
+                if (each.endsWith(String.valueOf(i))) {
                     result.add(each);
                 }
                 if (result.size() == availableTargetNames.size()) {

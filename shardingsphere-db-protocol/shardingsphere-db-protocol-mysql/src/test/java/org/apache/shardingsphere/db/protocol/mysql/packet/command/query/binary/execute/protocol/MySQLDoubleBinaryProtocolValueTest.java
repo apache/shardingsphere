@@ -37,13 +37,13 @@ public final class MySQLDoubleBinaryProtocolValueTest {
     
     @Test
     public void assertRead() {
-        when(byteBuf.readDoubleLE()).thenReturn(1d);
-        assertThat(new MySQLDoubleBinaryProtocolValue().read(new MySQLPacketPayload(byteBuf)), is(1d));
+        when(byteBuf.readDoubleLE()).thenReturn(1.0d);
+        assertThat(new MySQLDoubleBinaryProtocolValue().read(new MySQLPacketPayload(byteBuf)), is(1.0d));
     }
     
     @Test
     public void assertWrite() {
-        new MySQLDoubleBinaryProtocolValue().write(new MySQLPacketPayload(byteBuf), 1d);
-        verify(byteBuf).writeDoubleLE(1d);
+        new MySQLDoubleBinaryProtocolValue().write(new MySQLPacketPayload(byteBuf), 1.0d);
+        verify(byteBuf).writeDoubleLE(1.0d);
     }
 }

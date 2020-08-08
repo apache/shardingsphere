@@ -119,7 +119,7 @@ rules:
       type: ROUND_ROBIN
 
 orchestration:
-  namespace: test_sharding_ms_registry_name
+  name: test_sharding_ms_registry_name
   registryCenter:
     type: REG_TEST
     serverLists: localhost:3181

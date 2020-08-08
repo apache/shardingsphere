@@ -57,7 +57,7 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     private EtcdProperties etcdProperties;
 
     @Override
-    public void init(final String namespace, final OrchestrationCenterConfiguration config) {
+    public void init(final String name, final OrchestrationCenterConfiguration config) {
         etcdProperties = new EtcdProperties(props);
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).build();
     }
@@ -81,7 +81,7 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     
     private String getSubNodeKeyName(final String prefix, final String fullPath) {
         String pathWithoutPrefix = fullPath.substring(prefix.length());
-        return pathWithoutPrefix.contains("/") ? pathWithoutPrefix.substring(0, pathWithoutPrefix.indexOf("/")) : pathWithoutPrefix;
+        return pathWithoutPrefix.contains("/") ? pathWithoutPrefix.substring(0, pathWithoutPrefix.indexOf('/')) : pathWithoutPrefix;
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})

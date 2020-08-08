@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config.utils;
+package org.apache.shardingsphere.scaling.core.util;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManagerTest;
+import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
 import org.junit.Before;
 import org.junit.Test;
 

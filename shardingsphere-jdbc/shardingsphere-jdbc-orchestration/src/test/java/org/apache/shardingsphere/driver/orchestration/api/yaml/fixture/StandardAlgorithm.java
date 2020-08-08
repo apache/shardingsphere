@@ -39,7 +39,7 @@ public final class StandardAlgorithm implements StandardShardingAlgorithm<Intege
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(shardingValue.getValue() % 10 + "")) {
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % 10))) {
                 return each;
             }
         }

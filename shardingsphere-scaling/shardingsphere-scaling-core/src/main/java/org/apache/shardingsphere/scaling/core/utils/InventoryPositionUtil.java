@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position.utils;
+package org.apache.shardingsphere.scaling.core.utils;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;

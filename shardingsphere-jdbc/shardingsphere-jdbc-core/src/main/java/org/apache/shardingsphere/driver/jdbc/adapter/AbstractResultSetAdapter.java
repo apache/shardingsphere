@@ -54,7 +54,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     @Getter
     private final ExecutionContext executionContext;
     
-    public AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final ExecutionContext executionContext) {
+    protected AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final ExecutionContext executionContext) {
         Preconditions.checkArgument(!resultSets.isEmpty());
         this.resultSets = resultSets;
         this.statement = statement;

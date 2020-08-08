@@ -32,7 +32,7 @@ import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManagerFactory;
-import org.apache.shardingsphere.scaling.core.job.position.utils.InventoryPositionUtil;
+import org.apache.shardingsphere.scaling.core.utils.InventoryPositionUtil;
 
 import java.io.Closeable;
 import java.util.Map;
@@ -94,7 +94,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         log.info("resume incremental position from {} = {}", taskPath, data);
         Map<String, Object> incrementalPosition = GSON.<Map<String, Object>>fromJson(data, Map.class);
         for (Entry<String, Object> entry : incrementalPosition.entrySet()) {
-            getIncrementalPositionManagerMap().put(entry.getKey(), PositionManagerFactory.newInstance(databaseType, entry.getValue().toString()));
+            incrementalPositionManagerMap.put(entry.getKey(), PositionManagerFactory.newInstance(databaseType, entry.getValue().toString()));
         }
     }
     
