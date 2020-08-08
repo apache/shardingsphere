@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
      - config.ype = "file"
      - service.vgroup_mapping.my_test_tx_group = "default"
  */
-public class SeataATOrderServiceTest {
+public final class SeataATOrderServiceTest {
     
     private SeataATOrderService orderService;
     

@@ -28,11 +28,11 @@ import java.util.Map;
 /**
  * Create dataSource statement context converter.
  */
-public class CreateDataSourcesStatementContextConverter implements SQLStatementContextConverter<CreateDataSourcesStatementContext, Map<String, YamlDataSourceParameter>> {
+public final class CreateDataSourcesStatementContextConverter implements SQLStatementContextConverter<CreateDataSourcesStatementContext, Map<String, YamlDataSourceParameter>> {
     
     @Override
     public Map<String, YamlDataSourceParameter> convert(final CreateDataSourcesStatementContext sqlStatement) {
-        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>();
+        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(sqlStatement.getUrls().size(), 1);
         for (DataSourceConnectionUrl each : sqlStatement.getUrls()) {
             YamlDataSourceParameter dataSource = new YamlDataSourceParameter();
             dataSource.setUrl(each.getUrl());

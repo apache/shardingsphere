@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ShardingDeleteStatementValidatorTest {
+public final class ShardingDeleteStatementValidatorTest {
 
     @Mock
     private ShardingRule shardingRule;

@@ -32,7 +32,7 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 
-public class YamlOrchestrationShardingSphereDataSourceFactoryTest extends AbstractYamlDataSourceTest {
+public final class YamlOrchestrationShardingSphereDataSourceFactoryTest extends AbstractYamlDataSourceTest {
     
     private static final List<String> CONFIG_FILES = Arrays.asList("/yaml/integrate/sharding_ms/configWithDataSourceWithProps.yaml",
             "/yaml/integrate/sharding_ms/configWithoutDataSourceWithProps.yaml", "/yaml/integrate/sharding_ms/configWithDataSourceWithoutRules.yaml");

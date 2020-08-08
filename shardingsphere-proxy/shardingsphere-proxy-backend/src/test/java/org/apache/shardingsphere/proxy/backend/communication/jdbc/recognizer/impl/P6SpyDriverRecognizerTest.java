@@ -24,7 +24,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class P6SpyDriverRecognizerTest {
+public final class P6SpyDriverRecognizerTest {
     
     private final P6SpyDriverRecognizer recognizer = new P6SpyDriverRecognizer();
     

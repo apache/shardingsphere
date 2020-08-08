@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
  * limitations under the License.
  */
 
-public class ShardingCTLExplainBackendHandlerTest {
+public final class ShardingCTLExplainBackendHandlerTest {
     
     private ShardingCTLExplainBackendHandler handler;
     

@@ -22,7 +22,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class MySQLAuthenticationMethodTest {
+public final class MySQLAuthenticationMethodTest {
     
     @Test
     public void assertGetMethodName() {

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
  */
 @RequiredArgsConstructor
 @Getter
-public class EncryptRuleChangedEvent implements OrchestrationEvent {
+public final class EncryptRuleChangedEvent implements OrchestrationEvent {
     
     private final String shardingSchemaName;
     

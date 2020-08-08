@@ -26,7 +26,7 @@ import java.util.Properties;
 
 @Getter
 @Setter
-public class WithInitAlgorithm implements ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public final class WithInitAlgorithm implements ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
     private Properties props;
     
