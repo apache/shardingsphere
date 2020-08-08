@@ -86,15 +86,10 @@
     {{ end }}
 
     <!-- download button -->
-    <hr />
-    {{ if eq .Lang "en"}}
-      <a class="padding" href="{{"pdf/shadingsphere_docs_en.pdf" | relURL}}">
-        <i class="fa fa-fw fa-file-pdf-o" ></i>&nbsp;Download PDF&nbsp;&nbsp;<!-- &nbsp; is a placeholder -->
-    {{ else }}  
-      <a class="padding" href="{{"pdf/shadingsphere_docs_cn.pdf" | relURL}}">
-        <i class="fa fa-fw fa-file-pdf-o" ></i>&nbsp;下载PDF文档&nbsp;&nbsp;<!-- &nbsp; is a placeholder -->
-    {{end}}
-    </a>
+    <!-- <hr /> -->
+    <!-- <a class="padding" href=""> no link yet -->
+      <!-- <i class="fa fa-fw fa-file-pdf-o" ></i>&nbsp;Download PDF&nbsp;&nbsp;👈&nbsp; is a placeholder -->
+    <!-- </a> -->
     
     <section id="footer">
       {{ partial "menu-footer.html" . }}
