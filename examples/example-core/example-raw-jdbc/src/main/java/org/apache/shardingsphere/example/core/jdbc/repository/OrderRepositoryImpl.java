@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.core.jdbc.repository;
 
+import org.apache.shardingsphere.example.core.api.ExampleDatabaseType;
 import org.apache.shardingsphere.example.core.api.entity.Order;
 import org.apache.shardingsphere.example.core.api.repository.OrderRepository;
 
@@ -31,15 +32,24 @@ import java.util.List;
 
 public class OrderRepositoryImpl implements OrderRepository {
     
+    private final ExampleDatabaseType databaseType;
+    
     private final DataSource dataSource;
     
     public OrderRepositoryImpl(final DataSource dataSource) {
+        this(ExampleDatabaseType.MYSQL, dataSource);
+    }
+    
+    public OrderRepositoryImpl(final ExampleDatabaseType databaseType, final DataSource dataSource) {
+        this.databaseType = databaseType;
         this.dataSource = dataSource;
     }
     
     @Override
     public void createTableIfNotExists() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
+        String sql = "CREATE TABLE IF NOT EXISTS t_order ("
+            + (ExampleDatabaseType.POSTGRESQL == databaseType ? "order_id BIGSERIAL NOT NULL" : "order_id BIGINT NOT NULL AUTO_INCREMENT")
+            + ", user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);

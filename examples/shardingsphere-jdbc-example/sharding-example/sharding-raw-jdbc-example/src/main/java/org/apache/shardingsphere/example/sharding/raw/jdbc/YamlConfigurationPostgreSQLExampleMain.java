@@ -20,21 +20,23 @@ package org.apache.shardingsphere.example.sharding.raw.jdbc;
 import java.io.IOException;
 import java.sql.SQLException;
 import javax.sql.DataSource;
+import org.apache.shardingsphere.example.core.api.ExampleDatabaseType;
+import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.factory.YamlDataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
 
-/**
- * Tables should be created manually, table schema is in sharding-tables-postgresql.yaml .
- */
 public final class YamlConfigurationPostgreSQLExampleMain {
     
-    private static final ShardingType shardingType = ShardingType.SHARDING_TABLES_POSTGRESQL;
+    private static final ShardingType SHARDING_TYPE = ShardingType.SHARDING_TABLES_POSTGRESQL;
     
     public static void main(final String[] args) throws SQLException, IOException {
-        DataSource dataSource = YamlDataSourceFactory.newInstance(shardingType);
-        OrderServiceImpl orderService = new OrderServiceImpl(dataSource);
-        orderService.processSuccess();
+        DataSource dataSource = YamlDataSourceFactory.newInstance(SHARDING_TYPE);
+        ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     
+    private static ExampleService getExampleService(final DataSource dataSource) {
+        return new OrderServiceImpl(ExampleDatabaseType.POSTGRESQL, dataSource);
+    }
 }

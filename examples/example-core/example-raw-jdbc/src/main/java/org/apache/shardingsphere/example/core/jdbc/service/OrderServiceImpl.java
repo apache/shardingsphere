@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.core.jdbc.service;
 
+import org.apache.shardingsphere.example.core.api.ExampleDatabaseType;
 import org.apache.shardingsphere.example.core.api.entity.Address;
 import org.apache.shardingsphere.example.core.api.entity.Order;
 import org.apache.shardingsphere.example.core.api.entity.OrderItem;
@@ -42,8 +43,12 @@ public final class OrderServiceImpl implements ExampleService {
     private final AddressRepository addressRepository;
     
     public OrderServiceImpl(final DataSource dataSource) {
-        orderRepository = new OrderRepositoryImpl(dataSource);
-        orderItemRepository = new OrderItemRepositoryImpl(dataSource);
+        this(ExampleDatabaseType.MYSQL, dataSource);
+    }
+    
+    public OrderServiceImpl(final ExampleDatabaseType databaseType, final DataSource dataSource) {
+        orderRepository = new OrderRepositoryImpl(databaseType, dataSource);
+        orderItemRepository = new OrderItemRepositoryImpl(databaseType, dataSource);
         addressRepository = new AddressRepositoryImpl(dataSource);
     }
     
