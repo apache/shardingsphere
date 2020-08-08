@@ -35,7 +35,7 @@ import org.apache.shardingsphere.scaling.core.job.position.Position;
 @RequiredArgsConstructor
 @Setter
 @Getter
-public class BinlogPosition implements IncrementalPosition {
+public final class BinlogPosition implements IncrementalPosition {
     
     private static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     
@@ -48,7 +48,7 @@ public class BinlogPosition implements IncrementalPosition {
     private long serverId;
     
     @Override
-    public final int compareTo(final Position position) {
+    public int compareTo(final Position position) {
         if (null == position) {
             return 1;
         }

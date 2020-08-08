@@ -29,7 +29,7 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 @Getter
-public class ExecutionContext {
+public final class ExecutionContext {
     
     private final SQLStatementContext sqlStatementContext;
     

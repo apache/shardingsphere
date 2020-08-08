@@ -25,7 +25,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ShadowHitTotalCounterMetricsTrackerTest extends AbstractPrometheusCollectorRegistry {
+public final class ShadowHitTotalCounterMetricsTrackerTest extends AbstractPrometheusCollectorRegistry {
     
     @Test
     public void counterShadowHitTotal() {
@@ -33,7 +33,6 @@ public class ShadowHitTotalCounterMetricsTrackerTest extends AbstractPrometheusC
         assertThat(tracker.metricsLabel(), is(MetricsLabelEnum.SHADOW_HIT_TOTAL.getName()));
         assertThat(tracker.metricsType(), is(MetricsTypeEnum.COUNTER.name()));
         tracker.inc(1.0);
-        Double total = getCollectorRegistry().getSampleValue("shadow_hit_total");
-        assertThat(total, is(1.0));
+        assertThat(getCollectorRegistry().getSampleValue("shadow_hit_total"), is(1.0));
     }
 }

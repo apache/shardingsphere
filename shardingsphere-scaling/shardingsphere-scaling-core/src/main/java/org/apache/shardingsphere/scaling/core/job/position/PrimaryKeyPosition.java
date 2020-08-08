@@ -31,7 +31,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class PrimaryKeyPosition implements InventoryPosition {
+public final class PrimaryKeyPosition implements InventoryPosition {
     
     private static final Gson GSON = new Gson();
     

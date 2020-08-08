@@ -34,7 +34,7 @@ import java.util.concurrent.Future;
 /**
  * Sharding scaling executor engine.
  */
-public class ShardingScalingExecuteEngine {
+public final class ShardingScalingExecuteEngine {
     
     private final ListeningExecutorService executorService;
     
