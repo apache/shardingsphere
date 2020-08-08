@@ -32,7 +32,7 @@ public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenti
     @Override
     public YamlAuthenticationConfiguration swapToYamlConfiguration(final Authentication data) {
         YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
-        result.getUsers().putAll(Maps.transformValues(data.getUsers(), proxyUserYamlSwapper::swapToYamlConfiguration));
+        result.setUsers(Maps.transformValues(data.getUsers(), proxyUserYamlSwapper::swapToYamlConfiguration));
         return result;
     }
     

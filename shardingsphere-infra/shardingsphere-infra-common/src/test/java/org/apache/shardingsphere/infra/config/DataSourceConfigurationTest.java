@@ -70,7 +70,26 @@ public final class DataSourceConfigurationTest {
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
     }
-
+    
+    @Test
+    public void assertAddAlias() {
+        HikariDataSource actualDataSource = new HikariDataSource();
+        actualDataSource.setDriverClassName("org.h2.Driver");
+        actualDataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        actualDataSource.setUsername("root");
+        actualDataSource.setPassword("root");
+        DataSourceConfiguration actual = DataSourceConfiguration.getDataSourceConfiguration(actualDataSource);
+        actual.addPropertyAlias("url", "jdbcUrl");
+        actual.addPropertyAlias("user", "username");
+        assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
+        assertThat(actual.getProps().get("driverClassName").toString(), is("org.h2.Driver"));
+        assertThat(actual.getProps().get("jdbcUrl").toString(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actual.getProps().get("username").toString(), is("root"));
+        assertThat(actual.getProps().get("password").toString(), is("root"));
+        assertThat(actual.getProps().get("jdbcUrl"), is(actual.getProps().get("url")));
+        assertThat(actual.getProps().get("username"), is(actual.getProps().get("user")));
+    }
+    
     @Test
     public void assertEquals() {
         DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
@@ -86,7 +105,7 @@ public final class DataSourceConfigurationTest {
         originalDataSourceConfig.getProps().put("url", "jdbcUrl");
         assertThat(originalDataSourceConfig.equals(targetDataSourceConfiguration), is(false));
     }
-
+    
     @Test
     public void assertHashCode() {
         DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
@@ -102,25 +121,6 @@ public final class DataSourceConfigurationTest {
         originalDataSourceConfig.getProps().clear();
         targetDataSourceConfig = new DataSourceConfiguration(BasicDataSource.class.getName());
         assertThat(originalDataSourceConfig.hashCode(), not(targetDataSourceConfig.hashCode()));
-    }
-
-    @Test
-    public void assertAddAlias() {
-        HikariDataSource actualDataSource = new HikariDataSource();
-        actualDataSource.setDriverClassName("org.h2.Driver");
-        actualDataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        actualDataSource.setUsername("root");
-        actualDataSource.setPassword("root");
-        DataSourceConfiguration actual = DataSourceConfiguration.getDataSourceConfiguration(actualDataSource);
-        actual.addAlias("url", "jdbcUrl");
-        actual.addAlias("user", "username");
-        assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
-        assertThat(actual.getProps().get("driverClassName").toString(), is("org.h2.Driver"));
-        assertThat(actual.getProps().get("jdbcUrl").toString(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
-        assertThat(actual.getProps().get("username").toString(), is("root"));
-        assertThat(actual.getProps().get("password").toString(), is("root"));
-        assertThat(actual.getProps().get("jdbcUrl"), is(actual.getProps().get("url")));
-        assertThat(actual.getProps().get("username"), is(actual.getProps().get("user")));
     }
     
     @SuppressWarnings("unchecked")

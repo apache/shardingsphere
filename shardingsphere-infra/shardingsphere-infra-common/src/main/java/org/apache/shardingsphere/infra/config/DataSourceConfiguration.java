@@ -126,6 +126,18 @@ public final class DataSourceConfiguration {
         return Optional.empty();
     }
     
+    /**
+     * Add property alias to shared configuration.
+     *
+     * @param originalName original key for data source configuration property
+     * @param alias property alias for configuration
+     */
+    public void addPropertyAlias(final String originalName, final String alias) {
+        if (props.containsKey(originalName)) {
+            props.put(alias, props.get(originalName));
+        }
+    }
+    
     @Override
     public boolean equals(final Object obj) {
         return this == obj || null != obj && getClass() == obj.getClass() && equalsByProperties((DataSourceConfiguration) obj);
@@ -150,25 +162,5 @@ public final class DataSourceConfiguration {
             stringBuilder.append(entry.getKey()).append(entry.getValue());
         }
         return Objects.hashCode(dataSourceClassName, stringBuilder.toString());
-    }
-
-    /**
-     * Add alias to share configuration.
-     *
-     * @param alias alias for configuration
-     */
-    public void addAlias(final String... alias) {
-        Object value = null;
-        for (String each : alias) {
-            if (props.containsKey(each)) {
-                value = props.get(each);
-            }
-        }
-        if (null == value) {
-            return;
-        }
-        for (String each : alias) {
-            props.put(each, value);
-        }
     }
 }
