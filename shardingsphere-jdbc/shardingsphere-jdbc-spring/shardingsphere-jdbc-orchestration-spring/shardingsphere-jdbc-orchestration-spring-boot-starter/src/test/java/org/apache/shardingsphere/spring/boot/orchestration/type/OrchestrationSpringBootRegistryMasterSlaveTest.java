@@ -53,7 +53,7 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
     public static void init() {
         EmbedTestingServer.start();
         TestOrchestrationRepository repository = new TestOrchestrationRepository();
-        repository.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", ""
+        repository.persist("/orchestration-spring-boot-test/config/schema/logic_db/datasource", ""
                 + "ds_master: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
                 + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
                 + "  props:\n"
@@ -75,7 +75,7 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
                 + "    maxTotal: 16\n"
                 + "    password: ''\n"
                 + "    username: root\n");
-        repository.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", ""
+        repository.persist("/orchestration-spring-boot-test/config/schema/logic_db/rule", ""
                 + "rules:\n"
                 + "- !MASTER_SLAVE\n"
                 + "  loadBalancers:\n"
@@ -89,8 +89,8 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
                 + "      slaveDataSourceNames: \n"
                 + "        - ds_slave_0\n" 
                 + "        - ds_slave_1\n");
-        repository.persist("/demo_spring_boot_ds_center/config/props", "{}\n");
-        repository.persist("/demo_spring_boot_ds_center/registry/datasources", "");
+        repository.persist("/orchestration-spring-boot-test/config/props", "{}\n");
+        repository.persist("/orchestration-spring-boot-test/registry/datasources", "");
     }
     
     @Test
