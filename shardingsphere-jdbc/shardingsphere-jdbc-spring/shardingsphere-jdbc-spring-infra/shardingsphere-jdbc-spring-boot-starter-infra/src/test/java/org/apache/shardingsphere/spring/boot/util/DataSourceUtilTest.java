@@ -28,6 +28,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -86,12 +87,12 @@ public final class DataSourceUtilTest {
         dataSourceProperties.put("accessToUnderlyingConnectionAllowed", Boolean.TRUE);
         BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), dataSourceProperties);
         assertTrue(actual.getDefaultAutoCommit());
-        assertThat(actual.getDefaultReadOnly(), is(false));
+        assertFalse(actual.getDefaultReadOnly());
         assertThat(actual.isPoolPreparedStatements(), is(Boolean.TRUE));
         assertThat(actual.getTestOnBorrow(), is(Boolean.FALSE));
         assertThat(actual.getTestOnReturn(), is(Boolean.TRUE));
         assertThat(actual.getTestWhileIdle(), is(Boolean.FALSE));
-        assertThat(actual.isAccessToUnderlyingConnectionAllowed(), is(true));
+        assertTrue(actual.isAccessToUnderlyingConnectionAllowed());
     }
     
     @Test

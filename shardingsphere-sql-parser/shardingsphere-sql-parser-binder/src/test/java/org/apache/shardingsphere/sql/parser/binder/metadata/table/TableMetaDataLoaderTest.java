@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -126,7 +127,7 @@ public final class TableMetaDataLoaderTest {
         when(databaseMetaData.getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableNotExistResultSet);
         when(tableNotExistResultSet.next()).thenReturn(false);
         Optional<TableMetaData> actual = TableMetaDataLoader.load(dataSource, TEST_TABLE, "");
-        assertThat(actual.isPresent(), is(false));
+        assertFalse(actual.isPresent());
     }
     
     private void assertColumnMetaData(final ColumnMetaData actual, final String name, final int dataType, final String typeName, final boolean primaryKey, final boolean caseSensitive) {

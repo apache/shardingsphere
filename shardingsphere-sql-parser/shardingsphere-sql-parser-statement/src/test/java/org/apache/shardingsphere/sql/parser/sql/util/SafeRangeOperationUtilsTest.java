@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -141,7 +142,7 @@ public class SafeRangeOperationUtilsTest {
     @Test
     public void assertSafeContainsForInteger() {
         Range<Comparable<?>> range = Range.closed(12, 100);
-        assertThat(SafeRangeOperationUtils.safeContains(range, 500), is(false));
+        assertFalse(SafeRangeOperationUtils.safeContains(range, 500));
     }
     
     @Test
