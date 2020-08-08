@@ -31,10 +31,10 @@ weight = 3
 
 ```properties
 spring.shardingsphere.orchestration.name=orchestration-spring-boot-shardingsphere-test
-spring.shardingsphere.orchestration.registryCenter.type=Zookeeper
-spring.shardingsphere.orchestration.registryCenter.server-lists=localhost:2181
-spring.shardingsphere.orchestration.additionalConfigCenter.type=Zookeeper
-spring.shardingsphere.orchestration.additionalConfigCenter.server-lists=localhost:2182
+spring.shardingsphere.orchestration.registry-center.type=Zookeeper
+spring.shardingsphere.orchestration.registry-center.server-lists=localhost:2181
+spring.shardingsphere.orchestration.additional-config-center.type=Zookeeper
+spring.shardingsphere.orchestration.additional-config-center.server-lists=localhost:2182
 spring.shardingsphere.orchestration.overwrite=true
 ```
 
