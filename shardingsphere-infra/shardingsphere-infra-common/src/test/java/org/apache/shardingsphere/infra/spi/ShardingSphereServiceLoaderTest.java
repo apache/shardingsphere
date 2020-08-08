@@ -17,13 +17,9 @@
 
 package org.apache.shardingsphere.infra.spi;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.spi.exception.ServiceLoaderInstantiationException;
 import org.apache.shardingsphere.infra.spi.fixture.TypedSPIFixture;
 import org.junit.Test;
@@ -58,18 +54,16 @@ public final class ShardingSphereServiceLoaderTest {
         assertThat(actualSecondRegister.size(), is(actualFirstRegister.size()));
     }
     
-    @SneakyThrows({NoSuchFieldException.class, IllegalAccessException.class})
-    @Test(expected = ServiceLoaderInstantiationException.class)
-    public void assertNewInstanceError() {
-        ShardingSphereServiceLoader.register(TypedSPIFixture.class);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        Field actualField = ShardingSphereServiceLoader.class.getDeclaredField("SERVICE_MAP");
-        actualField.setAccessible(true);
-        modifiersField.setInt(actualField, actualField.getModifiers() & ~Modifier.FINAL);
-        Map<Class<?>, Collection<Class<?>>> actualServiceMap = new ConcurrentHashMap<>();
-        actualServiceMap.put(TypedSPIFixture.class, Collections.singleton(TypedSPIFixture.class));
-        actualField.set(null, actualServiceMap);
-        ShardingSphereServiceLoader.newServiceInstances(TypedSPIFixture.class);
+    @Test
+    public void assertNewInstanceError() throws NoSuchMethodException, IllegalAccessException {
+        Method method = ShardingSphereServiceLoader.class.getDeclaredMethod("newServiceInstance", Class.class);
+        method.setAccessible(true);
+        Throwable targetException = null;
+        try {
+            method.invoke(null, TypedSPIFixture.class);
+        } catch (InvocationTargetException ex) {
+            targetException = ex.getTargetException();
+        }
+        assertTrue("expected throw ServiceLoaderInstantiationException", targetException instanceof ServiceLoaderInstantiationException);
     }
 }
