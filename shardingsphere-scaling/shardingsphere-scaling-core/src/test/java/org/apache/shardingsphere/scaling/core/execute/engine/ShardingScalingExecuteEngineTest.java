@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.scaling.core.execute.engine;
 
 import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.concurrent.RejectedExecutionException;
+
+import static org.junit.Assert.fail;
 
 public final class ShardingScalingExecuteEngineTest {
     
@@ -33,7 +34,7 @@ public final class ShardingScalingExecuteEngineTest {
                 executeEngine.submit(mockShardingScalingExecutor());
             }
         } catch (final RejectedExecutionException ex) {
-            Assert.fail();
+            fail();
         }
     }
     
