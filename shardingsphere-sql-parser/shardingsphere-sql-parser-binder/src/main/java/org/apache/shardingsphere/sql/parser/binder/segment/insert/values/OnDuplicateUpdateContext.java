@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @ToString
-public class OnDuplicateUpdateContext {
+public final class OnDuplicateUpdateContext {
     private final int parametersCount;
     
     private final List<ExpressionSegment> valueExpressions;

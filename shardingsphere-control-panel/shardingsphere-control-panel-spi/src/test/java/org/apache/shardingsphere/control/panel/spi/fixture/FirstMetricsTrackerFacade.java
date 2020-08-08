@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.control.panel.spi.fixture;
 
-import java.util.function.Supplier;
 import org.apache.shardingsphere.control.panel.spi.metrics.MetricsHandlerFacade;
 
-public class FirstMetricsTrackerFacade implements MetricsHandlerFacade {
+import java.util.function.Supplier;
+
+public final class FirstMetricsTrackerFacade implements MetricsHandlerFacade {
     
     @Override
     public void counterIncrement(final String metricsLabel, final String... labelValues) {

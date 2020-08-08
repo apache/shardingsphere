@@ -30,7 +30,7 @@ import java.util.List;
  */
 @Getter
 @ToString
-public class InsertSelectContext {
+public final class InsertSelectContext {
     
     private final int parametersCount;
     

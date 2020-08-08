@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class HttpServerHandlerTest {
+public final class HttpServerHandlerTest {
     
     private static final Gson GSON = new Gson();
     

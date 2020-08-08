@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 @Setter
 @Getter
-public class ExpectedVariable extends AbstractExpectedSQLSegment {
+public final class ExpectedVariable extends AbstractExpectedSQLSegment {
     
     @XmlAttribute
     private String scope;

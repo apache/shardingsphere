@@ -53,23 +53,23 @@ import java.util.Map;
  * Registry center execute engine.
  */
 @RequiredArgsConstructor
-public class RegistryCenterExecuteEngine implements SQLExecuteEngine {
+public final class RegistryCenterExecuteEngine implements SQLExecuteEngine {
     
     private final String schemaName;
     
     private final SQLStatement sqlStatement;
     
     @Override
-    public final ExecutionContext execute(final String sql) {
+    public ExecutionContext execute(final String sql) {
         DatabaseType databaseType = ProxySchemaContexts.getInstance().getSchemaContexts().getSchemaContexts().get(schemaName).getSchema().getDatabaseType();
-        SQLStatementContext context = sqlStatement instanceof CreateDataSourcesStatement
+        SQLStatementContext<?> sqlStatementContext = sqlStatement instanceof CreateDataSourcesStatement
                 ? new CreateDataSourcesStatementContext((CreateDataSourcesStatement) sqlStatement, databaseType)
                 : new CreateShardingRuleStatementContext((CreateShardingRuleStatement) sqlStatement);
-        return new ExecutionContext(context, new LinkedList<>());
+        return new ExecutionContext(sqlStatementContext, new LinkedList<>());
     }
     
     @Override
-    public final BackendResponse execute(final ExecutionContext executionContext) {
+    public BackendResponse execute(final ExecutionContext executionContext) {
         if (!isRegistryCenterExisted()) {
             return new ErrorResponse(new SQLException("No Registry center to execute `%s` SQL", executionContext.getSqlStatementContext().getClass().getSimpleName()));
         }

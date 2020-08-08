@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
  */
 @RequiredArgsConstructor
 @Getter
-public class ShadowRuleChangedEvent implements OrchestrationEvent {
+public final class ShadowRuleChangedEvent implements OrchestrationEvent {
 
     private final String shardingSchemaName;
     

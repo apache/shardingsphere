@@ -22,5 +22,5 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintComma
 /**
  * Hint error parameter command.
  */
-public class HintErrorParameterCommand implements HintCommand {
+public final class HintErrorParameterCommand implements HintCommand {
 }
