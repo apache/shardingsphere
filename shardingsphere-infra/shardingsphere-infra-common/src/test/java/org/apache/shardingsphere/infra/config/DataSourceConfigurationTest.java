@@ -72,15 +72,15 @@ public final class DataSourceConfigurationTest {
     }
     
     @Test
-    public void assertAddAlias() {
+    public void assertAddPropertyAlias() {
         HikariDataSource actualDataSource = new HikariDataSource();
         actualDataSource.setDriverClassName("org.h2.Driver");
         actualDataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
         DataSourceConfiguration actual = DataSourceConfiguration.getDataSourceConfiguration(actualDataSource);
-        actual.addPropertyAlias("url", "jdbcUrl");
-        actual.addPropertyAlias("user", "username");
+        actual.addPropertyAlias("jdbcUrl", "url");
+        actual.addPropertyAlias("username", "user");
         assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
         assertThat(actual.getProps().get("driverClassName").toString(), is("org.h2.Driver"));
         assertThat(actual.getProps().get("jdbcUrl").toString(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));

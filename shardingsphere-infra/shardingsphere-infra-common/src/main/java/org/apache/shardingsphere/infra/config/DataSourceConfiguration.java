@@ -136,6 +136,10 @@ public final class DataSourceConfiguration {
         if (props.containsKey(originalName)) {
             props.put(alias, props.get(originalName));
         }
+        // TODO removed after clear the relationship of originalName and alias
+        if (props.containsKey(alias)) {
+            props.put(originalName, props.get(alias));
+        }
     }
     
     @Override
