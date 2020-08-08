@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCRawBackendDataSourceFactory;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -31,21 +30,27 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.reset;
 
-public class ProxyDataSourceContextTest {
+public final class ProxyDataSourceContextTest {
 
     @Test
     public void assertEmptySchemaDataSources() {
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = new HashMap<>();
         ProxyDataSourceContext proxyDataSourceContext = new ProxyDataSourceContext(schemaDataSources);
-        assertTrue(proxyDataSourceContext.getDatabaseType() instanceof MySQLDatabaseType);
+        assertThat(proxyDataSourceContext.getDatabaseType(), instanceOf(MySQLDatabaseType.class));
         assertTrue(proxyDataSourceContext.getDataSourcesMap().isEmpty());
     }
 
     @Test(expected = ShardingSphereException.class)
     public void assertWrongSchemaDataSources() {
-        // schameName -- dataSourceName -- dataSource
         DataSourceParameter dataSourceParameter = new DataSourceParameter();
         dataSourceParameter.setUrl("jdbc11:mysql11:xxx");
         Map<String, DataSourceParameter> dataSourceParameterMap = new LinkedHashMap<>();
@@ -53,27 +58,24 @@ public class ProxyDataSourceContextTest {
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = new HashMap<>();
         schemaDataSources.put("order", dataSourceParameterMap);
         new ProxyDataSourceContext(schemaDataSources);
-        //assertTrue(proxyDataSourceContext.getDatabaseType() instanceof MySQLDatabaseType);
     }
 
     @Test(expected = ShardingSphereException.class)
     public void assertThrowByBuild() throws Exception {
-        // schameName -- dataSourceName -- dataSource
-        JDBCRawBackendDataSourceFactory jdbcRawBackendDataSourceFactory = Mockito.mock(JDBCRawBackendDataSourceFactory.class);
-        Mockito.when(jdbcRawBackendDataSourceFactory.build(Mockito.anyString(), Mockito.any())).thenThrow(new ShardingSphereException(""));
+        JDBCRawBackendDataSourceFactory jdbcRawBackendDataSourceFactory = mock(JDBCRawBackendDataSourceFactory.class);
+        when(jdbcRawBackendDataSourceFactory.build(anyString(), any())).thenThrow(new ShardingSphereException(""));
         build(jdbcRawBackendDataSourceFactory);
-        Mockito.reset(jdbcRawBackendDataSourceFactory);
+        reset(jdbcRawBackendDataSourceFactory);
     }
 
     @Test
     public void assertRightMysqlSchemaDataSources() throws Exception {
-        // schameName -- dataSourceName -- dataSource
-        JDBCRawBackendDataSourceFactory jdbcRawBackendDataSourceFactory = Mockito.mock(JDBCRawBackendDataSourceFactory.class);
-        Mockito.when(jdbcRawBackendDataSourceFactory.build(Mockito.anyString(), Mockito.any())).thenReturn(new HikariDataSource());
+        JDBCRawBackendDataSourceFactory jdbcRawBackendDataSourceFactory = mock(JDBCRawBackendDataSourceFactory.class);
+        when(jdbcRawBackendDataSourceFactory.build(anyString(), any())).thenReturn(new HikariDataSource());
         ProxyDataSourceContext proxyDataSourceContext = build(jdbcRawBackendDataSourceFactory);
-        assertTrue(proxyDataSourceContext.getDatabaseType() instanceof MySQLDatabaseType);
+        assertThat(proxyDataSourceContext.getDatabaseType(), instanceOf(MySQLDatabaseType.class));
         assertTrue(proxyDataSourceContext.getDataSourcesMap().size() == 1);
-        Mockito.reset(jdbcRawBackendDataSourceFactory);
+        reset(jdbcRawBackendDataSourceFactory);
     }
 
     private ProxyDataSourceContext build(final JDBCRawBackendDataSourceFactory jdbcRawBackendDataSourceFactory) throws Exception {
@@ -85,7 +87,6 @@ public class ProxyDataSourceContextTest {
         modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
         field.setAccessible(true);
         field.set(field, jdbcRawBackendDataSourceFactory);
-
         DataSourceParameter dataSourceParameter = new DataSourceParameter();
         dataSourceParameter.setUrl("jdbc:mysql:xxx");
         Map<String, DataSourceParameter> dataSourceParameterMap = new LinkedHashMap<>();
