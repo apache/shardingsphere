@@ -27,6 +27,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class AuthenticationYamlSwapperTest {
         
@@ -56,5 +57,11 @@ public final class AuthenticationYamlSwapperTest {
         Authentication actual = new AuthenticationYamlSwapper().swapToObject(configuration);
         assertThat(actual.getUsers().size(), is(2));
         assertThat(actual.getUsers().get("user2").getAuthorizedSchemas().size(), is(2));
+    }
+    
+    @Test
+    public void assertSwapToObjectForNull() {
+        Authentication actual = new AuthenticationYamlSwapper().swapToObject(null);
+        assertTrue(actual.getUsers().isEmpty());
     }
 }
