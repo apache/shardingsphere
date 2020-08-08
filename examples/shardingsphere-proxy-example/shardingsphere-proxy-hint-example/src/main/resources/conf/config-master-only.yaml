@@ -25,7 +25,6 @@ dataSourceCommon:
   maxLifetimeMilliseconds: 1800000
   maxPoolSize: 50
   minPoolSize: 1
-  maintenanceIntervalMilliseconds: 30000
 
 dataSources:
   ds_master:

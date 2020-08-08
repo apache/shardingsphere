@@ -71,7 +71,6 @@ public final class DataSourceConverterTest {
         assertThat(props.get("connectionTimeout"), is(30 * 1000L));
         assertThat(props.get("idleTimeout"), is(60 * 1000L));
         assertThat(props.get("maxLifetime"), is(0L));
-        assertThat(props.get("maintenanceIntervalMilliseconds"), is(30 * 1000L));
         assertThat(props.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
         assertThat(props.get("username"), is("root"));
         assertThat(props.get("password"), is("root"));

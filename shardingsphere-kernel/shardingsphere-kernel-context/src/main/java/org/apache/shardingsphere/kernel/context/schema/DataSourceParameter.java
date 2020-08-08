@@ -45,7 +45,5 @@ public final class DataSourceParameter {
     
     private int minPoolSize = 1;
     
-    private long maintenanceIntervalMilliseconds = 30 * 1000L;
-    
     private boolean readOnly;
 }

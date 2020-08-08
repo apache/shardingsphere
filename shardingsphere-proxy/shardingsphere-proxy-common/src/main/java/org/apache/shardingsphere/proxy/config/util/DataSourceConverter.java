@@ -63,7 +63,6 @@ public final class DataSourceConverter {
         DataSourceParameter result = new DataSourceParameter();
         result.setConnectionTimeoutMilliseconds(yamlDataSourceParameter.getConnectionTimeoutMilliseconds());
         result.setIdleTimeoutMilliseconds(yamlDataSourceParameter.getIdleTimeoutMilliseconds());
-        result.setMaintenanceIntervalMilliseconds(yamlDataSourceParameter.getMaintenanceIntervalMilliseconds());
         result.setMaxLifetimeMilliseconds(yamlDataSourceParameter.getMaxLifetimeMilliseconds());
         result.setMaxPoolSize(yamlDataSourceParameter.getMaxPoolSize());
         result.setMinPoolSize(yamlDataSourceParameter.getMinPoolSize());
@@ -118,7 +117,6 @@ public final class DataSourceConverter {
         result.getProps().put("maxLifetime", dataSourceParameter.getMaxLifetimeMilliseconds());
         result.getProps().put("maxPoolSize", dataSourceParameter.getMaxPoolSize());
         result.getProps().put("minPoolSize", dataSourceParameter.getMinPoolSize());
-        result.getProps().put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
         result.getProps().put("readOnly", dataSourceParameter.isReadOnly());
         return result;
     }
@@ -140,7 +138,6 @@ public final class DataSourceConverter {
         result.setMaxLifetimeMilliseconds(hikariDataSource.getMaxLifetime());
         result.setMaxPoolSize(hikariDataSource.getMaximumPoolSize());
         result.setMinPoolSize(hikariDataSource.getMinimumIdle());
-        // TODO setMaintenanceIntervalMilliseconds
         result.setReadOnly(hikariDataSource.isReadOnly());
         return result;
     }

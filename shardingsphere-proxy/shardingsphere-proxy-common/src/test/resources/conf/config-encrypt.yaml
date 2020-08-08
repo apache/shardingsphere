@@ -25,7 +25,6 @@ dataSourceCommon:
   maxLifetimeMilliseconds: 1800000
   maxPoolSize: 50
   minPoolSize: 1
-  maintenanceIntervalMilliseconds: 30000
   
 dataSource:
   url: jdbc:mysql://127.0.0.1:3306/encrypt_ds

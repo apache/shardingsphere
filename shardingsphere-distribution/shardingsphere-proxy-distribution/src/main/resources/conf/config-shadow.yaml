@@ -36,7 +36,6 @@
 #  maxLifetimeMilliseconds: 1800000
 #  maxPoolSize: 50
 #  minPoolSize: 1
-#  maintenanceIntervalMilliseconds: 30000
 #
 #dataSources:
 #  ds:
@@ -67,7 +66,6 @@
 #  maxLifetimeMilliseconds: 1800000
 #  maxPoolSize: 50
 #  minPoolSize: 1
-#  maintenanceIntervalMilliseconds: 30000
 
 #dataSources:
 #  ds:
