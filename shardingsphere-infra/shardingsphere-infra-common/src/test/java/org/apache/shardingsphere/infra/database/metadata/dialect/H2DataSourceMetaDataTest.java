@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURL
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class H2DataSourceMetaDataTest {
@@ -32,7 +31,7 @@ public final class H2DataSourceMetaDataTest {
         assertThat(actual.getHostName(), is(""));
         assertThat(actual.getPort(), is(-1));
         assertThat(actual.getCatalog(), is("ds_0"));
-        assertThat(actual.getSchema(),is("root"));
+        assertThat(actual.getSchema(), is("root"));
     }
 
     @Test
@@ -40,7 +39,7 @@ public final class H2DataSourceMetaDataTest {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:~:ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root");
         assertThat(actual.getHostName(), is(""));
         assertThat(actual.getPort(), is(-1));
-        assertThat(actual.getSchema(),is("root"));
+        assertThat(actual.getSchema(), is("root"));
     }
 
     @Test(expected = UnrecognizedDatabaseURLException.class)
