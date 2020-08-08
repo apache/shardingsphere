@@ -417,6 +417,7 @@ Install docker locally and start the docker service
 #### Compile Docker Image
 
 ```shell
+git checkout ${RELEASE.VERSION}
 cd ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/
 mvn clean package -Prelease,docker
 ```

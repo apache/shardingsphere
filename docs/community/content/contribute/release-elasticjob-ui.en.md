@@ -404,6 +404,7 @@ Install docker locally and start the docker service
 #### Compile Docker Image
 
 ```shell
+git checkout ${RELEASE.VERSION}
 cd ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-cloud-ui-bin-distribution/
 mvn clean package -Prelease,docker
 ```
