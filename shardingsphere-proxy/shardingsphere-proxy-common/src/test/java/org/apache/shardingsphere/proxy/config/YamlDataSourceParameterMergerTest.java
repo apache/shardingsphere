@@ -51,7 +51,7 @@ public final class YamlDataSourceParameterMergerTest {
         Map<String, Object> commonProps =  generateCommonProps();
         YamlDataSourceParameter parameterPartMerged = generateYamlDataSourceParameter();
         YamlDataSourceParameterMerger.merged(parameterPartMerged, commonProps);
-
+        
         assertThat(parameterPartMerged.getUsername(), is("sharding"));
         assertThat(parameterPartMerged.getPassword(), is("admin"));
         assertThat(parameterPartMerged.getConnectionTimeoutMilliseconds(), is(30000L));
