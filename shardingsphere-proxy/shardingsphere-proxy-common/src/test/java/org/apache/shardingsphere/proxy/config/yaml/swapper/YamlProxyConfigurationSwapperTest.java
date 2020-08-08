@@ -115,7 +115,7 @@ public class YamlProxyConfigurationSwapperTest {
         assertThat(metricsConfiguration.getPort(), is(111));
         assertTrue(metricsConfiguration.getAsync());
         assertTrue(metricsConfiguration.getEnable());
-        assertThat(4, is(metricsConfiguration.getThreadCount()));
+        assertThat(metricsConfiguration.getThreadCount(), is(4));
         Properties metricsProperties = metricsConfiguration.getProps();
         assertNotNull(metricsProperties);
         assertThat(metricsProperties.size(), is(1));
