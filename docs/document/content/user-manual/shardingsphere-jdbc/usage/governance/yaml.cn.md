@@ -33,7 +33,7 @@ weight = 2
 
 ```yaml
 orchestration:
-  namespace: orchestration_ds
+  name: orchestration_ds
   registryCenter:
       type: Zookeeper
       serverLists: localhost:2181
