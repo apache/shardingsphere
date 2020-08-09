@@ -16,7 +16,7 @@
 #
 
 orchestration:
-  namespace: demo_yaml_ds_sharding
+  name: demo_yaml_ds_sharding
   registryCenter:
     type: ZooKeeper
     serverLists: localhost:2181
