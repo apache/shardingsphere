@@ -118,8 +118,8 @@ public final class HintManagerTest {
             assertTrue(HintManager.isDatabaseShardingOnly());
             hintManager.addDatabaseShardingValue("logic_table", 2);
             assertFalse(HintManager.isDatabaseShardingOnly());
-            assertThat(HintManager.getTableShardingValues("logic_table").size(), is(1));
-            assertTrue(HintManager.getTableShardingValues("logic_table").contains(2));
+            assertThat(HintManager.getDatabaseShardingValues("logic_table").size(), is(1));
+            assertTrue(HintManager.getDatabaseShardingValues("logic_table").contains(2));
             hintManager.close();
         }
     }
