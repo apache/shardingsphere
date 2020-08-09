@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.spi.singleton;
 
 import org.apache.shardingsphere.infra.spi.fixture.TypedSPIFixture;
+import org.apache.shardingsphere.infra.spi.type.TypedSPI;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -26,6 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 public final class SingletonServiceLoaderTest {
     
@@ -37,10 +39,30 @@ public final class SingletonServiceLoaderTest {
         assertNotNull(actualSecondServiceLoader);
         assertThat(actualFirstServiceLoader, is(actualSecondServiceLoader));
     }
-    
+
+    @Test(expected = NullPointerException.class)
+    public void assertGetSingletonServiceLoaderWhenServiceIsNull() {
+        SingletonServiceLoader.getServiceLoader(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void assertGetSingletonServiceLoaderWhenServiceIsNotAnInterface() {
+        SingletonServiceLoader.getServiceLoader(String.class);
+    }
+
     @Test
     public void assertNewServiceInstanceWhenIsNotExist() {
         Optional<TypedSPIFixture> actual = SingletonServiceLoader.getServiceLoader(TypedSPIFixture.class).newServiceInstances();
         assertTrue(actual.isPresent());
+    }
+
+    @Test
+    public void assertNewServiceInstanceWhenServiceDoesNotFind() {
+        Optional<NoImplTypedSPI> actual = SingletonServiceLoader.getServiceLoader(NoImplTypedSPI.class).newServiceInstances();
+        assertFalse(actual.isPresent());
+    }
+
+    interface NoImplTypedSPI extends TypedSPI {
+
     }
 }
