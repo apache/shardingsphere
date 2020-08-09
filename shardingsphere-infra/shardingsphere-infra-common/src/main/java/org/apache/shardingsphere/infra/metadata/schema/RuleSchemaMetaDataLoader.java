@@ -84,7 +84,7 @@ public final class RuleSchemaMetaDataLoader {
         }
         configuredSchemaMetaData = decorate(configuredSchemaMetaData);
         int maxConnectionCount = props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = executorService == null ? syncLoad(databaseType, dataSourceMap, maxConnectionCount, excludedTableNames)
+        Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = null == executorService ? syncLoad(databaseType, dataSourceMap, maxConnectionCount, excludedTableNames)
                 : asyncLoad(databaseType, dataSourceMap, executorService, maxConnectionCount, excludedTableNames);
         return new RuleSchemaMetaData(configuredSchemaMetaData, unconfiguredSchemaMetaDataMap);
     }
@@ -99,8 +99,8 @@ public final class RuleSchemaMetaDataLoader {
      * @return rule schema meta data
      * @throws SQLException SQL exception
      */
-    public RuleSchemaMetaData load(final DatabaseType databaseType, final DataSource dataSource, final ConfigurationProperties props,
-                                   final ListeningExecutorService executorService) throws SQLException {
+    public RuleSchemaMetaData load(final DatabaseType databaseType, final DataSource dataSource, 
+                                   final ConfigurationProperties props, final ListeningExecutorService executorService) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
         return load(databaseType, dataSourceMap, props, executorService);
@@ -117,8 +117,8 @@ public final class RuleSchemaMetaDataLoader {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Optional<TableMetaData> load(final DatabaseType databaseType, 
-                                        final Map<String, DataSource> dataSourceMap, final String tableName, final ConfigurationProperties props) throws SQLException {
+    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                                        final String tableName, final ConfigurationProperties props) throws SQLException {
         for (Entry<ShardingSphereRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
             Optional<TableMetaData> result = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), tableName, entry.getKey(), props);
             if (result.isPresent()) {
@@ -138,8 +138,8 @@ public final class RuleSchemaMetaDataLoader {
      * @return schema meta data
      * @throws SQLException SQL exception
      */
-    public Optional<TableMetaData> load(final DatabaseType databaseType,
-                                        final DataSource dataSource, final String tableName, final ConfigurationProperties props) throws SQLException {
+    public Optional<TableMetaData> load(final DatabaseType databaseType, final DataSource dataSource, 
+                                        final String tableName, final ConfigurationProperties props) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
         return load(databaseType, dataSourceMap, tableName, props);
