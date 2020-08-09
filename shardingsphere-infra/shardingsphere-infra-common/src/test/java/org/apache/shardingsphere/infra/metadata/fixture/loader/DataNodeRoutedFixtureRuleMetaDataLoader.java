@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,7 +35,8 @@ import java.util.Optional;
 public final class DataNodeRoutedFixtureRuleMetaDataLoader implements RuleMetaDataLoader<DataNodeRoutedFixtureRule> {
     
     @Override
-    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, final DataNodeRoutedFixtureRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) throws SQLException {
+    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                               final DataNodes dataNodes, final DataNodeRoutedFixtureRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) {
         Map<String, TableMetaData> tables = new HashMap<>(2, 1);
         tables.put("data_node_routed_table_0", new TableMetaData(Collections.emptyList(), Collections.emptyList()));
         tables.put("data_node_routed_table_1", new TableMetaData(Collections.emptyList(), Collections.emptyList()));
@@ -44,7 +44,8 @@ public final class DataNodeRoutedFixtureRuleMetaDataLoader implements RuleMetaDa
     }
     
     @Override
-    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, final String tableName, final DataNodeRoutedFixtureRule rule, final ConfigurationProperties props) throws SQLException {
+    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                                        final DataNodes dataNodes, final String tableName, final DataNodeRoutedFixtureRule rule, final ConfigurationProperties props) {
         return Optional.empty();
     }
     

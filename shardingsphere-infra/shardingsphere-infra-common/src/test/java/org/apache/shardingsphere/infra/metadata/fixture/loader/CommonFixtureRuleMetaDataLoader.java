@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,7 +35,8 @@ import java.util.Optional;
 public final class CommonFixtureRuleMetaDataLoader implements RuleMetaDataLoader<CommonFixtureRule> {
     
     @Override
-    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, final CommonFixtureRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) throws SQLException {
+    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                               final DataNodes dataNodes, final CommonFixtureRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) {
         Map<String, TableMetaData> tables = new HashMap<>(2, 1);
         tables.put("common_table_0", new TableMetaData(Collections.emptyList(), Collections.emptyList()));
         tables.put("common_table_1", new TableMetaData(Collections.emptyList(), Collections.emptyList()));
@@ -44,7 +44,8 @@ public final class CommonFixtureRuleMetaDataLoader implements RuleMetaDataLoader
     }
     
     @Override
-    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, final String tableName, final CommonFixtureRule rule, final ConfigurationProperties props) throws SQLException {
+    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                                        final DataNodes dataNodes, final String tableName, final CommonFixtureRule rule, final ConfigurationProperties props) {
         return Optional.empty();
     }
     
