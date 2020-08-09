@@ -60,18 +60,18 @@ public final class CreateTableStatementMetaDataRefreshStrategyTest extends Abstr
     @Test
     public void assertRefreshMetaDataWithUnConfigured() throws SQLException {
         MetaDataRefreshStrategy<CreateTableStatementContext> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
-        CreateTableStatement createTableStatement = new CreateTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
+        CreateTableStatement createTableStatement = new CreateTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))));
         CreateTableStatementContext createTableStatementContext = new CreateTableStatementContext(createTableStatement);
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>(1, 1);
         dataSourceSourceMap.put("t_order_item", initDataSource());
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), new MySQLDatabaseType(), dataSourceSourceMap, createTableStatementContext,
             tableName -> Optional.empty());
-        assertTrue(getMetaData().getSchema().getUnconfiguredSchemaMetaDataMap().containsKey("t_order_item"));
+        assertTrue(getMetaData().getSchema().getUnconfiguredSchemaMetaDataMap().get("t_order_item").containsTable("t_order_item_0"));
     }
     
     private DataSource initDataSource() throws SQLException {
         final String catalog = "catalog";
-        final String table = "t_order_item";
+        final String table = "t_order_item_0";
         DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         when(result.getConnection()).thenReturn(connection);
