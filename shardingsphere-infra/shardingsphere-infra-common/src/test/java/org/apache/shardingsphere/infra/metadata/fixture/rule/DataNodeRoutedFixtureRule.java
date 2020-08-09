@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.fixture;
+package org.apache.shardingsphere.infra.metadata.fixture.rule;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
@@ -34,7 +34,7 @@ public final class DataNodeRoutedFixtureRule implements DataNodeRoutedRule {
     
     @Override
     public Collection<String> getAllActualTables() {
-        return Arrays.asList("configured_table_0", "configured_table_1");
+        return Arrays.asList("data_node_routed_table_0", "data_node_routed_table_2");
     }
     
     @Override

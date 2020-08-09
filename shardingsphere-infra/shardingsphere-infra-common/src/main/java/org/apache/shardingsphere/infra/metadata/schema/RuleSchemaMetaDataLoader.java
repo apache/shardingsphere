@@ -181,8 +181,11 @@ public final class RuleSchemaMetaDataLoader {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private SchemaMetaData decorate(final SchemaMetaData schemaMetaData) {
-        Map<String, TableMetaData> result = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
         Map<ShardingSphereRule, RuleMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class);
+        if (decorators.isEmpty()) {
+            return schemaMetaData;
+        }
+        Map<String, TableMetaData> result = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
         for (String each : schemaMetaData.getAllTableNames()) {
             for (Entry<ShardingSphereRule, RuleMetaDataDecorator> entry : decorators.entrySet()) {
                 result.put(each, entry.getValue().decorate(each, result.getOrDefault(each, schemaMetaData.get(each)), entry.getKey()));

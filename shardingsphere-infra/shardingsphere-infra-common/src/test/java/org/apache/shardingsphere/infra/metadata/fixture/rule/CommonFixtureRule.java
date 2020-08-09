@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.fixture;
+package org.apache.shardingsphere.infra.metadata.fixture.rule;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata.schema;
 
+import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import java.util.ArrayList;

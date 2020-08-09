@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.metadata.schema;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.fixture.CommonFixtureRule;
-import org.apache.shardingsphere.infra.metadata.fixture.DataNodeRoutedFixtureRule;
+import org.apache.shardingsphere.infra.metadata.fixture.rule.CommonFixtureRule;
+import org.apache.shardingsphere.infra.metadata.fixture.rule.DataNodeRoutedFixtureRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,6 +71,11 @@ public final class RuleSchemaMetaDataLoaderTest {
     public void assertSyncLoadFullDatabase() throws SQLException {
         RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()));
         RuleSchemaMetaData actual = loader.load(databaseType, dataSource, props, null);
+        assertThat(actual.getConfiguredSchemaMetaData().getAllTableNames().size(), is(4));
+        assertTrue(actual.getConfiguredSchemaMetaData().containsTable("common_table_0"));
+        assertTrue(actual.getConfiguredSchemaMetaData().containsTable("common_table_1"));
+        assertTrue(actual.getConfiguredSchemaMetaData().containsTable("data_node_routed_table_0"));
+        assertTrue(actual.getConfiguredSchemaMetaData().containsTable("data_node_routed_table_1"));
         assertThat(actual.getUnconfiguredSchemaMetaDataMap().size(), is(1));
         assertTrue(actual.getUnconfiguredSchemaMetaDataMap().containsKey("logic_db"));
         assertTrue(actual.getUnconfiguredSchemaMetaDataMap().get("logic_db").containsTable("unconfigured_table_0"));
