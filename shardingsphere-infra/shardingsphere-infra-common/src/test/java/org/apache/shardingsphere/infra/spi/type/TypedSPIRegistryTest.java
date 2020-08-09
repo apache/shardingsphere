@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.spi.type;
 
 import java.util.Properties;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.spi.fixture.NoImplTypedSPIFixture;
 import org.apache.shardingsphere.infra.spi.fixture.TypedSPIFixture;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,5 +45,16 @@ public final class TypedSPIRegistryTest {
     public void assertGetRegisteredServiceBySPIClass() {
         TypedSPIFixture actual = TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class);
         assertNotNull(actual);
+    }
+    
+    @Test(expected = ServiceProviderNotFoundException.class)
+    public void assertGetRegisteredServiceWhenTypeIsNotExist() {
+        String type = "TEST_FIXTURE";
+        TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, type, new Properties());
+    }
+    
+    @Test(expected = ServiceProviderNotFoundException.class)
+    public void assertGetRegisteredServiceWhenSPIClassIsNotExist() {
+        TypedSPIRegistry.getRegisteredService(NoImplTypedSPIFixture.class);
     }
 }
