@@ -30,39 +30,38 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 public final class SingletonServiceLoaderTest {
-
+    
     @Test
     public void assertGetSingletonServiceLoader() {
         SingletonServiceLoader<TypedSPIFixture> actualFirstServiceLoader = SingletonServiceLoader.getServiceLoader(TypedSPIFixture.class);
         assertNotNull(actualFirstServiceLoader);
         SingletonServiceLoader<TypedSPIFixture> actualSecondServiceLoader = SingletonServiceLoader.getServiceLoader(TypedSPIFixture.class);
-        assertNotNull(actualSecondServiceLoader);
-        assertThat(actualFirstServiceLoader, is(actualSecondServiceLoader));
+        assertNotNull(actualSecondServiceLoader); assertThat(actualFirstServiceLoader, is(actualSecondServiceLoader));
     }
-
+    
     @Test(expected = NullPointerException.class)
     public void assertGetSingletonServiceLoaderWhenServiceIsNull() {
         SingletonServiceLoader.getServiceLoader(null);
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertGetSingletonServiceLoaderWhenServiceIsNotAnInterface() {
         SingletonServiceLoader.getServiceLoader(String.class);
     }
-
+    
     @Test
     public void assertNewServiceInstanceWhenIsNotExist() {
         Optional<TypedSPIFixture> actual = SingletonServiceLoader.getServiceLoader(TypedSPIFixture.class).newServiceInstances();
         assertTrue(actual.isPresent());
     }
-
+    
     @Test
     public void assertNewServiceInstanceWhenServiceDoesNotFind() {
         Optional<NoImplTypedSPI> actual = SingletonServiceLoader.getServiceLoader(NoImplTypedSPI.class).newServiceInstances();
         assertFalse(actual.isPresent());
     }
-
+    
     interface NoImplTypedSPI extends TypedSPI {
-
+        
     }
 }
