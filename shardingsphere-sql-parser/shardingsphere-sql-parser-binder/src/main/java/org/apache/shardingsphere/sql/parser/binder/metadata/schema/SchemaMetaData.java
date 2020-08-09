@@ -34,6 +34,11 @@ public final class SchemaMetaData {
     
     private final Map<String, TableMetaData> tables;
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
+    public SchemaMetaData() {
+        tables = new ConcurrentHashMap<>();
+    }
+    
     public SchemaMetaData(final Map<String, TableMetaData> tables) {
         this.tables = new ConcurrentHashMap<>(tables.size(), 1);
         for (Entry<String, TableMetaData> entry : tables.entrySet()) {

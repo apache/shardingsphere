@@ -69,11 +69,11 @@ public final class RuleSchemaMetaDataLoader {
      * @return rule schema meta data
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("unchecked")
-    public RuleSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ConfigurationProperties props,
-                                   final ListeningExecutorService executorService) throws SQLException {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public RuleSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                                   final ConfigurationProperties props, final ListeningExecutorService executorService) throws SQLException {
         Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        SchemaMetaData configuredSchemaMetaData = new SchemaMetaData(new HashMap<>());
+        SchemaMetaData configuredSchemaMetaData = new SchemaMetaData();
         for (Entry<ShardingSphereRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
             SchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), entry.getKey(), props, excludedTableNames);
             excludedTableNames.addAll(schemaMetaData.getAllTableNames());
@@ -116,7 +116,7 @@ public final class RuleSchemaMetaDataLoader {
      * @return schema meta data
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Optional<TableMetaData> load(final DatabaseType databaseType, 
                                         final Map<String, DataSource> dataSourceMap, final String tableName, final ConfigurationProperties props) throws SQLException {
         for (Entry<ShardingSphereRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
@@ -179,7 +179,7 @@ public final class RuleSchemaMetaDataLoader {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private SchemaMetaData decorate(final SchemaMetaData schemaMetaData) {
         Map<String, TableMetaData> result = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
         Map<ShardingSphereRule, RuleMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class);
