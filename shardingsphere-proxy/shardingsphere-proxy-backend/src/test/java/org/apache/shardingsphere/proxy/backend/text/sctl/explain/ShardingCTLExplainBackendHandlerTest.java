@@ -1,6 +1,5 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.explain;
 
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
@@ -49,7 +48,7 @@ public final class ShardingCTLExplainBackendHandlerTest {
     
     private SchemaContext createSchemaContext() {
         RuntimeContext runtimeContext = new RuntimeContext(null, null, new ShardingSphereSQLParserEngine(new StandardSQLParserEngine("MySQL")), null);
-        ShardingSphereSchema schema = new ShardingSphereSchema(new MySQLDatabaseType(), Collections.emptyList(),
+        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.emptyList(),
                 Collections.emptyList(), Collections.singletonMap("ds0", mock(DataSource.class)), null);
         return new SchemaContext("c1", schema, runtimeContext);
     }

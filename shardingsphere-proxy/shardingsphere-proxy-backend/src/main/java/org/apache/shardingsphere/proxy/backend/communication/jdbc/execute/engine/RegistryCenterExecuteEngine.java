@@ -61,7 +61,7 @@ public final class RegistryCenterExecuteEngine implements SQLExecuteEngine {
     
     @Override
     public ExecutionContext execute(final String sql) {
-        DatabaseType databaseType = ProxySchemaContexts.getInstance().getSchemaContexts().getSchemaContexts().get(schemaName).getSchema().getDatabaseType();
+        DatabaseType databaseType = ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType();
         SQLStatementContext<?> sqlStatementContext = sqlStatement instanceof CreateDataSourcesStatement
                 ? new CreateDataSourcesStatementContext((CreateDataSourcesStatement) sqlStatement, databaseType)
                 : new CreateShardingRuleStatementContext((CreateShardingRuleStatement) sqlStatement);

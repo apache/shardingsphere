@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.executor.batch;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -120,8 +119,7 @@ public final class BatchPreparedStatementExecutor {
      */
     public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        DatabaseType databaseType = schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType();
-        SQLExecutorCallback<int[]> callback = new DefaultSQLExecutorCallback<int[]>(databaseType, isExceptionThrown) {
+        SQLExecutorCallback<int[]> callback = new DefaultSQLExecutorCallback<int[]>(schemaContexts.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
