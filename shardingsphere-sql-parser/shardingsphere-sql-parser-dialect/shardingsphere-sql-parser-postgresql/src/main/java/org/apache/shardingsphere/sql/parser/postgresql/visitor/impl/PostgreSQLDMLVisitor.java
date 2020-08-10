@@ -416,12 +416,15 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             return shorthandProjection;
         }
         AExprContext expr = ctx.aExpr();
-        if (null != expr.cExpr() && null != expr.cExpr().columnref()) {
-            ColumnProjectionSegment projection = generateColumnProjection(expr.cExpr().columnref());
+        if (1 == expr.getChildCount() && null != expr.cExpr()) {
+            ASTNode projection = visit(expr.cExpr());
             AliasSegment alias = null != ctx.identifier()
                     ? new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())) : null;
-            projection.setAlias(alias);
-            return projection;
+            if (projection instanceof ColumnSegment) {
+                ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) projection);
+                result.setAlias(alias);
+                return result;
+            }
         }
         if (null != expr.cExpr() && null != expr.cExpr().funcExpr()) {
             visit(expr.cExpr().funcExpr());

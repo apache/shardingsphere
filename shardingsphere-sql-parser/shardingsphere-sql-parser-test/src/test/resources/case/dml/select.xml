@@ -1522,7 +1522,7 @@
             </table-factor>
         </table-reference>
         <projections distinct-row="true" start-index="15" stop-index="23">
-            <expression-projection start-index="15" stop-index="23" />
+            <column-projection start-index="16" stop-index="22" name="item_id"/>
         </projections>
         <order-by>
             <column-item name="item_id" start-index="52" stop-index="58" />

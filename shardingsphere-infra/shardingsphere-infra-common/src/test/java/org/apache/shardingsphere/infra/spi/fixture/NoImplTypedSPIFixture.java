@@ -15,19 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value;
+package org.apache.shardingsphere.infra.spi.fixture;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.spi.type.TypedSPI;
 
-/**
- * Predicate bracket value for in.
- */
-@RequiredArgsConstructor
-@Getter
-public final class PredicateBracketValue implements PredicateRightValue {
-    
-    private final PredicateLeftBracketValue predicateLeftBracketValue;
-    
-    private final PredicateRightBracketValue predicateRightBracketValue;
+public interface NoImplTypedSPIFixture extends TypedSPI {
 }
+

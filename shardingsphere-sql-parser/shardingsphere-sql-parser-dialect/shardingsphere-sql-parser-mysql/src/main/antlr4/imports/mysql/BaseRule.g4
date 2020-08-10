@@ -549,7 +549,7 @@ intervalUnit_
     ;
 
 subquery
-    : 'Default does not match anything'
+    : 'refer subquery in DMStement.g4'
     ;
 
 orderByClause

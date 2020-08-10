@@ -15,24 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value;
+package org.apache.shardingsphere.infra.metadata.fixture.rule;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Collection;
-
-/**
- * Predicate right value for IN operator.
- */
-@RequiredArgsConstructor
-@Getter
-public final class PredicateInRightValue implements PredicateRightValue {
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final Collection<ExpressionSegment> sqlExpressions;
+public final class CommonFixtureRule implements ShardingSphereRule {
 }

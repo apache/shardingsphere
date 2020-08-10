@@ -15,9 +15,5 @@
 # limitations under the License.
 #
 
-orchestration:
-  name: demo_yaml_ds_shadow
-  registryCenter:
-    type: ZooKeeper
-    serverLists: localhost:2181
-  overwrite: false
+org.apache.shardingsphere.infra.metadata.fixture.loader.CommonFixtureRuleMetaDataLoader
+org.apache.shardingsphere.infra.metadata.fixture.loader.DataNodeRoutedFixtureRuleMetaDataLoader

@@ -16,7 +16,7 @@
 #
 
 orchestration:
-  namespace: demo_yaml_ds_shadow
+  name: demo_yaml_ds_shadow
   registryCenter:
     type: ZooKeeper
     serverLists: localhost:2181

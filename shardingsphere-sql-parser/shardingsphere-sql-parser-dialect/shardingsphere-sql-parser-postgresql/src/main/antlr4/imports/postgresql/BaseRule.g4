@@ -522,7 +522,6 @@ aExpr
     | aExpr MOD_ aExpr
     | aExpr CARET_ aExpr
     | aExpr comparisonOperator aExpr
-    | LP_ aExpr RP_ optIndirection
     | aExpr qualOp aExpr
     | qualOp aExpr
     | aExpr qualOp
@@ -594,6 +593,7 @@ cExpr
     | columnref
     | aexprConst
     | PARAM indirectionEl?
+    | LP_ aExpr RP_ optIndirection
     | caseExpr
     | funcExpr
     | selectWithParens
