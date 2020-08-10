@@ -34,6 +34,9 @@ execute
     | truncateTable
     | createIndex
     | dropIndex
+    | createProcedure
+    | alterProcedure
+    | dropProcedure
     | setTransaction
     | beginTransaction
     | setAutoCommit
