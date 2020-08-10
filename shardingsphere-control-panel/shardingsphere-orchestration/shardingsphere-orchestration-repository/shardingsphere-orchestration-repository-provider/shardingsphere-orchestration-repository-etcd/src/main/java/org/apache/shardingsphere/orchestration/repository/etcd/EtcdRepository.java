@@ -81,7 +81,7 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     
     private String getSubNodeKeyName(final String prefix, final String fullPath) {
         String pathWithoutPrefix = fullPath.substring(prefix.length());
-        return pathWithoutPrefix.contains("/") ? pathWithoutPrefix.substring(0, pathWithoutPrefix.indexOf("/")) : pathWithoutPrefix;
+        return pathWithoutPrefix.contains("/") ? pathWithoutPrefix.substring(0, pathWithoutPrefix.indexOf('/')) : pathWithoutPrefix;
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})

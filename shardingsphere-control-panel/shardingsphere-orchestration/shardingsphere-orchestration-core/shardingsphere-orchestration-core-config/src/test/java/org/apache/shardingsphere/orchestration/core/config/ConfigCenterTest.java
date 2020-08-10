@@ -63,6 +63,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -512,8 +513,8 @@ public final class ConfigCenterTest {
         assertThat(actual.getMetricsName(), is("prometheus"));
         assertThat(actual.getPort(), is(9190));
         assertThat(actual.getHost(), is("127.0.0.1"));
-        assertThat(actual.getAsync(), is(true));
-        assertThat(actual.getEnable(), is(true));
+        assertTrue(actual.getAsync());
+        assertTrue(actual.getEnable());
     }
     
     @Test

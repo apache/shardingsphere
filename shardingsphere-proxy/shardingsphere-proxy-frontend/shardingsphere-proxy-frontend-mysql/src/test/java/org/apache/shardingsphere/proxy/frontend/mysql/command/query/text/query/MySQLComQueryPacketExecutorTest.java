@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLComQueryPacketExecutorTest {
+public final class MySQLComQueryPacketExecutorTest {
     
     @Mock
     private SQLException sqlException;

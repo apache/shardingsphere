@@ -39,7 +39,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ColumnMetaDataLoaderTest {
+public final class ColumnMetaDataLoaderTest {
     
     private static final String TEST_CATALOG = "catalog";
     

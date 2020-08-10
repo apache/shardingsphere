@@ -29,7 +29,7 @@ public abstract class EncryptAssignmentToken extends SQLToken implements Substit
     
     private final int stopIndex;
     
-    public EncryptAssignmentToken(final int startIndex, final int stopIndex) {
+    protected EncryptAssignmentToken(final int startIndex, final int stopIndex) {
         super(startIndex);
         this.stopIndex = stopIndex;
     }

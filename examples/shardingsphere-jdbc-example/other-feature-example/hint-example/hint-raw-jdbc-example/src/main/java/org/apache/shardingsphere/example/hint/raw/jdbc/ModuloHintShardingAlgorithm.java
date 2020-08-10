@@ -20,8 +20,8 @@ package org.apache.shardingsphere.example.hint.raw.jdbc;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Properties;
 
 public final class ModuloHintShardingAlgorithm implements HintShardingAlgorithm<Long> {
@@ -34,7 +34,7 @@ public final class ModuloHintShardingAlgorithm implements HintShardingAlgorithm<
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Long> shardingValue) {
-        Collection<String> result = new ArrayList<>();
+        Collection<String> result = new LinkedList<>();
         for (String each : availableTargetNames) {
             for (Long value : shardingValue.getValues()) {
                 if (each.endsWith(String.valueOf(value % 2))) {

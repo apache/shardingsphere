@@ -27,7 +27,7 @@ import org.springframework.core.env.Environment;
 /**
  * Sharding algorithm provided bean registry.
  */
-public class ShardingAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry {
+public final class ShardingAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry {
     
     private static final String SHARDING_ALGORITHMS = "spring.shardingsphere.rules.sharding.sharding-algorithms.";
     

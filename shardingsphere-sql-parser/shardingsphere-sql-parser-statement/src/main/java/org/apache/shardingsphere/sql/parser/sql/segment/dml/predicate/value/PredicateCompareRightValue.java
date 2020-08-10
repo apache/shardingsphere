@@ -28,6 +28,10 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegme
 @Getter
 public final class PredicateCompareRightValue implements PredicateRightValue {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final String operator;
     
     private final ExpressionSegment expression;

@@ -26,6 +26,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ConfigCenterNodeTest {
     
@@ -78,6 +79,6 @@ public final class ConfigCenterNodeTest {
     
     @Test
     public void assertGetMetricsPath() {
-        assertThat(configurationNode.getMetricsPath().contains("/test/config/metrics"), is(true));
+        assertTrue(configurationNode.getMetricsPath().contains("/test/config/metrics"));
     }
 }

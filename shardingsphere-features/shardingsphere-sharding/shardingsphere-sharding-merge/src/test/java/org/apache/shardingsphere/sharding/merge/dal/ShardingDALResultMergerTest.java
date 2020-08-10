@@ -54,7 +54,7 @@ public final class ShardingDALResultMergerTest {
     @Test
     public void assertMergeForShowDatabasesStatement() throws SQLException {
         DALStatement dalStatement = new ShowDatabasesStatement();
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(dalStatement);
+        SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
         ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(null);
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, null), instanceOf(SingleLocalDataMergedResult.class));
     }
@@ -62,7 +62,7 @@ public final class ShardingDALResultMergerTest {
     @Test
     public void assertMergeForShowShowTablesStatement() throws SQLException {
         DALStatement dalStatement = new ShowTablesStatement();
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(dalStatement);
+        SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
         ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(null);
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, null), instanceOf(LogicTablesMergedResult.class));
     }
@@ -70,7 +70,7 @@ public final class ShardingDALResultMergerTest {
     @Test
     public void assertMergeForShowCreateTableStatement() throws SQLException {
         DALStatement dalStatement = new ShowCreateTableStatement();
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(dalStatement);
+        SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
         ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(null);
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, null), instanceOf(ShowCreateTableMergedResult.class));
     }
@@ -78,7 +78,7 @@ public final class ShardingDALResultMergerTest {
     @Test
     public void assertMergeForShowOtherStatement() throws SQLException {
         DALStatement dalStatement = new ShowOtherStatement();
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(dalStatement);
+        SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
         ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(null);
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, null), instanceOf(TransparentMergedResult.class));
     }
@@ -86,13 +86,14 @@ public final class ShardingDALResultMergerTest {
     @Test
     public void assertMergeForDescribeStatement() throws SQLException {
         DALStatement dalStatement = new DescribeStatement();
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(dalStatement);
+        SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
         ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(mock(ShardingRule.class));
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, null), instanceOf(TransparentMergedResult.class));
     }
     
-    private SQLStatementContext mockSQLStatementContext(final DALStatement dalStatement) {
-        SQLStatementContext result = mock(SQLStatementContext.class);
+    @SuppressWarnings("unchecked")
+    private SQLStatementContext<DALStatement> mockSQLStatementContext(final DALStatement dalStatement) {
+        SQLStatementContext<DALStatement> result = mock(SQLStatementContext.class);
         when(result.getSqlStatement()).thenReturn(dalStatement);
         return result;
     }

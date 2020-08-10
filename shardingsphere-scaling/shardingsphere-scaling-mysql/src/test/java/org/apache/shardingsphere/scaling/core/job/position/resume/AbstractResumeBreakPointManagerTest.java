@@ -19,17 +19,18 @@ package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
+import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
-import org.apache.shardingsphere.scaling.mysql.MySQLScalingEntry;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.apache.shardingsphere.scaling.utils.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Map;
+import java.util.TreeMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -40,7 +41,7 @@ public final class AbstractResumeBreakPointManagerTest {
     
     private final String incrementalPosition = "{\"ds0\":{\"filename\":\"mysql-bin.000001\",\"position\":4},\"ds1\":{\"filename\":\"mysql-bin.000002\",\"position\":4}}";
     
-    private final String inventoryPosition = "{\"unfinished\":{\"ds0.t_order_2\":[],\"ds1.t_order_1#0\":[0,200],\"ds0.t_order_1#0\":[0,100]},\"finished\":[\"ds0.t_order_1#1\"]}";
+    private final String inventoryPosition = "{\"unfinished\":{\"ds0.t_order_1#0\":[0,100],\"ds0.t_order_2\":[],\"ds1.t_order_1#0\":[0,200]},\"finished\":[\"ds0.t_order_1#1\"]}";
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
@@ -48,7 +49,10 @@ public final class AbstractResumeBreakPointManagerTest {
         };
         resumeBreakPointManager.setDatabaseType("MySQL");
         resumeBreakPointManager.setTaskPath("/scalingTest/item-0");
-        ReflectionUtil.getFieldValueFromClass(new ScalingEntryLoader(), "SCALING_ENTRY_MAP", Map.class).put("MySQL", new MySQLScalingEntry());
+        ReflectionUtil.getFieldFromClass(AbstractResumeBreakPointManager.class, "inventoryPositionManagerMap", true)
+                .set(resumeBreakPointManager, new TreeMap<String, PositionManager<InventoryPosition>>());
+        ReflectionUtil.getFieldFromClass(AbstractResumeBreakPointManager.class, "incrementalPositionManagerMap", true)
+                .set(resumeBreakPointManager, new TreeMap<String, PositionManager<IncrementalPosition>>());
     }
     
     @Test
@@ -68,6 +72,24 @@ public final class AbstractResumeBreakPointManagerTest {
         resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0", new BasePositionManager<>(new BinlogPosition("mysql-bin.000001", 4L)));
         resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds1", new BasePositionManager<>(new BinlogPosition("mysql-bin.000002", 4L)));
         assertThat(resumeBreakPointManager.getIncrementalPositionData(), is(incrementalPosition));
+    }
+    
+    @Test
+    public void assertPrimaryKeyPositionJson() {
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new InventoryPositionManager<>(new PrimaryKeyPosition(0L, 100L)));
+        assertThat(resumeBreakPointManager.getInventoryPositionData(), is("{\"unfinished\":{\"ds0.t_order_1#0\":[0,100]},\"finished\":[]}"));
+    }
+    
+    @Test
+    public void assertPlaceholderPositionJson() {
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new InventoryPositionManager<>(new PlaceholderPosition()));
+        assertThat(resumeBreakPointManager.getInventoryPositionData(), is("{\"unfinished\":{\"ds0.t_order_1#0\":[]},\"finished\":[]}"));
+    }
+    
+    @Test
+    public void assertFinishedPositionJson() {
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new InventoryPositionManager<>(new FinishedPosition()));
+        assertThat(resumeBreakPointManager.getInventoryPositionData(), is("{\"unfinished\":{},\"finished\":[\"ds0.t_order_1#0\"]}"));
     }
     
     @Test

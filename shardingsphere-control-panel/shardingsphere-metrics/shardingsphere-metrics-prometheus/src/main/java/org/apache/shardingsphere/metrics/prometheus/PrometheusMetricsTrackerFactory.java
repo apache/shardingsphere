@@ -29,8 +29,8 @@ import org.apache.shardingsphere.metrics.prometheus.impl.gauge.ChannelCountGauge
 import org.apache.shardingsphere.metrics.prometheus.impl.histogram.RequestLatencyHistogramMetricsTracker;
 import org.apache.shardingsphere.metrics.prometheus.impl.summary.RequestLatencySummaryMetricsTracker;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -38,7 +38,7 @@ import java.util.Optional;
  */
 public final class PrometheusMetricsTrackerFactory implements MetricsTrackerFactory {
     
-    private static final Collection<MetricsTracker> REGISTER = new ArrayList<>();
+    private static final Collection<MetricsTracker> REGISTER = new LinkedList<>();
     
     static {
         REGISTER.add(new RequestTotalCounterMetricsTracker());

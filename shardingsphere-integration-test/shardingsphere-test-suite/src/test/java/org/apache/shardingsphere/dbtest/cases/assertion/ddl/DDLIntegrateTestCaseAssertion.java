@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  * JAXB definition of DDL integrate test case assertion.
  */
 @Getter
-public class DDLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
+public final class DDLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
     
     @XmlAttribute(name = "init-sql")
     private String initSql;

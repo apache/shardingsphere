@@ -22,8 +22,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -34,11 +32,14 @@ import org.postgresql.util.ServerErrorMessage;
 
 import java.util.LinkedList;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PostgreSQLComBindExecutorTest {
+public final class PostgreSQLComBindExecutorTest {
     
     @Mock
     private DatabaseCommunicationEngine databaseCommunicationEngine;
@@ -50,7 +51,7 @@ public class PostgreSQLComBindExecutorTest {
         FieldSetter.setField(postgreSQLComBindExecutor, PostgreSQLComBindExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
         ErrorResponse errorResponse = new ErrorResponse(new PSQLException(mock(ServerErrorMessage.class)));
         when(databaseCommunicationEngine.execute()).thenReturn(errorResponse);
-        Assert.assertThat(((LinkedList) postgreSQLComBindExecutor.execute()).get(1), Matchers.instanceOf(PostgreSQLErrorResponsePacket.class));
-        Assert.assertThat(postgreSQLComBindExecutor.isErrorResponse(), Matchers.is(true));
+        assertThat(((LinkedList) postgreSQLComBindExecutor.execute()).get(1), instanceOf(PostgreSQLErrorResponsePacket.class));
+        assertTrue(postgreSQLComBindExecutor.isErrorResponse());
     }
 }

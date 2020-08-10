@@ -68,12 +68,12 @@ public class OrchestrationSpringBootRegistryShardingTest {
         String shardingDatabases = readYAML(SHARDING_DATABASES_FILE);
         String shardingRule = readYAML(SHARDING_RULE_FILE);
         TestOrchestrationRepository repository = new TestOrchestrationRepository();
-        repository.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", shardingDatabases);
-        repository.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", shardingRule);
-        repository.persist("/demo_spring_boot_ds_center/config/props", ""
+        repository.persist("/orchestration-spring-boot-test/config/schema/logic_db/datasource", shardingDatabases);
+        repository.persist("/orchestration-spring-boot-test/config/schema/logic_db/rule", shardingRule);
+        repository.persist("/orchestration-spring-boot-test/config/props", ""
                 + "executor.size: '100'\n"
                 + "sql.show: 'true'\n");
-        repository.persist("/demo_spring_boot_ds_center/registry/datasources", "");
+        repository.persist("/orchestration-spring-boot-test/registry/datasources", "");
     }
     
     @Test

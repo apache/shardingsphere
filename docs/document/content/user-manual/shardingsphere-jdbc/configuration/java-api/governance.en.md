@@ -15,8 +15,9 @@ Attributes:
 
 | *Name*                              | *Data Type*                         | *Description*                                                                                                       |
 | ----------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| registryCenterConfiguration         | Map\<String, CenterConfiguration\>  | Config map of registry-center, the key is orchestration name, the value is the orchestration instance |
-| additionalConfigCenterConfiguration | Map\<String, CenterConfiguration\>  | Config additional map of config-center, the key is orchestration name, the value is the orchestration instance |
+| name         | String  | Orchestration instance name |
+| registryCenterConfiguration         | OrchestrationCenterConfiguration  | Config of registry-center |
+| additionalConfigCenterConfiguration | OrchestrationCenterConfiguration  | Config additional of config-center |
 
 The type of registryCenter could be Zookeeper or etcd.
 The type of additional ConfigCenter could be Zookeeper or etcd, Apollo, Nacos.
@@ -30,15 +31,9 @@ Attributes:
 | *Name*        | *Data Type* | *Description*                                                                                                                                    |
 | ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | type          | String      | Orchestration instance type, such as: Zookeeper, etcd, Apollo, Nacos                                                                             |
-| serverLists   | String      | The list of servers that connect to orchestration instance, including IP and port number, use commas to separate, such as: host1:2181,host2:2181 |
-| namespace (?) | String      | Orchestration namespace                                                                                                                          |
+| serverLists   | String      | The list of servers that connect to orchestration instance, including IP and port number, use commas to separate, such as: host1:2181,host2:2181 |                                                                                                                    |
 | props         | Properties  | Properties for center instance config, such as options of zookeeper                                                                              |
-
-Common Properties Configuration
-
-| *Name*          | *Data Type* | *Description*                                                                                                                             | *Default Value* |
-| --------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
-| overwrite       | boolean     | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations | false           |
+| overwrite       | boolean     | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations | 
 
 ZooKeeper Properties Configuration
 

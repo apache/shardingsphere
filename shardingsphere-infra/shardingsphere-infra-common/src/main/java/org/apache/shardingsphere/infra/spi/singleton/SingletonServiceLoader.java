@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.spi.singleton;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -76,7 +76,7 @@ public final class SingletonServiceLoader<T> {
         if (serviceMap.containsKey(service)) {
             return;
         }
-        serviceMap.put(service, new ArrayList<>());
+        serviceMap.put(service, new LinkedList<>());
         for (T each : ServiceLoader.load(service)) {
             serviceMap.get(service).add(each);
         }

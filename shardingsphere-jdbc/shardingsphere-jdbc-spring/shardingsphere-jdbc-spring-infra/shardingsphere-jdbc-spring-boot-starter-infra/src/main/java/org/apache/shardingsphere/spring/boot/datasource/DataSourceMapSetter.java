@@ -96,7 +96,7 @@ public final class DataSourceMapSetter {
         }
         DataSource result = DataSourceUtil.getDataSource(dataSourceProps.get(DATA_SOURCE_TYPE).toString(), dataSourceProps);
         DataSourcePropertiesSetterHolder.getDataSourcePropertiesSetterByType(dataSourceProps.get(DATA_SOURCE_TYPE).toString()).ifPresent(
-            dataSourcePropertiesSetter -> dataSourcePropertiesSetter.propertiesSet(environment, prefix, dataSourceName, result));
+            propsSetter -> propsSetter.propertiesSet(environment, prefix, dataSourceName, result));
         return result;
     }
     

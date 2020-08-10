@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
@@ -82,7 +83,8 @@ public final class ProxyOrchestrationSchemaContextsTest {
     private ProxyOrchestrationSchemaContexts getProxyOrchestrationSchemaContexts() {
         when(orchestrationFacade.getRegistryCenter()).thenReturn(mock(RegistryCenter.class));
         ProxyOrchestrationSchemaContexts result = new ProxyOrchestrationSchemaContexts(new StandardSchemaContexts(), orchestrationFacade);
-        SchemaContexts schemaContexts = new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()));
+        SchemaContexts schemaContexts =
+                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
         result.getSchemaContexts().putAll(schemaContexts.getSchemaContexts());
         return result;
     }

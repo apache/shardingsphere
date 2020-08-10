@@ -30,7 +30,7 @@ import java.util.Map;
  *
  * @param <T> type of SQL statement context
  */
-public interface MetaDataRefreshStrategy<T extends SQLStatementContext> {
+public interface MetaDataRefreshStrategy<T extends SQLStatementContext<?>> {
     
     /**
      * Refresh meta data.

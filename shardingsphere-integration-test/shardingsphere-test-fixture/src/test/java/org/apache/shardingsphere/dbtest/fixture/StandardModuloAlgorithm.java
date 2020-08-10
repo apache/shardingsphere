@@ -41,7 +41,7 @@ public final class StandardModuloAlgorithm implements StandardShardingAlgorithm<
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(shardingValue.getValue() % 10 + "")) {
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % 10))) {
                 return each;
             }
         }
@@ -60,7 +60,7 @@ public final class StandardModuloAlgorithm implements StandardShardingAlgorithm<
         }
         for (int i = begin; i <= range; i += 1) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(i + "")) {
+                if (each.endsWith(String.valueOf(i))) {
                     result.add(each);
                 }
             }

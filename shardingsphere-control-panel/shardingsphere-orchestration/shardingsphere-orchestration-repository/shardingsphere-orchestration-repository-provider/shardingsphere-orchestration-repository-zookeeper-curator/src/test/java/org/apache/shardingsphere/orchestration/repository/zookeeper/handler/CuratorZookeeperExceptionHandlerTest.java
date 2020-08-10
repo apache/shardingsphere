@@ -18,27 +18,26 @@
 package org.apache.shardingsphere.orchestration.repository.zookeeper.handler;
 
 import org.apache.shardingsphere.orchestration.repository.api.exception.OrchestrationException;
-import org.apache.zookeeper.KeeperException;
-import org.junit.Assert;
+import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.junit.Test;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class CuratorZookeeperExceptionHandlerTest {
-
+public final class CuratorZookeeperExceptionHandlerTest {
+    
     @Test
     public void assertHandleException() {
         CuratorZookeeperExceptionHandler.handleException(null);
-        CuratorZookeeperExceptionHandler.handleException(new KeeperException.NoNodeException());
-        CuratorZookeeperExceptionHandler.handleException(new Exception(new KeeperException.NoNodeException()));
-
+        CuratorZookeeperExceptionHandler.handleException(new NoNodeException());
+        CuratorZookeeperExceptionHandler.handleException(new Exception(new NoNodeException()));
         try {
             CuratorZookeeperExceptionHandler.handleException(new Exception());
             fail("must be failed handle new Exception().");
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            Assert.assertTrue(ex instanceof OrchestrationException);
+            assertTrue(ex instanceof OrchestrationException);
         }
     }
 }

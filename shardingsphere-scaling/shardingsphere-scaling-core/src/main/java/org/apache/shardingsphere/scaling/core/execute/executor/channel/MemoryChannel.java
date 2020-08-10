@@ -31,8 +31,6 @@ import java.util.concurrent.BlockingQueue;
  */
 public final class MemoryChannel implements Channel {
     
-    private static final int PUSH_TIMEOUT = ScalingContext.getInstance().getServerConfiguration().getPushTimeout();
-    
     private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(ScalingContext.getInstance().getServerConfiguration().getBlockQueueSize());
     
     private final AckCallback ackCallback;

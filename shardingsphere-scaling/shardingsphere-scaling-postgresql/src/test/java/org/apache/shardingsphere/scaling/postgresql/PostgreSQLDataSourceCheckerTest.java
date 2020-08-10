@@ -31,15 +31,15 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PostgreSQLDataSourceCheckerTest {
+public final class PostgreSQLDataSourceCheckerTest {
 
     private static final String CATALOG = "test";
 
@@ -56,7 +56,7 @@ public class PostgreSQLDataSourceCheckerTest {
         DataSource dataSource = mock(DataSource.class);
         Connection connection = mockConnection();
         when(dataSource.getConnection()).thenReturn(connection);
-        dataSources = new ArrayList<>();
+        dataSources = new LinkedList<>();
         dataSources.add(dataSource);
     }
 

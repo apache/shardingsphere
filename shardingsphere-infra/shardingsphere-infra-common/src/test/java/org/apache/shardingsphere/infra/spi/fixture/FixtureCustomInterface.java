@@ -15,12 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.merge.result.impl.fixture;
+package org.apache.shardingsphere.infra.spi.fixture;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-/**
- * Rule for test.
- */
-public final class TestRule implements ShardingSphereRule {
+public interface FixtureCustomInterface {
 }

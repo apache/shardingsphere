@@ -25,52 +25,63 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class YamlDataSourceParameterMergerTest {
     
     @Test
-    public void assertMerged() {
-        Map<String, Object> commonProps = new HashMap<>();
-        commonProps.put("username", "root");
-        commonProps.put("password", "123456");
-        commonProps.put("connectionTimeoutMilliseconds", 30000L);
-        commonProps.put("maxLifetimeMilliseconds", 30000L);
-        commonProps.put("maxPoolSize", 30);
-        commonProps.put("minPoolSize", 1);
-        commonProps.put("readOnly", false);
-        
+    public void assertParameterAllMerged() {
         YamlDataSourceParameter parameterAll = new YamlDataSourceParameter();
+        Map<String, Object> commonProps = generateCommonProps();
         parameterAll.setUrl("jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
-        
         YamlDataSourceParameterMerger.merged(parameterAll, commonProps);
-        
         assertThat(parameterAll.getUsername(), is("root"));
         assertThat(parameterAll.getPassword(), is("123456"));
         assertThat(parameterAll.getConnectionTimeoutMilliseconds(), is(30000L));
         assertThat(parameterAll.getMaxLifetimeMilliseconds(), is(30000L));
         assertThat(parameterAll.getMaxPoolSize(), is(30));
         assertThat(parameterAll.getMinPoolSize(), is(1));
-        assertThat(parameterAll.isReadOnly(), is(false));
+        assertFalse(parameterAll.isReadOnly());
         assertThat(parameterAll.getMaintenanceIntervalMilliseconds(), is(0L));
-        
-        YamlDataSourceParameter parameterPartMerged = new YamlDataSourceParameter();
-        parameterPartMerged.setUrl("jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
-        parameterPartMerged.setUsername("sharding");
-        parameterPartMerged.setPassword("admin");
-        parameterPartMerged.setMaxPoolSize(100);
-        parameterPartMerged.setMinPoolSize(10);
-        parameterPartMerged.setReadOnly(true);
-        
+    }
+    
+    @Test
+    public void assertParameterPartMerged() {
+        Map<String, Object> commonProps = generateCommonProps();
+        YamlDataSourceParameter parameterPartMerged = generateYamlDataSourceParameter();
         YamlDataSourceParameterMerger.merged(parameterPartMerged, commonProps);
-        
         assertThat(parameterPartMerged.getUsername(), is("sharding"));
         assertThat(parameterPartMerged.getPassword(), is("admin"));
         assertThat(parameterPartMerged.getConnectionTimeoutMilliseconds(), is(30000L));
         assertThat(parameterPartMerged.getMaxLifetimeMilliseconds(), is(30000L));
         assertThat(parameterPartMerged.getMaxPoolSize(), is(100));
         assertThat(parameterPartMerged.getMinPoolSize(), is(10));
-        assertThat(parameterPartMerged.isReadOnly(), is(true));
+        assertTrue(parameterPartMerged.isReadOnly());
         assertThat(parameterPartMerged.getMaintenanceIntervalMilliseconds(), is(0L));
+    }
+    
+    private Map<String, Object> generateCommonProps() {
+        Map<String, Object> result = new HashMap<>(7, 1);
+        result.put("username", "root");
+        result.put("password", "123456");
+        result.put("connectionTimeoutMilliseconds", 30000L);
+        result.put("maxLifetimeMilliseconds", 30000L);
+        result.put("maxPoolSize", 30);
+        result.put("minPoolSize", 1);
+        result.put("readOnly", false);
+        return result;
+    }
+    
+    private YamlDataSourceParameter generateYamlDataSourceParameter() {
+        YamlDataSourceParameter result = new YamlDataSourceParameter();
+        result.setUrl("jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
+        result.setUsername("sharding");
+        result.setPassword("admin");
+        result.setMaxPoolSize(100);
+        result.setMinPoolSize(10);
+        result.setReadOnly(true);
+        return result;
     }
 }

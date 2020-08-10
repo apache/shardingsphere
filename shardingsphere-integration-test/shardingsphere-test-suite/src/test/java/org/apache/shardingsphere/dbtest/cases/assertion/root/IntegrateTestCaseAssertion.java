@@ -57,7 +57,7 @@ public abstract class IntegrateTestCaseAssertion {
         for (String each : Splitter.on(",").trimResults().splitToList(parameters)) {
             // TODO improve the implement way
             if (each.startsWith("'")) {
-                String value = each.substring(each.indexOf("'") + 1, each.lastIndexOf("'"));
+                String value = each.substring(each.indexOf('\'') + 1, each.lastIndexOf('\''));
                 result.add(new SQLValue(value, "json", ++count));
                 continue;
             }

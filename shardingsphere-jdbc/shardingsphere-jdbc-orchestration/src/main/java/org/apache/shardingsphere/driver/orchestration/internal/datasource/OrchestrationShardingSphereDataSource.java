@@ -204,7 +204,8 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         SchemaContext oldSchemaContext = dataSource.getSchemaContexts().getSchemaContexts().get(DefaultSchema.LOGIC_NAME);
         schemaContexts.put(DefaultSchema.LOGIC_NAME, new SchemaContext(oldSchemaContext.getName(),
                 getChangedSchema(oldSchemaContext.getSchema(), event.getRuleSchemaMetaData()), oldSchemaContext.getRuntimeContext()));
-        dataSource = new ShardingSphereDataSource(new StandardSchemaContexts(schemaContexts, dataSource.getSchemaContexts().getAuthentication(), dataSource.getSchemaContexts().getProps()));
+        dataSource = new ShardingSphereDataSource(new StandardSchemaContexts(schemaContexts,
+                dataSource.getSchemaContexts().getAuthentication(), dataSource.getSchemaContexts().getProps(), dataSource.getSchemaContexts().getDatabaseType()));
     }
     
     /**
@@ -262,7 +263,8 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent event) {
         SchemaContexts oldSchemaContexts = dataSource.getSchemaContexts();
-        SchemaContexts schemaContexts = new StandardSchemaContexts(oldSchemaContexts.getSchemaContexts(), oldSchemaContexts.getAuthentication(), oldSchemaContexts.getProps(), event.isCircuitBreak());
+        SchemaContexts schemaContexts = new StandardSchemaContexts(oldSchemaContexts.getSchemaContexts(),
+                oldSchemaContexts.getAuthentication(), oldSchemaContexts.getProps(), oldSchemaContexts.getDatabaseType(), event.isCircuitBreak());
         dataSource = new ShardingSphereDataSource(schemaContexts);
     }
     
@@ -313,7 +315,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     
     private ShardingSphereSchema getChangedSchema(final ShardingSphereSchema oldSchema, final RuleSchemaMetaData newRuleSchemaMetaData) {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(oldSchema.getMetaData().getDataSources(), newRuleSchemaMetaData);
-        return new ShardingSphereSchema(oldSchema.getDatabaseType(), oldSchema.getConfigurations(), oldSchema.getRules(), oldSchema.getDataSources(), metaData);
+        return new ShardingSphereSchema(oldSchema.getConfigurations(), oldSchema.getRules(), oldSchema.getDataSources(), metaData);
     }
     
     /**

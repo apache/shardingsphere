@@ -9,7 +9,7 @@ weight = 6
 
 ```yaml
 orchestration:
-  namespace: #Orchestration namespace
+  name: #Orchestration name
   registryCenter: # Registry Center
     type: #Orchestration instance type. Example:Zookeeper, etcd
     serverLists: #The list of servers that connect to orchestration instance, including IP and port number; use commas to separate

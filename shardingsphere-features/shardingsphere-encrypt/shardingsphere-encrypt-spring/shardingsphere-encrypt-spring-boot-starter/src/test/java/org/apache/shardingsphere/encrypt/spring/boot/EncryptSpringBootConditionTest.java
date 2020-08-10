@@ -27,8 +27,8 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.mock.env.MockEnvironment;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,7 +43,7 @@ public final class EncryptSpringBootConditionTest {
         when(context.getEnvironment()).thenReturn(mockEnvironment);
         EncryptSpringBootCondition condition = new EncryptSpringBootCondition();
         ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
-        assertThat(matchOutcome.isMatch(), is(true));
+        assertTrue(matchOutcome.isMatch());
     }
     
     @Test
@@ -55,7 +55,7 @@ public final class EncryptSpringBootConditionTest {
         when(context.getEnvironment()).thenReturn(mockEnvironment);
         EncryptSpringBootCondition condition = new EncryptSpringBootCondition();
         ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
-        assertThat(matchOutcome.isMatch(), is(false));
+        assertFalse(matchOutcome.isMatch());
     }
 }
 
