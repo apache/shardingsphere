@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPlu
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
@@ -120,7 +121,7 @@ public final class MySQLAuthenticationHandlerTest {
     }
     
     private SchemaContexts getSchemaContexts(final Authentication authentication) {
-        return new StandardSchemaContexts(getSchemaContextMap(), authentication, new ConfigurationProperties(new Properties()));
+        return new StandardSchemaContexts(getSchemaContextMap(), authentication, new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
