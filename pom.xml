@@ -748,13 +748,13 @@
                 <version>${cobertura-maven-plugin.version}</version>
                 <configuration>
                     <check>
-                        <branchRate>60</branchRate>
-                        <lineRate>60</lineRate>
-                        <haltOnFailure>true</haltOnFailure>
-                        <totalBranchRate>60</totalBranchRate>
-                        <totalLineRate>60</totalLineRate>
-                        <packageLineRate>60</packageLineRate>
-                        <packageBranchRate>60</packageBranchRate>
+<!--                        <branchRate>60</branchRate>-->
+<!--                        <lineRate>60</lineRate>-->
+<!--                        <haltOnFailure>true</haltOnFailure>-->
+<!--                        <totalBranchRate>60</totalBranchRate>-->
+<!--                        <totalLineRate>60</totalLineRate>-->
+<!--                        <packageLineRate>60</packageLineRate>-->
+<!--                        <packageBranchRate>60</packageBranchRate>-->
                     </check>
                     <aggregate>true</aggregate>
                     <encoding>${project.build.sourceEncoding}</encoding>
