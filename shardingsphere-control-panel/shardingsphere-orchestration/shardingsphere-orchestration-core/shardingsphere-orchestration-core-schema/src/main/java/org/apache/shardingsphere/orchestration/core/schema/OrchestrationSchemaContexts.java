@@ -354,14 +354,14 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     
     private ShardingSphereSchema getChangedShardingSphereSchema(final ShardingSphereSchema oldShardingSphereSchema, final RuleSchemaMetaData newRuleSchemaMetaData) {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(oldShardingSphereSchema.getMetaData().getDataSources(), newRuleSchemaMetaData);
-        return new ShardingSphereSchema(oldShardingSphereSchema.getDatabaseType(), oldShardingSphereSchema.getConfigurations(),
+        return new ShardingSphereSchema(oldShardingSphereSchema.getConfigurations(),
                 oldShardingSphereSchema.getRules(), oldShardingSphereSchema.getDataSources(), metaData);
     }
     
     private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Collection<RuleConfiguration> configurations) throws SQLException {
         ShardingSphereSchema oldSchema = oldSchemaContext.getSchema();
         SchemaContextsBuilder builder = new SchemaContextsBuilder(Collections.singletonMap(oldSchemaContext.getName(), oldSchema.getDataSources()),
-                oldSchema.getDatabaseType(), Collections.singletonMap(oldSchemaContext.getName(), configurations), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
+                schemaContexts.getDatabaseType(), Collections.singletonMap(oldSchemaContext.getName(), configurations), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
         return builder.build().getSchemaContexts().values().iterator().next();
     }
     
@@ -373,7 +373,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         oldSchemaContext.getRuntimeContext().getTransactionManagerEngine().close();
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldSchemaContext.getName(), getNewDataSources(oldSchemaContext.getSchema().getDataSources(), 
                 deletedDataSources, getAddedDataSources(oldSchemaContext, newDataSources), modifiedDataSources));
-        return new SchemaContextsBuilder(dataSourcesMap, oldSchemaContext.getSchema().getDatabaseType(), 
+        return new SchemaContextsBuilder(dataSourcesMap, schemaContexts.getDatabaseType(),
                 Collections.singletonMap(oldSchemaContext.getName(), oldSchemaContext.getSchema().getConfigurations()), schemaContexts.getAuthentication(), 
                 schemaContexts.getProps().getProps()).build().getSchemaContexts().get(oldSchemaContext.getName());
     }

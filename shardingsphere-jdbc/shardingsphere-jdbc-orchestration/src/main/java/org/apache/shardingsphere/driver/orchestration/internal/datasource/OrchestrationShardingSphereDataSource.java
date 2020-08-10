@@ -315,7 +315,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     
     private ShardingSphereSchema getChangedSchema(final ShardingSphereSchema oldSchema, final RuleSchemaMetaData newRuleSchemaMetaData) {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(oldSchema.getMetaData().getDataSources(), newRuleSchemaMetaData);
-        return new ShardingSphereSchema(oldSchema.getDatabaseType(), oldSchema.getConfigurations(), oldSchema.getRules(), oldSchema.getDataSources(), metaData);
+        return new ShardingSphereSchema(oldSchema.getConfigurations(), oldSchema.getRules(), oldSchema.getDataSources(), metaData);
     }
     
     /**
