@@ -103,9 +103,10 @@ public final class ConfigCenter {
     }
     
     private void persistDataSourceConfiguration(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
-        if (isOverwrite) {
-            persistDataSourceConfiguration(schemaName, dataSourceConfigurations);
+        if (dataSourceConfigurations.isEmpty() || !isOverwrite) {
+            return;
         }
+        persistDataSourceConfiguration(schemaName, dataSourceConfigurations);
     }
     
     private void persistDataSourceConfiguration(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {

@@ -49,7 +49,7 @@ public final class ConfigurationListenerManager {
      * Initialize all configuration changed listeners.
      */
     public void initListeners() {
-        schemaChangedListener.watch(ChangedType.UPDATED, ChangedType.DELETED);
+        schemaChangedListener.watch(ChangedType.UPDATED, ChangedType.DELETED, ChangedType.ADDED);
         propertiesChangedListener.watch(ChangedType.UPDATED);
         authenticationChangedListener.watch(ChangedType.UPDATED);
         metricsConfigurationChangedListener.watch(ChangedType.UPDATED);
