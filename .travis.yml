@@ -13,6 +13,7 @@ before_script:
 
 after_success:
   - mvn clean cobertura:cobertura coveralls:report
+  - echo "build finished!"
 
 after_failure:
   - echo "build failed!"
