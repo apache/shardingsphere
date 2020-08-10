@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema;
 
+import com.google.common.util.concurrent.MoreExecutors;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -33,6 +34,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.concurrent.Executors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -53,6 +55,8 @@ public final class RuleSchemaMetaDataLoaderTest {
     @Mock
     private ConfigurationProperties props;
     
+    private final RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()));
+    
     @Before
     public void setUp() throws SQLException {
         ResultSet resultSet = mockResultSet();
@@ -69,13 +73,22 @@ public final class RuleSchemaMetaDataLoaderTest {
     
     @Test
     public void assertSyncLoadFullDatabase() throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()));
-        RuleSchemaMetaData actual = loader.load(databaseType, dataSource, props, null);
+        assertRuleSchemaMetaData(loader.load(databaseType, dataSource, props, null));
+    }
+    
+    @Test
+    public void assertAsyncLoadFullDatabase() throws SQLException {
+        assertRuleSchemaMetaData(loader.load(databaseType, dataSource, props, MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1))));
+    }
+    
+    private void assertRuleSchemaMetaData(final RuleSchemaMetaData actual) {
         assertThat(actual.getConfiguredSchemaMetaData().getAllTableNames().size(), is(4));
         assertTrue(actual.getConfiguredSchemaMetaData().containsTable("common_table_0"));
         assertTrue(actual.getConfiguredSchemaMetaData().containsTable("common_table_1"));
         assertTrue(actual.getConfiguredSchemaMetaData().containsTable("data_node_routed_table_0"));
+        assertTrue(actual.getConfiguredSchemaMetaData().get("data_node_routed_table_0").getColumns().containsKey("id"));
         assertTrue(actual.getConfiguredSchemaMetaData().containsTable("data_node_routed_table_1"));
+        assertTrue(actual.getConfiguredSchemaMetaData().get("data_node_routed_table_1").getColumns().containsKey("id"));
         assertThat(actual.getUnconfiguredSchemaMetaDataMap().size(), is(1));
         assertTrue(actual.getUnconfiguredSchemaMetaDataMap().containsKey("logic_db"));
         assertTrue(actual.getUnconfiguredSchemaMetaDataMap().get("logic_db").containsTable("unconfigured_table_0"));
