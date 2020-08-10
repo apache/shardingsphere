@@ -20,7 +20,29 @@ grammar DDLStatement;
 import Symbol, Keyword, MySQLKeyword, Literals, BaseRule, DMLStatement;
 
 createTable
-    : CREATE createTableSpecification_? TABLE notExistClause_ tableName (createDefinitionClause tableOptions_? partitionOptions? (AS? select)? | createLikeClause)
+    : CREATE TEMPORARY? TABLE notExistClause_ tableName (createDefinitionClause? tableOptions_? partitionClause? duplicateAsQueryExpression? | createLikeClause)
+    ;
+
+partitionClause
+    : PARTITION BY partitionTypeDef (PARTITIONS NUMBER_)? subPartitions? partitionDefinitions_?
+    ;
+
+partitionTypeDef
+    : LINEAR KEY partitionKeyAlgorithm? columnNames
+    | LINEAR HASH LP_ bitExpr RP_
+    | (RANGE | LIST) (LP_ bitExpr RP_ | COLUMNS columnNames )
+    ;
+
+subPartitions
+    : SUBPARTITION BY LINEAR? ( HASH LP_ bitExpr RP_ | KEY partitionKeyAlgorithm? columnNames ) (SUBPARTITIONS NUMBER_)?
+    ;
+
+partitionKeyAlgorithm
+    : ALGORITHM EQ_ NUMBER_
+    ;
+
+duplicateAsQueryExpression
+    : (REPLACE | IGNORE)? AS? LP_? select RP_?
     ;
 
 alterTable
@@ -46,9 +68,7 @@ partitionOption
     | REBUILD PARTITION (partitionNames | ALL)
     | REPAIR PARTITION (partitionNames | ALL)
     | REMOVE PARTITIONING
-    | PARTITION BY (LINEAR? HASH LP_ expr RP_ | LINEAR? KEY (ALGORITHM EQ_ NUMBER_)? LP_ columnNames RP_ | RANGE (LP_ expr RP_ | COLUMNS LP_ columnNames RP_) |
-     LIST (LP_ expr RP_ | COLUMNS LP_ columnNames RP_)) (PARTITIONS NUMBER_)?
-     (SUBPARTITION BY (LINEAR? HASH LP_ expr RP_ | LINEAR? KEY (ALGORITHM EQ_ NUMBER_ LP_ columnNames RP_)) (SUBPARTITIONS NUMBER_)?)?  partitionDefinitions_?
+    | partitionClause
     ;
 
 partitionNames
@@ -279,10 +299,6 @@ renameTable
     : RENAME TABLE tableName TO tableName (tableName TO tableName)*
     ;
 
-createTableSpecification_
-    : TEMPORARY
-    ;
-
 createDefinitionClause
     : LP_ createDefinition (COMMA_ createDefinition)* RP_
     ;
@@ -450,9 +466,12 @@ tableOption_
     | PACK_KEYS EQ_? (NUMBER_ | DEFAULT)
     | PASSWORD EQ_? STRING_
     | ROW_FORMAT EQ_? (DEFAULT | DYNAMIC | FIXED | COMPRESSED | REDUNDANT | COMPACT)
+    | SECONDARY_ENGINE EQ_? (NULL | STRING_)
+    | STORAGE (DISK | MEMORY)
     | STATS_AUTO_RECALC EQ_? (DEFAULT | NUMBER_)
     | STATS_PERSISTENT EQ_? (DEFAULT | NUMBER_)
-    | STATS_SAMPLE_PAGES EQ_? NUMBER_
+    | STATS_SAMPLE_PAGES EQ_? (NUMBER_ | DEFAULT)
+    | TABLE_CHECKSUM EQ_ NUMBER_
     | TABLESPACE ignoredIdentifier_ (STORAGE (DISK | MEMORY | DEFAULT))?
     | UNION EQ_? LP_ tableName (COMMA_ tableName)* RP_
     ;

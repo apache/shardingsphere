@@ -240,11 +240,6 @@
         </order-by>
     </select>
 
-    <!--TODO need to add later-->
-    <!--<select sql-case-id="select_order_by_with_parameter" parameters="order_id">-->
-            <!--<simple-table name="t_order" alias="o" start-index="14" stop-index="20" />-->
-    <!--</select>-->
-
     <select sql-case-id="select_order_by_with_table_star_table_name">
         <table-reference>
             <table-factor>
