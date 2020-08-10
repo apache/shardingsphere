@@ -47,6 +47,7 @@ public final class SQLRewriteEntry {
     
     private final ConfigurationProperties props;
     
+    @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators;
     
     public SQLRewriteEntry(final SchemaMetaData schemaMetaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
@@ -69,14 +70,14 @@ public final class SQLRewriteEntry {
                 ? new GenericSQLRewriteEngine().rewrite(sqlRewriteContext) : new RouteSQLRewriteEngine().rewrite(sqlRewriteContext, routeContext.getRouteResult());
     }
     
-    private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext sqlStatementContext, final RouteContext routeContext) {
+    private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
         SQLRewriteContext result = new SQLRewriteContext(schemaMetaData, sqlStatementContext, sql, parameters);
         decorate(decorators, result, routeContext);
         result.generateSQLTokens();
         return result;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private void decorate(final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         decorators.forEach((key, value) -> value.decorate(key, props, sqlRewriteContext, routeContext));
     }
