@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.concurrent.Executors;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -95,9 +96,13 @@ public final class RuleSchemaMetaDataLoaderTest {
         assertTrue(actual.getUnconfiguredSchemaMetaDataMap().get("logic_db").containsTable("unconfigured_table_1"));
     }
     
-//    @Test
-//    @Ignore
-//    public void assertLoadWithTableName() {
-//        
-//    }
+    @Test
+    public void assertLoadWithExistedTableName() throws SQLException {
+        assertTrue(loader.load(databaseType, dataSource, "data_node_routed_table_0", props).isPresent());
+    }
+    
+    @Test
+    public void assertLoadWithNotExistedTableName() throws SQLException {
+        assertFalse(loader.load(databaseType, dataSource, "invalid_table", props).isPresent());
+    }
 }
