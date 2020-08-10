@@ -91,7 +91,7 @@ public final class RouteResult {
      * @return  map relationship between data source and logic tables
      */
     public Map<String, Set<String>> getDataSourceLogicTablesMap(final Collection<String> actualDataSourceNames) {
-        Map<String, Set<String>> result = new HashMap<>();
+        Map<String, Set<String>> result = new HashMap<>(actualDataSourceNames.size(), 1);
         for (String each : actualDataSourceNames) {
             Set<String> logicTableNames = getLogicTableNames(each);
             if (!logicTableNames.isEmpty()) {
