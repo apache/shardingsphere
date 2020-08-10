@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 ## Who are using ShardingSphere?
 
-Total: 140 companies.
+Total: 141 companies.
 
 ### Financial Industry
 <ul>
@@ -97,6 +97,7 @@ Total: 140 companies.
 ### Logistics
 <ul>
     <li><a href="https://www.zto.com/" rel="nofollow">ZTO Express</a></li>
+    <li><a href="http://www.yundaex.com/cn/index.php" rel="nofollow">YUNDA Express</a></li>
     <li><a href="http://www.yl-scm.com/" rel="nofollow">YL-Scm</a></li>
     <li><a href="https://www.newbeescm.com/" rel="nofollow">NewBeeScm</a></li>
     <li><a href="https://www.dianwoda.com/" rel="nofollow">DianWoDa</a></li>
