@@ -82,7 +82,7 @@ public final class RuleSchemaMetaDataLoader {
             }
             configuredSchemaMetaData.merge(schemaMetaData);
         }
-        configuredSchemaMetaData = decorate(configuredSchemaMetaData);
+        decorate(configuredSchemaMetaData);
         int maxConnectionCount = props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = null == executorService ? syncLoad(databaseType, dataSourceMap, maxConnectionCount, excludedTableNames)
                 : asyncLoad(databaseType, dataSourceMap, executorService, maxConnectionCount, excludedTableNames);
@@ -180,18 +180,15 @@ public final class RuleSchemaMetaDataLoader {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private SchemaMetaData decorate(final SchemaMetaData schemaMetaData) {
+    private void decorate(final SchemaMetaData schemaMetaData) {
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
         Map<ShardingSphereRule, RuleMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class);
-        if (decorators.isEmpty()) {
-            return schemaMetaData;
-        }
-        Map<String, TableMetaData> result = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
         for (String each : schemaMetaData.getAllTableNames()) {
             for (Entry<ShardingSphereRule, RuleMetaDataDecorator> entry : decorators.entrySet()) {
-                result.put(each, entry.getValue().decorate(each, result.getOrDefault(each, schemaMetaData.get(each)), entry.getKey()));
+                tableMetaDataMap.put(each, entry.getValue().decorate(each, tableMetaDataMap.getOrDefault(each, schemaMetaData.get(each)), entry.getKey()));
             }
         }
-        return new SchemaMetaData(result);
+        schemaMetaData.merge(new SchemaMetaData(tableMetaDataMap));
     }
     
     @SuppressWarnings("unchecked")
