@@ -748,13 +748,13 @@
                 <version>${cobertura-maven-plugin.version}</version>
                 <configuration>
                     <check>
-                        <!--<branchRate>85</branchRate>-->
-                        <!--<lineRate>85</lineRate>-->
-                        <!--<haltOnFailure>true</haltOnFailure>-->
-                        <!--<totalBranchRate>85</totalBranchRate>-->
-                        <!--<totalLineRate>85</totalLineRate>-->
-                        <!--<packageLineRate>85</packageLineRate>-->
-                        <!--<packageBranchRate>85</packageBranchRate>-->
+                        <branchRate>60</branchRate>
+                        <lineRate>60</lineRate>
+                        <haltOnFailure>true</haltOnFailure>
+                        <totalBranchRate>60</totalBranchRate>
+                        <totalLineRate>60</totalLineRate>
+                        <packageLineRate>60</packageLineRate>
+                        <packageBranchRate>60</packageBranchRate>
                     </check>
                     <aggregate>true</aggregate>
                     <encoding>${project.build.sourceEncoding}</encoding>
@@ -767,6 +767,7 @@
                         </ignoreMethodAnnotations>
                         <excludes>
                             <exclude>org/apache/shardingsphere/sql/parser/autogen/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/rdl/parser/sql/autogen/*.class</exclude>
                             <exclude>org/apache/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
                             <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
                         </excludes>

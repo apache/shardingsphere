@@ -29,7 +29,7 @@ on:
 jobs:
   build:
 
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -37,7 +37,9 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Build with Maven
+    - name: Build with Maven and Cobertura
       run: |
-        mvn --batch-mode --no-transfer-progress clean install cobertura:cobertura -Dmaven.javadoc.skip=true
+        mvn --batch-mode --no-transfer-progress clean install cobertura:cobertura -DskipITs -Dmaven.javadoc.skip=true
+    - name: Run Codecov Coverage
+      run: |
         bash <(curl -s https://codecov.io/bash)
