@@ -17,18 +17,157 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
+import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule,DMLStatement;
 
 createTable
-    : CREATE createTableSpecification_ TABLE tableNotExistClause_ tableName createDefinitionClause inheritClause_
+    : CREATE createTableSpecification_ TABLE tableNotExistClause_ tableName
+      createDefinitionClause
+      (OF anyName optTypedTableElementList)?
+      (PARTITION OF qualifiedName optTypedTableElementList partitionBoundSpec)?
+      inheritClause_ optPartitionSpec_ tableAccessMethodClause optWith onCommitOption optTableSpace
+      (AS select optWithData)?
+      (EXECUTE name executeParamClause optWithData)?
+    ;
+
+executeParamClause
+    : LP_ exprList RP_
+    ;
+
+partitionBoundSpec
+    : FOR VALUES WITH LP_ hashPartbound RP_
+    | FOR VALUES IN LP_ exprList RP_
+    | FOR VALUES FROM LP_ exprList RP_ TO LP_ exprList RP_
+    | DEFAULT
+    ;
+
+hashPartbound
+    : hashPartboundElem
+    | hashPartbound COMMA_ hashPartboundElem
+    ;
+
+hashPartboundElem
+    : nonReservedWord NUMBER_
+    ;
+
+optTypedTableElementList
+     : LP_ typedTableElementList RP_
+     ;
+
+typedTableElementList
+    : typedTableElement
+    | typedTableElementList COMMA_ typedTableElement
+    ;
+
+typedTableElement
+    : columnOptions
+    | tableConstraint
+    ;
+
+columnOptions
+    : colId colQualList
+    | colId WITH OPTIONS colQualList
+    ;
+
+colQualList
+    : columnConstraint*
+    ;
+
+optWithData
+    : (WITH DATA | WITH NO DATA)?
+    ;
+
+optTableSpace
+    : (TABLESPACE name)?
+    ;
+
+onCommitOption
+    : (ON COMMIT (DROP | DELETE ROWS | PRESERVE ROWS))?
+    ;
+
+optWith
+    : (WITH reloptions | WITHOUT OIDS)?
+    ;
+
+tableAccessMethodClause
+    : (USING accessMethod)?
+    ;
+
+accessMethod
+    : colId
     ;
 
 createIndex
-    : CREATE createIndexSpecification_ INDEX concurrentlyClause_ (indexNotExistClause_ indexName)? ON onlyClause_ tableName 
+    : CREATE createIndexSpecification_ INDEX concurrentlyClause_ (indexNotExistClause_ indexName)? ON onlyClause_ tableName
+      accessMethodClause LP_ indexParams RP_ optInclude optReloptions optTableSpace whereClause?
+    ;
+
+optInclude
+    : (INCLUDE LP_ indexIncludingParams RP_)?
+    ;
+
+indexIncludingParams
+    : indexElem | indexIncludingParams COMMA_ indexElem
+    ;
+
+accessMethodClause
+    : (USING accessMethod)?
+    ;
+
+createDatabase
+    : CREATE DATABASE name optWith_ createDatabaseSpecification_*
+    ;
+
+createView
+    : CREATE (OR REPLACCE)? (TMP | TMPORARY)? (RECURSIVE)? VIEW name
+      (LP_ (columnList (COMMA_ columnList)*)? RP_)?
+      (WITH reloptions)?
+      AS select
+      (WITH (CASCADE | LOCAL)? CHECK OPTION)?
+    ;
+
+columnList
+    : columnElem
+    | columnList COMMA_ columnElem
+    ;
+
+columnElem
+    : colId
+    ;
+
+dropDatabase
+    : DROP DATABASE (IF EXISTS)? name
+    ;
+
+createDatabaseSpecification_
+    :  createdbOptName optEqual_ (signedIconst | optBooleanOrString | DEFAULT)
+    ;
+
+optEqual_
+    : (EQ_)?
+    ;
+
+createdbOptName
+    : identifier
+    | CONNECTION LIMIT
+    | ENCODING
+    | LOCATION
+    | OWNER
+    | TABLESPACE
+    | TEMPLATE
+    | LC_COLLATE
+    | LC_CTYPE
+    | IS_TEMPLATE
+    | ALLOW_CONNECTIONS
+    ;
+
+optWith_
+    : (WITH)?
     ;
 
 alterTable
-    : ALTER TABLE tableExistClause_ onlyClause_ tableNameClause alterDefinitionClause
+    : ALTER TABLE
+    ( tableExistClause_ onlyClause_ tableNameClause alterDefinitionClause
+    | ALL IN TABLESPACE name (OWNED BY roleList)? SET TABLESPACE name (NOWAIT)?)
     ;
 
 alterIndex
@@ -36,15 +175,29 @@ alterIndex
     ;
 
 dropTable
-    : DROP TABLE tableExistClause_ tableNames
+    : DROP TABLE tableExistClause_ tableNames dropTableOpt
+    ;
+
+dropTableOpt
+    : (CASCADE | RESTRICT)?
     ;
 
 dropIndex
-    : DROP INDEX concurrentlyClause_ indexExistClause_ indexNames
+    : DROP INDEX concurrentlyClause_ indexExistClause_ indexNames dropIndexOpt
     ;
-    
+
+dropIndexOpt
+    : (CASCADE | RESTRICT)?
+    ;
+
 truncateTable
-    : TRUNCATE TABLE? onlyClause_ tableNamesClause
+    : TRUNCATE TABLE? onlyClause_ tableNamesClause optRestartSeqs dropTableOpt
+    ;
+
+optRestartSeqs
+    : CONTINUE IDENTITY
+    | RESTART IDENTITY
+    |
     ;
 
 createTableSpecification_
@@ -79,6 +232,7 @@ columnConstraintOption
     : NOT? NULL
     | checkOption
     | DEFAULT defaultExpr
+    | GENERATED ALWAYS AS LP_ aExpr RP_ STORED
     | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
     | UNIQUE indexParameters
     | primaryKey indexParameters
@@ -144,6 +298,29 @@ inheritClause_
     : (INHERITS tableNames)?
     ;
 
+optPartitionSpec_
+    : partitionSpec?
+    ;
+
+partitionSpec
+    : PARTITION BY partStrategy LP_ partParams RP_
+    ;
+
+partParams
+    : partElem
+    | partParams COMMA_ partElem
+    ;
+
+partElem
+    : colId (COLLATE anyName)?  anyName?
+    | LP_ aExpr RP_ (COLLATE anyName)?  anyName?
+    ;
+
+partStrategy
+    : identifier
+    | unreservedWord
+    ;
+
 createIndexSpecification_
     : UNIQUE?
     ;
@@ -169,11 +346,30 @@ asteriskClause_
     ;
 
 alterDefinitionClause
-    : alterTableActions | renameColumnSpecification | renameConstraint | renameTableSpecification_
+    : alterTableActions
+    | renameColumnSpecification
+    | renameConstraint
+    | renameTableSpecification_
+    | SET SCHEMA name
+    | partitionCmd
+    ;
+
+partitionCmd
+    : ATTACH PARTITION qualifiedName partitionBoundSpec
+    | DETACH PARTITION qualifiedName
+    ;
+
+roleList
+    : roleSpec
+    | roleList COMMA_ roleSpec
     ;
 
 alterIndexDefinitionClause_
-    : renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace
+    : renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace | alterTableCmds | indexPartitionCmd
+    ;
+
+indexPartitionCmd
+    : ATTACH PARTITION qualifiedName
     ;
 
 renameIndexSpecification
@@ -181,11 +377,11 @@ renameIndexSpecification
     ;
 
 alterIndexDependsOnExtension
-    : ALTER INDEX indexName DEPENDS ON EXTENSION ignoredIdentifier_
+    : DEPENDS ON EXTENSION ignoredIdentifier_
     ;
 
 alterIndexSetTableSpace
-    : ALTER INDEX ALL IN TABLESPACE indexName (OWNED BY ignoredIdentifiers_)?
+    : ALL IN TABLESPACE indexName (OWNED BY ignoredIdentifiers_)? SET TABLESPACE name (NOWAIT)?
     ;
 
 tableNamesClause
@@ -304,4 +500,537 @@ indexExistClause_
 
 indexNames
     : indexName (COMMA_ indexName)*
+    ;
+
+alterDatabase
+    : ALTER DATABASE databaseName alterDatabaseClause
+    ;
+
+alterDatabaseClause
+    : (WITH)? createdbOptList
+    | RENAME TO databaseName
+    | OWNER TO roleSpec
+    | SET TABLESPACE name
+    | setResetClause
+    ;
+
+setResetClause
+    : SET setRest
+    | variableResetStmt
+    ;
+
+setRest
+    : TRANSACTION transactionModeList
+    | SESSION CHARACTERISTICS AS TRANSACTION transactionModeList
+    | setRestMore
+    ;
+
+transactionModeList
+    : transactionModeItem
+    | transactionModeList (COMMA_)? transactionModeItem
+    ;
+
+transactionModeItem
+    : ISOLATION LEVEL isoLevel
+    | READ ONLY
+    | READ WRITE
+    | DEFERRABLE
+    | NOT DEFERRABLE
+    ;
+
+setRestMore
+    : genericSet
+    | varName FROM CURRENT
+    | TIME ZONE zoneValue
+    | CATALOG STRING_
+    | SCHEMA STRING_
+    | NAMES optEncoding?
+    | ROLE nonReservedWord | STRING_
+    | SESSION AUTHORIZATION nonReservedWord | STRING_
+    | SESSION AUTHORIZATION DEFAULT
+    | XML OPTION documentOrContent
+    | TRANSACTION SNAPSHOT STRING_
+    ;
+
+optEncoding
+    : STRING_
+    | DEFAULT
+    ;
+
+genericSet
+    : varName (EQ_|TO) (varList | DEFAULT)
+    ;
+
+documentOrContent
+    : DOCUMENT
+    | CONTENT
+    ;
+
+createdbOptList
+    : createdbOptItems?
+    ;
+
+createdbOptItems
+    : createdbOptItem+
+    ;
+
+createdbOptItem
+    : createdbOptName (EQ_)? signedIconst
+    | createdbOptName (EQ_)? optBooleanOrString
+    | createdbOptName (EQ_)? DEFAULT
+    ;
+
+variableResetStmt
+    : RESET resetRest
+    ;
+
+resetRest
+    : genericReset
+    | TIME ZONE
+    | TRANSACTION ISOLATION LEVEL
+    | SESSION AUTHORIZATION
+    ;
+
+genericReset
+    : varName
+    | ALL
+    ;
+
+alterTableCmds
+    : alterTableCmd
+    | alterTableCmds COMMA_ alterTableCmd
+    ;
+
+alterTableCmd
+    : ADD COLUMN? (IF NOT EXISTS)? columnDef
+    | ALTER optColumn colId alterColumnDefault
+    | ALTER optColumn colId DROP NOT NULL
+    | ALTER optColumn colId SET NOT NULL
+    | ALTER optColumn colId SET STATISTICS signedIconst
+    | ALTER optColumn NUMBER_ SET STATISTICS signedIconst
+    | ALTER optColumn colId SET reloptions
+    | ALTER optColumn colId RESET reloptions
+    | ALTER optColumn colId SET STORAGE colId
+    | ALTER optColumn colId ADD GENERATED generatedWhen AS IDENTITY optParenthesizedSeqOptList
+    | ALTER optColumn colId alterIdentityColumnOptionList
+    | ALTER optColumn colId DROP IDENTITY
+    | ALTER optColumn colId DROP IDENTITY IF EXISTS
+    | DROP optColumn IF EXISTS colId optDropBehavior
+    | DROP optColumn colId optDropBehavior
+    | ALTER optColumn colId optSetData TYPE typeName optCollateClause alterUsing
+    | ALTER optColumn colId alterGenericOptions
+    | ADD tableConstraint
+    | ALTER CONSTRAINT name constraintAttributeSpec
+    | VALIDATE CONSTRAINT name
+    | DROP CONSTRAINT IF EXISTS name optDropBehavior
+    | DROP CONSTRAINT name optDropBehavior
+    | SET WITHOUT OIDS
+    | CLUSTER ON name
+    | SET WITHOUT CLUSTER
+    | SET LOGGED
+    | SET UNLOGGED
+    | ENABLE TRIGGER name
+    | ENABLE ALWAYS TRIGGER name
+    | ENABLE REPLICA TRIGGER name
+    | ENABLE TRIGGER ALL
+    | ENABLE TRIGGER USER
+    | DISABLE TRIGGER name
+    | DISABLE TRIGGER ALL
+    | DISABLE TRIGGER USER
+    | ENABLE RULE name
+    | ENABLE ALWAYS RULE name
+    | ENABLE REPLICA RULE name
+    | DISABLE RULE name
+    | INHERIT qualifiedName
+    | NO INHERIT qualifiedName
+    | OF anyName
+    | NOT OF
+    | OWNER TO roleSpec
+    | SET TABLESPACE name
+    | SET reloptions
+    | RESET reloptions
+    | REPLICA IDENTITY replicaIdentity
+    | ENABLE ROW LEVEL SECURITY
+    | DISABLE ROW LEVEL SECURITY
+    | FORCE ROW LEVEL SECURITY
+    | NO FORCE ROW LEVEL SECURITY
+    | alterGenericOptions
+    ;
+
+constraintAttributeSpec
+    : constraintAttributeElem*
+    ;
+
+constraintAttributeElem
+    : NOT DEFERRABLE
+    | DEFERRABLE
+    | INITIALLY IMMEDIATE
+    | INITIALLY DEFERRED
+    | NOT VALID
+    | NO INHERIT
+    ;
+
+alterGenericOptions
+    : OPTIONS LP_ alterGenericOptionList RP_
+    ;
+
+alterGenericOptionList
+    : alterGenericOptionElem
+    | alterGenericOptionList COMMA_ alterGenericOptionElem
+    ;
+
+alterGenericOptionElem
+    : genericOptionElem
+    | SET genericOptionElem
+    | ADD genericOptionElem
+    | DROP genericOptionName
+    ;
+
+genericOptionName
+    : colLable
+    ;
+
+optDropBehavior
+    : (CASCADE | RESTRICT)?
+    ;
+
+alterUsing
+    : (USING aExpr)?
+    ;
+
+optSetData
+    : (SET DATA)?
+    ;
+
+alterIdentityColumnOptionList
+    : alterIdentityColumnOption+
+    ;
+
+alterIdentityColumnOption
+    : RESTART
+    | RESTART (WITH)? numericOnly
+    | SET seqOptElem
+    | SET GENERATED generatedWhen
+    ;
+
+alterColumnDefault
+    : SET DEFAULT aExpr
+    | DROP DEFAULT
+    ;
+
+optColumn
+    : COLUMN?
+    ;
+
+alterOperator
+    : ALTER OPERATOR alterOperatorClauses
+    ;
+
+alterOperatorClauses
+    : operatorWithArgtypes SET SCHEMA name
+    | operatorWithArgtypes SET LP_ operatorDefList RP_
+    | operatorWithArgtypes OWNER TO roleSpec
+    ;
+
+operatorDefList
+    : operatorDefElem
+    | operatorDefList COMMA_ operatorDefElem
+    ;
+
+operatorDefElem
+    : colLabel EQ_ (NONE | operatorDefArg)
+    ;
+
+operatorDefArg
+    : funcType
+    | reservedKeyword
+    | qualAllOp
+    | numericOnly
+    | STRING_
+    ;
+
+operatorWithArgtypes
+    : anyOperator operArgtypes
+    ;
+
+alterAggregate
+    : ALTER AGGREGATE aggregateSignature alterAggregateDefinitionClause
+    ;
+
+aggregateSignature
+    : funcName aggrArgs
+    ;
+
+aggrArgs
+    : LP_ ASTERISK_ RP_
+    | LP_ aggrArgsList RP_
+    | LP_ ORDER BY aggrArgsList RP_
+    | LP_ aggrArgsList ORDER BY aggrArgsList RP_
+    ;
+
+aggrArgsList
+    : aggrArg
+    | aggrArgsList COMMA_ aggrArg
+    ;
+
+aggrArg
+    : funcArg
+    ;
+
+alterAggregateDefinitionClause
+    : RENAME TO name
+    | OWNER TO  roleSpec
+    | SET SCHEMA schemaName
+    ;
+
+alterCollation
+    : ALTER COLLATION anyName alterCollationClause
+    ;
+
+alterCollationClause
+    : REFRESH VERSION
+    | RENAME TO name
+    | OWNER TO roleSpec
+    | SET SCHEMA schemaName
+    ;
+
+alterConversion
+    : ALTER CONVERSION anyName alterConversionClause
+    ;
+
+alterConversionClause
+    : RENAME TO name
+    | OWNER TO roleSpec
+    | SET SCHEMA schemaName
+    ;
+
+alterDefaultPrivileges
+    : ALTER DEFAULT PRIVILEGES (defACLOptionList)? defACLAction
+    ;
+
+defACLAction
+    : GRANT privileges ON defaclPrivilegeTarget TO granteeList optGrantGrantOption?
+    | REVOKE privileges ON defaclPrivilegeTarget FROM granteeList optDropBehavior?
+    | REVOKE GRANT OPTION FOR privileges ON defaclPrivilegeTarget FROM granteeList optDropBehavior?
+    ;
+
+optGrantGrantOption
+    : (WITH GRANT OPTION)?
+    ;
+
+granteeList
+    : grantee
+    | granteeList COMMA_ grantee
+    ;
+
+grantee
+    : GROUP? roleSpec
+    | PUBLIC
+    ;
+
+defaclPrivilegeTarget
+    :TABLES
+    | FUNCTIONS
+    | ROUTINES
+    | SEQUENCES
+    | TYPES_P
+    | SCHEMAS
+    ;
+
+privileges
+    : privilegeList
+    | ALL
+    | ALL PRIVILEGES
+    | ALL LP_ columnList RP_
+    | ALL PRIVILEGES LP_ columnList RP_
+    ;
+
+privilegeList
+    : privilege
+    | privilegeList COMMA_ privilege
+    ;
+
+privilege
+    : SELECT (optColumnList)?
+    | REFERENCES (optColumnList)?
+    | CREATE (optColumnList)?
+    | colId (optColumnList)?
+    ;
+
+defACLOptionList
+    : defACLOptionList defACLOption
+    | defACLOption
+    ;
+
+defACLOption
+    : IN SCHEMA schemaNameList
+    | FOR (ROLE | USER) roleList
+    ;
+
+schemaNameList
+    : nameList
+    ;
+
+alterDomain
+    : ALTER DOMAIN alterDomainClause
+    ;
+
+alterDomainClause
+    : anyName (SET | DROP) NOT NULL
+    | anyName ADD tableConstraint
+    | anyName DROP CONSTRAINT (IF EXISTS) name optDropBehavior
+    | anyName VALIDATE CONSTRAINT name
+    | anyName RENAME CONSTRAINT constraintName TO constraintName
+    | anyName OWNER TO roleSpec
+    | anyName RENAME TO anyName
+    | anyName SET SCHEMA name
+    | anyName alterColumnDefault
+    ;
+
+constraintName
+    : colId
+    ;
+
+alterEventTrigger
+    : ALTER EVENT TRIGGER tiggerName alterEventTriggerClause
+    ;
+
+alterEventTriggerClause
+    : DISABLE
+    | ENABLE (REPLICA | ALWAYS)
+    | OWNER TO roleSpec
+    | RENAME TO tiggerName
+    ;
+
+tiggerName
+    : colId
+    ;
+
+alterExtension
+    : ALTER EXTENSION name alterExtensionClauses
+    ;
+
+alterExtensionClauses
+    : UPDATE alterExtensionOptList
+    | (ADD | DROP) ACCESS METHOD name
+    | (ADD | DROP) AGGREGATE aggregateWithArgtypes
+    | (ADD | DROP) CAST LP_ typeName AS typeName RP_
+    | (ADD | DROP) COLLATION anyName
+    | (ADD | DROP) CONVERSION anyName
+    | (ADD | DROP) DOMAIN typeName
+    | (ADD | DROP) FUNCTION functionWithArgtypes
+    | (ADD | DROP) PROCEDURAL? LANGUAGE name
+    | (ADD | DROP) OPERATOR operatorWithArgtypes
+    | (ADD | DROP) OPERATOR (CLASS | FAMILY) anyName USING accessMethod
+    | (ADD | DROP) PROCEDURE functionWithArgtypes
+    | (ADD | DROP) ROUTINE functionWithArgtypes
+    | (ADD | DROP) SCHEMA name
+    | (ADD | DROP) EVENT TRIGGER name
+    | (ADD | DROP) TABLE anyName
+    | (ADD | DROP) TEXT SEARCH PARSER anyName
+    | (ADD | DROP) TEXT SEARCH DICTIONARY anyName
+    | (ADD | DROP) TEXT SEARCH TEMPLATE anyName
+    | (ADD | DROP) TEXT SEARCH CONFIGURATION anyName
+    | (ADD | DROP) SEQUENCE anyName
+    | (ADD | DROP) VIEW anyName
+    | (ADD | DROP) MATERIALIZED VIEW anyName
+    | (ADD | DROP) FOREIGN TABLE anyName
+    | (ADD | DROP) FOREIGN DATA WRAPPER name
+    | (ADD | DROP) SERVER name
+    | (ADD | DROP) TRANSFORM FOR typeName LANGUAGE name
+    | (ADD | DROP) TYPE typeName
+    | SET SCHEMA name
+    ;
+
+functionWithArgtypes
+    : funcName funcArgs
+    | typeFuncNameKeyword
+    | colId
+    | colId indirection
+    ;
+
+funcArgs
+    : LP_ funcArgsList RP_
+    | LP_ RP_
+    ;
+
+aggregateWithArgtypes
+    : funcName aggrArgs
+    ;
+
+alterExtensionOptList
+    : alterExtensionOptItem*
+    ;
+
+alterExtensionOptItem
+    : TO (nonReservedWord | STRING_)
+    ;
+
+
+alterForeignDataWrapper
+    : ALTER FOREIGN DATA WRAPPER colId alterForeignDataWrapperClauses
+    ;
+
+alterForeignDataWrapperClauses
+    : optFdwOptions alterGenericOptions
+    | fdwOptions
+    | RENAME TO name
+    | OWNER TO roleSpec
+    ;
+
+genericOptionElem
+    : genericOptionName genericOptionArg
+    ;
+
+genericOptionArg
+    : aexprConst
+    ;
+
+fdwOptions
+    : fdwOption+
+    ;
+
+fdwOption
+    : HANDLER handlerName
+    | NO HANDLER
+    | VALIDATOR handlerName
+    | NO VALIDATOR
+    ;
+
+handlerName
+    : anyName
+    ;
+
+optFdwOptions
+    : fdwOptions?
+    ;
+
+alterGroup
+    : ALTER GROUP alterGroupClauses
+    ;
+
+alterGroupClauses
+    : roleSpec (ADD|DROP) USER roleList
+    | roleSpec RENAME TO roleSpec
+    ;
+
+alterLanguage
+    : ALTER PROCEDURAL? LANGUAGE (colId RENAME TO colId | OWNER TO (ignoredIdentifier_ | CURRENT_USER | SESSION_USER))
+    ;
+
+alterLargeObject
+    : ALTER LARGE OBJECT numericOnly OWNER TO (ignoredIdentifier_ | CURRENT_USER | SESSION_USER)
+    ;
+
+alterMaterializedView
+    : ALTER MATERIALIZED VIEW alterMaterializedViewClauses
+    ;
+
+alterMaterializedViewClauses
+    : (IF EXISTS)? qualifiedName alterTableCmds
+    | qualifiedName DEPENDS ON EXTENSION name
+    | (IF EXISTS)? qualifiedName RENAME (COLUMN)? columnName TO columnName
+    | (IF EXISTS)? qualifiedName RENAME TO qualifiedName
+    | (IF EXISTS)? qualifiedName SET SCHEMA schemaName
+    | ALL IN TABLESPACE name (OWNED BY roleList) SET TABLESPACE name NOWAIT?
     ;

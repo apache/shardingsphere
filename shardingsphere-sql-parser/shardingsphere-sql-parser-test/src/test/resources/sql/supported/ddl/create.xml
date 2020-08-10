@@ -62,7 +62,7 @@
     <sql-case id="create_table_with_out_of_line_composite_index" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), INDEX order_index (order_id, user_id, status))" db-types="MySQL" />
     <sql-case id="create_table_with_out_of_line_btree_index" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), INDEX order_index (order_id) USING BTREE)" db-types="MySQL" />
     <sql-case id="create_table_with_comment" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) COMMENT 't_order'" db-types="MySQL" />
-    <sql-case id="create_table_with_partition" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) PARTITION BY HASH (order_id) PARTITIONS 2" db-types="MySQL" />
+    <sql-case id="create_table_with_partition" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) PARTITION BY HASH (order_id) PARTITIONS 2" db-types="MySQL,PostgreSQL" />
     <!--
     <sql-case id="create_table_select" value="CREATE TABLE t_order_bak AS SELECT * FROM t_order" db-types="MySQL" />
     <sql-case id="create_table_like" value="CREATE TABLE t_order_bak (LIKE t_order)" db-types="MySQL" />
@@ -112,4 +112,6 @@
     <sql-case id="create_table_with_inline_constraints_sqlserver" value="CREATE TABLE t_order (order_id INT PRIMARY KEY UNIQUE CHECK (order_id > 0), user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
     <sql-case id="create_table_with_index" value="CREATE TABLE t_order (order_id INT INDEX order_index, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
     <sql-case id="create_index_with_bracket" value="CREATE INDEX [order_index] ON [t_order] ([order_id])" db-types="SQLServer" />
+
+    <sql-case id="create_index_with_no_default_fill_factor" value="CREATE UNIQUE INDEX order_index ON t_order (order_id) WITH (fillfactor = 70)" db-types="PostgreSQL"/>
 </sql-cases>

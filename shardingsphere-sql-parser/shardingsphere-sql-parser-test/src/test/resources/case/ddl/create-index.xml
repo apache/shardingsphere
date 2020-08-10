@@ -73,4 +73,8 @@
     <create-index sql-case-id="create_index_with_bracket">
         <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="30" stop-index="38" />
     </create-index>
+
+    <create-index sql-case-id="create_index_with_no_default_fill_factor">
+        <table name="t_order" start-index="35" stop-index="41" />
+    </create-index>
 </sql-parser-test-cases>

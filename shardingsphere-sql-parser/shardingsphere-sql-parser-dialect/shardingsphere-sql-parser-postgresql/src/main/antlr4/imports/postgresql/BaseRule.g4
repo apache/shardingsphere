@@ -1351,3 +1351,320 @@ ignoredIdentifier_
 ignoredIdentifiers_
     : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
     ;
+
+signedIconst
+    : NUMBER_
+    | PLUS_ NUMBER_
+    | MINUS_ NUMBER_
+    ;
+
+optBooleanOrString
+    : TRUE
+    | FALSE
+    | ON
+    | nonReservedWord
+    | STRING_
+    ;
+
+nonReservedWord
+    : identifier
+    | unreservedWord
+    | colNameKeyword
+    | typeFuncNameKeyword
+    ;
+
+colNameKeyword
+    : BETWEEN
+    | BIGINT
+    | BIT
+    | BOOLEAN
+    | CHAR
+    | CHARACTER
+    | COALESCE
+    | DEC
+    | DECIMAL
+    | EXISTS
+    | EXTRACT
+    | FLOAT
+    | GREATEST
+    | GROUPING
+    | INOUT
+    | INT
+    | INTEGER
+    | INTERVAL
+    | LEAST
+    | NATIONAL
+    | NCHAR
+    | NONE
+    | NULLIF
+    | NUMERIC
+    | OUT
+    | OVERLAY
+    | POSITION
+    | PRECISION
+    | REAL
+    | ROW
+    | SETOF
+    | SMALLINT
+    | SUBSTRING
+    | TIME
+    | TIMESTAMP
+    | TREAT
+    | TRIM
+    | VALUES
+    | VARCHAR
+    | XMLATTRIBUTES
+    | XMLCONCAT
+    | XMLELEMENT
+    | XMLEXISTS
+    | XMLFOREST
+    | XMLNAMESPACES
+    | XMLPARSE
+    | XMLPI
+    | XMLROOT
+    | XMLSERIALIZE
+    | XMLTABLE
+    ;
+
+databaseName
+    : colId
+    ;
+
+roleSpec
+    : identifier
+    | nonReservedWord
+    | CURRENT_USER
+    | SESSION_USER
+    ;
+
+varName
+    : colId
+    | varName DOT_ colId
+    ;
+
+varList
+    : varValue
+    | varList COMMA_ varValue
+    ;
+
+varValue
+    : identifier
+    ;
+
+zoneValue
+    : STRING_
+    | identifier
+    | INTERVAL STRING_ optInterval
+    | INTERVAL LP_ NUMBER_ RP_ STRING_
+    | numericOnly
+    | DEFAULT
+    | LOCAL
+    ;
+
+numericOnly
+    : NUMBER_
+    | PLUS_ NUMBER_
+    | MINUS_ NUMBER_
+    ;
+
+isoLevel
+    : READ UNCOMMITTED
+    | READ COMMITTED
+    | REPEATABLE READ
+    | SERIALIZABLE
+    ;
+
+columnDef
+    : colId typeName createGenericOptions colQualList
+    ;
+
+colQualList
+    : colConstraint*
+    ;
+
+colConstraint
+    : CONSTRAINT name colConstraintElem
+    | colConstraintElem
+    | constraintAttr
+    | COLLATE anyName
+    ;
+
+constraintAttr
+    : DEFERRABLE
+    | NOT DEFERRABLE
+    | INITIALLY DEFERRED
+    | INITIALLY IMMEDIATE
+    ;
+
+colConstraintElem
+    : NOT NULL
+    | NULL
+    | UNIQUE optDefinition optConsTableSpace
+    | PRIMARY KEY optDefinition optConsTableSpace
+    | CHECK LP_ aExpr RP_ optNoInherit
+    | DEFAULT bExpr
+    | GENERATED generatedWhen AS IDENTITY optParenthesizedSeqOptList
+    | GENERATED generatedWhen AS LP_ aExpr RP_ STORED
+    | REFERENCES qualifiedName optColumnList keyMatch keyActions
+    ;
+
+optParenthesizedSeqOptList
+    : (LP_ seqOptList RP_)?
+    ;
+
+seqOptList
+    : seqOptElem+
+    ;
+
+seqOptElem
+    : AS simpleTypeName
+    | CACHE numericOnly
+    | CYCLE
+    | NO CYCLE
+    | INCREMENT (BY)? numericOnly
+    | MAXVALUE numericOnly
+    | MINVALUE numericOnly
+    | NO MAXVALUE
+    | NO MINVALUE
+    | OWNED BY anyName
+    | SEQUENCE NAME anyName
+    | START (WITH)? numericOnly
+    | RESTART
+    | RESTART (WITH)? numericOnly
+    ;
+
+optColumnList
+    : LP_ columnList RP_
+    ;
+
+columnElem
+    : colId
+    ;
+
+columnList
+    : columnElem
+    | columnList COMMA_ columnElem
+    ;
+
+generatedWhen
+    : ALWAYS
+    | BY DEFAULT
+    ;
+
+optNoInherit
+    : (NO INHERIT)?
+    ;
+
+optConsTableSpace
+    : (USING INDEX TABLESPACE name)?
+    ;
+
+optDefinition
+    : (WITH definition)?
+    ;
+
+definition
+    : LP_ defList RP_
+    ;
+
+defList
+    : defElem
+    | defList COMMA_ defElem
+    ;
+
+defElem
+    : colLabel  defArg
+    | colLabel
+    ;
+
+colLabel
+    : identifier
+    | unreservedWord
+    | colNameKeyword
+    | typeFuncNameKeyword
+    | reservedKeyword
+    ;
+
+keyActions
+    : keyUpdate
+    | keyDelete
+    | keyUpdate keyDelete
+    | keyDelete keyUpdate
+    | /*EMPTY*/
+    ;
+
+keyDelete
+    : ON DELETE keyAction
+    ;
+
+keyUpdate
+    : ON UPDATE keyAction
+    ;
+
+keyAction:
+    NO ACTION
+    | RESTRICT
+    | CASCADE
+    | SET NULL
+    | SET DEFAULT
+	;
+
+keyMatch
+    : (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?
+    ;
+
+createGenericOptions
+    : ( OPTIONS LP_ genericOptionList RP_ )?
+    ;
+
+genericOptionList
+    : genericOptionElem
+    | genericOptionList COMMA_ genericOptionElem
+    ;
+
+genericOptionElem
+    : genericOptionName genericOptionArg
+    ;
+
+genericOptionArg
+    : STRING_
+    ;
+
+genericOptionName
+    : colLable
+    ;
+
+replicaIdentity
+    : NOTHING
+    | FULL
+    | DEFAULT
+    | USING INDEX name
+    ;
+
+operArgtypes
+    : LP_ typeName RP_
+    | LP_ typeName COMMA_ typeName RP_
+    | LP_ NONE COMMA_ typeName RP_
+    | LP_ typeName COMMA_ NONE RP_
+    ;
+
+funcArg
+    : argClass paramName funcType
+    | paramName argClass funcType
+    | paramName funcType
+    | argClass funcType
+    | funcType
+    ;
+
+argClass
+    : IN
+    | OUT
+    | INOUT
+    | IN OUT
+    | VARIADIC
+    ;
+
+funcArgsList
+    : funcArg
+    | funcArgsList COMMA_ funcArg
+    ;

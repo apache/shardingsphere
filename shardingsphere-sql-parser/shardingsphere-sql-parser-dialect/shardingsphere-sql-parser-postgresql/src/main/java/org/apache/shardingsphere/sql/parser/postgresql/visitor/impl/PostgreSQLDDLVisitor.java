@@ -54,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
@@ -87,7 +88,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
         CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
@@ -101,7 +102,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         }
         return result;
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
@@ -121,7 +122,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         }
         return result;
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
@@ -145,7 +146,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitAddColumnSpecification(final AddColumnSpecificationContext ctx) {
         CollectionValue<AddColumnDefinitionSegment> result = new CollectionValue<>();
@@ -157,7 +158,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
@@ -172,7 +173,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         }
         return result;
     }
-    
+
     private boolean isPrimaryKey(final ColumnDefinitionContext ctx) {
         for (ColumnConstraintContext each : ctx.columnConstraint()) {
             if (null != each.columnConstraintOption() && null != each.columnConstraintOption().primaryKey()) {
@@ -181,7 +182,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         }
         return false;
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTableConstraint(final TableConstraintContext ctx) {
@@ -194,7 +195,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitModifyColumnSpecification(final ModifyColumnSpecificationContext ctx) {
         // TODO visit pk and table ref
@@ -203,17 +204,17 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false);
         return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
     }
-    
+
     @Override
     public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
         return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList((ColumnSegment) visit(ctx.columnName())));
     }
-    
+
     @Override
     public ASTNode visitRenameColumnSpecification(final RenameColumnSpecificationContext ctx) {
         return new RenameColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnSegment) visit(ctx.columnName(0)), (ColumnSegment) visit(ctx.columnName(1)));
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
@@ -221,7 +222,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
@@ -229,7 +230,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNamesClause())).getValue());
         return result;
     }
-    
+
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
@@ -239,14 +240,14 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement();
+        AlterIndexStatement result = new AlterIndexStatement();
         result.setIndex((IndexSegment) visit(ctx.indexName()));
         return result;
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
@@ -254,7 +255,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         result.getIndexes().addAll(((CollectionValue<IndexSegment>) visit(ctx.indexNames())).getValue());
         return result;
     }
-    
+
     @Override
     public ASTNode visitIndexNames(final IndexNamesContext ctx) {
         CollectionValue<IndexSegment> result = new CollectionValue<>();
@@ -263,12 +264,12 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitTableNameClause(final TableNameClauseContext ctx) {
         return visit(ctx.tableName());
     }
-    
+
     @Override
     public ASTNode visitTableNamesClause(final TableNamesClauseContext ctx) {
         Collection<SimpleTableSegment> tableSegments = new LinkedList<>();
