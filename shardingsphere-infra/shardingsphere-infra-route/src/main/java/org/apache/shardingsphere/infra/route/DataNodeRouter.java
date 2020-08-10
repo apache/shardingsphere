@@ -49,6 +49,7 @@ public final class DataNodeRouter {
     
     private final ConfigurationProperties props;
     
+    @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, RouteDecorator> decorators;
     
     private final SPIRoutingHook routingHook;
@@ -82,7 +83,7 @@ public final class DataNodeRouter {
         }
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private RouteContext executeRoute(final SQLStatement sqlStatement, final List<Object> parameters) {
         RouteContext result = createRouteContext(sqlStatement, parameters);
         for (Entry<ShardingSphereRule, RouteDecorator> entry : decorators.entrySet()) {
