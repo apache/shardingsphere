@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.infra.rewrite.sql.impl;
 
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.infra.rewrite.sql.fixture.RouteUnitAwareSQLTokenFixture;
 import org.apache.shardingsphere.infra.rewrite.sql.fixture.SQLTokenFixture;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -28,21 +31,25 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DefaultSQLBuilderTest {
+public final class RouteSQLBuilderTest {
     
     @Test
-    public void assertToSQLWithEmptySQLToken() {
-        SQLRewriteContext context = mock(SQLRewriteContext.class);
-        when(context.getSql()).thenReturn("SELECT * FROM tbl WHERE id=?");
-        when(context.getSqlTokens()).thenReturn(Collections.emptyList());
-        assertThat(new DefaultSQLBuilder(context).toSQL(), is("SELECT * FROM tbl WHERE id=?"));
-    }
-    
-    @Test
-    public void assertToSQLWithSQLToken() {
+    public void assertToSQLWithNormalSQLToken() {
         SQLRewriteContext context = mock(SQLRewriteContext.class);
         when(context.getSql()).thenReturn("SELECT * FROM tbl WHERE id=?");
         when(context.getSqlTokens()).thenReturn(Collections.singletonList(new SQLTokenFixture(14, 16)));
-        assertThat(new DefaultSQLBuilder(context).toSQL(), is("SELECT * FROM XXX WHERE id=?"));
+        assertThat(new RouteSQLBuilder(context, createRouteUnit()).toSQL(), is("SELECT * FROM XXX WHERE id=?"));
+    }
+    
+    @Test
+    public void assertToSQLWithRouteUnitAwaredSQLToken() {
+        SQLRewriteContext context = mock(SQLRewriteContext.class);
+        when(context.getSql()).thenReturn("SELECT * FROM tbl WHERE id=?");
+        when(context.getSqlTokens()).thenReturn(Collections.singletonList(new RouteUnitAwareSQLTokenFixture(14, 16)));
+        assertThat(new RouteSQLBuilder(context, createRouteUnit()).toSQL(), is("SELECT * FROM tbl_0 WHERE id=?"));
+    }
+    
+    private RouteUnit createRouteUnit() {
+        return new RouteUnit(mock(RouteMapper.class), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
     }
 }
