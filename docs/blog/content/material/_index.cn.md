@@ -6,7 +6,7 @@ chapter = true
 
 欢迎阅读 Apache ShardingSphere 的精选博文，也欢迎您的投稿！
 
-1. [停滞数年后，ElasticJob 携首个 Apache 版本 3.0.0-alpha 回归！](/cn/material/alpha/)
+1. [停滞数年后，ElasticJob 携首个 Apache 版本 3.0.0-alpha 回归](/cn/material/alpha/)
 
 2. [快讯！分布式调度项目 ElasticJob 即将重新起航](/cn/material/elasticjob/)  
 
