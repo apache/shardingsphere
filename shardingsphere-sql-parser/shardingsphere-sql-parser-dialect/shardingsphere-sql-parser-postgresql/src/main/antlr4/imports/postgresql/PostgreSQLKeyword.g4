@@ -1381,18 +1381,6 @@ PARAM
     : P A R A M
     ;
 
-REPLACCE
-    : R E P L A C C E
-    ;
-
-TMP
-    : T M P
-    ;
-
-TMPORARY
-    : T M P O R A R Y
-    ;
-
 OUT
     : O U T
     ;

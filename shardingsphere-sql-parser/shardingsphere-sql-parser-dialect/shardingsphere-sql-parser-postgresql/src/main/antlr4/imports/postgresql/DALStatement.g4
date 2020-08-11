@@ -42,3 +42,7 @@ configurationParameterClause
 resetParameter
     : RESET (ALL | identifier)
     ;
+
+explain
+    :
+    ;

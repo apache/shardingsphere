@@ -1456,7 +1456,7 @@ isoLevel
     ;
 
 columnDef
-    : colId typeName createGenericOptions colQualList
+    : colId typeName createGenericOptions? colQualList
     ;
 
 colQualList
@@ -1484,13 +1484,13 @@ colConstraintElem
     | PRIMARY KEY (WITH definition)? consTableSpace
     | CHECK LP_ aExpr RP_ noInherit?
     | DEFAULT bExpr
-    | GENERATED generatedWhen AS IDENTITY optParenthesizedSeqOptList
+    | GENERATED generatedWhen AS IDENTITY parenthesizedSeqOptList?
     | GENERATED generatedWhen AS LP_ aExpr RP_ STORED
     | REFERENCES qualifiedName optColumnList? keyMatch? keyActions?
     ;
 
-optParenthesizedSeqOptList
-    : (LP_ seqOptList RP_)?
+parenthesizedSeqOptList
+    : LP_ seqOptList RP_
     ;
 
 seqOptList
@@ -1580,14 +1580,14 @@ keyAction
     | CASCADE
     | SET NULL
     | SET DEFAULT
-	;
+    ;
 
 keyMatch
     : MATCH FULL | MATCH PARTIAL | MATCH SIMPLE
     ;
 
 createGenericOptions
-    : ( OPTIONS LP_ genericOptionList RP_ )?
+    : OPTIONS LP_ genericOptionList RP_
     ;
 
 genericOptionList

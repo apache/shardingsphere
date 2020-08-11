@@ -24,7 +24,7 @@ createTable
       createDefinitionClause
       (OF anyName (LP_ typedTableElementList RP_)?)?
       (PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec)?
-      inheritClause_ partitionSpec? tableAccessMethodClause withOption? onCommitOption? tableSpace?
+      inheritClause_ partitionSpec? tableAccessMethodClause? withOption? onCommitOption? tableSpace?
       (AS select withData?)?
       (EXECUTE name executeParamClause withData?)?
     ;
@@ -82,7 +82,7 @@ withOption
     ;
 
 tableAccessMethodClause
-    : (USING accessMethod)?
+    : USING accessMethod
     ;
 
 accessMethod
@@ -107,11 +107,11 @@ accessMethodClause
     ;
 
 createDatabase
-    : CREATE DATABASE name optWith_ createDatabaseSpecification_*
+    : CREATE DATABASE name (WITH)? createDatabaseSpecification_*
     ;
 
 createView
-    : CREATE (OR REPLACCE)? (TMP | TMPORARY)? (RECURSIVE)? VIEW name
+    : CREATE (OR REPLACE)? (TEMP | TEMPORARY)? (RECURSIVE)? VIEW name
       (LP_ (columnList (COMMA_ columnList)*)? RP_)?
       (WITH reloptions)?
       AS select
@@ -142,10 +142,6 @@ createdbOptName
     | OWNER
     | TABLESPACE
     | TEMPLATE
-    ;
-
-optWith_
-    : (WITH)?
     ;
 
 alterTable
@@ -574,22 +570,22 @@ alterTableCmds
 
 alterTableCmd
     : ADD COLUMN? (IF NOT EXISTS)? columnDef
-    | ALTER column? colId alterColumnDefault
-    | ALTER column? colId DROP NOT NULL
-    | ALTER column? colId SET NOT NULL
-    | ALTER column? colId SET STATISTICS signedIconst
-    | ALTER column? NUMBER_ SET STATISTICS signedIconst
-    | ALTER column? colId SET reloptions
-    | ALTER column? colId RESET reloptions
-    | ALTER column? colId SET STORAGE colId
-    | ALTER column? colId ADD GENERATED generatedWhen AS IDENTITY optParenthesizedSeqOptList
-    | ALTER column? colId alterIdentityColumnOptionList
-    | ALTER column? colId DROP IDENTITY
-    | ALTER column? colId DROP IDENTITY IF EXISTS
-    | DROP column? IF EXISTS colId dropBehavior?
-    | DROP column? colId dropBehavior?
-    | ALTER column? colId setData? TYPE typeName collateClause? alterUsing?
-    | ALTER column? colId alterGenericOptions
+    | ALTER COLUMN? colId alterColumnDefault
+    | ALTER COLUMN? colId DROP NOT NULL
+    | ALTER COLUMN? colId SET NOT NULL
+    | ALTER COLUMN? colId SET STATISTICS signedIconst
+    | ALTER COLUMN? NUMBER_ SET STATISTICS signedIconst
+    | ALTER COLUMN? colId SET reloptions
+    | ALTER COLUMN? colId RESET reloptions
+    | ALTER COLUMN? colId SET STORAGE colId
+    | ALTER COLUMN? colId ADD GENERATED generatedWhen AS IDENTITY parenthesizedSeqOptList?
+    | ALTER COLUMN? colId alterIdentityColumnOptionList
+    | ALTER COLUMN? colId DROP IDENTITY
+    | ALTER COLUMN? colId DROP IDENTITY IF EXISTS
+    | DROP COLUMN? IF EXISTS colId dropBehavior?
+    | DROP COLUMN? colId dropBehavior?
+    | ALTER COLUMN? colId setData? TYPE typeName collateClause? alterUsing?
+    | ALTER COLUMN? colId alterGenericOptions
     | ADD tableConstraint
     | ALTER CONSTRAINT name constraintAttributeSpec
     | VALIDATE CONSTRAINT name
@@ -686,10 +682,6 @@ alterIdentityColumnOption
 alterColumnDefault
     : SET DEFAULT aExpr
     | DROP DEFAULT
-    ;
-
-column
-    : COLUMN
     ;
 
 alterOperator
@@ -929,7 +921,6 @@ alterExtensionOptList
 alterExtensionOptItem
     : TO (nonReservedWord | STRING_)
     ;
-
 
 alterForeignDataWrapper
     : ALTER FOREIGN DATA WRAPPER colId alterForeignDataWrapperClauses
