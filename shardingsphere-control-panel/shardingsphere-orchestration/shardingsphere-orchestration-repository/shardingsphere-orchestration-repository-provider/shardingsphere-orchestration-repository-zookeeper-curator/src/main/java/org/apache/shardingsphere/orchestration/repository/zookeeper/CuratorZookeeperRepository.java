@@ -24,9 +24,10 @@ import lombok.Setter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
+import org.apache.curator.framework.api.transaction.TransactionOp;
 import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.TreeCache;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
+import org.apache.curator.framework.recipes.cache.CuratorCache;
+import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
@@ -41,12 +42,14 @@ import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -55,7 +58,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class CuratorZookeeperRepository implements ConfigurationRepository, RegistryRepository {
     
-    private final Map<String, TreeCache> caches = new HashMap<>();
+    private final Map<String, CuratorCache> caches = new HashMap<>();
     
     private CuratorFramework client;
     
@@ -120,18 +123,18 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     
     @Override
     public String get(final String key) {
-        TreeCache cache = findTreeCache(key);
+        CuratorCache cache = findTreeCache(key);
         if (null == cache) {
             return getDirectly(key);
         }
-        ChildData resultInCache = cache.getCurrentData(key);
-        if (null != resultInCache) {
-            return null == resultInCache.getData() ? null : new String(resultInCache.getData(), Charsets.UTF_8);
+        Optional<ChildData> resultInCache = cache.get(key);
+        if (resultInCache.isPresent()) {
+            return null == resultInCache.get().getData() ? null : new String(resultInCache.get().getData(), Charsets.UTF_8);
         }
         return getDirectly(key);
     }
     
-    private TreeCache findTreeCache(final String key) {
+    private CuratorCache findTreeCache(final String key) {
         return caches.entrySet().stream().filter(entry -> key.startsWith(entry.getKey())).findFirst().map(Entry::getValue).orElse(null);
     }
     
@@ -166,7 +169,8 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     
     private void update(final String key, final String value) {
         try {
-            client.inTransaction().check().forPath(key).and().setData().forPath(key, value.getBytes(Charsets.UTF_8)).and().commit();
+            TransactionOp transactionOp = client.transactionOp();
+            client.transaction().forOperations(transactionOp.check().forPath(key), transactionOp.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8)));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -229,21 +233,19 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         if (!caches.containsKey(path)) {
             addCacheData(key);
         }
-        TreeCache cache = caches.get(path);
-        cache.getListenable().addListener((client, event) -> {
-            ChildData data = event.getData();
-            if (null == data || null == data.getPath()) {
-                return;
-            }
-            DataChangedEvent.ChangedType changedType = getChangedType(event);
+        CuratorCache cache = caches.get(path);
+        cache.listenable().addListener((type, oldData, data) -> {
+            String eventPath = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getPath() : data.getPath();
+            byte[] eventDataByte = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getData() : data.getData();
+            DataChangedEvent.ChangedType changedType = getChangedType(type);
             if (ChangedType.IGNORED != changedType) {
-                listener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), Charsets.UTF_8), changedType));
+                listener.onChange(new DataChangedEvent(eventPath, null == eventDataByte ? null : new String(eventDataByte, Charsets.UTF_8), changedType));
             }
         });
     }
     
     private void addCacheData(final String cachePath) {
-        TreeCache cache = new TreeCache(client, cachePath);
+        CuratorCache cache = CuratorCache.build(client, cachePath);
         try {
             cache.start();
             // CHECKSTYLE:OFF
@@ -254,13 +256,13 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         caches.put(cachePath + "/", cache);
     }
     
-    private ChangedType getChangedType(final TreeCacheEvent event) {
-        switch (event.getType()) {
-            case NODE_ADDED:
+    private ChangedType getChangedType(final CuratorCacheListener.Type type) {
+        switch (type) {
+            case NODE_CREATED:
                 return ChangedType.ADDED;
-            case NODE_UPDATED:
+            case NODE_CHANGED:
                 return ChangedType.UPDATED;
-            case NODE_REMOVED:
+            case NODE_DELETED:
                 return ChangedType.DELETED;
             default:
                 return ChangedType.IGNORED;
@@ -269,7 +271,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     
     @Override
     public void close() {
-        caches.values().forEach(TreeCache::close);
+        caches.values().forEach(CuratorCache::close);
         waitForCacheClose();
         CloseableUtils.closeQuietly(client);
     }
