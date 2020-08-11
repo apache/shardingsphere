@@ -1,6 +1,6 @@
 +++
 title = "开源推动下的Apache ShardingSphere架构演进"
-weight = 4
+weight = 24
 chapter = true
 +++
 

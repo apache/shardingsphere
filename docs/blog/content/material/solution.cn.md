@@ -1,6 +1,6 @@
 +++
 title = "刚柔并济的开源分布式事务解决方案"
-weight = 7
+weight = 17
 chapter = true
 +++
 

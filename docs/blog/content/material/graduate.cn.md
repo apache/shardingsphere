@@ -1,6 +1,6 @@
 +++
 title = "分布式数据库解决方案Apache ShardingSphere毕业成为顶级项目"
-weight = 2
+weight = 12
 chapter = true
 +++
 

@@ -1,6 +1,6 @@
 +++
 title = "Congratulations on graduation of Apache ShardingSphere as a Top-Level Project!" 
-weight = 2
+weight = 12
 chapter = true
 +++
 

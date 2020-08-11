@@ -1,6 +1,6 @@
 +++
 title = "Apache ShardingSphere architecture evolution driven by open source"
-weight = 4
+weight = 24
 chapter = true
 +++
 

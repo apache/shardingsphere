@@ -1,6 +1,6 @@
 +++
 title = "Revealing Sharding-Proxy —— Database Middleware Oriented DBA"
-weight = 12
+weight = 112
 chapter = true
 +++
 

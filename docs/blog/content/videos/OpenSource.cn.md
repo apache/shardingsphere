@@ -1,6 +1,6 @@
 +++
 title = "【开源总动员】零基础入门Apache ShardingSphere开源之道"
-weight = 1
+weight = 21
 chapter = true
 +++
 
