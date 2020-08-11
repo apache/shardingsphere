@@ -26,5 +26,4 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public final class CreateProcedureStatement extends DDLStatement {
-    
 }

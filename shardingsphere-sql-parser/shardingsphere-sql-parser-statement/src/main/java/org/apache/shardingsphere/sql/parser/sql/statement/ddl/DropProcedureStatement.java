@@ -21,5 +21,4 @@ package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
  * Drop procedure statement.
  */
 public final class DropProcedureStatement extends DDLStatement {
-    
 }
