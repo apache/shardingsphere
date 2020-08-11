@@ -9,7 +9,7 @@ In addition, by injecting them to ShardingSphere with SPI, users can use other t
 
 |                                               | *Driver*                                             | *Version* | *Config Center* | *Registry Center* | *Metadata Center* |
 | --------------------------------------------- | ---------------------------------------------------- | --------- | --------------- | ----------------- | ----------------- |
-| [Zookeeper](https://zookeeper.apache.org/)    | [Apache Curator](http://curator.apache.org/)         | 3.4.6     | Support         | Support           | Support           |
+| [Zookeeper](https://zookeeper.apache.org/)    | [Apache Curator](http://curator.apache.org/)         | 3.6.x     | Support         | Support           | Support           |
 | [Etcd](https://etcd.io/)                      | [jetcd](https://github.com/etcd-io/jetcd)            | v3        | Support         | Support           | Support           |
 | [Apollo](https://github.com/ctripcorp/apollo) | [Apollo Client](https://github.com/ctripcorp/apollo) | 1.5.0     | Support         | Not Support       | Not Support       |
 | [Nacos](https://nacos.io/zh-cn/docs/sdk.html) | [Nacos Client](https://nacos.io/zh-cn/docs/sdk.html) | 1.0.0     | Support         | Not Support       | Not Support       |
