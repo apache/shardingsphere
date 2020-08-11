@@ -47,16 +47,17 @@ public final class GenericSQLRewriteEngine {
         if (parameterBuilder instanceof StandardParameterBuilder) {
             return parameterBuilder.getParameters();
         }
-        
-        // TODO decouple onDuplicateKeyUpdateParameters and infra
-        List<Object> onDuplicateKeyUpdateParameters = ((GroupedParameterBuilder) parameterBuilder).getOnDuplicateKeyUpdateParametersBuilder().getParameters();
-        if (onDuplicateKeyUpdateParameters.isEmpty()) {
-            return parameterBuilder.getParameters();
+        return buildBroadcastParameters((GroupedParameterBuilder) parameterBuilder);
+    }
+    
+    private List<Object> buildBroadcastParameters(final GroupedParameterBuilder groupedParameterBuilder) {
+        List<Object> genericParameters = groupedParameterBuilder.getGenericParameterBuilder().getParameters();
+        if (genericParameters.isEmpty()) {
+            return groupedParameterBuilder.getParameters();
         }
-        
         List<Object> result = new LinkedList<>();
-        result.addAll(parameterBuilder.getParameters());
-        result.addAll(onDuplicateKeyUpdateParameters);
+        result.addAll(groupedParameterBuilder.getParameters());
+        result.addAll(genericParameters);
         return result;
     }
 }

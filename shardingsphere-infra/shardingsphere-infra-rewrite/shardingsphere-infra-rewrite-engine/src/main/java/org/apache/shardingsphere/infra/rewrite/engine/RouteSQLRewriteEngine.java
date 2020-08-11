@@ -58,29 +58,31 @@ public final class RouteSQLRewriteEngine {
         if (parameterBuilder instanceof StandardParameterBuilder) {
             return parameterBuilder.getParameters();
         }
-        
-        // TODO decouple onDuplicateKeyUpdateParameters and infra
-        if (routeResult.getOriginalDataNodes().isEmpty()) {
-            List<Object> onDuplicateKeyUpdateParameters = ((GroupedParameterBuilder) parameterBuilder).getOnDuplicateKeyUpdateParametersBuilder().getParameters();
-            if (onDuplicateKeyUpdateParameters.isEmpty()) {
-                return parameterBuilder.getParameters();
-            }
-            
-            List<Object> result = new LinkedList<>();
-            result.addAll(parameterBuilder.getParameters());
-            result.addAll(onDuplicateKeyUpdateParameters);
-            return result;
-        }
+        return routeResult.getOriginalDataNodes().isEmpty()
+                ? buildBroadcastParameters((GroupedParameterBuilder) parameterBuilder) : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeResult, routeUnit);
+    }
     
+    private List<Object> buildBroadcastParameters(final GroupedParameterBuilder groupedParameterBuilder) {
+        List<Object> genericParameters = groupedParameterBuilder.getGenericParameterBuilder().getParameters();
+        if (genericParameters.isEmpty()) {
+            return groupedParameterBuilder.getParameters();
+        }
+        List<Object> result = new LinkedList<>();
+        result.addAll(groupedParameterBuilder.getParameters());
+        result.addAll(genericParameters);
+        return result;
+    }
+    
+    private List<Object> buildRouteParameters(final GroupedParameterBuilder parameterBuilder, final RouteResult routeResult, final RouteUnit routeUnit) {
         List<Object> result = new LinkedList<>();
         int count = 0;
         for (Collection<DataNode> each : routeResult.getOriginalDataNodes()) {
             if (isInSameDataNode(each, routeUnit)) {
-                result.addAll(((GroupedParameterBuilder) parameterBuilder).getParameters(count));
+                result.addAll(parameterBuilder.getParameters(count));
             }
             count++;
         }
-        result.addAll(((GroupedParameterBuilder) parameterBuilder).getOnDuplicateKeyUpdateParametersBuilder().getParameters());
+        result.addAll(parameterBuilder.getGenericParameterBuilder().getParameters());
         return result;
     }
     
