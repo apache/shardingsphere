@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rewrite.impl;
+package org.apache.shardingsphere.infra.rewrite.parameter.builder.impl;
 
-import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.junit.Before;
 import org.junit.Test;
 

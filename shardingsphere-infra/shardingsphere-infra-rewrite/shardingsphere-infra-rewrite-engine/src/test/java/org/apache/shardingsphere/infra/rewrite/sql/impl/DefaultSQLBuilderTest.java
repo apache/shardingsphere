@@ -15,13 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rewrite.impl;
+package org.apache.shardingsphere.infra.rewrite.sql.impl;
 
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.infra.rewrite.sql.SQLBuilder;
-import org.apache.shardingsphere.infra.rewrite.sql.impl.DefaultSQLBuilder;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.rewrite.sql.fixture.SQLTokenFixture;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -29,13 +26,23 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class DefaultSQLBuilderTest {
     
     @Test
-    public void assertToSQL() {
-        SQLRewriteContext context = new SQLRewriteContext(mock(SchemaMetaData.class), mock(SQLStatementContext.class), "SELECT * FROM t_config", Collections.emptyList());
-        SQLBuilder sqlBuilderWithoutTokens = new DefaultSQLBuilder(context);
-        assertThat(sqlBuilderWithoutTokens.toSQL(), is("SELECT * FROM t_config"));
+    public void assertToSQLWithEmptySQLToken() {
+        SQLRewriteContext context = mock(SQLRewriteContext.class);
+        when(context.getSql()).thenReturn("SELECT * FROM tbl WHERE id=?");
+        when(context.getSqlTokens()).thenReturn(Collections.emptyList());
+        assertThat(new DefaultSQLBuilder(context).toSQL(), is("SELECT * FROM tbl WHERE id=?"));
+    }
+    
+    @Test
+    public void assertToSQLWithSQLToken() {
+        SQLRewriteContext context = mock(SQLRewriteContext.class);
+        when(context.getSql()).thenReturn("SELECT * FROM tbl WHERE id=?");
+        when(context.getSqlTokens()).thenReturn(Collections.singletonList(new SQLTokenFixture(14, 16)));
+        assertThat(new DefaultSQLBuilder(context).toSQL(), is("SELECT * FROM XXX WHERE id=?"));
     }
 }
