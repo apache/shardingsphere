@@ -19,8 +19,9 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.RegistryCenterExecuteEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.RDLExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
@@ -44,7 +45,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class RegistryCenterExecuteEngineTest {
+public final class RDLExecuteEngineTest {
     
     private CreateDataSourcesStatementContext dataSourcesContext;
     
@@ -74,7 +75,8 @@ public final class RegistryCenterExecuteEngineTest {
     
     @Test
     public void assertExecuteDataSourcesContext() {
-        RegistryCenterExecuteEngine executeEngine = new RegistryCenterExecuteEngine("sharding_db", mock(CreateDataSourcesStatement.class));
+        SchemaContext context = new SchemaContext("sharding_db", null, null);
+        RDLExecuteEngine executeEngine = new RDLExecuteEngine(context, mock(CreateDataSourcesStatement.class));
         BackendResponse response = executeEngine.execute(new ExecutionContext(dataSourcesContext, new LinkedList<>()));
         assertThat(response, instanceOf(ErrorResponse.class));
         setOrchestrationSchemaContexts(true);
@@ -84,7 +86,8 @@ public final class RegistryCenterExecuteEngineTest {
     
     @Test
     public void assertExecuteShardingRuleContext() {
-        RegistryCenterExecuteEngine executeEngine = new RegistryCenterExecuteEngine("sharding_db", mock(CreateShardingRuleStatement.class));
+        SchemaContext context = new SchemaContext("sharding_db", null, null);
+        RDLExecuteEngine executeEngine = new RDLExecuteEngine(context, mock(CreateShardingRuleStatement.class));
         BackendResponse response = executeEngine.execute(new ExecutionContext(ruleContext, new LinkedList<>()));
         assertThat(response, instanceOf(ErrorResponse.class));
         setOrchestrationSchemaContexts(true);

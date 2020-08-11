@@ -22,14 +22,13 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.jdbc.JDBCExecuteEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.RegistryCenterExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.RDLExecuteEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.jdbc.JDBCExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.StatementExecutorWrapper;
-import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.util.List;
@@ -80,7 +79,6 @@ public final class DatabaseCommunicationEngineFactory {
     }
     
     private SQLExecuteEngine createSQLExecuteEngine(final SchemaContext schema, final SQLStatement sqlStatement, final BackendConnection backendConnection, final JDBCExecutorWrapper executorWrapper) {
-        return sqlStatement instanceof CreateDataSourcesStatement || sqlStatement instanceof CreateShardingRuleStatement
-                ? new RegistryCenterExecuteEngine(schema.getName(), sqlStatement) : new JDBCExecuteEngine(backendConnection, executorWrapper);
+        return sqlStatement instanceof RDLStatement ? new RDLExecuteEngine(schema, sqlStatement) : new JDBCExecuteEngine(backendConnection, executorWrapper);
     }
 }
