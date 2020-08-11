@@ -15,26 +15,17 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.rdl.parser.statement.rdl;
 
-import Alphabet;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
+/**
+ * Create schema statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class CreateSchemaStatement extends RDLStatement {
     
-CREATE
-    : C R E A T E
-    ;
-
-SCHEMA
-    : S C H E M A
-    ;
-
-DATASOURCE
-    : D A T A S O U R C E
-    ;
-    
-SHARDINGRULE
-    : S H A R D I N G R U L E
-    ;
+    private final String schemaName;
+}

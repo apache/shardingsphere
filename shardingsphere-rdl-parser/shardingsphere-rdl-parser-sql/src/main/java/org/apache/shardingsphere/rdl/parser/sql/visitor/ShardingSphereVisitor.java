@@ -20,10 +20,12 @@ package org.apache.shardingsphere.rdl.parser.sql.visitor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementBaseVisitor;
+import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateSchemaContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateDatasourceContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.DatasourceContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.DatasourceValueContext;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateSchemaStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.DataSourceConnectionSegment;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
@@ -35,6 +37,11 @@ import java.util.LinkedList;
  */
 @Getter(AccessLevel.PROTECTED)
 public final class ShardingSphereVisitor extends ShardingSphereStatementBaseVisitor<ASTNode> {
+    
+    @Override
+    public ASTNode visitCreateSchema(final CreateSchemaContext ctx) {
+        return new CreateSchemaStatement(ctx.schemaName().getText());
+    }
     
     @Override
     public ASTNode visitCreateDatasource(final CreateDatasourceContext ctx) {
