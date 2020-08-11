@@ -614,3 +614,15 @@ pattern
 connectionId_
     : NUMBER_
     ;
+    
+labelName
+    : identifier
+    ;
+    
+cursorName
+    : identifier
+    ;
+    
+conditionName
+    : identifier
+    ;
