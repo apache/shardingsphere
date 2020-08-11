@@ -36,32 +36,32 @@ public final class GroupedParameterBuilderTest {
     }
     
     @Test
-    public void assertGetParametersWithOnDuplicateKeyParameters() {
-        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createOnDuplicateKeyUpdateParameters());
-        assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
-        assertThat(actual.getOnDuplicateKeyUpdateParametersBuilder().getParameters(), is(Arrays.<Object>asList(7, 8)));
+    public void assertGetParametersWithGenericParameters() {
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createGenericParameters());
+        assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6, 7, 8)));
+        assertThat(actual.getGenericParameterBuilder().getParameters(), is(Arrays.<Object>asList(7, 8)));
     }
     
     @Test
-    public void assertGetOnDuplicateKeyParametersWithModify() {
-        GroupedParameterBuilder actual = new GroupedParameterBuilder(new LinkedList<>(), createOnDuplicateKeyUpdateParameters());
-        actual.getOnDuplicateKeyUpdateParametersBuilder().addReplacedParameters(0, 77);
-        actual.getOnDuplicateKeyUpdateParametersBuilder().addReplacedParameters(1, 88);
-        actual.getOnDuplicateKeyUpdateParametersBuilder().addAddedParameters(0, Arrays.asList(66, -1));
-        actual.getOnDuplicateKeyUpdateParametersBuilder().addAddedParameters(2, Arrays.asList(99, 110));
-        actual.getOnDuplicateKeyUpdateParametersBuilder().addRemovedParameters(1);
-        assertThat(actual.getOnDuplicateKeyUpdateParametersBuilder().getParameters(), is(Arrays.<Object>asList(66, 77, 88, 99, 110)));
+    public void assertGetGenericParametersWithModify() {
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(new LinkedList<>(), createGenericParameters());
+        actual.getGenericParameterBuilder().addReplacedParameters(0, 77);
+        actual.getGenericParameterBuilder().addReplacedParameters(1, 88);
+        actual.getGenericParameterBuilder().addAddedParameters(0, Arrays.asList(66, -1));
+        actual.getGenericParameterBuilder().addAddedParameters(2, Arrays.asList(99, 110));
+        actual.getGenericParameterBuilder().addRemovedParameters(1);
+        assertThat(actual.getGenericParameterBuilder().getParameters(), is(Arrays.<Object>asList(66, 77, 88, 99, 110)));
     }
     
     @Test
     public void assertGetDerivedColumnName() {
-        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createOnDuplicateKeyUpdateParameters());
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createGenericParameters());
         String derivedColumnName = "derivedColumnName";
         actual.setDerivedColumnName(derivedColumnName);
         assertThat(actual.getDerivedColumnName(), is(Optional.of(derivedColumnName)));
     }
     
-    private List<Object> createOnDuplicateKeyUpdateParameters() {
+    private List<Object> createGenericParameters() {
         return new LinkedList<>(Arrays.asList(7, 8));
     }
     
