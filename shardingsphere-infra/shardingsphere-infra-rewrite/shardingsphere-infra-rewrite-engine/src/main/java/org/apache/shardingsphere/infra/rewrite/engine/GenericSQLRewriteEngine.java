@@ -20,11 +20,7 @@ package org.apache.shardingsphere.infra.rewrite.engine;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
-import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.impl.DefaultSQLBuilder;
-
-import java.util.List;
 
 /**
  * Generic SQL rewrite engine.
@@ -38,10 +34,6 @@ public final class GenericSQLRewriteEngine {
      * @return SQL rewrite result
      */
     public GenericSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new GenericSQLRewriteResult(new SQLRewriteUnit(new DefaultSQLBuilder(sqlRewriteContext).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder())));
-    }
-    
-    private List<Object> getParameters(final ParameterBuilder parameterBuilder) {
-        return parameterBuilder instanceof GroupedParameterBuilder ? ((GroupedParameterBuilder) parameterBuilder).buildBroadcastParameters() : parameterBuilder.getParameters();
+        return new GenericSQLRewriteResult(new SQLRewriteUnit(new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getParameterBuilder().getParameters()));
     }
 }

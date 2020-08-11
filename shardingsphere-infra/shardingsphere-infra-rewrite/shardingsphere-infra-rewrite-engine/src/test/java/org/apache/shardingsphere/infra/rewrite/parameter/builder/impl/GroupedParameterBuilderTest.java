@@ -38,7 +38,7 @@ public final class GroupedParameterBuilderTest {
     @Test
     public void assertGetParametersWithGenericParameters() {
         GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createGenericParameters());
-        assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
+        assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6, 7, 8)));
         assertThat(actual.getGenericParameterBuilder().getParameters(), is(Arrays.<Object>asList(7, 8)));
     }
     

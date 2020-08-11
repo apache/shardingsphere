@@ -54,6 +54,7 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
         for (int i = 0; i < parameterBuilders.size(); i++) {
             result.addAll(getParameters(i));
         }
+        result.addAll(genericParameterBuilder.getParameters());
         return result;
     }
     
@@ -74,21 +75,5 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
      */
     public Optional<String> getDerivedColumnName() {
         return Optional.ofNullable(derivedColumnName);
-    }
-    
-    /**
-     * Build broadcast parameters.
-     * 
-     * @return parameters
-     */
-    public List<Object> buildBroadcastParameters() {
-        List<Object> genericParameters = genericParameterBuilder.getParameters();
-        if (genericParameters.isEmpty()) {
-            return getParameters();
-        }
-        List<Object> result = new LinkedList<>();
-        result.addAll(getParameters());
-        result.addAll(genericParameters);
-        return result;
     }
 }

@@ -59,7 +59,7 @@ public final class RouteSQLRewriteEngine {
             return parameterBuilder.getParameters();
         }
         return routeResult.getOriginalDataNodes().isEmpty()
-                ? ((GroupedParameterBuilder) parameterBuilder).buildBroadcastParameters() : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeResult, routeUnit);
+                ? ((GroupedParameterBuilder) parameterBuilder).getParameters() : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeResult, routeUnit);
     }
     
     private List<Object> buildRouteParameters(final GroupedParameterBuilder parameterBuilder, final RouteResult routeResult, final RouteUnit routeUnit) {
