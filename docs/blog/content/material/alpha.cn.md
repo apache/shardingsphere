@@ -3,7 +3,7 @@ title = "停滞数年后，ElasticJob 携首个 Apache 版本 3.0.0-alpha 回归
 weight = 1
 chapter = true
 +++
-## 停滞数年后，ElasticJob 携首个 Apache 版本 3.0.0-alpha 回归！
+## 停滞数年后，ElasticJob 携首个 Apache 版本 3.0.0-alpha 回归
 
 在成为 Apache ShardingSphere 的子项目的几个月时间里，ElasticJob 社区在修复与合并了535个 issue 和 pull request 之后，发布了加入 Apache 软件基金会后的第一个正式版本：3.0.0-alpha。
 
