@@ -22,10 +22,8 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteRe
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
-import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.impl.DefaultSQLBuilder;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -44,20 +42,6 @@ public final class GenericSQLRewriteEngine {
     }
     
     private List<Object> getParameters(final ParameterBuilder parameterBuilder) {
-        if (parameterBuilder instanceof StandardParameterBuilder) {
-            return parameterBuilder.getParameters();
-        }
-        return buildBroadcastParameters((GroupedParameterBuilder) parameterBuilder);
-    }
-    
-    private List<Object> buildBroadcastParameters(final GroupedParameterBuilder groupedParameterBuilder) {
-        List<Object> genericParameters = groupedParameterBuilder.getGenericParameterBuilder().getParameters();
-        if (genericParameters.isEmpty()) {
-            return groupedParameterBuilder.getParameters();
-        }
-        List<Object> result = new LinkedList<>();
-        result.addAll(groupedParameterBuilder.getParameters());
-        result.addAll(genericParameters);
-        return result;
+        return parameterBuilder instanceof GroupedParameterBuilder ? ((GroupedParameterBuilder) parameterBuilder).buildBroadcastParameters() : parameterBuilder.getParameters();
     }
 }

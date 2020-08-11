@@ -59,18 +59,7 @@ public final class RouteSQLRewriteEngine {
             return parameterBuilder.getParameters();
         }
         return routeResult.getOriginalDataNodes().isEmpty()
-                ? buildBroadcastParameters((GroupedParameterBuilder) parameterBuilder) : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeResult, routeUnit);
-    }
-    
-    private List<Object> buildBroadcastParameters(final GroupedParameterBuilder groupedParameterBuilder) {
-        List<Object> genericParameters = groupedParameterBuilder.getGenericParameterBuilder().getParameters();
-        if (genericParameters.isEmpty()) {
-            return groupedParameterBuilder.getParameters();
-        }
-        List<Object> result = new LinkedList<>();
-        result.addAll(groupedParameterBuilder.getParameters());
-        result.addAll(genericParameters);
-        return result;
+                ? ((GroupedParameterBuilder) parameterBuilder).buildBroadcastParameters() : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeResult, routeUnit);
     }
     
     private List<Object> buildRouteParameters(final GroupedParameterBuilder parameterBuilder, final RouteResult routeResult, final RouteUnit routeUnit) {
