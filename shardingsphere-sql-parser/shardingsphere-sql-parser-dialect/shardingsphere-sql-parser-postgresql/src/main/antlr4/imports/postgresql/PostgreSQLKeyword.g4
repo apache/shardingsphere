@@ -1380,3 +1380,11 @@ VERBOSE
 PARAM
     : P A R A M
     ;
+
+OUT
+    : O U T
+    ;
+
+INOUT
+    : I N O U T
+    ;

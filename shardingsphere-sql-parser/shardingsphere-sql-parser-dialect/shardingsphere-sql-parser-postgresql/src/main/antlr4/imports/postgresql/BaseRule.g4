@@ -635,8 +635,7 @@ caseExpr
     ;
 
 whenClauseList
-    : whenClause
-    | whenClauseList whenClause
+    : whenClause+
     ;
 
 whenClause
@@ -705,9 +704,7 @@ anyOperator
     ;
 
 frameClause
-    : RANGE frameExtent windowExclusionClause?
-    | ROWS frameExtent windowExclusionClause?
-    | GROUPS frameExtent windowExclusionClause?
+    : (RANGE|ROWS|GROUPS) frameExtent windowExclusionClause?
     ;
 
 frameExtent
@@ -756,17 +753,16 @@ arrayExpr
     ;
 
 arrayExprList
-    : arrayExpr | arrayExprList COMMA_ arrayExpr
+    : arrayExpr (COMMA_ arrayExpr)*
     ;
 
 funcArgList
-    : funcArgExpr
-    | funcArgList COMMA_ funcArgExpr
+    : funcArgExpr (COMMA_ funcArgExpr)*
     ;
 
 paramName
     : typeFunctionName
-;
+    ;
 
 funcArgExpr
     : aExpr
@@ -775,8 +771,7 @@ funcArgExpr
     ;
 
 typeList
-    : typeName
-    | typeList COMMA_ typeName
+    : typeName (COMMA_ typeName)*
     ;
 
 funcApplication
@@ -816,8 +811,8 @@ typeFunctionName
     ;
 
 functionTable
-    : functionExprWindowless optOrdinality
-    | ROWS FROM LP_ rowsFromList RP_ optOrdinality
+    : functionExprWindowless ordinality?
+    | ROWS FROM LP_ rowsFromList RP_ ordinality?
     ;
 
 xmlTable
@@ -826,8 +821,7 @@ xmlTable
     ;
 
 xmlTableColumnList
-    : xmlTableColumnEl
-    | xmlTableColumnList COMMA_ xmlTableColumnEl
+    : xmlTableColumnEl (COMMA_ xmlTableColumnEl)*
     ;
 
 xmlTableColumnEl
@@ -849,8 +843,7 @@ xmlTableColumnOptionEl
     ;
 
 xmlNamespaceList
-    : xmlNamespaceEl
-    | xmlNamespaceList COMMA_ xmlNamespaceEl
+    : xmlNamespaceEl (COMMA_ xmlNamespaceEl)*
     ;
 
 xmlNamespaceEl
@@ -875,8 +868,8 @@ functionExprWindowless
     : funcApplication | functionExprCommonSubexpr
     ;
 
-optOrdinality
-    : WITH ORDINALITY |
+ordinality
+    : WITH ORDINALITY
     ;
 
 functionExprCommonSubexpr
@@ -922,7 +915,7 @@ functionExprCommonSubexpr
     | XMLPARSE LP_ documentOrContent aExpr xmlWhitespaceOption RP_
     | XMLPI LP_ NAME identifier RP_
     | XMLPI LP_ NAME identifier COMMA_ aExpr RP_
-    | XMLROOT LP_ aExpr COMMA_ xmlRootVersion optXmlRootStandalone RP_
+    | XMLROOT LP_ aExpr COMMA_ xmlRootVersion xmlRootStandalone? RP_
     | XMLSERIALIZE LP_ documentOrContent aExpr AS simpleTypeName RP_
     ;
 
@@ -977,16 +970,15 @@ numeric
 	;
 
 constDatetime
-    : TIMESTAMP LP_ NUMBER_ RP_ optTimezone
-    | TIMESTAMP optTimezone
-    | TIME LP_ NUMBER_ RP_ optTimezone
-    | TIME optTimezone
+    : TIMESTAMP LP_ NUMBER_ RP_ timezone?
+    | TIMESTAMP timezone?
+    | TIME LP_ NUMBER_ RP_ timezone?
+    | TIME timezone?
     ;
 
-optTimezone
+timezone
     : WITH TIME ZONE
     | WITHOUT TIME ZONE
-    |
     ;
 
 character
@@ -1115,8 +1107,7 @@ xmlAttributes
     ;
 
 xmlAttributeList
-    : xmlAttributeEl
-    | xmlAttributeList COMMA_ xmlAttributeEl
+    : xmlAttributeEl (COMMA_ xmlAttributeEl)*
     ;
 
 xmlAttributeEl
@@ -1147,36 +1138,33 @@ xmlRootVersion
     | VERSION NO VALUE
     ;
 
-optXmlRootStandalone
+xmlRootStandalone
     : COMMA_ STANDALONE YES
     | COMMA_ STANDALONE NO
     | COMMA_ STANDALONE NO VALUE
-    |
     ;
 
 rowsFromItem
-    : functionExprWindowless optColumnDefList
+    : functionExprWindowless columnDefList
     ;
 
 rowsFromList
-    : rowsFromItem
-	| rowsFromList COMMA_ rowsFromItem
+    : rowsFromItem (COMMA_ rowsFromItem)*
     ;
 
-optColumnDefList
+columnDefList
     : AS LP_ tableFuncElementList RP_
     ;
 
 tableFuncElementList
-    : tableFuncElement
-    | tableFuncElementList COMMA_ tableFuncElement
+    : tableFuncElement (COMMA_ tableFuncElement)*
     ;
 
 tableFuncElement
-    :  typeName optCollateClause
+    :  typeName collateClause
     ;
 
-optCollateClause
+collateClause
     : COLLATE anyName
     ;
 
@@ -1259,8 +1247,7 @@ partitionClause
     ;
 
 indexParams
-    : indexElem
-    | indexParams COMMA_ indexElem
+    : indexElem (COMMA_ indexElem)*
     ;
 
 indexElemOptions
@@ -1286,13 +1273,8 @@ reloptions
     : LP_ reloptionList RP_
     ;
 
-optReloptions
-    : WITH reloptions |
-    ;
-
 reloptionList
-    : reloptionElem
-    | reloptionList COMMA_ reloptionElem
+    : reloptionElem (COMMA_ reloptionElem)*
 	;
 
 reloptionElem
@@ -1350,4 +1332,310 @@ ignoredIdentifier_
 
 ignoredIdentifiers_
     : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
+    ;
+
+signedIconst
+    : NUMBER_
+    | PLUS_ NUMBER_
+    | MINUS_ NUMBER_
+    ;
+
+optBooleanOrString
+    : TRUE
+    | FALSE
+    | ON
+    | nonReservedWord
+    | STRING_
+    ;
+
+nonReservedWord
+    : identifier
+    | unreservedWord
+    | colNameKeyword
+    | typeFuncNameKeyword
+    ;
+
+colNameKeyword
+    : BETWEEN
+    | BIGINT
+    | BIT
+    | BOOLEAN
+    | CHAR
+    | CHARACTER
+    | COALESCE
+    | DEC
+    | DECIMAL
+    | EXISTS
+    | EXTRACT
+    | FLOAT
+    | GREATEST
+    | GROUPING
+    | INOUT
+    | INT
+    | INTEGER
+    | INTERVAL
+    | LEAST
+    | NATIONAL
+    | NCHAR
+    | NONE
+    | NULLIF
+    | NUMERIC
+    | OUT
+    | OVERLAY
+    | POSITION
+    | PRECISION
+    | REAL
+    | ROW
+    | SETOF
+    | SMALLINT
+    | SUBSTRING
+    | TIME
+    | TIMESTAMP
+    | TREAT
+    | TRIM
+    | VALUES
+    | VARCHAR
+    | XMLATTRIBUTES
+    | XMLCONCAT
+    | XMLELEMENT
+    | XMLEXISTS
+    | XMLFOREST
+    | XMLNAMESPACES
+    | XMLPARSE
+    | XMLPI
+    | XMLROOT
+    | XMLSERIALIZE
+    | XMLTABLE
+    ;
+
+databaseName
+    : colId
+    ;
+
+roleSpec
+    : identifier
+    | nonReservedWord
+    | CURRENT_USER
+    | SESSION_USER
+    ;
+
+varName
+    : colId
+    | varName DOT_ colId
+    ;
+
+varList
+    : varValue (COMMA_ varValue)*
+    ;
+
+varValue
+    : identifier
+    ;
+
+zoneValue
+    : STRING_
+    | identifier
+    | INTERVAL STRING_ optInterval
+    | INTERVAL LP_ NUMBER_ RP_ STRING_
+    | numericOnly
+    | DEFAULT
+    | LOCAL
+    ;
+
+numericOnly
+    : NUMBER_
+    | PLUS_ NUMBER_
+    | MINUS_ NUMBER_
+    ;
+
+isoLevel
+    : READ UNCOMMITTED
+    | READ COMMITTED
+    | REPEATABLE READ
+    | SERIALIZABLE
+    ;
+
+columnDef
+    : colId typeName createGenericOptions? colQualList
+    ;
+
+colQualList
+    : colConstraint*
+    ;
+
+colConstraint
+    : CONSTRAINT name colConstraintElem
+    | colConstraintElem
+    | constraintAttr
+    | COLLATE anyName
+    ;
+
+constraintAttr
+    : DEFERRABLE
+    | NOT DEFERRABLE
+    | INITIALLY DEFERRED
+    | INITIALLY IMMEDIATE
+    ;
+
+colConstraintElem
+    : NOT NULL
+    | NULL
+    | UNIQUE (WITH definition)? consTableSpace
+    | PRIMARY KEY (WITH definition)? consTableSpace
+    | CHECK LP_ aExpr RP_ noInherit?
+    | DEFAULT bExpr
+    | GENERATED generatedWhen AS IDENTITY parenthesizedSeqOptList?
+    | GENERATED generatedWhen AS LP_ aExpr RP_ STORED
+    | REFERENCES qualifiedName optColumnList? keyMatch? keyActions?
+    ;
+
+parenthesizedSeqOptList
+    : LP_ seqOptList RP_
+    ;
+
+seqOptList
+    : seqOptElem+
+    ;
+
+seqOptElem
+    : AS simpleTypeName
+    | CACHE numericOnly
+    | CYCLE
+    | NO CYCLE
+    | INCREMENT (BY)? numericOnly
+    | MAXVALUE numericOnly
+    | MINVALUE numericOnly
+    | NO MAXVALUE
+    | NO MINVALUE
+    | OWNED BY anyName
+    | SEQUENCE NAME anyName
+    | START (WITH)? numericOnly
+    | RESTART
+    | RESTART (WITH)? numericOnly
+    ;
+
+optColumnList
+    : LP_ columnList RP_
+    ;
+
+columnElem
+    : colId
+    ;
+
+columnList
+    : columnElem (COMMA_ columnElem)*
+    ;
+
+generatedWhen
+    : ALWAYS
+    | BY DEFAULT
+    ;
+
+noInherit
+    : NO INHERIT
+    ;
+
+consTableSpace
+    : USING INDEX TABLESPACE name
+    ;
+
+definition
+    : LP_ defList RP_
+    ;
+
+defList
+    : defElem (COMMA_ defElem)*
+    ;
+
+defElem
+    : colLabel  defArg?
+    ;
+
+colLabel
+    : identifier
+    | unreservedWord
+    | colNameKeyword
+    | typeFuncNameKeyword
+    | reservedKeyword
+    ;
+
+keyActions
+    : keyUpdate
+    | keyDelete
+    | keyUpdate keyDelete
+    | keyDelete keyUpdate
+    ;
+
+keyDelete
+    : ON DELETE keyAction
+    ;
+
+keyUpdate
+    : ON UPDATE keyAction
+    ;
+
+keyAction
+    : NO ACTION
+    | RESTRICT
+    | CASCADE
+    | SET NULL
+    | SET DEFAULT
+    ;
+
+keyMatch
+    : MATCH FULL | MATCH PARTIAL | MATCH SIMPLE
+    ;
+
+createGenericOptions
+    : OPTIONS LP_ genericOptionList RP_
+    ;
+
+genericOptionList
+    : genericOptionElem (COMMA_ genericOptionElem)*
+    ;
+
+genericOptionElem
+    : genericOptionName genericOptionArg
+    ;
+
+genericOptionArg
+    : STRING_
+    ;
+
+genericOptionName
+    : colLable
+    ;
+
+replicaIdentity
+    : NOTHING
+    | FULL
+    | DEFAULT
+    | USING INDEX name
+    ;
+
+operArgtypes
+    : LP_ typeName RP_
+    | LP_ typeName COMMA_ typeName RP_
+    | LP_ NONE COMMA_ typeName RP_
+    | LP_ typeName COMMA_ NONE RP_
+    ;
+
+funcArg
+    : argClass paramName funcType
+    | paramName argClass funcType
+    | paramName funcType
+    | argClass funcType
+    | funcType
+    ;
+
+argClass
+    : IN
+    | OUT
+    | INOUT
+    | IN OUT
+    | VARIADIC
+    ;
+
+funcArgsList
+    : funcArg (COMMA_ funcArg)*
     ;
