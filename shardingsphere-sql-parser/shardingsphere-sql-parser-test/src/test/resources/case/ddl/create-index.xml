@@ -38,7 +38,7 @@
     </create-index>
     
     <create-index sql-case-id="create_btree_index">
-        <table name="t_order" start-index="40" stop-index="46" />
+        <table name="t_order" start-index="28" stop-index="34" />
     </create-index>
     
     <create-index sql-case-id="create_index_with_quota">

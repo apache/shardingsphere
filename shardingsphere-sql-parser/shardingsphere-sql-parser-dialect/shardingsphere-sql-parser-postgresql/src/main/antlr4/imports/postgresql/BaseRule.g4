@@ -635,8 +635,7 @@ caseExpr
     ;
 
 whenClauseList
-    : whenClause
-    | whenClauseList whenClause
+    : whenClause+
     ;
 
 whenClause
@@ -705,9 +704,7 @@ anyOperator
     ;
 
 frameClause
-    : RANGE frameExtent windowExclusionClause?
-    | ROWS frameExtent windowExclusionClause?
-    | GROUPS frameExtent windowExclusionClause?
+    : (RANGE|ROWS|GROUPS) frameExtent windowExclusionClause?
     ;
 
 frameExtent
@@ -756,17 +753,16 @@ arrayExpr
     ;
 
 arrayExprList
-    : arrayExpr | arrayExprList COMMA_ arrayExpr
+    : arrayExpr (COMMA_ arrayExpr)*
     ;
 
 funcArgList
-    : funcArgExpr
-    | funcArgList COMMA_ funcArgExpr
+    : funcArgExpr (COMMA_ funcArgExpr)*
     ;
 
 paramName
     : typeFunctionName
-;
+    ;
 
 funcArgExpr
     : aExpr
@@ -775,8 +771,7 @@ funcArgExpr
     ;
 
 typeList
-    : typeName
-    | typeList COMMA_ typeName
+    : typeName (COMMA_ typeName)*
     ;
 
 funcApplication
@@ -816,8 +811,8 @@ typeFunctionName
     ;
 
 functionTable
-    : functionExprWindowless optOrdinality
-    | ROWS FROM LP_ rowsFromList RP_ optOrdinality
+    : functionExprWindowless ordinality?
+    | ROWS FROM LP_ rowsFromList RP_ ordinality?
     ;
 
 xmlTable
@@ -826,8 +821,7 @@ xmlTable
     ;
 
 xmlTableColumnList
-    : xmlTableColumnEl
-    | xmlTableColumnList COMMA_ xmlTableColumnEl
+    : xmlTableColumnEl (COMMA_ xmlTableColumnEl)*
     ;
 
 xmlTableColumnEl
@@ -849,8 +843,7 @@ xmlTableColumnOptionEl
     ;
 
 xmlNamespaceList
-    : xmlNamespaceEl
-    | xmlNamespaceList COMMA_ xmlNamespaceEl
+    : xmlNamespaceEl (COMMA_ xmlNamespaceEl)*
     ;
 
 xmlNamespaceEl
@@ -875,8 +868,8 @@ functionExprWindowless
     : funcApplication | functionExprCommonSubexpr
     ;
 
-optOrdinality
-    : WITH ORDINALITY |
+ordinality
+    : WITH ORDINALITY
     ;
 
 functionExprCommonSubexpr
@@ -922,7 +915,7 @@ functionExprCommonSubexpr
     | XMLPARSE LP_ documentOrContent aExpr xmlWhitespaceOption RP_
     | XMLPI LP_ NAME identifier RP_
     | XMLPI LP_ NAME identifier COMMA_ aExpr RP_
-    | XMLROOT LP_ aExpr COMMA_ xmlRootVersion optXmlRootStandalone RP_
+    | XMLROOT LP_ aExpr COMMA_ xmlRootVersion xmlRootStandalone? RP_
     | XMLSERIALIZE LP_ documentOrContent aExpr AS simpleTypeName RP_
     ;
 
@@ -977,16 +970,15 @@ numeric
 	;
 
 constDatetime
-    : TIMESTAMP LP_ NUMBER_ RP_ optTimezone
-    | TIMESTAMP optTimezone
-    | TIME LP_ NUMBER_ RP_ optTimezone
-    | TIME optTimezone
+    : TIMESTAMP LP_ NUMBER_ RP_ timezone?
+    | TIMESTAMP timezone?
+    | TIME LP_ NUMBER_ RP_ timezone?
+    | TIME timezone?
     ;
 
-optTimezone
+timezone
     : WITH TIME ZONE
     | WITHOUT TIME ZONE
-    |
     ;
 
 character
@@ -1115,8 +1107,7 @@ xmlAttributes
     ;
 
 xmlAttributeList
-    : xmlAttributeEl
-    | xmlAttributeList COMMA_ xmlAttributeEl
+    : xmlAttributeEl (COMMA_ xmlAttributeEl)*
     ;
 
 xmlAttributeEl
@@ -1147,36 +1138,33 @@ xmlRootVersion
     | VERSION NO VALUE
     ;
 
-optXmlRootStandalone
+xmlRootStandalone
     : COMMA_ STANDALONE YES
     | COMMA_ STANDALONE NO
     | COMMA_ STANDALONE NO VALUE
-    |
     ;
 
 rowsFromItem
-    : functionExprWindowless optColumnDefList
+    : functionExprWindowless columnDefList
     ;
 
 rowsFromList
-    : rowsFromItem
-	| rowsFromList COMMA_ rowsFromItem
+    : rowsFromItem (COMMA_ rowsFromItem)*
     ;
 
-optColumnDefList
+columnDefList
     : AS LP_ tableFuncElementList RP_
     ;
 
 tableFuncElementList
-    : tableFuncElement
-    | tableFuncElementList COMMA_ tableFuncElement
+    : tableFuncElement (COMMA_ tableFuncElement)*
     ;
 
 tableFuncElement
-    :  typeName optCollateClause
+    :  typeName collateClause
     ;
 
-optCollateClause
+collateClause
     : COLLATE anyName
     ;
 
@@ -1259,8 +1247,7 @@ partitionClause
     ;
 
 indexParams
-    : indexElem
-    | indexParams COMMA_ indexElem
+    : indexElem (COMMA_ indexElem)*
     ;
 
 indexElemOptions
@@ -1286,13 +1273,8 @@ reloptions
     : LP_ reloptionList RP_
     ;
 
-optReloptions
-    : WITH reloptions |
-    ;
-
 reloptionList
-    : reloptionElem
-    | reloptionList COMMA_ reloptionElem
+    : reloptionElem (COMMA_ reloptionElem)*
 	;
 
 reloptionElem
@@ -1443,8 +1425,7 @@ varName
     ;
 
 varList
-    : varValue
-    | varList COMMA_ varValue
+    : varValue (COMMA_ varValue)*
     ;
 
 varValue
@@ -1499,13 +1480,13 @@ constraintAttr
 colConstraintElem
     : NOT NULL
     | NULL
-    | UNIQUE optDefinition optConsTableSpace
-    | PRIMARY KEY optDefinition optConsTableSpace
-    | CHECK LP_ aExpr RP_ optNoInherit
+    | UNIQUE (WITH definition)? consTableSpace
+    | PRIMARY KEY (WITH definition)? consTableSpace
+    | CHECK LP_ aExpr RP_ noInherit?
     | DEFAULT bExpr
     | GENERATED generatedWhen AS IDENTITY optParenthesizedSeqOptList
     | GENERATED generatedWhen AS LP_ aExpr RP_ STORED
-    | REFERENCES qualifiedName optColumnList keyMatch keyActions
+    | REFERENCES qualifiedName optColumnList? keyMatch? keyActions?
     ;
 
 optParenthesizedSeqOptList
@@ -1542,8 +1523,7 @@ columnElem
     ;
 
 columnList
-    : columnElem
-    | columnList COMMA_ columnElem
+    : columnElem (COMMA_ columnElem)*
     ;
 
 generatedWhen
@@ -1551,16 +1531,12 @@ generatedWhen
     | BY DEFAULT
     ;
 
-optNoInherit
-    : (NO INHERIT)?
+noInherit
+    : NO INHERIT
     ;
 
-optConsTableSpace
-    : (USING INDEX TABLESPACE name)?
-    ;
-
-optDefinition
-    : (WITH definition)?
+consTableSpace
+    : USING INDEX TABLESPACE name
     ;
 
 definition
@@ -1568,13 +1544,11 @@ definition
     ;
 
 defList
-    : defElem
-    | defList COMMA_ defElem
+    : defElem (COMMA_ defElem)*
     ;
 
 defElem
-    : colLabel  defArg
-    | colLabel
+    : colLabel  defArg?
     ;
 
 colLabel
@@ -1590,7 +1564,6 @@ keyActions
     | keyDelete
     | keyUpdate keyDelete
     | keyDelete keyUpdate
-    | /*EMPTY*/
     ;
 
 keyDelete
@@ -1601,8 +1574,8 @@ keyUpdate
     : ON UPDATE keyAction
     ;
 
-keyAction:
-    NO ACTION
+keyAction
+    : NO ACTION
     | RESTRICT
     | CASCADE
     | SET NULL
@@ -1610,7 +1583,7 @@ keyAction:
 	;
 
 keyMatch
-    : (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?
+    : MATCH FULL | MATCH PARTIAL | MATCH SIMPLE
     ;
 
 createGenericOptions
@@ -1618,8 +1591,7 @@ createGenericOptions
     ;
 
 genericOptionList
-    : genericOptionElem
-    | genericOptionList COMMA_ genericOptionElem
+    : genericOptionElem (COMMA_ genericOptionElem)*
     ;
 
 genericOptionElem
@@ -1665,6 +1637,5 @@ argClass
     ;
 
 funcArgsList
-    : funcArg
-    | funcArgsList COMMA_ funcArg
+    : funcArg (COMMA_ funcArg)*
     ;

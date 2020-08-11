@@ -22,11 +22,11 @@ import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule,DMLStatement;
 createTable
     : CREATE createTableSpecification_ TABLE tableNotExistClause_ tableName
       createDefinitionClause
-      (OF anyName optTypedTableElementList)?
-      (PARTITION OF qualifiedName optTypedTableElementList partitionBoundSpec)?
-      inheritClause_ optPartitionSpec_ tableAccessMethodClause optWith onCommitOption optTableSpace
-      (AS select optWithData)?
-      (EXECUTE name executeParamClause optWithData)?
+      (OF anyName (LP_ typedTableElementList RP_)?)?
+      (PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec)?
+      inheritClause_ partitionSpec? tableAccessMethodClause withOption? onCommitOption? tableSpace?
+      (AS select withData?)?
+      (EXECUTE name executeParamClause withData?)?
     ;
 
 executeParamClause
@@ -41,21 +41,15 @@ partitionBoundSpec
     ;
 
 hashPartbound
-    : hashPartboundElem
-    | hashPartbound COMMA_ hashPartboundElem
+    : hashPartboundElem (COMMA_ hashPartboundElem)*
     ;
 
 hashPartboundElem
     : nonReservedWord NUMBER_
     ;
 
-optTypedTableElementList
-     : LP_ typedTableElementList RP_
-     ;
-
 typedTableElementList
-    : typedTableElement
-    | typedTableElementList COMMA_ typedTableElement
+    : typedTableElement (COMMA_ typedTableElement)*
     ;
 
 typedTableElement
@@ -64,28 +58,27 @@ typedTableElement
     ;
 
 columnOptions
-    : colId colQualList
-    | colId WITH OPTIONS colQualList
+    : colId (WITH OPTIONS)? colQualList
     ;
 
 colQualList
     : columnConstraint*
     ;
 
-optWithData
-    : (WITH DATA | WITH NO DATA)?
+withData
+    : WITH DATA | WITH NO DATA
     ;
 
-optTableSpace
-    : (TABLESPACE name)?
+tableSpace
+    : TABLESPACE name
     ;
 
 onCommitOption
-    : (ON COMMIT (DROP | DELETE ROWS | PRESERVE ROWS))?
+    : ON COMMIT (DROP | DELETE ROWS | PRESERVE ROWS)
     ;
 
-optWith
-    : (WITH reloptions | WITHOUT OIDS)?
+withOption
+    : WITH reloptions | WITHOUT OIDS
     ;
 
 tableAccessMethodClause
@@ -98,19 +91,19 @@ accessMethod
 
 createIndex
     : CREATE createIndexSpecification_ INDEX concurrentlyClause_ (indexNotExistClause_ indexName)? ON onlyClause_ tableName
-      accessMethodClause LP_ indexParams RP_ optInclude optReloptions optTableSpace whereClause?
+      accessMethodClause? LP_ indexParams RP_ include? (WITH reloptions)? tableSpace? whereClause?
     ;
 
-optInclude
-    : (INCLUDE LP_ indexIncludingParams RP_)?
+include
+    : INCLUDE LP_ indexIncludingParams RP_
     ;
 
 indexIncludingParams
-    : indexElem | indexIncludingParams COMMA_ indexElem
+    : indexElem (COMMA_ indexElem)*
     ;
 
 accessMethodClause
-    : (USING accessMethod)?
+    : USING accessMethod
     ;
 
 createDatabase
@@ -126,8 +119,7 @@ createView
     ;
 
 columnList
-    : columnElem
-    | columnList COMMA_ columnElem
+    : columnElem (COMMA_ columnElem)*
     ;
 
 columnElem
@@ -139,11 +131,7 @@ dropDatabase
     ;
 
 createDatabaseSpecification_
-    :  createdbOptName optEqual_ (signedIconst | optBooleanOrString | DEFAULT)
-    ;
-
-optEqual_
-    : (EQ_)?
+    :  createdbOptName (EQ_)? (signedIconst | optBooleanOrString | DEFAULT)
     ;
 
 createdbOptName
@@ -154,10 +142,6 @@ createdbOptName
     | OWNER
     | TABLESPACE
     | TEMPLATE
-    | LC_COLLATE
-    | LC_CTYPE
-    | IS_TEMPLATE
-    | ALLOW_CONNECTIONS
     ;
 
 optWith_
@@ -175,29 +159,28 @@ alterIndex
     ;
 
 dropTable
-    : DROP TABLE tableExistClause_ tableNames dropTableOpt
+    : DROP TABLE tableExistClause_ tableNames dropTableOpt?
     ;
 
 dropTableOpt
-    : (CASCADE | RESTRICT)?
+    : CASCADE | RESTRICT
     ;
 
 dropIndex
-    : DROP INDEX concurrentlyClause_ indexExistClause_ indexNames dropIndexOpt
+    : DROP INDEX concurrentlyClause_ indexExistClause_ indexNames dropIndexOpt?
     ;
 
 dropIndexOpt
-    : (CASCADE | RESTRICT)?
+    : CASCADE | RESTRICT
     ;
 
 truncateTable
-    : TRUNCATE TABLE? onlyClause_ tableNamesClause optRestartSeqs dropTableOpt
+    : TRUNCATE TABLE? onlyClause_ tableNamesClause restartSeqs? dropTableOpt?
     ;
 
-optRestartSeqs
+restartSeqs
     : CONTINUE IDENTITY
     | RESTART IDENTITY
-    |
     ;
 
 createTableSpecification_
@@ -298,17 +281,12 @@ inheritClause_
     : (INHERITS tableNames)?
     ;
 
-optPartitionSpec_
-    : partitionSpec?
-    ;
-
 partitionSpec
     : PARTITION BY partStrategy LP_ partParams RP_
     ;
 
 partParams
-    : partElem
-    | partParams COMMA_ partElem
+    : partElem (COMMA_ partElem)*
     ;
 
 partElem
@@ -360,8 +338,7 @@ partitionCmd
     ;
 
 roleList
-    : roleSpec
-    | roleList COMMA_ roleSpec
+    : roleSpec (COMMA_ roleSpec)*
     ;
 
 alterIndexDefinitionClause_
@@ -507,7 +484,7 @@ alterDatabase
     ;
 
 alterDatabaseClause
-    : (WITH)? createdbOptList
+    : (WITH)? createdbOptItems?
     | RENAME TO databaseName
     | OWNER TO roleSpec
     | SET TABLESPACE name
@@ -526,8 +503,7 @@ setRest
     ;
 
 transactionModeList
-    : transactionModeItem
-    | transactionModeList (COMMA_)? transactionModeItem
+    : transactionModeItem ((COMMA_)? transactionModeItem)*
     ;
 
 transactionModeItem
@@ -544,7 +520,7 @@ setRestMore
     | TIME ZONE zoneValue
     | CATALOG STRING_
     | SCHEMA STRING_
-    | NAMES optEncoding?
+    | NAMES encoding?
     | ROLE nonReservedWord | STRING_
     | SESSION AUTHORIZATION nonReservedWord | STRING_
     | SESSION AUTHORIZATION DEFAULT
@@ -552,7 +528,7 @@ setRestMore
     | TRANSACTION SNAPSHOT STRING_
     ;
 
-optEncoding
+encoding
     : STRING_
     | DEFAULT
     ;
@@ -564,10 +540,6 @@ genericSet
 documentOrContent
     : DOCUMENT
     | CONTENT
-    ;
-
-createdbOptList
-    : createdbOptItems?
     ;
 
 createdbOptItems
@@ -597,33 +569,32 @@ genericReset
     ;
 
 alterTableCmds
-    : alterTableCmd
-    | alterTableCmds COMMA_ alterTableCmd
+    : alterTableCmd (COMMA_ alterTableCmd)*
     ;
 
 alterTableCmd
     : ADD COLUMN? (IF NOT EXISTS)? columnDef
-    | ALTER optColumn colId alterColumnDefault
-    | ALTER optColumn colId DROP NOT NULL
-    | ALTER optColumn colId SET NOT NULL
-    | ALTER optColumn colId SET STATISTICS signedIconst
-    | ALTER optColumn NUMBER_ SET STATISTICS signedIconst
-    | ALTER optColumn colId SET reloptions
-    | ALTER optColumn colId RESET reloptions
-    | ALTER optColumn colId SET STORAGE colId
-    | ALTER optColumn colId ADD GENERATED generatedWhen AS IDENTITY optParenthesizedSeqOptList
-    | ALTER optColumn colId alterIdentityColumnOptionList
-    | ALTER optColumn colId DROP IDENTITY
-    | ALTER optColumn colId DROP IDENTITY IF EXISTS
-    | DROP optColumn IF EXISTS colId optDropBehavior
-    | DROP optColumn colId optDropBehavior
-    | ALTER optColumn colId optSetData TYPE typeName optCollateClause alterUsing
-    | ALTER optColumn colId alterGenericOptions
+    | ALTER column? colId alterColumnDefault
+    | ALTER column? colId DROP NOT NULL
+    | ALTER column? colId SET NOT NULL
+    | ALTER column? colId SET STATISTICS signedIconst
+    | ALTER column? NUMBER_ SET STATISTICS signedIconst
+    | ALTER column? colId SET reloptions
+    | ALTER column? colId RESET reloptions
+    | ALTER column? colId SET STORAGE colId
+    | ALTER column? colId ADD GENERATED generatedWhen AS IDENTITY optParenthesizedSeqOptList
+    | ALTER column? colId alterIdentityColumnOptionList
+    | ALTER column? colId DROP IDENTITY
+    | ALTER column? colId DROP IDENTITY IF EXISTS
+    | DROP column? IF EXISTS colId dropBehavior?
+    | DROP column? colId dropBehavior?
+    | ALTER column? colId setData? TYPE typeName collateClause? alterUsing?
+    | ALTER column? colId alterGenericOptions
     | ADD tableConstraint
     | ALTER CONSTRAINT name constraintAttributeSpec
     | VALIDATE CONSTRAINT name
-    | DROP CONSTRAINT IF EXISTS name optDropBehavior
-    | DROP CONSTRAINT name optDropBehavior
+    | DROP CONSTRAINT IF EXISTS name dropBehavior?
+    | DROP CONSTRAINT name dropBehavior?
     | SET WITHOUT OIDS
     | CLUSTER ON name
     | SET WITHOUT CLUSTER
@@ -675,8 +646,7 @@ alterGenericOptions
     ;
 
 alterGenericOptionList
-    : alterGenericOptionElem
-    | alterGenericOptionList COMMA_ alterGenericOptionElem
+    : alterGenericOptionElem (COMMA_ alterGenericOptionElem)*
     ;
 
 alterGenericOptionElem
@@ -690,16 +660,16 @@ genericOptionName
     : colLable
     ;
 
-optDropBehavior
-    : (CASCADE | RESTRICT)?
+dropBehavior
+    : CASCADE | RESTRICT
     ;
 
 alterUsing
-    : (USING aExpr)?
+    : USING aExpr
     ;
 
-optSetData
-    : (SET DATA)?
+setData
+    : SET DATA
     ;
 
 alterIdentityColumnOptionList
@@ -718,8 +688,8 @@ alterColumnDefault
     | DROP DEFAULT
     ;
 
-optColumn
-    : COLUMN?
+column
+    : COLUMN
     ;
 
 alterOperator
@@ -733,8 +703,7 @@ alterOperatorClauses
     ;
 
 operatorDefList
-    : operatorDefElem
-    | operatorDefList COMMA_ operatorDefElem
+    : operatorDefElem (COMMA_ operatorDefElem)*
     ;
 
 operatorDefElem
@@ -769,8 +738,7 @@ aggrArgs
     ;
 
 aggrArgsList
-    : aggrArg
-    | aggrArgsList COMMA_ aggrArg
+    : aggrArg (COMMA_ aggrArg)*
     ;
 
 aggrArg
@@ -809,23 +777,21 @@ alterDefaultPrivileges
     ;
 
 defACLAction
-    : GRANT privileges ON defaclPrivilegeTarget TO granteeList optGrantGrantOption?
-    | REVOKE privileges ON defaclPrivilegeTarget FROM granteeList optDropBehavior?
-    | REVOKE GRANT OPTION FOR privileges ON defaclPrivilegeTarget FROM granteeList optDropBehavior?
+    : GRANT privileges ON defaclPrivilegeTarget TO granteeList grantGrantOption?
+    | REVOKE privileges ON defaclPrivilegeTarget FROM granteeList dropBehavior?
+    | REVOKE GRANT OPTION FOR privileges ON defaclPrivilegeTarget FROM granteeList dropBehavior?
     ;
 
-optGrantGrantOption
-    : (WITH GRANT OPTION)?
+grantGrantOption
+    : WITH GRANT OPTION
     ;
 
 granteeList
-    : grantee
-    | granteeList COMMA_ grantee
+    : grantee (COMMA_ grantee)*
     ;
 
 grantee
     : GROUP? roleSpec
-    | PUBLIC
     ;
 
 defaclPrivilegeTarget
@@ -833,7 +799,7 @@ defaclPrivilegeTarget
     | FUNCTIONS
     | ROUTINES
     | SEQUENCES
-    | TYPES_P
+    | TYPES
     | SCHEMAS
     ;
 
@@ -846,8 +812,7 @@ privileges
     ;
 
 privilegeList
-    : privilege
-    | privilegeList COMMA_ privilege
+    : privilege (COMMA_ privilege)*
     ;
 
 privilege
@@ -858,8 +823,7 @@ privilege
     ;
 
 defACLOptionList
-    : defACLOptionList defACLOption
-    | defACLOption
+    : defACLOption+
     ;
 
 defACLOption
@@ -878,7 +842,7 @@ alterDomain
 alterDomainClause
     : anyName (SET | DROP) NOT NULL
     | anyName ADD tableConstraint
-    | anyName DROP CONSTRAINT (IF EXISTS) name optDropBehavior
+    | anyName DROP CONSTRAINT (IF EXISTS) name dropBehavior?
     | anyName VALIDATE CONSTRAINT name
     | anyName RENAME CONSTRAINT constraintName TO constraintName
     | anyName OWNER TO roleSpec
@@ -972,7 +936,7 @@ alterForeignDataWrapper
     ;
 
 alterForeignDataWrapperClauses
-    : optFdwOptions alterGenericOptions
+    : fdwOptions? alterGenericOptions
     | fdwOptions
     | RENAME TO name
     | OWNER TO roleSpec
@@ -999,10 +963,6 @@ fdwOption
 
 handlerName
     : anyName
-    ;
-
-optFdwOptions
-    : fdwOptions?
     ;
 
 alterGroup

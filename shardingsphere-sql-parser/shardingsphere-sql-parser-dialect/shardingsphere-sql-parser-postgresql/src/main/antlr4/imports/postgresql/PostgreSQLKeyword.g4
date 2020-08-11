@@ -1381,22 +1381,6 @@ PARAM
     : P A R A M
     ;
 
-LC_COLLATE
-    : L C UL_ C O L L A T E
-    ;
-
-LC_CTYPE
-    : L C UL_ C T Y P E
-    ;
-
-IS_TEMPLATE
-    : I S UL_ T E M P L A T E
-    ;
-
-ALLOW_CONNECTIONS
-    : A L L O W UL_ C O N N E C T I O N S
-    ;
-
 REPLACCE
     : R E P L A C C E
     ;
