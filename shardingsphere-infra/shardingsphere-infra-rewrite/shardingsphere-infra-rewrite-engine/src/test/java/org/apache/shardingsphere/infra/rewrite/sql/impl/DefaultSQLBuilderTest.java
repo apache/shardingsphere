@@ -19,8 +19,7 @@ package org.apache.shardingsphere.infra.rewrite.sql.impl;
 
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.sql.SQLBuilder;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.rewrite.sql.fixture.SQLTokenFixture;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -28,13 +27,25 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class DefaultSQLBuilderTest {
     
     @Test
-    public void assertToSQL() {
-        SQLRewriteContext context = new SQLRewriteContext(mock(SchemaMetaData.class), mock(SQLStatementContext.class), "SELECT * FROM t_config", Collections.emptyList());
+    public void assertToSQLWithEmptySQLToken() {
+        SQLRewriteContext context = mock(SQLRewriteContext.class);
+        when(context.getSql()).thenReturn("SELECT * FROM t_config WHERE id=?");
+        when(context.getSqlTokens()).thenReturn(Collections.emptyList());
         SQLBuilder sqlBuilderWithoutTokens = new DefaultSQLBuilder(context);
-        assertThat(sqlBuilderWithoutTokens.toSQL(), is("SELECT * FROM t_config"));
+        assertThat(sqlBuilderWithoutTokens.toSQL(), is("SELECT * FROM t_config WHERE id=?"));
+    }
+    
+    @Test
+    public void assertToSQLWithSQLTokens() {
+        SQLRewriteContext context = mock(SQLRewriteContext.class);
+        when(context.getSql()).thenReturn("SELECT * FROM t_config WHERE id=?");
+        when(context.getSqlTokens()).thenReturn(Collections.singletonList(new SQLTokenFixture(14, 21)));
+        SQLBuilder sqlBuilderWithoutTokens = new DefaultSQLBuilder(context);
+        assertThat(sqlBuilderWithoutTokens.toSQL(), is("SELECT * FROM XXX WHERE id=?"));
     }
 }
