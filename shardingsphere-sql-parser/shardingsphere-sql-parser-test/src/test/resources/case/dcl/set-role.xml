@@ -17,6 +17,7 @@
   -->
 
 <sql-parser-test-cases>
+    <set-role sql-case-id="set_role_default" />
     <set-role sql-case-id="set_role" />
     <set-role sql-case-id="set_roles" />
     <set-role sql-case-id="set_none_role" />

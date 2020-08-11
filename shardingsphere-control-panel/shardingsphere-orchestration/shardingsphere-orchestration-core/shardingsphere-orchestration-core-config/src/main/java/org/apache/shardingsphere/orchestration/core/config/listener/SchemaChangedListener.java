@@ -42,7 +42,7 @@ import org.apache.shardingsphere.orchestration.repository.api.listener.DataChang
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -57,7 +57,7 @@ public final class SchemaChangedListener extends PostOrchestrationRepositoryEven
     
     private final ConfigCenterNode configurationNode;
     
-    private final Collection<String> existedSchemaNames = new LinkedList<>();
+    private final Collection<String> existedSchemaNames = new LinkedHashSet<>();
     
     public SchemaChangedListener(final String name, final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
         super(configurationRepository, new ConfigCenterNode(name).getAllSchemaConfigPaths(schemaNames));

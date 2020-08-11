@@ -46,7 +46,8 @@ public final class DataNodeRoutedFixtureRuleMetaDataLoader implements RuleMetaDa
     @Override
     public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
                                         final DataNodes dataNodes, final String tableName, final DataNodeRoutedFixtureRule rule, final ConfigurationProperties props) {
-        return Optional.empty();
+        return ("data_node_routed_table_0".equals(tableName) || "data_node_routed_table_1".equals(tableName))
+                ? Optional.of(new TableMetaData(Collections.emptyList(), Collections.emptyList())) : Optional.empty();
     }
     
     @Override

@@ -30,7 +30,4 @@ public final class DatabaseAccessConfiguration {
     private final String url;
     
     private final String username;
-    
-    // TODO check usage of password, issue: #6703
-    private final String password;
 }

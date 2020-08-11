@@ -21,10 +21,10 @@
     <sql-case id="select_distinct_with_single_column_without_order_by" value="SELECT DISTINCT item_id FROM t_order_item" />
     <sql-case id="select_distinct_with_multi_column_without_order_by" value="SELECT DISTINCT order_id, user_id, status FROM t_order" />
 
-    <!-- sql-case id="select_distinct_with_owner_column_without_order_by" value="SELECT DISTINCT t_order.order_id FROM t_order order by t_order.order_id" />
-    <sql-case id="select_distinct_with_owner_star_without_order_by" value="SELECT DISTINCT t_order.*, t_order_item.order_id FROM t_order, t_order_item WHERE t_order.order_id = t_order_item.order_id" / -->
+    <sql-case id="select_distinct_with_owner_column_without_order_by" value="SELECT DISTINCT t_order.order_id FROM t_order order by t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_distinct_with_owner_star_without_order_by" value="SELECT DISTINCT t_order.*, t_order_item.order_id FROM t_order, t_order_item WHERE t_order.order_id = t_order_item.order_id" db-types="MySQL" />
     <!-- for with owner column with group by without order by  -->
-    <!-- sql-case id="select_distinct_with_owner_column" value="SELECT DISTINCT t_order.order_id FROM t_order GROUP BY t_order.order_id" / -->
+    <sql-case id="select_distinct_with_owner_column_with_group_by" value="SELECT DISTINCT t_order.order_id FROM t_order GROUP BY t_order.order_id" db-types="MySQL" />
 
     <sql-case id="select_distinct_with_single_column" value="SELECT DISTINCT item_id FROM t_order_item ORDER BY item_id" />
     <sql-case id="select_distinct_with_multi_column" value="SELECT DISTINCT order_id, user_id, status FROM t_order ORDER BY order_id" />

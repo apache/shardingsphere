@@ -38,7 +38,7 @@ public final class ServerHandlerInitializer extends ChannelInitializer<SocketCha
     protected void initChannel(final SocketChannel socketChannel) {
         // TODO Consider loading from configuration.
         DatabaseType databaseType = ProxySchemaContexts.getInstance().getSchemaContexts().getSchemaContexts().isEmpty() ? new MySQLDatabaseType()
-                : ProxySchemaContexts.getInstance().getSchemaContexts().getSchemaContexts().values().iterator().next().getSchema().getDatabaseType();
+                : ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType();
         DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseProtocolFrontendEngineFactory.newInstance(databaseType);
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast(new PacketCodec(databaseProtocolFrontendEngine.getCodecEngine()));

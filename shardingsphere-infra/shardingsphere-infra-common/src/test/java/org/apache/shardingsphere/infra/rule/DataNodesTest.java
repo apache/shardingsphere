@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rule;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
+import org.apache.shardingsphere.infra.rule.fixture.TestDataSourceRoutedRule;
 import org.apache.shardingsphere.infra.rule.fixture.TestShardingRule;
 import org.apache.shardingsphere.infra.rule.fixture.TestShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.fixture.TestTableRule;
@@ -27,13 +28,14 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class DataNodesTest {
     
@@ -44,6 +46,10 @@ public final class DataNodesTest {
     private final Collection<String> dataSourceNames1 = Arrays.asList("master_db_1", "master_db_2", "slave_db_1", "slave_db_2");
     
     private final Collection<String> dataSourceNames2 = Arrays.asList("master_db_3", "slave_db_3");
+    
+    private final String logicDataSourceName = "master_db_1";
+    
+    private final Collection<String> replicaDataSourceNames = Arrays.asList("route_db_1", "route_db_2");
     
     @Test(expected = NullPointerException.class)
     public void assertWrongTable() {
@@ -59,8 +65,8 @@ public final class DataNodesTest {
     @Test
     public void assertGetDataNodes() {
         DataNodes dataNodes = getRoutedRuleDataNodes();
-        assertThat(dataNodes.getDataNodes(logicTableName1), is(getExpectedDataNodes(dataSourceNames1, logicTableName1)));
-        assertThat(dataNodes.getDataNodes(logicTableName2), is(getExpectedDataNodes(dataSourceNames2, logicTableName2)));
+        assertTrue(dataNodes.getDataNodes(logicTableName1).containsAll(getExpectedDataNodes(dataSourceNames1, logicTableName1)));
+        assertTrue(dataNodes.getDataNodes(logicTableName2).containsAll(getExpectedDataNodes(dataSourceNames2, logicTableName2)));
     }
     
     @Test
@@ -74,8 +80,10 @@ public final class DataNodesTest {
         TestTableRule tableRule1 = new TestTableRule(dataSourceNames1, logicTableName1);
         TestTableRule tableRule2 = new TestTableRule(dataSourceNames2, logicTableName2);
         List<TestTableRule> tableRules = Arrays.asList(tableRule1, tableRule2);
-        ShardingSphereRule rule = new TestShardingRule(tableRules);
-        return new DataNodes(Collections.singleton(rule));
+        ShardingSphereRule rule1 = new TestShardingRule(tableRules);
+        Map<String, Collection<String>> dataSourceMapper = Collections.singletonMap(logicDataSourceName, replicaDataSourceNames);
+        TestDataSourceRoutedRule rule2 = new TestDataSourceRoutedRule(dataSourceMapper);
+        return new DataNodes(Arrays.asList(rule1, rule2));
     }
     
     private DataNodes getNonRoutedRuleDataNodes() {
@@ -85,18 +93,16 @@ public final class DataNodesTest {
     private Collection<DataNode> getExpectedDataNodes(final Collection<String> dataSourceNames, final String logicTableName) {
         Collection<DataNode> result = new LinkedList<>();
         for (String each : dataSourceNames) {
-            result.add(new DataNode(each, logicTableName));
+            if (logicDataSourceName.equals(each)) {
+                replicaDataSourceNames.stream().forEach(a -> result.add(new DataNode(a, logicTableName)));
+            } else {
+                result.add(new DataNode(each, logicTableName));
+            }
         }
         return result;
     }
     
-    private Map<String, Collection<DataNode>> getExpectedDataNodeGroups(final Collection<String> dataSourceNames, final String logicTableName) {
-        Map<String, Collection<DataNode>> result = new LinkedHashMap<>(dataSourceNames.size(), 1);
-        for (String each : dataSourceNames) {
-            Collection<DataNode> self = new LinkedList<>();
-            self.add(new DataNode(each, logicTableName));
-            result.put(each, self);
-        }
-        return result;
+    private Map<String, List<DataNode>> getExpectedDataNodeGroups(final Collection<String> dataSourceNames, final String logicTableName) {
+        return getExpectedDataNodes(dataSourceNames, logicTableName).stream().collect(Collectors.groupingBy(DataNode::getDataSourceName));
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.impl;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.sql.SQLBuilder;
@@ -30,7 +29,6 @@ import java.util.Collections;
  * Abstract SQL builder.
  */
 @RequiredArgsConstructor
-@Getter
 public abstract class AbstractSQLBuilder implements SQLBuilder {
     
     private final SQLRewriteContext context;
