@@ -48,6 +48,7 @@ public final class GenericSQLRewriteEngine {
             return parameterBuilder.getParameters();
         }
         
+        // TODO decouple onDuplicateKeyUpdateParameters and infra
         List<Object> onDuplicateKeyUpdateParameters = ((GroupedParameterBuilder) parameterBuilder).getOnDuplicateKeyUpdateParametersBuilder().getParameters();
         if (onDuplicateKeyUpdateParameters.isEmpty()) {
             return parameterBuilder.getParameters();
