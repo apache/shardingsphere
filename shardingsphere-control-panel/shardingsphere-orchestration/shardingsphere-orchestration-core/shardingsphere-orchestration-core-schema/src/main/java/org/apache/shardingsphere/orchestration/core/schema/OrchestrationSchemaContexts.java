@@ -114,8 +114,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     }
     
     private DatabaseType getDatabaseType(final Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap) {
-        if (dataSourceParametersMap.isEmpty() || dataSourceParametersMap.values().iterator().next().values().isEmpty()) {
-            schemaContexts.getDatabaseType();
+        if (dataSourceParametersMap.isEmpty() || dataSourceParametersMap.values().iterator().next().isEmpty()) {
+            return schemaContexts.getDatabaseType();
         }
         return DatabaseTypes.getDatabaseTypeByURL(dataSourceParametersMap.values().iterator().next().values().iterator().next().getUrl());
     }

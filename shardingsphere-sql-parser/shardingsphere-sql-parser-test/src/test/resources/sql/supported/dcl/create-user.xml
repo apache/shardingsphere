@@ -48,7 +48,6 @@
     <sql-case id="create_user_with_login" value="CREATE USER user1 FROM LOGIN login1" db-types="SQLServer" />
     <sql-case id="create_user_with_schema" value="CREATE USER user1 WITH DEFAULT_SCHEMA = schema" db-types="SQLServer" />
     <sql-case id="create_user_with_no_login" value="CREATE USER user1 WITHOUT LOGIN" db-types="SQLServer" />
-    <!--<sql-case id="create_login_with_windows" value="CREATE LOGIN [domain\login1]" db-types="SQLServer" />-->
     <sql-case id="create_user_with_certificate" value="CREATE USER user1 FROM CERTIFICATE certificate" db-types="SQLServer" />
     <sql-case id="create_user_with_asym_key" value="CREATE USER user1 FROM ASYMMETRIC KEY asym_key" db-types="SQLServer" />
 </sql-cases>

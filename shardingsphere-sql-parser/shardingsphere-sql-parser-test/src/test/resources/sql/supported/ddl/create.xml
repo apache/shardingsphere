@@ -92,10 +92,9 @@
     <sql-case id="create_table_with_double_quota" value="CREATE TABLE &quot;t_order&quot; (&quot;order_id&quot; INTEGER, &quot;user_id&quot; INTEGER, &quot;status&quot; VARCHAR(10), &quot;column1&quot; VARCHAR(10), &quot;column2&quot; VARCHAR(10), &quot;column3&quot; VARCHAR(10))" db-types="PostgreSQL" />
     <sql-case id="create_local_temporary_table" value="CREATE LOCAL TEMPORARY TABLE t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="PostgreSQL" />
     <sql-case id="create_table_with_range_partition" value="CREATE TABLE t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) PARTITION BY RANGE (order_id)" db-types="PostgreSQL" />
-    <!--  
-    <sql-case id="create_table_like" value="CREATE TABLE t_order_bak (LIKE t_order)" db-types="PostgreSQL" />
-    <sql-case id="create_table_inherits" value="CREATE TABLE t_order_bak() inherits (t_order)" db-types="PostgreSQL" />
-    -->
+<!--    TODO support create table with like and inherits on PostgreSQL-->
+<!--    <sql-case id="create_table_like" value="CREATE TABLE t_order_bak (LIKE t_order)" db-types="PostgreSQL" />-->
+<!--    <sql-case id="create_table_inherits" value="CREATE TABLE t_order_bak() inherits (t_order)" db-types="PostgreSQL" />-->
     <sql-case id="create_index_with_double_quota" value="CREATE INDEX &quot;order_index&quot; ON &quot;t_order&quot; (&quot;order_id&quot;)" db-types="PostgreSQL" />
     <sql-case id="create_index_with_double_quota_and_uescape" value="CREATE INDEX U&amp;&quot;order_index!0061t!+000061&quot; UESCAPE '!' ON u&amp;&quot;t_order&quot; (u&amp;&quot;order_id&quot;)" db-types="PostgreSQL" />
     <sql-case id="create_index_concurrently" value="CREATE INDEX CONCURRENTLY order_index ON t_order (order_id)" db-types="PostgreSQL" />

@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="set_role_default" value="SET ROLE DEFAULT" db-types="MySQL" />
     <sql-case id="set_role" value="SET ROLE role1" db-types="MySQL" />
     <sql-case id="set_roles" value="SET ROLE role1, role2" db-types="MySQL" />
     <sql-case id="set_none_role" value="SET ROLE NONE" db-types="MySQL" />
