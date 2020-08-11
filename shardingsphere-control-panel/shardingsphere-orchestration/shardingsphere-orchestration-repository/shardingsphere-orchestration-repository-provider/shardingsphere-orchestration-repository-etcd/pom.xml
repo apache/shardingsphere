@@ -26,10 +26,6 @@
     <artifactId>shardingsphere-orchestration-repository-etcd</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <guava.version>20.0</guava.version>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
