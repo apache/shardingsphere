@@ -1,6 +1,6 @@
 +++
 title = "Getting started with Apache ShardingSphere"
-weight = 21
+weight = 1
 chapter = true
 +++
 

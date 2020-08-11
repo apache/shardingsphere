@@ -1,7 +1,7 @@
 
 +++
 title = "快讯！分布式调度项目ElasticJob即将重新起航"
-weight = 11
+weight = 1
 chapter = true
 +++
 

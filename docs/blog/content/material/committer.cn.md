@@ -1,6 +1,6 @@
 +++
 title = "成为Apache官方认可的Committer有什么优势"
-weight = 18
+weight = 8
 chapter = true
 +++
 ## 成为Apache官方认可的Committer有什么优势

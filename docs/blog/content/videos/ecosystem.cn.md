@@ -1,6 +1,6 @@
 +++
 title = "海量数据下的NewSQL数据库生态构建"
-weight = 25
+weight = 5
 chapter = true
 +++
 

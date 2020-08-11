@@ -1,6 +1,6 @@
 +++
 title = "分布式事务在Sharding-Sphere中的实现"
-weight = 111
+weight = 11
 chapter = true
 +++
 

@@ -1,6 +1,6 @@
 +++
 title = "The mixed open-source distributed transaction solution"
-weight = 17
+weight = 7
 chapter = true
 +++
 

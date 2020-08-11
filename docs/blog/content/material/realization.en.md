@@ -1,6 +1,6 @@
 +++
 title = "The quick explanation of ShardingSphere transaction module"
-weight = 111
+weight = 11
 chapter = true
 +++
 

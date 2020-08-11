@@ -1,6 +1,6 @@
 +++
 title = "剖析Sharding-Sphere系列——结果归并 "
-weight = 110
+weight = 10
 chapter = true
 +++
 
