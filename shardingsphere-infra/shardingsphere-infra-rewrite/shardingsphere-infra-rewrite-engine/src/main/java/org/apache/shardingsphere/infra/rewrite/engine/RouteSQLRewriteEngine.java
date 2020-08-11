@@ -59,6 +59,7 @@ public final class RouteSQLRewriteEngine {
             return parameterBuilder.getParameters();
         }
         
+        // TODO decouple onDuplicateKeyUpdateParameters and infra
         if (routeResult.getOriginalDataNodes().isEmpty()) {
             List<Object> onDuplicateKeyUpdateParameters = ((GroupedParameterBuilder) parameterBuilder).getOnDuplicateKeyUpdateParametersBuilder().getParameters();
             if (onDuplicateKeyUpdateParameters.isEmpty()) {
