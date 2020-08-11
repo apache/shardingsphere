@@ -57,6 +57,12 @@ public enum VisitorRule {
     ALTER_PROCEDURE("AlterProcedure", SQLStatementType.DDL),
 
     DROP_PROCEDURE("DropProcedure", SQLStatementType.DDL),
+
+    CREATE_FUNCTION("CreateFunction", SQLStatementType.DDL),
+
+    ALTER_FUNCTION("AlterFunction", SQLStatementType.DDL),
+
+    DROP_FUNCTION("DropFunction", SQLStatementType.DDL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
     
