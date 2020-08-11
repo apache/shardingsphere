@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rewrite.impl;
+package org.apache.shardingsphere.infra.rewrite.sql.impl;
 
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.sql.SQLBuilder;
-import org.apache.shardingsphere.infra.rewrite.sql.impl.DefaultSQLBuilder;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.junit.Test;
