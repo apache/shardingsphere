@@ -71,7 +71,7 @@ import java.util.LinkedList;
  * DDL visitor for PostgreSQL.
  */
 public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDLVisitor {
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
