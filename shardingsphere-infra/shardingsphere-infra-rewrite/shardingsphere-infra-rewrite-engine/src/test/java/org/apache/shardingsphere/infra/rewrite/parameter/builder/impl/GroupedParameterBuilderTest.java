@@ -36,15 +36,15 @@ public final class GroupedParameterBuilderTest {
     }
     
     @Test
-    public void assertGetParametersWithOnDuplicateKeyParameters() {
-        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createOnDuplicateKeyUpdateParameters());
+    public void assertGetParametersWithGenericParameters() {
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createGenericParameters());
         assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
         assertThat(actual.getGenericParameterBuilder().getParameters(), is(Arrays.<Object>asList(7, 8)));
     }
     
     @Test
-    public void assertGetOnDuplicateKeyParametersWithModify() {
-        GroupedParameterBuilder actual = new GroupedParameterBuilder(new LinkedList<>(), createOnDuplicateKeyUpdateParameters());
+    public void assertGetGenericParametersWithModify() {
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(new LinkedList<>(), createGenericParameters());
         actual.getGenericParameterBuilder().addReplacedParameters(0, 77);
         actual.getGenericParameterBuilder().addReplacedParameters(1, 88);
         actual.getGenericParameterBuilder().addAddedParameters(0, Arrays.asList(66, -1));
@@ -55,13 +55,13 @@ public final class GroupedParameterBuilderTest {
     
     @Test
     public void assertGetDerivedColumnName() {
-        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createOnDuplicateKeyUpdateParameters());
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createGenericParameters());
         String derivedColumnName = "derivedColumnName";
         actual.setDerivedColumnName(derivedColumnName);
         assertThat(actual.getDerivedColumnName(), is(Optional.of(derivedColumnName)));
     }
     
-    private List<Object> createOnDuplicateKeyUpdateParameters() {
+    private List<Object> createGenericParameters() {
         return new LinkedList<>(Arrays.asList(7, 8));
     }
     

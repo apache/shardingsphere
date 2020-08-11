@@ -40,12 +40,12 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     @Setter
     private String derivedColumnName;
     
-    public GroupedParameterBuilder(final List<List<Object>> groupedParameters, final List<Object> onDuplicateKeyUpdateParameters) {
+    public GroupedParameterBuilder(final List<List<Object>> groupedParameters, final List<Object> genericParameters) {
         parameterBuilders = new ArrayList<>(groupedParameters.size());
         for (List<Object> each : groupedParameters) {
             parameterBuilders.add(new StandardParameterBuilder(each));
         }
-        genericParameterBuilder = new StandardParameterBuilder(onDuplicateKeyUpdateParameters);
+        genericParameterBuilder = new StandardParameterBuilder(genericParameters);
     }
     
     @Override
