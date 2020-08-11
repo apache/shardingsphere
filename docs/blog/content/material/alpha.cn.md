@@ -1,5 +1,5 @@
 +++
-title = "停滞数年后，ElasticJob 携首个 Apache 版本 3.0.0-alpha 回归！"
+title = "停滞数年后，ElasticJob 携首个 Apache 版本 3.0.0-alpha 回归"
 weight = 1
 chapter = true
 +++
@@ -165,10 +165,10 @@ ElasticJob 3.x 提供了官方的Spring Boot Starter，并已经着手开发基�
 
 与 Apache ShardingSphere 一脉相承，ElasticJob 也将提供更加可插拔和模块化架构，为开发者提供基础设施。方便开发者基于 ElasticJob 二次开发，添加各种定制化功能，包括但不限于作业类型（如：大数据作业、HTTP作业等）、注册中心类型（如：Eureka等）、执行轨迹存储介质（如其他数据库类型）等。
 
+
 ElasticJob 最终会将 Lite 和 Cloud 以更贴近的方式供开发工程师和运维工程师使用，共享其调度、执行和作业库。整体规划如下：
 
- ![](https://shardingsphere.apache.org/blog/img/alpha3.jpg)
-
+![](https://shardingsphere.apache.org/blog/img/alpha3.jpg)
 
 ### 关于 ElasticJob 社区
 
@@ -184,7 +184,7 @@ ElasticJob 是Apache ShardingSphere（ https://github.com/apache/shardingsphere 
 
 目前主要精力投入在将分布式数据库中间件 Apache ShardingSphere 打造为业界一流的金融级数据解决方案之上。
 
-Apache ShardingSphere(https://github.com/apache/shardingsphere)是京东主导的首个 Apache 软件基金会顶级项目，也是 Apache 软件基金会首个分布式数据库中间件。
+Apache ShardingSphere( https://github.com/apache/shardingsphere )是京东主导的首个 Apache 软件基金会顶级项目，也是 Apache 软件基金会首个分布式数据库中间件。
 
 曾出版书籍《未来架构——从服务化到云原生》。
 
