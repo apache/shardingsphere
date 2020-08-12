@@ -44,12 +44,12 @@ public final class AESEncryptAlgorithmTest {
     }
     
     @Test
-    public void assertEncode() {
+    public void assertEncrypt() {
         assertThat(encryptAlgorithm.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertEncodeWithoutKey() {
+    public void assertEncryptWithoutKey() {
         Properties props = new Properties();
         encryptAlgorithm.setProps(props);
         encryptAlgorithm.init();
@@ -57,21 +57,26 @@ public final class AESEncryptAlgorithmTest {
     }
     
     @Test
-    public void assertDecode() {
+    public void assertEncryptWithNullPlaintext() {
+        assertNull(encryptAlgorithm.encrypt(null));
+    }
+    
+    @Test
+    public void assertDecrypt() {
+        assertThat(encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertDecryptWithoutKey() {
+        Properties props = new Properties();
+        encryptAlgorithm.setProps(props);
+        encryptAlgorithm.init();
         assertThat(encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
     }
     
     @Test
-    public void assertDecodeWithNull() {
+    public void assertDecryptWithNullCiphertext() {
         assertNull(encryptAlgorithm.decrypt(null));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertDecodeWithoutKey() {
-        Properties props = new Properties();
-        encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
-        assertThat(encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
     }
     
     @Test
