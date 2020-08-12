@@ -69,11 +69,11 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     @Override
     public void init(final String name, final OrchestrationCenterConfiguration config) {
         ZookeeperProperties zookeeperProperties = new ZookeeperProperties(props);
-        client = buildCuratorClient(name, config, zookeeperProperties);
+        client = buildCuratorClient(config, zookeeperProperties);
         initCuratorClient(zookeeperProperties);
     }
     
-    private CuratorFramework buildCuratorClient(final String namespace, final OrchestrationCenterConfiguration config, final ZookeeperProperties zookeeperProperties) {
+    private CuratorFramework buildCuratorClient(final OrchestrationCenterConfiguration config, final ZookeeperProperties zookeeperProperties) {
         int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
         int maxRetries = zookeeperProperties.getValue(ZookeeperPropertyKey.MAX_RETRIES);
         int timeToLiveSeconds = zookeeperProperties.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
@@ -81,8 +81,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         String digest = zookeeperProperties.getValue(ZookeeperPropertyKey.DIGEST);
         CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
             .connectString(config.getServerLists())
-            .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
-            .namespace(namespace);
+            .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries));
         if (0 != timeToLiveSeconds) {
             builder.sessionTimeoutMs(timeToLiveSeconds * 1000);
         }
