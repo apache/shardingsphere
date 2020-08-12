@@ -12,7 +12,7 @@ before_script:
   - echo "MAVEN_OPTS='-Xmx1024m -XX:MaxMetaspaceSize=256m'" > ~/.mavenrc
 
 after_success:
-  - mvn clean cobertura:cobertura coveralls:report
+  - mvn clean jacoco:report coveralls:report
   - echo "build finished!"
 
 after_failure:

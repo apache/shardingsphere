@@ -743,38 +743,6 @@
                 <version>${coveralls-maven-plugin.version}</version>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>${cobertura-maven-plugin.version}</version>
-                <configuration>
-                    <check>
-<!--                        <branchRate>60</branchRate>-->
-<!--                        <lineRate>60</lineRate>-->
-<!--                        <haltOnFailure>true</haltOnFailure>-->
-<!--                        <totalBranchRate>60</totalBranchRate>-->
-<!--                        <totalLineRate>60</totalLineRate>-->
-<!--                        <packageLineRate>60</packageLineRate>-->
-<!--                        <packageBranchRate>60</packageBranchRate>-->
-                    </check>
-                    <aggregate>true</aggregate>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <quiet>true</quiet>
-                    <format>xml</format>
-                    <instrumentation>
-                        <ignoreTrivial>true</ignoreTrivial>
-                        <ignoreMethodAnnotations>
-                            <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
-                        </ignoreMethodAnnotations>
-                        <excludes>
-                            <exclude>org/apache/shardingsphere/sql/parser/autogen/*.class</exclude>
-                            <exclude>org/apache/shardingsphere/rdl/parser/sql/autogen/*.class</exclude>
-                            <exclude>org/apache/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
-                            <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
-                        </excludes>
-                    </instrumentation>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco-maven-plugin.version}</version>
