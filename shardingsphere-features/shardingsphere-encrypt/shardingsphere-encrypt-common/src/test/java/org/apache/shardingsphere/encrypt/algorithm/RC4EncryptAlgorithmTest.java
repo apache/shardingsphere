@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,24 +33,27 @@ import static org.junit.Assert.assertThat;
 
 public final class RC4EncryptAlgorithmTest {
     
-    private final RC4EncryptAlgorithm encryptAlgorithm = new RC4EncryptAlgorithm();
+    static {
+        ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
+    }
+    
+    private EncryptAlgorithm encryptAlgorithm;
     
     @Before
     public void setUp() {
         Properties props = new Properties();
         props.setProperty("rc4.key.value", "test-sharding");
-        encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(encryptAlgorithm.getType(), is("RC4"));
+        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("Rc4", props), EncryptAlgorithm.class);
     }
     
     @Test
     public void assertEncode() {
         assertThat(encryptAlgorithm.encrypt("test"), is("qn36NQ=="));
+    }
+    
+    @Test
+    public void assertEncryptWithNullPlaintext() {
+        assertNull(encryptAlgorithm.encrypt(null));
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -67,7 +74,7 @@ public final class RC4EncryptAlgorithmTest {
     }
     
     @Test
-    public void assertDecodeWithNull() {
+    public void assertDecryptWithNullCiphertext() {
         assertNull(encryptAlgorithm.decrypt(null));
     }
     
