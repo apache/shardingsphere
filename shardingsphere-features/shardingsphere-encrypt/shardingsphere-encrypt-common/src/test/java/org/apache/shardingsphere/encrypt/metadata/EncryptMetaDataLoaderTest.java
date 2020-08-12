@@ -22,6 +22,9 @@ import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
+import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataLoader;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.junit.Before;
@@ -49,6 +52,10 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class EncryptMetaDataLoaderTest {
+    
+    static {
+        ShardingSphereServiceLoader.register(RuleMetaDataLoader.class);
+    }
     
     @Mock
     private DatabaseType databaseType;
@@ -85,7 +92,7 @@ public final class EncryptMetaDataLoaderTest {
     @Test
     public void assertLoad() throws SQLException {
         EncryptRule rule = createEncryptRule();
-        EncryptMetaDataLoader loader = new EncryptMetaDataLoader();
+        EncryptMetaDataLoader loader = (EncryptMetaDataLoader) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(rule), RuleMetaDataLoader.class).get(rule);
         SchemaMetaData actual = loader.load(databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(Collections.singletonList(rule)), rule, props, Collections.emptyList());
         assertThat(actual.get("t_encrypt").getColumnMetaData(0).getName(), is("id"));
         assertThat(actual.get("t_encrypt").getColumnMetaData(1).getName(), is("pwd_cipher"));
@@ -95,7 +102,7 @@ public final class EncryptMetaDataLoaderTest {
     @Test
     public void assertLoadByExistedTable() throws SQLException {
         EncryptRule rule = createEncryptRule();
-        EncryptMetaDataLoader loader = new EncryptMetaDataLoader();
+        EncryptMetaDataLoader loader = (EncryptMetaDataLoader) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(rule), RuleMetaDataLoader.class).get(rule);
         Optional<TableMetaData> actual = loader.load(databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(Collections.singletonList(rule)), "t_encrypt", rule, props);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getColumnMetaData(0).getName(), is("id"));
