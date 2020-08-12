@@ -36,11 +36,6 @@ public final class MD5EncryptAlgorithmTest {
     }
     
     @Test
-    public void assertGetType() {
-        assertThat(encryptAlgorithm.getType(), is("MD5"));
-    }
-    
-    @Test
     public void assertEncode() {
         assertThat(encryptAlgorithm.encrypt("test"), is("098f6bcd4621d373cade4e832627b4f6"));
     }

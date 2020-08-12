@@ -39,11 +39,6 @@ public final class AESEncryptAlgorithmTest {
     }
     
     @Test
-    public void assertGetType() {
-        assertThat(encryptAlgorithm.getType(), is("AES"));
-    }
-    
-    @Test
     public void assertEncrypt() {
         assertThat(encryptAlgorithm.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }

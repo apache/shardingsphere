@@ -40,13 +40,13 @@ public final class RC4EncryptAlgorithmTest {
     }
     
     @Test
-    public void assertGetType() {
-        assertThat(encryptAlgorithm.getType(), is("RC4"));
+    public void assertEncode() {
+        assertThat(encryptAlgorithm.encrypt("test"), is("qn36NQ=="));
     }
     
     @Test
-    public void assertEncode() {
-        assertThat(encryptAlgorithm.encrypt("test"), is("qn36NQ=="));
+    public void assertEncryptWithNullPlaintext() {
+        assertNull(encryptAlgorithm.encrypt(null));
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -67,7 +67,7 @@ public final class RC4EncryptAlgorithmTest {
     }
     
     @Test
-    public void assertDecodeWithNull() {
+    public void assertDecryptWithNullCiphertext() {
         assertNull(encryptAlgorithm.decrypt(null));
     }
     
