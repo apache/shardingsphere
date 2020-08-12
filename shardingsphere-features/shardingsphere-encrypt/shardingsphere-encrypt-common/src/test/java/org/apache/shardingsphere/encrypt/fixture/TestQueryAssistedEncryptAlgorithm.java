@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm.fixture;
+package org.apache.shardingsphere.encrypt.fixture;
 
 import lombok.Getter;
 import lombok.Setter;

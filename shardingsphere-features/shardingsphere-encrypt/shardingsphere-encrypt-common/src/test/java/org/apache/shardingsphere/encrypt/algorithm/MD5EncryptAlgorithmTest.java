@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,11 +32,15 @@ import static org.junit.Assert.assertThat;
 
 public final class MD5EncryptAlgorithmTest {
     
-    private final MD5EncryptAlgorithm encryptAlgorithm = new MD5EncryptAlgorithm();
+    static {
+        ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
+    }
+    
+    private EncryptAlgorithm encryptAlgorithm;
     
     @Before
     public void setUp() {
-        encryptAlgorithm.init();
+        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("Md5", new Properties()), EncryptAlgorithm.class);
     }
     
     @Test

@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,14 +32,17 @@ import static org.junit.Assert.assertThat;
 
 public final class AESEncryptAlgorithmTest {
     
-    private final AESEncryptAlgorithm encryptAlgorithm = new AESEncryptAlgorithm();
+    static {
+        ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
+    }
+    
+    private EncryptAlgorithm encryptAlgorithm;
     
     @Before
     public void setUp() {
         Properties props = new Properties();
         props.setProperty("aes.key.value", "test");
-        encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
+        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("AES", props), EncryptAlgorithm.class);
     }
     
     @Test
@@ -72,10 +79,5 @@ public final class AESEncryptAlgorithmTest {
     @Test
     public void assertDecryptWithNullCiphertext() {
         assertNull(encryptAlgorithm.decrypt(null));
-    }
-    
-    @Test
-    public void assertGetProperties() {
-        assertThat(encryptAlgorithm.getProps().getProperty("aes.key.value"), is("test"));
     }
 }
