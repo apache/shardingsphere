@@ -1285,4 +1285,17 @@
         </values>
     </insert>
     
+    <insert sql-case-id="insert_with_digit_literals_value">
+        <table name="digit_literals_value_test" start-index="12" stop-index="36" />
+        <columns start-index="37" stop-index="42">
+            <column name="col1" start-index="38" stop-index="41" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="x'1234'" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>
