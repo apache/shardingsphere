@@ -17,16 +17,23 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class MD5EncryptAlgorithmTest {
     
     private final MD5EncryptAlgorithm encryptAlgorithm = new MD5EncryptAlgorithm();
+    
+    @Before
+    public void setUp() {
+        encryptAlgorithm.init();
+    }
     
     @Test
     public void assertGetType() {
@@ -36,6 +43,11 @@ public final class MD5EncryptAlgorithmTest {
     @Test
     public void assertEncode() {
         assertThat(encryptAlgorithm.encrypt("test"), is("098f6bcd4621d373cade4e832627b4f6"));
+    }
+    
+    @Test
+    public void assertEncryptWithNullPlaintext() {
+        assertNull(encryptAlgorithm.encrypt(null));
     }
     
     @Test
