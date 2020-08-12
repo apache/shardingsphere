@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.binder.metadata.column;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.binder.metadata.util.JdbcUtil;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -28,7 +29,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.shardingsphere.sql.parser.binder.metadata.util.JdbcUtil;
 
 /**
  * Column meta data loader.
