@@ -18,16 +18,25 @@
 package org.apache.shardingsphere.rdl.parser.statement.rdl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 import java.util.Collection;
 
 /**
- * Create sharding rule statement.
+ * Table rule segment.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CreateShardingRuleStatement extends RDLStatement {
+@Setter
+public final class TableRuleSegment implements ASTNode {
     
-    private final Collection<TableRuleSegment> tables;
+    private String logicTable;
+    
+    private Collection<String> dataSources;
+    
+    private String shardingColumn;
+    
+    private String algorithmType;
+    
+    private Collection<String> properties;
 }

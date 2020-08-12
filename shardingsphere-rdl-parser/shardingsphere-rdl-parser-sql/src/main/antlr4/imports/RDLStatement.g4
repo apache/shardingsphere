@@ -24,48 +24,49 @@ createSchema
     ;
 
 createDatasource
-    : CREATE DATASOURCE datasource (COMMA datasource)*
+    : CREATE DATASOURCE dataSource (COMMA dataSource)*
     ;
 
-createShardingrule
-    : CREATE SHARDINGRULE shardingrule (COMMA shardingrule)*
+createShardingRule
+    : CREATE SHARDINGRULE tableRule (COMMA tableRule)*
     ;
 
-shardingrule
-    : key EQ shardingruleValue
+tableRule
+    : tableName EQ tableRuleDefinition
     ;
 
-datasource
-    : key EQ datasourceValue
+dataSource
+    : dataSourceName EQ dataSourceDefinition
     ;
-    
-key
-    : IDENTIFIER
-    ;
-    
-datasourceValue
+       
+dataSourceDefinition
     : hostName COLON port COLON dbName COLON user COLON password
     ;
 
-shardingruleValue
-    : strategyType LP strategyValue RP
+tableRuleDefinition
+    : strategyType LP strategyDefinition RP
     ;
 
 strategyType
     : IDENTIFIER
     ;
 
-strategyValue
-    : tableName COMMA columName COMMA strategyProps+
+strategyDefinition
+    : columName COMMA strategyProps
     ;
 
 strategyProps
     : strategyProp (COMMA strategyProp)*
     ;
+    
 strategyProp
     : IDENTIFIER | NUMBER | INT
     ;
 
+dataSourceName
+    : IDENTIFIER
+    ;
+ 
 schemaName
     : IDENTIFIER
     ;
