@@ -46,15 +46,6 @@ public final class RegistryCenterNode {
     }
     
     /**
-     * Get instance node root path.
-     *
-     * @return instance node root path
-     */
-    public String getInstanceNodeRootPath() {
-        return Joiner.on("/").join("", name, ROOT, INSTANCES_NODE_PATH);
-    }
-    
-    /**
      * Get data source node full root path.
      *
      * @return data source node full root path

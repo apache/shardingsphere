@@ -93,9 +93,9 @@ public final class ClusterFacade {
     }
     
     private Map<String, DataSourceState> buildDataSourceStateMap(final InstanceState instanceState, final HeartbeatResponse heartbeatResponse) {
-        Map<String, DataSourceState> dataSourceStateMap = new HashMap<>();
-        heartbeatResponse.getHeartbeatResultMap().forEach((key, value) -> buildDataSourceState(key, value, dataSourceStateMap, instanceState));
-        return dataSourceStateMap;
+        Map<String, DataSourceState> result = new HashMap<>();
+        heartbeatResponse.getHeartbeatResultMap().forEach((key, value) -> buildDataSourceState(key, value, result, instanceState));
+        return result;
     }
     
     private void buildDataSourceState(final String schemaName, final Collection<HeartbeatResult> heartbeatResults,
