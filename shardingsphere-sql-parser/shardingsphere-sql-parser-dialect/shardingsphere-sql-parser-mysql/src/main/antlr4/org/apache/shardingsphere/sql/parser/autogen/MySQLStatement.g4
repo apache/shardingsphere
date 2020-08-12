@@ -37,6 +37,9 @@ execute
     | createProcedure
     | alterProcedure
     | dropProcedure
+    | createFunction
+    | alterFunction
+    | dropFunction
     | setTransaction
     | beginTransaction
     | setAutoCommit
