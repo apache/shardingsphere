@@ -17,14 +17,37 @@
 
 package org.apache.shardingsphere.cluster.heartbeat;
 
+import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertNotNull;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class ClusterHeartbeatInstanceTest {
+    
+    private static final ClusterHeartbeatInstance INSTANCE = ClusterHeartbeatInstance.getInstance();
+    
+    @Before
+    public void setUp() {
+        HeartbeatConfiguration heartBeatConfig = new HeartbeatConfiguration();
+        heartBeatConfig.setSql("select 1");
+        heartBeatConfig.setInterval(60);
+        heartBeatConfig.setRetryEnable(true);
+        heartBeatConfig.setRetryMaximum(3);
+        INSTANCE.init(heartBeatConfig);
+    }
     
     @Test
     public void assertGetInstance() {
         assertNotNull(ClusterHeartbeatInstance.getInstance());
+    }
+    
+    @After
+    public void close() {
+        INSTANCE.close();
     }
 }
