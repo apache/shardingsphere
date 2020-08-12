@@ -130,7 +130,7 @@ dropDatabase
     : DROP DATABASE (IF EXISTS)? name
     ;
 
-createDatabaseSpecification_
+ createDatabaseSpecification_
     :  createdbOptName (EQ_)? (signedIconst | optBooleanOrString | DEFAULT)
     ;
 
@@ -333,10 +333,6 @@ partitionCmd
     | DETACH PARTITION qualifiedName
     ;
 
-roleList
-    : roleSpec (COMMA_ roleSpec)*
-    ;
-
 alterIndexDefinitionClause_
     : renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace | alterTableCmds | indexPartitionCmd
     ;
@@ -487,57 +483,6 @@ alterDatabaseClause
     | setResetClause
     ;
 
-setResetClause
-    : SET setRest
-    | variableResetStmt
-    ;
-
-setRest
-    : TRANSACTION transactionModeList
-    | SESSION CHARACTERISTICS AS TRANSACTION transactionModeList
-    | setRestMore
-    ;
-
-transactionModeList
-    : transactionModeItem ((COMMA_)? transactionModeItem)*
-    ;
-
-transactionModeItem
-    : ISOLATION LEVEL isoLevel
-    | READ ONLY
-    | READ WRITE
-    | DEFERRABLE
-    | NOT DEFERRABLE
-    ;
-
-setRestMore
-    : genericSet
-    | varName FROM CURRENT
-    | TIME ZONE zoneValue
-    | CATALOG STRING_
-    | SCHEMA STRING_
-    | NAMES encoding?
-    | ROLE nonReservedWord | STRING_
-    | SESSION AUTHORIZATION nonReservedWord | STRING_
-    | SESSION AUTHORIZATION DEFAULT
-    | XML OPTION documentOrContent
-    | TRANSACTION SNAPSHOT STRING_
-    ;
-
-encoding
-    : STRING_
-    | DEFAULT
-    ;
-
-genericSet
-    : varName (EQ_|TO) (varList | DEFAULT)
-    ;
-
-documentOrContent
-    : DOCUMENT
-    | CONTENT
-    ;
-
 createdbOptItems
     : createdbOptItem+
     ;
@@ -546,22 +491,6 @@ createdbOptItem
     : createdbOptName (EQ_)? signedIconst
     | createdbOptName (EQ_)? optBooleanOrString
     | createdbOptName (EQ_)? DEFAULT
-    ;
-
-variableResetStmt
-    : RESET resetRest
-    ;
-
-resetRest
-    : genericReset
-    | TIME ZONE
-    | TRANSACTION ISOLATION LEVEL
-    | SESSION AUTHORIZATION
-    ;
-
-genericReset
-    : varName
-    | ALL
     ;
 
 alterTableCmds

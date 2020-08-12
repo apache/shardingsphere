@@ -50,4 +50,6 @@
     <sql-case id="create_user_with_no_login" value="CREATE USER user1 WITHOUT LOGIN" db-types="SQLServer" />
     <sql-case id="create_user_with_certificate" value="CREATE USER user1 FROM CERTIFICATE certificate" db-types="SQLServer" />
     <sql-case id="create_user_with_asym_key" value="CREATE USER user1 FROM ASYMMETRIC KEY asym_key" db-types="SQLServer" />
+    <sql-case id="create_user_with_sysid" value="CREATE USER user1 WITH SYSID 10000" db-types="PostgreSQL"/>
+    <sql-case id="create_user_with_group" value="CREATE USER user1 IN GROUP group1,group2" db-types="PostgreSQL" />
 </sql-cases>

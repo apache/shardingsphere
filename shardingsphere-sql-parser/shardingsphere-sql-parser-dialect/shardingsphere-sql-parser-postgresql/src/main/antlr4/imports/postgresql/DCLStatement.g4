@@ -78,25 +78,61 @@ onObjectClause
     ;
 
 createUser
-    : CREATE USER
+    : CREATE USER roleSpec (WITH)? optRoleList
+    ;
+
+optRoleList
+    : createOptRoleElem*
+    ;
+
+createOptRoleElem
+    : alterOptRoleElem
+    | SYSID NUMBER_
+    | ADMIN roleList
+    | ROLE roleList
+    | IN ROLE roleList
+    | IN GROUP roleList
+    ;
+
+alterOptRoleElem
+    : PASSWORD STRING_
+    | PASSWORD NULL
+    | ENCRYPTED PASSWORD STRING_
+    | UNENCRYPTED PASSWORD STRING_
+    | INHERIT
+    | CONNECTION LIMIT signedIconst
+    | VALID UNTIL STRING_
+    | USER roleList
+    | identifier
     ;
 
 dropUser
-    : DROP USER
+    : DROP USER (IF EXISTS)? roleList
     ;
 
 alterUser
-    : ALTER USER
+    : ALTER USER alterUserClauses
+    ;
+
+alterUserClauses
+    : roleSpec (WITH)? alterOptRoleList
+    | roleSpec (IN DATABASE name)? setResetClause
+    | ALL (IN DATABASE name)? setResetClause
+    | roleSpec RENAME TO roleSpec
+    ;
+
+alterOptRoleList
+    : alterOptRoleElem*
     ;
 
 createRole
-    : CREATE ROLE
+    : CREATE ROLE roleSpec (WITH)? optRoleList
     ;
 
 dropRole
-    : DROP ROLE
+    : DROP ROLE (IF EXISTS)? roleList
     ;
 
 alterRole
-    : ALTER ROLE
+    : ALTER ROLE alterUserClauses
     ;

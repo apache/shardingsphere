@@ -17,14 +17,25 @@
 
 grammar DALStatement;
 
-import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
+import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule, DMLStatement, DDLStatement;
 
 show
-    : SHOW (ALL | TRANSACTION ISOLATION LEVEL | identifier)
+    : SHOW (varName | TIME ZONE | TRANSACTION ISOLATION LEVEL | SESSION AUTHORIZATION | ALL)
     ;
 
 set
-    : SET runtimeScope_? (timeZoneClause_ | configurationParameterClause)
+    : SET runtimeScope_?
+    (timeZoneClause_
+    | configurationParameterClause
+    | varName FROM CURRENT
+    | TIME ZONE zoneValue
+    | CATALOG STRING_
+    | SCHEMA STRING_
+    | NAMES optEncoding?
+    | ROLE nonReservedWordOrSconst
+    | SESSION AUTHORIZATION nonReservedWordOrSconst
+    | SESSION AUTHORIZATION DEFAULT
+    | XML OPTION documentOrContent)
     ;
 
 runtimeScope_
@@ -41,4 +52,81 @@ configurationParameterClause
 
 resetParameter
     : RESET (ALL | identifier)
+    ;
+
+explain
+    : EXPLAIN
+    (analyzeKeyword VERBOSE?
+    | VERBOSE
+    | '(' explainOptionList ')')?
+    explainableStmt
+    ;
+
+//TODO explainableStmt COMPLETE
+explainableStmt
+    : select | insert | update | delete
+    ;
+
+explainOptionList
+    : explainOptionElem (COMMA_ explainOptionElem)*
+    ;
+
+explainOptionElem
+    : explainOptionName explainOptionArg?
+    ;
+
+explainOptionArg
+    : optBooleanOrString | numericOnly
+    ;
+
+explainOptionName
+    : nonReservedWord | analyzeKeyword
+    ;
+
+analyzeKeyword
+    : ANALYZE | ANALYSE
+    ;
+
+setConstraints
+    : SET CONSTRAINTS constraintsSetList constraintsSetMode
+    ;
+
+constraintsSetMode
+    : DEFERRED | IMMEDIATE
+    ;
+
+constraintsSetList
+    : ALL | qualifiedNameList
+    ;
+
+analyze
+    : analyzeKeyword (VERBOSE? | LP_ vacAnalyzeOptionList RP_) vacuumRelationList?
+    ;
+
+vacuumRelationList
+    : vacuumRelation (COMMA_ vacuumRelation)*
+    ;
+
+vacuumRelation
+    : qualifiedName optNameList
+    ;
+
+vacAnalyzeOptionList
+    : vacAnalyzeOptionElem (COMMA_ vacAnalyzeOptionElem)*
+    ;
+
+vacAnalyzeOptionElem
+    : vacAnalyzeOptionName vacAnalyzeOptionArg?
+    ;
+
+vacAnalyzeOptionArg
+    : optBooleanOrString | numericOnly
+    ;
+
+vacAnalyzeOptionName
+    : nonReservedWord | analyzeKeyword
+    ;
+
+load
+    : LOAD fileName
     ;

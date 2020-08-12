@@ -1429,7 +1429,7 @@ varList
     ;
 
 varValue
-    : identifier
+    : optBooleanOrString | numericOnly
     ;
 
 zoneValue
@@ -1638,4 +1638,83 @@ argClass
 
 funcArgsList
     : funcArg (COMMA_ funcArg)*
+    ;
+
+optEncoding
+    : STRING_ | DEFAULT
+    ;
+
+nonReservedWordOrSconst
+    : nonReservedWord
+    | STRING_
+    ;
+
+fileName
+    : STRING_
+    ;
+
+roleList
+    : roleSpec (COMMA_ roleSpec)*
+    ;
+
+setResetClause
+    : SET setRest
+    | variableResetStmt
+    ;
+
+setRest
+    : TRANSACTION transactionModeList
+    | SESSION CHARACTERISTICS AS TRANSACTION transactionModeList
+    | setRestMore
+    ;
+
+transactionModeList
+    : transactionModeItem ((COMMA_)? transactionModeItem)*
+    ;
+
+transactionModeItem
+    : ISOLATION LEVEL isoLevel
+    | READ ONLY
+    | READ WRITE
+    | DEFERRABLE
+    | NOT DEFERRABLE
+    ;
+
+setRestMore
+    : genericSet
+    | varName FROM CURRENT
+    | TIME ZONE zoneValue
+    | CATALOG STRING_
+    | SCHEMA STRING_
+    | NAMES encoding?
+    | ROLE nonReservedWord | STRING_
+    | SESSION AUTHORIZATION nonReservedWord | STRING_
+    | SESSION AUTHORIZATION DEFAULT
+    | XML OPTION documentOrContent
+    | TRANSACTION SNAPSHOT STRING_
+    ;
+
+encoding
+    : STRING_
+    | DEFAULT
+    ;
+
+genericSet
+    : varName (EQ_|TO) (varList | DEFAULT)
+    ;
+
+variableResetStmt
+    : RESET resetRest
+    ;
+
+resetRest
+    : genericReset
+    | TIME ZONE
+    | TRANSACTION ISOLATION LEVEL
+    | SESSION AUTHORIZATION
+    ;
+
+genericReset
+    : varName
+    | ALL
     ;

@@ -34,4 +34,6 @@
     <sql-case id="create_role_with_password" value="CREATE ROLE role_dev_new PASSWORD 'passwd_dev'" db-types="PostgreSQL" />
     <sql-case id="create_user_with_role_postgresql" value="CREATE USER user1 WITH ROLE role1" db-types="PostgreSQL" />
     <sql-case id="create_user_with_roles_postgresql" value="CREATE USER user1 WITH ROLE role1, role2" db-types="PostgreSQL" />
+    <sql-case id="create_role_with_valid_until" value="CREATE ROLE miriam WITH LOGIN PASSWORD 'jw8s0F4' VALID UNTIL '2005-01-01'" db-types="PostgreSQL" />
+    <sql-case id="create_role_with_createdb" value="CREATE ROLE admin WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
 </sql-cases>
