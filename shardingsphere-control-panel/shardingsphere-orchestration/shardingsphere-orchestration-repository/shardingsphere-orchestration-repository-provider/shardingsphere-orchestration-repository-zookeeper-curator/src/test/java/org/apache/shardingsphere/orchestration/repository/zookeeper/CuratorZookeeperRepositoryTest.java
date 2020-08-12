@@ -81,7 +81,7 @@ public final class CuratorZookeeperRepositoryTest {
     public void assertWatchUpdatedChangedType() throws InterruptedException {
         REPOSITORY.persist("/test/children_updated/1", "value1");
         AtomicReference<DataChangedEvent> dataChangedEventActual = new AtomicReference<>();
-        REPOSITORY.watch("/test/children_updated", dataChangedEventActual::set);
+        REPOSITORY.watch("/test/children_updated/1", dataChangedEventActual::set);
         REPOSITORY.persist("/test/children_updated/1", "value2");
         Thread.sleep(50L);
         DataChangedEvent dataChangedEvent = dataChangedEventActual.get();
@@ -94,13 +94,13 @@ public final class CuratorZookeeperRepositoryTest {
     
     @Test
     public void assertWatchDeletedChangedType() throws Exception {
+        AtomicReference<DataChangedEvent> dataChangedEventActual = new AtomicReference<>();
+        REPOSITORY.watch("/test/children_deleted", dataChangedEventActual::set);
         REPOSITORY.persist("/test/children_deleted/5", "value5");
         Field field = CuratorZookeeperRepository.class.getDeclaredField("client");
         field.setAccessible(true);
         CuratorFramework client = (CuratorFramework) field.get(REPOSITORY);
-        AtomicReference<DataChangedEvent> dataChangedEventActual = new AtomicReference<>();
-        REPOSITORY.watch("/test/children_deleted/5", dataChangedEventActual::set);
-        client.delete().forPath("/test/children_deleted/5");
+        client.delete().deletingChildrenIfNeeded().forPath("/test/children_deleted/5");
         Thread.sleep(50L);
         DataChangedEvent dataChangedEvent = dataChangedEventActual.get();
         assertNotNull(dataChangedEvent);

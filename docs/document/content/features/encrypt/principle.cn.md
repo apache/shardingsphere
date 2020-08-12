@@ -104,11 +104,11 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 在对比一段时间无误后，可以夜间操作将生产流量切到预发环境中。
 此方案相对安全可靠，只是时间、人力、资金、成本较高，主要包括：预发环境搭建、生产代码整改、相关辅助工具开发等。
 
-业务开发人员最希望的做法是：减少资金费用的承担、最好不要修改业务代码、能够安全平滑迁移系统。于是，ShardingSphere的加密功能模块便应用而生。可分为 3 步进行：
+业务开发人员最希望的做法是：减少资金费用的承担、最好不要修改业务代码、能够安全平滑迁移系统。于是，ShardingSphere的加密功能模块便应运而生。可分为 3 步进行：
 
 1. 系统迁移前
 
-假设系统需要对 `t_user` 的 `pwd`。字段进行加密处理，业务方使用 Apache ShardingSphere 来代替标准化的 JDBC 接口，此举基本不需要额外改造（我们还提供了 Spring Boot Starter，Spring 命名空间，YAML 等接入方式，满足不同业务方需求）。
+假设系统需要对 `t_user` 的 `pwd` 字段进行加密处理，业务方使用 Apache ShardingSphere 来代替标准化的 JDBC 接口，此举基本不需要额外改造（我们还提供了 Spring Boot Starter，Spring 命名空间，YAML 等接入方式，满足不同业务方需求）。
 另外，提供一套加密配置规则，如下所示：
 
 ```yaml
@@ -200,16 +200,16 @@ props:
 
 ## 加密算法解析
 
-Apache ShardingSphere 提供了两种加密算法用于数据加密，该两种策略分别对应 Apache ShardingSphere 的两种加解密的接口，即 `EncryptAlgorithm` 和 `QueryAssistedEncryptAlgorithm`。
+Apache ShardingSphere 提供了两种加密算法用于数据加密，这两种策略分别对应 Apache ShardingSphere 的两种加解密的接口，即 `EncryptAlgorithm` 和 `QueryAssistedEncryptAlgorithm`。
 
 一方面，Apache ShardingSphere 为用户提供了内置的加解密实现类，用户只需进行配置即可使用；
-另一方面，为了满足用户不同场景的需求，我们还开放了相关加解密接口，用户可依据该两种类型的接口提供具体实现类。
+另一方面，为了满足用户不同场景的需求，我们还开放了相关加解密接口，用户可依据这两种类型的接口提供具体实现类。
 再进行简单配置，即可让 Apache ShardingSphere 调用用户自定义的加解密方案进行数据加密。
 
 ### EncryptAlgorithm
 
 该解决方案通过提供`encrypt()`, `decrypt()`两种方法对需要加密的数据进行加解密。
-在用户进行`INSERT`, `DELETE`, `UPDATE`时，ShardingSphere会按照用户配置，对SQL进行解析、改写、路由，并会调用`encrypt()`将数据加密后存储到数据库, 
+在用户进行`INSERT`, `DELETE`, `UPDATE`时，ShardingSphere会按照用户配置，对SQL进行解析、改写、路由，并调用`encrypt()`将数据加密后存储到数据库, 
 而在`SELECT`时，则调用`decrypt()`方法将从数据库中取出的加密数据进行逆向解密，最终将原始数据返回给用户。
 
 当前，Apache ShardingSphere 针对这种类型的加密解决方案提供了两种具体实现类，分别是 MD5(不可逆)，AES(可逆)，用户只需配置即可使用这两种内置的方案。

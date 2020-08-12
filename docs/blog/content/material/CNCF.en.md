@@ -1,6 +1,6 @@
 +++
 title = "Apache ShardingSphere is included in CNCF Landscape"
-weight = 5
+weight = 6
 chapter = true
 +++
 

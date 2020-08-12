@@ -72,9 +72,9 @@ public final class SchemaChangedListenerTest {
     
     @Test
     public void assertCreateIgnoredEvent() {
-        assertThat(schemaChangedListener.createOrchestrationEvent(new DataChangedEvent("/test/config/schema/logic_db", "test", ChangedType.UPDATED)), 
+        assertThat(schemaChangedListener.createOrchestrationEvent(new DataChangedEvent("/test/config/schema/encrypt_db", "test", ChangedType.UPDATED)),
                 instanceOf(IgnoredOrchestrationEvent.class));
-        assertThat(schemaChangedListener.createOrchestrationEvent(new DataChangedEvent("/test/config/schema/logic_db/rule", "test", ChangedType.IGNORED)), 
+        assertThat(schemaChangedListener.createOrchestrationEvent(new DataChangedEvent("/test/config/schema/encrypt_db/rule", "test", ChangedType.IGNORED)),
                 instanceOf(IgnoredOrchestrationEvent.class));
     }
     
@@ -188,19 +188,19 @@ public final class SchemaChangedListenerTest {
     }
     
     @Test
-    public void assertCreateWithInvalidNodeChangedEvent() {
+    public void assertCreateWithSchemaDeletedEvent() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db", dataSource, ChangedType.DELETED);
         OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
-        assertThat(actual, instanceOf(IgnoredOrchestrationEvent.class));
+        assertThat(actual, instanceOf(SchemaDeletedEvent.class));
     }
     
     @Test
-    public void assertCreateWithNullShardingSchemaName() {
+    public void assertCreateWithSchemaDeletedEventWithDataSourceNode() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/datasource", dataSource, ChangedType.DELETED);
         OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
-        assertThat(actual, instanceOf(IgnoredOrchestrationEvent.class));
+        assertThat(actual, instanceOf(SchemaDeletedEvent.class));
     }
     
     @Test

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.cluster.heartbeat.task;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,5 +59,10 @@ public final class HeartbeatTaskManagerTest {
         }).when(executorService).scheduleAtFixedRate(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class));
         heartbeatTaskManager.start(heartbeatTask);
         verify(executorService).scheduleAtFixedRate(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class));
+    }
+    
+    @After
+    public void close() {
+        heartbeatTaskManager.close();
     }
 }

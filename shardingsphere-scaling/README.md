@@ -30,6 +30,6 @@ Refer to the [Quick Start](https://shardingsphere.apache.org/document/current/en
 
 ## For more documents
 
-[Overview](https://shardingsphere.apache.org/document/current/en/features/shardingsphere-scaling/)
+[Overview](https://shardingsphere.apache.org/document/current/en/features/scaling/)
 
-[Principle](https://shardingsphere.apache.org/document/current/en/features/shardingsphere-scaling/principle/)
+[Principle](https://shardingsphere.apache.org/document/current/en/features/scaling/principle/)

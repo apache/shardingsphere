@@ -49,10 +49,10 @@ public abstract class AbstractHeartbeatDetect implements Callable<Map<String, He
     /**
      * Build heart beat result.
      *
-     * @param result heart beat result
+     * @param heartbeatResult heart beat result
      * @return heart beat result
      */
-    protected abstract Map<String, HeartbeatResult> buildResult(boolean result);
+    protected abstract Map<String, HeartbeatResult> buildResult(boolean heartbeatResult);
     
     @Override
     public final Map<String, HeartbeatResult> call() {

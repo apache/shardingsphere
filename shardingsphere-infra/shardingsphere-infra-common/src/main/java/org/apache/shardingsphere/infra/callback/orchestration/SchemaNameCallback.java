@@ -15,11 +15,26 @@
  * limitations under the License.
  */
 
-grammar ShardingSphereStatement;
+package org.apache.shardingsphere.infra.callback.orchestration;
 
-import Symbol, RDLStatement;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.callback.Callback;
 
-execute
-    : (createDatasource
-    ) SEMI?
-    ;
+/**
+ * Schema name callback.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SchemaNameCallback extends Callback<Boolean> {
+    
+    private static final SchemaNameCallback INSTANCE = new SchemaNameCallback();
+    
+    /**
+     * Get instance.
+     *
+     * @return data source callback
+     */
+    public static SchemaNameCallback getInstance() {
+        return INSTANCE;
+    }
+}

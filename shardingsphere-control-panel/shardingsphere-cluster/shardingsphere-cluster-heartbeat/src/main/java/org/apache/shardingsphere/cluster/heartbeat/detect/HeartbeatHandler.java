@@ -88,9 +88,9 @@ public final class HeartbeatHandler {
         schemaContexts.forEach((key, value) -> value.getSchema().getDataSources().forEach((innerKey, innerValue) -> {
             futureTasks.add(executorService.submit(new HeartbeatDetect(key, innerKey, innerValue, configuration, isDisabled(key, innerKey))));
         }));
-        HeartbeatResponse heartbeatResponse = buildHeartbeatResponse(futureTasks);
+        HeartbeatResponse result = buildHeartbeatResponse(futureTasks);
         closeExecutor(executorService);
-        return heartbeatResponse;
+        return result;
     }
     
     /**

@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, MySQLKeyword, Literals, BaseRule, DMLStatement;
+import Symbol, Keyword, MySQLKeyword, Literals, BaseRule, DMLStatement, DALStatement;
 
 createTable
     : CREATE TEMPORARY? TABLE notExistClause_ tableName (createDefinitionClause? tableOptions_? partitionClause? duplicateAsQueryExpression? | createLikeClause)
@@ -578,7 +578,7 @@ timestampValue
     ;
 
 routineBody
-    :  NOT_SUPPORT_
+    : simpleStatement | compoundStatement
     ;
 
 serverOption_
@@ -600,9 +600,173 @@ routineOption_
     ;
 
 procedureParameter_
-    : ( IN | OUT | INOUT ) identifier dataType
+    : (IN | OUT | INOUT)? identifier dataType
     ;
 
 fileSizeLiteral_
     : FILESIZE_LITERAL | numberLiterals
+    ; 
+    
+simpleStatement
+    : validStatement
+    ;
+    
+compoundStatement
+    : beginStatement
+    ;
+
+validStatement
+    : (createTable | alterTable | dropTable | truncateTable 
+    | insert | replace | update | delete | select
+    | setVariable | beginStatement | declareStatement | flowControlStatement | cursorStatement | conditionHandlingStatement) SEMI_?
+    ;
+
+beginStatement
+    : (labelName COLON_)? BEGIN validStatement* END labelName? SEMI_?
+    ;
+
+declareStatement
+    : DECLARE variable (COMMA_ variable)* dataType (DEFAULT simpleExpr)*
+    ;
+
+flowControlStatement
+    : caseStatement | ifStatement | iterateStatement | leaveStatement | loopStatement | repeatStatement | returnStatement | whileStatement
+    ;
+    
+caseStatement
+    : CASE expr? 
+      (WHEN expr THEN validStatement+)+ 
+      (ELSE validStatement+)? 
+      END CASE
+    ;
+    
+ifStatement
+    : IF expr THEN validStatement+
+      (ELSEIF expr THEN validStatement+)*
+      (ELSE validStatement+)?
+      END IF
+    ;
+    
+iterateStatement
+    : ITERATE labelName
+    ;
+
+leaveStatement
+    : LEAVE labelName
+    ;
+    
+loopStatement
+    : (labelName COLON_)? LOOP
+      validStatement+
+      END LOOP labelName?
+    ;
+    
+repeatStatement
+    : (labelName COLON_)? REPEAT
+      validStatement+
+      UNTIL expr
+      END REPEAT labelName?
+    ;
+    
+returnStatement
+    : RETURN expr
+    ;   
+    
+whileStatement
+    : (labelName COLON_)? WHILE expr DO
+      validStatement+
+      END WHILE labelName?
+    ;
+    
+cursorStatement
+    : cursorCloseStatement | cursorDeclareStatement | cursorFetchStatement | cursorOpenStatement 
+    ;
+    
+cursorCloseStatement
+    : CLOSE cursorName
+    ;
+    
+cursorDeclareStatement
+    : DECLARE cursorName CURSOR FOR select
+    ;
+    
+cursorFetchStatement
+    : FETCH ((NEXT)? FROM)? cursorName INTO variable (COMMA_ variable)*
+    ;
+    
+cursorOpenStatement
+    : OPEN cursorName
+    ;
+    
+conditionHandlingStatement
+    : declareConditionStatement | declareHandlerStatement | getDiagnosticsStatement | resignalStatement | signalStatement 
+    ;
+    
+declareConditionStatement
+    : DECLARE conditionName CONDITION FOR conditionValue
+    ;
+    
+declareHandlerStatement
+    : DECLARE handlerAction HANDLER FOR conditionValue (COMMA_ conditionValue)* validStatement
+    ;
+
+getDiagnosticsStatement
+    : GET (CURRENT | STACKED)? DIAGNOSTICS 
+      ((statementInformationItem (COMMA_ statementInformationItem)*) 
+    | (CONDITION conditionNumber conditionInformationItem (COMMA_ conditionInformationItem)*))
+    ;
+
+statementInformationItem
+    : variable EQ_ statementInformationItemName
+    ;
+    
+conditionInformationItem
+    : variable EQ_ conditionInformationItemName
+    ;
+    
+conditionNumber
+    : variable | numberLiterals 
+    ;
+
+statementInformationItemName
+    : NUMBER
+    | ROW_COUNT
+    ;
+    
+conditionInformationItemName
+    : CLASS_ORIGIN
+    | SUBCLASS_ORIGIN
+    | RETURNED_SQLSTATE
+    | MESSAGE_TEXT
+    | MYSQL_ERRNO
+    | CONSTRAINT_CATALOG
+    | CONSTRAINT_SCHEMA
+    | CONSTRAINT_NAME
+    | CATALOG_NAME
+    | SCHEMA_NAME
+    | TABLE_NAME
+    | COLUMN_NAME
+    | CURSOR_NAME
+    ;
+    
+handlerAction
+    : CONTINUE | EXIT | UNDO
+    ;
+    
+conditionValue
+    : numberLiterals | SQLSTATE (VALUE)? stringLiterals | conditionName | SQLWARNING | NOT FOUND | SQLEXCEPTION
+    ;
+    
+resignalStatement
+    : RESIGNAL conditionValue?
+      (SET signalInformationItem (COMMA_ signalInformationItem)*)?
+    ;
+    
+signalStatement
+    : SIGNAL conditionValue
+      (SET signalInformationItem (COMMA_ signalInformationItem)*)?
+    ;
+    
+signalInformationItem
+    : conditionInformationItemName EQ_ expr
     ;

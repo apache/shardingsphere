@@ -35,7 +35,7 @@ NUMBER_
     ;
 
 HEX_DIGIT_
-    : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
+    : '0x' HEX_+ | X SQ_ HEX_+ SQ_
     ;
 
 BIT_NUM_

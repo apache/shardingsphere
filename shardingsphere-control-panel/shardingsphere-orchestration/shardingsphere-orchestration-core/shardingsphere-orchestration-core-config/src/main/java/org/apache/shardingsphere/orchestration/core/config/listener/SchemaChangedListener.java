@@ -68,6 +68,7 @@ public final class SchemaChangedListener extends PostOrchestrationRepositoryEven
     
     @Override
     protected OrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
+        // TODO Consider removing the following one.
         if (configurationNode.getSchemaPath().equals(event.getKey())) {
             return createSchemaNamesUpdatedEvent(event.getValue());
         }
@@ -101,7 +102,8 @@ public final class SchemaChangedListener extends PostOrchestrationRepositoryEven
     }
     
     private boolean isValidNodeChangedEvent(final String shardingSchemaName, final String nodeFullPath) {
-        return configurationNode.getDataSourcePath(shardingSchemaName).equals(nodeFullPath) || configurationNode.getRulePath(shardingSchemaName).equals(nodeFullPath);
+        return !existedSchemaNames.contains(shardingSchemaName)
+                || configurationNode.getDataSourcePath(shardingSchemaName).equals(nodeFullPath) || configurationNode.getRulePath(shardingSchemaName).equals(nodeFullPath);
     }
     
     private OrchestrationEvent createAddedEvent(final String shardingSchemaName) {

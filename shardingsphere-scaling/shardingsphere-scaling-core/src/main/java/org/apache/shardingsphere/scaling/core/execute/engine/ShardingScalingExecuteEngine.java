@@ -61,7 +61,7 @@ public final class ShardingScalingExecuteEngine {
      */
     public Future<?> submit(final ShardingScalingExecutor shardingScalingExecutor, final ExecuteCallback executeCallback) {
         ListenableFuture<?> result = executorService.submit(shardingScalingExecutor);
-        Futures.addCallback(result, new ExecuteFutureCallback<>(executeCallback));
+        Futures.addCallback(result, new ExecuteFutureCallback<>(executeCallback), executorService);
         return result;
     }
     
@@ -79,7 +79,7 @@ public final class ShardingScalingExecuteEngine {
             listenableFutures.add(listenableFuture);
         }
         ListenableFuture result = Futures.allAsList(listenableFutures);
-        Futures.addCallback(result, new ExecuteFutureCallback<Collection<Object>>(executeCallback));
+        Futures.addCallback(result, new ExecuteFutureCallback<Collection<Object>>(executeCallback), executorService);
         return result;
     }
     

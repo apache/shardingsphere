@@ -35,18 +35,17 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     private final List<StandardParameterBuilder> parameterBuilders;
     
     @Getter
-    private final StandardParameterBuilder onDuplicateKeyUpdateParametersBuilder;
+    private final StandardParameterBuilder genericParameterBuilder;
     
     @Setter
     private String derivedColumnName;
     
-    public GroupedParameterBuilder(final List<List<Object>> groupedParameters, final List<Object> onDuplicateKeyUpdateParameters) {
+    public GroupedParameterBuilder(final List<List<Object>> groupedParameters, final List<Object> genericParameters) {
         parameterBuilders = new ArrayList<>(groupedParameters.size());
         for (List<Object> each : groupedParameters) {
             parameterBuilders.add(new StandardParameterBuilder(each));
         }
-    
-        onDuplicateKeyUpdateParametersBuilder = new StandardParameterBuilder(onDuplicateKeyUpdateParameters);
+        genericParameterBuilder = new StandardParameterBuilder(genericParameters);
     }
     
     @Override
@@ -55,6 +54,7 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
         for (int i = 0; i < parameterBuilders.size(); i++) {
             result.addAll(getParameters(i));
         }
+        result.addAll(genericParameterBuilder.getParameters());
         return result;
     }
     

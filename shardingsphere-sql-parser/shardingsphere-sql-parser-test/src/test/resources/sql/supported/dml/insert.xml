@@ -62,4 +62,5 @@
     <sql-case id="insert_select_without_generate_key_column" value="INSERT INTO t_order_item(order_id, user_id, status, creation_date) SELECT order_id, user_id, 'insert', '2017-08-08' FROM t_order_item WHERE order_id = ?" db-types="MySQL" />
     <sql-case id="insert_select_on_duplicate_key_update" value="INSERT INTO t_order(order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = ? ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
     <sql-case id="insert_with_emoji_value" value="INSERT INTO t_emoji_test(col1) VALUES('test😀')" db-types="MySQL" />
+    <sql-case id="insert_with_digit_literals_value" value="INSERT INTO digit_literals_value_test(col1) VALUES(x'1234')" db-types="MySQL" />
 </sql-cases>

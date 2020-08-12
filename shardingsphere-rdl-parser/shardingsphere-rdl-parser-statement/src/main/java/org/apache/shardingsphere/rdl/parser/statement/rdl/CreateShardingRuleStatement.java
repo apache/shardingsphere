@@ -17,8 +17,17 @@
 
 package org.apache.shardingsphere.rdl.parser.statement.rdl;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
+
 /**
  * Create sharding rule statement.
  */
+@RequiredArgsConstructor
+@Getter
 public final class CreateShardingRuleStatement extends RDLStatement {
+    
+    private final Collection<TableRuleSegment> tables;
 }

@@ -34,6 +34,12 @@ execute
     | truncateTable
     | createIndex
     | dropIndex
+    | createProcedure
+    | alterProcedure
+    | dropProcedure
+    | createFunction
+    | alterFunction
+    | dropFunction
     | setTransaction
     | beginTransaction
     | setAutoCommit
