@@ -125,11 +125,6 @@ public final class EncryptRuleTest {
     }
     
     @Test
-    public void assertGetLogicAndPlainColumns() {
-        assertFalse(new EncryptRule(encryptRuleConfig).getLogicAndPlainColumns(table).isEmpty());
-    }
-    
-    @Test
     public void assertGetEncryptTableNames() {
         assertFalse(new EncryptRule(encryptRuleConfig).getEncryptTableNames().isEmpty());
     }

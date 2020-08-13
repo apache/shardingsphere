@@ -138,7 +138,7 @@ public final class EncryptRule implements ShardingSphereRule {
         Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
         return originColumnName.isPresent() && tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.empty();
     }
-
+    
     private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {
         for (String each : tables.get(logicTable).getLogicColumns()) {
             if (logicColumn.equalsIgnoreCase(each)) {
@@ -219,16 +219,6 @@ public final class EncryptRule implements ShardingSphereRule {
     }
     
     /**
-     * Get logic and plain columns.
-     *
-     * @param logicTable logic table 
-     * @return logic and plain columns
-     */
-    public Map<String, String> getLogicAndPlainColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getLogicAndPlainColumns() : Collections.emptyMap();
-    }
-    
-    /**
      * Get encrypt assisted query values.
      *
      * @param logicTable logic table
@@ -266,10 +256,7 @@ public final class EncryptRule implements ShardingSphereRule {
      * @return encryptor
      */
     public Optional<EncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn) {
-        if (!tables.containsKey(logicTable)) {
-            return Optional.empty();
-        }
-        return tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get);
+        return tables.containsKey(logicTable) ? tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
     }
     
     /**
