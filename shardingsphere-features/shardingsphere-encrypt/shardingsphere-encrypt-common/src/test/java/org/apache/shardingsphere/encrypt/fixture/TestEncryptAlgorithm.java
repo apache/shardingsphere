@@ -45,6 +45,6 @@ public final class TestEncryptAlgorithm implements EncryptAlgorithm {
     
     @Override
     public String getType() {
-        return "test";
+        return "TEST";
     }
 }
