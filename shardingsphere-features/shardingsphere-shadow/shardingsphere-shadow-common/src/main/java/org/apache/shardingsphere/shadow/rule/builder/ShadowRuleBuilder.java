@@ -15,31 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replica.rule;
+package org.apache.shardingsphere.shadow.rule.builder;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
-import org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration;
-import org.apache.shardingsphere.replica.constant.ReplicaOrder;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.constant.ShadowOrder;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
 
 /**
- * Replica rule builder.
+ * Shadow rule builder.
  */
-public final class ReplicaRuleBuilder implements ShardingSphereRuleBuilder<ReplicaRule, ReplicaRuleConfiguration> {
+public final class ShadowRuleBuilder implements ShardingSphereRuleBuilder<ShadowRule, ShadowRuleConfiguration> {
     
     @Override
-    public ReplicaRule build(final ReplicaRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
-        return new ReplicaRule(ruleConfiguration);
+    public ShadowRule build(final ShadowRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+        return new ShadowRule(ruleConfiguration);
     }
     
     @Override
     public int getOrder() {
-        return ReplicaOrder.ORDER;
+        return ShadowOrder.ORDER;
     }
     
     @Override
-    public Class<ReplicaRuleConfiguration> getTypeClass() {
-        return ReplicaRuleConfiguration.class;
+    public Class<ShadowRuleConfiguration> getTypeClass() {
+        return ShadowRuleConfiguration.class;
     }
 }
