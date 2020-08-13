@@ -37,7 +37,7 @@ import static org.junit.Assert.assertThat;
 
 public final class ClusterConfigurationChangedListenerTest {
     
-    private static final String DATA_CLUSTER_YAML = "yaml/data-cluster.yaml";
+    private static final String DATA_CLUSTER_YAML = "yaml/configCenter/data-cluster.yaml";
     
     private ClusterConfigurationChangedListener clusterConfigurationChangedListener;
     
