@@ -17,20 +17,45 @@
 
 package org.apache.shardingsphere.infra.rewrite.context;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SQLRewriteContextTest {
+    
+    @Mock
+    private SQLStatementContext sqlStatementContext;
+    
+    @Mock
+    private SQLToken sqlToken;
+    
+    @Mock
+    private OptionalSQLTokenGenerator optionalSQLTokenGenerator;
+    
+    @Before
+    public void setUp() {
+        when(optionalSQLTokenGenerator.generateSQLToken(sqlStatementContext)).thenReturn(sqlToken);
+        when(optionalSQLTokenGenerator.isGenerateSQLToken(sqlStatementContext)).thenReturn(true);
+    }
     
     @Test
     public void assertInsertStatementContext() {
@@ -42,7 +67,15 @@ public class SQLRewriteContextTest {
     @Test
     public void assertNotInsertStatementContext() {
         SelectStatementContext statementContext = mock(SelectStatementContext.class);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(SchemaMetaData.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(SchemaMetaData.class), statementContext, "SELECT * FROM tbl", Collections.singletonList(1));
         assertThat(sqlRewriteContext.getParameterBuilder(), instanceOf(StandardParameterBuilder.class));
+    }
+    
+    @Test
+    public void assertGenerateSQLTokens() {
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(SchemaMetaData.class), sqlStatementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
+        sqlRewriteContext.addSQLTokenGenerators(Lists.newArrayList(optionalSQLTokenGenerator));
+        sqlRewriteContext.generateSQLTokens();
+        assertThat(sqlRewriteContext.getSqlTokens().get(0), instanceOf(SQLToken.class));
     }
 }
