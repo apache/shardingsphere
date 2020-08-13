@@ -239,6 +239,37 @@ public final class SchemaChangedListenerTest {
         assertThat(((SchemaAddedEvent) actual).getRuleConfigurations().iterator().next(), instanceOf(MasterSlaveRuleConfiguration.class));
     }
     
+    @Test
+    public void assertCreateSchemaNamesUpdatedEventForAdd() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema", "sharding_db,masterslave_db,encrypt_db,shadow_db", ChangedType.UPDATED);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(SchemaAddedEvent.class));
+        assertThat(((SchemaAddedEvent) actual).getShardingSchemaName(), is("shadow_db"));
+    }
+    
+    @Test
+    public void assertCreateSchemaNamesUpdatedEventForDelete() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema", "sharding_db,masterslave_db", ChangedType.UPDATED);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(SchemaDeletedEvent.class));
+        assertThat(((SchemaDeletedEvent) actual).getShardingSchemaName(), is("encrypt_db"));
+    }
+    
+    @Test
+    public void assertCreateSchemaNamesUpdatedEventForIgnore() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema", "sharding_db,masterslave_db,encrypt_db", ChangedType.UPDATED);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(IgnoredOrchestrationEvent.class));
+    }
+    
+    @Test
+    public void assertCreateSchemaNameAddEvent() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/shadow_db", "", ChangedType.ADDED);
+        OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(SchemaAddedEvent.class));
+        assertThat(((SchemaAddedEvent) actual).getShardingSchemaName(), is("shadow_db"));
+    }
+    
     @SneakyThrows
     private String readYAML(final String yamlFile) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
