@@ -107,6 +107,15 @@ public final class EncryptRule implements ShardingSphereRule {
     }
     
     /**
+     * Get encrypt table names.
+     *
+     * @return encrypt table names
+     */
+    public Collection<String> getEncryptTableNames() {
+        return tables.keySet();
+    }
+    
+    /**
      * Find encrypt table.
      * 
      * @param logicTable logic table
@@ -117,35 +126,39 @@ public final class EncryptRule implements ShardingSphereRule {
     }
     
     /**
-     * Get logic column of cipher column.
-     *
-     * @param logicTable logic table
-     * @param cipherColumn cipher column
-     * @return logic column
-     */
-    public String getLogicColumnOfCipher(final String logicTable, final String cipherColumn) {
-        return tables.get(logicTable).getLogicColumnOfCipher(cipherColumn);
-    }
-    
-    /**
-     * Find plain column.
+     * Find encryptor.
      *
      * @param logicTable logic table name
      * @param logicColumn logic column name
-     * @return plain column
+     * @return encryptor
      */
-    public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
-        Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
-        return originColumnName.isPresent() && tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.empty();
+    public Optional<EncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn) {
+        return tables.containsKey(logicTable) ? tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
     }
-
-    private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {
-        for (String each : tables.get(logicTable).getLogicColumns()) {
-            if (logicColumn.equalsIgnoreCase(each)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
+    
+    /**
+     * get encrypt values.
+     *
+     * @param logicTable logic table
+     * @param logicColumn logic column
+     * @param originalValues original values
+     * @return encrypt values
+     */
+    public List<Object> getEncryptValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
+        Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
+        Preconditions.checkArgument(encryptor.isPresent(), String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
+        return originalValues.stream().map(input -> null == input ? null : String.valueOf(encryptor.get().encrypt(input.toString()))).collect(Collectors.toList());
+    }
+    
+    /**
+     * Is cipher column or not.
+     *
+     * @param tableName table name
+     * @param columnName column name
+     * @return cipher column or not
+     */
+    public boolean isCipherColumn(final String tableName, final String columnName) {
+        return tables.containsKey(tableName) && tables.get(tableName).getCipherColumns().stream().anyMatch(each -> each.equalsIgnoreCase(columnName));
     }
     
     /**
@@ -160,14 +173,24 @@ public final class EncryptRule implements ShardingSphereRule {
     }
     
     /**
-     * Is cipher column or not.
+     * Get logic column of cipher column.
      *
-     * @param tableName table name
-     * @param columnName column name
-     * @return cipher column or not
+     * @param logicTable logic table
+     * @param cipherColumn cipher column
+     * @return logic column
      */
-    public boolean isCipherColumn(final String tableName, final String columnName) {
-        return tables.containsKey(tableName) && tables.get(tableName).getCipherColumns().stream().anyMatch(each -> each.equalsIgnoreCase(columnName));
+    public String getLogicColumnOfCipher(final String logicTable, final String cipherColumn) {
+        return tables.get(logicTable).getLogicColumnOfCipher(cipherColumn);
+    }
+    
+    /**
+     * Get logic and cipher columns.
+     *
+     * @param logicTable logic table 
+     * @return logic and cipher columns
+     */
+    public Map<String, String> getLogicAndCipherColumns(final String logicTable) {
+        return tables.containsKey(logicTable) ? tables.get(logicTable).getLogicAndCipherColumns() : Collections.emptyMap();
     }
     
     /**
@@ -192,6 +215,22 @@ public final class EncryptRule implements ShardingSphereRule {
     }
     
     /**
+     * Get encrypt assisted query values.
+     *
+     * @param logicTable logic table
+     * @param logicColumn logic column
+     * @param originalValues original values
+     * @return assisted query values
+     */
+    public List<Object> getEncryptAssistedQueryValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
+        Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
+        Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
+                String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
+        return originalValues.stream().map(input -> null == input
+                ? null : ((QueryAssistedEncryptAlgorithm) encryptor.get()).queryAssistedEncrypt(input.toString())).collect(Collectors.toList());
+    }
+    
+    /**
      * Get assisted query and plain columns.
      *
      * @param logicTable logic table name
@@ -209,75 +248,23 @@ public final class EncryptRule implements ShardingSphereRule {
     }
     
     /**
-     * Get logic and cipher columns.
-     *
-     * @param logicTable logic table 
-     * @return logic and cipher columns
-     */
-    public Map<String, String> getLogicAndCipherColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getLogicAndCipherColumns() : Collections.emptyMap();
-    }
-    
-    /**
-     * Get logic and plain columns.
-     *
-     * @param logicTable logic table 
-     * @return logic and plain columns
-     */
-    public Map<String, String> getLogicAndPlainColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getLogicAndPlainColumns() : Collections.emptyMap();
-    }
-    
-    /**
-     * Get encrypt assisted query values.
-     *
-     * @param logicTable logic table
-     * @param logicColumn logic column
-     * @param originalValues original values
-     * @return assisted query values
-     */
-    public List<Object> getEncryptAssistedQueryValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
-        Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
-                String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
-        return originalValues.stream().map(input -> null == input
-                ? null : ((QueryAssistedEncryptAlgorithm) encryptor.get()).queryAssistedEncrypt(input.toString())).collect(Collectors.toList());
-    }
-    
-    /**
-     * get encrypt values.
-     *
-     * @param logicTable logic table
-     * @param logicColumn logic column
-     * @param originalValues original values
-     * @return encrypt values
-     */
-    public List<Object> getEncryptValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
-        Preconditions.checkArgument(encryptor.isPresent(), String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
-        return originalValues.stream().map(input -> null == input ? null : String.valueOf(encryptor.get().encrypt(input.toString()))).collect(Collectors.toList());
-    }
-    
-    /**
-     * Find encryptor.
+     * Find plain column.
      *
      * @param logicTable logic table name
      * @param logicColumn logic column name
-     * @return encryptor
+     * @return plain column
      */
-    public Optional<EncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn) {
-        if (!tables.containsKey(logicTable)) {
-            return Optional.empty();
-        }
-        return tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get);
+    public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
+        Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
+        return originColumnName.isPresent() && tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.empty();
     }
     
-    /**
-     * Get encrypt table names.
-     *
-     * @return encrypt table names
-     */
-    public Collection<String> getEncryptTableNames() {
-        return tables.keySet();
+    private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {
+        for (String each : tables.get(logicTable).getLogicColumns()) {
+            if (logicColumn.equalsIgnoreCase(each)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
 }

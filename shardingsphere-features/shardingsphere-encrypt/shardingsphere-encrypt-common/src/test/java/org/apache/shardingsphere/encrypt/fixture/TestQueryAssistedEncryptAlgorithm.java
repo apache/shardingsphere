@@ -50,6 +50,6 @@ public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEnc
     
     @Override
     public String getType() {
-        return "assistedTest";
+        return "QUERY_ASSISTED_TEST";
     }
 }
