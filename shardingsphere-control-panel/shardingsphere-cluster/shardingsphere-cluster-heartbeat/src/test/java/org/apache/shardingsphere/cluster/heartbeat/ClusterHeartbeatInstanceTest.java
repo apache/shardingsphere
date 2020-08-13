@@ -17,19 +17,37 @@
 
 package org.apache.shardingsphere.cluster.heartbeat;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
+import org.apache.shardingsphere.cluster.heartbeat.detect.HeartbeatHandler;
+import org.apache.shardingsphere.orchestration.core.registry.RegistryCenter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
+import java.util.HashMap;
+
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ClusterHeartbeatInstanceTest {
     
     private static final ClusterHeartbeatInstance INSTANCE = ClusterHeartbeatInstance.getInstance();
+    
+    @Mock
+    private RegistryCenter registryCenter;
+    
+    @Mock
+    private HeartbeatHandler heartbeatHandler;
     
     @Before
     public void setUp() {
@@ -44,6 +62,16 @@ public final class ClusterHeartbeatInstanceTest {
     @Test
     public void assertGetInstance() {
         assertNotNull(ClusterHeartbeatInstance.getInstance());
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    @Test
+    public void assertDetect() {
+        FieldSetter.setField(INSTANCE, ClusterHeartbeatInstance.class.getDeclaredField("registryCenter"), registryCenter);
+        FieldSetter.setField(INSTANCE, ClusterHeartbeatInstance.class.getDeclaredField("heartbeatHandler"), heartbeatHandler);
+        when(registryCenter.loadDisabledDataSources()).thenReturn(Arrays.asList("logic_db.ds_0"));
+        INSTANCE.detect(new HashMap<>());
+        verify(heartbeatHandler).handle(anyMap(), anyCollection());
     }
     
     @After

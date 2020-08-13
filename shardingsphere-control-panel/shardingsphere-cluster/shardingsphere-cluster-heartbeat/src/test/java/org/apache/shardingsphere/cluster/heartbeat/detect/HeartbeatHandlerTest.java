@@ -23,6 +23,7 @@ import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -141,6 +142,21 @@ public final class HeartbeatHandlerTest {
         response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().forEachRemaining(each -> assertTrue(each.isEnable()));
     }
     
+    @Test
+    public void assertHandleWithDisableDataSource() {
+        handler.init(getHeartbeatConfiguration(true));
+        HeartbeatResponse response = handler.handle(getSchemaContext(), Arrays.asList("sharding_db.ds_0"));
+        assertNotNull(response);
+        assertNotNull(response.getHeartbeatResultMap());
+        assertTrue(response.getHeartbeatResultMap().containsKey(SCHEMA_NAME));
+        assertThat(response.getHeartbeatResultMap().get(SCHEMA_NAME).size(), is(1));
+        HeartbeatResult heartbeatResult = response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().next();
+        assertNotNull(heartbeatResult);
+        assertThat(heartbeatResult.getDataSourceName(), is(DATA_SOURCE_0));
+        assertFalse(heartbeatResult.isEnable());
+        assertTrue(heartbeatResult.isDisabled());
+    }
+    
     private HeartbeatConfiguration getHeartbeatConfiguration(final boolean retry) {
         HeartbeatConfiguration result = new HeartbeatConfiguration();
         result.setSql(DETECT_SQL);
@@ -193,5 +209,10 @@ public final class HeartbeatHandlerTest {
             doThrow(SQLException.class).when(result).executeQuery();
         }
         return result;
+    }
+    
+    @After
+    public void close() {
+        handler.close();
     }
 }
