@@ -92,6 +92,7 @@ public final class ShardingSphereVisitor extends ShardingSphereStatementBaseVisi
         result.setLogicTable(ctx.tableName().getText());
         result.setAlgorithmType(ctx.tableRuleDefinition().strategyType().getText());
         result.setShardingColumn(ctx.tableRuleDefinition().strategyDefinition().columName().getText());
+        // TODO Future feature.
         result.setDataSources(new LinkedList<>());
         CollectionValue<String> props = (CollectionValue) visit(ctx.tableRuleDefinition().strategyDefinition().strategyProps());
         result.setProperties(props.getValue());
