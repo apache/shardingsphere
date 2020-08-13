@@ -21,10 +21,13 @@ import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.rdl.parser.binder.context.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.rdl.parser.binder.generator.SQLStatementContextConverter;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.TableRuleSegment;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
+
+import java.util.Properties;
 
 /**
  * Create sharding rule statement context converter.
@@ -34,33 +37,36 @@ public final class CreateShardingRuleStatementContextConverter implements SQLSta
     @Override
     public YamlShardingRuleConfiguration convert(final CreateShardingRuleStatementContext context) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
-        addYamlShardingSphereAlgorithmConfiguration(context, result);
-        addYamlShardingAutoTableRuleConfiguration(context, result);
+        for (TableRuleSegment each : context.getSqlStatement().getTables()) {
+            result.getShardingAlgorithms().put(getAlgorithmName(each.getLogicTable(), each.getAlgorithmType()),
+                    createAlgorithmConfiguration(each, context.getAlgorithmProperties(each)));
+            result.getAutoTables().put(each.getLogicTable(), createAutoTableRuleConfiguration(each));
+        }
         return result;
     }
     
-    private void addYamlShardingSphereAlgorithmConfiguration(final CreateShardingRuleStatementContext context, final YamlShardingRuleConfiguration ruleConfiguration) {
-        YamlShardingSphereAlgorithmConfiguration algorithmConfiguration = new YamlShardingSphereAlgorithmConfiguration();
-        algorithmConfiguration.setType(context.getAlgorithmType());
-        algorithmConfiguration.setProps(context.getAlgorithmProperties());
-        ruleConfiguration.getShardingAlgorithms().put(getAlgorithmName(context.getLogicTable(), context.getAlgorithmType()), algorithmConfiguration);
+    private YamlShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final TableRuleSegment segment, final Properties properties) {
+        YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
+        result.setType(segment.getAlgorithmType());
+        result.setProps(properties);
+        return result;
     }
     
-    private void addYamlShardingAutoTableRuleConfiguration(final CreateShardingRuleStatementContext context, final YamlShardingRuleConfiguration ruleConfiguration) {
-        YamlShardingAutoTableRuleConfiguration tableRuleConfiguration = new YamlShardingAutoTableRuleConfiguration();
-        tableRuleConfiguration.setLogicTable(context.getLogicTable());
-        tableRuleConfiguration.setActualDataSources(Joiner.on(",").join(context.getDataSources()));
-        tableRuleConfiguration.setShardingStrategy(createYamlShardingStrategyConfiguration(context));
-        ruleConfiguration.getAutoTables().put(context.getLogicTable(), tableRuleConfiguration);
+    private YamlShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration(final TableRuleSegment segment) {
+        YamlShardingAutoTableRuleConfiguration result = new YamlShardingAutoTableRuleConfiguration();
+        result.setLogicTable(segment.getLogicTable());
+        result.setActualDataSources(Joiner.on(",").join(segment.getDataSources()));
+        result.setShardingStrategy(createStrategyConfiguration(segment));
+        return result;
     }
     
-    private YamlShardingStrategyConfiguration createYamlShardingStrategyConfiguration(final CreateShardingRuleStatementContext context) {
-        YamlShardingStrategyConfiguration strategy = new YamlShardingStrategyConfiguration();
+    private YamlShardingStrategyConfiguration createStrategyConfiguration(final TableRuleSegment segment) {
+        YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         YamlStandardShardingStrategyConfiguration standard = new YamlStandardShardingStrategyConfiguration();
-        standard.setShardingColumn(context.getShardingColumn());
-        standard.setShardingAlgorithmName(getAlgorithmName(context.getLogicTable(), context.getAlgorithmType()));
-        strategy.setStandard(standard);
-        return strategy;
+        standard.setShardingColumn(segment.getShardingColumn());
+        standard.setShardingAlgorithmName(getAlgorithmName(segment.getLogicTable(), segment.getAlgorithmType()));
+        result.setStandard(standard);
+        return result;
     }
     
     private String getAlgorithmName(final String tableName, final String algorithmType) {
