@@ -12,7 +12,8 @@ before_script:
   - echo "MAVEN_OPTS='-Xmx1024m -XX:MaxMetaspaceSize=256m'" > ~/.mavenrc
 
 script:
-  - travis_wait 30 mvn --batch-mode --no-transfer-progress clean install cobertura:cobertura coveralls:report -DrepoToken="${COVERALLS_REPO_TOKEN}" -Dmaven.javadoc.skip=true
+  - travis_wait 30 mvn --batch-mode --no-transfer-progress clean install cobertura:cobertura -Dmaven.javadoc.skip=true
+  - echo coveralls:report -DrepoToken="${COVERALLS_REPO_TOKEN}"
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
