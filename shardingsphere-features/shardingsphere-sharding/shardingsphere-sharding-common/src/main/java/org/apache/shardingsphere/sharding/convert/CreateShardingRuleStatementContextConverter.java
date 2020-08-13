@@ -32,33 +32,33 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStan
 public final class CreateShardingRuleStatementContextConverter implements SQLStatementContextConverter<CreateShardingRuleStatementContext, YamlShardingRuleConfiguration> {
     
     @Override
-    public YamlShardingRuleConfiguration convert(final CreateShardingRuleStatementContext sqlStatement) {
+    public YamlShardingRuleConfiguration convert(final CreateShardingRuleStatementContext context) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
-        addYamlShardingSphereAlgorithmConfiguration(sqlStatement, result);
-        addYamlShardingAutoTableRuleConfiguration(sqlStatement, result);
+        addYamlShardingSphereAlgorithmConfiguration(context, result);
+        addYamlShardingAutoTableRuleConfiguration(context, result);
         return result;
     }
     
-    private void addYamlShardingSphereAlgorithmConfiguration(final CreateShardingRuleStatementContext sqlStatement, final YamlShardingRuleConfiguration ruleConfiguration) {
+    private void addYamlShardingSphereAlgorithmConfiguration(final CreateShardingRuleStatementContext context, final YamlShardingRuleConfiguration ruleConfiguration) {
         YamlShardingSphereAlgorithmConfiguration algorithmConfiguration = new YamlShardingSphereAlgorithmConfiguration();
-        algorithmConfiguration.setType(sqlStatement.getAlgorithmType());
-        algorithmConfiguration.setProps(sqlStatement.getAlgorithmProperties());
-        ruleConfiguration.getShardingAlgorithms().put(getAlgorithmName(sqlStatement.getLogicTable(), sqlStatement.getAlgorithmType()), algorithmConfiguration);
+        algorithmConfiguration.setType(context.getAlgorithmType());
+        algorithmConfiguration.setProps(context.getAlgorithmProperties());
+        ruleConfiguration.getShardingAlgorithms().put(getAlgorithmName(context.getLogicTable(), context.getAlgorithmType()), algorithmConfiguration);
     }
     
-    private void addYamlShardingAutoTableRuleConfiguration(final CreateShardingRuleStatementContext sqlStatement, final YamlShardingRuleConfiguration ruleConfiguration) {
+    private void addYamlShardingAutoTableRuleConfiguration(final CreateShardingRuleStatementContext context, final YamlShardingRuleConfiguration ruleConfiguration) {
         YamlShardingAutoTableRuleConfiguration tableRuleConfiguration = new YamlShardingAutoTableRuleConfiguration();
-        tableRuleConfiguration.setLogicTable(sqlStatement.getLogicTable());
-        tableRuleConfiguration.setActualDataSources(Joiner.on(",").join(sqlStatement.getDataSources()));
-        tableRuleConfiguration.setShardingStrategy(createYamlShardingStrategyConfiguration(sqlStatement));
-        ruleConfiguration.getAutoTables().put(sqlStatement.getLogicTable(), tableRuleConfiguration);
+        tableRuleConfiguration.setLogicTable(context.getLogicTable());
+        tableRuleConfiguration.setActualDataSources(Joiner.on(",").join(context.getDataSources()));
+        tableRuleConfiguration.setShardingStrategy(createYamlShardingStrategyConfiguration(context));
+        ruleConfiguration.getAutoTables().put(context.getLogicTable(), tableRuleConfiguration);
     }
     
-    private YamlShardingStrategyConfiguration createYamlShardingStrategyConfiguration(final CreateShardingRuleStatementContext sqlStatement) {
+    private YamlShardingStrategyConfiguration createYamlShardingStrategyConfiguration(final CreateShardingRuleStatementContext context) {
         YamlShardingStrategyConfiguration strategy = new YamlShardingStrategyConfiguration();
         YamlStandardShardingStrategyConfiguration standard = new YamlStandardShardingStrategyConfiguration();
-        standard.setShardingColumn(sqlStatement.getShardingColumn());
-        standard.setShardingAlgorithmName(getAlgorithmName(sqlStatement.getLogicTable(), sqlStatement.getAlgorithmType()));
+        standard.setShardingColumn(context.getShardingColumn());
+        standard.setShardingAlgorithmName(getAlgorithmName(context.getLogicTable(), context.getAlgorithmType()));
         strategy.setStandard(standard);
         return strategy;
     }

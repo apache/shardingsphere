@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
@@ -58,8 +59,7 @@ public final class RDLExecuteEngineTest {
     }
     
     private void createDataSourcesContext() {
-        dataSourcesContext = mock(CreateDataSourcesStatementContext.class);
-        when(dataSourcesContext.getUrls()).thenReturn(Collections.emptyList());
+        dataSourcesContext = new CreateDataSourcesStatementContext(new CreateDataSourcesStatement(Collections.emptyList()), new MySQLDatabaseType());
     }
     
     private void createRuleContext() {
