@@ -18,33 +18,34 @@
 package org.apache.shardingsphere.sharding.convert;
 
 import org.apache.shardingsphere.rdl.parser.binder.context.CreateShardingRuleStatementContext;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.TableRuleSegment;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Properties;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class CreateShardingRuleStatementContextConverterTest {
+    
+    private TableRuleSegment segment;
     
     private CreateShardingRuleStatementContext context;
     
     @Before
     public void setUp() {
-        context = mock(CreateShardingRuleStatementContext.class);
-        when(context.getLogicTable()).thenReturn("t_order");
-        when(context.getDataSources()).thenReturn(Arrays.asList("ds0", "ds1"));
-        when(context.getShardingColumn()).thenReturn("order_id");
-        when(context.getAlgorithmType()).thenReturn("MOD");
-        Properties properties = new Properties();
-        properties.setProperty("sharding.count", "2");
-        when(context.getAlgorithmProperties()).thenReturn(properties);
+        segment = new TableRuleSegment();
+        segment.setLogicTable("t_order");
+        segment.setDataSources(Arrays.asList("ds0", "ds1"));
+        segment.setShardingColumn("order_id");
+        segment.setAlgorithmType("MOD");
+        segment.setProperties(Collections.singleton("2"));
+        context = new CreateShardingRuleStatementContext(new CreateShardingRuleStatement(Collections.singleton(segment)));
     }
     
     @Test
@@ -52,9 +53,9 @@ public class CreateShardingRuleStatementContextConverterTest {
         YamlShardingRuleConfiguration rule = new CreateShardingRuleStatementContextConverter().convert(context);
         assertTrue(rule.getTables().isEmpty());
         assertThat(rule.getAutoTables().size(), is(1));
-        assertThat(rule.getAutoTables().get(context.getLogicTable()).getActualDataSources(), is("ds0,ds1"));
-        assertThat(rule.getAutoTables().get(context.getLogicTable()).getShardingStrategy().getStandard().getShardingColumn(), is("order_id"));
-        assertThat(rule.getAutoTables().get(context.getLogicTable()).getShardingStrategy().getStandard().getShardingAlgorithmName(), is("t_order_MOD"));
+        assertThat(rule.getAutoTables().get(segment.getLogicTable()).getActualDataSources(), is("ds0,ds1"));
+        assertThat(rule.getAutoTables().get(segment.getLogicTable()).getShardingStrategy().getStandard().getShardingColumn(), is("order_id"));
+        assertThat(rule.getAutoTables().get(segment.getLogicTable()).getShardingStrategy().getStandard().getShardingAlgorithmName(), is("t_order_MOD"));
         assertTrue(rule.getShardingAlgorithms().containsKey("t_order_MOD"));
         assertThat(rule.getShardingAlgorithms().get("t_order_MOD").getType(), is("MOD"));
     }

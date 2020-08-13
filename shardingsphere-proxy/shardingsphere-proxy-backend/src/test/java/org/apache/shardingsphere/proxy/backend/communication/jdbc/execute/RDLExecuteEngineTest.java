@@ -31,6 +31,7 @@ import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStat
 import org.apache.shardingsphere.rdl.parser.binder.context.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.TableRuleSegment;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,12 +40,10 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class RDLExecuteEngineTest {
     
@@ -63,14 +62,13 @@ public final class RDLExecuteEngineTest {
     }
     
     private void createRuleContext() {
-        ruleContext = mock(CreateShardingRuleStatementContext.class);
-        when(ruleContext.getLogicTable()).thenReturn("t_order");
-        when(ruleContext.getDataSources()).thenReturn(Arrays.asList("ds0", "ds1"));
-        when(ruleContext.getShardingColumn()).thenReturn("order_id");
-        when(ruleContext.getAlgorithmType()).thenReturn("MOD");
-        Properties properties = new Properties();
-        properties.setProperty("sharding.count", "2");
-        when(ruleContext.getAlgorithmProperties()).thenReturn(properties);
+        TableRuleSegment segment = new TableRuleSegment();
+        segment.setLogicTable("t_order");
+        segment.setDataSources(Arrays.asList("ds0", "ds1"));
+        segment.setShardingColumn("order_id");
+        segment.setAlgorithmType("MOD");
+        segment.setProperties(Collections.singleton("2"));
+        ruleContext = new CreateShardingRuleStatementContext(new CreateShardingRuleStatement(Collections.singleton(segment)));
     }
     
     @Test
