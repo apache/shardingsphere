@@ -49,11 +49,11 @@ public final class EncryptRuleTest {
     @Before
     public void setUp() {
         Properties props = new Properties();
-        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration(column, "cipher_pwd", "", "plain_pwd", "aes");
-        EncryptColumnRuleConfiguration idNumberConfig = new EncryptColumnRuleConfiguration(idNumber, "cipher_id_number", "", "plain_id_number", "aes");
+        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration(column, "cipher_pwd", "", "plain_pwd", "AES");
+        EncryptColumnRuleConfiguration idNumberConfig = new EncryptColumnRuleConfiguration(idNumber, "cipher_id_number", "", "plain_id_number", "AES");
         ShardingSphereAlgorithmConfiguration encryptAlgorithmConfiguration = new ShardingSphereAlgorithmConfiguration("assistedTest", props);
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(table, Arrays.asList(columnConfig, idNumberConfig));
-        encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("aes", encryptAlgorithmConfiguration));
+        encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("AES", encryptAlgorithmConfiguration));
     }
     
     @Test
@@ -122,6 +122,16 @@ public final class EncryptRuleTest {
     @Test
     public void assertGetLogicAndCipherColumns() {
         assertFalse(new EncryptRule(encryptRuleConfig).getLogicAndCipherColumns(table).isEmpty());
+    }
+    
+    @Test
+    public void assertFindEncryptor() {
+        assertTrue(new EncryptRule(encryptRuleConfig).findEncryptor(table, column).isPresent());
+    }
+    
+    @Test
+    public void assertNotFindEncryptor() {
+        assertFalse(new EncryptRule(encryptRuleConfig).findEncryptor(table, "other_column").isPresent());
     }
     
     @Test
