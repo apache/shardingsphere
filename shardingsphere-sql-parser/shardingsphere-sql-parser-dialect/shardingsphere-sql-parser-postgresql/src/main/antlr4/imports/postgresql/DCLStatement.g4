@@ -78,11 +78,7 @@ onObjectClause
     ;
 
 createUser
-    : CREATE USER roleSpec (WITH)? optRoleList
-    ;
-
-optRoleList
-    : createOptRoleElem*
+    : CREATE USER roleSpec (WITH)? createOptRoleElem*
     ;
 
 createOptRoleElem
@@ -126,7 +122,7 @@ alterOptRoleList
     ;
 
 createRole
-    : CREATE ROLE roleSpec (WITH)? optRoleList
+    : CREATE ROLE roleSpec (WITH)? createOptRoleElem*
     ;
 
 dropRole
@@ -135,4 +131,8 @@ dropRole
 
 alterRole
     : ALTER ROLE alterUserClauses
+    ;
+
+alterSchema
+    : ALTER SCHEMA name ( RENAME TO name | OWNER TO roleSpec)
     ;

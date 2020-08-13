@@ -429,7 +429,44 @@ whereOrCurrentClause
 	| WHERE CURRENT OF cursorName
 	;
 
-
 havingClause
     : HAVING aExpr
+    ;
+
+call
+    : CALL funcName LP_ callClauses? RP_
+    ;
+
+callClauses
+    : (ALL | DISTINCT)? funcArgList sortClause?
+    | VARIADIC funcArgExpr sortClause
+    | funcArgList COMMA_ VARIADIC funcArgExpr sortClause
+    | ASTERISK_
+    ;
+
+doStatement
+    : DO dostmtOptList
+    ;
+
+dostmtOptList
+    : dostmtOptItem+
+    ;
+
+dostmtOptItem
+    : STRING_ | LANGUAGE nonReservedWordOrSconst
+    ;
+
+lock
+    : LOCK (TABLE)? relationExprList (IN lockType MODE)? (NOWAIT)?
+    ;
+
+lockType
+    : ACCESS SHARE
+    | ROW SHARE
+    | ROW EXCLUSIVE
+    | SHARE UPDATE EXCLUSIVE
+    | SHARE
+    | SHARE ROW EXCLUSIVE
+    | EXCLUSIVE
+    | ACCESS EXCLUSIVE
     ;

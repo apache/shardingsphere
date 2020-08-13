@@ -1340,7 +1340,7 @@ signedIconst
     | MINUS_ NUMBER_
     ;
 
-optBooleanOrString
+booleanOrString
     : TRUE
     | FALSE
     | ON
@@ -1429,7 +1429,7 @@ varList
     ;
 
 varValue
-    : optBooleanOrString | numericOnly
+    : booleanOrString | numericOnly
     ;
 
 zoneValue
@@ -1640,10 +1640,6 @@ funcArgsList
     : funcArg (COMMA_ funcArg)*
     ;
 
-optEncoding
-    : STRING_ | DEFAULT
-    ;
-
 nonReservedWordOrSconst
     : nonReservedWord
     | STRING_
@@ -1717,4 +1713,40 @@ resetRest
 genericReset
     : varName
     | ALL
+    ;
+
+relationExprList
+    : relationExpr (COMMA_ relationExpr)*
+    ;
+
+relationExpr
+    : qualifiedName
+    | qualifiedName ASTERISK_
+    | ONLY qualifiedName
+    | ONLY LP_ qualifiedName RP_
+    ;
+
+commonFuncOptItem
+    : CALLED ON NULL INPUT
+    | RETURNS NULL ON NULL INPUT
+    | STRICT
+    | IMMUTABLE
+    | STABLE
+    | VOLATILE
+    | EXTERNAL SECURITY DEFINER
+    | EXTERNAL SECURITY INVOKER
+    | SECURITY DEFINER
+    | SECURITY INVOKER
+    | LEAKPROOF
+    | NOT LEAKPROOF
+    | COST numericOnly
+    | ROWS numericOnly
+    | SUPPORT anyName
+    | functionSetResetClause
+    | PARALLEL colId
+    ;
+
+functionSetResetClause
+    : SET setRestMore
+    | variableResetStmt
     ;

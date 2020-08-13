@@ -131,7 +131,7 @@ dropDatabase
     ;
 
  createDatabaseSpecification_
-    :  createdbOptName (EQ_)? (signedIconst | optBooleanOrString | DEFAULT)
+    :  createdbOptName (EQ_)? (signedIconst | booleanOrString | DEFAULT)
     ;
 
 createdbOptName
@@ -489,7 +489,7 @@ createdbOptItems
 
 createdbOptItem
     : createdbOptName (EQ_)? signedIconst
-    | createdbOptName (EQ_)? optBooleanOrString
+    | createdbOptName (EQ_)? booleanOrString
     | createdbOptName (EQ_)? DEFAULT
     ;
 
@@ -913,4 +913,109 @@ alterMaterializedViewClauses
     | (IF EXISTS)? qualifiedName RENAME TO qualifiedName
     | (IF EXISTS)? qualifiedName SET SCHEMA schemaName
     | ALL IN TABLESPACE name (OWNED BY roleList) SET TABLESPACE name NOWAIT?
+    ;
+
+declare
+    : DECLARE name cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
+    ;
+
+cursorOptions
+    : cursorOption*
+    ;
+
+cursorOption
+    : NO SCROLL
+    | SCROLL
+    | BINARY
+    | INSENSITIVE
+    ;
+
+execute
+    : EXECUTE name executeParamClause
+    ;
+
+createMaterializedView
+    : CREATE (UNLOGGED)? MATERIALIZED VIEW (IF NOT EXISTS)? createMvTarget AS select (WITH DATA | WITH NO DATA)?
+    ;
+
+createMvTarget
+    : qualifiedName optColumnList? tableAccessMethodClause (WITH reloptions)? (TABLESPACE name)?
+    ;
+
+refreshMatViewStmt
+    : REFRESH MATERIALIZED VIEW (CONCURRENTLY)? qualifiedName (WITH DATA | WITH NO DATA)?
+    ;
+
+alterPolicy
+    : ALTER POLICY (IF EXISTS)? name ON qualifiedName alterPolicyClauses
+    ;
+
+alterPolicyClauses
+    : (TO roleList)? (USING LP_ aExpr RP_)? (WITH CHECK LP_ aExpr RP_)?
+    | RENAME TO name
+    ;
+
+alterProcedure
+    : ALTER PROCEDURE functionWithArgtypes alterProcedureClauses
+    ;
+
+alterProcedureClauses
+    : alterfuncOptList (RESTRICT)?
+    | RENAME TO name
+    | (NO)? DEPENDS ON EXTENSION name
+    | SET SCHEMA name
+    | OWNER TO roleSpec
+    ;
+
+alterfuncOptList
+    : commonFuncOptItem+
+    ;
+
+alterFunction
+    : ALTER FUNCTION functionWithArgtypes alterFunctionClauses
+    ;
+
+alterFunctionClauses
+    : alterfuncOptList (RESTRICT)?
+    | RENAME TO name
+    | (NO)? DEPENDS ON EXTENSION name
+    | SET SCHEMA name
+    | OWNER TO roleSpec
+    ;
+
+alterPublication
+    : ALTER PUBLICATION name
+    (RENAME TO name
+    | OWNER TO roleSpec
+    | SET definition
+    | (ADD | SET | DROP)  TABLE relationExprList)
+    ;
+
+alterRoutine
+    : ALTER ROUTINE alterProcedureClauses
+    ;
+
+alterRule
+    : ALTER RULE ON qualifiedName RENAME TO name
+    ;
+
+alterSequence
+    : ALTER SEQUENCE (IF EXISTS)? qualifiedName alterSequenceClauses
+    ;
+
+alterSequenceClauses
+    : alterTableCmds | seqOptList | RENAME TO name | SET SCHEMA name
+    ;
+
+alterServer
+    : ALTER SERVER name
+    ( foreignServerVersion alterGenericOptions
+    | foreignServerVersion
+    | alterGenericOptions
+    | RENAME TO name
+    | OWNER TO roleSpec)
+    ;
+
+foreignServerVersion
+    : VERSION (STRING_ | NULL)
     ;

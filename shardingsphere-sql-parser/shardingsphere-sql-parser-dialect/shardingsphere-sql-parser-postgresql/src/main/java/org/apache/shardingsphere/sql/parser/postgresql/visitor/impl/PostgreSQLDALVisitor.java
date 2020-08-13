@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.postgresql.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DALVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ConfigurationParameterClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ResetParameterContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetContext;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.postgresql.visitor.PostgreSQLVisitor
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ShowStatement;
 
@@ -83,5 +85,10 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
     @Override
     public ASTNode visitResetParameter(final ResetParameterContext ctx) {
         return new ResetParameterStatement();
+    }
+    
+    @Override
+    public ASTNode visitAnalyze(final PostgreSQLStatementParser.AnalyzeContext ctx) {
+        return new AnalyzeTableStatement();
     }
 }

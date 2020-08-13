@@ -31,7 +31,7 @@ set
     | TIME ZONE zoneValue
     | CATALOG STRING_
     | SCHEMA STRING_
-    | NAMES optEncoding?
+    | NAMES encoding?
     | ROLE nonReservedWordOrSconst
     | SESSION AUTHORIZATION nonReservedWordOrSconst
     | SESSION AUTHORIZATION DEFAULT
@@ -58,13 +58,12 @@ explain
     : EXPLAIN
     (analyzeKeyword VERBOSE?
     | VERBOSE
-    | '(' explainOptionList ')')?
+    | LP_ explainOptionList RP_)?
     explainableStmt
     ;
 
-//TODO explainableStmt COMPLETE
 explainableStmt
-    : select | insert | update | delete
+    : select | insert | update | delete | declare | execute | createMaterializedView | refreshMatViewStmt
     ;
 
 explainOptionList
@@ -76,7 +75,7 @@ explainOptionElem
     ;
 
 explainOptionArg
-    : optBooleanOrString | numericOnly
+    : booleanOrString | numericOnly
     ;
 
 explainOptionName
@@ -120,7 +119,7 @@ vacAnalyzeOptionElem
     ;
 
 vacAnalyzeOptionArg
-    : optBooleanOrString | numericOnly
+    : booleanOrString | numericOnly
     ;
 
 vacAnalyzeOptionName

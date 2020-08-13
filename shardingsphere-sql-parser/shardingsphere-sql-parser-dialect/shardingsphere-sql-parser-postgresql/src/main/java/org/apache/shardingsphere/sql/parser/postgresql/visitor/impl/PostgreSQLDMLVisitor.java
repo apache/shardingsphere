@@ -106,7 +106,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
@@ -656,5 +658,15 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         }
         LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
+    }
+    
+    @Override
+    public ASTNode visitCall(final PostgreSQLStatementParser.CallContext ctx) {
+        return new CallStatement();
+    }
+    
+    @Override
+    public ASTNode visitDoStatement(final PostgreSQLStatementParser.DoStatementContext ctx) {
+        return new DoStatement();
     }
 }
