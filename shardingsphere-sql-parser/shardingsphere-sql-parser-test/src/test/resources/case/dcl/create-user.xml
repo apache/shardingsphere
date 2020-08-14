@@ -52,4 +52,6 @@
     <create-user sql-case-id="create_user_with_no_login" />
     <create-user sql-case-id="create_user_with_certificate" />
     <create-user sql-case-id="create_user_with_asym_key" />
+    <create-user sql-case-id="create_user_with_sysid" />
+    <create-user sql-case-id="create_user_with_group" />
 </sql-parser-test-cases>

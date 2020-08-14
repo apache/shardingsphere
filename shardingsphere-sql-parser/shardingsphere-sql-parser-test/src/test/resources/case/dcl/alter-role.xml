@@ -37,4 +37,6 @@
     <alter-role sql-case-id="alter_role_add_member" />
     <alter-role sql-case-id="alter_role_drop_member" />
     <alter-role sql-case-id="alter_role_rename" />
+    <alter-role sql-case-id="alter_role_createRole_and_createDB" />
+    <alter-role sql-case-id="alter_role_in_database_set" />
 </sql-parser-test-cases>

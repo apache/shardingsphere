@@ -37,4 +37,6 @@
     <sql-case id="alter_role_add_member" value="ALTER ROLE role1 ADD MEMBER member1" db-types="SQLServer" />
     <sql-case id="alter_role_drop_member" value="ALTER ROLE role1_bak DROP MEMBER member1" db-types="SQLServer" />
     <sql-case id="alter_role_rename" value="ALTER ROLE role1_bak WITH NAME = role1" db-types="SQLServer" />
+    <sql-case id="alter_role_createRole_and_createDB" value="ALTER ROLE miriam CREATEROLE CREATEDB" db-types="PostgreSQL" />
+    <sql-case id="alter_role_in_database_set" value="ALTER ROLE fred IN DATABASE devel SET client_min_messages = DEBUG" db-types="PostgreSQL" />
 </sql-cases>

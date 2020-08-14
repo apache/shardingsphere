@@ -38,11 +38,11 @@
     <sql-case id="rollbackToSavepoint" value="ROLLBACK TO savepoint1" />
     <sql-case id="setGlobalTransaction" value="SET GLOBAL TRANSACTION ISOLATION LEVEL REPEATABLE READ" />
     <sql-case id="setTransactionReadOnly" value="SET TRANSACTION READ ONLY" db-types="MySQL,Oracle,PostgreSQL" />
-    <sql-case id="setTransactionWithName" value="SET TRANSACTION NAME 'comment1'" db-types="Oracle,PostgreSQL,SQLServer" />
+    <sql-case id="setTransactionWithName" value="SET TRANSACTION NAME 'comment1'" db-types="Oracle,SQLServer" />
     <sql-case id="beginReadCommitted" value="BEGIN ISOLATION LEVEL READ COMMITTED" db-types="PostgreSQL" />
     <sql-case id="beginReadOnly" value="BEGIN READ ONLY" db-types="PostgreSQL" />
     <sql-case id="commitPrepare" value="COMMIT PREPARED transaction1" db-types="PostgreSQL" />
     <sql-case id="rollbackPrepare" value="ROLLBACK PREPARED transaction1" db-types="PostgreSQL" />
-    <sql-case id="setTransactionSnapshot" value="SET TRANSACTION SNAPSHOT snapshot1" db-types="PostgreSQL" />
+    <sql-case id="setTransactionSnapshot" value="SET TRANSACTION SNAPSHOT 'snapshot1'" db-types="PostgreSQL" />
     <sql-case id="setSessionTransaction" value="SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="PostgreSQL" />
 </sql-cases>

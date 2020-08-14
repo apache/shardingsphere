@@ -1161,7 +1161,7 @@ tableFuncElementList
     ;
 
 tableFuncElement
-    :  typeName collateClause
+    : colId typeName collateClause?
     ;
 
 collateClause
@@ -1340,7 +1340,7 @@ signedIconst
     | MINUS_ NUMBER_
     ;
 
-optBooleanOrString
+booleanOrString
     : TRUE
     | FALSE
     | ON
@@ -1429,7 +1429,7 @@ varList
     ;
 
 varValue
-    : identifier
+    : booleanOrString | numericOnly
     ;
 
 zoneValue
@@ -1502,16 +1502,16 @@ seqOptElem
     | CACHE numericOnly
     | CYCLE
     | NO CYCLE
-    | INCREMENT (BY)? numericOnly
+    | INCREMENT BY? numericOnly
     | MAXVALUE numericOnly
     | MINVALUE numericOnly
     | NO MAXVALUE
     | NO MINVALUE
     | OWNED BY anyName
     | SEQUENCE NAME anyName
-    | START (WITH)? numericOnly
+    | START WITH? numericOnly
     | RESTART
-    | RESTART (WITH)? numericOnly
+    | RESTART WITH? numericOnly
     ;
 
 optColumnList
@@ -1639,3 +1639,115 @@ argClass
 funcArgsList
     : funcArg (COMMA_ funcArg)*
     ;
+
+nonReservedWordOrSconst
+    : nonReservedWord
+    | STRING_
+    ;
+
+fileName
+    : STRING_
+    ;
+
+roleList
+    : roleSpec (COMMA_ roleSpec)*
+    ;
+
+setResetClause
+    : SET setRest
+    | variableResetStmt
+    ;
+
+setRest
+    : TRANSACTION transactionModeList
+    | SESSION CHARACTERISTICS AS TRANSACTION transactionModeList
+    | setRestMore
+    ;
+
+transactionModeList
+    : transactionModeItem (COMMA_? transactionModeItem)*
+    ;
+
+transactionModeItem
+    : ISOLATION LEVEL isoLevel
+    | READ ONLY
+    | READ WRITE
+    | DEFERRABLE
+    | NOT DEFERRABLE
+    ;
+
+setRestMore
+    : genericSet
+    | varName FROM CURRENT
+    | TIME ZONE zoneValue
+    | CATALOG STRING_
+    | SCHEMA STRING_
+    | NAMES encoding?
+    | ROLE nonReservedWord | STRING_
+    | SESSION AUTHORIZATION nonReservedWord | STRING_
+    | SESSION AUTHORIZATION DEFAULT
+    | XML OPTION documentOrContent
+    | TRANSACTION SNAPSHOT STRING_
+    ;
+
+encoding
+    : STRING_
+    | DEFAULT
+    ;
+
+genericSet
+    : varName (EQ_|TO) (varList | DEFAULT)
+    ;
+
+variableResetStmt
+    : RESET resetRest
+    ;
+
+resetRest
+    : genericReset
+    | TIME ZONE
+    | TRANSACTION ISOLATION LEVEL
+    | SESSION AUTHORIZATION
+    ;
+
+genericReset
+    : varName
+    | ALL
+    ;
+
+relationExprList
+    : relationExpr (COMMA_ relationExpr)*
+    ;
+
+relationExpr
+    : qualifiedName
+    | qualifiedName ASTERISK_
+    | ONLY qualifiedName
+    | ONLY LP_ qualifiedName RP_
+    ;
+
+commonFuncOptItem
+    : CALLED ON NULL INPUT
+    | RETURNS NULL ON NULL INPUT
+    | STRICT
+    | IMMUTABLE
+    | STABLE
+    | VOLATILE
+    | EXTERNAL SECURITY DEFINER
+    | EXTERNAL SECURITY INVOKER
+    | SECURITY DEFINER
+    | SECURITY INVOKER
+    | LEAKPROOF
+    | NOT LEAKPROOF
+    | COST numericOnly
+    | ROWS numericOnly
+    | SUPPORT anyName
+    | functionSetResetClause
+    | PARALLEL colId
+    ;
+
+functionSetResetClause
+    : SET setRestMore
+    | variableResetStmt
+    ;
+
