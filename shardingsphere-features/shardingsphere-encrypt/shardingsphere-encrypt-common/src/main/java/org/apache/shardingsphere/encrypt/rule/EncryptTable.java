@@ -23,11 +23,11 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.TreeMap;
 
 /**
  * Encrypt table.
@@ -37,7 +37,7 @@ public final class EncryptTable {
     private final Map<String, EncryptColumn> columns;
     
     public EncryptTable(final EncryptTableRuleConfiguration config) {
-        columns = new LinkedHashMap<>(config.getColumns().size());
+        columns = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
             columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getEncryptorName()));
         }
@@ -88,16 +88,13 @@ public final class EncryptTable {
     }
     
     /**
-     * Get cipher columns.
+     * Is cipher column or not.
      *
-     * @return cipher columns
+     * @param columnName column name
+     * @return cipher column or not
      */
-    public Collection<String> getCipherColumns() {
-        Collection<String> result = new LinkedList<>();
-        for (EncryptColumn each : columns.values()) {
-            result.add(each.getCipherColumn());
-        }
-        return result;
+    public boolean isCipherColumn(final String columnName) {
+        return columns.values().stream().anyMatch(each -> each.getCipherColumn().equalsIgnoreCase(columnName));
     }
     
     /**
