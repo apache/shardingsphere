@@ -158,7 +158,7 @@ public final class EncryptRule implements ShardingSphereRule {
      * @return cipher column or not
      */
     public boolean isCipherColumn(final String tableName, final String columnName) {
-        return tables.containsKey(tableName) && tables.get(tableName).getCipherColumns().stream().anyMatch(each -> each.equalsIgnoreCase(columnName));
+        return tables.containsKey(tableName) && tables.get(tableName).isCipherColumn(columnName);
     }
     
     /**
@@ -180,7 +180,7 @@ public final class EncryptRule implements ShardingSphereRule {
      * @return logic column
      */
     public String getLogicColumnOfCipher(final String logicTable, final String cipherColumn) {
-        return tables.get(logicTable).getLogicColumnOfCipher(cipherColumn);
+        return tables.get(logicTable).getLogicColumn(cipherColumn);
     }
     
     /**
