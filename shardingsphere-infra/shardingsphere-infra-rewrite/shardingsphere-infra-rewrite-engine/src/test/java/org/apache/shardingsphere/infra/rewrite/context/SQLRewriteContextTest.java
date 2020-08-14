@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SQLRewriteContextTest {
+public final class SQLRewriteContextTest {
     
     @Mock
     private SQLStatementContext sqlStatementContext;
