@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.postgresql.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AddColumnSpecificationContext;
@@ -60,6 +61,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterFunctionState
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
@@ -293,5 +295,10 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
         return new AlterProcedureStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateFunction(PostgreSQLStatementParser.CreateFunctionContext ctx) {
+        return new CreateFunctionStatement();
     }
 }

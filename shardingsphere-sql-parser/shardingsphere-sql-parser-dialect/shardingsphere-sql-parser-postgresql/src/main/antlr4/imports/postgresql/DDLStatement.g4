@@ -107,11 +107,11 @@ accessMethodClause
     ;
 
 createDatabase
-    : CREATE DATABASE name (WITH)? createDatabaseSpecification_*
+    : CREATE DATABASE name WITH? createDatabaseSpecification_*
     ;
 
 createView
-    : CREATE (OR REPLACE)? (TEMP | TEMPORARY)? (RECURSIVE)? VIEW name
+    : CREATE (OR REPLACE)? (TEMP | TEMPORARY)? RECURSIVE? VIEW name
       (LP_ (columnList (COMMA_ columnList)*)? RP_)?
       (WITH reloptions)?
       AS select
@@ -131,7 +131,7 @@ dropDatabase
     ;
 
 createDatabaseSpecification_
-    :  createdbOptName (EQ_)? (signedIconst | booleanOrString | DEFAULT)
+    :  createdbOptName EQ_? (signedIconst | booleanOrString | DEFAULT)
     ;
 
 createdbOptName
@@ -147,7 +147,7 @@ createdbOptName
 alterTable
     : ALTER TABLE
     ( tableExistClause_ onlyClause_ tableNameClause alterDefinitionClause
-    | ALL IN TABLESPACE name (OWNED BY roleList)? SET TABLESPACE name (NOWAIT)?)
+    | ALL IN TABLESPACE name (OWNED BY roleList)? SET TABLESPACE name NOWAIT?)
     ;
 
 alterIndex
@@ -476,7 +476,7 @@ alterDatabase
     ;
 
 alterDatabaseClause
-    : (WITH)? createdbOptItems?
+    : WITH? createdbOptItems?
     | RENAME TO databaseName
     | OWNER TO roleSpec
     | SET TABLESPACE name
@@ -488,9 +488,9 @@ createdbOptItems
     ;
 
 createdbOptItem
-    : createdbOptName (EQ_)? signedIconst
-    | createdbOptName (EQ_)? booleanOrString
-    | createdbOptName (EQ_)? DEFAULT
+    : createdbOptName EQ_? signedIconst
+    | createdbOptName EQ_? booleanOrString
+    | createdbOptName EQ_? DEFAULT
     ;
 
 alterTableCmds
@@ -603,7 +603,7 @@ alterIdentityColumnOptionList
 
 alterIdentityColumnOption
     : RESTART
-    | RESTART (WITH)? numericOnly
+    | RESTART WITH? numericOnly
     | SET seqOptElem
     | SET GENERATED generatedWhen
     ;
@@ -694,7 +694,7 @@ alterConversionClause
     ;
 
 alterDefaultPrivileges
-    : ALTER DEFAULT PRIVILEGES (defACLOptionList)? defACLAction
+    : ALTER DEFAULT PRIVILEGES defACLOptionList? defACLAction
     ;
 
 defACLAction
@@ -737,10 +737,10 @@ privilegeList
     ;
 
 privilege
-    : SELECT (optColumnList)?
-    | REFERENCES (optColumnList)?
-    | CREATE (optColumnList)?
-    | colId (optColumnList)?
+    : SELECT optColumnList?
+    | REFERENCES optColumnList?
+    | CREATE optColumnList?
+    | colId optColumnList?
     ;
 
 defACLOptionList
@@ -909,7 +909,7 @@ alterMaterializedView
 alterMaterializedViewClauses
     : (IF EXISTS)? qualifiedName alterTableCmds
     | qualifiedName DEPENDS ON EXTENSION name
-    | (IF EXISTS)? qualifiedName RENAME (COLUMN)? columnName TO columnName
+    | (IF EXISTS)? qualifiedName RENAME COLUMN? columnName TO columnName
     | (IF EXISTS)? qualifiedName RENAME TO qualifiedName
     | (IF EXISTS)? qualifiedName SET SCHEMA schemaName
     | ALL IN TABLESPACE name (OWNED BY roleList) SET TABLESPACE name NOWAIT?
@@ -935,7 +935,7 @@ execute
     ;
 
 createMaterializedView
-    : CREATE (UNLOGGED)? MATERIALIZED VIEW (IF NOT EXISTS)? createMvTarget AS select (WITH DATA | WITH NO DATA)?
+    : CREATE UNLOGGED? MATERIALIZED VIEW (IF NOT EXISTS)? createMvTarget AS select (WITH DATA | WITH NO DATA)?
     ;
 
 createMvTarget
@@ -943,7 +943,7 @@ createMvTarget
     ;
 
 refreshMatViewStmt
-    : REFRESH MATERIALIZED VIEW (CONCURRENTLY)? qualifiedName (WITH DATA | WITH NO DATA)?
+    : REFRESH MATERIALIZED VIEW CONCURRENTLY? qualifiedName (WITH DATA | WITH NO DATA)?
     ;
 
 alterPolicy
@@ -960,9 +960,9 @@ alterProcedure
     ;
 
 alterProcedureClauses
-    : alterfuncOptList (RESTRICT)?
+    : alterfuncOptList RESTRICT?
     | RENAME TO name
-    | (NO)? DEPENDS ON EXTENSION name
+    | NO? DEPENDS ON EXTENSION name
     | SET SCHEMA name
     | OWNER TO roleSpec
     ;
@@ -976,9 +976,9 @@ alterFunction
     ;
 
 alterFunctionClauses
-    : alterfuncOptList (RESTRICT)?
+    : alterfuncOptList RESTRICT?
     | RENAME TO name
-    | (NO)? DEPENDS ON EXTENSION name
+    | NO? DEPENDS ON EXTENSION name
     | SET SCHEMA name
     | OWNER TO roleSpec
     ;
@@ -1065,7 +1065,7 @@ alterTextSearchConfigurationClauses
     : RENAME TO name
     | SET SCHEMA name
     | OWNER TO roleSpec
-    | (ADD | ALTER) MAPPING FOR nameList (WITH)? anyNameList
+    | (ADD | ALTER) MAPPING FOR nameList WITH? anyNameList
     | ALTER MAPPING (FOR nameList) REPLACE anyName WITH anyName
     | DROP MAPPING (IF EXISTS)? FOR nameList
     ;
@@ -1091,7 +1091,7 @@ alterTextSearchTemplate
     ;
 
 alterTrigger
-    : ALTER TRIGGER name ON qualifiedName (RENAME TO name | (NO)? DEPENDS ON EXTENSION name)
+    : ALTER TRIGGER name ON qualifiedName (RENAME TO name | NO? DEPENDS ON EXTENSION name)
     ;
 
 alterType
@@ -1135,7 +1135,7 @@ alterView
 alterViewClauses
     : alterTableCmds
     | RENAME TO name
-    | RENAME (COLUMN)? name TO name
+    | RENAME COLUMN? name TO name
     | SET SCHEMA name
     ;
 
@@ -1193,7 +1193,7 @@ dropTypeName
     | EVENT TRIGGER
     | EXTENSION
     | FOREIGN DATA WRAPPER
-    | (PROCEDURAL)? LANGUAGE
+    | PROCEDURAL? LANGUAGE
     | PUBLICATION
     | SCHEMA
     | SERVER
@@ -1255,11 +1255,11 @@ createCollation
     ;
 
 createConversion
-    : CREATE (DEFAULT)? CONVERSION anyName FOR STRING_ TO STRING_ FROM anyName
+    : CREATE DEFAULT? CONVERSION anyName FOR STRING_ TO STRING_ FROM anyName
     ;
 
 createDomain
-    : CREATE DOMAIN anyName (AS)? typeName colQualList
+    : CREATE DOMAIN anyName AS? typeName colQualList
     ;
 
 createEventTrigger
@@ -1279,7 +1279,7 @@ eventTriggerValueList
     ;
 
 createExtension
-    : CREATE EXTENSION (IF NOT EXISTS)? name (WITH)? createExtensionOptList
+    : CREATE EXTENSION (IF NOT EXISTS)? name WITH? createExtensionOptList
     ;
 
 createExtensionOptList
@@ -1349,3 +1349,4 @@ funcArgWithDefault
     | funcArg DEFAULT aExpr
     | funcArg EQ_ aExpr
     ;
+

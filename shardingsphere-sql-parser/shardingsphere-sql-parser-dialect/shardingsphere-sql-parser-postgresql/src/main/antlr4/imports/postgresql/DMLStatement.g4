@@ -457,7 +457,7 @@ dostmtOptItem
     ;
 
 lock
-    : LOCK (TABLE)? relationExprList (IN lockType MODE)? (NOWAIT)?
+    : LOCK TABLE? relationExprList (IN lockType MODE)? NOWAIT?
     ;
 
 lockType
@@ -474,3 +474,4 @@ lockType
 checkpoint
     : CHECKPOINT
     ;
+

@@ -1502,16 +1502,16 @@ seqOptElem
     | CACHE numericOnly
     | CYCLE
     | NO CYCLE
-    | INCREMENT (BY)? numericOnly
+    | INCREMENT BY? numericOnly
     | MAXVALUE numericOnly
     | MINVALUE numericOnly
     | NO MAXVALUE
     | NO MINVALUE
     | OWNED BY anyName
     | SEQUENCE NAME anyName
-    | START (WITH)? numericOnly
+    | START WITH? numericOnly
     | RESTART
-    | RESTART (WITH)? numericOnly
+    | RESTART WITH? numericOnly
     ;
 
 optColumnList
@@ -1665,7 +1665,7 @@ setRest
     ;
 
 transactionModeList
-    : transactionModeItem ((COMMA_)? transactionModeItem)*
+    : transactionModeItem (COMMA_? transactionModeItem)*
     ;
 
 transactionModeItem
@@ -1750,3 +1750,4 @@ functionSetResetClause
     : SET setRestMore
     | variableResetStmt
     ;
+
