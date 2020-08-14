@@ -130,7 +130,7 @@ dropDatabase
     : DROP DATABASE (IF EXISTS)? name
     ;
 
- createDatabaseSpecification_
+createDatabaseSpecification_
     :  createdbOptName (EQ_)? (signedIconst | booleanOrString | DEFAULT)
     ;
 
@@ -1295,11 +1295,6 @@ createExtensionOptItem
 
 createForeignDataWrapper
     : CREATE FOREIGN DATA WRAPPER name fdwOptions? createGenericOptions
-    ;
-
-//TODO
-createForeignTable
-    : CREATE FOREIGN TABLE
     ;
 
 createFunction
