@@ -22,6 +22,7 @@ import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterProcedureContext;
@@ -77,6 +78,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
@@ -120,6 +122,11 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         return new CreateDatabaseStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterDatabase(final AlterDatabaseContext ctx) {
+        return new AlterDatabaseStatement();
     }
     
     @Override

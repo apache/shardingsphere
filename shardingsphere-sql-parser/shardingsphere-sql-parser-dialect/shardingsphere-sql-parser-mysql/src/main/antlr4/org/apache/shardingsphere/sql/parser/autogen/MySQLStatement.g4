@@ -30,7 +30,6 @@ execute
     | repairTable
     | renameTableSpecification
     | dropTable
-    | dropDatabase
     | truncateTable
     | createIndex
     | dropIndex
@@ -40,6 +39,9 @@ execute
     | createFunction
     | alterFunction
     | dropFunction
+    | createDatabase
+    | alterDatabase
+    | dropDatabase
     | setTransaction
     | beginTransaction
     | setAutoCommit
