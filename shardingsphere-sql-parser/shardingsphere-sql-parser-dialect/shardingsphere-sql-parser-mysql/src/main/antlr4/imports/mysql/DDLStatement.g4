@@ -28,8 +28,8 @@ partitionClause
     ;
 
 partitionTypeDef
-    : LINEAR KEY partitionKeyAlgorithm? columnNames
-    | LINEAR HASH LP_ bitExpr RP_
+    : LINEAR? KEY partitionKeyAlgorithm? columnNames
+    | LINEAR? HASH LP_ bitExpr RP_
     | (RANGE | LIST) (LP_ bitExpr RP_ | COLUMNS columnNames )
     ;
 
