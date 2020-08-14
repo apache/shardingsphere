@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -24,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -82,8 +84,32 @@ public final class EncryptTableTest {
     }
     
     @Test
+    public void assertGetAssistedQueryColumns() {
+        assertThat(encryptTable.getAssistedQueryColumns(), is(Collections.singletonList("assistedQueryColumn")));
+    }
+    
+    @Test
+    public void assertFindAssistedQueryColumn() {
+        Optional<String> actual = encryptTable.findAssistedQueryColumn("logicColumn");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("assistedQueryColumn"));
+    }
+    
+    @Test
+    public void assertNotFindAssistedQueryColumn() {
+        assertFalse(encryptTable.findAssistedQueryColumn("notExistLogicColumn").isPresent());
+    }
+    
+    @Test
+    public void assertGetPlainColumns() {
+        assertThat(encryptTable.getPlainColumns(), is(Collections.singletonList("plainColumn")));
+    }
+    
+    @Test
     public void assertFindPlainColumn() {
-        assertTrue(encryptTable.findPlainColumn("logicColumn").isPresent());
+        Optional<String> actual = encryptTable.findPlainColumn("logicColumn");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("plainColumn"));
     }
     
     @Test
@@ -93,11 +119,6 @@ public final class EncryptTableTest {
     
     @Test
     public void assertGetLogicAndCipherColumns() {
-        assertFalse(encryptTable.getLogicAndCipherColumns().isEmpty());
-    }
-    
-    @Test
-    public void assertGetLogicAndPlainColumns() {
-        assertFalse(encryptTable.getLogicAndPlainColumns().isEmpty());
+        assertThat(encryptTable.getLogicAndCipherColumns(), is(ImmutableMap.of("logicColumn", "cipherColumn")));
     }
 }

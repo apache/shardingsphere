@@ -155,18 +155,4 @@ public final class EncryptTable {
     public Map<String, String> getLogicAndCipherColumns() {
         return Maps.transformValues(columns, EncryptColumn::getCipherColumn);
     }
-    
-    /**
-     * Get logic and plain columns.
-     *
-     * @return logic and plain columns
-     */
-    public Map<String, String> getLogicAndPlainColumns() {
-        return Maps.transformValues(columns, input -> {
-            if (input.getPlainColumn().isPresent()) {
-                return input.getPlainColumn().get();
-            }
-            throw new ShardingSphereException("Plain column is null.");
-        });
-    }
 }
