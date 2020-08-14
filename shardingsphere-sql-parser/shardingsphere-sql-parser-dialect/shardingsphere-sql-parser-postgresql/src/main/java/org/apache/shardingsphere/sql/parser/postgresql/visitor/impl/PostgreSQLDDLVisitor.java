@@ -298,7 +298,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     }
     
     @Override
-    public ASTNode visitCreateFunction(PostgreSQLStatementParser.CreateFunctionContext ctx) {
+    public ASTNode visitCreateFunction(final PostgreSQLStatementParser.CreateFunctionContext ctx) {
         return new CreateFunctionStatement();
     }
 }
