@@ -1161,7 +1161,7 @@ tableFuncElementList
     ;
 
 tableFuncElement
-    :  typeName collateClause
+    : colId typeName collateClause?
     ;
 
 collateClause

@@ -1019,3 +1019,338 @@ alterServer
 foreignServerVersion
     : VERSION (STRING_ | NULL)
     ;
+
+alterStatistics
+    : ALTER STATISTICS
+    ( (IF EXISTS)? anyName SET STATISTICS signedIconst
+    | anyName RENAME TO name
+    | anyName SET SCHEMA name
+    | anyName OWNER TO roleSpec)
+    ;
+
+alterSubscription
+    : ALTER SUBSCRIPTION name
+    ( RENAME TO name
+    | OWNER TO roleSpec
+    | SET definition
+    | CONNECTION STRING_
+    | REFRESH PUBLICATION (WITH definition)?
+    | SET PUBLICATION publicationNameList (WITH definition)?
+    | (ENABLE | DISABLE))
+    ;
+
+publicationNameList
+    : publicationNameItem (COMMA_ publicationNameItem)*
+    ;
+
+publicationNameItem
+    : colLabel
+    ;
+
+alterSystem
+    : ALTER SYSTEM SET | RESET genericSet
+    ;
+
+alterTablespace
+    : ALTER TABLESPACE name
+    ( SET|RESET reloptions
+    | RENAME TO name
+    | OWNER TO roleSpec)
+    ;
+alterTextSearchConfiguration
+    : ALTER TEXT SEARCH CONFIGURATION anyName alterTextSearchConfigurationClauses
+    ;
+
+alterTextSearchConfigurationClauses
+    : RENAME TO name
+    | SET SCHEMA name
+    | OWNER TO roleSpec
+    | (ADD | ALTER) MAPPING FOR nameList (WITH)? anyNameList
+    | ALTER MAPPING (FOR nameList) REPLACE anyName WITH anyName
+    | DROP MAPPING (IF EXISTS)? FOR nameList
+    ;
+
+anyNameList
+    : anyName (COMMA_ anyName)*
+    ;
+
+alterTextSearchDictionary
+    : ALTER TEXT SEARCH DICTIONARY anyName
+    ( RENAME TO name
+    | SET SCHEMA name
+    | OWNER TO roleSpec
+    | definition)
+    ;
+
+alterTextSearchParser
+    : ALTER TEXT SEARCH PARSER (anyName RENAME TO name | SET SCHEMA name)
+    ;
+
+alterTextSearchTemplate
+    : ALTER TEXT SEARCH TEMPLATE (anyName RENAME TO name | SET SCHEMA name)
+    ;
+
+alterTrigger
+    : ALTER TRIGGER name ON qualifiedName (RENAME TO name | (NO)? DEPENDS ON EXTENSION name)
+    ;
+
+alterType
+    : ALTER TYPE anyName alterTypeClauses
+    ;
+
+alterTypeClauses
+    : alterTypeCmds
+    | ADD VALUE (IF NOT EXISTS)? STRING_ ((BEFORE | AFTER) STRING_)?
+    | RENAME VALUE STRING_ TO STRING_
+    | RENAME TO name
+    | RENAME ATTRIBUTE name TO name dropBehavior?
+    | SET SCHEMA name
+    | SET LP_ operatorDefList RP_
+    | OWNER TO roleSpec
+    ;
+
+alterTypeCmds
+    : alterTypeCmd (COMMA_ alterTypeCmd)?
+    ;
+
+alterTypeCmd
+    : ADD ATTRIBUTE tableFuncElement dropBehavior?
+    | DROP ATTRIBUTE IF EXISTS colId dropBehavior?
+    | DROP ATTRIBUTE colId dropBehavior?
+    | ALTER ATTRIBUTE colId setData? TYPE typeName collateClause? dropBehavior?
+    ;
+
+alterUserMapping
+    : ALTER USER MAPPING FOR authIdent SERVER name alterGenericOptions
+    ;
+
+authIdent
+    : roleSpec | USER
+    ;
+
+alterView
+    : ALTER VIEW (IF EXISTS)? qualifiedName alterViewClauses
+    ;
+
+alterViewClauses
+    : alterTableCmds
+    | RENAME TO name
+    | RENAME (COLUMN)? name TO name
+    | SET SCHEMA name
+    ;
+
+close
+    : CLOSE (cursorName | ALL)
+    ;
+
+cluster
+    : CLUSTER VERBOSE (qualifiedName clusterIndexSpecification? | name ON qualifiedName)?
+    ;
+
+clusterIndexSpecification
+    : USING name
+    ;
+
+comment
+    : COMMENT ON commentClauses
+    ;
+
+commentClauses
+    : objectTypeAnyName anyName IS commentText
+    | COLUMN anyName IS commentText
+    | objectTypeName name IS commentText
+    | TYPE typeName IS commentText
+    | DOMAIN typeName IS commentText
+    | AGGREGATE aggregateWithArgtypes IS commentText
+    | FUNCTION functionWithArgtypes IS commentText
+    | OPERATOR operatorWithArgtypes IS commentText
+    | CONSTRAINT name ON anyName IS commentText
+    | CONSTRAINT name ON DOMAIN anyName IS commentText
+    | objectTypeNameOnAnyName name ON anyName IS commentText
+    | PROCEDURE functionWithArgtypes IS commentText
+    | ROUTINE functionWithArgtypes IS commentText
+    | TRANSFORM FOR typeName LANGUAGE name IS commentText
+    | OPERATOR CLASS anyName USING name IS commentText
+    | OPERATOR FAMILY anyName USING name IS commentText
+    | LARGE OBJECT numericOnly IS commentText
+    | CAST LP_ typeName AS typeName RP_ IS commentText
+    ;
+
+objectTypeNameOnAnyName
+    : POLICY | RULE	| TRIGGER
+    ;
+
+objectTypeName
+    : dropTypeName
+    | DATABASE
+    | ROLE
+    | SUBSCRIPTION
+    | TABLESPACE
+    ;
+
+dropTypeName
+    : ACCESS METHOD
+    | EVENT TRIGGER
+    | EXTENSION
+    | FOREIGN DATA WRAPPER
+    | (PROCEDURAL)? LANGUAGE
+    | PUBLICATION
+    | SCHEMA
+    | SERVER
+    ;
+
+objectTypeAnyName
+    : TABLE
+    | SEQUENCE
+    | VIEW
+    | MATERIALIZED VIEW
+    | INDEX
+    | FOREIGN TABLE
+    | COLLATION
+    | CONVERSION
+    | STATISTICS
+    | TEXT SEARCH PARSER
+    | TEXT SEARCH DICTIONARY
+    | TEXT SEARCH TEMPLATE
+    | TEXT SEARCH CONFIGURATION
+    ;
+
+commentText
+    : STRING_ | NULL
+    ;
+
+createAccessMethod
+    : CREATE ACCESS METHOD name TYPE (INDEX|TABLE) HANDLER handlerName
+    ;
+
+createAggregate
+    : CREATE (OR REPLACE)? AGGREGATE funcName (aggrArgs definition | oldAggrDefinition)
+    ;
+
+oldAggrDefinition
+    : LP_ oldAggrList RP_
+    ;
+
+oldAggrList
+    : oldAggrElem (COMMA_ oldAggrElem)*
+    ;
+
+oldAggrElem
+    : identifier EQ_ defArg
+    ;
+
+createCast
+    : CREATE CAST LP_ typeName AS typeName RP_
+    ( WITH FUNCTION functionWithArgtypes castContext?
+    | WITHOUT FUNCTION castContext?
+    | WITH INOUT castContext?)
+    ;
+
+castContext
+    : AS IMPLICIT | AS ASSIGNMENT
+    ;
+
+createCollation
+    : CREATE COLLATION (IF NOT EXISTS)? (anyName definition | anyName FROM anyName)
+    ;
+
+createConversion
+    : CREATE (DEFAULT)? CONVERSION anyName FOR STRING_ TO STRING_ FROM anyName
+    ;
+
+createDomain
+    : CREATE DOMAIN anyName (AS)? typeName colQualList
+    ;
+
+createEventTrigger
+    : CREATE EVENT TRIGGER name ON colLabel (WHEN eventTriggerWhenList)? EXECUTE (FUNCTION | PROCEDURE) funcName LP_ RP_
+    ;
+
+eventTriggerWhenList
+    : eventTriggerWhenItem (AND eventTriggerWhenItem)*
+    ;
+
+eventTriggerWhenItem
+    : colId IN LP_ eventTriggerValueList RP_
+    ;
+
+eventTriggerValueList
+    : STRING_ (COMMA_ STRING_)*
+    ;
+
+createExtension
+    : CREATE EXTENSION (IF NOT EXISTS)? name (WITH)? createExtensionOptList
+    ;
+
+createExtensionOptList
+    : createExtensionOptItem*
+    ;
+
+createExtensionOptItem
+    : SCHEMA name
+    | VERSION nonReservedWordOrSconst
+    | FROM nonReservedWordOrSconst
+    | CASCADE
+    ;
+
+createForeignDataWrapper
+    : CREATE FOREIGN DATA WRAPPER name fdwOptions? createGenericOptions
+    ;
+
+//TODO
+createForeignTable
+    : CREATE FOREIGN TABLE
+    ;
+
+createFunction
+    : CREATE (OR REPLACE)? FUNCTION funcName funcArgsWithDefaults
+    ( RETURNS funcReturn createfuncOptList
+    | RETURNS TABLE LP_ tableFuncColumnList RP_ createfuncOptList
+    | createfuncOptList)
+    ;
+
+tableFuncColumnList
+    : tableFuncColumn (COMMA_ tableFuncColumn)*
+    ;
+
+tableFuncColumn
+    : paramName funcType
+    ;
+
+createfuncOptList
+    : createfuncOptItem+
+    ;
+
+createfuncOptItem
+    : AS funcAs
+    | LANGUAGE nonReservedWordOrSconst
+    | TRANSFORM transformTypeList
+    | WINDOW
+    | commonFuncOptItem
+    ;
+
+transformTypeList
+    : FOR TYPE typeName (COMMA_ FOR TYPE typeName)
+    ;
+
+funcAs
+    : STRING_ (COMMA_ STRING_)?
+    ;
+
+funcReturn
+    : funcType
+    ;
+
+funcArgsWithDefaults
+    : LP_ funcArgsWithDefaultsList? RP_
+    ;
+
+funcArgsWithDefaultsList
+    : funcArgWithDefault (COMMA_ funcArgWithDefault)*
+    ;
+
+funcArgWithDefault
+    : funcArg
+    | funcArg DEFAULT aExpr
+    | funcArg EQ_ aExpr
+    ;
