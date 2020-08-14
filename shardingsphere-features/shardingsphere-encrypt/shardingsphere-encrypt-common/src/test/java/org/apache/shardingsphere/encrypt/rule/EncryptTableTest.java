@@ -67,6 +67,21 @@ public final class EncryptTableTest {
     }
     
     @Test
+    public void assertIsCipherColumn() {
+        assertTrue(encryptTable.isCipherColumn("CipherColumn"));
+    }
+    
+    @Test
+    public void assertIsNotCipherColumn() {
+        assertFalse(encryptTable.isCipherColumn("logicColumn"));
+    }
+    
+    @Test
+    public void assertGetCipherColumn() {
+        assertThat(encryptTable.getCipherColumn("LogicColumn"), is("cipherColumn"));
+    }
+    
+    @Test
     public void assertFindPlainColumn() {
         assertTrue(encryptTable.findPlainColumn("logicColumn").isPresent());
     }
