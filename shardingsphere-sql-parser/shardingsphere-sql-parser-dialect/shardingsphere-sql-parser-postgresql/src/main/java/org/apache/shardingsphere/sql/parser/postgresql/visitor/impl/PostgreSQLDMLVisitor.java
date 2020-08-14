@@ -21,6 +21,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CallContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AliasClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AttrNameContext;
@@ -661,12 +663,12 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     }
     
     @Override
-    public ASTNode visitCall(final PostgreSQLStatementParser.CallContext ctx) {
+    public ASTNode visitCall(final CallContext ctx) {
         return new CallStatement();
     }
     
     @Override
-    public ASTNode visitDoStatement(final PostgreSQLStatementParser.DoStatementContext ctx) {
+    public ASTNode visitDoStatement(final DoStatementContext ctx) {
         return new DoStatement();
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.postgresql.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DALVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AnalyzeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ConfigurationParameterClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ResetParameterContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetContext;
@@ -88,7 +88,7 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
     }
     
     @Override
-    public ASTNode visitAnalyze(final PostgreSQLStatementParser.AnalyzeContext ctx) {
+    public ASTNode visitAnalyze(final AnalyzeContext ctx) {
         return new AnalyzeTableStatement();
     }
 }

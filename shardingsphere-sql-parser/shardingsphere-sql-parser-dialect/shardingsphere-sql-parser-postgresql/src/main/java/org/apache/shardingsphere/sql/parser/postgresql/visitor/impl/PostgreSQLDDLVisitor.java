@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.postgresql.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AddColumnSpecificationContext;
@@ -298,7 +298,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     }
     
     @Override
-    public ASTNode visitCreateFunction(final PostgreSQLStatementParser.CreateFunctionContext ctx) {
+    public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
         return new CreateFunctionStatement();
     }
 }
