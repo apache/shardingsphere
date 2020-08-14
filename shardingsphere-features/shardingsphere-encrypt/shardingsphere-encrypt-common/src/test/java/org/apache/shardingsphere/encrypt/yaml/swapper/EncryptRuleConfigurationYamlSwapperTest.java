@@ -21,9 +21,11 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,9 +52,7 @@ public final class EncryptRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        EncryptRuleConfigurationYamlSwapper swapper = (EncryptRuleConfigurationYamlSwapper)
-                OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), YamlRuleConfigurationSwapper.class).get(ruleConfig);
-        YamlEncryptRuleConfiguration actual = swapper.swapToYamlConfiguration(createEncryptRuleConfiguration());
+        YamlEncryptRuleConfiguration actual = getSwapper().swapToYamlConfiguration(createEncryptRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getEncryptors().size(), is(1));
     }
@@ -61,5 +61,27 @@ public final class EncryptRuleConfigurationYamlSwapperTest {
         Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(new EncryptTableRuleConfiguration("tbl", Collections.emptyList()));
         Map<String, ShardingSphereAlgorithmConfiguration> encryptors = ImmutableMap.of("myEncryptor", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
         return new EncryptRuleConfiguration(tables, encryptors);
+    }
+    
+    @Test
+    public void assertSwapToObject() {
+        EncryptRuleConfiguration actual = getSwapper().swapToObject(createYamlEncryptRuleConfiguration());
+        assertThat(actual.getTables().size(), is(1));
+        assertThat(actual.getEncryptors().size(), is(1));
+    }
+    
+    private YamlEncryptRuleConfiguration createYamlEncryptRuleConfiguration() {
+        YamlEncryptRuleConfiguration result = new YamlEncryptRuleConfiguration();
+        YamlEncryptTableRuleConfiguration tableRuleConfig = new YamlEncryptTableRuleConfiguration();
+        tableRuleConfig.setName("t_encrypt");
+        result.getTables().put("t_encrypt", tableRuleConfig);
+        YamlShardingSphereAlgorithmConfiguration algorithmConfig = new YamlShardingSphereAlgorithmConfiguration();
+        algorithmConfig.setType("TEST");
+        result.getEncryptors().put("test", algorithmConfig);
+        return result;
+    }
+    
+    private EncryptRuleConfigurationYamlSwapper getSwapper() {
+        return (EncryptRuleConfigurationYamlSwapper) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), YamlRuleConfigurationSwapper.class).get(ruleConfig);
     }
 }

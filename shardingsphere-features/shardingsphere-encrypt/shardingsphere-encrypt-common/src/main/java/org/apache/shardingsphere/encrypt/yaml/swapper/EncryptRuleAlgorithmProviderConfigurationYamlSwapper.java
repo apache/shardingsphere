@@ -52,9 +52,9 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapper implemen
         return result;
     }
     
-    private Collection<EncryptTableRuleConfiguration> swapTables(final YamlEncryptRuleConfiguration yamlConfiguration) {
+    private Collection<EncryptTableRuleConfiguration> swapTables(final YamlEncryptRuleConfiguration yamlConfig) {
         Collection<EncryptTableRuleConfiguration> result = new LinkedList<>();
-        for (Entry<String, YamlEncryptTableRuleConfiguration> entry : yamlConfiguration.getTables().entrySet()) {
+        for (Entry<String, YamlEncryptTableRuleConfiguration> entry : yamlConfig.getTables().entrySet()) {
             YamlEncryptTableRuleConfiguration yamlEncryptTableRuleConfig = entry.getValue();
             yamlEncryptTableRuleConfig.setName(entry.getKey());
             result.add(tableYamlSwapper.swapToObject(yamlEncryptTableRuleConfig));
@@ -74,7 +74,6 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapper implemen
     
     @Override
     public int getOrder() {
-        return EncryptOrder.ALGORITHM_PROVIDER_ENCRYPT_ORDER;
+        return EncryptOrder.ORDER + 1;
     }
-    
 }

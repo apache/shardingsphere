@@ -56,9 +56,9 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
         return new EncryptRuleConfiguration(swapTables(yamlConfig), swapEncryptAlgorithm(yamlConfig));
     }
     
-    private Collection<EncryptTableRuleConfiguration> swapTables(final YamlEncryptRuleConfiguration yamlConfiguration) {
+    private Collection<EncryptTableRuleConfiguration> swapTables(final YamlEncryptRuleConfiguration yamlConfig) {
         Collection<EncryptTableRuleConfiguration> result = new LinkedList<>();
-        for (Entry<String, YamlEncryptTableRuleConfiguration> entry : yamlConfiguration.getTables().entrySet()) {
+        for (Entry<String, YamlEncryptTableRuleConfiguration> entry : yamlConfig.getTables().entrySet()) {
             YamlEncryptTableRuleConfiguration yamlEncryptTableRuleConfig = entry.getValue();
             yamlEncryptTableRuleConfig.setName(entry.getKey());
             result.add(tableYamlSwapper.swapToObject(yamlEncryptTableRuleConfig));
@@ -66,11 +66,10 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
         return result;
     }
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> swapEncryptAlgorithm(final YamlEncryptRuleConfiguration yamlConfiguration) {
-        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>();
-        for (Entry<String, YamlShardingSphereAlgorithmConfiguration> entry : yamlConfiguration.getEncryptors().entrySet()) {
-            YamlShardingSphereAlgorithmConfiguration yamlEncryptAlgorithmConfig = entry.getValue();
-            result.put(entry.getKey(), algorithmSwapper.swapToObject(yamlEncryptAlgorithmConfig));
+    private Map<String, ShardingSphereAlgorithmConfiguration> swapEncryptAlgorithm(final YamlEncryptRuleConfiguration yamlConfig) {
+        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(yamlConfig.getEncryptors().size(), 1);
+        for (Entry<String, YamlShardingSphereAlgorithmConfiguration> entry : yamlConfig.getEncryptors().entrySet()) {
+            result.put(entry.getKey(), algorithmSwapper.swapToObject(entry.getValue()));
         }
         return result;
     }
