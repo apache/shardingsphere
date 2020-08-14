@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.schema;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
@@ -156,6 +157,7 @@ public final class ProxySchemaContexts {
         public List<Connection> getConnections(final String schemaName, final String dataSourceName, 
                                                final int connectionSize, final ConnectionMode connectionMode, final TransactionType transactionType) throws SQLException {
             DataSource dataSource = schemaContexts.getSchemaContexts().get(schemaName).getSchema().getDataSources().get(dataSourceName);
+            Preconditions.checkNotNull(dataSource, "Can not get connection from datasource %s.", dataSourceName);
             if (1 == connectionSize) {
                 return Collections.singletonList(createConnection(schemaName, dataSourceName, dataSource, transactionType));
             }

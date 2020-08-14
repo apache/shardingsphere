@@ -60,8 +60,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     public ExecutionContext execute(final String sql) {
         Collection<ShardingSphereRule> rules = schema.getSchema().getRules();
         if (rules.isEmpty()) {
-            return new ExecutionContext(
-                    new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(schema.getSchema().getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
+            return createExecutionContext(sql);
         }
         RouteContext routeContext = 
                 new DataNodeRouter(schema.getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).route(sqlStatement, sql, Collections.emptyList());
@@ -69,6 +68,12 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(schema.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(),
                 PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).rewrite(sql, Collections.emptyList(), routeContext);
         return new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(schema.getSchema().getMetaData(), sqlRewriteResult));
+    }
+    
+    private ExecutionContext createExecutionContext(final String sql) {
+        String dataSource = schema.getSchema().getDataSources().isEmpty() ? "" : schema.getSchema().getDataSources().keySet().iterator().next();
+        return new ExecutionContext(
+                new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(dataSource, new SQLUnit(sql, Collections.emptyList())));
     }
     
     @Override
