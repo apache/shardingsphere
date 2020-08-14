@@ -59,9 +59,9 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
     private Collection<EncryptTableRuleConfiguration> swapTables(final YamlEncryptRuleConfiguration yamlConfiguration) {
         Collection<EncryptTableRuleConfiguration> result = new LinkedList<>();
         for (Entry<String, YamlEncryptTableRuleConfiguration> entry : yamlConfiguration.getTables().entrySet()) {
-            YamlEncryptTableRuleConfiguration yamlEncryptTableRuleConfiguration = entry.getValue();
-            yamlEncryptTableRuleConfiguration.setName(entry.getKey());
-            result.add(tableYamlSwapper.swapToObject(yamlEncryptTableRuleConfiguration));
+            YamlEncryptTableRuleConfiguration yamlEncryptTableRuleConfig = entry.getValue();
+            yamlEncryptTableRuleConfig.setName(entry.getKey());
+            result.add(tableYamlSwapper.swapToObject(yamlEncryptTableRuleConfig));
         }
         return result;
     }
@@ -69,8 +69,8 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
     private Map<String, ShardingSphereAlgorithmConfiguration> swapEncryptAlgorithm(final YamlEncryptRuleConfiguration yamlConfiguration) {
         Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>();
         for (Entry<String, YamlShardingSphereAlgorithmConfiguration> entry : yamlConfiguration.getEncryptors().entrySet()) {
-            YamlShardingSphereAlgorithmConfiguration yamlEncryptAlgorithmConfiguration = entry.getValue();
-            result.put(entry.getKey(), algorithmSwapper.swapToObject(yamlEncryptAlgorithmConfiguration));
+            YamlShardingSphereAlgorithmConfiguration yamlEncryptAlgorithmConfig = entry.getValue();
+            result.put(entry.getKey(), algorithmSwapper.swapToObject(yamlEncryptAlgorithmConfig));
         }
         return result;
     }
