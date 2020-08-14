@@ -25,8 +25,10 @@ import org.junit.Test;
 
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class EncryptTableTest {
@@ -35,28 +37,43 @@ public final class EncryptTableTest {
     
     @Before
     public void setUp() {
-        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("", 
-                Collections.singleton(new EncryptColumnRuleConfiguration("key", "cipherColumn", "plainColumn", "plainColumn", "encryptorName"))));
+        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt", 
+                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "myEncryptor"))));
     }
     
     @Test
-    public void assertGetLogicColumnOfCipher() {
-        assertNotNull(encryptTable.getLogicColumnOfCipher("cipherColumn"));
+    public void assertFindEncryptorName() {
+        assertTrue(encryptTable.findEncryptorName("logicColumn").isPresent());
     }
     
-    @Test(expected = ShardingSphereException.class)
-    public void assertGetLogicColumnShardingExceptionThrownWhenCipherColumnAbsent() {
-        encryptTable.getLogicColumnOfCipher("___cipherColumn");
+    @Test
+    public void assertNotFindEncryptorName() {
+        assertFalse(encryptTable.findEncryptorName("notExistLogicColumn").isPresent());
     }
     
     @Test
     public void assertGetLogicColumns() {
-        assertFalse(encryptTable.getLogicColumns().isEmpty());
+        assertThat(encryptTable.getLogicColumns(), is(Collections.singleton("logicColumn")));
+    }
+    
+    @Test
+    public void assertGetLogicColumn() {
+        assertNotNull(encryptTable.getLogicColumn("cipherColumn"));
+    }
+    
+    @Test(expected = ShardingSphereException.class)
+    public void assertGetLogicColumnWhenNotFind() {
+        encryptTable.getLogicColumn("invalidColumn");
     }
     
     @Test
     public void assertFindPlainColumn() {
-        assertFalse(encryptTable.findPlainColumn("logicColumn").isPresent());
+        assertTrue(encryptTable.findPlainColumn("logicColumn").isPresent());
+    }
+    
+    @Test
+    public void assertNotFindPlainColumn() {
+        assertFalse(encryptTable.findPlainColumn("notExistLogicColumn").isPresent());
     }
     
     @Test
@@ -67,11 +84,5 @@ public final class EncryptTableTest {
     @Test
     public void assertGetLogicAndPlainColumns() {
         assertFalse(encryptTable.getLogicAndPlainColumns().isEmpty());
-    }
-
-    @Test
-    public void assertGetEncryptor() {
-        assertTrue(encryptTable.findEncryptorName("key").isPresent());
-        assertFalse(encryptTable.findEncryptorName("notExistLogicColumn").isPresent());
     }
 }

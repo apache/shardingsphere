@@ -180,7 +180,7 @@ public final class EncryptRule implements ShardingSphereRule {
      * @return logic column
      */
     public String getLogicColumnOfCipher(final String logicTable, final String cipherColumn) {
-        return tables.get(logicTable).getLogicColumnOfCipher(cipherColumn);
+        return tables.get(logicTable).getLogicColumn(cipherColumn);
     }
     
     /**

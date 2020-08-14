@@ -44,18 +44,23 @@ public final class EncryptTable {
     }
     
     /**
-     * Get logic column of cipher column.
-     * 
-     * @param cipherColumn cipher column
-     * @return logic column
+     * Find encrypt algorithm name.
+     *
+     * @param logicColumn column name
+     * @return encrypt algorithm name
      */
-    public String getLogicColumnOfCipher(final String cipherColumn) {
-        for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
-            if (entry.getValue().getCipherColumn().equals(cipherColumn)) {
-                return entry.getKey();
+    public Optional<String> findEncryptorName(final String logicColumn) {
+        Optional<String> originLogicColumnName = findOriginLogicColumnName(logicColumn);
+        return originLogicColumnName.isPresent() && columns.containsKey(originLogicColumnName.get()) ? Optional.of(columns.get(originLogicColumnName.get()).getEncryptorName()) : Optional.empty();
+    }
+    
+    private Optional<String> findOriginLogicColumnName(final String logicColumn) {
+        for (String each : columns.keySet()) {
+            if (logicColumn.equalsIgnoreCase(each)) {
+                return Optional.of(each);
             }
         }
-        throw new ShardingSphereException("Can not find logic column by %s.", cipherColumn);
+        return Optional.empty();
     }
     
     /**
@@ -68,38 +73,18 @@ public final class EncryptTable {
     }
     
     /**
-     * Find plain column.
+     * Get logic column.
      * 
-     * @param logicColumn logic column name
-     * @return plain column
+     * @param cipherColumn cipher column
+     * @return logic column
      */
-    public Optional<String> findPlainColumn(final String logicColumn) {
-        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getPlainColumn() : Optional.empty();
-    }
-    
-    /**
-     * Get plain columns.
-     *
-     * @return plain columns
-     */
-    public Collection<String> getPlainColumns() {
-        Collection<String> result = new LinkedList<>();
-        for (EncryptColumn each : columns.values()) {
-            if (each.getPlainColumn().isPresent()) {
-                result.add(each.getPlainColumn().get());
+    public String getLogicColumn(final String cipherColumn) {
+        for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
+            if (entry.getValue().getCipherColumn().equals(cipherColumn)) {
+                return entry.getKey();
             }
         }
-        return result;
-    }
-    
-    /**
-     * Get cipher column.
-     *
-     * @param logicColumn logic column name
-     * @return cipher column
-     */
-    public String getCipherColumn(final String logicColumn) {
-        return columns.get(logicColumn).getCipherColumn();
+        throw new ShardingSphereException("Can not find logic column by %s.", cipherColumn);
     }
     
     /**
@@ -116,14 +101,13 @@ public final class EncryptTable {
     }
     
     /**
-     * Find assisted query column.
+     * Get cipher column.
      *
-     * @param logicColumn column name
-     * @return assisted query column
+     * @param logicColumn logic column name
+     * @return cipher column
      */
-    public Optional<String> findAssistedQueryColumn(final String logicColumn) {
-        Optional<String> originalColumn = findOriginLogicColumnName(logicColumn);
-        return originalColumn.isPresent() ? columns.get(originalColumn.get()).getAssistedQueryColumn() : Optional.empty();
+    public String getCipherColumn(final String logicColumn) {
+        return columns.get(logicColumn).getCipherColumn();
     }
     
     /**
@@ -142,24 +126,39 @@ public final class EncryptTable {
     }
     
     /**
-     * Find encrypt algorithm name.
+     * Find assisted query column.
      *
      * @param logicColumn column name
-     * @return encrypt algorithm name
+     * @return assisted query column
      */
-    public Optional<String> findEncryptorName(final String logicColumn) {
-        Optional<String> originLogicColumnName = findOriginLogicColumnName(logicColumn);
-        return originLogicColumnName.isPresent() && columns.containsKey(originLogicColumnName.get())
-                ? Optional.of(columns.get(originLogicColumnName.get()).getEncryptorName()) : Optional.empty();
+    public Optional<String> findAssistedQueryColumn(final String logicColumn) {
+        Optional<String> originalColumn = findOriginLogicColumnName(logicColumn);
+        return originalColumn.isPresent() ? columns.get(originalColumn.get()).getAssistedQueryColumn() : Optional.empty();
     }
     
-    private Optional<String> findOriginLogicColumnName(final String logicColumn) {
-        for (String each : columns.keySet()) {
-            if (logicColumn.equalsIgnoreCase(each)) {
-                return Optional.of(each);
+    /**
+     * Get plain columns.
+     *
+     * @return plain columns
+     */
+    public Collection<String> getPlainColumns() {
+        Collection<String> result = new LinkedList<>();
+        for (EncryptColumn each : columns.values()) {
+            if (each.getPlainColumn().isPresent()) {
+                result.add(each.getPlainColumn().get());
             }
         }
-        return Optional.empty();
+        return result;
+    }
+    
+    /**
+     * Find plain column.
+     *
+     * @param logicColumn logic column name
+     * @return plain column
+     */
+    public Optional<String> findPlainColumn(final String logicColumn) {
+        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getPlainColumn() : Optional.empty();
     }
     
     /**
