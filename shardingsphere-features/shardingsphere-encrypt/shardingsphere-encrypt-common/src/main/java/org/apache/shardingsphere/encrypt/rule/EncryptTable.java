@@ -50,17 +50,7 @@ public final class EncryptTable {
      * @return encrypt algorithm name
      */
     public Optional<String> findEncryptorName(final String logicColumn) {
-        Optional<String> originLogicColumnName = findOriginLogicColumnName(logicColumn);
-        return originLogicColumnName.isPresent() && columns.containsKey(originLogicColumnName.get()) ? Optional.of(columns.get(originLogicColumnName.get()).getEncryptorName()) : Optional.empty();
-    }
-    
-    private Optional<String> findOriginLogicColumnName(final String logicColumn) {
-        for (String each : columns.keySet()) {
-            if (logicColumn.equalsIgnoreCase(each)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
+        return columns.containsKey(logicColumn) ? Optional.of(columns.get(logicColumn).getEncryptorName()) : Optional.empty();
     }
     
     /**
@@ -129,8 +119,7 @@ public final class EncryptTable {
      * @return assisted query column
      */
     public Optional<String> findAssistedQueryColumn(final String logicColumn) {
-        Optional<String> originalColumn = findOriginLogicColumnName(logicColumn);
-        return originalColumn.isPresent() ? columns.get(originalColumn.get()).getAssistedQueryColumn() : Optional.empty();
+        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getAssistedQueryColumn() : Optional.empty();
     }
     
     /**
