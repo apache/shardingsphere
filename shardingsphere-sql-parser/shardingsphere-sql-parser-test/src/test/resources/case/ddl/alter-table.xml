@@ -824,4 +824,12 @@
             </column-definition>
         </modify-column>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_schema">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_attach_partition">
+        <table name="t_order" stop-index="18" start-index="12"/>
+    </alter-table>
 </sql-parser-test-cases>

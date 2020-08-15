@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 @Getter
 @Setter
-public class VariableAssignSegment implements SQLSegment {
+public final class VariableAssignSegment implements SQLSegment {
     
     private int startIndex;
     

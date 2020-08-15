@@ -43,8 +43,12 @@ public final class ProxyDataSourceContext {
     private final Map<String, Map<String, DataSource>> dataSourcesMap;
     
     public ProxyDataSourceContext(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
-        databaseType = schemaDataSources.isEmpty() ? new MySQLDatabaseType() : DatabaseTypes.getActualDatabaseType(getDatabaseTypeName(schemaDataSources));
+        databaseType = isToInitDatabaseType(schemaDataSources) ? DatabaseTypes.getActualDatabaseType(getDatabaseTypeName(schemaDataSources)) : new MySQLDatabaseType();
         dataSourcesMap = createDataSourcesMap(schemaDataSources);
+    }
+    
+    private boolean isToInitDatabaseType(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
+        return !schemaDataSources.isEmpty() && !schemaDataSources.values().iterator().next().isEmpty();
     }
     
     private static String getDatabaseTypeName(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {

@@ -1,0 +1,82 @@
+.post {
+  padding: 3rem 0;
+
+  &-info {
+    color: $default-tint;
+    font-family: $serif-secondary;
+    letter-spacing: 0.5px;
+    text-align: right;
+    line-height: 1em;
+
+    span {
+      font-style: italic;
+    }
+  }
+
+  &-title {
+    color: $default-shade;
+    font-family: $sans-serif;
+    font-size: 1.5rem;
+    margin: 1rem 0;
+    text-align: center;
+  }
+
+  &-line {
+    border-top: 0.4rem solid $default-shade;
+    display: block;
+    margin: 0 auto 0.5rem;
+    width: 4rem;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+  h2 {
+    border-left: 5px solid $black-0;
+    text-indent: 1rem;
+    font-size: 1.6rem;
+  }
+  h3 {
+    font-size: 1.4rem;
+  }
+
+  p {
+    margin: 0 0 1rem;
+    // text-align: justify;
+    line-height: 2em;
+    text-indent: 2em;
+  }
+
+  li {
+    line-height: 2em;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  img {
+    margin: 0 auto 0.5rem;
+  }
+
+  img + em {
+    color: $default-tint;
+    display: block;
+    font-family: $sans-serif;
+    font-size: 0.9rem;
+    font-style: normal;
+    text-align: center;
+  }
+
+  // CSS for making emoji inline
+  img.emoji {
+    display: inline-block;
+    left: 0;
+    transform: none;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: text-top;
+    padding: 0;
+    margin: 0;
+  }
+}

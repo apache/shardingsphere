@@ -15,8 +15,10 @@ weight = 6
 
 | *名称*                              | *数据类型*                           | *说明*                                                            |
 | ----------------------------------- | ----------------------------------- | ----------------------------------------------------------------- |
-| registryCenterConfiguration         | Map\<String, CenterConfiguration\>  | 注册中心实例的配置 map，key 为名称，value 为治理实例 |
-| additionalConfigCenterConfiguration | Map\<String, CenterConfiguration\>  | 可选的配置中心实例的配置 map，key 为名称，value 为治理实例 |
+| name         | String  | 注册中心实例名称 |
+| registryCenterConfiguration         | OrchestrationCenterConfiguration  | 注册中心实例的配置 |
+| additionalConfigCenterConfiguration | OrchestrationCenterConfiguration  | 可选的配置中心实例配置 |
+| overwrite | boolean   | 本地配置是否覆盖配置中心配置，如果可覆盖，每次启动都以本地配置为准 |
 
 注册中心的类型可以为Zookeeper或etcd。
 配置中心的类型可以为Zookeeper或etcd、Apollo、Nacos。
@@ -30,15 +32,8 @@ weight = 6
 | *名称*         | *数据类型* | *说明*                                                                      |
 | ------------- | ---------- | -------------------------------------------------------------------------- |
 | type          | String     | 治理实例类型，如：Zookeeper, etcd, Apollo, Nacos                             |
-| serverLists   | String     | 治理服务列表，包括 IP 地址和端口号，多个地址用逗号分隔，如: host1:2181,host2:2181 |
-| namespace (?) | String     | 治理命名空间                                                                 |
+| serverLists   | String     | 治理服务列表，包括 IP 地址和端口号，多个地址用逗号分隔，如: host1:2181,host2:2181 |                                                             |
 | props         | Properties | 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等                            |
-
-通用属性配置
-
-| *名称*    | *数据类型* | *说明*                                                      | *默认值* |
-| --------- | --------- | ---------------------------------------------------------- | ------- |
-| overwrite | boolean   | 本地配置是否覆盖配置中心配置，如果可覆盖，每次启动都以本地配置为准 | false   |
 
 ZooKeeper 属性配置
 

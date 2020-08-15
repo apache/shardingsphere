@@ -36,9 +36,9 @@ public final class YamlShardingSphereAlgorithmConfiguration implements YamlConfi
     private Properties props = new Properties();
     
     /**
-     * Build by typed spi.
+     * Build by typed SPI.
      *
-     * @param value typedSPI
+     * @param value typed SPI
      * @return YAML sharding sphere algorithm configuration
      */
     public static YamlShardingSphereAlgorithmConfiguration buildByTypedSPI(final TypedSPI value) {

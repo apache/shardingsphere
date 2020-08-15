@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfig
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.callback.orchestration.DataSourceCallback;
 import org.apache.shardingsphere.infra.callback.orchestration.RuleCallback;
+import org.apache.shardingsphere.infra.callback.orchestration.SchemaNameCallback;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
@@ -72,6 +73,7 @@ public final class ConfigCenter {
         this.repository = repository;
         DataSourceCallback.getInstance().register(this::persistDataSourceConfiguration);
         RuleCallback.getInstance().register(this::persistRuleConfigurations);
+        SchemaNameCallback.getInstance().register(this::persistSchemaName);
     }
     
     /**
@@ -103,9 +105,10 @@ public final class ConfigCenter {
     }
     
     private void persistDataSourceConfiguration(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
-        if (isOverwrite) {
-            persistDataSourceConfiguration(schemaName, dataSourceConfigurations);
+        if (dataSourceConfigurations.isEmpty() || !isOverwrite) {
+            return;
         }
+        persistDataSourceConfiguration(schemaName, dataSourceConfigurations);
     }
     
     private void persistDataSourceConfiguration(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {

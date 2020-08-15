@@ -49,7 +49,7 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
 
     @Override
     public RuleSchemaMetaData swapToObject(final YamlRuleSchemaMetaData yamlConfig) {
-        SchemaMetaData configured = Optional.ofNullable(yamlConfig.getConfiguredSchemaMetaData()).map(this::convertSchema).orElse(new SchemaMetaData(new HashMap<>()));
+        SchemaMetaData configured = Optional.ofNullable(yamlConfig.getConfiguredSchemaMetaData()).map(this::convertSchema).orElse(new SchemaMetaData());
         Map<String, SchemaMetaData> unconfigured = Optional.ofNullable(yamlConfig.getUnconfiguredSchemaMetaDataMap()).map(e -> e.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> convertSchema(entry.getValue())))).orElse(new HashMap<>());
         return new RuleSchemaMetaData(configured, unconfigured);

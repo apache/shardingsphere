@@ -515,6 +515,7 @@ Install docker locally and start the docker service
 #### Compile Docker Image
 
 ```shell
+git checkout ${RELEASE.VERSION}
 cd ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/
 mvn clean package -Prelease,docker
 ```

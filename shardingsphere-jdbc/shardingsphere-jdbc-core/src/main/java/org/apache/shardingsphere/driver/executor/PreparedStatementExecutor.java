@@ -76,7 +76,7 @@ public final class PreparedStatementExecutor {
     }
     
     private DefaultSQLExecutorCallback<QueryResult> createDefaultSQLExecutorCallbackWithQueryResult(final boolean isExceptionThrown) {
-        return new DefaultSQLExecutorCallback<QueryResult>(schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType(), isExceptionThrown) {
+        return new DefaultSQLExecutorCallback<QueryResult>(schemaContexts.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException { 
@@ -110,7 +110,7 @@ public final class PreparedStatementExecutor {
     }
     
     private DefaultSQLExecutorCallback<Integer> createDefaultSQLExecutorCallbackWithInteger(final boolean isExceptionThrown) {
-        return new DefaultSQLExecutorCallback<Integer>(schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType(), isExceptionThrown) {
+        return new DefaultSQLExecutorCallback<Integer>(schemaContexts.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -151,7 +151,7 @@ public final class PreparedStatementExecutor {
     }
     
     private DefaultSQLExecutorCallback<Boolean> createDefaultSQLExecutorCallbackWithBoolean(final boolean isExceptionThrown) {
-        return new DefaultSQLExecutorCallback<Boolean>(schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType(), isExceptionThrown) {
+        return new DefaultSQLExecutorCallback<Boolean>(schemaContexts.getDatabaseType(), isExceptionThrown) {
                     
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -168,8 +168,8 @@ public final class PreparedStatementExecutor {
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
             RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(schemaContext.getSchema().getRules());
-            refreshStrategy.get().refreshMetaData(schemaContext.getSchema().getMetaData(), schemaContext.getSchema().getDatabaseType(), 
-                    dataSourceMap, sqlStatementContext, tableName -> metaDataLoader.load(schemaContext.getSchema().getDatabaseType(), 
+            refreshStrategy.get().refreshMetaData(schemaContext.getSchema().getMetaData(), schemaContexts.getDatabaseType(),
+                    dataSourceMap, sqlStatementContext, tableName -> metaDataLoader.load(schemaContexts.getDatabaseType(),
                             dataSourceMap, tableName, schemaContexts.getProps()));
             MetaDataCallback.getInstance().run(DefaultSchema.LOGIC_NAME, schemaContext.getSchema().getMetaData().getSchema());
         }

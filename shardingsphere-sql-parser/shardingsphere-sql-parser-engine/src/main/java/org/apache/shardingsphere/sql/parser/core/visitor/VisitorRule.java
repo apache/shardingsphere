@@ -51,6 +51,24 @@ public enum VisitorRule {
     ALTER_INDEX("AlterIndex", SQLStatementType.DDL),
     
     DROP_INDEX("DropIndex", SQLStatementType.DDL),
+
+    CREATE_PROCEDURE("CreateProcedure", SQLStatementType.DDL),
+
+    ALTER_PROCEDURE("AlterProcedure", SQLStatementType.DDL),
+
+    DROP_PROCEDURE("DropProcedure", SQLStatementType.DDL),
+
+    CREATE_FUNCTION("CreateFunction", SQLStatementType.DDL),
+
+    ALTER_FUNCTION("AlterFunction", SQLStatementType.DDL),
+
+    DROP_FUNCTION("DropFunction", SQLStatementType.DDL),
+
+    CREATE_DATABASE("CreateDatabase", SQLStatementType.DDL),
+    
+    ALTER_DATABASE("AlterDatabase", SQLStatementType.DDL),
+
+    DROP_DATABASE("DropDatabase", SQLStatementType.DDL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
     

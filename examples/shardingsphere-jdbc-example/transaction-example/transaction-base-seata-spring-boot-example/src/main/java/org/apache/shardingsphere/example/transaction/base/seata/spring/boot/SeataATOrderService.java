@@ -31,7 +31,6 @@ import java.sql.SQLException;
 
 /**
  * Order service.
- *
  */
 @Service
 public class SeataATOrderService {

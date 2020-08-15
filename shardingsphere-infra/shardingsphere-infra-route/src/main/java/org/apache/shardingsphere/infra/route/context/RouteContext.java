@@ -30,7 +30,7 @@ import java.util.List;
 @Getter
 public final class RouteContext {
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     private final List<Object> parameters;
     

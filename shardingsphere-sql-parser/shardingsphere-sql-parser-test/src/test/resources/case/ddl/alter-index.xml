@@ -29,4 +29,6 @@
     <alter-index sql-case-id="alter_index_with_quota_bracket">
         <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="29" stop-index="37" />
     </alter-index>
+
+    <alter-index sql-case-id="alter_index_alter_column" />
 </sql-parser-test-cases>

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfigura
 import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -36,7 +35,7 @@ public final class OrchestrationSpringBootRootConfiguration {
     
     private Properties props = new Properties();
     
-    private Map<String, YamlOrchestrationConfiguration> orchestration;
+    private YamlOrchestrationConfiguration orchestration;
     
     private YamlClusterConfiguration cluster;
 }

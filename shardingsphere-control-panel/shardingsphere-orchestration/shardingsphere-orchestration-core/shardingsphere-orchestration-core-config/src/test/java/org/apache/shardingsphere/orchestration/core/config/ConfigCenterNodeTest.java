@@ -81,4 +81,9 @@ public final class ConfigCenterNodeTest {
     public void assertGetMetricsPath() {
         assertTrue(configurationNode.getMetricsPath().contains("/test/config/metrics"));
     }
+    
+    @Test
+    public void assertGetSchemaNamePath() {
+        assertThat(configurationNode.getSchemaNamePath("sharding_db"), is("/test/config/schema/sharding_db"));
+    }
 }

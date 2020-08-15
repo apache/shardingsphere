@@ -1270,6 +1270,75 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_distinct_with_owner_column_without_order_by" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="38" stop-index="44" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="16" stop-index="31" distinct-row="true">
+            <column-projection name="order_id" start-index="16" stop-index="31" >
+                <owner name="t_order" start-index="16" stop-index="22" />
+            </column-projection>
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="55" stop-index="70">
+                <owner name="t_order" start-index="55" stop-index="61"/>
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_distinct_with_owner_star_without_order_by" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="54" stop-index="60" />
+            </table-factor>
+        </table-reference>
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" start-index="63" stop-index="74" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="16" stop-index="47" distinct-row="true">
+            <shorthand-projection start-index="16" stop-index="24">
+                <owner name="t_order" start-index="16" stop-index="22"/>
+            </shorthand-projection>
+            <column-projection name="order_id" start-index="27" stop-index="47" >
+                <owner name="t_order_item" start-index="27" stop-index="38" />
+            </column-projection>
+        </projections>
+        <where>
+            <and-predicate>
+                <predicate start-index="82" stop-index="121">
+                    <column-left-value name="order_id" start-index="82" stop-index="97">
+                        <owner name="t_order" start-index="82" stop-index="88"/>
+                    </column-left-value>
+                    <column-right-value name="order_id" start-index="101" stop-index="121">
+                        <owner name="t_order_item" start-index="101" stop-index="112"/>
+                    </column-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_distinct_with_owner_column_with_group_by" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="38" stop-index="44" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="16" stop-index="31" distinct-row="true">
+            <column-projection name="order_id" start-index="16" stop-index="31" >
+                <owner name="t_order" start-index="16" stop-index="22" />
+            </column-projection>
+        </projections>
+        <group-by>
+            <column-item name="order_id" start-index="55" stop-index="70">
+                <owner name="t_order" start-index="55" stop-index="61"/>
+            </column-item>
+        </group-by>
+    </select>
+
     <select sql-case-id="select_distinct_with_single_column" >
         <table-reference>
             <table-factor>
@@ -1522,7 +1591,7 @@
             </table-factor>
         </table-reference>
         <projections distinct-row="true" start-index="15" stop-index="23">
-            <expression-projection start-index="15" stop-index="23" />
+            <column-projection start-index="16" stop-index="22" name="item_id"/>
         </projections>
         <order-by>
             <column-item name="item_id" start-index="52" stop-index="58" />

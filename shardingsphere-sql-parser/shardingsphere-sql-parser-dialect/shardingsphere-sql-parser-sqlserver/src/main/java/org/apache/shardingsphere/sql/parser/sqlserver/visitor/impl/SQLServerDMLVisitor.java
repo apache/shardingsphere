@@ -362,7 +362,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         }
         // FIXME :For DISTINCT()
         if (projection instanceof ColumnSegment) {
-            ExpressionProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+            ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) projection);
             result.setAlias(alias);
             return result;
         }

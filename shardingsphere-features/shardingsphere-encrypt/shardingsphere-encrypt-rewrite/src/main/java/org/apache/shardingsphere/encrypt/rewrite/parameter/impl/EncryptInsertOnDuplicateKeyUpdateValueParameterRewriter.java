@@ -56,7 +56,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
             encryptorOptional.ifPresent(encryptor -> {
                 Object plainColumnValue = onDuplicateKeyUpdateValueContext.getValue(columnIndex);
                 Object cipherColumnValue = encryptorOptional.get().encrypt(plainColumnValue);
-                groupedParameterBuilder.getOnDuplicateKeyUpdateParametersBuilder().addReplacedParameters(columnIndex, cipherColumnValue);
+                groupedParameterBuilder.getGenericParameterBuilder().addReplacedParameters(columnIndex, cipherColumnValue);
                 Collection<Object> addedParameters = new LinkedList<>();
                 if (encryptor instanceof QueryAssistedEncryptAlgorithm) {
                     Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
@@ -67,10 +67,10 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
                     addedParameters.add(plainColumnValue);
                 }
                 if (!addedParameters.isEmpty()) {
-                    if (!groupedParameterBuilder.getOnDuplicateKeyUpdateParametersBuilder().getAddedIndexAndParameters().containsKey(columnIndex + 1)) {
-                        groupedParameterBuilder.getOnDuplicateKeyUpdateParametersBuilder().getAddedIndexAndParameters().put(columnIndex + 1, new LinkedList<>());
+                    if (!groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().containsKey(columnIndex + 1)) {
+                        groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().put(columnIndex + 1, new LinkedList<>());
                     }
-                    groupedParameterBuilder.getOnDuplicateKeyUpdateParametersBuilder().getAddedIndexAndParameters().get(columnIndex + 1).addAll(addedParameters);
+                    groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().get(columnIndex + 1).addAll(addedParameters);
                 }
             });
         }

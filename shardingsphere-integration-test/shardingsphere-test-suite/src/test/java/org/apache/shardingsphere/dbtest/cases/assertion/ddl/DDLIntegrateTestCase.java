@@ -28,7 +28,7 @@ import java.util.List;
  * JAXB definition of DDL integrate test case.
  */
 @Getter
-public class DDLIntegrateTestCase extends IntegrateTestCase {
+public final class DDLIntegrateTestCase extends IntegrateTestCase {
     
     @XmlElement(name = "assertion")
     private List<DDLIntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();

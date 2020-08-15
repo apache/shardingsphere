@@ -62,4 +62,5 @@
     <alter-user sql-case-id="alter_user_set_login" />
     <alter-user sql-case-id="alter_user_set_default_schema" />
     <alter-user sql-case-id="alter_user_rename" />
+    <alter-user sql-case-id="alter_user_in_database" />
 </sql-parser-test-cases>

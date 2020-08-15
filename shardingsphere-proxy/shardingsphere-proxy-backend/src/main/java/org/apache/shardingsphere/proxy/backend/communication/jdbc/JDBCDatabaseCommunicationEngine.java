@@ -42,6 +42,7 @@ import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.rdl.parser.binder.context.CreateSchemaStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
@@ -126,15 +127,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(schema.getSchema().getMetaData(),
-                    schema.getSchema().getDatabaseType(), schema.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
+            refreshStrategy.get().refreshMetaData(schema.getSchema().getMetaData(), ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType(),
+                    schema.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
             MetaDataCallback.getInstance().run(schema.getName(), schema.getSchema().getMetaData().getSchema());
         }
     }
     
     private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
         RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(schema.getSchema().getRules());
-        return loader.load(schema.getSchema().getDatabaseType(),
+        return loader.load(ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType(),
                 schema.getSchema().getDataSources(), tableName, ProxySchemaContexts.getInstance().getSchemaContexts().getProps());
     }
     
@@ -154,12 +155,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {
+        if (sqlStatementContext instanceof CreateSchemaStatementContext) {
+            return false;
+        }
         Optional<DataNodeRoutedRule> dataNodeRoutedRule = schema.getSchema().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         return dataNodeRoutedRule.isPresent() && dataNodeRoutedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(schema.getSchema().getDatabaseType(), 
+        MergeEngine mergeEngine = new MergeEngine(ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType(),
                 schema.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), ProxySchemaContexts.getInstance().getSchemaContexts().getProps(), schema.getSchema().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }

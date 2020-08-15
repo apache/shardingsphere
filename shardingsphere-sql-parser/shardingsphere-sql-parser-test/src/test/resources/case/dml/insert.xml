@@ -624,9 +624,43 @@
         </values>
     </insert>
 
-    <!--<insert sql-case-id="insert_with_batch_and_composite_expression" parameters="1, 1, 'init', 2, 2, 'init'">-->
-            <!--<table name="t_order" start-index="12" stop-index="18" />-->
-    <!--</insert>-->
+    <insert sql-case-id="insert_with_batch_and_composite_expression" parameters="1, 1, 'init', 2, 2, 'init'">
+            <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="56" stop-index="56" />
+                    <literal-expression value="1" start-index="56" stop-index="56" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" start-index="59" stop-index="59" />
+                    <literal-expression value="1" start-index="59" stop-index="59" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression text="SUBSTR(?, 1)" literal-text="SUBSTR('init', 1)" literal-start-index="62" literal-stop-index="78" start-index="62" stop-index="73" />
+
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="3" start-index="78" stop-index="78" />
+                    <literal-expression value="2" literal-start-index="83" literal-stop-index="83" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="4" start-index="81" stop-index="81" />
+                    <literal-expression value="2" literal-start-index="86" literal-stop-index="86" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression text="SUBSTR(?, 1)" literal-text="SUBSTR('init', 1)" start-index="84" stop-index="95" literal-start-index="89" literal-stop-index="105" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 
     <insert sql-case-id="insert_with_batch_and_with_generate_key_column" parameters="10000, 1000, 10, 10010, 1001, 10">
         <table name="t_order_item" start-index="12" stop-index="23" />
@@ -1251,4 +1285,17 @@
         </values>
     </insert>
     
+    <insert sql-case-id="insert_with_digit_literals_value">
+        <table name="digit_literals_value_test" start-index="12" stop-index="36" />
+        <columns start-index="37" stop-index="42">
+            <column name="col1" start-index="38" stop-index="41" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="x'1234'" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>

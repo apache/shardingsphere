@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
@@ -82,7 +83,8 @@ public final class BackendConnectionTest {
     private void setSchemaContexts() throws NoSuchFieldException, IllegalAccessException {
         Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        field.set(ProxySchemaContexts.getInstance(), new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties())));
+        field.set(ProxySchemaContexts.getInstance(),
+                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {

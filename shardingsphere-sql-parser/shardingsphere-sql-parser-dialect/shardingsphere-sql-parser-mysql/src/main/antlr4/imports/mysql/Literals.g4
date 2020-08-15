@@ -25,6 +25,10 @@ IDENTIFIER_
     | (DQ_ ( '\\'. | '""' | ~('"'| '\\') )* DQ_)
     ;
 
+Y_N_
+    : SQ_ ('Y' | 'N') SQ_
+    ;
+
 STRING_ 
     : (DQ_ ( '\\'. | '""' | ~('"'| '\\') )* DQ_)
     | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
@@ -35,7 +39,7 @@ NUMBER_
     ;
 
 HEX_DIGIT_
-    : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
+    : '0x' HEX_+ | X SQ_ HEX_+ SQ_
     ;
 
 BIT_NUM_
@@ -48,10 +52,6 @@ INNODB_
 
 TLS_
     : 'TLS'
-    ;
-
-Y_N_
-    : ('Y' | 'N')
     ;
 
 NOT_SUPPORT_

@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.spring.boot;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spring.boot.condition.EncryptSpringBootCondition;
@@ -33,6 +30,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Encrypt rule configuration for spring boot.
@@ -64,9 +65,9 @@ public class EncryptRuleSpringBootConfiguration {
      */
     @Bean
     public RuleConfiguration encryptRuleConfiguration(final YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration, final ObjectProvider<Map<String, EncryptAlgorithm>> encryptors) {
-        AlgorithmProvidedEncryptRuleConfiguration ruleConfiguration = swapper.swapToObject(yamlEncryptRuleConfiguration);
-        ruleConfiguration.setEncryptors(Optional.ofNullable(encryptors.getIfAvailable()).orElse(Collections.emptyMap()));
-        return ruleConfiguration;
+        AlgorithmProvidedEncryptRuleConfiguration result = swapper.swapToObject(yamlEncryptRuleConfiguration);
+        result.setEncryptors(Optional.ofNullable(encryptors.getIfAvailable()).orElse(Collections.emptyMap()));
+        return result;
     }
     
     /**
