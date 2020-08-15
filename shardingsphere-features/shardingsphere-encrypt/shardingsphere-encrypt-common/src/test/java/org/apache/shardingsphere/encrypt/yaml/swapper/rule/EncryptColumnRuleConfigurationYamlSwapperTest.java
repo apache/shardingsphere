@@ -21,8 +21,9 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfiguration;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 public final class EncryptColumnRuleConfigurationYamlSwapperTest {
     
@@ -44,10 +45,10 @@ public final class EncryptColumnRuleConfigurationYamlSwapperTest {
             new EncryptColumnRuleConfiguration(TEST_LOGIC_COLUMN, TEST_CIPHER_COLUMN, TEST_ASSISTED_QUERY_COLUMN, TEST_PLAIN_COLUMN, TEST_ENCRYPTOR_NAME);
         YamlEncryptColumnRuleConfiguration actualYamlEncryptColumnConfig = columnYamlSwapper.swapToYamlConfiguration(encryptColumnConfig);
         assertNotNull(actualYamlEncryptColumnConfig);
-        assertEquals(TEST_CIPHER_COLUMN, actualYamlEncryptColumnConfig.getCipherColumn());
-        assertEquals(TEST_ASSISTED_QUERY_COLUMN, actualYamlEncryptColumnConfig.getAssistedQueryColumn());
-        assertEquals(TEST_PLAIN_COLUMN, actualYamlEncryptColumnConfig.getPlainColumn());
-        assertEquals(TEST_ENCRYPTOR_NAME, actualYamlEncryptColumnConfig.getEncryptorName());
+        assertThat(actualYamlEncryptColumnConfig.getCipherColumn(), is(TEST_CIPHER_COLUMN));
+        assertThat(actualYamlEncryptColumnConfig.getAssistedQueryColumn(), is(TEST_ASSISTED_QUERY_COLUMN));
+        assertThat(actualYamlEncryptColumnConfig.getPlainColumn(), is(TEST_PLAIN_COLUMN));
+        assertThat(actualYamlEncryptColumnConfig.getEncryptorName(), is(TEST_ENCRYPTOR_NAME));
     }
     
     @Test
@@ -60,10 +61,10 @@ public final class EncryptColumnRuleConfigurationYamlSwapperTest {
         actualYamlEncryptColumnConfig.setEncryptorName(TEST_ENCRYPTOR_NAME);
         EncryptColumnRuleConfiguration actualEncryptColumnConfig = columnYamlSwapper.swapToObject(actualYamlEncryptColumnConfig);
         assertNotNull(actualEncryptColumnConfig);
-        assertEquals(TEST_LOGIC_COLUMN, actualEncryptColumnConfig.getLogicColumn());
-        assertEquals(TEST_CIPHER_COLUMN, actualYamlEncryptColumnConfig.getCipherColumn());
-        assertEquals(TEST_ASSISTED_QUERY_COLUMN, actualYamlEncryptColumnConfig.getAssistedQueryColumn());
-        assertEquals(TEST_PLAIN_COLUMN, actualYamlEncryptColumnConfig.getPlainColumn());
-        assertEquals(TEST_ENCRYPTOR_NAME, actualYamlEncryptColumnConfig.getEncryptorName());
+        assertThat(actualEncryptColumnConfig.getLogicColumn(), is(TEST_LOGIC_COLUMN));
+        assertThat(actualYamlEncryptColumnConfig.getCipherColumn(), is(TEST_CIPHER_COLUMN));
+        assertThat(actualYamlEncryptColumnConfig.getAssistedQueryColumn(), is(TEST_ASSISTED_QUERY_COLUMN));
+        assertThat(actualYamlEncryptColumnConfig.getPlainColumn(), is(TEST_PLAIN_COLUMN));
+        assertThat(actualYamlEncryptColumnConfig.getEncryptorName(), is(TEST_ENCRYPTOR_NAME));
     }
 }
