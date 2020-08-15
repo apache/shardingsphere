@@ -106,13 +106,18 @@ createDatabase
     ;
 
 alterDatabase
-    : ALTER (DATABASE | SCHEMA) schemaName createDatabaseSpecification_*
+    : ALTER (DATABASE | SCHEMA) schemaName? alterDatabaseSpecification_*
     ;
 
 createDatabaseSpecification_
     : DEFAULT? (CHARACTER SET | CHARSET) EQ_? characterSetName_
     | DEFAULT? COLLATE EQ_? collationName_
-    | DEFAULT ENCRYPTION EQ_ Y_N_
+    | DEFAULT? ENCRYPTION EQ_? Y_N_
+    ;
+    
+alterDatabaseSpecification_
+    : createDatabaseSpecification_ 
+    | READ ONLY EQ_? (DEFAULT | NUMBER_)
     ;
 
 dropDatabase
