@@ -1,0 +1,66 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.proxy.frontend.postgresql.auth;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
+import org.apache.shardingsphere.infra.auth.ProxyUser;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+
+/**
+ * Authentication handler for PostgreSQL.
+ */
+public class PostgreSQLAuthenticationHandler {
+    
+    /**
+     * Login.
+     *
+     * @param userName              user name
+     * @param databaseName          database name
+     * @param md5Salt               md5 salt
+     * @param passwordMessagePacket password message packet
+     * @return PostgreSQLLoginResult
+     */
+    public static PostgreSQLLoginResult loginWithMd5Password(final String userName, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
+        ProxyUser proxyUser = null;
+        for (Map.Entry<String, ProxyUser> entry : ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().entrySet()) {
+            if (entry.getKey().equals(userName)) {
+                proxyUser = entry.getValue();
+                break;
+            }
+        }
+        if (null == proxyUser) {
+            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, "unknown userName: " + userName);
+        }
+        
+        String md5Digest = passwordMessagePacket.getMd5Digest();
+        String expectedMd5Digest = new String(PostgreSQLMd5Digest.encode(userName.getBytes(StandardCharsets.UTF_8), proxyUser.getPassword().getBytes(StandardCharsets.UTF_8), md5Salt));
+        if (!expectedMd5Digest.equals(md5Digest)) {
+            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, "bad md5 password");
+        }
+        
+        if (!proxyUser.getAuthorizedSchemas().contains(databaseName)) {
+            return new PostgreSQLLoginResult(PostgreSQLErrorCode.PRIVILEGE_NOT_GRANTED, String.format("%s has no configured %s in authorizedSchemas", userName, databaseName));
+        }
+        
+        return new PostgreSQLLoginResult(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION, null);
+    }
+    
+}
