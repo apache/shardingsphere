@@ -67,8 +67,8 @@ public final class EncryptTableRuleConfigurationYamlSwapperTest {
         EncryptTableRuleConfiguration actualEncryptTableRuleConfig = tableRuleConfigYamlSwapper.swapToObject(yamlEncryptTableRuleConfig);
         assertNotNull(actualEncryptTableRuleConfig);
         assertThat(actualEncryptTableRuleConfig.getName(), is("test_table"));
-        Collection<EncryptColumnRuleConfiguration> actualColumn = actualEncryptTableRuleConfig.getColumns();
-        assertFalse(actualColumn.isEmpty());
-        assertThat(actualColumn.size(), is(1));
+        Collection<EncryptColumnRuleConfiguration> actualColumns = actualEncryptTableRuleConfig.getColumns();
+        assertFalse(actualColumns.isEmpty());
+        assertThat(actualColumns.size(), is(1));
     }
 }
