@@ -77,7 +77,7 @@ public final class SQLRewriteContextTest {
     @Test
     public void assertNotInsertStatementContext() {
         SelectStatementContext statementContext = mock(SelectStatementContext.class);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(SchemaMetaData.class), statementContext, "SELECT * FROM tbl", Collections.singletonList(1));
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(SchemaMetaData.class), statementContext, "SELECT * FROM tbl WHERE id = ?", Collections.singletonList(1));
         assertThat(sqlRewriteContext.getParameterBuilder(), instanceOf(StandardParameterBuilder.class));
     }
     
