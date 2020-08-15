@@ -42,6 +42,9 @@ execute
     | createDatabase
     | alterDatabase
     | dropDatabase
+    | createEvent
+    | alterEvent
+    | dropEvent
     | setTransaction
     | beginTransaction
     | setAutoCommit
