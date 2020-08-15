@@ -31,6 +31,7 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -70,40 +71,7 @@ public final class DataSourceConfigurationTest {
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
     }
-
-    @Test
-    public void assertEquals() {
-        DataSourceConfiguration originalDataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
-        DataSourceConfiguration targetDataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
-        assertThat(originalDataSourceConfiguration.equals(originalDataSourceConfiguration), is(true));
-        assertThat(originalDataSourceConfiguration.equals(targetDataSourceConfiguration), is(true));
-        originalDataSourceConfiguration.getProps().put("username", "root");
-        targetDataSourceConfiguration.getProps().put("username", "root");
-        assertThat(originalDataSourceConfiguration.equals(targetDataSourceConfiguration), is(true));
-        targetDataSourceConfiguration.getProps().put("password", "root");
-        assertThat(originalDataSourceConfiguration.equals(targetDataSourceConfiguration), is(true));
-        originalDataSourceConfiguration.getProps().put("username", "root");
-        originalDataSourceConfiguration.getProps().put("url", "jdbcUrl");
-        assertThat(originalDataSourceConfiguration.equals(targetDataSourceConfiguration), is(false));
-    }
-
-    @Test
-    public void assertHashCode() {
-        DataSourceConfiguration originalDataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
-        DataSourceConfiguration targetDataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
-        assertThat(originalDataSourceConfiguration.hashCode(), is(targetDataSourceConfiguration.hashCode()));
-        originalDataSourceConfiguration.getProps().put("username", "root");
-        originalDataSourceConfiguration.getProps().put("password", "root");
-        targetDataSourceConfiguration.getProps().put("username", "root");
-        targetDataSourceConfiguration.getProps().put("password", "root");
-        assertThat(originalDataSourceConfiguration.hashCode(), is(targetDataSourceConfiguration.hashCode()));
-        originalDataSourceConfiguration.getProps().put("url", "jdbcUrl");
-        assertThat(originalDataSourceConfiguration.hashCode(), not(targetDataSourceConfiguration.hashCode()));
-        originalDataSourceConfiguration.getProps().clear();
-        targetDataSourceConfiguration = new DataSourceConfiguration(BasicDataSource.class.getName());
-        assertThat(originalDataSourceConfiguration.hashCode(), not(targetDataSourceConfiguration.hashCode()));
-    }
-
+    
     @Test
     public void assertAddAlias() {
         HikariDataSource actualDataSource = new HikariDataSource();
@@ -112,8 +80,8 @@ public final class DataSourceConfigurationTest {
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
         DataSourceConfiguration actual = DataSourceConfiguration.getDataSourceConfiguration(actualDataSource);
-        actual.addAlias("url", "jdbcUrl");
-        actual.addAlias("user", "username");
+        actual.addPropertyAlias("url", "jdbcUrl");
+        actual.addPropertyAlias("user", "username");
         assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
         assertThat(actual.getProps().get("driverClassName").toString(), is("org.h2.Driver"));
         assertThat(actual.getProps().get("jdbcUrl").toString(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
@@ -121,6 +89,60 @@ public final class DataSourceConfigurationTest {
         assertThat(actual.getProps().get("password").toString(), is("root"));
         assertThat(actual.getProps().get("jdbcUrl"), is(actual.getProps().get("url")));
         assertThat(actual.getProps().get("username"), is(actual.getProps().get("user")));
+    }
+    
+    @Test
+    public void assertEquals() {
+        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        DataSourceConfiguration targetDataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
+        assertThat(originalDataSourceConfig, is(originalDataSourceConfig));
+        assertThat(originalDataSourceConfig, is(targetDataSourceConfiguration));
+        originalDataSourceConfig.getProps().put("username", "root");
+        targetDataSourceConfiguration.getProps().put("username", "root");
+        assertThat(originalDataSourceConfig, is(targetDataSourceConfiguration));
+        targetDataSourceConfiguration.getProps().put("password", "root");
+        assertThat(originalDataSourceConfig, is(targetDataSourceConfiguration));
+    }
+    
+    @Test
+    public void assertNotEquals() {
+        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        DataSourceConfiguration targetDataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
+        originalDataSourceConfig.getProps().put("username", "root");
+        assertThat(originalDataSourceConfig, not(targetDataSourceConfiguration));
+        targetDataSourceConfiguration.getProps().put("username", "root");
+        originalDataSourceConfig.getProps().put("password", "root");
+        assertThat(originalDataSourceConfig, not(targetDataSourceConfiguration));
+        assertFalse(originalDataSourceConfig.equals(null));
+        originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        targetDataSourceConfiguration = new DataSourceConfiguration(BasicDataSource.class.getName());
+        assertThat(originalDataSourceConfig, not(targetDataSourceConfiguration));
+    }
+    
+    @Test
+    public void assertSameHashCode() {
+        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        assertThat(originalDataSourceConfig.hashCode(), is(targetDataSourceConfig.hashCode()));
+        originalDataSourceConfig.getProps().put("username", "root");
+        targetDataSourceConfig.getProps().put("username", "root");
+        assertThat(originalDataSourceConfig.hashCode(), is(targetDataSourceConfig.hashCode()));
+        originalDataSourceConfig.getProps().put("password", "root");
+        targetDataSourceConfig.getProps().put("password", "root");
+        assertThat(originalDataSourceConfig.hashCode(), is(targetDataSourceConfig.hashCode()));
+    }
+    
+    @Test
+    public void assertDifferentHashCode() {
+        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        originalDataSourceConfig.getProps().put("username", "root");
+        targetDataSourceConfig.getProps().put("username", "root");
+        targetDataSourceConfig.getProps().put("password", "root");
+        assertThat(originalDataSourceConfig.hashCode(), not(targetDataSourceConfig.hashCode()));
+        originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        targetDataSourceConfig = new DataSourceConfiguration(BasicDataSource.class.getName());
+        assertThat(originalDataSourceConfig.hashCode(), not(targetDataSourceConfig.hashCode()));
     }
     
     @SuppressWarnings("unchecked")

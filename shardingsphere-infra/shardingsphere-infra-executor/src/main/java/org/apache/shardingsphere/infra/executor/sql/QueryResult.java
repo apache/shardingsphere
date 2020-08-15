@@ -26,14 +26,14 @@ import java.util.Calendar;
  * Query result form SQL.
  */
 public interface QueryResult {
-
+    
     /**
      * Get JDBC ResultSetMetaData.
      *
      * @return JDBC ResultSetMetaData
      */
     ResultSetMetaData getResultSetMetaData();
-
+    
     /**
      * iterate next data.
      *

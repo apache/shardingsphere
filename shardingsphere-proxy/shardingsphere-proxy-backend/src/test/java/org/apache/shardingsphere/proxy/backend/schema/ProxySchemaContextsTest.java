@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.schema;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
@@ -42,18 +43,14 @@ import static org.mockito.Mockito.when;
 public final class ProxySchemaContextsTest {
     
     @Test
-    public void assertGetDataSourceSampleEmpty() {
-        assertThat(ProxySchemaContexts.getInstance().getDataSourceSample(), is(Optional.empty()));
-    }
-    
-    @Test
     public void assertGetDataSourceSample() throws NoSuchFieldException, IllegalAccessException {
         Map<String, DataSource> mockDataSourceMap = new HashMap<>(2, 1);
         mockDataSourceMap.put("ds_1", new MockDataSource());
         mockDataSourceMap.put("ds_2", new MockDataSource());
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(), new StandardSchemaContexts(getSchemaContextMap(mockDataSourceMap), new Authentication(), new ConfigurationProperties(new Properties())));
+        schemaContexts.set(ProxySchemaContexts.getInstance(),
+                new StandardSchemaContexts(getSchemaContextMap(mockDataSourceMap), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         Optional<DataSource> actual = ProxySchemaContexts.getInstance().getDataSourceSample();
         assertThat(actual, is(Optional.of(mockDataSourceMap.get("ds_1"))));
     }

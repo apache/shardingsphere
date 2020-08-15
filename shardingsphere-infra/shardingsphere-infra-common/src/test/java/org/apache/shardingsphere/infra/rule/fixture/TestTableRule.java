@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
-public class TestTableRule {
+public final class TestTableRule {
     
     private final String logicTable;
     

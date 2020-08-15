@@ -410,6 +410,7 @@ GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `
 #### 编译Docker镜像
 
 ```shell
+git checkout ${RELEASE.VERSION}
 cd ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/
 mvn clean package -Prelease,docker
 ```

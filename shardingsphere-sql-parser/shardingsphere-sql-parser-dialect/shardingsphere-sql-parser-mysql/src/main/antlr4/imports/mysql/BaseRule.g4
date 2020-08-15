@@ -549,7 +549,7 @@ intervalUnit_
     ;
 
 subquery
-    : 'Default does not match anything'
+    : 'refer subquery in DMStement.g4'
     ;
 
 orderByClause
@@ -613,4 +613,16 @@ pattern
 
 connectionId_
     : NUMBER_
+    ;
+    
+labelName
+    : identifier
+    ;
+    
+cursorName
+    : identifier
+    ;
+    
+conditionName
+    : identifier
     ;

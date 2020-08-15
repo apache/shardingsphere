@@ -23,6 +23,7 @@ import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
+import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 
 /**
  * MySQL scaling entry.
@@ -40,7 +41,7 @@ public final class MySQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends PositionManager> getPositionManager() {
+    public Class<? extends PositionManager<BinlogPosition>> getPositionManager() {
         return MySQLPositionManager.class;
     }
     

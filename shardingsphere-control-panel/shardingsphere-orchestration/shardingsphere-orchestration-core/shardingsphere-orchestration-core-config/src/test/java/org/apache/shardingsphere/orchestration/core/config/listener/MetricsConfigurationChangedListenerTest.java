@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MetricsConfigurationChangedListenerTest {
@@ -58,6 +59,6 @@ public final class MetricsConfigurationChangedListenerTest {
         assertThat(actual.getMetricsName(), is("prometheus"));
         assertThat(actual.getPort(), is(9190));
         assertThat(actual.getHost(), is("127.0.0.1"));
-        assertThat(actual.getAsync(), is(true));
+        assertTrue(actual.getAsync());
     }
 }

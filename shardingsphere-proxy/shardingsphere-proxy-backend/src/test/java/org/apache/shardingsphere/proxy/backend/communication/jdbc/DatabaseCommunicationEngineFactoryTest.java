@@ -18,12 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
-import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,24 +32,24 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class DatabaseCommunicationEngineFactoryTest {
     
     private SchemaContext schemaContext;
-
+    
+    private BackendConnection backendConnection;
+    
     @Before
     public void setUp() {
-        schemaContext = mock(SchemaContext.class);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        ShardingSphereSQLParserEngine sqlParserEngine = mock(ShardingSphereSQLParserEngine.class);
-        when(sqlParserEngine.parse(anyString(), anyBoolean())).thenReturn(mock(SQLStatement.class));
-        when(runtimeContext.getSqlParserEngine()).thenReturn(sqlParserEngine);
-        when(schema.getRules()).thenReturn(Collections.emptyList());
-        when(schemaContext.getSchema()).thenReturn(schema);
-        when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
+        schemaContext = mock(SchemaContext.class, RETURNS_DEEP_STUBS);
+        when(schemaContext.getSchema().getRules()).thenReturn(Collections.emptyList());
+        when(schemaContext.getRuntimeContext().getSqlParserEngine().parse(anyString(), anyBoolean())).thenReturn(mock(SQLStatement.class));
+    
+        backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
+        when(backendConnection.isSerialExecute()).thenReturn(true);
     }
     
     @Test

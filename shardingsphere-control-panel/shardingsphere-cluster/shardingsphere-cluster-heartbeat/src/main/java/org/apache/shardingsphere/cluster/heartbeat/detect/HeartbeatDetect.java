@@ -70,9 +70,9 @@ public final class HeartbeatDetect extends AbstractHeartbeatDetect {
     }
     
     @Override
-    protected Map<String, HeartbeatResult> buildResult(final boolean result) {
-        Map<String, HeartbeatResult> heartBeatResultMap = new HashMap<>(1, 1);
-        heartBeatResultMap.put(schemaName, new HeartbeatResult(dataSourceName, result, System.currentTimeMillis(), dataSourceDisabled));
-        return heartBeatResultMap;
+    protected Map<String, HeartbeatResult> buildResult(final boolean heartbeatResult) {
+        Map<String, HeartbeatResult> result = new HashMap<>(1, 1);
+        result.put(schemaName, new HeartbeatResult(dataSourceName, heartbeatResult, System.currentTimeMillis(), dataSourceDisabled));
+        return result;
     }
 }

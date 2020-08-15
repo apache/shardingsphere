@@ -35,7 +35,7 @@ import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.config.utils.SyncConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.ScalingJobController;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;

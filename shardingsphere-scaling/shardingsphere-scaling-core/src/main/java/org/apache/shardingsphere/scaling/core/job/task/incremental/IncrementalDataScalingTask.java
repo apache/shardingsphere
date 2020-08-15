@@ -31,6 +31,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.ImporterFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ import java.util.concurrent.Future;
  * Incremental data execute task.
  */
 @Slf4j
-public final class IncrementalDataScalingTask extends AbstractShardingScalingExecutor implements ScalingTask {
+public final class IncrementalDataScalingTask extends AbstractShardingScalingExecutor<IncrementalPosition> implements ScalingTask<IncrementalPosition> {
     
     private final SyncConfiguration syncConfiguration;
     
@@ -53,6 +54,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     
     private long delayMillisecond;
     
+    @SuppressWarnings("unchecked")
     public IncrementalDataScalingTask(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
         dataSourceManager = new DataSourceManager();
@@ -63,7 +65,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     @Override
     public void start() {
         syncConfiguration.getDumperConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
-        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), getPositionManager().getCurrentPosition());
+        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), getPositionManager().getPosition());
         Collection<Importer> importers = instanceImporters();
         instanceChannel(importers);
         Future<?> future = ScalingContext.getInstance().getTaskExecuteEngine().submitAll(importers, new ExecuteCallback() {
@@ -94,7 +96,9 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     private void instanceChannel(final Collection<Importer> importers) {
         DistributionChannel channel = new DistributionChannel(importers.size(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
-            getPositionManager().updateCurrentPosition(lastHandledRecord.getPosition());
+            if (lastHandledRecord.getPosition() instanceof IncrementalPosition) {
+                getPositionManager().setPosition((IncrementalPosition) lastHandledRecord.getPosition());
+            }
             delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();
         });
         dumper.setChannel(channel);
@@ -122,7 +126,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     
     @Override
     public SyncProgress getProgress() {
-        return new IncrementalDataSyncTaskProgress(getTaskId(), delayMillisecond, getPositionManager().getCurrentPosition());
+        return new IncrementalDataSyncTaskProgress(getTaskId(), delayMillisecond, getPositionManager().getPosition());
     }
     
 }

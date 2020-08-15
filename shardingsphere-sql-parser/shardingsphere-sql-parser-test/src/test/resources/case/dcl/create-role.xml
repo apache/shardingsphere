@@ -32,4 +32,6 @@
     <create-role sql-case-id="create_role_with_authorization" />
     <create-role sql-case-id="create_role_identified_by" />
     <create-role sql-case-id="create_role_with_password" />
+    <create-role sql-case-id="create_role_with_valid_until" />
+    <create-role sql-case-id="create_role_with_createdb" />
 </sql-parser-test-cases>

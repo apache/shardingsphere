@@ -21,6 +21,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
@@ -54,7 +55,7 @@ import java.util.Random;
  * MySQL binlog dumper.
  */
 @Slf4j
-public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor implements LogDumper {
+public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<BinlogPosition> implements LogDumper {
     
     private final BinlogPosition binlogPosition;
     
@@ -79,11 +80,10 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
     @Override
     public void start() {
         super.start();
-        dump(channel);
+        dump();
     }
     
-    @Override
-    public void dump(final Channel channel) {
+    private void dump() {
         JDBCDataSourceConfiguration jdbcDataSourceConfig = (JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration();
         JdbcUri uri = new JdbcUri(jdbcDataSourceConfig.getJdbcUrl());
         MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfig.getUsername(), jdbcDataSourceConfig.getPassword()));
@@ -92,43 +92,43 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
         while (isRunning()) {
             AbstractBinlogEvent event = client.poll();
             if (null != event) {
-                handleEvent(channel, uri, event);
+                handleEvent(uri, event);
             }
         }
-        pushRecord(channel, new FinishedRecord(new NopPosition()));
+        pushRecord(new FinishedRecord(new NopPosition()));
     }
     
-    private void handleEvent(final Channel channel, final JdbcUri uri, final AbstractBinlogEvent event) {
+    private void handleEvent(final JdbcUri uri, final AbstractBinlogEvent event) {
         if (event instanceof WriteRowsEvent) {
-            handleWriteRowsEvent(channel, uri, (WriteRowsEvent) event);
+            handleWriteRowsEvent(uri, (WriteRowsEvent) event);
         } else if (event instanceof UpdateRowsEvent) {
-            handleUpdateRowsEvent(channel, uri, (UpdateRowsEvent) event);
+            handleUpdateRowsEvent(uri, (UpdateRowsEvent) event);
         } else if (event instanceof DeleteRowsEvent) {
-            handleDeleteRowsEvent(channel, uri, (DeleteRowsEvent) event);
+            handleDeleteRowsEvent(uri, (DeleteRowsEvent) event);
         } else if (event instanceof PlaceholderEvent) {
-            createPlaceholderRecord(channel, event);
+            createPlaceholderRecord(event);
         }
     }
     
-    private void handleWriteRowsEvent(final Channel channel, final JdbcUri uri, final WriteRowsEvent event) {
+    private void handleWriteRowsEvent(final JdbcUri uri, final WriteRowsEvent event) {
         if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
-            createPlaceholderRecord(channel, event);
+            createPlaceholderRecord(event);
             return;
         }
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getAfterRows()) {
             DataRecord record = createDataRecord(event, each.length);
-            record.setType("INSERT");
+            record.setType(ScalingConstant.INSERT);
             for (int i = 0; i < each.length; i++) {
                 record.addColumn(new Column(tableMetaData.getColumnMetaData(i).getName(), each[i], true, tableMetaData.isPrimaryKey(i)));
             }
-            pushRecord(channel, record);
+            pushRecord(record);
         }
     }
     
-    private void handleUpdateRowsEvent(final Channel channel, final JdbcUri uri, final UpdateRowsEvent event) {
+    private void handleUpdateRowsEvent(final JdbcUri uri, final UpdateRowsEvent event) {
         if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
-            createPlaceholderRecord(channel, event);
+            createPlaceholderRecord(event);
             return;
         }
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
@@ -136,29 +136,29 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
             Serializable[] beforeValues = event.getBeforeRows().get(i);
             Serializable[] afterValues = event.getAfterRows().get(i);
             DataRecord record = createDataRecord(event, beforeValues.length);
-            record.setType("UPDATE");
+            record.setType(ScalingConstant.UPDATE);
             for (int j = 0; j < beforeValues.length; j++) {
                 Object oldValue = beforeValues[j];
                 Object newValue = afterValues[j];
                 record.addColumn(new Column(tableMetaData.getColumnMetaData(j).getName(), newValue, !Objects.equals(newValue, oldValue), tableMetaData.isPrimaryKey(j)));
             }
-            pushRecord(channel, record);
+            pushRecord(record);
         }
     }
     
-    private void handleDeleteRowsEvent(final Channel channel, final JdbcUri uri, final DeleteRowsEvent event) {
+    private void handleDeleteRowsEvent(final JdbcUri uri, final DeleteRowsEvent event) {
         if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
-            createPlaceholderRecord(channel, event);
+            createPlaceholderRecord(event);
             return;
         }
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getBeforeRows()) {
             DataRecord record = createDataRecord(event, each.length);
-            record.setType("DELETE");
+            record.setType(ScalingConstant.DELETE);
             for (int i = 0; i < each.length; i++) {
                 record.addColumn(new Column(tableMetaData.getColumnMetaData(i).getName(), each[i], true, tableMetaData.isPrimaryKey(i)));
             }
-            pushRecord(channel, record);
+            pushRecord(record);
         }
     }
     
@@ -169,13 +169,13 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
         return result;
     }
     
-    private void createPlaceholderRecord(final Channel channel, final AbstractBinlogEvent event) {
+    private void createPlaceholderRecord(final AbstractBinlogEvent event) {
         PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()));
         record.setCommitTime(event.getTimestamp() * 1000);
-        pushRecord(channel, record);
+        pushRecord(record);
     }
     
-    private void pushRecord(final Channel channel, final Record record) {
+    private void pushRecord(final Record record) {
         try {
             channel.pushRecord(record);
         } catch (final InterruptedException ignored) {

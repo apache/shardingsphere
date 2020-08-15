@@ -82,14 +82,14 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetBooleanForColumnIndex() throws SQLException {
         for (ResultSet each : resultSets.values()) {
-            assertThat(each.getBoolean(1), is(true));
+            assertTrue(each.getBoolean(1));
         }
     }
     
     @Test
     public void assertGetBooleanForColumnLabel() throws SQLException {
         for (ResultSet each : resultSets.values()) {
-            assertThat(each.getBoolean(columnName), is(true));
+            assertTrue(each.getBoolean(columnName));
         }
     }
     
@@ -152,28 +152,28 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetFloatForColumnIndex() throws SQLException {
         for (ResultSet each : resultSets.values()) {
-            assertThat(each.getFloat(1), is(10F));
+            assertThat(each.getFloat(1), is(10.0F));
         }
     }
     
     @Test
     public void assertGetFloatForColumnLabel() throws SQLException {
         for (ResultSet each : resultSets.values()) {
-            assertThat(each.getFloat(columnName), is(10F));
+            assertThat(each.getFloat(columnName), is(10.0F));
         }
     }
     
     @Test
     public void assertGetDoubleForColumnIndex() throws SQLException {
         for (ResultSet each : resultSets.values()) {
-            assertThat(each.getDouble(1), is(10D));
+            assertThat(each.getDouble(1), is(10.0D));
         }
     }
     
     @Test
     public void assertGetDoubleForColumnLabel() throws SQLException {
         for (ResultSet each : resultSets.values()) {
-            assertThat(each.getDouble(columnName), is(10D));
+            assertThat(each.getDouble(columnName), is(10.0D));
         }
     }
     

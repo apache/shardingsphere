@@ -19,7 +19,6 @@ package org.apache.shardingsphere.kernel.context.schema;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -36,8 +35,6 @@ import java.util.Map;
 @Getter
 public final class ShardingSphereSchema {
     
-    private final DatabaseType databaseType;
-    
     private final Collection<RuleConfiguration> configurations = new LinkedList<>();
     
     private final Collection<ShardingSphereRule> rules = new LinkedList<>();
@@ -46,9 +43,8 @@ public final class ShardingSphereSchema {
     
     private final ShardingSphereMetaData metaData;
     
-    public ShardingSphereSchema(final DatabaseType databaseType, final Collection<RuleConfiguration> configurations, final Collection<ShardingSphereRule> rules, 
+    public ShardingSphereSchema(final Collection<RuleConfiguration> configurations, final Collection<ShardingSphereRule> rules,
                                 final Map<String, DataSource> dataSourceMap, final ShardingSphereMetaData shardingSphereMetaData) {
-        this.databaseType = databaseType;
         this.configurations.addAll(configurations);
         this.rules.addAll(rules);
         dataSources.putAll(dataSourceMap);

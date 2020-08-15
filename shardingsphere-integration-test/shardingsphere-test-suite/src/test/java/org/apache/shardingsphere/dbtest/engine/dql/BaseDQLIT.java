@@ -58,8 +58,8 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 public abstract class BaseDQLIT extends SingleIT {
     
-    public BaseDQLIT(final String path, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
-                     final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+    protected BaseDQLIT(final String path, final DQLIntegrateTestCaseAssertion assertion, final String ruleType, 
+                        final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(path, assertion, ruleType, databaseType, caseType, sql);
     }
     

@@ -22,8 +22,10 @@ import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPositionManager;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.SyncTaskFactory;
@@ -55,8 +57,8 @@ public final class InventoryDataTaskSplitter {
      * @param dataSourceManager data source manager
      * @return split inventory data task
      */
-    public Collection<ScalingTask> splitInventoryData(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
-        Collection<ScalingTask> result = new LinkedList<>();
+    public Collection<ScalingTask<InventoryPosition>> splitInventoryData(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+        Collection<ScalingTask<InventoryPosition>> result = new LinkedList<>();
         for (SyncConfiguration each : splitConfiguration(syncConfiguration, dataSourceManager)) {
             result.add(syncTaskFactory.createInventoryDataSyncTask(each));
         }
@@ -82,7 +84,7 @@ public final class InventoryDataTaskSplitter {
         for (String each : syncConfiguration.getTableNameMap().keySet()) {
             RdbmsConfiguration dumperConfig = RdbmsConfiguration.clone(syncConfiguration.getDumperConfiguration());
             dumperConfig.setTableName(each);
-            dumperConfig.setPositionManager(new PrimaryKeyPositionManager(new PrimaryKeyPosition.PlaceholderPosition()));
+            dumperConfig.setPositionManager(new InventoryPositionManager<>(new PlaceholderPosition()));
             result.add(new SyncConfiguration(syncConfiguration.getConcurrency(), syncConfiguration.getTableNameMap(),
                 dumperConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration())));
         }
@@ -132,10 +134,10 @@ public final class InventoryDataTaskSplitter {
             for (int i = 0; i < concurrency && min <= max; i++) {
                 RdbmsConfiguration splitDumperConfig = RdbmsConfiguration.clone(dumperConfiguration);
                 if (i < concurrency - 1) {
-                    splitDumperConfig.setPositionManager(new PrimaryKeyPositionManager(new PrimaryKeyPosition(min, min + step)));
+                    splitDumperConfig.setPositionManager(new InventoryPositionManager<>(new PrimaryKeyPosition(min, min + step)));
                     min += step + 1;
                 } else {
-                    splitDumperConfig.setPositionManager(new PrimaryKeyPositionManager(new PrimaryKeyPosition(min, max)));
+                    splitDumperConfig.setPositionManager(new InventoryPositionManager<>(new PrimaryKeyPosition(min, max)));
                 }
                 splitDumperConfig.setSpiltNum(i);
                 result.add(new SyncConfiguration(concurrency, syncConfiguration.getTableNameMap(),

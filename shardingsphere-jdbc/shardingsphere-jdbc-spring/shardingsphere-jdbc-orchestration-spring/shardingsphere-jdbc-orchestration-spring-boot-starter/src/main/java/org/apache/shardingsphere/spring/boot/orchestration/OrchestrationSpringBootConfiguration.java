@@ -24,7 +24,6 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.OrchestrationCenterConfigurationYamlSwapper;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.orchestration.common.OrchestrationSpringBootRootConfiguration;
@@ -42,7 +41,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.util.CollectionUtils;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -50,7 +48,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -76,18 +74,13 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
      * @return orchestration configuration
      */
     @Bean
-    // TODO only can support one OrchestrationConfiguration, should support multiple
     public OrchestrationConfiguration orchestrationConfiguration() {
-        Preconditions.checkState(!CollectionUtils.isEmpty(root.getOrchestration()), "The orchestration configuration is invalid, please configure orchestration");
-        for (Entry<String, YamlOrchestrationConfiguration> entry : root.getOrchestration().entrySet()) {
-            if (null == entry.getValue().getAdditionalConfigCenter()) {
-                return new OrchestrationConfiguration(entry.getKey(), swapper.swapToObject(entry.getValue().getRegistryCenter()), entry.getValue().isOverwrite());
-            }
-            return new OrchestrationConfiguration(entry.getKey(), 
-                    swapper.swapToObject(entry.getValue().getRegistryCenter()), swapper.swapToObject(entry.getValue().getAdditionalConfigCenter()), entry.getValue().isOverwrite());
+        Preconditions.checkState(Objects.nonNull(root.getOrchestration()), "The orchestration configuration is invalid, please configure orchestration");
+        if (null == root.getOrchestration().getAdditionalConfigCenter()) {
+            return new OrchestrationConfiguration(root.getOrchestration().getName(), swapper.swapToObject(root.getOrchestration().getRegistryCenter()), root.getOrchestration().isOverwrite());
         }
-        // TODO should return map when support multiple OrchestrationConfiguration
-        return null;
+        return new OrchestrationConfiguration(root.getOrchestration().getName(),
+                swapper.swapToObject(root.getOrchestration().getRegistryCenter()), swapper.swapToObject(root.getOrchestration().getAdditionalConfigCenter()), root.getOrchestration().isOverwrite());
     }
     
     /**

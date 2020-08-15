@@ -1,12 +1,11 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.explain;
 
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,7 +35,7 @@ import static org.mockito.Mockito.when;
  * limitations under the License.
  */
 
-public class ShardingCTLExplainBackendHandlerTest {
+public final class ShardingCTLExplainBackendHandlerTest {
     
     private ShardingCTLExplainBackendHandler handler;
     
@@ -48,8 +47,8 @@ public class ShardingCTLExplainBackendHandlerTest {
     }
     
     private SchemaContext createSchemaContext() {
-        RuntimeContext runtimeContext = new RuntimeContext(null, null, new ShardingSphereSQLParserEngine(new SQLParserEngine("MySQL")), null);
-        ShardingSphereSchema schema = new ShardingSphereSchema(new MySQLDatabaseType(), Collections.emptyList(),
+        RuntimeContext runtimeContext = new RuntimeContext(null, null, new ShardingSphereSQLParserEngine(new StandardSQLParserEngine("MySQL")), null);
+        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.emptyList(),
                 Collections.emptyList(), Collections.singletonMap("ds0", mock(DataSource.class)), null);
         return new SchemaContext("c1", schema, runtimeContext);
     }

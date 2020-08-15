@@ -104,4 +104,7 @@
     <sql-case id="alter_index_with_quota_bracket" value="ALTER INDEX [order_index] ON [t_order] REBUILD" db-types="SQLServer" />
     <sql-case id="alter_table_alter_column_for_postgresql" value="ALTER TABLE t_order ALTER column4 TYPE VARCHAR(20)" db-types="PostgreSQL" />
     <sql-case id="alter_table_alter_column_for_sqlserver" value="ALTER TABLE t_order ALTER COLUMN column4 VARCHAR(20)" db-types="SQLServer" />
+    <sql-case id="alter_table_set_schema" value="ALTER TABLE t_order SET SCHEMA yourschema" db-types="PostgreSQL" />
+    <sql-case id="alter_table_attach_partition" value="ALTER TABLE t_order ATTACH PARTITION measurement_y2016m07 FOR VALUES FROM ('2016-07-01') TO ('2016-08-01')" db-types="PostgreSQL"/>
+    <sql-case id="alter_index_alter_column" value="ALTER INDEX t_order_idx ALTER COLUMN 3 SET STATISTICS 1000" db-types="PostgreSQL"/>
 </sql-cases>

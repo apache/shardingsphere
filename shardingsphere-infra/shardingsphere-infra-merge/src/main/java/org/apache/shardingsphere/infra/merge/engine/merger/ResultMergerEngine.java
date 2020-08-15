@@ -39,5 +39,5 @@ public interface ResultMergerEngine<T extends ShardingSphereRule> extends Result
      * @param sqlStatementContext SQL statement context
      * @return new instance of result merger engine
      */
-    ResultMerger newInstance(DatabaseType databaseType, T rule, ConfigurationProperties props, SQLStatementContext sqlStatementContext);
+    ResultMerger newInstance(DatabaseType databaseType, T rule, ConfigurationProperties props, SQLStatementContext<?> sqlStatementContext);
 }

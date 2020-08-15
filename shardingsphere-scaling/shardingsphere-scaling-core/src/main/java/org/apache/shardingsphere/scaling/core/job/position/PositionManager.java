@@ -25,16 +25,16 @@ package org.apache.shardingsphere.scaling.core.job.position;
 public interface PositionManager<T extends Position> {
     
     /**
-     * Get current position.
+     * Get position.
      *
      * @return position
      */
-    T getCurrentPosition();
+    T getPosition();
     
     /**
-     * Update currentPosition.
+     * Set Position.
      *
-     * @param newPosition new position.
+     * @param position position.
      */
-    void updateCurrentPosition(T newPosition);
+    void setPosition(T position);
 }

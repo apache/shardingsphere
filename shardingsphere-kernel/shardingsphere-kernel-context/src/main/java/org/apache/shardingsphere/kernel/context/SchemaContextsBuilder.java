@@ -92,7 +92,7 @@ public final class SchemaContextsBuilder {
         for (String each : ruleConfigurations.keySet()) {
             schemaContexts.put(each, createSchemaContext(each));
         }
-        return new StandardSchemaContexts(schemaContexts, authentication, props);
+        return new StandardSchemaContexts(schemaContexts, authentication, props, databaseType);
     }
     
     private SchemaContext createSchemaContext(final String schemaName) throws SQLException {
@@ -103,6 +103,9 @@ public final class SchemaContextsBuilder {
     }
     
     private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
+        if (dataSources.isEmpty()) {
+            return null;
+        }
         try (Connection connection = dataSources.values().iterator().next().getConnection()) {
             return new CachedDatabaseMetaData(connection.getMetaData());
         }
@@ -118,7 +121,7 @@ public final class SchemaContextsBuilder {
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
         Collection<RuleConfiguration> ruleConfigurations = this.ruleConfigurations.get(schemaName);
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigurations, dataSources.keySet());
-        return new ShardingSphereSchema(databaseType, ruleConfigurations, rules, dataSources, createMetaData(dataSources, rules));
+        return new ShardingSphereSchema(ruleConfigurations, rules, dataSources, createMetaData(dataSources, rules));
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
@@ -136,7 +139,7 @@ public final class SchemaContextsBuilder {
             DataSource dataSource = entry.getValue();
             try (Connection connection = dataSource.getConnection()) {
                 DatabaseMetaData metaData = connection.getMetaData();
-                result.put(entry.getKey(), new DatabaseAccessConfiguration(metaData.getURL(), metaData.getUserName(), null));
+                result.put(entry.getKey(), new DatabaseAccessConfiguration(metaData.getURL(), metaData.getUserName()));
             }
         }
         return result;

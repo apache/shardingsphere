@@ -35,7 +35,7 @@ import java.sql.SQLFeatureNotSupportedException;
  */
 public abstract class AbstractUnsupportedOperationPreparedStatement extends AbstractStatementAdapter implements PreparedStatement {
     
-    public AbstractUnsupportedOperationPreparedStatement() {
+    protected AbstractUnsupportedOperationPreparedStatement() {
         super(PreparedStatement.class);
     }
     

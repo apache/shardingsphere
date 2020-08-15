@@ -76,7 +76,7 @@ public final class PreparedStatementExecutor {
     }
     
     private DefaultSQLExecutorCallback<QueryResult> createDefaultSQLExecutorCallbackWithQueryResult(final boolean isExceptionThrown) {
-        return new DefaultSQLExecutorCallback<QueryResult>(schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType(), isExceptionThrown) {
+        return new DefaultSQLExecutorCallback<QueryResult>(schemaContexts.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException { 
@@ -99,7 +99,7 @@ public final class PreparedStatementExecutor {
      * @return effected records count
      * @throws SQLException SQL exception
      */
-    public int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext sqlStatementContext) throws SQLException {
+    public int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Integer> sqlExecutorCallback = createDefaultSQLExecutorCallbackWithInteger(isExceptionThrown);
         List<Integer> results = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
@@ -110,7 +110,7 @@ public final class PreparedStatementExecutor {
     }
     
     private DefaultSQLExecutorCallback<Integer> createDefaultSQLExecutorCallbackWithInteger(final boolean isExceptionThrown) {
-        return new DefaultSQLExecutorCallback<Integer>(schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType(), isExceptionThrown) {
+        return new DefaultSQLExecutorCallback<Integer>(schemaContexts.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -119,7 +119,7 @@ public final class PreparedStatementExecutor {
         };
     }
     
-    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
+    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
         return rules.stream().anyMatch(each -> ((DataNodeRoutedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
     }
     
@@ -139,7 +139,7 @@ public final class PreparedStatementExecutor {
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext sqlStatementContext) throws SQLException {
+    public boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Boolean> sqlExecutorCallback = createDefaultSQLExecutorCallbackWithBoolean(isExceptionThrown);
         List<Boolean> result = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
@@ -151,7 +151,7 @@ public final class PreparedStatementExecutor {
     }
     
     private DefaultSQLExecutorCallback<Boolean> createDefaultSQLExecutorCallbackWithBoolean(final boolean isExceptionThrown) {
-        return new DefaultSQLExecutorCallback<Boolean>(schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType(), isExceptionThrown) {
+        return new DefaultSQLExecutorCallback<Boolean>(schemaContexts.getDatabaseType(), isExceptionThrown) {
                     
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -161,15 +161,15 @@ public final class PreparedStatementExecutor {
     }
     
     @SuppressWarnings("unchecked")
-    private void refreshTableMetaData(final SchemaContext schemaContext, final SQLStatementContext sqlStatementContext) throws SQLException {
+    private void refreshTableMetaData(final SchemaContext schemaContext, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         if (null == sqlStatementContext) {
             return;
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
             RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(schemaContext.getSchema().getRules());
-            refreshStrategy.get().refreshMetaData(schemaContext.getSchema().getMetaData(), schemaContext.getSchema().getDatabaseType(), 
-                    dataSourceMap, sqlStatementContext, tableName -> metaDataLoader.load(schemaContext.getSchema().getDatabaseType(), 
+            refreshStrategy.get().refreshMetaData(schemaContext.getSchema().getMetaData(), schemaContexts.getDatabaseType(),
+                    dataSourceMap, sqlStatementContext, tableName -> metaDataLoader.load(schemaContexts.getDatabaseType(),
                             dataSourceMap, tableName, schemaContexts.getProps()));
             MetaDataCallback.getInstance().run(DefaultSchema.LOGIC_NAME, schemaContext.getSchema().getMetaData().getSchema());
         }

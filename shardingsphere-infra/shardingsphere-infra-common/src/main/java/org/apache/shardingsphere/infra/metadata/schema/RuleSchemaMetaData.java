@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -41,7 +40,7 @@ public final class RuleSchemaMetaData {
      * @return schema meta data
      */
     public SchemaMetaData getSchemaMetaData() {
-        SchemaMetaData result = new SchemaMetaData(new HashMap<>());
+        SchemaMetaData result = new SchemaMetaData();
         unconfiguredSchemaMetaDataMap.values().forEach(result::merge);
         result.merge(configuredSchemaMetaData);
         return result;

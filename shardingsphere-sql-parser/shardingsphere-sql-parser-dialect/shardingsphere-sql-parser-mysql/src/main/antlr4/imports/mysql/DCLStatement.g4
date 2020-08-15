@@ -97,8 +97,27 @@ privilegeLevel
 
 createUser
     : CREATE USER (IF NOT EXISTS)? userName userAuthOption_? (COMMA_ userName userAuthOption_?)*
-    DEFAULT ROLE roleName (COMMA_ roleName)* (REQUIRE (NONE | tlsOption_ (AND? tlsOption_)*))?
-    (WITH resourceOption_ resourceOption_*)? (passwordOption_ | lockOption_)* (COMMENT STRING_ | ATTRIBUTE STRING_)?
+    defaultRoleClause? requireClause? connectOption? accountLockPasswordExpireOptions?
+    ;
+
+defaultRoleClause
+    : DEFAULT ROLE roleName (COMMA_ roleName)*
+    ;
+
+requireClause
+    : REQUIRE (NONE | tlsOption_ (AND? tlsOption_)*)
+    ;
+
+connectOption
+    : WITH resourceOption_ resourceOption_*
+    ;
+
+accountLockPasswordExpireOptions
+    : accountLockPasswordExpireOption+
+    ;
+
+accountLockPasswordExpireOption
+    : passwordOption_ | lockOption_
     ;
 
 alterUser

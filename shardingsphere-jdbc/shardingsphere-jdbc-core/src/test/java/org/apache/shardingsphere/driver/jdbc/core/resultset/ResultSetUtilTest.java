@@ -21,7 +21,6 @@ import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -31,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class ResultSetUtilTest {
@@ -45,7 +45,7 @@ public final class ResultSetUtilTest {
     public void assertConvertLocalDateTime() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         LocalDateTime dateTime = (LocalDateTime) ResultSetUtil.convertValue(timestamp, LocalDateTime.class);
-        Assert.assertNotNull(dateTime);
+        assertNotNull(dateTime);
         assertThat(dateTime.toString(), is(timestamp.toLocalDateTime().toString()));
     }
     

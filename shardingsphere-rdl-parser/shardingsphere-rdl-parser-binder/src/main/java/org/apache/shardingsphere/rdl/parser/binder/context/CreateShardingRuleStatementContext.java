@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.rdl.parser.binder.context;
 
+import org.apache.shardingsphere.rdl.parser.binder.util.ShardingAlgorithmPropertiesUtil;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.TableRuleSegment;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Properties;
 
 /**
@@ -34,47 +34,12 @@ public final class CreateShardingRuleStatementContext extends CommonSQLStatement
     }
     
     /**
-     * Get logic table.
-     *
-     * @return logic table
-     */
-    public String getLogicTable() {
-        return "";
-    }
-    
-    /**
-     * Get data sources.
-     *
-     * @return data sources
-     */
-    public Collection<String> getDataSources() {
-        return new LinkedList<>();
-    }
-    
-    /**
-     * Get sharding column.
-     *
-     * @return sharding column
-     */
-    public String getShardingColumn() {
-        return "";
-    }
-    
-    /**
-     * Get sharding algorithm type.
-     *
-     * @return sharding algorithm type
-     */
-    public String getAlgorithmType() {
-        return "";
-    }
-    
-    /**
      * Get algorithm properties.
      *
+     * @param segment segment
      * @return algorithm properties
      */
-    public Properties getAlgorithmProperties() {
-        return new Properties();
+    public Properties getAlgorithmProperties(final TableRuleSegment segment) {
+        return ShardingAlgorithmPropertiesUtil.getProperties(segment.getAlgorithmType(), segment.getProperties());
     }
 }

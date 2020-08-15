@@ -64,4 +64,5 @@
     <sql-case id="alter_user_set_login" value="ALTER USER user1 WITH LOGIN = login1" db-types="SQLServer" />
     <sql-case id="alter_user_set_default_schema" value="ALTER USER user1 WITH DEFAULT_SCHEMA = schema" db-types="SQLServer" />
     <sql-case id="alter_user_rename" value="ALTER USER user1_bak WITH NAME = user1" db-types="SQLServer" />
+    <sql-case id="alter_user_in_database" value="ALTER USER user1 IN DATABASE ds SET arg1='val1'" db-types="PostgreSQL" />
 </sql-cases>

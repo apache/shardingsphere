@@ -59,21 +59,6 @@ public final class DataSourceConverter {
                 .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
     }
     
-    private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
-        bindAlias(dataSourceConfiguration);
-        DataSourceParameter result = new DataSourceParameter();
-        for (Field each : result.getClass().getDeclaredFields()) {
-            try {
-                each.setAccessible(true);
-                if (dataSourceConfiguration.getProps().containsKey(each.getName())) {
-                    each.set(result, dataSourceConfiguration.getProps().get(each.getName()));
-                }
-            } catch (final ReflectiveOperationException ignored) {
-            }
-        }
-        return result;
-    }
-    
     private static DataSourceParameter createDataSourceParameter(final YamlDataSourceParameter yamlDataSourceParameter) {
         DataSourceParameter result = new DataSourceParameter();
         result.setConnectionTimeoutMilliseconds(yamlDataSourceParameter.getConnectionTimeoutMilliseconds());
@@ -88,13 +73,28 @@ public final class DataSourceConverter {
         result.setUrl(yamlDataSourceParameter.getUrl());
         return result;
     }
+    
+    private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfig) {
+        bindAlias(dataSourceConfig);
+        DataSourceParameter result = new DataSourceParameter();
+        for (Field each : result.getClass().getDeclaredFields()) {
+            try {
+                each.setAccessible(true);
+                if (dataSourceConfig.getProps().containsKey(each.getName())) {
+                    each.set(result, dataSourceConfig.getProps().get(each.getName()));
+                }
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
+        return result;
+    }
 
     private static void bindAlias(final DataSourceConfiguration dataSourceConfiguration) {
-        dataSourceConfiguration.addAlias("url", "jdbcUrl");
-        dataSourceConfiguration.addAlias("user", "username");
-        dataSourceConfiguration.addAlias("connectionTimeout", "connectionTimeoutMilliseconds");
-        dataSourceConfiguration.addAlias("maxLifetime", "maxLifetimeMilliseconds");
-        dataSourceConfiguration.addAlias("idleTimeout", "idleTimeoutMilliseconds");
+        dataSourceConfiguration.addPropertyAlias("url", "jdbcUrl");
+        dataSourceConfiguration.addPropertyAlias("user", "username");
+        dataSourceConfiguration.addPropertyAlias("connectionTimeout", "connectionTimeoutMilliseconds");
+        dataSourceConfiguration.addPropertyAlias("maxLifetime", "maxLifetimeMilliseconds");
+        dataSourceConfiguration.addPropertyAlias("idleTimeout", "idleTimeoutMilliseconds");
     }
     
     /**

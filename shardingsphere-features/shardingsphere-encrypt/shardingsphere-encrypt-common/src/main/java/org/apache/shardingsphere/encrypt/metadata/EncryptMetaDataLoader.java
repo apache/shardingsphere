@@ -56,8 +56,7 @@ public final class EncryptMetaDataLoader implements RuleMetaDataLoader<EncryptRu
     @Override
     public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, 
                                         final String tableName, final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
-        return encryptRule.findEncryptTable(tableName).isPresent()
-                ? TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType.getName()) : Optional.empty();
+        return encryptRule.findEncryptTable(tableName).isPresent() ? TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType.getName()) : Optional.empty();
     }
     
     @Override

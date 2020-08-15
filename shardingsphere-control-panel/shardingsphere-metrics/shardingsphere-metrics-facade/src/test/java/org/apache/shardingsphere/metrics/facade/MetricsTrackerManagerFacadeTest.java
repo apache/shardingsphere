@@ -31,8 +31,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MetricsTrackerManagerFacadeTest {
@@ -47,7 +49,7 @@ public final class MetricsTrackerManagerFacadeTest {
     
     @Test
     public void assertInit() {
-        assertThat(MetricsTrackerManagerFacade.getEnabled(), is(true));
+        assertTrue(MetricsTrackerManagerFacade.getEnabled());
     }
     
     @Test
@@ -59,14 +61,14 @@ public final class MetricsTrackerManagerFacadeTest {
     @Test
     public void testClose() {
         MetricsTrackerManagerFacade.close();
-        assertThat(MetricsTrackerManagerFacade.getEnabled(), is(false));
+        assertFalse(MetricsTrackerManagerFacade.getEnabled());
     }
     
     @Test
     public void restart() {
         MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, 0, false, true, 8, null);
         MetricsTrackerManagerFacade.restart(metricsConfiguration);
-        assertThat(MetricsTrackerManagerFacade.getEnabled(), is(true));
+        assertTrue(MetricsTrackerManagerFacade.getEnabled());
     }
     
     @After

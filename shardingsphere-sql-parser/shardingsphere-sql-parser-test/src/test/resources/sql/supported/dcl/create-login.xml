@@ -23,6 +23,7 @@
     <sql-case id="create_login_with_default_database" value="CREATE LOGIN login1 WITH PASSWORD = 'password', DEFAULT_DATABASE = database" db-types="SQLServer" />
     <sql-case id="create_login_with_expired_password" value="CREATE LOGIN login1 WITH PASSWORD = 'password' MUST_CHANGE, CHECK_EXPIRATION = ON" db-types="SQLServer" />
     <sql-case id="create_login_to_credential" value="CREATE LOGIN login1 WITH PASSWORD = 'password', CREDENTIAL = credential" db-types="SQLServer" />
+<!--    TODO suport create_login_with_windows on SQLServer-->
     <!--<sql-case id="create_login_with_windows" value="CREATE LOGIN [domain\login1] FROM WINDOWS" db-types="SQLServer" />-->
     <sql-case id="create_login_with_certificate" value="CREATE LOGIN login1 FROM CERTIFICATE certificate" db-types="SQLServer" />
     <sql-case id="create_login_with_asym_key" value="CREATE LOGIN login1 FROM ASYMMETRIC KEY asym_key" db-types="SQLServer" />

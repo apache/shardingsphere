@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class MySQLTimeValueUtilTest {
+public final class MySQLTimeValueUtilTest {
     
     @Test
     public void assertGetSimpleDateFormat() {

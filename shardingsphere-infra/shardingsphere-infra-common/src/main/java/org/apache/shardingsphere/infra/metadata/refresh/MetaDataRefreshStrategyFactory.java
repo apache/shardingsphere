@@ -41,7 +41,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetaDataRefreshStrategyFactory {
     
-    private static final Map<Class, MetaDataRefreshStrategy> REGISTRY = new HashMap<>();
+    private static final Map<Class<?>, MetaDataRefreshStrategy> REGISTRY = new HashMap<>();
     
     static {
         REGISTRY.put(CreateTableStatementContext.class, new CreateTableStatementMetaDataRefreshStrategy());
@@ -57,7 +57,7 @@ public final class MetaDataRefreshStrategyFactory {
      * @param sqlStatementContext SQL statement context
      * @return meta data refresh strategy
      */
-    public static Optional<MetaDataRefreshStrategy> newInstance(final SQLStatementContext sqlStatementContext) {
+    public static Optional<MetaDataRefreshStrategy> newInstance(final SQLStatementContext<?> sqlStatementContext) {
         return Optional.ofNullable(REGISTRY.get(sqlStatementContext.getClass()));
     }
 }

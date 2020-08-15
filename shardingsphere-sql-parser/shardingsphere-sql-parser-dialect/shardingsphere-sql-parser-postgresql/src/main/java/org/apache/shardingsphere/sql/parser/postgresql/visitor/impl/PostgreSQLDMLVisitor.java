@@ -21,6 +21,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CallContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AliasClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AttrNameContext;
@@ -53,7 +55,6 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Se
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetClauseListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTargetContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTargetListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SimpleSelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TargetElContext;
@@ -107,7 +108,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
@@ -288,11 +291,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     }
     
     @Override
-    public ASTNode visitSetTargetList(final SetTargetListContext ctx) {
-        return super.visitSetTargetList(ctx);
-    }
-    
-    @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement result = new DeleteStatement();
         SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
@@ -422,12 +420,15 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             return shorthandProjection;
         }
         AExprContext expr = ctx.aExpr();
-        if (null != expr.cExpr() && null != expr.cExpr().columnref()) {
-            ColumnProjectionSegment projection = generateColumnProjection(expr.cExpr().columnref());
+        if (1 == expr.getChildCount() && null != expr.cExpr()) {
+            ASTNode projection = visit(expr.cExpr());
             AliasSegment alias = null != ctx.identifier()
                     ? new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())) : null;
-            projection.setAlias(alias);
-            return projection;
+            if (projection instanceof ColumnSegment) {
+                ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) projection);
+                result.setAlias(alias);
+                return result;
+            }
         }
         if (null != expr.cExpr() && null != expr.cExpr().funcExpr()) {
             visit(expr.cExpr().funcExpr());
@@ -659,5 +660,15 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         }
         LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
+    }
+    
+    @Override
+    public ASTNode visitCall(final CallContext ctx) {
+        return new CallStatement();
+    }
+    
+    @Override
+    public ASTNode visitDoStatement(final DoStatementContext ctx) {
+        return new DoStatement();
     }
 }

@@ -25,6 +25,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -37,7 +38,7 @@ public final class MetricsThreadPoolExecutorTest {
         assertThat(executor.getCorePoolSize(), is(8));
         assertThat(executor.getMaximumPoolSize(), is(8));
         assertThat(executor.getQueue().getClass().getName(), is(LinkedBlockingQueue.class.getName()));
-        assertThat(executor.isShutdown(), is(false));
+        assertFalse(executor.isShutdown());
         assertThat(executor.getKeepAliveTime(TimeUnit.MILLISECONDS), is(0L));
         executor.shutdown();
     }

@@ -23,6 +23,8 @@ import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManagerFactory;
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
@@ -89,11 +91,11 @@ public final class ShardingScalingJobPreparer {
     }
     
     private void initInventoryDataTasks(final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager) {
-        List<ScalingTask> allInventoryDataTasks = new LinkedList<>();
+        List<ScalingTask<InventoryPosition>> allInventoryDataTasks = new LinkedList<>();
         for (SyncConfiguration each : shardingScalingJob.getSyncConfigurations()) {
             allInventoryDataTasks.addAll(inventoryDataTaskSplitter.splitInventoryData(each, dataSourceManager));
         }
-        for (Collection<ScalingTask> each : JobPrepareUtil.groupInventoryDataTasks(shardingScalingJob.getSyncConfigurations().get(0).getConcurrency(), allInventoryDataTasks)) {
+        for (Collection<ScalingTask<InventoryPosition>> each : JobPrepareUtil.groupInventoryDataTasks(shardingScalingJob.getSyncConfigurations().get(0).getConcurrency(), allInventoryDataTasks)) {
             shardingScalingJob.getInventoryDataTasks().add(syncTaskFactory.createInventoryDataSyncTaskGroup(each));
         }
     }
@@ -106,10 +108,9 @@ public final class ShardingScalingJobPreparer {
         }
     }
     
-    @SuppressWarnings("rawtypes")
-    private PositionManager instancePositionManager(final String databaseType, final DataSource dataSource) {
-        PositionManager positionManager = PositionManagerFactory.newInstance(databaseType, dataSource);
-        positionManager.getCurrentPosition();
+    private PositionManager<? extends IncrementalPosition> instancePositionManager(final String databaseType, final DataSource dataSource) {
+        PositionManager<? extends IncrementalPosition> positionManager = PositionManagerFactory.newInstance(databaseType, dataSource);
+        positionManager.getPosition();
         return positionManager;
     }
 }

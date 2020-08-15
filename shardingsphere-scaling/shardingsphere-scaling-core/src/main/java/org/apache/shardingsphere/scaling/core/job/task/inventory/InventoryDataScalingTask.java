@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.config.utils.RdbmsConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.RdbmsConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
-import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import javax.sql.DataSource;
@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Table slice execute task.
  */
 @Slf4j
-public final class InventoryDataScalingTask extends AbstractShardingScalingExecutor implements ScalingTask {
+public final class InventoryDataScalingTask extends AbstractShardingScalingExecutor<InventoryPosition> implements ScalingTask<InventoryPosition> {
     
     private final SyncConfiguration syncConfiguration;
     
@@ -66,6 +66,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
         this(syncConfiguration, new DataSourceManager());
     }
     
+    @SuppressWarnings("unchecked")
     public InventoryDataScalingTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = dataSourceManager;
@@ -126,10 +127,8 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
             for (Record record : records) {
                 if (record instanceof DataRecord) {
                     count++;
-                } else if (record instanceof FinishedRecord) {
-                    if (record.getPosition() instanceof PrimaryKeyPosition) {
-                        getPositionManager().updateCurrentPosition(record.getPosition());
-                    }
+                } else if (record instanceof FinishedRecord && record.getPosition() instanceof InventoryPosition) {
+                    getPositionManager().setPosition((InventoryPosition) record.getPosition());
                 }
             }
             syncedRows.addAndGet(count);

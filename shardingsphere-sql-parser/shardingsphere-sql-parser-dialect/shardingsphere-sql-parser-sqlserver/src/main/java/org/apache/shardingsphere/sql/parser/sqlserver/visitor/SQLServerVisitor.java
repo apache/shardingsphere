@@ -24,8 +24,6 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BitValueLiteralsContext;
@@ -36,6 +34,8 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Cha
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameWithSortContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FunctionCallContext;
@@ -80,11 +80,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrde
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateLeftBracketValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeSegment;
@@ -283,8 +280,9 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         if (rightValue instanceof ColumnSegment) {
             return rightValue;
         }
-        return rightValue instanceof SubquerySegment ? new PredicateCompareRightValue(ctx.comparisonOperator().getText(), new SubqueryExpressionSegment((SubquerySegment) rightValue))
-                : new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue);
+        return rightValue instanceof SubquerySegment ? new PredicateCompareRightValue(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), ctx.comparisonOperator().getText(),
+                new SubqueryExpressionSegment((SubquerySegment) rightValue))
+                : new PredicateCompareRightValue(ctx.predicate().start.getStartIndex(), ctx.predicate().stop.getStopIndex(), ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue);
     }
     
     @Override
@@ -303,8 +301,10 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     
     private PredicateSegment createInSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
-        PredicateBracketValue predicateBracketValue = createBracketValue(ctx);
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(predicateBracketValue, getExpressionSegments(ctx)));
+        PredicateInRightValue predicateInRightValue = null != ctx.subquery() ? new PredicateInRightValue(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(),
+                getExpressionSegments(ctx))
+                : new PredicateInRightValue(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), getExpressionSegments(ctx));
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, predicateInRightValue);
     }
     
     private Collection<ExpressionSegment> getExpressionSegments(final PredicateContext ctx) {
@@ -320,21 +320,11 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         return result;
     }
     
-    private PredicateBracketValue createBracketValue(final PredicateContext ctx) {
-        PredicateLeftBracketValue predicateLeftBracketValue = null != ctx.subquery()
-                ? new PredicateLeftBracketValue(ctx.subquery().LP_().getSymbol().getStartIndex(), ctx.subquery().LP_().getSymbol().getStopIndex())
-                : new PredicateLeftBracketValue(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex());
-        PredicateRightBracketValue predicateRightBracketValue = null != ctx.subquery()
-                ? new PredicateRightBracketValue(ctx.subquery().RP_().getSymbol().getStartIndex(), ctx.subquery().RP_().getSymbol().getStopIndex())
-                : new PredicateRightBracketValue(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
-        return new PredicateBracketValue(predicateLeftBracketValue, predicateRightBracketValue);
-    }
-    
     private PredicateSegment createBetweenSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between, and));
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between.getStartIndex(), and.getStopIndex(), between, and));
     }
     
     private ASTNode visitRemainPredicate(final PredicateContext ctx) {

@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
-import org.apache.shardingsphere.scaling.core.config.utils.RdbmsConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.RdbmsConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPositionManager;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class RdbmsConfigurationTest {
     
@@ -33,9 +32,9 @@ public final class RdbmsConfigurationTest {
     public void assertClone() {
         RdbmsConfiguration origin = new RdbmsConfiguration();
         RdbmsConfiguration clone = RdbmsConfiguration.clone(origin);
-        assertTrue(origin.equals(clone));
+        assertThat(clone, is(origin));
         origin.setTableName("t1");
-        assertFalse(origin.equals(clone));
+        assertNotSame(origin, clone);
     }
     
     @Test
@@ -43,7 +42,7 @@ public final class RdbmsConfigurationTest {
         RdbmsConfiguration rdbmsConfiguration = new RdbmsConfiguration();
         assertThat(RdbmsConfigurationUtil.getWhereCondition(rdbmsConfiguration), is(""));
         rdbmsConfiguration.setPrimaryKey("id");
-        rdbmsConfiguration.setPositionManager(new PrimaryKeyPositionManager(new PrimaryKeyPosition(0, 10)));
+        rdbmsConfiguration.setPositionManager(new InventoryPositionManager<>(new PrimaryKeyPosition(0, 10)));
         assertThat(RdbmsConfigurationUtil.getWhereCondition(rdbmsConfiguration), is("WHERE id BETWEEN 0 AND 10"));
     }
 }
