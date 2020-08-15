@@ -19,9 +19,9 @@ public class InsertValueTest {
         List<ExpressionSegment> expressionSegmentList = new ArrayList<>();
 
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment =
-                new ParameterMarkerExpressionSegment(1,1,1);
+                new ParameterMarkerExpressionSegment(1, 1, 1);
         LiteralExpressionSegment literalExpressionSegment
-                = new LiteralExpressionSegment(2,2,"literals");
+                = new LiteralExpressionSegment(2, 2, "literals");
         ComplexExpressionSegment complexExpressionSegment = new ComplexExpressionSegment() {
             @Override
             public String getText() {
@@ -45,6 +45,6 @@ public class InsertValueTest {
 
         InsertValue insertValue = new InsertValue(expressionSegmentList);
         String result = insertValue.toString();
-        assertThat(result,is("(?, 'literals', complexExpressionSegment)"));
+        assertThat(result, is("(?, 'literals', complexExpressionSegment)"));
     }
 }
