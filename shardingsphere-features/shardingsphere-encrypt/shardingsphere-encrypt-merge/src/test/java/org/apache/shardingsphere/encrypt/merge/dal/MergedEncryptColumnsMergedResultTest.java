@@ -53,7 +53,6 @@ public final class MergedEncryptColumnsMergedResultTest {
     @Test
     public void assertNextWithTableEncryptColumnMetaDataListEmpty() throws SQLException {
         when(queryResult.next()).thenReturn(true);
-        when(queryResult.getValue(1, String.class)).thenReturn("1");
         TableMetaData tableMetaData = new TableMetaData(Collections.emptyList(), Collections.emptyList());
         Map<String, TableMetaData> tables = new HashMap<>(1, 1);
         tables.put("test", tableMetaData);
@@ -78,7 +77,6 @@ public final class MergedEncryptColumnsMergedResultTest {
     
     @Test
     public void assertGetValueWithCipherColumn() throws SQLException {
-        when(queryResult.next()).thenReturn(true).thenReturn(false);
         when(queryResult.getValue(1, String.class)).thenReturn("cipher");
         EncryptColumnMetaData encryptColumnMetaData = new EncryptColumnMetaData("id", Types.VARCHAR, "varchar", true, "cipher", "plain", "assistedQuery");
         TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(encryptColumnMetaData), Collections.emptyList());
@@ -89,7 +87,6 @@ public final class MergedEncryptColumnsMergedResultTest {
     
     @Test
     public void assertGetValueWithOtherColumn() throws SQLException {
-        when(queryResult.next()).thenReturn(true).thenReturn(false);
         when(queryResult.getValue(1, String.class)).thenReturn("assistedQuery");
         EncryptColumnMetaData encryptColumnMetaData = new EncryptColumnMetaData("id", Types.VARCHAR, "varchar", true, "cipher", "plain", "assistedQuery");
         TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(encryptColumnMetaData), Collections.emptyList());
@@ -100,7 +97,6 @@ public final class MergedEncryptColumnsMergedResultTest {
     
     @Test
     public void assertGetValueWithOtherIndex() throws SQLException {
-        when(queryResult.next()).thenReturn(true).thenReturn(false);
         when(queryResult.getValue(2, String.class)).thenReturn("id");
         EncryptColumnMetaData encryptColumnMetaData = new EncryptColumnMetaData("id", Types.VARCHAR, "varchar", true, "cipher", "plain", "assistedQuery");
         TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(encryptColumnMetaData), Collections.emptyList());
