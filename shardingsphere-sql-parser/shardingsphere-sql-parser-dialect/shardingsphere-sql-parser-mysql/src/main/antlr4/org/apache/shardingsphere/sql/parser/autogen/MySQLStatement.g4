@@ -46,6 +46,9 @@ execute
     | alterEvent
     | dropEvent
     | alterInstance
+    | createLogfileGroup
+    | alterLogfileGroup
+    | dropLogfileGroup
     | setTransaction
     | beginTransaction
     | setAutoCommit

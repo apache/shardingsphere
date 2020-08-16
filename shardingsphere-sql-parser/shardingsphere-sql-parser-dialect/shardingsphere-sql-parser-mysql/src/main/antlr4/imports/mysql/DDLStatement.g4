@@ -280,18 +280,19 @@ createLogfileGroup
       (NODEGROUP EQ_? identifier)?
       WAIT?
       (COMMENT EQ_? STRING_)?
-      ENGINE EQ_? identifier
+      (ENGINE EQ_? identifier)?
     ;
 
 alterLogfileGroup
     : ALTER LOGFILE GROUP identifier
       ADD UNDOFILE STRING_
       (INITIAL_SIZE EQ_? fileSizeLiteral_)?
-      WAIT? ENGINE EQ_? identifier
+      WAIT? 
+      (ENGINE EQ_? identifier)?
     ;
 
 dropLogfileGroup
-    : DROP LOGFILE GROUP identifier ENGINE EQ_? identifier
+    : DROP LOGFILE GROUP identifier (ENGINE EQ_? identifier)?
     ;
 
 createTrigger
