@@ -20,8 +20,6 @@ package org.apache.shardingsphere.scaling.core.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
-
 /**
  * Sync configuration.
  */
@@ -33,9 +31,7 @@ public final class SyncConfiguration {
      * The concurrency of writers.
      */
     private final int concurrency;
-    
-    private final Map<String, String> tableNameMap;
-    
+
     private final DumperConfiguration dumperConfiguration;
     
     private final ImporterConfiguration importerConfiguration;

@@ -46,7 +46,7 @@ public final class SyncConfigurationUtilTest {
     @Test
     public void assertFilterByShardingDataSourceTables() {
         List<SyncConfiguration> syncConfigurations = (List<SyncConfiguration>) SyncConfigurationUtil.toSyncConfigurations(scalingConfiguration);
-        assertThat(syncConfigurations.get(0).getTableNameMap().size(), is(1));
+        assertThat(syncConfigurations.get(0).getDumperConfiguration().getTableNameMap().size(), is(1));
     }
     
     private void initConfig(final String configFile) {

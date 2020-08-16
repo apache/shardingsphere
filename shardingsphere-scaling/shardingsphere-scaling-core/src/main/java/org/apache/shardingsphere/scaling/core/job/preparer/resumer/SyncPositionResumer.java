@@ -87,8 +87,7 @@ public final class SyncPositionResumer {
             splitDumperConfig.setSpiltNum(Integer.parseInt(splitTable[1]));
         }
         splitDumperConfig.setPrimaryKey(metaDataManager.getTableMetaData(splitDumperConfig.getTableName()).getPrimaryKeyColumns().get(0));
-        return new SyncConfiguration(syncConfiguration.getConcurrency(), syncConfiguration.getTableNameMap(),
-                splitDumperConfig, syncConfiguration.getImporterConfiguration());
+        return new SyncConfiguration(syncConfiguration.getConcurrency(), splitDumperConfig, syncConfiguration.getImporterConfiguration());
     }
     
     private Map<String, PositionManager<InventoryPosition>> getInventoryPositionMap(

@@ -117,7 +117,6 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
     }
     
     private void instanceDumper() {
-        syncConfiguration.getDumperConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
         dumper = DumperFactory.newInstanceJdbcDumper(syncConfiguration.getDumperConfiguration(), dataSourceManager);
     }
     

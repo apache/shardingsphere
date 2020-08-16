@@ -59,10 +59,7 @@ public final class InventoryDataTaskSplitterTest {
     public void setUp() {
         DumperConfiguration dumperConfig = mockDumperConfig();
         ImporterConfiguration importerConfig = new ImporterConfiguration();
-        Map<String, String> tableMap = new HashMap<>();
-        tableMap.put("t_order", "t_order");
-        syncConfiguration = new SyncConfiguration(3, tableMap,
-            dumperConfig, importerConfig);
+        syncConfiguration = new SyncConfiguration(3, dumperConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
         inventoryDataTaskSplitter = new InventoryDataTaskSplitter();
     }
@@ -148,6 +145,9 @@ public final class InventoryDataTaskSplitterTest {
         DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);
+        Map<String, String> tableMap = new HashMap<>();
+        tableMap.put("t_order", "t_order");
+        result.setTableNameMap(tableMap);
         return result;
     }
 }

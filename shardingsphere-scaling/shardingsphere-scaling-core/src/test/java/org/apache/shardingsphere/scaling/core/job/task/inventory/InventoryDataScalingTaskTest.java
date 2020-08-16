@@ -58,7 +58,7 @@ public final class InventoryDataScalingTaskTest {
         DumperConfiguration dumperConfig = mockDumperConfig();
         ImporterConfiguration importerConfig = mockImporterConfig();
         ScalingContext.getInstance().init(new ServerConfiguration());
-        syncConfiguration = new SyncConfiguration(3, Collections.emptyMap(), dumperConfig, importerConfig);
+        syncConfiguration = new SyncConfiguration(3, dumperConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
     }
     
@@ -98,6 +98,7 @@ public final class InventoryDataScalingTaskTest {
         result.setDataSourceConfiguration(dataSourceConfiguration);
         result.setTableName("t_order");
         result.setPositionManager(new InventoryPositionManager<>(new PrimaryKeyPosition(1, 100)));
+        result.setTableNameMap(Collections.emptyMap());
         return result;
     }
     

@@ -86,9 +86,7 @@ public final class SyncPositionResumerTest {
     private SyncConfiguration mockSyncConfiguration() {
         DumperConfiguration dumperConfig = mockDumperConfig();
         ImporterConfiguration importerConfig = new ImporterConfiguration();
-        Map<String, String> tableMap = new HashMap<>();
-        tableMap.put("t_order", "t_order");
-        return new SyncConfiguration(3, tableMap, dumperConfig, importerConfig);
+        return new SyncConfiguration(3, dumperConfig, importerConfig);
     }
     
     private DumperConfiguration mockDumperConfig() {
@@ -96,6 +94,9 @@ public final class SyncPositionResumerTest {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName("ds0");
         result.setDataSourceConfiguration(dataSourceConfiguration);
+        Map<String, String> tableMap = new HashMap<>();
+        tableMap.put("t_order", "t_order");
+        result.setTableNameMap(tableMap);
         return result;
     }
 }

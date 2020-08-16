@@ -65,10 +65,10 @@ public final class SyncConfigurationUtil {
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDatasource.keySet());
         filterByShardingDataSourceTables(dataSourceTableNameMap, scalingConfiguration.getJobConfiguration());
         for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
-            DumperConfiguration dumperConfiguration = createDumperConfiguration(entry.getKey(), sourceDatasource.get(entry.getKey()));
+            DumperConfiguration dumperConfiguration = createDumperConfiguration(entry.getKey(), sourceDatasource.get(entry.getKey()), entry.getValue());
             ImporterConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration, sourceRule);
             importerConfiguration.setRetryTimes(scalingConfiguration.getJobConfiguration().getRetryTimes());
-            result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), entry.getValue(), dumperConfiguration, importerConfiguration));
+            result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), dumperConfiguration, importerConfiguration));
         }
         return result;
     }
@@ -148,7 +148,7 @@ public final class SyncConfigurationUtil {
         }
     }
     
-    private static DumperConfiguration createDumperConfiguration(final String dataSourceName, final DataSourceConfiguration dataSourceConfiguration) {
+    private static DumperConfiguration createDumperConfiguration(final String dataSourceName, final DataSourceConfiguration dataSourceConfiguration, final Map<String, String> tableMap) {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName(dataSourceName);
         Map<String, Object> dataSourceProperties = dataSourceConfiguration.getProps();
@@ -156,6 +156,7 @@ public final class SyncConfigurationUtil {
                 dataSourceProperties.containsKey("jdbcUrl") ? dataSourceProperties.get("jdbcUrl").toString() : dataSourceProperties.get("url").toString(),
                 dataSourceProperties.get("username").toString(), dataSourceProperties.get("password").toString());
         result.setDataSourceConfiguration(dumperDataSourceConfiguration);
+        result.setTableNameMap(tableMap);
         return result;
     }
     

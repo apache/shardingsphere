@@ -81,12 +81,11 @@ public final class InventoryDataTaskSplitter {
     
     private Collection<SyncConfiguration> splitByTable(final SyncConfiguration syncConfiguration) {
         Collection<SyncConfiguration> result = new LinkedList<>();
-        for (String each : syncConfiguration.getTableNameMap().keySet()) {
+        for (String each : syncConfiguration.getDumperConfiguration().getTableNameMap().keySet()) {
             DumperConfiguration dumperConfig = DumperConfiguration.clone(syncConfiguration.getDumperConfiguration());
             dumperConfig.setTableName(each);
             dumperConfig.setPositionManager(new InventoryPositionManager<>(new PlaceholderPosition()));
-            result.add(new SyncConfiguration(syncConfiguration.getConcurrency(), syncConfiguration.getTableNameMap(),
-                dumperConfig, syncConfiguration.getImporterConfiguration()));
+            result.add(new SyncConfiguration(syncConfiguration.getConcurrency(), dumperConfig, syncConfiguration.getImporterConfiguration()));
         }
         return result;
     }
@@ -140,8 +139,7 @@ public final class InventoryDataTaskSplitter {
                     splitDumperConfig.setPositionManager(new InventoryPositionManager<>(new PrimaryKeyPosition(min, max)));
                 }
                 splitDumperConfig.setSpiltNum(i);
-                result.add(new SyncConfiguration(concurrency, syncConfiguration.getTableNameMap(),
-                    splitDumperConfig, syncConfiguration.getImporterConfiguration()));
+                result.add(new SyncConfiguration(concurrency, splitDumperConfig, syncConfiguration.getImporterConfiguration()));
             }
         } catch (final SQLException ex) {
             throw new PrepareFailedException(String.format("Split task for table %s by primary key %s error", dumperConfiguration.getTableName(), primaryKey), ex);

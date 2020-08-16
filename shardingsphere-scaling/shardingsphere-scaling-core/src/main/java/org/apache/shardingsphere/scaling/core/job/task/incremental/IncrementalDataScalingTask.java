@@ -64,7 +64,6 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     
     @Override
     public void start() {
-        syncConfiguration.getDumperConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
         dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), getPositionManager().getPosition());
         Collection<Importer> importers = instanceImporters();
         instanceChannel(importers);
