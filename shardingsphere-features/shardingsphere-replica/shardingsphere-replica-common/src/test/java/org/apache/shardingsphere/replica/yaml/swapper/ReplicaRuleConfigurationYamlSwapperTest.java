@@ -76,12 +76,12 @@ public final class ReplicaRuleConfigurationYamlSwapperTest {
     }
 
     private YamlReplicaRuleConfiguration createYamlReplicaRuleConfiguration() {
-        YamlReplicaRuleConfiguration yamlReplicaRuleConfiguration = new YamlReplicaRuleConfiguration();
         YamlReplicaDataSourceConfiguration configuration = new YamlReplicaDataSourceConfiguration();
         configuration.setName("name");
         configuration.setReplicaDataSourceNames(Arrays.asList("replicaDataSourceNames"));
         Map<String, YamlReplicaDataSourceConfiguration> dataSources = new LinkedHashMap<>();
         dataSources.put("dataSources", configuration);
+        YamlReplicaRuleConfiguration yamlReplicaRuleConfiguration = new YamlReplicaRuleConfiguration();
         yamlReplicaRuleConfiguration.setDataSources(dataSources);
         return yamlReplicaRuleConfiguration;
     }
