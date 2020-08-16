@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.scaling.core.job.task.incremental;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
@@ -46,7 +47,11 @@ import java.util.concurrent.Future;
 @Slf4j
 public final class IncrementalDataScalingTask extends AbstractShardingScalingExecutor<IncrementalPosition> implements ScalingTask<IncrementalPosition> {
     
-    private final SyncConfiguration syncConfiguration;
+    private final int concurrency;
+
+    private final DumperConfiguration dumperConfiguration;
+
+    private final ImporterConfiguration importerConfiguration;
     
     private final DataSourceManager dataSourceManager;
     
@@ -55,16 +60,18 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     private long delayMillisecond;
     
     @SuppressWarnings("unchecked")
-    public IncrementalDataScalingTask(final SyncConfiguration syncConfiguration) {
-        this.syncConfiguration = syncConfiguration;
+    public IncrementalDataScalingTask(final int concurrency, final DumperConfiguration dumperConfiguration, final ImporterConfiguration importerConfiguration) {
+        this.concurrency = concurrency;
+        this.dumperConfiguration = dumperConfiguration;
+        this.importerConfiguration = importerConfiguration;
         dataSourceManager = new DataSourceManager();
-        setTaskId(syncConfiguration.getDumperConfiguration().getDataSourceName());
-        setPositionManager(syncConfiguration.getDumperConfiguration().getPositionManager());
+        setTaskId(dumperConfiguration.getDataSourceName());
+        setPositionManager(dumperConfiguration.getPositionManager());
     }
     
     @Override
     public void start() {
-        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), getPositionManager().getPosition());
+        dumper = DumperFactory.newInstanceLogDumper(dumperConfiguration, getPositionManager().getPosition());
         Collection<Importer> importers = instanceImporters();
         instanceChannel(importers);
         Future<?> future = ScalingContext.getInstance().getTaskExecuteEngine().submitAll(importers, new ExecuteCallback() {
@@ -85,9 +92,9 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     }
     
     private List<Importer> instanceImporters() {
-        List<Importer> result = new ArrayList<>(syncConfiguration.getConcurrency());
-        for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
-            result.add(ImporterFactory.newInstance(syncConfiguration.getImporterConfiguration(), dataSourceManager));
+        List<Importer> result = new ArrayList<>(concurrency);
+        for (int i = 0; i < concurrency; i++) {
+            result.add(ImporterFactory.newInstance(importerConfiguration, dataSourceManager));
         }
         return result;
     }

@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.job.task;
 
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDataScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
@@ -36,12 +37,12 @@ public final class DefaultSyncTaskFactory implements SyncTaskFactory {
     }
     
     @Override
-    public InventoryDataScalingTask createInventoryDataSyncTask(final SyncConfiguration syncConfiguration) {
-        return new InventoryDataScalingTask(syncConfiguration);
+    public InventoryDataScalingTask createInventoryDataSyncTask(final DumperConfiguration dumperConfiguration, final ImporterConfiguration importerConfiguration) {
+        return new InventoryDataScalingTask(dumperConfiguration, importerConfiguration);
     }
     
     @Override
-    public IncrementalDataScalingTask createIncrementalDataSyncTask(final SyncConfiguration syncConfiguration) {
-        return new IncrementalDataScalingTask(syncConfiguration);
+    public IncrementalDataScalingTask createIncrementalDataSyncTask(final int concurrency, final DumperConfiguration dumperConfiguration, final ImporterConfiguration importerConfiguration) {
+        return new IncrementalDataScalingTask(concurrency, dumperConfiguration, importerConfiguration);
     }
 }
