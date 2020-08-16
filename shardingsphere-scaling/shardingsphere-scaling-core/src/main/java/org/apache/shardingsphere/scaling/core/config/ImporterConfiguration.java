@@ -17,51 +17,22 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Relational database management system configuration.
+ * Importer configuration.
  */
 @Setter
 @Getter
-@EqualsAndHashCode
-public final class RdbmsConfiguration implements Cloneable {
-    
-    private String dataSourceName;
-    
+public final class ImporterConfiguration {
+
     private DataSourceConfiguration dataSourceConfiguration;
-    
-    private String tableName;
-    
+
     private Map<String, Set<String>> shardingColumnsMap;
-    
-    private String primaryKey;
-    
-    @SuppressWarnings("rawtypes")
-    private PositionManager positionManager;
-    
-    private Integer spiltNum;
-    
-    private Map<String, String> tableNameMap;
-    
+
     private int retryTimes;
-    
-    /**
-     * Clone to new rdbms configuration.
-     *
-     * @param origin origin rdbms configuration
-     * @return new rdbms configuration
-     */
-    @SneakyThrows
-    public static RdbmsConfiguration clone(final RdbmsConfiguration origin) {
-        return (RdbmsConfiguration) origin.clone();
-    }
-    
 }

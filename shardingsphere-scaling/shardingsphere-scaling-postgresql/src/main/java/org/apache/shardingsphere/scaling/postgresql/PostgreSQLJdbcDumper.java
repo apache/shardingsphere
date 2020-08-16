@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.AbstractJDBCDumper;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 
@@ -31,8 +31,8 @@ import java.sql.SQLException;
  */
 public final class PostgreSQLJdbcDumper extends AbstractJDBCDumper {
     
-    public PostgreSQLJdbcDumper(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
-        super(rdbmsConfiguration, dataSourceManager);
+    public PostgreSQLJdbcDumper(final DumperConfiguration dumperConfiguration, final DataSourceManager dataSourceManager) {
+        super(dumperConfiguration, dataSourceManager);
     }
     
     @Override

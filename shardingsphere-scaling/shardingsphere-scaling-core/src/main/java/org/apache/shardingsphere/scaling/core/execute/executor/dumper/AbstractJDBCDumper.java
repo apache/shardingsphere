@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
@@ -54,7 +54,7 @@ import java.sql.SQLException;
 public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor<InventoryPosition> implements JDBCDumper {
     
     @Getter(AccessLevel.PROTECTED)
-    private final RdbmsConfiguration rdbmsConfiguration;
+    private final DumperConfiguration rdbmsConfiguration;
     
     private final DataSourceManager dataSourceManager;
     
@@ -63,7 +63,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     @Setter
     private Channel channel;
     
-    protected AbstractJDBCDumper(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    protected AbstractJDBCDumper(final DumperConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         if (!JDBCDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("AbstractJDBCDumper only support JDBCDataSourceConfiguration");
         }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
@@ -47,7 +47,7 @@ import java.util.List;
 @Slf4j
 public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecutor<IncrementalPosition> implements Importer {
     
-    private final RdbmsConfiguration rdbmsConfiguration;
+    private final ImporterConfiguration importerConfiguration;
     
     private final DataSourceManager dataSourceManager;
     
@@ -56,8 +56,8 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     @Setter
     private Channel channel;
     
-    protected AbstractJDBCImporter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
-        this.rdbmsConfiguration = rdbmsConfiguration;
+    protected AbstractJDBCImporter(final ImporterConfiguration importerConfiguration, final DataSourceManager dataSourceManager) {
+        this.importerConfiguration = importerConfiguration;
         this.dataSourceManager = dataSourceManager;
         sqlBuilder = createSqlBuilder();
     }
@@ -80,7 +80,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
         while (isRunning()) {
             List<Record> records = channel.fetchRecords(100, 3);
             if (null != records && !records.isEmpty()) {
-                flush(dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()), records);
+                flush(dataSourceManager.getDataSource(importerConfiguration.getDataSourceConfiguration()), records);
                 if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
                     channel.ack();
                     break;
@@ -98,7 +98,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     }
     
     private boolean tryFlush(final DataSource dataSource, final List<Record> buffer) {
-        int retryTimes = rdbmsConfiguration.getRetryTimes();
+        int retryTimes = importerConfiguration.getRetryTimes();
         List<Record> unflushed = buffer;
         do {
             unflushed = doFlush(dataSource, unflushed);
@@ -152,7 +152,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     }
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
-        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, rdbmsConfiguration.getShardingColumnsMap().get(record.getTableName()));
+        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfiguration.getShardingColumnsMap().get(record.getTableName()));
         List<Column> values = new ArrayList<>();
         values.addAll(RecordUtil.extractUpdatedColumns(record));
         values.addAll(conditionColumns);
@@ -165,7 +165,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     }
     
     private void executeDelete(final Connection connection, final DataRecord record) throws SQLException {
-        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, rdbmsConfiguration.getShardingColumnsMap().get(record.getTableName()));
+        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfiguration.getShardingColumnsMap().get(record.getTableName()));
         String deleteSql = sqlBuilder.buildDeleteSQL(record, conditionColumns);
         PreparedStatement ps = connection.prepareStatement(deleteSql);
         for (int i = 0; i < conditionColumns.size(); i++) {

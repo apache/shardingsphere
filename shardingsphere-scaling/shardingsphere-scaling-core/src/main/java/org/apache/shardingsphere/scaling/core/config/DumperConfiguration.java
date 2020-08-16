@@ -18,25 +18,42 @@
 package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 import java.util.Map;
 
 /**
- * Sync configuration.
+ * Dumper configuration.
  */
+@Setter
 @Getter
-@RequiredArgsConstructor
-public final class SyncConfiguration {
-    
+public final class DumperConfiguration implements Cloneable {
+
+    private String dataSourceName;
+
+    private DataSourceConfiguration dataSourceConfiguration;
+
+    private String tableName;
+
+    private String primaryKey;
+
+    @SuppressWarnings("rawtypes")
+    private PositionManager positionManager;
+
+    private Integer spiltNum;
+
+    private Map<String, String> tableNameMap;
+
     /**
-     * The concurrency of writers.
+     * Clone to new dumper configuration.
+     *
+     * @param origin origin dumper configuration
+     * @return new dumper configuration
      */
-    private final int concurrency;
-    
-    private final Map<String, String> tableNameMap;
-    
-    private final DumperConfiguration dumperConfiguration;
-    
-    private final ImporterConfiguration importerConfiguration;
+    @SneakyThrows
+    public static DumperConfiguration clone(final DumperConfiguration origin) {
+        return (DumperConfiguration) origin.clone();
+    }
 }

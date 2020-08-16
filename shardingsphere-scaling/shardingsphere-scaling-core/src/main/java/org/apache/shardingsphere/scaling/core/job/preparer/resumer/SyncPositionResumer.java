@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer.resumer;
 
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
@@ -80,7 +80,7 @@ public final class SyncPositionResumer {
     
     private SyncConfiguration newSyncConfiguration(final SyncConfiguration syncConfiguration, final MetaDataManager metaDataManager, final Entry<String, PositionManager<InventoryPosition>> entry) {
         String[] splitTable = entry.getKey().split("#");
-        RdbmsConfiguration splitDumperConfig = RdbmsConfiguration.clone(syncConfiguration.getDumperConfiguration());
+        DumperConfiguration splitDumperConfig = DumperConfiguration.clone(syncConfiguration.getDumperConfiguration());
         splitDumperConfig.setTableName(splitTable[0].split("\\.")[1]);
         splitDumperConfig.setPositionManager(entry.getValue());
         if (2 == splitTable.length) {
@@ -88,11 +88,11 @@ public final class SyncPositionResumer {
         }
         splitDumperConfig.setPrimaryKey(metaDataManager.getTableMetaData(splitDumperConfig.getTableName()).getPrimaryKeyColumns().get(0));
         return new SyncConfiguration(syncConfiguration.getConcurrency(), syncConfiguration.getTableNameMap(),
-                splitDumperConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration()));
+                splitDumperConfig, syncConfiguration.getImporterConfiguration());
     }
     
     private Map<String, PositionManager<InventoryPosition>> getInventoryPositionMap(
-            final RdbmsConfiguration dumperConfiguration, final ResumeBreakPointManager resumeBreakPointManager) {
+            final DumperConfiguration dumperConfiguration, final ResumeBreakPointManager resumeBreakPointManager) {
         Pattern pattern = Pattern.compile(String.format("%s\\.\\w+(#\\d+)?", dumperConfiguration.getDataSourceName()));
         return resumeBreakPointManager.getInventoryPositionManagerMap().entrySet().stream()
                 .filter(entry -> pattern.matcher(entry.getKey()).find())

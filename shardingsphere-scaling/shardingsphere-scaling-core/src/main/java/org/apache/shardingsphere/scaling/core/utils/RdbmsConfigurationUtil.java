@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 
@@ -32,12 +32,12 @@ public final class RdbmsConfigurationUtil {
     /**
      * Get SQL where condition whit primary key.
      *
-     * @param rdbmsConfiguration rdbms configuration
+     * @param dumperConfiguration rdbms configuration
      * @return SQL where condition
      */
     @SuppressWarnings("unchecked")
-    public static String getWhereCondition(final RdbmsConfiguration rdbmsConfiguration) {
-        return getWhereCondition(rdbmsConfiguration.getPrimaryKey(), rdbmsConfiguration.getPositionManager());
+    public static String getWhereCondition(final DumperConfiguration dumperConfiguration) {
+        return getWhereCondition(dumperConfiguration.getPrimaryKey(), dumperConfiguration.getPositionManager());
     }
     
     private static String getWhereCondition(final String primaryKey, final PositionManager<PrimaryKeyPosition> positionManager) {

@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
 import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
@@ -54,8 +55,8 @@ public final class InventoryDataScalingTaskTest {
     
     @Before
     public void setUp() {
-        RdbmsConfiguration dumperConfig = mockDumperConfig();
-        RdbmsConfiguration importerConfig = mockImporterConfig();
+        DumperConfiguration dumperConfig = mockDumperConfig();
+        ImporterConfiguration importerConfig = mockImporterConfig();
         ScalingContext.getInstance().init(new ServerConfiguration());
         syncConfiguration = new SyncConfiguration(3, Collections.emptyMap(), dumperConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
@@ -81,7 +82,7 @@ public final class InventoryDataScalingTaskTest {
         assertThat(((InventoryDataSyncTaskProgress) inventoryDataSyncTask.getProgress()).getEstimatedRows(), is(2L));
     }
     
-    private void initTableData(final RdbmsConfiguration dumperConfig) throws SQLException {
+    private void initTableData(final DumperConfiguration dumperConfig) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
@@ -91,18 +92,18 @@ public final class InventoryDataScalingTaskTest {
         }
     }
     
-    private RdbmsConfiguration mockDumperConfig() {
+    private DumperConfiguration mockDumperConfig() {
         DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
-        RdbmsConfiguration result = new RdbmsConfiguration();
+        DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);
         result.setTableName("t_order");
         result.setPositionManager(new InventoryPositionManager<>(new PrimaryKeyPosition(1, 100)));
         return result;
     }
     
-    private RdbmsConfiguration mockImporterConfig() {
+    private ImporterConfiguration mockImporterConfig() {
         DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
-        RdbmsConfiguration result = new RdbmsConfiguration();
+        ImporterConfiguration result = new ImporterConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);
         return result;
     }

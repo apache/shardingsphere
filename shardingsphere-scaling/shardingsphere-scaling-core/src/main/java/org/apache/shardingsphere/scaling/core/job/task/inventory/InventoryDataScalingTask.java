@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.utils.RdbmsConfigurationUtil;
@@ -74,7 +74,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
         setPositionManager(syncConfiguration.getDumperConfiguration().getPositionManager());
     }
     
-    private String generateSyncTaskId(final RdbmsConfiguration dumperConfiguration) {
+    private String generateSyncTaskId(final DumperConfiguration dumperConfiguration) {
         String result = String.format("%s.%s", dumperConfiguration.getDataSourceName(), dumperConfiguration.getTableName());
         return null == dumperConfiguration.getSpiltNum() ? result : result + "#" + dumperConfiguration.getSpiltNum();
     }

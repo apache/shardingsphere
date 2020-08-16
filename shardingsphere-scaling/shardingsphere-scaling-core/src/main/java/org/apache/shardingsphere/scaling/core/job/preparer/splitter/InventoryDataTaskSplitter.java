@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
@@ -82,16 +82,16 @@ public final class InventoryDataTaskSplitter {
     private Collection<SyncConfiguration> splitByTable(final SyncConfiguration syncConfiguration) {
         Collection<SyncConfiguration> result = new LinkedList<>();
         for (String each : syncConfiguration.getTableNameMap().keySet()) {
-            RdbmsConfiguration dumperConfig = RdbmsConfiguration.clone(syncConfiguration.getDumperConfiguration());
+            DumperConfiguration dumperConfig = DumperConfiguration.clone(syncConfiguration.getDumperConfiguration());
             dumperConfig.setTableName(each);
             dumperConfig.setPositionManager(new InventoryPositionManager<>(new PlaceholderPosition()));
             result.add(new SyncConfiguration(syncConfiguration.getConcurrency(), syncConfiguration.getTableNameMap(),
-                dumperConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration())));
+                dumperConfig, syncConfiguration.getImporterConfiguration()));
         }
         return result;
     }
     
-    private boolean isSpiltByPrimaryKeyRange(final RdbmsConfiguration rdbmsConfiguration, final MetaDataManager metaDataManager) {
+    private boolean isSpiltByPrimaryKeyRange(final DumperConfiguration rdbmsConfiguration, final MetaDataManager metaDataManager) {
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(rdbmsConfiguration.getTableName());
         if (null == tableMetaData) {
             log.warn("Can't split range for table {}, reason: can not get table metadata ", rdbmsConfiguration.getTableName());
@@ -121,7 +121,7 @@ public final class InventoryDataTaskSplitter {
     private Collection<SyncConfiguration> splitByPrimaryKeyRange(final SyncConfiguration syncConfiguration, final MetaDataManager metaDataManager, final DataSource dataSource) {
         int concurrency = syncConfiguration.getConcurrency();
         Collection<SyncConfiguration> result = new LinkedList<>();
-        RdbmsConfiguration dumperConfiguration = syncConfiguration.getDumperConfiguration();
+        DumperConfiguration dumperConfiguration = syncConfiguration.getDumperConfiguration();
         String primaryKey = metaDataManager.getTableMetaData(dumperConfiguration.getTableName()).getPrimaryKeyColumns().get(0);
         dumperConfiguration.setPrimaryKey(primaryKey);
         try (Connection connection = dataSource.getConnection()) {
@@ -132,7 +132,7 @@ public final class InventoryDataTaskSplitter {
             long max = rs.getLong(2);
             long step = (max - min) / concurrency;
             for (int i = 0; i < concurrency && min <= max; i++) {
-                RdbmsConfiguration splitDumperConfig = RdbmsConfiguration.clone(dumperConfiguration);
+                DumperConfiguration splitDumperConfig = DumperConfiguration.clone(dumperConfiguration);
                 if (i < concurrency - 1) {
                     splitDumperConfig.setPositionManager(new InventoryPositionManager<>(new PrimaryKeyPosition(min, min + step)));
                     min += step + 1;
@@ -141,7 +141,7 @@ public final class InventoryDataTaskSplitter {
                 }
                 splitDumperConfig.setSpiltNum(i);
                 result.add(new SyncConfiguration(concurrency, syncConfiguration.getTableNameMap(),
-                    splitDumperConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration())));
+                    splitDumperConfig, syncConfiguration.getImporterConfiguration()));
             }
         } catch (final SQLException ex) {
             throw new PrepareFailedException(String.format("Split task for table %s by primary key %s error", dumperConfiguration.getTableName(), primaryKey), ex);
