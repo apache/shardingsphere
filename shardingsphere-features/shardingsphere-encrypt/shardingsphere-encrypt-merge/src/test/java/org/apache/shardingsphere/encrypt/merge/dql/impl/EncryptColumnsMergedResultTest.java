@@ -58,7 +58,7 @@ public final class EncryptColumnsMergedResultTest {
     
     @Mock
     private TableMetaData tableMetaData;
-
+    
     private EncryptColumnsMergedResultFixture encryptColumnsMergedResultFixture;
     
     @Before
@@ -116,7 +116,13 @@ public final class EncryptColumnsMergedResultTest {
     @Test
     @SneakyThrows
     public void assertGetValueWithColumnIndex() {
+        Map<String, ColumnMetaData> columns = new HashMap<>();
+        EncryptColumnMetaData encryptColumnMetaData = new EncryptColumnMetaData("order", 1, "Integer", false, "status", "status", "status");
+        columns.put("key", encryptColumnMetaData);
+        when(schemaMetaData.get(anyString())).thenReturn(tableMetaData);
+        when(tableMetaData.getColumns()).thenReturn(columns);
         when(encryptColumnsMergedResultFixture.getOriginalValue(1, String.class)).thenReturn("status");
+        assertThat(encryptColumnsMergedResultFixture.getValue(1, String.class), is("key"));
     }
     
     @Test
