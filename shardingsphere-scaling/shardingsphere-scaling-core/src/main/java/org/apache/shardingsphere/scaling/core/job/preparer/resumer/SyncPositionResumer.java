@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.preparer.resumer;
 
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
@@ -78,10 +79,10 @@ public final class SyncPositionResumer {
         return result;
     }
 
-    private DumperConfiguration newInventoryDumperConfiguration(final DumperConfiguration dumperConfiguration, final MetaDataManager metaDataManager,
+    private InventoryDumperConfiguration newInventoryDumperConfiguration(final DumperConfiguration dumperConfiguration, final MetaDataManager metaDataManager,
                                                                 final Entry<String, PositionManager<InventoryPosition>> entry) {
         String[] splitTable = entry.getKey().split("#");
-        DumperConfiguration splitDumperConfig = DumperConfiguration.clone(dumperConfiguration);
+        InventoryDumperConfiguration splitDumperConfig = new InventoryDumperConfiguration(dumperConfiguration);
         splitDumperConfig.setTableName(splitTable[0].split("\\.")[1]);
         splitDumperConfig.setPositionManager(entry.getValue());
         if (2 == splitTable.length) {

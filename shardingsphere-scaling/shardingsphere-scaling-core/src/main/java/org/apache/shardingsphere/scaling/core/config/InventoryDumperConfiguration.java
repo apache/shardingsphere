@@ -19,23 +19,23 @@ package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
-
-import java.util.Map;
 
 /**
- * Dumper configuration.
+ * Inventory dumper configuration.
  */
-@Setter
 @Getter
-public class DumperConfiguration implements Cloneable {
+@Setter
+public final class InventoryDumperConfiguration extends DumperConfiguration {
 
-    private String dataSourceName;
+    private String tableName;
 
-    private DataSourceConfiguration dataSourceConfiguration;
+    private String primaryKey;
 
-    @SuppressWarnings("rawtypes")
-    private PositionManager positionManager;
+    private Integer spiltNum;
 
-    private Map<String, String> tableNameMap;
+    public InventoryDumperConfiguration(final DumperConfiguration dumperConfiguration) {
+        setDataSourceName(dumperConfiguration.getDataSourceName());
+        setDataSourceConfiguration(dumperConfiguration.getDataSourceConfiguration());
+        setTableNameMap(dumperConfiguration.getTableNameMap());
+    }
 }
