@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -32,10 +31,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class GeneratedKeysResultSetTest {
     
-    private final Statement statement = Mockito.mock(Statement.class);
+    private final Statement statement = mock(Statement.class);
     
     private GeneratedKeysResultSet actualResultSet;
     
