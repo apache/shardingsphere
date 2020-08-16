@@ -75,6 +75,8 @@ public enum VisitorRule {
     ALTER_EVENT("AlterEvent", SQLStatementType.DDL),
     
     DROP_EVENT("DropEvent", SQLStatementType.DDL),
+
+    ALTER_INSTANCE("AlterInstance", SQLStatementType.DDL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
     

@@ -45,6 +45,7 @@ execute
     | createEvent
     | alterEvent
     | dropEvent
+    | alterInstance
     | setTransaction
     | beginTransaction
     | setAutoCommit

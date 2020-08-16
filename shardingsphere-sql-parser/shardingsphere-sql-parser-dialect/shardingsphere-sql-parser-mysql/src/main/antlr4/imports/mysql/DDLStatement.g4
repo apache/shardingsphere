@@ -126,15 +126,17 @@ dropDatabase
 
 alterInstance
     : ALTER INSTANCE instanceAction
-    
     ;
 
 instanceAction
-    : ROTATE INNODB_ MASTER KEY | ROTATE BINLOG MASTER KEY | RELOAD TLS_ (FOR CHANNEL channel)? (NO ROLLBACK ON ERROR)?
+    : (ENABLE | DISABLE) INNODB_ REDO_LOG_ 
+    | ROTATE INNODB_ MASTER KEY 
+    | ROTATE BINLOG MASTER KEY 
+    | RELOAD TLS (FOR CHANNEL channel)? (NO ROLLBACK ON ERROR)?
     ;
 
 channel
-    : MYSQL_ADMIN
+    : MYSQL_MAIN | MYSQL_ADMIN
     ;
 
 createEvent
