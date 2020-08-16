@@ -22,15 +22,21 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.merge.dql.fixture.EncryptColumnsMergedResultFixture;
 import org.apache.shardingsphere.encrypt.merge.dql.fixture.TableAvailableAndSqlStatementContextFixture;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.HashMap;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -50,6 +56,9 @@ public final class EncryptColumnsMergedResultTest {
     private TableNameSegment tableNameSegment;
     
     @Mock
+    private TableMetaData tableMetaData;
+    
+    @Mock
     private IdentifierValue identifierValue;
     
     @Mock
@@ -61,6 +70,8 @@ public final class EncryptColumnsMergedResultTest {
         when(simpleTableSegment.getTableName()).thenReturn(tableNameSegment);
         when(tableNameSegment.getIdentifier()).thenReturn(identifierValue);
         when(identifierValue.getValue()).thenReturn("t_order");
+        when(schemaMetaData.get(ArgumentMatchers.anyString())).thenReturn(tableMetaData);
+        when(tableMetaData.getColumns()).thenReturn(new HashMap<>());
         encryptColumnsMergedResultFixture = spy(new EncryptColumnsMergedResultFixture(tableAvailableAndSqlStatementContextFixture, schemaMetaData));
     }
     
@@ -68,6 +79,6 @@ public final class EncryptColumnsMergedResultTest {
     @SneakyThrows
     public void assertNextWithEmptyColumnMetaData() {
         when(encryptColumnsMergedResultFixture.nextValue()).thenReturn(true);
-        System.out.println(encryptColumnsMergedResultFixture.next());
+        assertThat(encryptColumnsMergedResultFixture.next(), is(true));
     }
 }
