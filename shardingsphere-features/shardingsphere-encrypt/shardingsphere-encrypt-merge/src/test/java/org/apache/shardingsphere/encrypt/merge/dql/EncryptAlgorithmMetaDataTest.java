@@ -101,7 +101,7 @@ public final class EncryptAlgorithmMetaDataTest {
     }
     
     @Test
-    public void assertFindEncryptorWhencolumnProjectionIsNotExists() {
+    public void assertFindEncryptorWhenColumnProjectionIsNotExist() {
         when(projectionsContext.getExpandProjections()).thenReturn(Collections.singletonList(mock(DerivedProjection.class)));
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(schemaMetaData, encryptRule, selectStatementContext);
         Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor(1);
