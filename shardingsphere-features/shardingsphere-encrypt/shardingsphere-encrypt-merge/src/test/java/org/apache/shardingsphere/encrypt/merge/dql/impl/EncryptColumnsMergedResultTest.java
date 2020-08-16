@@ -40,7 +40,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -104,8 +103,8 @@ public final class EncryptColumnsMergedResultTest {
         when(schemaMetaData.get(anyString())).thenReturn(tableMetaData);
         when(tableMetaData.getColumns()).thenReturn(columns);
         EncryptColumnsMergedResultFixture encryptColumnsMergedResultFixture = spy(new EncryptColumnsMergedResultFixture(tableAvailableAndSqlStatementContextFixture, schemaMetaData));
-        when(encryptColumnsMergedResultFixture.nextValue()).thenReturn(true);
-        when(encryptColumnsMergedResultFixture.getOriginalValue(anyInt(), String.class)).thenReturn("status");
+        when(encryptColumnsMergedResultFixture.nextValue()).thenReturn(true).thenReturn(true);
+        when(encryptColumnsMergedResultFixture.getOriginalValue(1, String.class)).thenReturn("status").thenReturn("noInThatCollection");
         assertThat(encryptColumnsMergedResultFixture.next(), is(true));
     }
 }
