@@ -34,6 +34,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -122,5 +124,17 @@ public final class EncryptColumnsMergedResultTest {
     public void assertGetValueWithOutColumnIndex() {
         when(encryptColumnsMergedResultFixture.getOriginalValue(2, String.class)).thenReturn("status");
         assertThat(encryptColumnsMergedResultFixture.getValue(2, String.class), is("status"));
+    }
+    
+    @Test(expected = SQLFeatureNotSupportedException.class)
+    @SneakyThrows
+    public void assertGetCalendarValue() {
+        encryptColumnsMergedResultFixture.getCalendarValue(1, String.class, Calendar.getInstance());
+    }
+
+    @Test(expected = SQLFeatureNotSupportedException.class)
+    @SneakyThrows
+    public void assertGetInputStream() {
+        encryptColumnsMergedResultFixture.getInputStream(1, "whateverString");
     }
 }
