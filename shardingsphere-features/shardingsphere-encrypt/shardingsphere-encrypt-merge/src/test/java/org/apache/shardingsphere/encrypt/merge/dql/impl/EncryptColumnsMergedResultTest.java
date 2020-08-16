@@ -74,6 +74,9 @@ public final class EncryptColumnsMergedResultTest {
         when(simpleTableSegment.getTableName()).thenReturn(tableNameSegment);
         when(tableNameSegment.getIdentifier()).thenReturn(identifierValue);
         when(identifierValue.getValue()).thenReturn(tableName);
+        when(schemaMetaData.get(anyString())).thenReturn(tableMetaData);
+        when(tableMetaData.getColumns()).thenReturn(columns);
+        encryptColumnsMergedResultFixture = spy(new EncryptColumnsMergedResultFixture(tableAvailableAndSqlStatementContextFixture, schemaMetaData));
     }
     
     @Test
@@ -106,5 +109,18 @@ public final class EncryptColumnsMergedResultTest {
         when(encryptColumnsMergedResultFixture.nextValue()).thenReturn(true).thenReturn(true);
         when(encryptColumnsMergedResultFixture.getOriginalValue(1, String.class)).thenReturn("status").thenReturn("noInThatCollection");
         assertThat(encryptColumnsMergedResultFixture.next(), is(true));
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertGetValueWithColumnIndex() {
+        when(encryptColumnsMergedResultFixture.getOriginalValue(1, String.class)).thenReturn("status");
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertGetValueWithOutColumnIndex() {
+        when(encryptColumnsMergedResultFixture.getOriginalValue(2, String.class)).thenReturn("status");
+        assertThat(encryptColumnsMergedResultFixture.getValue(2, String.class), is("status"));
     }
 }
