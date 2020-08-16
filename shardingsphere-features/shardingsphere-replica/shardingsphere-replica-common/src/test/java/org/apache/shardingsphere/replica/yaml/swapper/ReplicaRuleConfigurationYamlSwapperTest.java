@@ -29,10 +29,16 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ReplicaRuleConfigurationYamlSwapperTest {
@@ -70,14 +76,14 @@ public final class ReplicaRuleConfigurationYamlSwapperTest {
     }
 
     private YamlReplicaRuleConfiguration createYamlReplicaRuleConfiguration() {
-        YamlReplicaRuleConfiguration result = new YamlReplicaRuleConfiguration();
+        YamlReplicaRuleConfiguration yamlReplicaRuleConfiguration = new YamlReplicaRuleConfiguration();
         YamlReplicaDataSourceConfiguration configuration = new YamlReplicaDataSourceConfiguration();
         configuration.setName("name");
         configuration.setReplicaDataSourceNames(Arrays.asList("replicaDataSourceNames"));
         Map<String, YamlReplicaDataSourceConfiguration> dataSources = new LinkedHashMap<>();
-        dataSources.put("dataSources",configuration);
-        result.setDataSources(dataSources);
-        return result;
+        dataSources.put("dataSources", configuration);
+        yamlReplicaRuleConfiguration.setDataSources(dataSources);
+        return yamlReplicaRuleConfiguration;
     }
 
     private ReplicaRuleConfigurationYamlSwapper getSwapper() {
