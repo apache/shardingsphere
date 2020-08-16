@@ -28,10 +28,6 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.annotation.Resource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -45,21 +41,6 @@ public class GenerateKeyJUnitTest extends AbstractSpringJUnitTest {
     
     @Resource
     private ShardingSphereDataSource shardingSphereDataSource;
-    
-    @Test
-    public void assertGenerateKey() throws SQLException {
-        try (Connection connection = getShardingSphereDataSource().getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.execute("INSERT INTO t_order (user_id, status) VALUES (1, 'init')", Statement.RETURN_GENERATED_KEYS);
-            ResultSet generateKeyResultSet = statement.getGeneratedKeys();
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(101L));
-            statement.execute("INSERT INTO t_order_item (order_id, user_id, status) VALUES (101, 1, 'init')", Statement.RETURN_GENERATED_KEYS);
-            generateKeyResultSet = statement.getGeneratedKeys();
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(99L));
-        }
-    }
     
     @SuppressWarnings("unchecked")
     @Test
