@@ -19,26 +19,39 @@ package org.apache.shardingsphere.masterslave.yaml.swapper;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.rule.YamlMasterSlaveDataSourceRuleConfiguration;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class MasterSlaveRuleConfigurationYamlSwapperTest {
+    
+    private final Collection<YamlRuleConfigurationSwapper> collection = ShardingSphereServiceLoader.newServiceInstances(YamlRuleConfigurationSwapper.class);
+    
+    static {
+        ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
+    }
     
     @Test
     public void assertSwapToYamlWithLoadBalanceAlgorithm() {
         MasterSlaveDataSourceRuleConfiguration dataSourceConfiguration = new MasterSlaveDataSourceRuleConfiguration("ds", "master", Collections.singletonList("slave"), "roundRobin");
-        YamlMasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swapToYamlConfiguration(new MasterSlaveRuleConfiguration(
+        YamlMasterSlaveRuleConfiguration actual = getMasterSlaveRuleConfigurationYamlSwapper().swapToYamlConfiguration(new MasterSlaveRuleConfiguration(
                 Collections.singleton(dataSourceConfiguration), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()))));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
         assertThat(actual.getDataSources().get("ds").getMasterDataSourceName(), is("master"));
@@ -49,7 +62,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
         MasterSlaveDataSourceRuleConfiguration dataSourceConfiguration = new MasterSlaveDataSourceRuleConfiguration("ds", "master", Collections.singletonList("slave"), null);
-        YamlMasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swapToYamlConfiguration(
+        YamlMasterSlaveRuleConfiguration actual = getMasterSlaveRuleConfigurationYamlSwapper().swapToYamlConfiguration(
                 new MasterSlaveRuleConfiguration(Collections.singleton(dataSourceConfiguration), Collections.emptyMap()));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
         assertThat(actual.getDataSources().get("ds").getMasterDataSourceName(), is("master"));
@@ -61,7 +74,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
     public void assertSwapToObjectWithLoadBalanceAlgorithmType() {
         YamlMasterSlaveRuleConfiguration yamlConfiguration = createYamlMasterSlaveRuleConfiguration();
         yamlConfiguration.getDataSources().get("master_slave_ds").setLoadBalancerName("RANDOM");
-        MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swapToObject(yamlConfiguration);
+        MasterSlaveRuleConfiguration actual = getMasterSlaveRuleConfigurationYamlSwapper().swapToObject(yamlConfiguration);
         assertMasterSlaveRuleConfiguration(actual);
         assertThat(actual.getDataSources().iterator().next().getLoadBalancerName(), is("RANDOM"));
     }
@@ -69,7 +82,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToObjectWithoutLoadBalanceAlgorithm() {
         YamlMasterSlaveRuleConfiguration yamlConfiguration = createYamlMasterSlaveRuleConfiguration();
-        MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swapToObject(yamlConfiguration);
+        MasterSlaveRuleConfiguration actual = getMasterSlaveRuleConfigurationYamlSwapper().swapToObject(yamlConfiguration);
         assertMasterSlaveRuleConfiguration(actual);
         assertNull(actual.getDataSources().iterator().next().getLoadBalancerName());
     }
@@ -88,5 +101,28 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
         assertThat(group.getName(), is("master_slave_ds"));
         assertThat(group.getMasterDataSourceName(), is("master_ds"));
         assertThat(group.getSlaveDataSourceNames(), is(Arrays.asList("slave_ds_0", "slave_ds_1")));
+    }
+    
+    @Test
+    public void assertGetTypeClass() {
+        MasterSlaveRuleConfigurationYamlSwapper masterSlaveRuleConfigurationYamlSwapper = getMasterSlaveRuleConfigurationYamlSwapper();
+        Class<MasterSlaveRuleConfiguration> actual = masterSlaveRuleConfigurationYamlSwapper.getTypeClass();
+        assertTrue(actual.isAssignableFrom(MasterSlaveRuleConfiguration.class));
+    }
+    
+    @Test
+    public void assertGetOrder() {
+        MasterSlaveRuleConfigurationYamlSwapper masterSlaveRuleConfigurationYamlSwapper = getMasterSlaveRuleConfigurationYamlSwapper();
+        int actual = masterSlaveRuleConfigurationYamlSwapper.getOrder();
+        assertEquals(MasterSlaveOrder.ORDER, actual);
+    }
+    
+    private MasterSlaveRuleConfigurationYamlSwapper getMasterSlaveRuleConfigurationYamlSwapper() {
+        Optional<MasterSlaveRuleConfigurationYamlSwapper> optional = collection.stream()
+                .filter(swapper -> swapper instanceof MasterSlaveRuleConfigurationYamlSwapper)
+                .map(swapper -> (MasterSlaveRuleConfigurationYamlSwapper) swapper)
+                .findFirst();
+        assertTrue(optional.isPresent());
+        return optional.get();
     }
 }
