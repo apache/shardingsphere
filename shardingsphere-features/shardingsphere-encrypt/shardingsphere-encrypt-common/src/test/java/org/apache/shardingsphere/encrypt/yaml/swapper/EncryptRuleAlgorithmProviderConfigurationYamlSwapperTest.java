@@ -64,6 +64,7 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
     }
     
     private EncryptRuleAlgorithmProviderConfigurationYamlSwapper getSwapper() {
-        return (EncryptRuleAlgorithmProviderConfigurationYamlSwapper) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), YamlRuleConfigurationSwapper.class).get(ruleConfig);
+        return (EncryptRuleAlgorithmProviderConfigurationYamlSwapper)
+                    OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), YamlRuleConfigurationSwapper.class).get(ruleConfig);
     }
 }
