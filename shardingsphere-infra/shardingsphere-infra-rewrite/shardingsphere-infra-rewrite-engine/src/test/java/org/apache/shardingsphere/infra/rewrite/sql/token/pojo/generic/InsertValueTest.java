@@ -44,7 +44,8 @@ public class InsertValueTest {
         expressionSegmentList.add(complexExpressionSegment);
 
         InsertValue insertValue = new InsertValue(expressionSegmentList);
-        String result = insertValue.toString();
-        assertThat(result, is("(?, 'literals', complexExpressionSegment)"));
+        String actualToString = insertValue.toString();
+        String expectedToString = "(?, 'literals', complexExpressionSegment)";
+        assertThat(actualToString, is(expectedToString));
     }
 }
