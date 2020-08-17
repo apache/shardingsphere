@@ -83,6 +83,12 @@ public enum VisitorRule {
     ALTER_LOGFILE_GROUP("AlterLogfileGroup", SQLStatementType.DDL),
 
     DROP_LOGFILE_GROUP("DropLogfileGroup", SQLStatementType.DDL),
+
+    CREATE_SERVER("CreateServer", SQLStatementType.DDL),
+    
+    ALTER_SERVER("AlterServer", SQLStatementType.DDL),
+
+    DROP_SERVER("DropServer", SQLStatementType.DDL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
     

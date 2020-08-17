@@ -49,6 +49,9 @@ execute
     | createLogfileGroup
     | alterLogfileGroup
     | dropLogfileGroup
+    | createServer
+    | alterServer
+    | dropServer
     | setTransaction
     | beginTransaction
     | setAutoCommit
