@@ -36,15 +36,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
+            <artifactId>shardingsphere-jdbc-spring-namespace-infra</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
         
         <dependency>

@@ -45,6 +45,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-encrypt-spring-namespace</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-shadow-spring-namespace</artifactId>
             <version>${project.version}</version>
         </dependency>
