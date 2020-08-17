@@ -18,16 +18,21 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context.xsd 
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
                            ">
-    <import resource="datasource/dataSource.xml" />
+    <context:property-placeholder location="classpath:conf/conf.properties" ignore-unresolvable="true" />
+    
+    <bean id="encrypt_ds" class="org.apache.shardingsphere.test.MockedDataSource" />
     
     <encrypt:encrypt-algorithm id="aes_encryptor" type="AES">
         <props>
@@ -43,7 +48,7 @@
         </encrypt:table>
     </encrypt:rule>
     
-    <shardingsphere:data-source id="encryptDataSource" data-source-names="dbtbl_0" rule-refs="encryptRule">
+    <shardingsphere:data-source id="encryptDataSource" data-source-names="encrypt_ds" rule-refs="encryptRule">
         <props>
             <prop key="sql.show">${sql_show}</prop>
             <prop key="query.with.cipher.column">true</prop>

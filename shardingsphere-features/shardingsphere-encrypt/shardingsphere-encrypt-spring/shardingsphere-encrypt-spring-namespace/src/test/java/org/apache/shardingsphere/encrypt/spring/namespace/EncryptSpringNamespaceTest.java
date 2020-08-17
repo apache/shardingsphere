@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring;
+package org.apache.shardingsphere.encrypt.spring.namespace;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.algorithm.AESEncryptAlgorithm;
@@ -32,8 +32,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/encryptNamespace.xml")
-public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
+@ContextConfiguration(locations = "classpath:META-INF/spring/encrypt-application-context.xml")
+public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void assertDataSource() {
