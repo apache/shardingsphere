@@ -31,7 +31,6 @@ import java.sql.Statement;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -341,7 +340,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
             preparedStatement.setString(6, "MULTI");
             int result = preparedStatement.executeUpdate();
             ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
-            assertEquals(2, result);
+            assertThat(result, is(2));
             assertTrue(generateKeyResultSet.next());
             assertThat(generateKeyResultSet.getInt(1), is(1));
             assertTrue(generateKeyResultSet.next());
