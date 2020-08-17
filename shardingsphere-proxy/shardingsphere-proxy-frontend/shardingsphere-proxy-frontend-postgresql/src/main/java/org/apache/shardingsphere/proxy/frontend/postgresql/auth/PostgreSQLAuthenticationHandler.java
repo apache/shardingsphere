@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.auth;
 
+import com.google.common.base.Strings;
 import java.security.MessageDigest;
+import java.util.Collection;
 import java.util.Map;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
@@ -58,8 +61,8 @@ public class PostgreSQLAuthenticationHandler {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, "password authentication failed for user \"" + userName + "\"");
         }
         
-        if (!proxyUser.getAuthorizedSchemas().contains(databaseName)) {
-            return new PostgreSQLLoginResult(PostgreSQLErrorCode.PRIVILEGE_NOT_GRANTED, String.format("%s has no configured %s in authorizedSchemas", userName, databaseName));
+        if (!isAuthorizedSchema(proxyUser.getAuthorizedSchemas(), databaseName)) {
+            return new PostgreSQLLoginResult(PostgreSQLErrorCode.PRIVILEGE_NOT_GRANTED, String.format("Access denied for user '%s' to database '%s'", userName, databaseName));
         }
         
         return new PostgreSQLLoginResult(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION, null);
@@ -73,4 +76,7 @@ public class PostgreSQLAuthenticationHandler {
         return "md5" + new String(Hex.encodeHex(messageDigest.digest(), true));
     }
     
+    private static boolean isAuthorizedSchema(final Collection<String> authorizedSchemas, final String schema) {
+        return Strings.isNullOrEmpty(schema) || CollectionUtils.isEmpty(authorizedSchemas) || authorizedSchemas.contains(schema);
+    }
 }
