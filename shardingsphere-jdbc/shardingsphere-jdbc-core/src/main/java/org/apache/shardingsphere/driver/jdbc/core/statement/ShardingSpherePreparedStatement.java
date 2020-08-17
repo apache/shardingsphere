@@ -261,7 +261,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(schemaContext.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), 
                 schemaContexts.getProps(), schemaContext.getSchema().getRules()).rewrite(sql, new ArrayList<>(getParameters()), routeContext);
         ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(schemaContext.getSchema().getMetaData(), sqlRewriteResult));
-        findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.add(generatedKey.getGeneratedValues().getLast()));
+        findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.addAll(generatedKey.getGeneratedValues()));
         logSQL(result);
         return result;
     }
