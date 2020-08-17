@@ -39,10 +39,10 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
     
     @Test
     public void assertEncryptRuleConfiguration() {
-        AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfig = applicationContext.getBean("encryptRule", AlgorithmProvidedEncryptRuleConfiguration.class);
-        assertEncryptors(encryptRuleConfig.getEncryptors());
-        assertThat(encryptRuleConfig.getTables().size(), is(1));
-        assertEncryptTable(encryptRuleConfig.getTables().iterator().next());
+        AlgorithmProvidedEncryptRuleConfiguration config = applicationContext.getBean("encryptRule", AlgorithmProvidedEncryptRuleConfiguration.class);
+        assertEncryptors(config.getEncryptors());
+        assertThat(config.getTables().size(), is(1));
+        assertEncryptTable(config.getTables().iterator().next());
     }
     
     private void assertEncryptors(final Map<String, EncryptAlgorithm> encryptors) {

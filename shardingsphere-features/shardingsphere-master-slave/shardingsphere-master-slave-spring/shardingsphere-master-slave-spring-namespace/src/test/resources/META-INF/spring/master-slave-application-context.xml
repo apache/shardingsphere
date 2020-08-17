@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd 
+                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave
+                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                           ">
+    <master-slave:load-balance-algorithm id="random_loadbalancer" type="RANDOM" />
+    
+    <master-slave:rule id="defaultMasterSlaveRule">
+        <master-slave:data-source-rule id="default_ds" master-data-source-name="master_ds" slave-data-source-names="slave_ds_0, slave_ds_1" />
+    </master-slave:rule>
+    
+    <master-slave:rule id="randomMasterSlaveRule">
+        <master-slave:data-source-rule id="random_ds" master-data-source-name="master_ds" slave-data-source-names="slave_ds_0, slave_ds_1" load-balance-algorithm-ref="random_loadbalancer" />
+    </master-slave:rule>
+</beans>
