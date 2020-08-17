@@ -23,9 +23,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * PasswordMessage (F) packet for PostgreSQL.
+ * PasswordMessage (frontend) packet for PostgreSQL.
  */
-public class PostgreSQLPasswordMessagePacket implements PostgreSQLPacket {
+public final class PostgreSQLPasswordMessagePacket implements PostgreSQLPacket {
     
     @Getter
     private final String md5Digest;

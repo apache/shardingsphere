@@ -23,9 +23,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * AuthenticationMD5Password (B) packet for PostgreSQL.
+ * AuthenticationMD5Password (backend) packet for PostgreSQL.
  */
-public class PostgreSQLAuthenticationMD5PasswordPacket implements PostgreSQLPacket {
+public final class PostgreSQLAuthenticationMD5PasswordPacket implements PostgreSQLPacket {
     
     private static final int AUTH_REQ_MD5 = 5;
     

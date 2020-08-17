@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
  * Random generator for PostgreSQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostgreSQLRandomGenerator {
+public final class PostgreSQLRandomGenerator {
     
     private static final PostgreSQLRandomGenerator INSTANCE = new PostgreSQLRandomGenerator();
     

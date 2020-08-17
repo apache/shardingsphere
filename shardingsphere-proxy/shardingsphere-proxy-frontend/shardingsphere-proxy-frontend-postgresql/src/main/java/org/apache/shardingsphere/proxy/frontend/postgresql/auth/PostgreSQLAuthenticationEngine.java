@@ -94,7 +94,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
             context.writeAndFlush(new PostgreSQLAuthenticationMD5PasswordPacket(md5Salt));
             return false;
         } else {
-            final char messageType = (char) ((PostgreSQLPacketPayload) payload).readInt1();
+            char messageType = (char) ((PostgreSQLPacketPayload) payload).readInt1();
             if ('p' != messageType) {
                 PostgreSQLErrorResponsePacket responsePacket = createPostgreSQLErrorResponsePacket(PostgreSQLErrorCode.SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION,
                     "PasswordMessage is expected, message type 'p', but not '" + messageType + "'");
@@ -112,6 +112,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
                 context.close();
                 return false;
             } else {
+                // TODO implement PostgreSQLServerInfo like MySQLServerInfo
                 context.write(new PostgreSQLAuthenticationOKPacket(true));
                 context.write(new PostgreSQLParameterStatusPacket("server_version", "12.3"));
                 context.write(new PostgreSQLParameterStatusPacket("client_encoding", "UTF8"));
@@ -126,7 +127,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
         result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, "FATAL");
         result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, errorCode.getErrorCode());
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, errorMessage);
+        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, Strings.isNullOrEmpty(errorMessage) ? errorCode.getConditionName() : errorMessage);
         return result;
     }
 }

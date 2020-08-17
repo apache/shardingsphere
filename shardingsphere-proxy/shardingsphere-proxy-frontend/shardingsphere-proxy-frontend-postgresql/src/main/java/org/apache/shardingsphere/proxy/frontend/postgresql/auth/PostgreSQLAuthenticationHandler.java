@@ -55,7 +55,7 @@ public class PostgreSQLAuthenticationHandler {
         String md5Digest = passwordMessagePacket.getMd5Digest();
         String expectedMd5Digest = md5Encode(userName, proxyUser.getPassword(), md5Salt);
         if (!expectedMd5Digest.equals(md5Digest)) {
-            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, "bad md5 password");
+            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, "password authentication failed for user \"" + userName + "\"");
         }
         
         if (!proxyUser.getAuthorizedSchemas().contains(databaseName)) {
@@ -66,9 +66,9 @@ public class PostgreSQLAuthenticationHandler {
     }
     
     private static String md5Encode(final String userName, final String password, final byte[] md5Salt) {
-        String pwdHash = new String(Hex.encodeHex(DigestUtils.md5(password + userName), true));
+        String passwordHash = new String(Hex.encodeHex(DigestUtils.md5(password + userName), true));
         MessageDigest messageDigest = DigestUtils.getMd5Digest();
-        messageDigest.update(pwdHash.getBytes());
+        messageDigest.update(passwordHash.getBytes());
         messageDigest.update(md5Salt);
         return "md5" + new String(Hex.encodeHex(messageDigest.digest(), true));
     }
