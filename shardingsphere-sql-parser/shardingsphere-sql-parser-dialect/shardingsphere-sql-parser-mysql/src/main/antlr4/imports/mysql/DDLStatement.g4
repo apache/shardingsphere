@@ -138,7 +138,7 @@ channel
     ;
 
 createEvent
-    : CREATE ownerStatement? EVENT notExistClause_? eventName
+    : CREATE ownerStatement? EVENT notExistClause_ eventName
       ON SCHEDULE scheduleExpression_
       (ON COMPLETION NOT? PRESERVE)? 
       (ENABLE | DISABLE | DISABLE ON SLAVE)?
@@ -572,10 +572,10 @@ ownerStatement
     ;
 
 scheduleExpression_
-    : AT_ timestampValue (PLUS_ intervalExpression)*
-    | EVERY intervalExpression
+    : AT timestampValue (PLUS_ intervalExpression)*
+    | EVERY intervalValue
       (STARTS timestampValue (PLUS_ intervalExpression)*)?
-      ( ENDS timestampValue (PLUS_ intervalExpression)*)?     
+      (ENDS timestampValue (PLUS_ intervalExpression)*)?     
     ;
 
 timestampValue
@@ -622,7 +622,7 @@ compoundStatement
 
 validStatement
     : (createTable | alterTable | dropTable | truncateTable 
-    | insert | replace | update | delete | select
+    | insert | replace | update | delete | select | call
     | setVariable | beginStatement | declareStatement | flowControlStatement | cursorStatement | conditionHandlingStatement) SEMI_?
     ;
 
