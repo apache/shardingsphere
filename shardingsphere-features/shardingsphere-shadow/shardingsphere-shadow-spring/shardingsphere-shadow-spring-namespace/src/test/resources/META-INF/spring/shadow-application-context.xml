@@ -18,26 +18,15 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
                            ">
-    <import resource="datasource/dataSource.xml"/>
-    
     <shadow:rule id="shadowRule" column="shadow">
         <shadow:mappings>
-            <shadow:mapping product-data-source-name="dbtbl_0" shadow-data-source-name="dbtbl_1"/>
+            <shadow:mapping product-data-source-name="prod_ds" shadow-data-source-name="shadow_ds" />
         </shadow:mappings>
     </shadow:rule>
-    
-    <shardingsphere:data-source id="shadowDataSource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="shadowRule">
-        <props>
-            <prop key="sql.show">${sql_show}</prop>
-        </props>
-    </shardingsphere:data-source>
 </beans>
