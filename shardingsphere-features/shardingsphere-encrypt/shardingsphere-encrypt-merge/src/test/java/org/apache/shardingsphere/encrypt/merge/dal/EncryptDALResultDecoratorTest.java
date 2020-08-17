@@ -57,9 +57,9 @@ public final class EncryptDALResultDecoratorTest {
         schemaMetaData = mock(SchemaMetaData.class);
         sqlStatementContext = getDescribeStatementContext();
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
-        MergedResult mergedResult = encryptDALResultDecorator.decorate(mock(QueryResult.class),sqlStatementContext,schemaMetaData);
+        MergedResult mergedResult = encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schemaMetaData);
         assertThat(mergedResult, instanceOf(MergedEncryptColumnsMergedResult.class));
-        mergedResult = encryptDALResultDecorator.decorate(mock(MergedResult.class),sqlStatementContext,schemaMetaData);
+        mergedResult = encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schemaMetaData);
         assertThat(mergedResult, instanceOf(DecoratedEncryptColumnsMergedResult.class));
     }
 
@@ -68,9 +68,9 @@ public final class EncryptDALResultDecoratorTest {
         schemaMetaData = mock(SchemaMetaData.class);
         sqlStatementContext = getShowColumnsStatementContext();
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
-        MergedResult mergedResult = encryptDALResultDecorator.decorate(mock(QueryResult.class),sqlStatementContext,schemaMetaData);
+        MergedResult mergedResult = encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schemaMetaData);
         assertThat(mergedResult, instanceOf(MergedEncryptColumnsMergedResult.class));
-        mergedResult = encryptDALResultDecorator.decorate(mock(MergedResult.class),sqlStatementContext,schemaMetaData);
+        mergedResult = encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schemaMetaData);
         assertThat(mergedResult, instanceOf(DecoratedEncryptColumnsMergedResult.class));
     }
 
@@ -79,9 +79,9 @@ public final class EncryptDALResultDecoratorTest {
         schemaMetaData = mock(SchemaMetaData.class);
         sqlStatementContext = mock(SQLStatementContext.class);
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
-        MergedResult mergedResult = encryptDALResultDecorator.decorate(mock(QueryResult.class),sqlStatementContext,schemaMetaData);
+        MergedResult mergedResult = encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schemaMetaData);
         assertThat(mergedResult, instanceOf(TransparentMergedResult.class));
-        mergedResult = encryptDALResultDecorator.decorate(mock(MergedResult.class),sqlStatementContext,schemaMetaData);
+        mergedResult = encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schemaMetaData);
         assertThat(mergedResult, instanceOf(MergedResult.class));
     }
 
