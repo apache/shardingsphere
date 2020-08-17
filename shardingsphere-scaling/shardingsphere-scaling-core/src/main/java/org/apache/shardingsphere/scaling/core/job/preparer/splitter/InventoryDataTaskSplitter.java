@@ -48,9 +48,9 @@ import java.util.List;
  */
 @Slf4j
 public final class InventoryDataTaskSplitter {
-
+    
     private final SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
-
+    
     /**
      * Split inventory data to multi-tasks.
      *
@@ -65,7 +65,7 @@ public final class InventoryDataTaskSplitter {
         }
         return result;
     }
-
+    
     private Collection<InventoryDumperConfiguration> splitDumperConfiguration(final int concurrency, final DumperConfiguration dumperConfiguration, final DataSourceManager dataSourceManager) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfiguration.getDataSourceConfiguration());
@@ -79,7 +79,7 @@ public final class InventoryDataTaskSplitter {
         }
         return result;
     }
-
+    
     private Collection<InventoryDumperConfiguration> splitByTable(final DumperConfiguration dumperConfiguration) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         for (String each : dumperConfiguration.getTableNameMap().keySet()) {
@@ -90,7 +90,7 @@ public final class InventoryDataTaskSplitter {
         }
         return result;
     }
-
+    
     private boolean isSpiltByPrimaryKeyRange(final InventoryDumperConfiguration inventoryDumperConfiguration, final MetaDataManager metaDataManager) {
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(inventoryDumperConfiguration.getTableName());
         if (null == tableMetaData) {
@@ -113,11 +113,11 @@ public final class InventoryDataTaskSplitter {
         }
         return true;
     }
-
+    
     private boolean isNotIntegerPrimary(final int columnType) {
         return Types.INTEGER != columnType && Types.BIGINT != columnType && Types.SMALLINT != columnType && Types.TINYINT != columnType;
     }
-
+    
     private Collection<InventoryDumperConfiguration> splitByPrimaryKeyRange(final int concurrency, final InventoryDumperConfiguration inventoryDumperConfiguration,
                                                                    final MetaDataManager metaDataManager, final DataSource dataSource) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();

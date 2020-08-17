@@ -29,10 +29,10 @@ import java.util.Set;
 @Setter
 @Getter
 public final class ImporterConfiguration {
-
+    
     private DataSourceConfiguration dataSourceConfiguration;
-
+    
     private Map<String, Set<String>> shardingColumnsMap;
-
+    
     private int retryTimes;
 }

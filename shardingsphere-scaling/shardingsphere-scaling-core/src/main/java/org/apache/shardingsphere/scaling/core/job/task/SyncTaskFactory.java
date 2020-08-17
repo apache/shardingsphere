@@ -31,7 +31,7 @@ import java.util.Collection;
  * Sync task factory.
  */
 public interface SyncTaskFactory {
-
+    
     /**
      * Create inventory data sync task group.
      *
@@ -39,7 +39,7 @@ public interface SyncTaskFactory {
      * @return inventory data sync task group
      */
     InventoryDataScalingTaskGroup createInventoryDataSyncTaskGroup(Collection<ScalingTask<InventoryPosition>> inventoryDataScalingTasks);
-
+    
     /**
      * Create inventory data sync task.
      *
@@ -48,7 +48,7 @@ public interface SyncTaskFactory {
      * @return inventory data sync task
      */
     InventoryDataScalingTask createInventoryDataSyncTask(InventoryDumperConfiguration inventoryDumperConfiguration, ImporterConfiguration importerConfiguration);
-
+    
     /**
      * Create incremental data sync task.
      *

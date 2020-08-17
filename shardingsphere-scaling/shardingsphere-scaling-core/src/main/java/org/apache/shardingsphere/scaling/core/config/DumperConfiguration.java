@@ -29,13 +29,13 @@ import java.util.Map;
 @Setter
 @Getter
 public class DumperConfiguration {
-
+    
     private String dataSourceName;
-
+    
     private DataSourceConfiguration dataSourceConfiguration;
-
+    
     @SuppressWarnings("rawtypes")
     private PositionManager positionManager;
-
+    
     private Map<String, String> tableNameMap;
 }

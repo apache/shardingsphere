@@ -26,13 +26,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public final class InventoryDumperConfiguration extends DumperConfiguration {
-
+    
     private String tableName;
-
+    
     private String primaryKey;
-
+    
     private Integer spiltNum;
-
+    
     public InventoryDumperConfiguration(final DumperConfiguration dumperConfiguration) {
         setDataSourceName(dumperConfiguration.getDataSourceName());
         setDataSourceConfiguration(dumperConfiguration.getDataSourceConfiguration());

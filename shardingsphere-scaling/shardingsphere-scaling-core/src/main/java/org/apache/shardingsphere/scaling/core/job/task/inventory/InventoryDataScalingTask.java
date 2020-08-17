@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public final class InventoryDataScalingTask extends AbstractShardingScalingExecutor<InventoryPosition> implements ScalingTask<InventoryPosition> {
     
     private final InventoryDumperConfiguration inventoryDumperConfiguration;
-
+    
     private final ImporterConfiguration importerConfiguration;
     
     private final DataSourceManager dataSourceManager;

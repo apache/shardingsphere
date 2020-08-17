@@ -48,9 +48,9 @@ import java.util.concurrent.Future;
 public final class IncrementalDataScalingTask extends AbstractShardingScalingExecutor<IncrementalPosition> implements ScalingTask<IncrementalPosition> {
     
     private final int concurrency;
-
+    
     private final DumperConfiguration dumperConfiguration;
-
+    
     private final ImporterConfiguration importerConfiguration;
     
     private final DataSourceManager dataSourceManager;
