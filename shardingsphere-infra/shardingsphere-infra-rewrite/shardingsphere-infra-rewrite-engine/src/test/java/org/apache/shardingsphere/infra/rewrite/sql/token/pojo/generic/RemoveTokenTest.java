@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.rule;
+package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class TableRuleConfigurationTest {
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertConstructorWithoutLogicTable() {
-        new ShardingTableRuleConfiguration("");
-    }
+public final class RemoveTokenTest {
     
     @Test
-    public void assertConstructorWithFullArguments() {
-        ShardingTableRuleConfiguration actual = new ShardingTableRuleConfiguration("tbl", "ds_$->{0..15}.tbl_$->{0..15}");
-        assertThat(actual.getLogicTable(), is("tbl"));
-        assertThat(actual.getActualDataNodes(), is("ds_$->{0..15}.tbl_$->{0..15}"));
+    public void assertToString() {
+        assertThat(new RemoveToken(0, 1).toString(), is(""));
     }
 }

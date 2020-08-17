@@ -15,29 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
+package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ComplexShardingStrategyConfigurationTest {
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertConstructorWithoutShardingColumns() {
-        new ComplexShardingStrategyConfiguration("", "test");
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void assertConstructorWithoutShardingAlgorithm() {
-        new ComplexShardingStrategyConfiguration("id, creation_date", null);
-    }
+public final class SubstitutableColumnNameTokenTest {
     
     @Test
-    public void assertConstructorWithFullArguments() {
-        ComplexShardingStrategyConfiguration actual = new ComplexShardingStrategyConfiguration("id, creation_date", "test");
-        assertThat(actual.getShardingColumns(), is("id, creation_date"));
-        assertThat(actual.getShardingAlgorithmName(), is("test"));
+    public void assertToString() {
+        assertThat(new SubstitutableColumnNameToken(0, 1, "id").toString(), is("id"));
     }
 }

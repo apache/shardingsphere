@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
+package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
+import java.util.Arrays;
+import java.util.Collections;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class StandardShardingStrategyConfigurationTest {
+public final class UseDefaultInsertColumnsTokenTest {
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertConstructorWithoutShardingColumn() {
-        new StandardShardingStrategyConfiguration("", "test");
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void assertConstructorWithoutPreciseShardingAlgorithm() {
-        new StandardShardingStrategyConfiguration("id", null);
+    @Test
+    public void assertToStringWithEmptyColumn() {
+        assertThat(new UseDefaultInsertColumnsToken(0, Collections.emptyList()).toString(), is(""));
     }
     
     @Test
-    public void assertConstructorWithArguments() {
-        StandardShardingStrategyConfiguration actual = new StandardShardingStrategyConfiguration("id", "test");
-        assertThat(actual.getShardingColumn(), is("id"));
-        assertThat(actual.getShardingAlgorithmName(), is("test"));
+    public void assertToStringWithColumns() {
+        assertThat(new UseDefaultInsertColumnsToken(0, Arrays.asList("id", "name")).toString(), is("(id, name)"));
     }
 }
