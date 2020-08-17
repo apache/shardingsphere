@@ -18,21 +18,24 @@
 package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
- * Sync configuration.
+ * Inventory dumper configuration.
  */
 @Getter
-@RequiredArgsConstructor
-public final class SyncConfiguration {
+@Setter
+public final class InventoryDumperConfiguration extends DumperConfiguration {
     
-    /**
-     * The concurrency of writers.
-     */
-    private final int concurrency;
+    private String tableName;
     
-    private final DumperConfiguration dumperConfiguration;
+    private String primaryKey;
     
-    private final ImporterConfiguration importerConfiguration;
+    private Integer spiltNum;
+    
+    public InventoryDumperConfiguration(final DumperConfiguration dumperConfiguration) {
+        setDataSourceName(dumperConfiguration.getDataSourceName());
+        setDataSourceConfiguration(dumperConfiguration.getDataSourceConfiguration());
+        setTableNameMap(dumperConfiguration.getTableNameMap());
+    }
 }

@@ -18,21 +18,21 @@
 package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
- * Sync configuration.
+ * Importer configuration.
  */
+@Setter
 @Getter
-@RequiredArgsConstructor
-public final class SyncConfiguration {
+public final class ImporterConfiguration {
     
-    /**
-     * The concurrency of writers.
-     */
-    private final int concurrency;
+    private DataSourceConfiguration dataSourceConfiguration;
     
-    private final DumperConfiguration dumperConfiguration;
+    private Map<String, Set<String>> shardingColumnsMap;
     
-    private final ImporterConfiguration importerConfiguration;
+    private int retryTimes;
 }
