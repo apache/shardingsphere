@@ -26,11 +26,13 @@ import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConf
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapperTest {
     
@@ -40,12 +42,31 @@ public final class MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapperTest 
     public void assertSwapToYamlConfiguration() {
         YamlMasterSlaveRuleConfiguration actual = createYamlMasterSlaveRuleConfiguration();
         assertNotNull(actual);
+        assertNotNull(actual.getDataSources());
+        assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
+        assertThat(actual.getDataSources().get("name").getName(), is("name"));
+        assertThat(actual.getDataSources().get("name").getMasterDataSourceName(), is("masterDataSourceName"));
+        assertThat(actual.getDataSources().get("name").getLoadBalancerName(), is("loadBalancerName"));
+        assertThat(actual.getDataSources().get("name").getSlaveDataSourceNames(), is(Collections.singletonList("slaveDataSourceName")));
+        assertNotNull(actual.getLoadBalancers());
+        assertThat(actual.getLoadBalancers().keySet(), is(Collections.singleton("name")));
+        assertNotNull(actual.getLoadBalancers().get("name"));
+        assertThat(actual.getLoadBalancers().get("name").getType(), is("RANDOM"));
     }
     
     @Test
     public void assertSwapToObject() {
         AlgorithmProvidedMasterSlaveRuleConfiguration actual = swapper.swapToObject(createYamlMasterSlaveRuleConfiguration());
         assertNotNull(actual);
+        assertNotNull(actual.getDataSources());
+        assertTrue(actual.getDataSources().iterator().hasNext());
+        MasterSlaveDataSourceRuleConfiguration ruleConfiguration = actual.getDataSources().iterator().next();
+        assertNotNull(ruleConfiguration);
+        assertThat(ruleConfiguration.getName(), is("name"));
+        assertThat(ruleConfiguration.getMasterDataSourceName(), is("masterDataSourceName"));
+        assertThat(ruleConfiguration.getLoadBalancerName(), is("loadBalancerName"));
+        assertThat(ruleConfiguration.getSlaveDataSourceNames(), is(Collections.singletonList("slaveDataSourceName")));
+        assertThat(actual.getLoadBalanceAlgorithms(), is(new LinkedHashMap<>()));
     }
     
     @Test
