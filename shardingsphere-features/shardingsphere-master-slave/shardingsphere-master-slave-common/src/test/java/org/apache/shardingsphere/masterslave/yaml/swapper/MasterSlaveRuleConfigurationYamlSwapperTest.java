@@ -35,7 +35,6 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -114,7 +113,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
     public void assertGetOrder() {
         MasterSlaveRuleConfigurationYamlSwapper masterSlaveRuleConfigurationYamlSwapper = getMasterSlaveRuleConfigurationYamlSwapper();
         int actual = masterSlaveRuleConfigurationYamlSwapper.getOrder();
-        assertEquals(MasterSlaveOrder.ORDER, actual);
+        assertThat(actual, is(MasterSlaveOrder.ORDER));
     }
     
     private MasterSlaveRuleConfigurationYamlSwapper getMasterSlaveRuleConfigurationYamlSwapper() {
