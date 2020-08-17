@@ -26,6 +26,7 @@ import org.apache.shardingsphere.spring.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.spring.util.FieldValueUtil;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.annotation.Resource;
 import java.util.Collection;
@@ -37,7 +38,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/withNamespaceGenerateKeyColumns.xml")
-public class GenerateKeyJUnitTest extends AbstractSpringJUnitTest {
+public class GenerateKeyJUnitTest extends AbstractJUnit4SpringContextTests {
     
     @Resource
     private ShardingSphereDataSource shardingSphereDataSource;
