@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.auth;
 
-import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.Map;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
@@ -51,7 +53,7 @@ public class PostgreSQLAuthenticationHandler {
         }
         
         String md5Digest = passwordMessagePacket.getMd5Digest();
-        String expectedMd5Digest = new String(PostgreSQLMd5Digest.encode(userName.getBytes(StandardCharsets.UTF_8), proxyUser.getPassword().getBytes(StandardCharsets.UTF_8), md5Salt));
+        String expectedMd5Digest = md5Encode(userName, proxyUser.getPassword(), md5Salt);
         if (!expectedMd5Digest.equals(md5Digest)) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, "bad md5 password");
         }
@@ -61,6 +63,14 @@ public class PostgreSQLAuthenticationHandler {
         }
         
         return new PostgreSQLLoginResult(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION, null);
+    }
+    
+    private static String md5Encode(final String userName, final String password, final byte[] md5Salt) {
+        String pwdHash = new String(Hex.encodeHex(DigestUtils.md5(password + userName), true));
+        MessageDigest messageDigest = DigestUtils.getMd5Digest();
+        messageDigest.update(pwdHash.getBytes());
+        messageDigest.update(md5Salt);
+        return "md5" + new String(Hex.encodeHex(messageDigest.digest(), true));
     }
     
 }
