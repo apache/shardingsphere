@@ -25,7 +25,9 @@ import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSour
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -86,5 +88,13 @@ public final class MasterSlaveRuleTest {
         assertThat(masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames(), is(Collections.singletonList("slave_db_1")));
         masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent("slave_db_0", false));
         assertThat(masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
+    }
+    
+    @Test
+    public void assertGetDataSourceMapper() {
+        MasterSlaveRule masterSlaveRule = createMasterSlaveRule();
+        Map<String, Collection<String>> actual = masterSlaveRule.getDataSourceMapper();
+        Map<String, Collection<String>> expected = ImmutableMap.of("test_ms", Arrays.asList("master_db", "slave_db_0", "slave_db_1"));
+        assertThat(actual, is(expected));
     }
 }
