@@ -61,11 +61,10 @@ public final class EncryptColumnsMergedResultTest {
     
     private EncryptColumnsMergedResultFixture encryptColumnsMergedResultFixture;
     
-    @Before
     @SneakyThrows
+    @Before
     public void setUp() {
         String tableName = "t_order";
-        String columnName = "status";
         Map<String, ColumnMetaData> columns = new HashMap<>();
         EncryptColumnMetaData encryptColumnMetaData = new EncryptColumnMetaData("order", 1, "Integer", false, "status", "status", "status");
         columns.put("", encryptColumnMetaData);
@@ -81,8 +80,8 @@ public final class EncryptColumnsMergedResultTest {
         encryptColumnsMergedResultFixture = spy(new EncryptColumnsMergedResultFixture(tableAvailableAndSqlStatementContextFixture, schemaMetaData));
     }
     
-    @Test
     @SneakyThrows
+    @Test
     public void assertHasNextWithEmptyColumnMetaData() {
         when(schemaMetaData.get(anyString())).thenReturn(tableMetaData);
         when(tableMetaData.getColumns()).thenReturn(Collections.emptyMap());
@@ -90,9 +89,9 @@ public final class EncryptColumnsMergedResultTest {
         when(encryptColumnsMergedResultFixture.nextValue()).thenReturn(true).thenReturn(false);
         assertThat(encryptColumnsMergedResultFixture.next(), is(true));
     }
-
-    @Test
+    
     @SneakyThrows
+    @Test
     public void assertWithoutHasNext() {
         EncryptColumnsMergedResultFixture encryptColumnsMergedResultFixture = spy(new EncryptColumnsMergedResultFixture(tableAvailableAndSqlStatementContextFixture, schemaMetaData));
         when(encryptColumnsMergedResultFixture.nextValue()).thenReturn(false);
@@ -113,8 +112,8 @@ public final class EncryptColumnsMergedResultTest {
         assertThat(encryptColumnsMergedResultFixture.next(), is(true));
     }
     
-    @Test
     @SneakyThrows
+    @Test
     public void assertGetValueWithColumnIndex() {
         Map<String, ColumnMetaData> columns = new HashMap<>();
         EncryptColumnMetaData encryptColumnMetaData = new EncryptColumnMetaData("order", 1, "Integer", false, "status", "status", "status");
@@ -125,21 +124,21 @@ public final class EncryptColumnsMergedResultTest {
         assertThat(encryptColumnsMergedResultFixture.getValue(1, String.class), is("key"));
     }
     
-    @Test
     @SneakyThrows
+    @Test
     public void assertGetValueWithOutColumnIndex() {
         when(encryptColumnsMergedResultFixture.getOriginalValue(2, String.class)).thenReturn("status");
         assertThat(encryptColumnsMergedResultFixture.getValue(2, String.class), is("status"));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
     @SneakyThrows
+    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetCalendarValue() {
         encryptColumnsMergedResultFixture.getCalendarValue(1, String.class, Calendar.getInstance());
     }
-
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    
     @SneakyThrows
+    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetInputStream() {
         encryptColumnsMergedResultFixture.getInputStream(1, "whateverString");
     }
