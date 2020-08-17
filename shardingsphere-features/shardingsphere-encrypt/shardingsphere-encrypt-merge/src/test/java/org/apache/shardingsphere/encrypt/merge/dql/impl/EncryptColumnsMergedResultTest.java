@@ -63,8 +63,7 @@ public final class EncryptColumnsMergedResultTest {
     
     @SneakyThrows
     @Before
-    public void setUp() {
-        String tableName = "t_order";
+    public void setUp() { 
         Map<String, ColumnMetaData> columns = new HashMap<>();
         EncryptColumnMetaData encryptColumnMetaData = new EncryptColumnMetaData("order", 1, "Integer", false, "status", "status", "status");
         columns.put("", encryptColumnMetaData);
@@ -74,6 +73,7 @@ public final class EncryptColumnsMergedResultTest {
         when(tableAvailableAndSqlStatementContextFixture.getAllTables()).thenReturn(Lists.newArrayList(simpleTableSegment));
         when(simpleTableSegment.getTableName()).thenReturn(tableNameSegment);
         when(tableNameSegment.getIdentifier()).thenReturn(identifierValue);
+        String tableName = "t_order";
         when(identifierValue.getValue()).thenReturn(tableName);
         when(schemaMetaData.get(anyString())).thenReturn(tableMetaData);
         when(tableMetaData.getColumns()).thenReturn(columns);
