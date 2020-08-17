@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @Setter
 @Getter
-public class DumperConfiguration implements Cloneable {
+public class DumperConfiguration {
 
     private String dataSourceName;
 

@@ -51,8 +51,8 @@ public final class SyncPositionResumer {
     /**
      * Resume position from resume from break-point manager.
      *
-     * @param shardingScalingJob      sharding scaling job
-     * @param dataSourceManager       dataSource manager
+     * @param shardingScalingJob sharding scaling job
+     * @param dataSourceManager dataSource manager
      * @param resumeBreakPointManager resume from break-point manager
      */
     public void resumePosition(final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager, final ResumeBreakPointManager resumeBreakPointManager) {
@@ -110,7 +110,7 @@ public final class SyncPositionResumer {
     /**
      * Persist position.
      *
-     * @param shardingScalingJob      sharding scaling job
+     * @param shardingScalingJob sharding scaling job
      * @param resumeBreakPointManager resume from break-point manager
      */
     public void persistPosition(final ShardingScalingJob shardingScalingJob, final ResumeBreakPointManager resumeBreakPointManager) {
