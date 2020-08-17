@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.strategy.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
 import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +33,8 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class InlineShardingAlgorithmTest {
 
@@ -47,6 +51,7 @@ public final class InlineShardingAlgorithmTest {
     private StandardShardingStrategy createShardingStrategy() {
         InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("algorithm.expression", "t_order_$->{order_id % 4}");
+        shardingAlgorithm.getProps().setProperty("allow.range.query.with.inline.sharding", "true");
         shardingAlgorithm.init();
         return new StandardShardingStrategy("order_id", shardingAlgorithm);
     }
@@ -66,6 +71,14 @@ public final class InlineShardingAlgorithmTest {
         assertThat(actual.size(), is(4));
         Collection<String> actualWithSimplified = shardingStrategyWithSimplified.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
         assertThat(actualWithSimplified.size(), is(4));
+    }
+    
+    @Test
+    public void assertDoShardingWithRangeRouteValue() {
+        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("order_id", "t_order", mock(Range.class)));
+        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
+        assertTrue(actual.containsAll(availableTargetNames));
     }
     
     @Test
