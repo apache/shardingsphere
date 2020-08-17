@@ -31,12 +31,12 @@ public final class TableAvailableAndSqlStatementContextFixture implements TableA
     public SQLStatement getSqlStatement() {
         return null;
     }
-
+    
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
         return null;
     }
-
+    
     @Override
     public TablesContext getTablesContext() {
         return null;

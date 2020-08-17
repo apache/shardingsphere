@@ -33,12 +33,12 @@ public final class EncryptColumnsMergedResultFixture extends EncryptColumnsMerge
     public boolean nextValue() throws SQLException {
         return false;
     }
-
+    
     @Override
     public Object getOriginalValue(final int columnIndex, final Class<?> type) throws SQLException {
         return null;
     }
-
+    
     @Override
     public boolean wasNull() throws SQLException {
         return false;
