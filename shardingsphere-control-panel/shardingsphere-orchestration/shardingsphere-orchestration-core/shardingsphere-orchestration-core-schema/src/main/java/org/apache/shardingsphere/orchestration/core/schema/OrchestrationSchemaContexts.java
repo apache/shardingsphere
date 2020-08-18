@@ -163,7 +163,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         schemas.put(schemaName, getAddedSchemaContext(schemaAddedEvent));
         schemaContexts =
                 new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
-        OrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.getSchemaContexts().get(schemaName).getSchema().getMetaData().getSchema());
+        orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.getSchemaContexts().get(schemaName).getSchema().getMetaData().getSchema());
     }
     
     /**
@@ -251,7 +251,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         schemaContexts.put(schemaName, getChangedSchemaContext(this.schemaContexts.getSchemaContexts().get(schemaName), ruleConfigurationsChangedEvent.getRuleConfigurations()));
         this.schemaContexts =
                 new StandardSchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps(), this.schemaContexts.getDatabaseType());
-        OrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.get(schemaName).getSchema().getMetaData().getSchema());
+        orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.get(schemaName).getSchema().getMetaData().getSchema());
     }
     
     /**
@@ -383,8 +383,12 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         Map<String, DataSource> result = new LinkedHashMap<>(oldDataSources);
         result.keySet().removeAll(deletedDataSources);
         result.keySet().removeAll(modifiedDataSources.keySet());
-        result.putAll(modifiedDataSources);
-        result.putAll(addedDataSources);
+        if (null != modifiedDataSources) {
+            result.putAll(modifiedDataSources);
+        }
+        if (null != addedDataSources) {
+            result.putAll(addedDataSources);
+        }
         return result;
     }
     
