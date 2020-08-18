@@ -57,13 +57,13 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
             return new ErrorResponse(new NoDatabaseSelectedException());
         }
         if (!backendConnection.getSchema().isComplete()) {
-            return getEmptyQueryResponse(backendConnection.getSchema().getName());
+            return getDefaultQueryResponse(backendConnection.getSchema().getName());
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
         return databaseCommunicationEngine.execute();
     }
     
-    private QueryResponse getEmptyQueryResponse(final String schemaName) {
+    private QueryResponse getDefaultQueryResponse(final String schemaName) {
         return new QueryResponse(Collections.singletonList(new QueryHeader(schemaName, "", "", "", 255, Types.VARCHAR, 0, false, false, false, false)));
     }
     
