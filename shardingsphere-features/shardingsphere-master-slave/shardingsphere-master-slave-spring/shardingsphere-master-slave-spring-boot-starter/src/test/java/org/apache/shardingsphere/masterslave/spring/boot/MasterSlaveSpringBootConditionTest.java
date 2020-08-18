@@ -20,7 +20,6 @@ package org.apache.shardingsphere.masterslave.spring.boot;
 import org.apache.shardingsphere.masterslave.spring.boot.condition.MasterSlaveSpringBootCondition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.context.annotation.ConditionContext;
@@ -29,6 +28,7 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -39,8 +39,8 @@ public final class MasterSlaveSpringBootConditionTest {
         MockEnvironment mockEnvironment = new MockEnvironment();
         mockEnvironment.setProperty("spring.shardingsphere.rules.encrypt.encryptors.aes_encryptor.type", "AES");
         mockEnvironment.setProperty("spring.shardingsphere.rules.shadow.column", "user_id");
-        ConditionContext context = Mockito.mock(ConditionContext.class);
-        AnnotatedTypeMetadata metadata = Mockito.mock(AnnotatedTypeMetadata.class);
+        ConditionContext context = mock(ConditionContext.class);
+        AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);
         MasterSlaveSpringBootCondition condition = new MasterSlaveSpringBootCondition();
         ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
@@ -51,8 +51,8 @@ public final class MasterSlaveSpringBootConditionTest {
     public void assertMatch() {
         MockEnvironment mockEnvironment = new MockEnvironment();
         mockEnvironment.setProperty("spring.shardingsphere.rules.master-slave.data-sources.ds_ms.master-data-source-name", "ds_master");
-        ConditionContext context = Mockito.mock(ConditionContext.class);
-        AnnotatedTypeMetadata metadata = Mockito.mock(AnnotatedTypeMetadata.class);
+        ConditionContext context = mock(ConditionContext.class);
+        AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);
         MasterSlaveSpringBootCondition condition = new MasterSlaveSpringBootCondition();
         ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);

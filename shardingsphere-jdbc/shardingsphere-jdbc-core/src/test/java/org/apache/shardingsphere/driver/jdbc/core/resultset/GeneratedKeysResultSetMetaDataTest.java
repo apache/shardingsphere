@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import javax.sql.rowset.RowSetMetaDataImpl;
 import java.sql.ResultSetMetaData;
@@ -32,6 +31,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class GeneratedKeysResultSetMetaDataTest {
     
@@ -39,7 +39,7 @@ public final class GeneratedKeysResultSetMetaDataTest {
     
     @Before
     public void init() {
-        actualMetaData = new GeneratedKeysResultSet("order_id", Arrays.<Comparable<?>>asList(1L, 2L).iterator(), Mockito.mock(Statement.class)).getMetaData();
+        actualMetaData = new GeneratedKeysResultSet("order_id", Arrays.<Comparable<?>>asList(1L, 2L).iterator(), mock(Statement.class)).getMetaData();
     }
     
     @Test
