@@ -258,7 +258,7 @@ After at least 72 hours and with at least 3 `+1 PMC member` votes, it can come t
 Title:
 
 ```
-[VOTE] Release Apache ElasticJob UI ${RELEASE.VERSION}
+[VOTE] Release Apache ShardingSphere ElasticJob UI ${RELEASE.VERSION}
 
 ```
 

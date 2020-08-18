@@ -254,7 +254,7 @@ diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src/ shardingsphe
 标题：
 
 ```
-[VOTE] Release Apache ElasticJob UI ${RELEASE.VERSION}
+[VOTE] Release Apache ShardingSphere ElasticJob UI ${RELEASE.VERSION}
 ```
 
 正文：
