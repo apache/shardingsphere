@@ -32,7 +32,7 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="db_${0..9}.select">
+    <metadata data-nodes="db_${0..9}.key_word">
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
@@ -166,14 +166,14 @@
     <row data-node="db_7.t_broadcast_table" values="1, init" />
     <row data-node="db_8.t_broadcast_table" values="1, init" />
     <row data-node="db_9.t_broadcast_table" values="1, init" />
-    <row data-node="db_0.select" values="1, init" />
-    <row data-node="db_1.select" values="1, init" />
-    <row data-node="db_2.select" values="1, init" />
-    <row data-node="db_3.select" values="1, init" />
-    <row data-node="db_4.select" values="1, init" />
-    <row data-node="db_5.select" values="1, init" />
-    <row data-node="db_6.select" values="1, init" />
-    <row data-node="db_7.select" values="1, init" />
-    <row data-node="db_8.select" values="1, init" />
-    <row data-node="db_9.select" values="1, init" />
+    <row data-node="db_0.key_word" values="1, init" />
+    <row data-node="db_1.key_word" values="1, init" />
+    <row data-node="db_2.key_word" values="1, init" />
+    <row data-node="db_3.key_word" values="1, init" />
+    <row data-node="db_4.key_word" values="1, init" />
+    <row data-node="db_5.key_word" values="1, init" />
+    <row data-node="db_6.key_word" values="1, init" />
+    <row data-node="db_7.key_word" values="1, init" />
+    <row data-node="db_8.key_word" values="1, init" />
+    <row data-node="db_9.key_word" values="1, init" />
 </dataset>
