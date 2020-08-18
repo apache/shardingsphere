@@ -326,29 +326,6 @@ Checklist for reference:
 
 2. 宣布投票结果模板：
 
-正文：
-
-```
-The vote to release Apache ShardingSphere ElasticJob-${RELEASE.VERSION} has passed.
-
-7 PMC member +1 binding votes:
-
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-
-1 community +1 non-binding vote:
-xxx
-
-Thank you everyone for taking the time to review the release and help us. 
-```
-
-3. 宣布投票结果模板：
-
 标题：
 
 ```

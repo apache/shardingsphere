@@ -314,31 +314,6 @@ Checklist for reference:
 
 2. Announce the vote result:
 
-Body:
-
-```
-The vote to release Apache ShardingSphere UI ${RELEASE.VERSION} has passed.
-
-7 PMC member +1 binding votes:
-
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-
-1 community +1 non-binding vote:
-xxx
-
-Thank you everyone for taking the time to review the release and help us. 
-```
-
-3. Announce the vote result:
-
-**Notice: Please include the votes from ShardingSphere community above.**
-
 Title：
 
 ```
