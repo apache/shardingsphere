@@ -63,13 +63,13 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     @Test
     public void assertDataSourceShardingAlgorithm() {
         assertThat(dataSourceShardingAlgorithm.getType(), is("INLINE"));
-        assertThat(dataSourceShardingAlgorithm.getProps().getProperty("algorithm.expression"), is("ds_${order_id % 2}"));
+        assertThat(dataSourceShardingAlgorithm.getProps().getProperty("algorithm.expression"), is("ds_$->{order_id % 2}"));
     }
     
     @Test
     public void assertOrderTableShardingAlgorithm() {
         assertThat(orderTableShardingAlgorithm.getType(), is("INLINE"));
-        assertThat(orderTableShardingAlgorithm.getProps().getProperty("algorithm.expression"), is("t_order_${order_id % 4}"));
+        assertThat(orderTableShardingAlgorithm.getProps().getProperty("algorithm.expression"), is("t_order_$->{order_id % 4}"));
     }
     
     @Test
