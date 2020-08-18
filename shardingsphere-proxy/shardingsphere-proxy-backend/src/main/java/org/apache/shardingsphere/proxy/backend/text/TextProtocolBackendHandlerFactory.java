@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.admin.BroadcastBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.ShowTablesBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.UnicastBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.query.QueryBackendHandler;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
@@ -102,6 +104,9 @@ public final class TextProtocolBackendHandlerFactory {
         }
         if (dalStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesBackendHandler(backendConnection);
+        }
+        if (dalStatement instanceof ShowTablesStatement) {
+            return new ShowTablesBackendHandler(sql, dalStatement, backendConnection);
         }
         // FIXME: There are three SetStatement classes.
         if (dalStatement instanceof SetStatement) {
