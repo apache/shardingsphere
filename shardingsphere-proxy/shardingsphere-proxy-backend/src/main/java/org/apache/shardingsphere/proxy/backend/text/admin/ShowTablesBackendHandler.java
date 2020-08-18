@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.query;
+package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
@@ -28,7 +28,6 @@ import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -36,10 +35,10 @@ import java.sql.Types;
 import java.util.Collections;
 
 /**
- * Backend handler with query.
+ * Backend handler for show tables.
  */
 @RequiredArgsConstructor
-public final class QueryBackendHandler implements TextProtocolBackendHandler {
+public final class ShowTablesBackendHandler implements TextProtocolBackendHandler {
     
     private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
@@ -53,22 +52,20 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public BackendResponse execute() {
-        if (!hasSelectedOrNewSchema()) {
+        if (null == backendConnection.getSchema()) {
             return new ErrorResponse(new NoDatabaseSelectedException());
         }
         if (!backendConnection.getSchema().isComplete()) {
             return getDefaultQueryResponse(backendConnection.getSchema().getName());
         }
+        // TODO Get all tables from meta data.
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
         return databaseCommunicationEngine.execute();
     }
     
     private QueryResponse getDefaultQueryResponse(final String schemaName) {
-        return new QueryResponse(Collections.singletonList(new QueryHeader(schemaName, "", "", "", 255, Types.VARCHAR, 0, false, false, false, false)));
-    }
-    
-    private boolean hasSelectedOrNewSchema() {
-        return null != backendConnection.getSchema() || sqlStatement instanceof CreateSchemaStatement;
+        return new QueryResponse(Collections.singletonList(
+                new QueryHeader(schemaName, "", "Tables_in_" + schemaName, "Tables_in_" + schemaName, 64, Types.VARCHAR, 0, false, false, false, false)));
     }
     
     @Override

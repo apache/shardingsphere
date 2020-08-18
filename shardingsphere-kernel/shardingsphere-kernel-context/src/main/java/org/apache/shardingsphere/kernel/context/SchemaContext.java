@@ -38,4 +38,13 @@ public final class SchemaContext {
         this.schema = schema;
         this.runtimeContext = runtimeContext;
     }
+    
+    /**
+     * Is complete schema Context.
+     *
+     * @return is complete schema Context or not
+     */
+    public boolean isComplete() {
+        return null != schema && null != runtimeContext && !schema.getRules().isEmpty() && !schema.getDataSources().isEmpty();
+    }
 }
