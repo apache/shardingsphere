@@ -35,17 +35,17 @@ import java.util.stream.Collectors;
 
 public final class TestOrchestrationSchemaContexts extends OrchestrationSchemaContexts {
     
-    public TestOrchestrationSchemaContexts(SchemaContexts schemaContexts, OrchestrationFacade orchestrationFacade) {
+    public TestOrchestrationSchemaContexts(final SchemaContexts schemaContexts, final OrchestrationFacade orchestrationFacade) {
         super(schemaContexts, orchestrationFacade);
     }
     
     @Override
-    protected Map<String, DataSource> getAddedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSources) throws Exception {
+    protected Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
         return Collections.singletonMap("ds_2", buildDataSource(getDataSourceParameter()));
     }
     
     @Override
-    protected Map<String, DataSource> getModifiedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSources) throws Exception {
+    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
         return Collections.singletonMap("ds_1", buildDataSource(getDataSourceParameter()));
     }
     
@@ -58,7 +58,7 @@ public final class TestOrchestrationSchemaContexts extends OrchestrationSchemaCo
     }
     
     @Override
-    protected Map<String, Map<String, DataSource>> createDataSourcesMap(Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) throws Exception {
+    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) throws Exception {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>();
         for (Map.Entry<String, Map<String, DataSourceParameter>> entry : createDataSourceParametersMap(dataSourcesMap).entrySet()) {
             result.put(entry.getKey(), createDataSources(entry.getValue()));
@@ -75,7 +75,7 @@ public final class TestOrchestrationSchemaContexts extends OrchestrationSchemaCo
     }
     
     @Override
-    public Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
+    public Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
         Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
         for (Map.Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesMap.entrySet()) {
             result.put(entry.getKey(), getDataSourceParameterMap(entry.getValue()));
@@ -83,7 +83,7 @@ public final class TestOrchestrationSchemaContexts extends OrchestrationSchemaCo
         return result;
     }
     
-    public DataSource buildDataSource(final DataSourceParameter dataSourceParameter) {
+    private DataSource buildDataSource(final DataSourceParameter dataSourceParameter) {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(dataSourceParameter.getUrl());
         config.setUsername(dataSourceParameter.getUsername());
@@ -97,7 +97,7 @@ public final class TestOrchestrationSchemaContexts extends OrchestrationSchemaCo
         return new HikariDataSource(config);
     }
     
-    public Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
+    private Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
         return dataSourceConfigurationMap.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
     }
