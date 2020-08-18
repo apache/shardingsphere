@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.masterslave.spring.boot;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.masterslave.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
@@ -33,6 +30,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Rule spring boot configuration for master-slave.

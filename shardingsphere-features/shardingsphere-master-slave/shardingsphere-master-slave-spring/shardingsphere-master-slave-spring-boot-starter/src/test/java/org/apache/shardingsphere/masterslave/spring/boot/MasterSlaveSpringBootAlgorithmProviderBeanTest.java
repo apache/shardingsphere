@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.masterslave.spring.boot;
 
-import javax.annotation.Resource;
 import org.apache.shardingsphere.masterslave.spring.boot.fixture.RandomMasterSlaveLoadBalanceAlgorithmFixture;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +25,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.annotation.Resource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
