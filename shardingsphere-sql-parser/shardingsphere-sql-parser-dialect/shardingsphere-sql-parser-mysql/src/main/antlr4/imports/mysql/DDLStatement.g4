@@ -126,15 +126,17 @@ dropDatabase
 
 alterInstance
     : ALTER INSTANCE instanceAction
-    
     ;
 
 instanceAction
-    : ROTATE INNODB_ MASTER KEY | ROTATE BINLOG MASTER KEY | RELOAD TLS_ (FOR CHANNEL channel)? (NO ROLLBACK ON ERROR)?
+    : (ENABLE | DISABLE) INNODB_ REDO_LOG_ 
+    | ROTATE INNODB_ MASTER KEY 
+    | ROTATE BINLOG MASTER KEY 
+    | RELOAD TLS (FOR CHANNEL channel)? (NO ROLLBACK ON ERROR)?
     ;
 
 channel
-    : MYSQL_ADMIN
+    : MYSQL_MAIN | MYSQL_ADMIN
     ;
 
 createEvent
@@ -278,18 +280,19 @@ createLogfileGroup
       (NODEGROUP EQ_? identifier)?
       WAIT?
       (COMMENT EQ_? STRING_)?
-      ENGINE EQ_? identifier
+      (ENGINE EQ_? identifier)?
     ;
 
 alterLogfileGroup
     : ALTER LOGFILE GROUP identifier
       ADD UNDOFILE STRING_
       (INITIAL_SIZE EQ_? fileSizeLiteral_)?
-      WAIT? ENGINE EQ_? identifier
+      WAIT? 
+      (ENGINE EQ_? identifier)?
     ;
 
 dropLogfileGroup
-    : DROP LOGFILE GROUP identifier ENGINE EQ_? identifier
+    : DROP LOGFILE GROUP identifier (ENGINE EQ_? identifier)?
     ;
 
 createTrigger
