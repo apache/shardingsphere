@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.mysql;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
@@ -59,7 +59,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
     
     private final BinlogPosition binlogPosition;
     
-    private final RdbmsConfiguration rdbmsConfiguration;
+    private final DumperConfiguration dumperConfiguration;
     
     private final MetaDataManager metaDataManager;
     
@@ -68,13 +68,13 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
     @Setter
     private Channel channel;
     
-    public MySQLBinlogDumper(final RdbmsConfiguration rdbmsConfiguration, final Position binlogPosition) {
+    public MySQLBinlogDumper(final DumperConfiguration dumperConfiguration, final Position binlogPosition) {
         this.binlogPosition = (BinlogPosition) binlogPosition;
-        if (!JDBCDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
+        if (!JDBCDataSourceConfiguration.class.equals(dumperConfiguration.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("MySQLBinlogDumper only support JDBCDataSourceConfiguration");
         }
-        this.rdbmsConfiguration = rdbmsConfiguration;
-        metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(rdbmsConfiguration.getDataSourceConfiguration()));
+        this.dumperConfiguration = dumperConfiguration;
+        metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(dumperConfiguration.getDataSourceConfiguration()));
     }
     
     @Override
@@ -84,7 +84,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
     }
     
     private void dump() {
-        JDBCDataSourceConfiguration jdbcDataSourceConfig = (JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration();
+        JDBCDataSourceConfiguration jdbcDataSourceConfig = (JDBCDataSourceConfiguration) dumperConfiguration.getDataSourceConfiguration();
         JdbcUri uri = new JdbcUri(jdbcDataSourceConfig.getJdbcUrl());
         MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfig.getUsername(), jdbcDataSourceConfig.getPassword()));
         client.connect();
@@ -164,7 +164,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
     
     private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {
         DataRecord result = new DataRecord(new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId()), columnCount);
-        result.setTableName(rdbmsConfiguration.getTableNameMap().get(rowsEvent.getTableName()));
+        result.setTableName(dumperConfiguration.getTableNameMap().get(rowsEvent.getTableName()));
         result.setCommitTime(rowsEvent.getTimestamp() * 1000);
         return result;
     }
@@ -183,6 +183,6 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
     }
     
     private boolean filter(final String database, final String schemaName, final String tableName) {
-        return !schemaName.equals(database) || !rdbmsConfiguration.getTableNameMap().containsKey(tableName);
+        return !schemaName.equals(database) || !dumperConfiguration.getTableNameMap().containsKey(tableName);
     }
 }

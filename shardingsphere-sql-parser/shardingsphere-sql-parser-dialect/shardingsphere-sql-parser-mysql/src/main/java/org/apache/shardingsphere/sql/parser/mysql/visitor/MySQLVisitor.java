@@ -399,7 +399,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     private void visitRemainBitExpr(final BitExprContext ctx) {
         if (null != ctx.intervalExpression()) {
-            visit(ctx.intervalExpression().expr());
+            visit(ctx.intervalExpression().intervalValue().expr());
         }
         ctx.bitExpr().forEach(this::visit);
     }
@@ -437,7 +437,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.expr()));
+        calculateParameterCount(Collections.singleton(ctx.intervalValue().expr()));
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     

@@ -80,6 +80,10 @@ TREE
     : T R E E
     ;
 
+MYSQL_MAIN
+    : M Y S Q L UL_ M A I N
+    ;
+
 MYSQL_ADMIN
     : M Y S Q L UL_ A D M I N
     ;

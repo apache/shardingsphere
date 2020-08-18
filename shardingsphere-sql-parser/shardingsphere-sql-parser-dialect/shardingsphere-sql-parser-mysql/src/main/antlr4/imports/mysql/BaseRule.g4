@@ -539,7 +539,11 @@ caseElse_
     ;
 
 intervalExpression
-    : INTERVAL expr intervalUnit_
+    : INTERVAL intervalValue
+    ;
+    
+intervalValue
+    : expr intervalUnit_
     ;
 
 intervalUnit_

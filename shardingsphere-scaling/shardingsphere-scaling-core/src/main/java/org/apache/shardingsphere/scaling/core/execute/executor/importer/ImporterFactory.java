@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
@@ -34,25 +34,25 @@ public final class ImporterFactory {
     /**
      * New instance of importer.
      *
-     * @param rdbmsConfiguration rdbms configuration
+     * @param importerConfiguration rdbms configuration
      * @param dataSourceManager data source factory
      * @return importer
      */
-    public static Importer newInstance(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
-        return newInstance(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration, dataSourceManager);
+    public static Importer newInstance(final ImporterConfiguration importerConfiguration, final DataSourceManager dataSourceManager) {
+        return newInstance(importerConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), importerConfiguration, dataSourceManager);
     }
     
     /**
      * New instance of importer.
      *
      * @param databaseType database type
-     * @param rdbmsConfiguration rdbms configuration
+     * @param importerConfiguration rdbms configuration
      * @param dataSourceManager data source factory
      * @return importer
      */
     @SneakyThrows
-    public static Importer newInstance(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public static Importer newInstance(final String databaseType, final ImporterConfiguration importerConfiguration, final DataSourceManager dataSourceManager) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getImporterClass().getConstructor(RdbmsConfiguration.class, DataSourceManager.class).newInstance(rdbmsConfiguration, dataSourceManager);
+        return scalingEntry.getImporterClass().getConstructor(ImporterConfiguration.class, DataSourceManager.class).newInstance(importerConfiguration, dataSourceManager);
     }
 }

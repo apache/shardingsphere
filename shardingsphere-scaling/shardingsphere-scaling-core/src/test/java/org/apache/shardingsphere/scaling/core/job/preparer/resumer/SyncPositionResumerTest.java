@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.scaling.core.job.preparer.resumer;
 
 import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
@@ -83,18 +84,19 @@ public final class SyncPositionResumerTest {
     }
     
     private SyncConfiguration mockSyncConfiguration() {
-        RdbmsConfiguration dumperConfig = mockDumperConfig();
-        RdbmsConfiguration importerConfig = new RdbmsConfiguration();
-        Map<String, String> tableMap = new HashMap<>();
-        tableMap.put("t_order", "t_order");
-        return new SyncConfiguration(3, tableMap, dumperConfig, importerConfig);
+        DumperConfiguration dumperConfig = mockDumperConfig();
+        ImporterConfiguration importerConfig = new ImporterConfiguration();
+        return new SyncConfiguration(3, dumperConfig, importerConfig);
     }
     
-    private RdbmsConfiguration mockDumperConfig() {
+    private DumperConfiguration mockDumperConfig() {
         DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
-        RdbmsConfiguration result = new RdbmsConfiguration();
+        DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName("ds0");
         result.setDataSourceConfiguration(dataSourceConfiguration);
+        Map<String, String> tableMap = new HashMap<>();
+        tableMap.put("t_order", "t_order");
+        result.setTableNameMap(tableMap);
         return result;
     }
 }
