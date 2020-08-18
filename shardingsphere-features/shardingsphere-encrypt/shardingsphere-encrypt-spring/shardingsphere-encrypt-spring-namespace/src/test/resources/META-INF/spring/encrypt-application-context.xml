@@ -29,17 +29,17 @@
                            ">
     <context:property-placeholder location="classpath:conf/conf.properties" />
     
-    <encrypt:encrypt-algorithm id="aes_encryptor" type="AES">
+    <encrypt:encrypt-algorithm id="aesEncryptor" type="AES">
         <props>
             <prop key="aes.key.value">${aes.key.value}</prop>
         </props>
     </encrypt:encrypt-algorithm>
-    <encrypt:encrypt-algorithm id="md5_encryptor" type="MD5" />
+    <encrypt:encrypt-algorithm id="md5Encryptor" type="MD5" />
     
     <encrypt:rule id="encryptRule">
         <encrypt:table name="t_order">
-            <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-algorithm-ref="aes_encryptor" />
-            <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-algorithm-ref="md5_encryptor" />
+            <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-algorithm-ref="aesEncryptor" />
+            <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-algorithm-ref="md5Encryptor" />
         </encrypt:table>
     </encrypt:rule>
 </beans>

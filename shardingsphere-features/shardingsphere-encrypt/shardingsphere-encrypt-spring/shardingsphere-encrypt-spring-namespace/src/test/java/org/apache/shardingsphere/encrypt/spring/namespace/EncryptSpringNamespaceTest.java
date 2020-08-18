@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
+import javax.annotation.Resource;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -37,19 +38,38 @@ import static org.junit.Assert.assertThat;
 @ContextConfiguration(locations = "classpath:META-INF/spring/encrypt-application-context.xml")
 public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
+    @Resource
+    private EncryptAlgorithm aesEncryptor;
+    
+    @Resource
+    private EncryptAlgorithm md5Encryptor;
+    
+    @Resource
+    private AlgorithmProvidedEncryptRuleConfiguration encryptRule;
+    
+    @Test
+    public void assertAESEncryptor() {
+        assertThat(aesEncryptor.getType(), is("AES"));
+        assertThat(aesEncryptor.getProps().getProperty("aes.key.value"), is("123456"));
+    }
+    
+    @Test
+    public void assertMD5Encryptor() {
+        assertThat(md5Encryptor.getType(), is("MD5"));
+    }
+    
     @Test
     public void assertEncryptRuleConfiguration() {
-        AlgorithmProvidedEncryptRuleConfiguration config = applicationContext.getBean("encryptRule", AlgorithmProvidedEncryptRuleConfiguration.class);
-        assertEncryptors(config.getEncryptors());
-        assertThat(config.getTables().size(), is(1));
-        assertEncryptTable(config.getTables().iterator().next());
+        assertEncryptors(encryptRule.getEncryptors());
+        assertThat(encryptRule.getTables().size(), is(1));
+        assertEncryptTable(encryptRule.getTables().iterator().next());
     }
     
     private void assertEncryptors(final Map<String, EncryptAlgorithm> encryptors) {
         assertThat(encryptors.size(), is(2));
-        assertThat(encryptors.get("aes_encryptor"), instanceOf(AESEncryptAlgorithm.class));
-        assertThat(encryptors.get("aes_encryptor").getProps().getProperty("aes.key.value"), is("123456"));
-        assertThat(encryptors.get("md5_encryptor"), instanceOf(MD5EncryptAlgorithm.class));
+        assertThat(encryptors.get("aesEncryptor"), instanceOf(AESEncryptAlgorithm.class));
+        assertThat(encryptors.get("aesEncryptor").getProps().getProperty("aes.key.value"), is("123456"));
+        assertThat(encryptors.get("md5Encryptor"), instanceOf(MD5EncryptAlgorithm.class));
     }
     
     private void assertEncryptTable(final EncryptTableRuleConfiguration tableRuleConfig) {
@@ -65,7 +85,7 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
         assertThat(columnRuleConfig.getCipherColumn(), is("user_encrypt"));
         assertThat(columnRuleConfig.getAssistedQueryColumn(), is("user_assisted"));
         assertThat(columnRuleConfig.getPlainColumn(), is("user_decrypt"));
-        assertThat(columnRuleConfig.getEncryptorName(), is("aes_encryptor"));
+        assertThat(columnRuleConfig.getEncryptorName(), is("aesEncryptor"));
     }
     
     private void assertEncryptColumn2(final EncryptColumnRuleConfiguration columnRuleConfig) {
@@ -73,6 +93,6 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
         assertThat(columnRuleConfig.getCipherColumn(), is("order_encrypt"));
         assertThat(columnRuleConfig.getAssistedQueryColumn(), is("order_assisted"));
         assertThat(columnRuleConfig.getPlainColumn(), is("order_decrypt"));
-        assertThat(columnRuleConfig.getEncryptorName(), is("md5_encryptor"));
+        assertThat(columnRuleConfig.getEncryptorName(), is("md5Encryptor"));
     }
 }
