@@ -36,7 +36,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            ">
-    <context:property-placeholder location="classpath:conf/rdb/conf.properties" />
+    <context:property-placeholder location="classpath:conf/conf.properties" />
     
     <bean id="ds_0_master" class="org.apache.shardingsphere.test.MockedDataSource" />
     <bean id="ds_0_slave_0" class="org.apache.shardingsphere.test.MockedDataSource" />
