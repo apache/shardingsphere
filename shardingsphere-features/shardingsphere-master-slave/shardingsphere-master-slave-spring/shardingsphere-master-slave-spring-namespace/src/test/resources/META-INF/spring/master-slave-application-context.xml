@@ -24,13 +24,13 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/masterslave
                            http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
                            ">
-    <master-slave:load-balance-algorithm id="random_loadbalancer" type="RANDOM" />
+    <master-slave:load-balance-algorithm id="randomLoadbalancer" type="RANDOM" />
     
     <master-slave:rule id="defaultMasterSlaveRule">
         <master-slave:data-source-rule id="default_ds" master-data-source-name="master_ds" slave-data-source-names="slave_ds_0, slave_ds_1" />
     </master-slave:rule>
     
     <master-slave:rule id="randomMasterSlaveRule">
-        <master-slave:data-source-rule id="random_ds" master-data-source-name="master_ds" slave-data-source-names="slave_ds_0, slave_ds_1" load-balance-algorithm-ref="random_loadbalancer" />
+        <master-slave:data-source-rule id="random_ds" master-data-source-name="master_ds" slave-data-source-names="slave_ds_0, slave_ds_1" load-balance-algorithm-ref="randomLoadbalancer" />
     </master-slave:rule>
 </beans>

@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
+import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -35,17 +36,30 @@ import static org.junit.Assert.assertThat;
 @ContextConfiguration(locations = "classpath:META-INF/spring/master-slave-application-context.xml")
 public final class MasterSlaveSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
+    @Resource
+    private MasterSlaveLoadBalanceAlgorithm randomLoadbalancer;
+    
+    @Resource
+    private AlgorithmProvidedMasterSlaveRuleConfiguration defaultMasterSlaveRule;
+    
+    @Resource
+    private AlgorithmProvidedMasterSlaveRuleConfiguration randomMasterSlaveRule;
+    
+    @Test
+    public void assertRandomLoadbalancer() {
+        assertThat(randomLoadbalancer.getType(), is("RANDOM"));
+    }
+    
     @Test
     public void assertDefaultMaserSlaveDataSource() {
-        AlgorithmProvidedMasterSlaveRuleConfiguration config = applicationContext.getBean("defaultMasterSlaveRule", AlgorithmProvidedMasterSlaveRuleConfiguration.class);
-        assertLoadBalancers(config.getLoadBalanceAlgorithms());
-        assertThat(config.getDataSources().size(), is(1));
-        assertDefaultMasterSlaveDataSourceRule(config.getDataSources().iterator().next());
+        assertLoadBalancers(defaultMasterSlaveRule.getLoadBalanceAlgorithms());
+        assertThat(defaultMasterSlaveRule.getDataSources().size(), is(1));
+        assertDefaultMasterSlaveDataSourceRule(defaultMasterSlaveRule.getDataSources().iterator().next());
     }
     
     private void assertLoadBalancers(final Map<String, MasterSlaveLoadBalanceAlgorithm> loadBalances) {
         assertThat(loadBalances.size(), is(1));
-        assertThat(loadBalances.get("random_loadbalancer"), instanceOf(RandomMasterSlaveLoadBalanceAlgorithm.class));
+        assertThat(loadBalances.get("randomLoadbalancer"), instanceOf(RandomMasterSlaveLoadBalanceAlgorithm.class));
     }
     
     private void assertDefaultMasterSlaveDataSourceRule(final MasterSlaveDataSourceRuleConfiguration dataSourceRuleConfig) {
@@ -57,16 +71,15 @@ public final class MasterSlaveSpringNamespaceTest extends AbstractJUnit4SpringCo
     
     @Test
     public void assertRandomMaserSlaveDataSource() {
-        AlgorithmProvidedMasterSlaveRuleConfiguration config = applicationContext.getBean("randomMasterSlaveRule", AlgorithmProvidedMasterSlaveRuleConfiguration.class);
-        assertLoadBalancers(config.getLoadBalanceAlgorithms());
-        assertThat(config.getDataSources().size(), is(1));
-        assertRandomMasterSlaveDataSourceRule(config.getDataSources().iterator().next());
+        assertLoadBalancers(randomMasterSlaveRule.getLoadBalanceAlgorithms());
+        assertThat(randomMasterSlaveRule.getDataSources().size(), is(1));
+        assertRandomMasterSlaveDataSourceRule(randomMasterSlaveRule.getDataSources().iterator().next());
     }
     
     private void assertRandomMasterSlaveDataSourceRule(final MasterSlaveDataSourceRuleConfiguration dataSourceRuleConfig) {
         assertThat(dataSourceRuleConfig.getName(), is("random_ds"));
         assertThat(dataSourceRuleConfig.getMasterDataSourceName(), is("master_ds"));
         assertThat(dataSourceRuleConfig.getSlaveDataSourceNames(), is(Arrays.asList("slave_ds_0", "slave_ds_1")));
-        assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("random_loadbalancer"));
+        assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("randomLoadbalancer"));
     }
 }
