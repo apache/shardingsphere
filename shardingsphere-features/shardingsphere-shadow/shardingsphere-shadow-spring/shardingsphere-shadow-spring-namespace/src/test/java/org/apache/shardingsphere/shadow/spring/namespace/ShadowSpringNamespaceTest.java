@@ -23,16 +23,20 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
+import javax.annotation.Resource;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/shadow-application-context.xml")
 public final class ShadowSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
+    @Resource
+    private ShadowRuleConfiguration shadowRule;
+    
     @Test
     public void assertDataSource() {
-        ShadowRuleConfiguration config = applicationContext.getBean("shadowRule", ShadowRuleConfiguration.class);
-        assertThat(config.getColumn(), is("shadow"));
-        assertThat(config.getShadowMappings(), is(ImmutableMap.of("prod_ds", "shadow_ds")));
+        assertThat(shadowRule.getColumn(), is("shadow"));
+        assertThat(shadowRule.getShadowMappings(), is(ImmutableMap.of("prod_ds", "shadow_ds")));
     }
 }
