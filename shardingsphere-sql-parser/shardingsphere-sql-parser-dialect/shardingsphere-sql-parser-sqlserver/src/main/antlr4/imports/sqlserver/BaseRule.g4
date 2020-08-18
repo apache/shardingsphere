@@ -119,7 +119,7 @@ name
     ;
 
 columnNames
-    : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
+    : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
 tableNames
