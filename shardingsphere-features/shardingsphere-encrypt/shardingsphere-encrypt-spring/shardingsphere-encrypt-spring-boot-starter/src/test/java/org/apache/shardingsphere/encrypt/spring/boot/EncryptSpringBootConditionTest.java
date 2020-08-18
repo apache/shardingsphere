@@ -20,7 +20,6 @@ package org.apache.shardingsphere.encrypt.spring.boot;
 import org.apache.shardingsphere.encrypt.spring.boot.condition.EncryptSpringBootCondition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.context.annotation.ConditionContext;
@@ -29,6 +28,7 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -38,8 +38,8 @@ public final class EncryptSpringBootConditionTest {
     public void assertMatch() {
         MockEnvironment mockEnvironment = new MockEnvironment();
         mockEnvironment.setProperty("spring.shardingsphere.rules.encrypt.encryptors.aes_encryptor.type", "AES");
-        ConditionContext context = Mockito.mock(ConditionContext.class);
-        AnnotatedTypeMetadata metadata = Mockito.mock(AnnotatedTypeMetadata.class);
+        ConditionContext context = mock(ConditionContext.class);
+        AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);
         EncryptSpringBootCondition condition = new EncryptSpringBootCondition();
         ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
@@ -50,8 +50,8 @@ public final class EncryptSpringBootConditionTest {
     public void assertNotMatch() {
         MockEnvironment mockEnvironment = new MockEnvironment();
         mockEnvironment.setProperty("spring.shardingsphere.rules.sharding.binding-tables", "t_order");
-        ConditionContext context = Mockito.mock(ConditionContext.class);
-        AnnotatedTypeMetadata metadata = Mockito.mock(AnnotatedTypeMetadata.class);
+        ConditionContext context = mock(ConditionContext.class);
+        AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);
         EncryptSpringBootCondition condition = new EncryptSpringBootCondition();
         ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);

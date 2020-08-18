@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractJDBCImporter;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSqlBuilder;
@@ -27,8 +27,8 @@ import org.apache.shardingsphere.scaling.core.execute.executor.importer.Abstract
  */
 public final class PostgreSQLImporter extends AbstractJDBCImporter {
     
-    public PostgreSQLImporter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
-        super(rdbmsConfiguration, dataSourceManager);
+    public PostgreSQLImporter(final ImporterConfiguration importerConfiguration, final DataSourceManager dataSourceManager) {
+        super(importerConfiguration, dataSourceManager);
     }
     
     @Override

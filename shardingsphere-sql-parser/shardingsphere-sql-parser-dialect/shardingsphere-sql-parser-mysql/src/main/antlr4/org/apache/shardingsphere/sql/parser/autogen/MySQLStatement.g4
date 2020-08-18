@@ -42,6 +42,16 @@ execute
     | createDatabase
     | alterDatabase
     | dropDatabase
+    | createEvent
+    | alterEvent
+    | dropEvent
+    | alterInstance
+    | createLogfileGroup
+    | alterLogfileGroup
+    | dropLogfileGroup
+    | createServer
+    | alterServer
+    | dropServer
     | setTransaction
     | beginTransaction
     | setAutoCommit

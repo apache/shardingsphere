@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
@@ -47,6 +46,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -70,7 +70,7 @@ public final class EncryptMetaDataLoaderTest {
     public void setUp() throws SQLException {
         ResultSet tableResultSet = createTableResultSet();
         ResultSet columnResultSet = createColumnResultSet();
-        Connection connection = mock(Connection.class, Mockito.RETURNS_DEEP_STUBS);
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getTables(any(), any(), any(), eq(null))).thenReturn(tableResultSet);
         when(connection.getMetaData().getColumns(any(), any(), any(), eq("%"))).thenReturn(columnResultSet);
         when(dataSource.getConnection()).thenReturn(connection);

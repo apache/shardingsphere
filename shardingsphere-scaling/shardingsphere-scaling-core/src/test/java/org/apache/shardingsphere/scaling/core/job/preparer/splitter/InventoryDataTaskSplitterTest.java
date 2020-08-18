@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 
 import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
@@ -56,12 +57,9 @@ public final class InventoryDataTaskSplitterTest {
     
     @Before
     public void setUp() {
-        RdbmsConfiguration dumperConfig = mockDumperConfig();
-        RdbmsConfiguration importerConfig = new RdbmsConfiguration();
-        Map<String, String> tableMap = new HashMap<>();
-        tableMap.put("t_order", "t_order");
-        syncConfiguration = new SyncConfiguration(3, tableMap,
-            dumperConfig, importerConfig);
+        DumperConfiguration dumperConfig = mockDumperConfig();
+        ImporterConfiguration importerConfig = new ImporterConfiguration();
+        syncConfiguration = new SyncConfiguration(3, dumperConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
         inventoryDataTaskSplitter = new InventoryDataTaskSplitter();
     }
@@ -103,7 +101,7 @@ public final class InventoryDataTaskSplitterTest {
         assertThat(actual.size(), is(1));
     }
     
-    private void initIntPrimaryEnvironment(final RdbmsConfiguration dumperConfig) throws SQLException {
+    private void initIntPrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
@@ -113,7 +111,7 @@ public final class InventoryDataTaskSplitterTest {
         }
     }
     
-    private void initCharPrimaryEnvironment(final RdbmsConfiguration dumperConfig) throws SQLException {
+    private void initCharPrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
@@ -123,7 +121,7 @@ public final class InventoryDataTaskSplitterTest {
         }
     }
     
-    private void initUnionPrimaryEnvironment(final RdbmsConfiguration dumperConfig) throws SQLException {
+    private void initUnionPrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
@@ -133,7 +131,7 @@ public final class InventoryDataTaskSplitterTest {
         }
     }
     
-    private void initNoPrimaryEnvironment(final RdbmsConfiguration dumperConfig) throws SQLException {
+    private void initNoPrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
@@ -143,10 +141,13 @@ public final class InventoryDataTaskSplitterTest {
         }
     }
     
-    private RdbmsConfiguration mockDumperConfig() {
+    private DumperConfiguration mockDumperConfig() {
         DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
-        RdbmsConfiguration result = new RdbmsConfiguration();
+        DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);
+        Map<String, String> tableMap = new HashMap<>();
+        tableMap.put("t_order", "t_order");
+        result.setTableNameMap(tableMap);
         return result;
     }
 }

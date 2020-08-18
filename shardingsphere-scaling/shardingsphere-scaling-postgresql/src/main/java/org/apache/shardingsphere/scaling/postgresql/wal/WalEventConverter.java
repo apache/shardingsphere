@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.postgresql.wal;
 
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
@@ -42,13 +42,13 @@ import java.util.List;
  */
 public final class WalEventConverter {
     
-    private final RdbmsConfiguration rdbmsConfiguration;
+    private final DumperConfiguration dumperConfiguration;
     
     private final MetaDataManager metaDataManager;
     
-    public WalEventConverter(final RdbmsConfiguration rdbmsConfiguration) {
-        this.rdbmsConfiguration = rdbmsConfiguration;
-        metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(rdbmsConfiguration.getDataSourceConfiguration()));
+    public WalEventConverter(final DumperConfiguration dumperConfiguration) {
+        this.dumperConfiguration = dumperConfiguration;
+        metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(dumperConfiguration.getDataSourceConfiguration()));
     }
     
     /**
@@ -58,7 +58,7 @@ public final class WalEventConverter {
      * @return record
      */
     public Record convert(final AbstractWalEvent event) {
-        JdbcUri uri = new JdbcUri(((JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration()).getJdbcUrl());
+        JdbcUri uri = new JdbcUri(((JDBCDataSourceConfiguration) dumperConfiguration.getDataSourceConfiguration()).getJdbcUrl());
         if (filter(uri.getDatabase(), event)) {
             return createPlaceholderRecord(event);
         } else if (event instanceof WriteRowEvent) {
@@ -76,7 +76,7 @@ public final class WalEventConverter {
     private boolean filter(final String database, final AbstractWalEvent event) {
         if (isRowEvent(event)) {
             AbstractRowEvent rowEvent = (AbstractRowEvent) event;
-            return !rowEvent.getSchemaName().equals(database) || !rdbmsConfiguration.getTableNameMap().containsKey(rowEvent.getTableName());
+            return !rowEvent.getSchemaName().equals(database) || !dumperConfiguration.getTableNameMap().containsKey(rowEvent.getTableName());
         }
         return false;
     }
@@ -118,7 +118,7 @@ public final class WalEventConverter {
     
     private DataRecord createDataRecord(final AbstractRowEvent rowsEvent, final int columnCount) {
         DataRecord result = new DataRecord(new WalPosition(rowsEvent.getLogSequenceNumber()), columnCount);
-        result.setTableName(rdbmsConfiguration.getTableNameMap().get(rowsEvent.getTableName()));
+        result.setTableName(dumperConfiguration.getTableNameMap().get(rowsEvent.getTableName()));
         return result;
     }
     

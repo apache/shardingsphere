@@ -43,7 +43,8 @@
         <module>shardingsphere-scaling</module>
         <module>shardingsphere-transaction</module>
         <module>shardingsphere-control-panel</module>
-        
+
+        <module>shardingsphere-test</module>
         <module>shardingsphere-integration-test</module>
         <module>shardingsphere-distribution</module>
     </modules>
@@ -769,6 +770,7 @@
                             <exclude>org/apache/shardingsphere/sql/parser/autogen/*.class</exclude>
                             <exclude>org/apache/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
                             <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
+                            <exclude>org/apache/shardingsphere/test/**/*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>
