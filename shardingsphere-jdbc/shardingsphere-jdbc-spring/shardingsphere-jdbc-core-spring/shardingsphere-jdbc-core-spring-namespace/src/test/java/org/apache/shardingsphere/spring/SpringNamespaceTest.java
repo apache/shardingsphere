@@ -51,7 +51,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/shardingNamespace.xml")
+@ContextConfiguration(locations = "classpath:META-INF/spring/application-context.xml")
 public class SpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
