@@ -356,6 +356,7 @@ svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.a
 ```shell
 git checkout master
 git merge origin/${RELEASE.VERSION}-release
+git pull
 git push origin master
 git push --delete origin ${RELEASE.VERSION}-release
 ```
