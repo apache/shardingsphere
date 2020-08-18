@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
@@ -48,12 +49,12 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     @Override
     public BackendResponse execute() {
         Collection<BackendResponse> responses = new LinkedList<>();
-        String originalSchema = backendConnection.getSchema().getName();
+        SchemaContext schema = backendConnection.getSchema();
         for (String each : ProxySchemaContexts.getInstance().getSchemaNames()) {
             backendConnection.setCurrentSchema(each);
             responses.add(databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection).execute());
         }
-        backendConnection.setCurrentSchema(originalSchema);
+        backendConnection.setCurrentSchema(schema == null ? null : schema.getName());
         for (BackendResponse each : responses) {
             if (each instanceof ErrorResponse) {
                 return each;
