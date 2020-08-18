@@ -38,8 +38,8 @@
     
     <encrypt:rule id="encryptRule">
         <encrypt:table name="t_order">
-            <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-algorithm-ref="aesEncryptor" />
-            <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-algorithm-ref="md5Encryptor" />
+            <encrypt:column logic-column="pwd" cipher-column="pwd_cipher" encrypt-algorithm-ref="aesEncryptor" />
+            <encrypt:column logic-column="credit_card" cipher-column="credit_card_cipher" assisted-query-column="credit_card_assisted_query" plain-column="credit_card_plain" encrypt-algorithm-ref="md5Encryptor" />
         </encrypt:table>
     </encrypt:rule>
 </beans>

@@ -81,18 +81,16 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
     }
     
     private void assertEncryptColumn1(final EncryptColumnRuleConfiguration columnRuleConfig) {
-        assertThat(columnRuleConfig.getLogicColumn(), is("user_id"));
-        assertThat(columnRuleConfig.getCipherColumn(), is("user_encrypt"));
-        assertThat(columnRuleConfig.getAssistedQueryColumn(), is("user_assisted"));
-        assertThat(columnRuleConfig.getPlainColumn(), is("user_decrypt"));
+        assertThat(columnRuleConfig.getLogicColumn(), is("pwd"));
+        assertThat(columnRuleConfig.getCipherColumn(), is("pwd_cipher"));
         assertThat(columnRuleConfig.getEncryptorName(), is("aesEncryptor"));
     }
     
     private void assertEncryptColumn2(final EncryptColumnRuleConfiguration columnRuleConfig) {
-        assertThat(columnRuleConfig.getLogicColumn(), is("order_id"));
-        assertThat(columnRuleConfig.getCipherColumn(), is("order_encrypt"));
-        assertThat(columnRuleConfig.getAssistedQueryColumn(), is("order_assisted"));
-        assertThat(columnRuleConfig.getPlainColumn(), is("order_decrypt"));
+        assertThat(columnRuleConfig.getLogicColumn(), is("credit_card"));
+        assertThat(columnRuleConfig.getCipherColumn(), is("credit_card_cipher"));
+        assertThat(columnRuleConfig.getAssistedQueryColumn(), is("credit_card_assisted_query"));
+        assertThat(columnRuleConfig.getPlainColumn(), is("credit_card_plain"));
         assertThat(columnRuleConfig.getEncryptorName(), is("md5Encryptor"));
     }
 }
