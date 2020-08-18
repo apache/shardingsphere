@@ -52,7 +52,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/application-context.xml")
-public class SpringNamespaceTest extends AbstractJUnit4SpringContextTests {
+public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void assertKeyGenerateAlgorithm() {
