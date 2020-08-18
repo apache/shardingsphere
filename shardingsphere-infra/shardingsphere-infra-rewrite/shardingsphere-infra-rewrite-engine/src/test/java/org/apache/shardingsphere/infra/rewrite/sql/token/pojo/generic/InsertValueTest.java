@@ -29,37 +29,33 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class InsertValueTest {
-
+public final class InsertValueTest {
+    
     @Test
     public void assertToString() {
-        List<ExpressionSegment> expressionSegmentList = new ArrayList<>();
-
-        ParameterMarkerExpressionSegment parameterMarkerExpressionSegment =
-                new ParameterMarkerExpressionSegment(1, 1, 1);
-        LiteralExpressionSegment literalExpressionSegment
-                = new LiteralExpressionSegment(2, 2, "literals");
+        List<ExpressionSegment> expressionSegmentList = new ArrayList<>(3);
+        ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(1, 1, 1);
+        LiteralExpressionSegment literalExpressionSegment = new LiteralExpressionSegment(2, 2, "literals");
         ComplexExpressionSegment complexExpressionSegment = new ComplexExpressionSegment() {
+            
             @Override
             public String getText() {
                 return "complexExpressionSegment";
             }
-
+            
             @Override
             public int getStartIndex() {
                 return 3;
             }
-
+            
             @Override
             public int getStopIndex() {
                 return 3;
             }
         };
-
         expressionSegmentList.add(parameterMarkerExpressionSegment);
         expressionSegmentList.add(literalExpressionSegment);
         expressionSegmentList.add(complexExpressionSegment);
-
         InsertValue insertValue = new InsertValue(expressionSegmentList);
         String actualToString = insertValue.toString();
         String expectedToString = "(?, 'literals', complexExpressionSegment)";
