@@ -191,6 +191,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
      * @return tables.
      */
     public Collection<SimpleTableSegment> getSimpleTableSegments() {
-        return TableExtractUtils.getSimpleTableFromFromClause(getSqlStatement());
+        return TableExtractUtils.getSimpleTableFromSelect(getSqlStatement());
     }
 }

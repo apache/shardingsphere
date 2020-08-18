@@ -86,7 +86,7 @@ public final class TableExtractUtils {
      * @param selectStatement SelectStatement.
      * @return SimpleTableSegment collection
      */
-    public static Collection<SimpleTableSegment> getSimpleTableFromFromClause(final SelectStatement selectStatement) {
+    public static Collection<SimpleTableSegment> getSimpleTableFromSelect(final SelectStatement selectStatement) {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         Collection<TableSegment> realTables = new LinkedList<>();
         for (TableReferenceSegment each : selectStatement.getTableReferences()) {
@@ -94,7 +94,7 @@ public final class TableExtractUtils {
         }
         for (TableSegment each : realTables) {
             if (each instanceof SubqueryTableSegment) {
-                result.addAll(getSimpleTableFromFromClause(((SubqueryTableSegment) each).getSubquery().getSelect()));
+                result.addAll(getSimpleTableFromSelect(((SubqueryTableSegment) each).getSubquery().getSelect()));
             } else {
                 result.add((SimpleTableSegment) each);
             }
