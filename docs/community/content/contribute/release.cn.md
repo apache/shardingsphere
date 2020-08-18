@@ -458,6 +458,7 @@ git merge origin/${RELEASE.VERSION}-release
 git pull
 git push origin master
 git push --delete origin ${RELEASE.VERSION}-release
+git branch -d ${RELEASE.VERSION}-release
 ```
 
 ### 修改README文件
