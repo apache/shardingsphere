@@ -52,7 +52,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/shardingNamespace.xml")
-public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
+public class SpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void assertKeyGenerateAlgorithm() {
