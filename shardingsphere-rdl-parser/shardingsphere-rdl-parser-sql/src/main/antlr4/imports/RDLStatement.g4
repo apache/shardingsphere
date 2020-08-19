@@ -19,10 +19,6 @@ grammar RDLStatement;
 
 import Keyword, Literals, Symbol;
 
-createSchema
-    : CREATE SCHEMA schemaName
-    ;
-
 createDatasource
     : CREATE DATASOURCE dataSource (COMMA dataSource)*
     ;
@@ -64,10 +60,6 @@ strategyProp
     ;
 
 dataSourceName
-    : IDENTIFIER
-    ;
- 
-schemaName
     : IDENTIFIER
     ;
 

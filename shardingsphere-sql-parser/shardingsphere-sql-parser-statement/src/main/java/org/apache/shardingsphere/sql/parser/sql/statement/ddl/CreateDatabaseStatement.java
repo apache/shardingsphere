@@ -17,8 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Create database statement.
  */
+@RequiredArgsConstructor
+@Getter
 public final class CreateDatabaseStatement extends DDLStatement {
+    
+    private final String schemaName;
 }

@@ -27,10 +27,6 @@ CREATE
     : C R E A T E
     ;
 
-SCHEMA
-    : S C H E M A
-    ;
-
 DATASOURCE
     : D A T A S O U R C E
     ;
