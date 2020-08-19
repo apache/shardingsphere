@@ -33,7 +33,7 @@ public final class ResponseContentUtil {
      *
      * @return response result
      */
-    public static ResponseContent success() {
+    public static ResponseContent<Object> success() {
         return build(null);
     }
     
@@ -57,8 +57,8 @@ public final class ResponseContentUtil {
      * @param errorMsg error message
      * @return response result
      */
-    public static ResponseContent handleBadRequest(final String errorMsg) {
-        ResponseContent result = new ResponseContent<>();
+    public static ResponseContent<Object> handleBadRequest(final String errorMsg) {
+        ResponseContent<Object> result = new ResponseContent<>();
         result.setSuccess(false);
         result.setErrorCode(ResponseCode.BAD_REQUEST);
         result.setErrorMsg(errorMsg);
@@ -71,8 +71,8 @@ public final class ResponseContentUtil {
      * @param errorMsg error message
      * @return response result
      */
-    public static ResponseContent handleException(final String errorMsg) {
-        ResponseContent result = new ResponseContent<>();
+    public static ResponseContent<Object> handleException(final String errorMsg) {
+        ResponseContent<Object> result = new ResponseContent<>();
         result.setSuccess(false);
         result.setErrorCode(ResponseCode.SERVER_ERROR);
         result.setErrorMsg(errorMsg);

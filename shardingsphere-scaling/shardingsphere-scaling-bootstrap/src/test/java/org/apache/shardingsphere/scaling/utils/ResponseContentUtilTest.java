@@ -31,7 +31,7 @@ public class ResponseContentUtilTest {
     
     @Test
     public void assertHandleBadRequest() {
-        ResponseContent responseContent = ResponseContentUtil.handleBadRequest(ERROR_MESSAGE);
+        ResponseContent<Object> responseContent = ResponseContentUtil.handleBadRequest(ERROR_MESSAGE);
         assertThat(responseContent.getErrorMsg(), is(ERROR_MESSAGE));
         assertThat(responseContent.getErrorCode(), is(ResponseCode.BAD_REQUEST));
         assertNull(responseContent.getModel());
@@ -39,7 +39,7 @@ public class ResponseContentUtilTest {
     
     @Test
     public void assertHandleException() {
-        ResponseContent responseContent = ResponseContentUtil.handleException(ERROR_MESSAGE);
+        ResponseContent<Object> responseContent = ResponseContentUtil.handleException(ERROR_MESSAGE);
         assertThat(responseContent.getErrorCode(), is(ResponseCode.SERVER_ERROR));
     }
 }
