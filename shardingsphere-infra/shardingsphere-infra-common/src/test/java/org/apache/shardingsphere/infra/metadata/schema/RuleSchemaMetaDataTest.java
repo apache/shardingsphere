@@ -25,7 +25,8 @@ import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 
-public class RuleSchemaMetaDataTest {
+public final class RuleSchemaMetaDataTest {
+
     @Test
     public void assertGetSchemaMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
