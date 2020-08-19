@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.type;
+package org.apache.shardingsphere.spring.boot;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.shardingsphere.spring.boot.fixture.TestJndiInitialContextFactory;
+import org.apache.shardingsphere.test.MockedDataSource;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -28,34 +29,35 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
+import javax.naming.Context;
 import javax.sql.DataSource;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = SpringBootShadowTest.class)
+@SpringBootTest(classes = SpringBootJNDIDataSourceTest.class)
 @SpringBootApplication
-@ActiveProfiles("shadow")
-public class SpringBootShadowTest {
+@ActiveProfiles("jndi")
+public class SpringBootJNDIDataSourceTest {
     
     @Resource
-    private DataSource dataSource;
+    private ShardingSphereDataSource dataSource;
     
-    @Test
-    public void assertSqlShow() {
-        assertTrue(((ShardingSphereDataSource) dataSource).getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+    @BeforeClass
+    public static void setUp() {
+        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, TestJndiInitialContextFactory.class.getName());
+        TestJndiInitialContextFactory.bind("java:comp/env/jdbc/jndi0", new MockedDataSource());
+        TestJndiInitialContextFactory.bind("java:comp/env/jdbc/jndi1", new MockedDataSource());
     }
     
     @Test
-    public void assertDataSource() {
-        assertTrue(dataSource instanceof ShardingSphereDataSource);
-        assertShadowRule();
-    }
-    
-    private void assertShadowRule() {
-        ShadowRule shadowRule = (ShadowRule) ((ShardingSphereDataSource) dataSource).getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().iterator().next();
-        assertThat(shadowRule.getColumn(), is("is_shadow"));
+    public void assertDatasourceMap() {
+        Map<String, DataSource> dataSourceMap = dataSource.getDataSourceMap();
+        assertThat(dataSourceMap.size(), is(2));
+        assertTrue(dataSourceMap.containsKey("jndi0"));
+        assertTrue(dataSourceMap.containsKey("jndi1"));
     }
 }
