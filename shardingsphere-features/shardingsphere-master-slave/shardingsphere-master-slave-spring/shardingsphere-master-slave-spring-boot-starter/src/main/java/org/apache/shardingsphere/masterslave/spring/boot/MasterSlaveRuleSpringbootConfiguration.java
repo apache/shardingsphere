@@ -66,10 +66,10 @@ public class MasterSlaveRuleSpringbootConfiguration {
     @Bean
     public RuleConfiguration masterSlaveRuleConfiguration(final YamlMasterSlaveRuleConfiguration yamlRuleConfiguration,
                                                           final ObjectProvider<Map<String, MasterSlaveLoadBalanceAlgorithm>> loadBalanceAlgorithms) {
-        AlgorithmProvidedMasterSlaveRuleConfiguration ruleConfiguration = swapper.swapToObject(yamlRuleConfiguration);
+        AlgorithmProvidedMasterSlaveRuleConfiguration result = swapper.swapToObject(yamlRuleConfiguration);
         Map<String, MasterSlaveLoadBalanceAlgorithm> balanceAlgorithmMap = Optional.ofNullable(loadBalanceAlgorithms.getIfAvailable()).orElse(Collections.emptyMap());
-        ruleConfiguration.setLoadBalanceAlgorithms(balanceAlgorithmMap);
-        return ruleConfiguration;
+        result.setLoadBalanceAlgorithms(balanceAlgorithmMap);
+        return result;
     }
     
     /**
