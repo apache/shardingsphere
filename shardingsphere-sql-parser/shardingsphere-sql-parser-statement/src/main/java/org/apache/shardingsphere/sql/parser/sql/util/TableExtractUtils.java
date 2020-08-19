@@ -52,7 +52,7 @@ public final class TableExtractUtils {
      * @param selectStatement SelectStatement.
      * @return SimpleTableSegment collection
      */
-    public static Collection<SimpleTableSegment> getTableFromSelect(final SelectStatement selectStatement) {
+    public static Collection<SimpleTableSegment> getTablesFromSelect(final SelectStatement selectStatement) {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         Collection<TableSegment> realTables = new LinkedList<>();
         Collection<TableSegment> allTables = new LinkedList<>();
@@ -72,7 +72,7 @@ public final class TableExtractUtils {
         }
         for (TableSegment each : allTables) {
             if (each instanceof SubqueryTableSegment) {
-                result.addAll(getTableFromSelect(((SubqueryTableSegment) each).getSubquery().getSelect()));
+                result.addAll(getTablesFromSelect(((SubqueryTableSegment) each).getSubquery().getSelect()));
             } else {
                 result.add((SimpleTableSegment) each);
             }
@@ -222,7 +222,7 @@ public final class TableExtractUtils {
         }
         if (predicate.getRightValue() instanceof PredicateCompareRightValue) {
             if (((PredicateCompareRightValue) predicate.getRightValue()).getExpression() instanceof SubqueryExpressionSegment) {
-                result.addAll(TableExtractUtils.getTableFromSelect(((SubqueryExpressionSegment) ((PredicateCompareRightValue) predicate.getRightValue()).getExpression()).getSubquery().getSelect()));
+                result.addAll(TableExtractUtils.getTablesFromSelect(((SubqueryExpressionSegment) ((PredicateCompareRightValue) predicate.getRightValue()).getExpression()).getSubquery().getSelect()));
             }
         } else {
             if (predicate.getRightValue() instanceof ColumnSegment) {
@@ -241,7 +241,7 @@ public final class TableExtractUtils {
         }
         for (ProjectionSegment each : projections.getProjections()) {
             if (each instanceof SubqueryProjectionSegment) {
-                result.addAll(getTableFromSelect(((SubqueryProjectionSegment) each).getSubquery().getSelect()));
+                result.addAll(getTablesFromSelect(((SubqueryProjectionSegment) each).getSubquery().getSelect()));
             } else {
                 Optional<SimpleTableSegment> table = getTableSegment(each, tableSegments);
                 table.ifPresent(result::add);

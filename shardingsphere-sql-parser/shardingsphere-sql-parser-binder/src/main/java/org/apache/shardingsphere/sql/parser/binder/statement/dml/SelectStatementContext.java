@@ -178,7 +178,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return TableExtractUtils.getTableFromSelect(getSqlStatement());
+        return TableExtractUtils.getTablesFromSelect(getSqlStatement());
     }
     
     @Override
