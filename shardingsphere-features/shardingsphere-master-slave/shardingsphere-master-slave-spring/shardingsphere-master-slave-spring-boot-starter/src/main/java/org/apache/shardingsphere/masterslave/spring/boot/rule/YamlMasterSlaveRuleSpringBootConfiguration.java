@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.prop;
+package org.apache.shardingsphere.masterslave.spring.boot.rule;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Properties;
-
 /**
- * Spring boot properties configuration.
+ * YAML master-slave rule spring boot configuration.
  */
-@ConfigurationProperties(prefix = "spring.shardingsphere")
+@ConfigurationProperties(prefix = "spring.shardingsphere.rules")
 @Getter
 @Setter
-public final class SpringBootPropertiesConfiguration {
+public final class YamlMasterSlaveRuleSpringBootConfiguration {
     
-    private Properties props = new Properties();
+    private YamlMasterSlaveRuleConfiguration masterSlave;
 }
