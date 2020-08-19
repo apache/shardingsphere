@@ -289,7 +289,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     private ASTNode createPredicateRightValue(final BooleanPrimaryContext ctx) {
         if (null != ctx.subquery()) {
-            new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()));
+            return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()));
         }
         ASTNode rightValue = visit(ctx.predicate());
         return createPredicateRightValue(ctx, rightValue);
