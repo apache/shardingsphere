@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine;
+package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.callback.orchestration.DataSourceCallback;
@@ -24,17 +24,15 @@ import org.apache.shardingsphere.infra.callback.orchestration.SchemaNameCallback
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
+import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.config.util.DataSourceConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.convert.CreateDataSourcesStatementContextConverter;
@@ -52,30 +50,25 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * RDL execute engine.
+ * Backer handler for rdl.
  */
 @RequiredArgsConstructor
-public final class RDLExecuteEngine implements SQLExecuteEngine {
+public final class RDLBackendHandler implements TextProtocolBackendHandler {
     
-    private final SchemaContext schema;
+    private final BackendConnection backendConnection;
     
     private final SQLStatement sqlStatement;
     
     @Override
-    public ExecutionContext execute(final String sql) {
-        return new ExecutionContext(getSqlStatementContext(), Collections.singleton(getExecutionUnit(sql)));
-    }
-    
-    @Override
-    public BackendResponse execute(final ExecutionContext executionContext) {
+    public BackendResponse execute() {
+        SQLStatementContext context = getSqlStatementContext();
         if (!isRegistryCenterExisted()) {
-            return new ErrorResponse(new SQLException("No Registry center to execute `%s` SQL", executionContext.getSqlStatementContext().getClass().getSimpleName()));
+            return new ErrorResponse(new SQLException("No Registry center to execute `%s` SQL", context.getClass().getSimpleName()));
         }
-        return getBackendResponse(executionContext.getSqlStatementContext());
+        return getBackendResponse(context);
     }
     
     private BackendResponse execute(final CreateSchemaStatementContext context) {
@@ -90,7 +83,7 @@ public final class RDLExecuteEngine implements SQLExecuteEngine {
         Map<String, YamlDataSourceParameter> parameters = new CreateDataSourcesStatementContextConverter().convert(context);
         Map<String, DataSourceConfiguration> dataSources = DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(parameters));
         // TODO Need to get the executed feedback from registry center for returning.
-        DataSourceCallback.getInstance().run(schema.getName(), dataSources);
+        DataSourceCallback.getInstance().run(backendConnection.getSchema().getName(), dataSources);
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
@@ -100,7 +93,7 @@ public final class RDLExecuteEngine implements SQLExecuteEngine {
         YamlShardingRuleConfiguration configurations = new CreateShardingRuleStatementContextConverter().convert(context);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(configurations));
         // TODO Need to get the executed feedback from registry center for returning.
-        RuleCallback.getInstance().run(schema.getName(), rules);
+        RuleCallback.getInstance().run(backendConnection.getSchema().getName(), rules);
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
@@ -116,10 +109,6 @@ public final class RDLExecuteEngine implements SQLExecuteEngine {
         return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
     }
     
-    private ExecutionUnit getExecutionUnit(final String sql) {
-        return new ExecutionUnit("", new SQLUnit(sql, new LinkedList<>()));
-    }
-    
     private BackendResponse getBackendResponse(final SQLStatementContext context) {
         if (context instanceof CreateSchemaStatementContext) {
             return execute((CreateSchemaStatementContext) context);
@@ -132,5 +121,15 @@ public final class RDLExecuteEngine implements SQLExecuteEngine {
     
     private boolean isRegistryCenterExisted() {
         return !(ProxySchemaContexts.getInstance().getSchemaContexts() instanceof StandardSchemaContexts);
+    }
+    
+    @Override
+    public boolean next() {
+        return false;
+    }
+    
+    @Override
+    public QueryData getQueryData() {
+        return new QueryData(Collections.emptyList(), Collections.emptyList());
     }
 }
