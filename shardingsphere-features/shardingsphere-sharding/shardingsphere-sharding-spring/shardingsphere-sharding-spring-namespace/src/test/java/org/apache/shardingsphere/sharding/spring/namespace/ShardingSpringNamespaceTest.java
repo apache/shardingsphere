@@ -246,9 +246,9 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
         Collection<ShardingAutoTableRuleConfiguration> actualAutoTableConfigurations = autoRule.getAutoTables();
         assertFalse(actualAutoTableConfigurations.isEmpty());
         assertThat(actualAutoTableConfigurations.size(), is(1));
-        ShardingAutoTableRuleConfiguration actualShardingAutoTableRuleConfig = actualAutoTableConfigurations.iterator().next();
-        assertThat(actualShardingAutoTableRuleConfig.getLogicTable(), is("t_order"));
-        assertThat(actualShardingAutoTableRuleConfig.getActualDataSources(), is("ds_0, ds_1"));
-        assertThat(actualShardingAutoTableRuleConfig.getShardingStrategy().getShardingAlgorithmName(), is("modShardingAlgorithm"));
+        ShardingAutoTableRuleConfiguration actualShardingAutoTableRuleConfiguration = actualAutoTableConfigurations.iterator().next();
+        assertThat(actualShardingAutoTableRuleConfiguration.getLogicTable(), is("t_order"));
+        assertThat(actualShardingAutoTableRuleConfiguration.getActualDataSources(), is("ds_0, ds_1"));
+        assertThat(actualShardingAutoTableRuleConfiguration.getShardingStrategy().getShardingAlgorithmName(), is("modShardingAlgorithm"));
     }
 }
