@@ -141,7 +141,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        return new CreateDatabaseStatement();
+        return new CreateDatabaseStatement(ctx.schemaName().getText());
     }
     
     @Override

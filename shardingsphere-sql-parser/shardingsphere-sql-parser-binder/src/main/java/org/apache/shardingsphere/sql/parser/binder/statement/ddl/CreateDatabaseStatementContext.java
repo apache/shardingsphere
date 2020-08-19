@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.rdl.parser.statement.rdl;
+package org.apache.shardingsphere.sql.parser.binder.statement.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDatabaseStatement;
 
 /**
- * Create schema statement.
+ * Create database statement context.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CreateSchemaStatement extends RDLStatement {
+public final class CreateDatabaseStatementContext extends CommonSQLStatementContext<CreateDatabaseStatement> {
     
-    private final String schemaName;
+    public CreateDatabaseStatementContext(final CreateDatabaseStatement sqlStatement) {
+        super(sqlStatement);
+    }
 }

@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementBaseVisitor;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateDatasourceContext;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateSchemaContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.DataSourceContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.DataSourceDefinitionContext;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParse
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.StrategyPropsContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.TableRuleContext;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateSchemaStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.DataSourceConnectionSegment;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.TableRuleSegment;
@@ -44,11 +42,6 @@ import java.util.LinkedList;
  */
 @Getter(AccessLevel.PROTECTED)
 public final class ShardingSphereVisitor extends ShardingSphereStatementBaseVisitor<ASTNode> {
-    
-    @Override
-    public ASTNode visitCreateSchema(final CreateSchemaContext ctx) {
-        return new CreateSchemaStatement(ctx.schemaName().getText());
-    }
     
     @Override
     public ASTNode visitCreateDatasource(final CreateDatasourceContext ctx) {

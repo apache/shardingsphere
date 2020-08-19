@@ -28,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDatabaseStatement;
 import org.junit.After;
 import org.junit.Test;
 
@@ -39,6 +40,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class RDLBackendHandlerTest {
+    
+    @Test
+    public void assertExecuteCreateDatabaseContext() {
+        SchemaContext context = new SchemaContext("sharding_db", null, null);
+        BackendConnection connection = mock(BackendConnection.class);
+        when(connection.getSchema()).thenReturn(context);
+        RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new CreateDatabaseStatement("new_db"));
+        BackendResponse response = executeEngine.execute();
+        assertThat(response, instanceOf(ErrorResponse.class));
+        setOrchestrationSchemaContexts(true);
+        response = executeEngine.execute();
+        assertThat(response, instanceOf(UpdateResponse.class));
+    }
     
     @Test
     public void assertExecuteDataSourcesContext() {

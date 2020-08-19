@@ -28,7 +28,6 @@ import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -53,7 +52,7 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public BackendResponse execute() {
-        if (!hasSelectedOrNewSchema()) {
+        if (null == backendConnection.getSchema()) {
             return new ErrorResponse(new NoDatabaseSelectedException());
         }
         if (!backendConnection.getSchema().isComplete()) {
@@ -65,10 +64,6 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     
     private QueryResponse getDefaultQueryResponse(final String schemaName) {
         return new QueryResponse(Collections.singletonList(new QueryHeader(schemaName, "", "", "", 255, Types.VARCHAR, 0, false, false, false, false)));
-    }
-    
-    private boolean hasSelectedOrNewSchema() {
-        return null != backendConnection.getSchema() || sqlStatement instanceof CreateSchemaStatement;
     }
     
     @Override

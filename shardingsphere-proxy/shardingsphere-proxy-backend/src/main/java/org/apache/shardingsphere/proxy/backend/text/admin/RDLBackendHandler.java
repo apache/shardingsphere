@@ -37,15 +37,15 @@ import org.apache.shardingsphere.proxy.config.util.DataSourceConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.convert.CreateDataSourcesStatementContextConverter;
 import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStatementContext;
-import org.apache.shardingsphere.rdl.parser.binder.context.CreateSchemaStatementContext;
 import org.apache.shardingsphere.rdl.parser.binder.context.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateSchemaStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.sharding.convert.CreateShardingRuleStatementContextConverter;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDatabaseStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDatabaseStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -71,7 +71,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         return getBackendResponse(context);
     }
     
-    private BackendResponse execute(final CreateSchemaStatementContext context) {
+    private BackendResponse execute(final CreateDatabaseStatementContext context) {
         SchemaNameCallback.getInstance().run(context.getSqlStatement().getSchemaName(), true);
         // TODO Need to get the executed feedback from registry center for returning.
         UpdateResponse result = new UpdateResponse();
@@ -106,12 +106,12 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         } else if (sqlStatement instanceof CreateShardingRuleStatement) {
             return new CreateShardingRuleStatementContext((CreateShardingRuleStatement) sqlStatement);
         }
-        return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
+        return new CreateDatabaseStatementContext((CreateDatabaseStatement) sqlStatement);
     }
     
     private BackendResponse getBackendResponse(final SQLStatementContext context) {
-        if (context instanceof CreateSchemaStatementContext) {
-            return execute((CreateSchemaStatementContext) context);
+        if (context instanceof CreateDatabaseStatementContext) {
+            return execute((CreateDatabaseStatementContext) context);
         }
         if (context instanceof CreateDataSourcesStatementContext) {
             return execute((CreateDataSourcesStatementContext) context);
