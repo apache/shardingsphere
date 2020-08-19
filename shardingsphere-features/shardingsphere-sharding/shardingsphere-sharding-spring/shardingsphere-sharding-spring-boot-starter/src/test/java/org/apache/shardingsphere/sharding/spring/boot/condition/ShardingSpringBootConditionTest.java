@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spring.boot;
+package org.apache.shardingsphere.sharding.spring.boot.condition;
 
-import org.apache.shardingsphere.sharding.spring.boot.condition.ShardingSpringBootCondition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
