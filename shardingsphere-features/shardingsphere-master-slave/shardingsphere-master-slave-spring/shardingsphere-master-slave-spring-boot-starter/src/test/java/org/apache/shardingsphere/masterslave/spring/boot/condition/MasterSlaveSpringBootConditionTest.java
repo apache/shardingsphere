@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.boot;
+package org.apache.shardingsphere.masterslave.spring.boot.condition;
 
-import org.apache.shardingsphere.masterslave.spring.boot.condition.MasterSlaveSpringBootCondition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;

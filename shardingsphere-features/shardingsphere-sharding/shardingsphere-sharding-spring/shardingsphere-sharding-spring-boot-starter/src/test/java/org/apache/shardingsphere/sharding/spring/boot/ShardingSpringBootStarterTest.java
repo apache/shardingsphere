@@ -54,11 +54,6 @@ public class ShardingSpringBootStarterTest {
     private AlgorithmProvidedShardingRuleConfiguration shardingRuleConfiguration;
     
     @Test
-    public void assertShardingConfiguration() {
-        // TODO assert sharding configuration
-    }
-    
-    @Test
     public void assertShardingAlgorithm() {
         assertThat(databaseShardingAlgorithm.getProps().getProperty("algorithm.expression"), is("ds_$->{user_id % 2}"));
         assertThat(orderTableShardingAlgorithm.getProps().getProperty("algorithm.expression"), is("t_order_$->{order_id % 2}"));
@@ -68,5 +63,10 @@ public class ShardingSpringBootStarterTest {
     @Test
     public void assertKeyGenerateAlgorithm() {
         assertThat(keyGenerator.getProps().getProperty("worker.id"), is("123"));
+    }
+    
+    @Test
+    public void assertShardingConfiguration() {
+        // TODO assert sharding configuration
     }
 }

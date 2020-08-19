@@ -17,35 +17,38 @@
 
 package org.apache.shardingsphere.masterslave.spring.boot;
 
-import org.apache.shardingsphere.masterslave.spring.boot.fixture.RandomMasterSlaveLoadBalanceAlgorithmFixture;
+import org.apache.shardingsphere.masterslave.algorithm.RandomMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = MasterSlaveSpringBootAlgorithmProviderBeanTest.class)
+@SpringBootTest(classes = MasterSlaveSpringBootStarterTest.class)
 @SpringBootApplication
 @ActiveProfiles("masterslave")
-public class MasterSlaveSpringBootAlgorithmProviderBeanTest {
+public class MasterSlaveSpringBootStarterTest {
     
     @Resource
-    private ApplicationContext applicationContext;
+    private RandomMasterSlaveLoadBalanceAlgorithm random;
+    
+    @Resource
+    private MasterSlaveRuleConfiguration masterSlaveRuleConfiguration;
     
     @Test
-    public void assertAlgorithmProviderBean() {
-        Object algorithmBean = applicationContext.getBean("fixture");
-        assertThat(algorithmBean.getClass().getName(), is(RandomMasterSlaveLoadBalanceAlgorithmFixture.class.getName()));
-        RandomMasterSlaveLoadBalanceAlgorithmFixture algorithmFixture = (RandomMasterSlaveLoadBalanceAlgorithmFixture) algorithmBean;
-        assertNotNull(algorithmFixture.getEnvironment());
+    public void assertLoadBalanceAlgorithm() {
+        assertTrue(random.getProps().isEmpty());
+    }
+    
+    @Test
+    public void assertMasterSlaveRuleConfiguration() {
+        // TODO assert MasterSlave Rule Configuration
     }
 }

@@ -32,16 +32,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = ShadowSpringBootConditionTest.class)
+@SpringBootTest(classes = ShadowSpringBootStarterTest.class)
 @SpringBootApplication
 @ActiveProfiles("shadow")
-public class ShadowSpringBootConditionTest {
+public class ShadowSpringBootStarterTest {
     
     @Resource
     private ShadowRuleConfiguration shadowRuleConfiguration;
     
     @Test
-    public void assertAlgorithmProviderBean() {
+    public void assertShadowRuleConfiguration() {
         assertThat(shadowRuleConfiguration.getColumn(), is("shadow"));
         assertThat(shadowRuleConfiguration.getShadowMappings(), is(Collections.singletonMap("ds", "shadow_ds")));
     }
