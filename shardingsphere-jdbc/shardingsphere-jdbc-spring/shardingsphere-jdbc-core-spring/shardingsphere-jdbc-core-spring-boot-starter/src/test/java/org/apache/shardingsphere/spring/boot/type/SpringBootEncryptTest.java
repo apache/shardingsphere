@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spring.boot.type;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -53,8 +52,7 @@ public class SpringBootEncryptTest {
     @Test
     public void assertWithEncryptDataSource() {
         assertTrue(dataSource instanceof ShardingSphereDataSource);
-        BasicDataSource basicDataSource = (BasicDataSource) ((ShardingSphereDataSource) dataSource).getDataSourceMap().values().iterator().next();
-        assertThat(basicDataSource.getMaxTotal(), is(100));
+        assertThat(((ShardingSphereDataSource) dataSource).getDataSourceMap().size(), is(1));
     }
     
     @Test

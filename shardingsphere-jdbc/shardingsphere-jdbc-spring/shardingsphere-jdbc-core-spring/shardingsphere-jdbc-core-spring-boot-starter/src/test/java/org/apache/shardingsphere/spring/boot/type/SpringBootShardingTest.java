@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spring.boot.type;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -53,9 +52,7 @@ public class SpringBootShardingTest {
     public void assertWithShardingSphereDataSource() {
         assertThat(dataSource, instanceOf(ShardingSphereDataSource.class));
         SchemaContexts schemaContexts = ((ShardingSphereDataSource) dataSource).getSchemaContexts();
-        for (DataSource each : ((ShardingSphereDataSource) dataSource).getDataSourceMap().values()) {
-            assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
-        }
+        assertThat(((ShardingSphereDataSource) dataSource).getDataSourceMap().size(), is(3));
         assertTrue(schemaContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertTrue(schemaContexts.getProps().getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertThat(schemaContexts.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(100));
