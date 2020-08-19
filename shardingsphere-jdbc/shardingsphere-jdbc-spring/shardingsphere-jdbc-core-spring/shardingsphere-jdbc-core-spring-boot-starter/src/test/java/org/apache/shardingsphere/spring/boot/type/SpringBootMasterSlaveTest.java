@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spring.boot.type;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveDataSourceRule;
@@ -49,9 +48,7 @@ public class SpringBootMasterSlaveTest {
     @Test
     public void assertDataSource() {
         assertTrue(dataSource instanceof ShardingSphereDataSource);
-        for (DataSource each : ((ShardingSphereDataSource) dataSource).getDataSourceMap().values()) {
-            assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
-        }
+        assertThat(((ShardingSphereDataSource) dataSource).getDataSourceMap().size(), is(3));
         Collection<ShardingSphereRule> rules = ((ShardingSphereDataSource) dataSource).getSchemaContexts().getDefaultSchemaContext().getSchema().getRules();
         assertThat(rules.size(), is(1));
         assertMasterSlaveRule((MasterSlaveRule) rules.iterator().next());

@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.sharding.spring.boot;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
@@ -35,6 +32,10 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * Sharding rule configuration for spring boot.
  */
@@ -46,7 +47,7 @@ public class ShardingRuleSpringBootConfiguration {
     private final ShardingRuleAlgorithmProviderConfigurationYamlSwapper swapper = new ShardingRuleAlgorithmProviderConfigurationYamlSwapper();
     
     /**
-     * Sharding YAML rule spring boot configuration.
+     * Create sharding YAML rule spring boot configuration bean.
      *
      * @return YAML rule configuration
      */
@@ -57,12 +58,12 @@ public class ShardingRuleSpringBootConfiguration {
     }
     
     /**
-     * Sharding rule configuration.
+     * Create sharding rule configuration bean.
      *
      * @param yamlShardingRuleConfiguration YAML sharding rule configuration
      * @param shardingAlgorithmProvider sharding algorithm provider
      * @param keyGenerateAlgorithmProvider key generate algorithm provider
-     * @return the rule configuration
+     * @return sharding rule configuration
      */
     @Bean
     public RuleConfiguration shardingRuleConfiguration(final YamlShardingRuleConfiguration yamlShardingRuleConfiguration,
@@ -70,14 +71,14 @@ public class ShardingRuleSpringBootConfiguration {
                                                        final ObjectProvider<Map<String, KeyGenerateAlgorithm>> keyGenerateAlgorithmProvider) {
         Map<String, ShardingAlgorithm> shardingAlgorithmMap = Optional.ofNullable(shardingAlgorithmProvider.getIfAvailable()).orElse(Collections.emptyMap());
         Map<String, KeyGenerateAlgorithm> keyGenerateAlgorithmMap = Optional.ofNullable(keyGenerateAlgorithmProvider.getIfAvailable()).orElse(Collections.emptyMap());
-        AlgorithmProvidedShardingRuleConfiguration ruleConfiguration = swapper.swapToObject(yamlShardingRuleConfiguration);
-        ruleConfiguration.setShardingAlgorithms(shardingAlgorithmMap);
-        ruleConfiguration.setKeyGenerators(keyGenerateAlgorithmMap);
-        return ruleConfiguration;
+        AlgorithmProvidedShardingRuleConfiguration result = swapper.swapToObject(yamlShardingRuleConfiguration);
+        result.setShardingAlgorithms(shardingAlgorithmMap);
+        result.setKeyGenerators(keyGenerateAlgorithmMap);
+        return result;
     }
     
     /**
-     * Sharding algorithm provided bean registry.
+     * Create sharding algorithm provided bean registry.
      *
      * @param environment environment
      * @return sharding algorithm provided bean registry

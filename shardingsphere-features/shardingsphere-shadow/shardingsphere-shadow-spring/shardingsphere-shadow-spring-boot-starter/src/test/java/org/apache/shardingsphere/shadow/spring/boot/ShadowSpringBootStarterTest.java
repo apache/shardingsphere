@@ -17,38 +17,32 @@
 
 package org.apache.shardingsphere.shadow.spring.boot;
 
-import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
-
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = ShadowSpringBootAlgorithmProviderBeanTest.class)
+@SpringBootTest(classes = ShadowSpringBootStarterTest.class)
 @SpringBootApplication
 @ActiveProfiles("shadow")
-public class ShadowSpringBootAlgorithmProviderBeanTest {
+public class ShadowSpringBootStarterTest {
     
     @Resource
-    private ApplicationContext applicationContext;
+    private ShadowRuleConfiguration shadowRuleConfiguration;
     
     @Test
-    public void assertAlgorithmProviderBean() {
-        Object algorithmBean = applicationContext.getBean("shadow");
-        assertThat(algorithmBean.getClass(), equalTo(YamlShadowRuleConfiguration.class));
-        YamlShadowRuleConfiguration actual = YamlShadowRuleConfiguration.class.cast(algorithmBean);
-        assertThat(actual.getColumn(), is("shadow"));
-        assertThat(actual.getShadowMappings(), is(Collections.singletonMap("ds", "shadow_ds")));
+    public void assertShadowRuleConfiguration() {
+        assertThat(shadowRuleConfiguration.getColumn(), is("shadow"));
+        assertThat(shadowRuleConfiguration.getShadowMappings(), is(Collections.singletonMap("ds", "shadow_ds")));
     }
 }

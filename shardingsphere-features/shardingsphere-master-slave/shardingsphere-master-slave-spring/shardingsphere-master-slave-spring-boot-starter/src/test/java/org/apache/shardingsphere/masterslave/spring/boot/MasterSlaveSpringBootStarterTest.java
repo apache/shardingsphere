@@ -15,36 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.spring.boot;
+package org.apache.shardingsphere.masterslave.spring.boot;
 
-import javax.annotation.Resource;
-import org.apache.shardingsphere.encrypt.spring.boot.fixture.TestEncryptAlgorithm;
+import org.apache.shardingsphere.masterslave.algorithm.RandomMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import javax.annotation.Resource;
+
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = EncryptSpringBootAlgorithmProviderBeanTest.class)
+@SpringBootTest(classes = MasterSlaveSpringBootStarterTest.class)
 @SpringBootApplication
-@ActiveProfiles("encrypt")
-public class EncryptSpringBootAlgorithmProviderBeanTest {
+@ActiveProfiles("masterslave")
+public class MasterSlaveSpringBootStarterTest {
     
     @Resource
-    private ApplicationContext applicationContext;
+    private RandomMasterSlaveLoadBalanceAlgorithm random;
+    
+    @Resource
+    private MasterSlaveRuleConfiguration masterSlaveRuleConfiguration;
     
     @Test
-    public void assertAlgorithmProviderBean() {
-        Object algorithmBean = applicationContext.getBean("aes_encryptor");
-        assertThat(algorithmBean.getClass().getName(), is(TestEncryptAlgorithm.class.getName()));
-        TestEncryptAlgorithm algorithmFixture = (TestEncryptAlgorithm) algorithmBean;
-        assertNotNull(algorithmFixture.getEnvironment());
+    public void assertLoadBalanceAlgorithm() {
+        assertTrue(random.getProps().isEmpty());
+    }
+    
+    @Test
+    public void assertMasterSlaveRuleConfiguration() {
+        // TODO assert MasterSlave Rule Configuration
     }
 }

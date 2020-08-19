@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.spring.boot;
+package org.apache.shardingsphere.masterslave.spring.boot.condition;
 
-import org.apache.shardingsphere.shadow.spring.boot.condition.ShadowSpringBootCondition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -32,16 +31,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShadowSpringBootConditionTest {
+public final class MasterSlaveSpringBootConditionTest {
     
     @Test
     public void assertNotMatch() {
         MockEnvironment mockEnvironment = new MockEnvironment();
         mockEnvironment.setProperty("spring.shardingsphere.rules.encrypt.encryptors.aes_encryptor.type", "AES");
+        mockEnvironment.setProperty("spring.shardingsphere.rules.shadow.column", "user_id");
         ConditionContext context = mock(ConditionContext.class);
         AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);
-        ShadowSpringBootCondition condition = new ShadowSpringBootCondition();
+        MasterSlaveSpringBootCondition condition = new MasterSlaveSpringBootCondition();
         ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
         assertFalse(matchOutcome.isMatch());
     }
@@ -49,11 +49,11 @@ public final class ShadowSpringBootConditionTest {
     @Test
     public void assertMatch() {
         MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.rules.shadow.column", "user_id");
+        mockEnvironment.setProperty("spring.shardingsphere.rules.master-slave.data-sources.ds_ms.master-data-source-name", "ds_master");
         ConditionContext context = mock(ConditionContext.class);
         AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);
-        ShadowSpringBootCondition condition = new ShadowSpringBootCondition();
+        MasterSlaveSpringBootCondition condition = new MasterSlaveSpringBootCondition();
         ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
         assertTrue(matchOutcome.isMatch());
     }
