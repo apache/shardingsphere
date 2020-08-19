@@ -21,17 +21,17 @@
 # 
 ######################################################################################################
 #
-orchestration:
-  name: orchestration_ds
-  registryCenter:
-    type: ZooKeeper
-    serverLists: localhost:2181
-    props:
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
-      maxRetries: 3
-      operationTimeoutMilliseconds: 500
-  overwrite: false
+#orchestration:
+#  name: orchestration_ds
+#  registryCenter:
+#    type: ZooKeeper
+#    serverLists: localhost:2181
+#    props:
+#      retryIntervalMilliseconds: 500
+#      timeToLiveSeconds: 60
+#      maxRetries: 3
+#      operationTimeoutMilliseconds: 500
+#  overwrite: false
 #
 #authentication:
 #  users:
