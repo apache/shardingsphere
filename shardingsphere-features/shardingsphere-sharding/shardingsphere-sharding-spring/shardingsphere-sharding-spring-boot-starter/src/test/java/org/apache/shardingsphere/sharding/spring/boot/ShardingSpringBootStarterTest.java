@@ -67,6 +67,7 @@ public class ShardingSpringBootStarterTest {
     
     @Test
     public void assertShardingConfiguration() {
+        assertThat(shardingRuleConfiguration.getTables().size(), is(2));
         // TODO assert sharding configuration
     }
 }
