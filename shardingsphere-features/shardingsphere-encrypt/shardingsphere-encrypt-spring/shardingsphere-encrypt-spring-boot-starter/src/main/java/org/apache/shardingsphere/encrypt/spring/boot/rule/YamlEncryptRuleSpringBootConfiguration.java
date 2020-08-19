@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.spring.boot.yaml;
+package org.apache.shardingsphere.encrypt.spring.boot.rule;
 
 import lombok.Getter;
 import lombok.Setter;

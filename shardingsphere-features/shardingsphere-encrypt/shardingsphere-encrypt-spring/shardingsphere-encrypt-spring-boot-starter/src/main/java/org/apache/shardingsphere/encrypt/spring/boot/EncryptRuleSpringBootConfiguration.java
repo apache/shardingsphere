@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncry
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spring.boot.algorithm.EncryptAlgorithmProvidedBeanRegistry;
 import org.apache.shardingsphere.encrypt.spring.boot.condition.EncryptSpringBootCondition;
-import org.apache.shardingsphere.encrypt.spring.boot.yaml.YamlEncryptRuleSpringBootConfiguration;
+import org.apache.shardingsphere.encrypt.spring.boot.rule.YamlEncryptRuleSpringBootConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleAlgorithmProviderConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
