@@ -65,19 +65,19 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     private StandardShardingStrategyConfiguration orderTableShardingStrategy;
     
     @Resource
-    private StandardShardingStrategyConfiguration modShardingStrategy;
+    private StandardShardingStrategyConfiguration modStrategy;
     
     @Resource
-    private ComplexShardingStrategyConfiguration complexShardingStrategy;
+    private ComplexShardingStrategyConfiguration complexStrategy;
     
     @Resource
     private HintShardingStrategyConfiguration hintShardingStrategy;
     
     @Resource
-    private KeyGenerateStrategyConfiguration defaultKeyGeneratorShardingStrategy;
+    private KeyGenerateStrategyConfiguration defaultKeyGenerator;
     
     @Resource
-    private KeyGenerateStrategyConfiguration orderKeyGeneratorShardingStrategy;
+    private KeyGenerateStrategyConfiguration orderKeyGenerator;
     
     @Resource
     private NoneShardingStrategyConfiguration noneStrategy;
@@ -124,15 +124,14 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertModStrategy() {
-        // TODO
-        assertThat(modShardingStrategy.getShardingColumn(), is("order_id"));
-        assertThat(modShardingStrategy.getShardingAlgorithmName(), is("modShardingAlgorithm"));
+        assertThat(modStrategy.getShardingColumn(), is("order_id"));
+        assertThat(modStrategy.getShardingAlgorithmName(), is("modShardingAlgorithm"));
     }
     
     @Test
     public void assertComplexStrategy() {
-        assertThat(complexShardingStrategy.getShardingColumns(), is("order_id,user_id"));
-        assertThat(complexShardingStrategy.getShardingAlgorithmName(), is("complexShardingAlgorithm"));
+        assertThat(complexStrategy.getShardingColumns(), is("order_id,user_id"));
+        assertThat(complexStrategy.getShardingAlgorithmName(), is("complexShardingAlgorithm"));
     }
     
     @Test
@@ -152,14 +151,14 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertDefaultKeyGenerator() {
-        assertThat(defaultKeyGeneratorShardingStrategy.getColumn(), is("id"));
-        assertThat(defaultKeyGeneratorShardingStrategy.getKeyGeneratorName(), is("incrementAlgorithm"));
+        assertThat(defaultKeyGenerator.getColumn(), is("id"));
+        assertThat(defaultKeyGenerator.getKeyGeneratorName(), is("incrementAlgorithm"));
     }
     
     @Test
     public void assertOrderKeyGenerator() {
-        assertThat(orderKeyGeneratorShardingStrategy.getColumn(), is("order_id"));
-        assertThat(orderKeyGeneratorShardingStrategy.getKeyGeneratorName(), is("incrementAlgorithm"));
+        assertThat(orderKeyGenerator.getColumn(), is("order_id"));
+        assertThat(orderKeyGenerator.getKeyGeneratorName(), is("incrementAlgorithm"));
     }
     
     @Test
