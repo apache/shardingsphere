@@ -19,10 +19,14 @@ package org.apache.shardingsphere.sharding.spring.namespace;
 
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -52,10 +56,28 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     private HintShardingAlgorithm<?> hintShardingAlgorithm;
     
     @Resource
+    private KeyGenerateAlgorithm incrementAlgorithm;
+    
+    @Resource
     private StandardShardingStrategyConfiguration dataSourceShardingStrategy;
     
     @Resource
     private StandardShardingStrategyConfiguration orderTableShardingStrategy;
+    
+    @Resource
+    private StandardShardingStrategyConfiguration modStrategy;
+    
+    @Resource
+    private ComplexShardingStrategyConfiguration complexStrategy;
+    
+    @Resource
+    private HintShardingStrategyConfiguration hintShardingStrategy;
+    
+    @Resource
+    private KeyGenerateStrategyConfiguration defaultKeyGenerator;
+    
+    @Resource
+    private KeyGenerateStrategyConfiguration orderKeyGenerator;
     
     @Resource
     private NoneShardingStrategyConfiguration noneStrategy;
@@ -102,17 +124,19 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertModStrategy() {
-        // TODO
+        assertThat(modStrategy.getShardingColumn(), is("order_id"));
+        assertThat(modStrategy.getShardingAlgorithmName(), is("modShardingAlgorithm"));
     }
     
     @Test
     public void assertComplexStrategy() {
-        // TODO
+        assertThat(complexStrategy.getShardingColumns(), is("order_id,user_id"));
+        assertThat(complexStrategy.getShardingAlgorithmName(), is("complexShardingAlgorithm"));
     }
     
     @Test
     public void assertHintStrategy() {
-        // TODO
+        assertThat(hintShardingStrategy.getShardingAlgorithmName(), is("hintShardingAlgorithm"));
     }
     
     @Test
@@ -122,17 +146,19 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertIncrementAlgorithm() {
-        // TODO
+        assertThat(incrementAlgorithm.getType(), is("INCREMENT"));
     }
     
     @Test
     public void assertDefaultKeyGenerator() {
-        // TODO
+        assertThat(defaultKeyGenerator.getColumn(), is("id"));
+        assertThat(defaultKeyGenerator.getKeyGeneratorName(), is("incrementAlgorithm"));
     }
     
     @Test
     public void assertOrderKeyGenerator() {
-        // TODO
+        assertThat(orderKeyGenerator.getColumn(), is("order_id"));
+        assertThat(orderKeyGenerator.getKeyGeneratorName(), is("incrementAlgorithm"));
     }
     
     @Test
