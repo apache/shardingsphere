@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.masterslave.spring.boot;
 
 import org.apache.shardingsphere.masterslave.algorithm.RandomMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -40,7 +40,7 @@ public class MasterSlaveSpringBootStarterTest {
     private RandomMasterSlaveLoadBalanceAlgorithm random;
     
     @Resource
-    private MasterSlaveRuleConfiguration masterSlaveRuleConfiguration;
+    private AlgorithmProvidedMasterSlaveRuleConfiguration masterSlaveRuleConfiguration;
     
     @Test
     public void assertLoadBalanceAlgorithm() {
