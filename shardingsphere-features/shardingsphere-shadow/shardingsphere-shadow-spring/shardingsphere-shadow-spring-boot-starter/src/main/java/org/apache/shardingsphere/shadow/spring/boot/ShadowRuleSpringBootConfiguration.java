@@ -51,11 +51,11 @@ public class ShadowRuleSpringBootConfiguration {
     /**
      * Shadow rule configuration.
      *
-     * @param yamlShadowRuleConfiguration YAML shadow rule configuration
+     * @param yamlShadowRuleConfig YAML shadow rule configuration
      * @return shadow rule configuration
      */
     @Bean
-    public RuleConfiguration shadowRuleConfiguration(final YamlShadowRuleConfiguration yamlShadowRuleConfiguration) {
-        return swapper.swapToObject(yamlShadowRuleConfiguration);
+    public RuleConfiguration shadowRuleConfiguration(final YamlShadowRuleConfiguration yamlShadowRuleConfig) {
+        return swapper.swapToObject(yamlShadowRuleConfig);
     }
 }
