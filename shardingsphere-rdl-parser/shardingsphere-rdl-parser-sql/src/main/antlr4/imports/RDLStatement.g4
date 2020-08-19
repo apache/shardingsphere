@@ -19,12 +19,12 @@ grammar RDLStatement;
 
 import Keyword, Literals, Symbol;
 
-createDatasource
-    : CREATE DATASOURCE dataSource (COMMA dataSource)*
+createDataSources
+    : CREATE DATASOURCES LP dataSource (COMMA dataSource)* RP
     ;
 
-createShardingRule
-    : CREATE SHARDINGRULE tableRule (COMMA tableRule)*
+createShardingRules
+    : CREATE SHARDINGRULES LP tableRule (COMMA tableRule)* RP
     ;
 
 tableRule
@@ -36,7 +36,7 @@ dataSource
     ;
        
 dataSourceDefinition
-    : hostName COLON port COLON dbName COLON user COLON password
+    : hostName COLON port COLON dbName (COLON user (COLON password)?)?
     ;
 
 tableRuleDefinition
