@@ -17,34 +17,39 @@
 
 package org.apache.shardingsphere.encrypt.spring.boot;
 
-import javax.annotation.Resource;
-import org.apache.shardingsphere.encrypt.spring.boot.fixture.TestEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.algorithm.AESEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.Resource;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = EncryptSpringBootAlgorithmProviderBeanTest.class)
+@SpringBootTest(classes = EncryptSpringBootStarterTest.class)
 @SpringBootApplication
 @ActiveProfiles("encrypt")
-public class EncryptSpringBootAlgorithmProviderBeanTest {
+public class EncryptSpringBootStarterTest {
     
     @Resource
-    private ApplicationContext applicationContext;
+    private AESEncryptAlgorithm aesEncryptor;
+    
+    @Resource
+    private AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfiguration;
     
     @Test
-    public void assertAlgorithmProviderBean() {
-        Object algorithmBean = applicationContext.getBean("aes_encryptor");
-        assertThat(algorithmBean.getClass().getName(), is(TestEncryptAlgorithm.class.getName()));
-        TestEncryptAlgorithm algorithmFixture = (TestEncryptAlgorithm) algorithmBean;
-        assertNotNull(algorithmFixture.getEnvironment());
+    public void assertAesEncryptor() {
+        assertThat(aesEncryptor.getProps().getProperty("aes.key.value"), is("123456"));
+    }
+    
+    @Test
+    public void assertEncryptRuleConfiguration() {
+        // TODO assert Encrypt Rule Configuration
     }
 }
