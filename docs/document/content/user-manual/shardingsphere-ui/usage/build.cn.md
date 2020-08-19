@@ -13,23 +13,23 @@ weight = 1
 
 ## 源码调试模式
 
-ShardingSphere-UI采用前后端分离的方式。
+ShardingSphere-UI 采用前后端分离的方式。
 
 ### 后端
 
-1. 后端程序执行入口为`org.apache.shardingsphere.ui.Bootstrap`；
-1. 访问`http://localhost:8088/`。
+1. 后端程序执行入口为 `org.apache.shardingsphere.ui.Bootstrap`；
+1. 访问 `http://localhost:8088/`。
 
 ### 前端
 
-1. 进入`shardingsphere-ui-frontend/`目录；
-1. 执行`npm install`；
-1. 执行`npm run dev`；
-1. 访问`http://localhost:8080/`。
+1. 进入 `shardingsphere-ui-frontend/` 目录；
+1. 执行 `npm install`；
+1. 执行 `npm run dev`；
+1. 访问 `http://localhost:8080/`。
 
 ## 配置
 
-ShardingSphere-UI的配置文件为`conf/application.properties`, 它由两部分组成。
+ShardingSphere-UI 的配置文件为 `conf/application.properties`, 它由两部分组成。
 
 1. 程序监听端口；
 1. 登录身份验证信息。
@@ -43,7 +43,7 @@ user.admin.password=admin
 
 ## 注意事项
 
-1. 若使用maven构建后，再进行本地运行前端项目时，可能因为node版本不一致导致运行失败，可以清空`node_modules/`目录后重新运行。
+1. 若使用 maven 构建后，再进行本地运行前端项目时，可能因为 node 版本不一致导致运行失败，可以清空 `node_modules/` 目录后重新运行。
 错误日志如下：
 
 ```
