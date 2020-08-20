@@ -78,14 +78,14 @@ public class ShardingSpringBootStarterTest {
         assertThat(shardingTableRuleConfigurationList.get(0).getLogicTable(), is("t_order"));
         assertThat(shardingTableRuleConfigurationList.get(0).getActualDataNodes(), is("ds_$->{0..1}.t_order_$->{0..1}"));
         assertThat(shardingTableRuleConfigurationList.get(0).getTableShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
-        assertThat(((StandardShardingStrategyConfiguration)shardingTableRuleConfigurationList.get(0).getTableShardingStrategy()).getShardingColumn(), is("order_id"));
+        assertThat(((StandardShardingStrategyConfiguration) shardingTableRuleConfigurationList.get(0).getTableShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(shardingTableRuleConfigurationList.get(0).getTableShardingStrategy().getShardingAlgorithmName(), is("orderTableShardingAlgorithm"));
         assertThat(shardingTableRuleConfigurationList.get(0).getKeyGenerateStrategy().getColumn(), is("order_id"));
         assertThat(shardingTableRuleConfigurationList.get(0).getKeyGenerateStrategy().getKeyGeneratorName(), is("keyGenerator"));
         assertThat(shardingTableRuleConfigurationList.get(1).getLogicTable(), is("t_order_item"));
         assertThat(shardingTableRuleConfigurationList.get(1).getActualDataNodes(), is("ds_$->{0..1}.t_order_item_$->{0..1}"));
         assertThat(shardingTableRuleConfigurationList.get(1).getTableShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
-        assertThat(((StandardShardingStrategyConfiguration)shardingTableRuleConfigurationList.get(1).getTableShardingStrategy()).getShardingColumn(), is("order_id"));
+        assertThat(((StandardShardingStrategyConfiguration) shardingTableRuleConfigurationList.get(1).getTableShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(shardingTableRuleConfigurationList.get(1).getTableShardingStrategy().getShardingAlgorithmName(), is("orderItemTableShardingAlgorithm"));
         assertThat(shardingTableRuleConfigurationList.get(1).getKeyGenerateStrategy().getColumn(), is("order_item_id"));
         assertThat(shardingTableRuleConfigurationList.get(1).getKeyGenerateStrategy().getKeyGeneratorName(), is("keyGenerator"));
@@ -99,7 +99,7 @@ public class ShardingSpringBootStarterTest {
         assertThat(shardingRuleConfiguration.getBroadcastTables().iterator().next(), is("t_config"));
 
         assertThat(shardingRuleConfiguration.getDefaultDatabaseShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
-        assertThat(((StandardShardingStrategyConfiguration)shardingRuleConfiguration.getDefaultDatabaseShardingStrategy()).getShardingColumn(), is("user_id"));
+        assertThat(((StandardShardingStrategyConfiguration) shardingRuleConfiguration.getDefaultDatabaseShardingStrategy()).getShardingColumn(), is("user_id"));
         assertThat(shardingRuleConfiguration.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName(), is("databaseShardingAlgorithm"));
     
         assertThat(shardingRuleConfiguration.getShardingAlgorithms().size(), is(3));
