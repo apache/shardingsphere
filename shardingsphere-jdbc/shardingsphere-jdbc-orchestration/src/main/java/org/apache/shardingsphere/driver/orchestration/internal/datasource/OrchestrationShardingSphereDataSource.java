@@ -109,6 +109,26 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         initControlPanel();
     }
     
+    public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) throws SQLException {
+        init(orchestrationConfig);
+        dataSource = loadDataSource();
+        initWithOrchestrationCenter();
+        initConfigurations(clusterConfiguration, null);
+        disableDataSources();
+        persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
+        initControlPanel();
+    }
+    
+    public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig, final MetricsConfiguration metricsConfiguration) throws SQLException {
+        init(orchestrationConfig);
+        dataSource = loadDataSource();
+        initWithOrchestrationCenter();
+        initConfigurations(null, metricsConfiguration);
+        disableDataSources();
+        persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
+        initControlPanel();
+    }
+    
     public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) {
         init(orchestrationConfig);
         this.dataSource = dataSource;
@@ -126,6 +146,30 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         this.dataSource = dataSource;
         initWithLocalConfiguration();
         initConfigurations(clusterConfiguration, metricsConfiguration);
+        disableDataSources();
+        persistMetaData(this.dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
+        initControlPanel();
+    }
+    
+    public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource dataSource,
+                                                 final OrchestrationConfiguration orchestrationConfig,
+                                                 final ClusterConfiguration clusterConfiguration) {
+        init(orchestrationConfig);
+        this.dataSource = dataSource;
+        initWithLocalConfiguration();
+        initConfigurations(clusterConfiguration, null);
+        disableDataSources();
+        persistMetaData(this.dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
+        initControlPanel();
+    }
+    
+    public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource dataSource,
+                                                 final OrchestrationConfiguration orchestrationConfig,
+                                                 final MetricsConfiguration metricsConfiguration) {
+        init(orchestrationConfig);
+        this.dataSource = dataSource;
+        initWithLocalConfiguration();
+        initConfigurations(null, metricsConfiguration);
         disableDataSources();
         persistMetaData(this.dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
         initControlPanel();

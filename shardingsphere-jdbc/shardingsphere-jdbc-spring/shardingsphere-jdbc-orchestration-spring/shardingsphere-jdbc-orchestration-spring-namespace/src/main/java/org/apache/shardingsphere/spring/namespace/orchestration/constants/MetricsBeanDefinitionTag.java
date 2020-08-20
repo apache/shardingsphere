@@ -15,39 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.configuration.config;
+package org.apache.shardingsphere.spring.namespace.orchestration.constants;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.Properties;
-import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
 
 /**
- * Metrics configuration.
+ * Metrics bean definition tag.
  */
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public final class MetricsConfiguration implements ControlPanelConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MetricsBeanDefinitionTag {
     
-    public static final int DEFAULT_PORT = 9190;
+    public static final String ROOT_TAG = "metrics";
     
-    private String metricsName;
+    public static final String NAME_TAG = "name";
     
-    private String host;
+    public static final String HOST_TAG = "host";
     
-    private int port;
+    public static final String PORT_TAG = "port";
     
-    private Boolean async;
+    public static final String ASYNC_TAG = "async";
     
-    private Boolean enable;
+    public static final String ENABLE_TAG = "enable";
     
-    private int threadCount;
+    public static final String THREAD_COUNT_TAG = "thread-count";
     
-    private Properties props;
+    public static final String PROPS_TAG = "props";
 }
-
