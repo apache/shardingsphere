@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.namespace.parser;
 
-import org.apache.shardingsphere.spring.namespace.parser.fixture.ShardingSphereAlgorithmFactoryBeanFixture;
+import org.apache.shardingsphere.spring.namespace.fixture.ShardingSphereAlgorithmFactoryBeanFixture;
 import org.junit.Test;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.xml.ParserContext;

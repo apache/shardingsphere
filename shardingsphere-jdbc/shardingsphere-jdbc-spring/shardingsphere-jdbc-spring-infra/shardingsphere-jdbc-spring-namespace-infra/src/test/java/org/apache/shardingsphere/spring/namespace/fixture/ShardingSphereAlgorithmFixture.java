@@ -15,15 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.parser.fixture;
+package org.apache.shardingsphere.spring.namespace.fixture;
 
-import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
-import java.util.Properties;
-
-public final class ShardingSphereAlgorithmFactoryBeanFixture extends ShardingSphereAlgorithmFactoryBean<ShardingSphereAlgorithmFixture> {
-    
-    public ShardingSphereAlgorithmFactoryBeanFixture(final String type, final Properties props, final Class<ShardingSphereAlgorithmFixture> objectType) {
-        super(type, props, objectType);
-    }
+public interface ShardingSphereAlgorithmFixture extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
 }
