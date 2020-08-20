@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.database.metadata.dialect.SQL92DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
@@ -26,12 +28,11 @@ import java.util.Collections;
 /**
  * Database type of SQL92.
  */
+@EqualsAndHashCode
 public final class SQL92DatabaseType implements DatabaseType {
     
-    @Override
-    public String getName() {
-        return "SQL92";
-    }
+    @Getter
+    private final String name = "SQL92"; 
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
@@ -41,13 +42,5 @@ public final class SQL92DatabaseType implements DatabaseType {
     @Override
     public SQL92DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new SQL92DataSourceMetaData(url);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (!(obj instanceof DatabaseType)) {
-            return false;
-        }
-        return getName().equals(((DatabaseType) obj).getName());
     }
 }

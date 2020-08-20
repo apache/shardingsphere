@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
@@ -26,12 +28,11 @@ import java.util.Collections;
 /**
  * Database type of PostgreSQL.
  */
+@EqualsAndHashCode
 public final class PostgreSQLDatabaseType implements DatabaseType {
     
-    @Override
-    public String getName() {
-        return "PostgreSQL";
-    }
+    @Getter
+    private final String name = "PostgreSQL"; 
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
@@ -41,13 +42,5 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     @Override
     public PostgreSQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new PostgreSQLDataSourceMetaData(url);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (!(obj instanceof DatabaseType)) {
-            return false;
-        }
-        return getName().equals(((DatabaseType) obj).getName());
     }
 }

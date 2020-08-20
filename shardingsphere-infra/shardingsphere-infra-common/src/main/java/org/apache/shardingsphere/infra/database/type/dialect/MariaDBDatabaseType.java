@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MariaDBDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -28,12 +30,11 @@ import java.util.Collections;
 /**
  * Database type of Mariadb.
  */
+@EqualsAndHashCode
 public final class MariaDBDatabaseType implements BranchDatabaseType {
     
-    @Override
-    public String getName() {
-        return "MariaDB";
-    }
+    @Getter
+    private final String name = "MariaDB";
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
@@ -48,13 +49,5 @@ public final class MariaDBDatabaseType implements BranchDatabaseType {
     @Override
     public DatabaseType getTrunkDatabaseType() {
         return DatabaseTypes.getActualDatabaseType("MySQL");
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (!(obj instanceof DatabaseType)) {
-            return false;
-        }
-        return getName().equals(((DatabaseType) obj).getName());
     }
 }

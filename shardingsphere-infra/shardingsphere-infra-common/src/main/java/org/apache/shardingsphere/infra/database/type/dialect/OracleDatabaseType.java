@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.database.metadata.dialect.OracleDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
@@ -26,12 +28,11 @@ import java.util.Collections;
 /**
  * Database type of Oracle.
  */
+@EqualsAndHashCode
 public final class OracleDatabaseType implements DatabaseType {
     
-    @Override
-    public String getName() {
-        return "Oracle";
-    }
+    @Getter
+    private final String name = "Oracle";
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
@@ -41,13 +42,5 @@ public final class OracleDatabaseType implements DatabaseType {
     @Override
     public OracleDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new OracleDataSourceMetaData(url, username);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (!(obj instanceof DatabaseType)) {
-            return false;
-        }
-        return getName().equals(((DatabaseType) obj).getName());
     }
 }
