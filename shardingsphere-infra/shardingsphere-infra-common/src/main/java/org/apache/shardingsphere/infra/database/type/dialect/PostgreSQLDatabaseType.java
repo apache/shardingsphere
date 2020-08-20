@@ -42,4 +42,12 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     public PostgreSQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new PostgreSQLDataSourceMetaData(url);
     }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof DatabaseType)) {
+            return false;
+        }
+        return getName().equals(((DatabaseType) obj).getName());
+    }
 }

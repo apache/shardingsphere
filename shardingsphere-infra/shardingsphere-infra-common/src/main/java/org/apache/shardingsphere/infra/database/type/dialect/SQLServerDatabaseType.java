@@ -42,4 +42,12 @@ public final class SQLServerDatabaseType implements DatabaseType {
     public SQLServerDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new SQLServerDataSourceMetaData(url);
     }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof DatabaseType)) {
+            return false;
+        }
+        return getName().equals(((DatabaseType) obj).getName());
+    }
 }

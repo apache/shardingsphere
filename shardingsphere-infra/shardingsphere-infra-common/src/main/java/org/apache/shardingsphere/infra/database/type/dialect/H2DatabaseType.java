@@ -49,4 +49,12 @@ public final class H2DatabaseType implements BranchDatabaseType {
     public DatabaseType getTrunkDatabaseType() {
         return DatabaseTypes.getActualDatabaseType("MySQL");
     }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof DatabaseType)) {
+            return false;
+        }
+        return getName().equals(((DatabaseType) obj).getName());
+    }
 }

@@ -42,4 +42,12 @@ public final class MySQLDatabaseType implements DatabaseType {
     public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new MySQLDataSourceMetaData(url);
     }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof DatabaseType)) {
+            return false;
+        }
+        return getName().equals(((DatabaseType) obj).getName());
+    }
 }

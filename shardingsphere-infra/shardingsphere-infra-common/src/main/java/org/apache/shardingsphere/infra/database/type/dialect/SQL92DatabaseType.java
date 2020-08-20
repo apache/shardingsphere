@@ -42,4 +42,12 @@ public final class SQL92DatabaseType implements DatabaseType {
     public SQL92DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new SQL92DataSourceMetaData(url);
     }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof DatabaseType)) {
+            return false;
+        }
+        return getName().equals(((DatabaseType) obj).getName());
+    }
 }
