@@ -40,7 +40,7 @@ public final class ShardingSphereAlgorithmFactoryBeanTest {
     public void assertGetObject() {
         Properties props = new Properties();
         props.setProperty("fixture.value", "foo");
-        ShardingSphereAlgorithmFactoryBean<ShardingSphereAlgorithmFixture> factoryBean = new ShardingSphereAlgorithmFactoryBeanFixture("FIXTURE", props, ShardingSphereAlgorithmFixture.class);
+        ShardingSphereAlgorithmFactoryBean<ShardingSphereAlgorithmFixture> factoryBean = new ShardingSphereAlgorithmFactoryBeanFixture(ShardingSphereAlgorithmFixture.class, "FIXTURE", props);
         ShardingSphereAlgorithmFixtureImpl actual = (ShardingSphereAlgorithmFixtureImpl) factoryBean.getObject();
         assertThat(actual.getValue(), is("foo"));
     }

@@ -23,7 +23,7 @@ import java.util.Properties;
 
 public final class ShardingSphereAlgorithmFactoryBeanFixture extends ShardingSphereAlgorithmFactoryBean<ShardingSphereAlgorithmFixture> {
     
-    public ShardingSphereAlgorithmFactoryBeanFixture(final String type, final Properties props, final Class<ShardingSphereAlgorithmFixture> objectType) {
-        super(type, props, objectType);
+    public ShardingSphereAlgorithmFactoryBeanFixture(final Class<ShardingSphereAlgorithmFixture> objectType, final String type, final Properties props) {
+        super(objectType, type, props);
     }
 }

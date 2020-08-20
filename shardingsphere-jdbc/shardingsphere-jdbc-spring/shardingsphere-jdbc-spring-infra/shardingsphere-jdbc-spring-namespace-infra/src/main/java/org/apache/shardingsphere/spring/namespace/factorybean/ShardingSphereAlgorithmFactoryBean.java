@@ -32,12 +32,12 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public abstract class ShardingSphereAlgorithmFactoryBean<T extends ShardingSphereAlgorithm> implements FactoryBean<T> {
     
+    @Getter
+    private final Class<T> objectType;
+    
     private final String type;
     
     private final Properties props;
-    
-    @Getter
-    private final Class<T> objectType;
     
     @Override
     public final T getObject() {
