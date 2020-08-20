@@ -15,39 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.configuration.config;
+package org.apache.shardingsphere.spring.namespace.orchestration.handler;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.Properties;
-import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
+import org.apache.shardingsphere.spring.namespace.orchestration.constants.MetricsBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.orchestration.parser.MetricsBeanDefinitionParser;
+import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Metrics configuration.
+ * Metrics spring namespace handler.
  */
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public final class MetricsConfiguration implements ControlPanelConfiguration {
-    
-    public static final int DEFAULT_PORT = 9190;
-    
-    private String metricsName;
-    
-    private String host;
-    
-    private int port;
-    
-    private Boolean async;
-    
-    private Boolean enable;
-    
-    private int threadCount;
-    
-    private Properties props;
+public final class MetricsNamespaceHandler extends NamespaceHandlerSupport {
+    @Override
+    public void init() {
+        registerBeanDefinitionParser(MetricsBeanDefinitionTag.ROOT_TAG, new MetricsBeanDefinitionParser());
+    }
 }
-
