@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.masterslave.route.engine;
 
+import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
@@ -72,12 +75,18 @@ public final class MasterSlaveRouteDecoratorTest {
     private SelectStatement selectStatement;
     
     private MasterSlaveRouteDecorator routeDecorator;
-    
+
+    static {
+        ShardingSphereServiceLoader.register(RouteDecorator.class);
+    }
+
     @Before
     public void setUp() {
-        routeDecorator = new MasterSlaveRouteDecorator();
         masterSlaveRule = new MasterSlaveRule(new MasterSlaveRuleConfiguration(
                 Collections.singleton(new MasterSlaveDataSourceRuleConfiguration(DATASOURCE_NAME, MASTER_DATASOURCE, Collections.singletonList(SLAVE_DATASOURCE), null)), Collections.emptyMap()));
+        routeDecorator = (MasterSlaveRouteDecorator) OrderedSPIRegistry
+                .getRegisteredServices(Collections.singleton(masterSlaveRule), RouteDecorator.class)
+                .get(masterSlaveRule);
     }
     
     @After
@@ -148,7 +157,7 @@ public final class MasterSlaveRouteDecoratorTest {
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
         assertThat(actual.getParameters().get(0), is("true"));
     }
-    
+
     private RouteContext mockSQLRouteContext(final SQLStatement sqlStatement) {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         return new RouteContext(sqlStatementContext, Collections.emptyList(), mockRouteResult());
