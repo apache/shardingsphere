@@ -15,30 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spring.boot;
+package org.apache.shardingsphere.encrypt.spring.boot.algorithm;
 
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.env.Environment;
 
 /**
- * Sharding algorithm provided bean registry.
+ * Encrypt algorithm provided bean registry.
  */
-public final class ShardingAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry {
+public final class EncryptAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry {
     
-    private static final String SHARDING_ALGORITHMS = "spring.shardingsphere.rules.sharding.sharding-algorithms.";
+    private static final String ENCRYPTORS_ALGORITHMS = "spring.shardingsphere.rules.encrypt.encryptors.";
     
-    private static final String KEY_GENERATORS = "spring.shardingsphere.rules.sharding.key-generators.";
-    
-    public ShardingAlgorithmProvidedBeanRegistry(final Environment environment) {
+    /**
+     * Instantiates a new encrypt algorithm provided bean registry.
+     *
+     * @param environment environment
+     */
+    public EncryptAlgorithmProvidedBeanRegistry(final Environment environment) {
         super(environment);
     }
     
     @Override
-    public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) {
-        registerBean(SHARDING_ALGORITHMS, ShardingAlgorithm.class, registry);
-        registerBean(KEY_GENERATORS, KeyGenerateAlgorithm.class, registry);
+    public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) throws BeansException {
+        registerBean(ENCRYPTORS_ALGORITHMS, EncryptAlgorithm.class, registry);
     }
 }

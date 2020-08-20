@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-grammar ShardingSphereStatement;
+package org.apache.shardingsphere.sharding.spring.boot.rule;
 
-import Symbol, RDLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-execute
-    : (createDataSources
-    | createShardingRules
-    ) SEMI?
-    ;
+/**
+ * YAML sharding rule spring boot configuration.
+ */
+@ConfigurationProperties(prefix = "spring.shardingsphere.rules")
+@Getter
+@Setter
+public final class YamlShardingRuleSpringBootConfiguration {
+    
+    private YamlShardingRuleConfiguration sharding;
+}

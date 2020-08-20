@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.boot;
+package org.apache.shardingsphere.masterslave.spring.boot.algorithm;
 
 import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry;
