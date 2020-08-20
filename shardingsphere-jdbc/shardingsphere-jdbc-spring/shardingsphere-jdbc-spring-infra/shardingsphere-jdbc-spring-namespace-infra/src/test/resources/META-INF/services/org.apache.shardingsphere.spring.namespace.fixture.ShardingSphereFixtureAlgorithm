@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.spring.namespace.fixture.ShardingSphereFixtureAlgorithmImpl
+org.apache.shardingsphere.spring.namespace.fixture.FooShardingSphereFixtureAlgorithm

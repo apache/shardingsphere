@@ -23,7 +23,7 @@ import lombok.Setter;
 import java.util.Properties;
 
 @Getter
-public final class ShardingSphereFixtureAlgorithmImpl implements ShardingSphereFixtureAlgorithm {
+public final class FooShardingSphereFixtureAlgorithm implements ShardingSphereFixtureAlgorithm {
     
     @Setter
     private Properties props;
