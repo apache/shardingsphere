@@ -28,6 +28,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereAlgorithmFactoryBeanTest {
     
@@ -43,5 +44,10 @@ public final class ShardingSphereAlgorithmFactoryBeanTest {
         ShardingSphereAlgorithmFactoryBean<ShardingSphereAlgorithmFixture> factoryBean = new ShardingSphereAlgorithmFactoryBeanFixture(ShardingSphereAlgorithmFixture.class, "FIXTURE", props);
         ShardingSphereAlgorithmFixtureImpl actual = (ShardingSphereAlgorithmFixtureImpl) factoryBean.getObject();
         assertThat(actual.getValue(), is("foo"));
+    }
+    
+    @Test
+    public void assertIsSingleton() {
+        assertTrue(new ShardingSphereAlgorithmFactoryBeanFixture(ShardingSphereAlgorithmFixture.class, "FIXTURE", new Properties()).isSingleton());
     }
 }
