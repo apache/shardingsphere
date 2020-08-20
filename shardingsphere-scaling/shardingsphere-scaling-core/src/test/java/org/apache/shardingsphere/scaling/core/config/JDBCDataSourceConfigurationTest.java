@@ -28,19 +28,19 @@ public final class JDBCDataSourceConfigurationTest {
     
     @Test
     public void assertJDBCDataSourceConfigurationEquals() {
-        JDBCDataSourceConfiguration configurationA = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
-        JDBCDataSourceConfiguration configurationB = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
-        assertThat(configurationA, is(configurationB));
+        JDBCDataSourceConfiguration sourceConfiguration = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
+        JDBCDataSourceConfiguration targetConfiguration = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
+        assertThat(sourceConfiguration, is(targetConfiguration));
     
-        configurationA.setDatabaseType(new H2DatabaseType());
+        sourceConfiguration.setDatabaseType(new H2DatabaseType());
         // TODO this should not be equal
-        assertThat(configurationA, is(configurationB));
+        assertThat(sourceConfiguration, is(targetConfiguration));
     }
     
     @Test
     public void assertJDBCDataSourceConfigurationNotEquals() {
-        JDBCDataSourceConfiguration configurationA = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "sa", "root");
-        JDBCDataSourceConfiguration configurationB = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
-        assertThat(configurationA, not(configurationB));
+        JDBCDataSourceConfiguration sourceConfiguration = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "sa", "root");
+        JDBCDataSourceConfiguration targetConfiguration = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
+        assertThat(sourceConfiguration, not(targetConfiguration));
     }
 }
