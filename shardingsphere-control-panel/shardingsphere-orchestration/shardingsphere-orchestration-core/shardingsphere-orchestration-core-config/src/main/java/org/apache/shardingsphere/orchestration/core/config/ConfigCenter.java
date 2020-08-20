@@ -130,12 +130,12 @@ public final class ConfigCenter {
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof ShardingRuleConfiguration) {
                 ShardingRuleConfiguration config = (ShardingRuleConfiguration) each;
-                Preconditions.checkState(!config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy(),
+                Preconditions.checkState(hasAvailableTableConfigurations(config),
                         "No available rule configurations in `%s` for orchestration.", schemaName);
                 configurations.add(each);
             } else if (each instanceof AlgorithmProvidedShardingRuleConfiguration) {
                 AlgorithmProvidedShardingRuleConfiguration config = (AlgorithmProvidedShardingRuleConfiguration) each;
-                Preconditions.checkState(!config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy(),
+                Preconditions.checkState(hasAvailableTableConfigurations(config),
                         "No available rule configurations in `%s` for orchestration.", schemaName);
                 configurations.add(each);
             } else if (each instanceof AlgorithmProvidedMasterSlaveRuleConfiguration) {
@@ -165,6 +165,14 @@ public final class ConfigCenter {
         YamlRootRuleConfigurations yamlRuleConfigurations = new YamlRootRuleConfigurations();
         yamlRuleConfigurations.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(configurations));
         repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(yamlRuleConfigurations));
+    }
+    
+    private boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration configuration) {
+        return !configuration.getTables().isEmpty() || null != configuration.getDefaultTableShardingStrategy() || !configuration.getAutoTables().isEmpty();
+    }
+    
+    private boolean hasAvailableTableConfigurations(final AlgorithmProvidedShardingRuleConfiguration configuration) {
+        return !configuration.getTables().isEmpty() || null != configuration.getDefaultTableShardingStrategy() || !configuration.getAutoTables().isEmpty();
     }
     
     /**
