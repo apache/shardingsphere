@@ -39,7 +39,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -186,7 +185,6 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     @Test
     public void assertSimpleRule() {
         Collection<ShardingTableRuleConfiguration> actualSimpleRuleConfigurations = simpleRule.getTables();
-        assertFalse(actualSimpleRuleConfigurations.isEmpty());
         assertThat(actualSimpleRuleConfigurations.size(), is(1));
         ShardingTableRuleConfiguration actualSimpleRuleConfiguration = actualSimpleRuleConfigurations.iterator().next();
         assertThat(actualSimpleRuleConfiguration.getLogicTable(), is("t_order"));
@@ -195,7 +193,6 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     @Test
     public void assertComplexRule() {
         Collection<ShardingTableRuleConfiguration> actualComplexRuleConfigurations = complexRule.getTables();
-        assertFalse(actualComplexRuleConfigurations.isEmpty());
         assertThat(actualComplexRuleConfigurations.size(), is(1));
         ShardingTableRuleConfiguration actualComplexRuleConfiguration = actualComplexRuleConfigurations.iterator().next();
         assertThat(actualComplexRuleConfiguration.getLogicTable(), is("t_order"));
@@ -210,7 +207,6 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     @Test
     public void assertBindingRule() {
         Collection<ShardingTableRuleConfiguration> actualBindingTableRuleConfigurations = bindingRule.getTables();
-        assertFalse(actualBindingTableRuleConfigurations.isEmpty());
         assertThat(actualBindingTableRuleConfigurations.size(), is(4));
         Iterator<ShardingTableRuleConfiguration> actualIterator = actualBindingTableRuleConfigurations.iterator();
         assertThat(actualIterator.next().getLogicTable(), is("t_order"));
@@ -218,7 +214,6 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
         assertThat(actualIterator.next().getLogicTable(), is("t_user"));
         assertThat(actualIterator.next().getLogicTable(), is("t_user_detail"));
         Collection<String> actualBindingTableGroups = bindingRule.getBindingTableGroups();
-        assertFalse(actualBindingTableGroups.isEmpty());
         assertThat(actualBindingTableGroups.size(), is(2));
         assertTrue(actualBindingTableGroups.containsAll(Arrays.asList("t_order, t_order_item", "t_order, t_order_item")));
     }
@@ -226,17 +221,14 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     @Test
     public void assertBroadcastRule() {
         Collection<ShardingTableRuleConfiguration> actualBroadcastTableConfigurations = broadcastRule.getTables();
-        assertFalse(actualBroadcastTableConfigurations.isEmpty());
         assertThat(actualBroadcastTableConfigurations.size(), is(2));
         Iterator<ShardingTableRuleConfiguration> actualIterator = actualBroadcastTableConfigurations.iterator();
         assertThat(actualIterator.next().getLogicTable(), is("t_order"));
         assertThat(actualIterator.next().getLogicTable(), is("t_order_item"));
         Collection<String> broadcastTables = broadcastRule.getBroadcastTables();
-        assertFalse(broadcastTables.isEmpty());
         assertThat(broadcastTables.size(), is(2));
         assertTrue(broadcastTables.containsAll(Arrays.asList("t_dict", "t_address")));
         Collection<String> actualBindingTableGroups = broadcastRule.getBindingTableGroups();
-        assertFalse(actualBindingTableGroups.isEmpty());
         assertThat(actualBindingTableGroups.size(), is(1));
         assertTrue(actualBindingTableGroups.containsAll(Arrays.asList("t_order, t_order_item")));
     }
@@ -244,7 +236,6 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     @Test
     public void assertAutoRule() {
         Collection<ShardingAutoTableRuleConfiguration> actualAutoTableConfigurations = autoRule.getAutoTables();
-        assertFalse(actualAutoTableConfigurations.isEmpty());
         assertThat(actualAutoTableConfigurations.size(), is(1));
         ShardingAutoTableRuleConfiguration actualShardingAutoTableRuleConfiguration = actualAutoTableConfigurations.iterator().next();
         assertThat(actualShardingAutoTableRuleConfiguration.getLogicTable(), is("t_order"));
