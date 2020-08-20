@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-http\://shardingsphere.apache.org/schema/shardingsphere/algorithm-fixture=org.apache.shardingsphere.spring.namespace.fixture.handler.AlgorithmFixtureNamespaceHandler
+http\://shardingsphere.apache.org/schema/shardingsphere/algorithm-fixture=org.apache.shardingsphere.spring.namespace.fixture.handler.ShardingSphereAlgorithmFixtureNamespaceHandler

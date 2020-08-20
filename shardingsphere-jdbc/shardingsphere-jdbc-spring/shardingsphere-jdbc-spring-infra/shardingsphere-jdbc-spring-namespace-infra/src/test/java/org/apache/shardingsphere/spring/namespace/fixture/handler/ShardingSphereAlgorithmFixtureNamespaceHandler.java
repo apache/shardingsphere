@@ -21,7 +21,7 @@ import org.apache.shardingsphere.spring.namespace.fixture.factorybean.ShardingSp
 import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
-public final class AlgorithmFixtureNamespaceHandler extends NamespaceHandlerSupport {
+public final class ShardingSphereAlgorithmFixtureNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
