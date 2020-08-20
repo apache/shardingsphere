@@ -17,26 +17,8 @@
 
 package org.apache.shardingsphere.spring.namespace.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
-import java.util.Properties;
-
-@Getter
-public final class ShardingSphereAlgorithmFixtureImpl implements ShardingSphereAlgorithmFixture {
-    
-    @Setter
-    private Properties props;
-    
-    private String value;
-    
-    @Override
-    public void init() {
-        value = props.getProperty("fixture.value");
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
-    }
+public interface ShardingSphereFixtureAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
 }

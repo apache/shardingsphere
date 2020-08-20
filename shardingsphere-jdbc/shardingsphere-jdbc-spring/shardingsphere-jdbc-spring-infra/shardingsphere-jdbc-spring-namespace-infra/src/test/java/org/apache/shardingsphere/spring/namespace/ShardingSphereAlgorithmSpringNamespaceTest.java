@@ -15,32 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.factorybean;
+package org.apache.shardingsphere.spring.namespace;
 
 import org.apache.shardingsphere.spring.namespace.fixture.ShardingSphereFixtureAlgorithm;
-import org.apache.shardingsphere.spring.namespace.fixture.ShardingSphereFixtureAlgorithmImpl;
-import org.apache.shardingsphere.spring.namespace.fixture.factorybean.ShardingSphereAlgorithmFixtureFactoryBean;
 import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-import java.util.Properties;
+import javax.annotation.Resource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ShardingSphereAlgorithmFactoryBeanTest {
+@ContextConfiguration(locations = "classpath:META-INF/spring/application-context.xml")
+public final class ShardingSphereAlgorithmSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
+    
+    @Resource
+    private ShardingSphereFixtureAlgorithm algorithmWithProps;
+    
+    @Resource
+    private ShardingSphereFixtureAlgorithm algorithmWithoutProps;
     
     @Test
-    public void assertGetObject() {
-        Properties props = new Properties();
-        props.setProperty("fixture.value", "foo");
-        ShardingSphereAlgorithmFactoryBean<ShardingSphereFixtureAlgorithm> factoryBean = new ShardingSphereAlgorithmFixtureFactoryBean("FIXTURE", props);
-        ShardingSphereFixtureAlgorithmImpl actual = (ShardingSphereFixtureAlgorithmImpl) factoryBean.getObject();
-        assertThat(actual.getValue(), is("foo"));
+    public void assertAlgorithmWithProps() {
+        assertThat(algorithmWithProps.getType(), is("FIXTURE"));
+        assertThat(algorithmWithProps.getProps().getProperty("fixture.value"), is("foo"));
     }
     
     @Test
-    public void assertIsSingleton() {
-        assertTrue(new ShardingSphereAlgorithmFixtureFactoryBean("FIXTURE", new Properties()).isSingleton());
+    public void assertAlgorithmWithoutProps() {
+        assertThat(algorithmWithoutProps.getType(), is("FIXTURE"));
+        assertTrue(algorithmWithoutProps.getProps().isEmpty());
     }
 }

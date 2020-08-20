@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.namespace.registry;
 
-import org.apache.shardingsphere.spring.namespace.fixture.ShardingSphereAlgorithmFactoryBeanFixture;
+import org.apache.shardingsphere.spring.namespace.fixture.factorybean.ShardingSphereAlgorithmFixtureFactoryBean;
 import org.junit.Test;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.xml.ParserContext;
@@ -36,9 +36,9 @@ public final class ShardingSphereAlgorithmBeanRegistryTest {
     public void assertGetAlgorithmBeanReferences() {
         ParserContext parserContext = mock(ParserContext.class, RETURNS_DEEP_STUBS);
         when(parserContext.getRegistry().getBeanDefinitionNames()).thenReturn(new String[] {"includeBean", "excludeBean"});
-        when(parserContext.getRegistry().getBeanDefinition("includeBean").getBeanClassName()).thenReturn(ShardingSphereAlgorithmFactoryBeanFixture.class.getName());
+        when(parserContext.getRegistry().getBeanDefinition("includeBean").getBeanClassName()).thenReturn(ShardingSphereAlgorithmFixtureFactoryBean.class.getName());
         when(parserContext.getRegistry().getBeanDefinition("excludeBean").getBeanClassName()).thenReturn(Object.class.getName());
-        Map<String, RuntimeBeanReference> actual = ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ShardingSphereAlgorithmFactoryBeanFixture.class);
+        Map<String, RuntimeBeanReference> actual = ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ShardingSphereAlgorithmFixtureFactoryBean.class);
         assertThat(actual.size(), is(1));
         assertThat(actual.get("includeBean").getBeanName(), is("includeBean"));
     }

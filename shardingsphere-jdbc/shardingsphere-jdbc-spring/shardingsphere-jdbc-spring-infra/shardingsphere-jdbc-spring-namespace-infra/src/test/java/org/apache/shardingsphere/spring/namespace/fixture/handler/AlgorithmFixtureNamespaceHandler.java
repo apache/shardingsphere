@@ -15,10 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.fixture;
+package org.apache.shardingsphere.spring.namespace.fixture.handler;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import org.apache.shardingsphere.spring.namespace.fixture.factorybean.ShardingSphereAlgorithmFixtureFactoryBean;
+import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanDefinitionParser;
+import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
-public interface ShardingSphereAlgorithmFixture extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public final class AlgorithmFixtureNamespaceHandler extends NamespaceHandlerSupport {
+    
+    @Override
+    public void init() {
+        registerBeanDefinitionParser("test-algorithm", new ShardingSphereAlgorithmBeanDefinitionParser(ShardingSphereAlgorithmFixtureFactoryBean.class));
+    }
 }

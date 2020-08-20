@@ -17,13 +17,26 @@
 
 package org.apache.shardingsphere.spring.namespace.fixture;
 
-import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Properties;
 
-public final class ShardingSphereAlgorithmFactoryBeanFixture extends ShardingSphereAlgorithmFactoryBean<ShardingSphereAlgorithmFixture> {
+@Getter
+public final class ShardingSphereFixtureAlgorithmImpl implements ShardingSphereFixtureAlgorithm {
     
-    public ShardingSphereAlgorithmFactoryBeanFixture(final Class<ShardingSphereAlgorithmFixture> objectType, final String type, final Properties props) {
-        super(objectType, type, props);
+    @Setter
+    private Properties props;
+    
+    private String value;
+    
+    @Override
+    public void init() {
+        value = props.getProperty("fixture.value");
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }
