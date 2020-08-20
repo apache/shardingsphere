@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.parser;
+package org.apache.shardingsphere.spring.namespace.registry;
 
 import org.apache.shardingsphere.spring.namespace.fixture.ShardingSphereAlgorithmFactoryBeanFixture;
 import org.junit.Test;
