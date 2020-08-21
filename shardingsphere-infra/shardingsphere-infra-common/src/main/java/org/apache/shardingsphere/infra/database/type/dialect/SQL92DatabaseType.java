@@ -27,7 +27,7 @@ import java.util.Collections;
  * Database type of SQL92.
  */
 public final class SQL92DatabaseType implements DatabaseType {
-
+    
     @Override
     public String getName() {
         return "SQL92";
