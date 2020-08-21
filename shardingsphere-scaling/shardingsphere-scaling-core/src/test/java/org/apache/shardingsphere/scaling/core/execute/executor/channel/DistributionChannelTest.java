@@ -38,7 +38,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class DistributionChannelTest {
+public final class DistributionChannelTest {
     
     private DistributionChannel distributionChannel;
     

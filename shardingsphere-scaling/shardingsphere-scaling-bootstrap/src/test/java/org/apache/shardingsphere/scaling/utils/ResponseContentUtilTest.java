@@ -25,7 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public class ResponseContentUtilTest {
+public final class ResponseContentUtilTest {
     
     public static final String ERROR_MESSAGE = "error message.";
     

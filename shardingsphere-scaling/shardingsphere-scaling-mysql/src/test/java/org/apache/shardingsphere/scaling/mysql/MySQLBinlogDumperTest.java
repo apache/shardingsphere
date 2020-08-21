@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.mysql;
 
 import org.junit.Test;
 
-public class MySQLBinlogDumperTest {
+public final class MySQLBinlogDumperTest {
     
     @Test
     public void assertStart() {

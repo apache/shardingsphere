@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLJdbcDumperTest {
+public final class MySQLJdbcDumperTest {
     
     private DataSourceManager dataSourceManager;
     
