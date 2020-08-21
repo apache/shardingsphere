@@ -33,6 +33,6 @@ public final class ShardingAlgorithmFactoryBean extends ShardingSphereAlgorithmF
     }
     
     public ShardingAlgorithmFactoryBean(final String type, final Properties props) {
-        super(type, props, ShardingAlgorithm.class);
+        super(ShardingAlgorithm.class, type, props);
     }
 }

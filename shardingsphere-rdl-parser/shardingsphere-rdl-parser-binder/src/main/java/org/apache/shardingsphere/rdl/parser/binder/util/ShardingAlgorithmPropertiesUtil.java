@@ -53,11 +53,12 @@ public final class ShardingAlgorithmPropertiesUtil {
      * @return properties
      */
     public static Properties getProperties(final String shardingAlgorithmType, final Collection<String> properties) {
-        Preconditions.checkArgument(TYPE_AND_PROPERTIES.containsKey(shardingAlgorithmType), "Bad sharding algorithm type: %s.", shardingAlgorithmType);
-        Preconditions.checkArgument(TYPE_AND_PROPERTIES.get(shardingAlgorithmType).size() == properties.size(),
-                "%s needs %d properties, but %s properties are given.", shardingAlgorithmType, TYPE_AND_PROPERTIES.get(shardingAlgorithmType).size(), properties.size());
+        String algorithmType = shardingAlgorithmType.toUpperCase();
+        Preconditions.checkArgument(TYPE_AND_PROPERTIES.containsKey(algorithmType), "Bad sharding algorithm type: %s.", algorithmType);
+        Preconditions.checkArgument(TYPE_AND_PROPERTIES.get(algorithmType).size() == properties.size(),
+                "%s needs %d properties, but %s properties are given.", algorithmType, TYPE_AND_PROPERTIES.get(algorithmType).size(), properties.size());
         Properties result = new Properties();
-        Iterator<String> keys = TYPE_AND_PROPERTIES.get(shardingAlgorithmType).iterator();
+        Iterator<String> keys = TYPE_AND_PROPERTIES.get(algorithmType).iterator();
         Iterator<String> values = properties.iterator();
         while (keys.hasNext()) {
             result.setProperty(keys.next(), values.next());

@@ -131,7 +131,7 @@ public final class TableRule {
             return new LinkedList<>();
         }
         List<String> result = new LinkedList<>();
-        List<String> dataSources = null == tableRuleConfig.getActualDataSources() ? new LinkedList<>(dataSourceNames)
+        List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new LinkedList<>(dataSourceNames)
                 : new InlineExpressionParser(tableRuleConfig.getActualDataSources()).splitAndEvaluate();
         ShardingAutoTableAlgorithm tableAlgorithm = (ShardingAutoTableAlgorithm) tableShardingStrategy.getShardingAlgorithm();
         Iterator iterator = dataSources.iterator();
