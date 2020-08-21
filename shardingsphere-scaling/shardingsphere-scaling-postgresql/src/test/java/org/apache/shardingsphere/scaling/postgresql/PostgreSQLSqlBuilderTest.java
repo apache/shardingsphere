@@ -23,9 +23,8 @@ import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.junit.Test;
 import org.postgresql.replication.LogSequenceNumber;
 
-import static org.junit.Assert.*;
-
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class PostgreSQLSqlBuilderTest {
     
