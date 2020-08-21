@@ -79,14 +79,6 @@ public final class MySQLPositionManagerTest {
     }
     
     @Test
-    public void assertInitPositionFa() {
-        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(new BinlogPosition(LOG_FILE_NAME, LOG_POSITION).toJson().toString());
-        BinlogPosition actual = mysqlPositionManager.getPosition();
-        assertThat(actual.getFilename(), is(LOG_FILE_NAME));
-        assertThat(actual.getPosition(), is(LOG_POSITION));
-    }
-    
-    @Test
     public void assertUpdateCurrentPosition() {
         MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(dataSource);
         BinlogPosition expected = new BinlogPosition(LOG_FILE_NAME, LOG_POSITION, SERVER_ID);
