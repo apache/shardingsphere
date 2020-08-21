@@ -39,7 +39,6 @@
     <dcl-test-case sql="ALTER USER user_dev RENAME TO user_dev_new" db-types="PostgreSQL"/>
     <dcl-test-case sql="ALTER USER user_dev WITH PASSWORD = 'passwd_dev'" db-types="SQLServer"/>
     <dcl-test-case sql="ALTER USER user_dev WITH PASSWORD 'passwd_dev'" db-types="PostgreSQL"/>
-    <dcl-test-case sql="ALTER USER user_dev WITH PASSWORD 'passwd_dev'" db-types="PostgreSQL"/>
     <dcl-test-case sql="ALTER ROLE role_dev_bak DROP MEMBER member1" db-types="SQLServer"/>
     <dcl-test-case sql="ALTER ROLE role_dev IDENTIFIED EXTERNALLY"  db-types="Oracle"/>
     <dcl-test-case sql="ALTER USER user_dev IDENTIFIED EXTERNALLY" db-types="Oracle"/>
