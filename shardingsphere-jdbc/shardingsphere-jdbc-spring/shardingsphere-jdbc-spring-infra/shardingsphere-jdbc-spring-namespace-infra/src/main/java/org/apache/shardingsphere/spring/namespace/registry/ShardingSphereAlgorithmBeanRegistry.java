@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.parser;
+package org.apache.shardingsphere.spring.namespace.registry;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -39,7 +39,8 @@ public final class ShardingSphereAlgorithmBeanRegistry {
      * @param algorithmFactoryBeanClass ShardingSphere algorithm factory bean class
      * @return ShardingSphere algorithm bean references
      */
-    public static Map<String, RuntimeBeanReference> getAlgorithmBeanReferences(final ParserContext parserContext, final Class<? extends ShardingSphereAlgorithmFactoryBean> algorithmFactoryBeanClass) {
+    public static Map<String, RuntimeBeanReference> getAlgorithmBeanReferences(final ParserContext parserContext, 
+                                                                               final Class<? extends ShardingSphereAlgorithmFactoryBean<?>> algorithmFactoryBeanClass) {
         String[] beanDefinitionNames = parserContext.getRegistry().getBeanDefinitionNames();
         String algorithmFactoryBeanClassName = algorithmFactoryBeanClass.getName();
         Map<String, RuntimeBeanReference> result = new ManagedMap<>(beanDefinitionNames.length);

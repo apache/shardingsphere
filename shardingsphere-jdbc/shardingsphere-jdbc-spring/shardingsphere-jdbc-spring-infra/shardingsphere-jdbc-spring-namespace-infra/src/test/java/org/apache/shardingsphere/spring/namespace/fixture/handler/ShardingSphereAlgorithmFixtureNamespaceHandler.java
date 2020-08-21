@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spring.namespace.factorybean;
+package org.apache.shardingsphere.spring.namespace.fixture.handler;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
+import org.apache.shardingsphere.spring.namespace.fixture.factorybean.ShardingSphereAlgorithmFixtureFactoryBean;
+import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanDefinitionParser;
+import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
-import java.util.Properties;
-
-/**
- * Key generate algorithm factory bean.
- */
-public final class KeyGenerateAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<KeyGenerateAlgorithm> {
+public final class ShardingSphereAlgorithmFixtureNamespaceHandler extends NamespaceHandlerSupport {
     
-    static {
-        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
-    }
-    
-    public KeyGenerateAlgorithmFactoryBean(final String type, final Properties props) {
-        super(KeyGenerateAlgorithm.class, type, props);
+    @Override
+    public void init() {
+        registerBeanDefinitionParser("test-algorithm", new ShardingSphereAlgorithmBeanDefinitionParser(ShardingSphereAlgorithmFixtureFactoryBean.class));
     }
 }

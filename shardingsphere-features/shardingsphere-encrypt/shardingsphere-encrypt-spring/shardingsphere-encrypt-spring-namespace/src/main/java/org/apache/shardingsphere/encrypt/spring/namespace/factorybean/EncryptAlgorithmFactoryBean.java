@@ -33,6 +33,6 @@ public final class EncryptAlgorithmFactoryBean extends ShardingSphereAlgorithmFa
     }
     
     public EncryptAlgorithmFactoryBean(final String type, final Properties props) {
-        super(type, props, EncryptAlgorithm.class);
+        super(EncryptAlgorithm.class, type, props);
     }
 }
