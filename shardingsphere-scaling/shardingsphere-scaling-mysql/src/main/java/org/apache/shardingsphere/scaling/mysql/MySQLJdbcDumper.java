@@ -42,6 +42,18 @@ public final class MySQLJdbcDumper extends AbstractJDBCDumper {
         jdbcDataSourceConfiguration.setJdbcUrl(fixMySQLUrl(jdbcDataSourceConfiguration.getJdbcUrl()));
     }
     
+    private String fixMySQLUrl(final String url) {
+        JdbcUri uri = new JdbcUri(url);
+        return String.format("jdbc:%s://%s/%s?%s", uri.getScheme(), uri.getHost(), uri.getDatabase(), fixMySQLParams(uri.getParameters()));
+    }
+    
+    private String fixMySQLParams(final Map<String, String> parameters) {
+        if (!parameters.containsKey("yearIsDateType")) {
+            parameters.put("yearIsDateType", "false");
+        }
+        return formatMySQLParams(parameters);
+    }
+    
     private String formatMySQLParams(final Map<String, String> params) {
         StringBuilder result = new StringBuilder();
         for (Entry<String, String> entry : params.entrySet()) {
@@ -53,18 +65,6 @@ public final class MySQLJdbcDumper extends AbstractJDBCDumper {
         }
         result.deleteCharAt(result.length() - 1);
         return result.toString();
-    }
-    
-    private String fixMySQLUrl(final String url) {
-        JdbcUri uri = new JdbcUri(url);
-        return String.format("jdbc:%s://%s/%s?%s", uri.getScheme(), uri.getHost(), uri.getDatabase(), fixMySQLParams(uri.getParameters()));
-    }
-    
-    private String fixMySQLParams(final Map<String, String> parameters) {
-        if (!parameters.containsKey("yearIsDateType")) {
-            parameters.put("yearIsDateType", "false");
-        }
-        return formatMySQLParams(parameters);
     }
     
     @Override
@@ -83,7 +83,7 @@ public final class MySQLJdbcDumper extends AbstractJDBCDumper {
     @Override
     protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
         PreparedStatement result = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        result.setFetchSize(Integer.MIN_VALUE);
+        result.setFetchSize(100);
         return result;
     }
 }

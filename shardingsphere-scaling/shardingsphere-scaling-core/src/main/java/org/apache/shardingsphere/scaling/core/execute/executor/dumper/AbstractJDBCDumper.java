@@ -32,10 +32,10 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
+import org.apache.shardingsphere.scaling.core.job.position.FinishedInventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.scaling.core.utils.RdbmsConfigurationUtil;
@@ -98,7 +98,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
                 }
                 pushRecord(record);
             }
-            pushRecord(new FinishedRecord(new FinishedPosition()));
+            pushRecord(new FinishedRecord(new FinishedInventoryPosition()));
         } catch (final SQLException ex) {
             stop();
             channel.close();
@@ -110,7 +110,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     
     private InventoryPosition newInventoryPosition(final ResultSet rs) throws SQLException {
         if (null == inventoryDumperConfiguration.getPrimaryKey()) {
-            return new PlaceholderPosition();
+            return new PlaceholderInventoryPosition();
         }
         return new PrimaryKeyPosition(rs.getLong(inventoryDumperConfiguration.getPrimaryKey()), ((PrimaryKeyPosition) inventoryDumperConfiguration.getPositionManager().getPosition()).getEndValue());
     }

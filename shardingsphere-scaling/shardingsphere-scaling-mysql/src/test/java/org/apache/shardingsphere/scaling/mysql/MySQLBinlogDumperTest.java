@@ -15,23 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.mysql;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
+import org.junit.Test;
 
-/**
- * Placeholder position.
- */
-public final class PlaceholderPosition implements InventoryPosition {
+public final class MySQLBinlogDumperTest {
     
-    @Override
-    public JsonElement toJson() {
-        return new JsonArray();
-    }
+    @Test
+    public void assertStart() {
     
-    @Override
-    public int compareTo(final Position o) {
-        return 0;
     }
 }

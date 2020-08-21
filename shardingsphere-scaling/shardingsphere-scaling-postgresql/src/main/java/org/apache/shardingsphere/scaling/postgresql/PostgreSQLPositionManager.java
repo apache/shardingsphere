@@ -47,7 +47,7 @@ public final class PostgreSQLPositionManager extends BasePositionManager<WalPosi
     }
     
     public PostgreSQLPositionManager(final String position) {
-        setPosition(new WalPosition(LogSequenceNumber.valueOf(position)));
+        setPosition(new WalPosition(LogSequenceNumber.valueOf(Long.parseLong(position))));
     }
     
     @Override
