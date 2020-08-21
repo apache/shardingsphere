@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql92;
 
 import org.apache.shardingsphere.test.sql.parser.integrate.engine.SQLParserParameterizedTest;
 import org.apache.shardingsphere.test.sql.parser.integrate.jaxb.sql.SQLCaseType;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -26,6 +27,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
+@Ignore
 public final class SQL92ParserParameterizedTest extends SQLParserParameterizedTest {
     
     public SQL92ParserParameterizedTest(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
