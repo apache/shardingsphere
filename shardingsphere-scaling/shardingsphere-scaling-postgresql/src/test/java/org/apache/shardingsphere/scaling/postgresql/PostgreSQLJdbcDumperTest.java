@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.mysql;
+package org.apache.shardingsphere.scaling.postgresql;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
@@ -28,28 +28,22 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-public final class MySQLJdbcDumperTest {
+public final class PostgreSQLJdbcDumperTest {
     
     private DataSourceManager dataSourceManager;
     
-    private MySQLJdbcDumper mySQLJdbcDumper;
+    private PostgreSQLJdbcDumper postgreSQLJdbcDumper;
     
     @Before
     public void setUp() {
         dataSourceManager = new DataSourceManager();
-        mySQLJdbcDumper = new MySQLJdbcDumper(mockInventoryDumperConfiguration(), dataSourceManager);
+        postgreSQLJdbcDumper = new PostgreSQLJdbcDumper(mockInventoryDumperConfiguration(), dataSourceManager);
     }
     
     private InventoryDumperConfiguration mockInventoryDumperConfiguration() {
@@ -58,13 +52,6 @@ public final class MySQLJdbcDumperTest {
         InventoryDumperConfiguration result = new InventoryDumperConfiguration(dumperConfiguration);
         result.setTableName("t_order");
         return result;
-    }
-    
-    private DumperConfiguration mockDumperConfiguration() {
-        DumperConfiguration dumperConfiguration = new DumperConfiguration();
-        dumperConfiguration.setDataSourceConfiguration(
-                new JDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
-        return dumperConfiguration;
     }
     
     @SneakyThrows(SQLException.class)
@@ -80,25 +67,18 @@ public final class MySQLJdbcDumperTest {
     
     @Test
     @SneakyThrows(SQLException.class)
-    public void assertReadValue() {
-        ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIMESTAMP);
-        when(resultSetMetaData.getColumnType(2)).thenReturn(Types.VARCHAR);
-        mySQLJdbcDumper.readValue(resultSet, 1);
-        mySQLJdbcDumper.readValue(resultSet, 2);
-        verify(resultSet).getString(1);
-        verify(resultSet).getObject(2);
-    }
-    
-    @Test
-    @SneakyThrows(SQLException.class)
     public void assertCreatePreparedStatement() {
         DataSource dataSource = dataSourceManager.getDataSource(mockDumperConfiguration().getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = mySQLJdbcDumper.createPreparedStatement(connection, "SELECT * FROM t_order")) {
+             PreparedStatement preparedStatement = postgreSQLJdbcDumper.createPreparedStatement(connection, "SELECT * FROM t_order")) {
             assertThat(preparedStatement.getFetchSize(), is(100));
         }
+    }
+    
+    private DumperConfiguration mockDumperConfiguration() {
+        DumperConfiguration dumperConfiguration = new DumperConfiguration();
+        dumperConfiguration.setDataSourceConfiguration(
+                new JDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
+        return dumperConfiguration;
     }
 }
