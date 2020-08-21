@@ -120,10 +120,6 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         }
         schema = schemaName;
     }
-//
-//    public SchemaContext getSchema() {
-//        return ProxySchemaContexts.getInstance().getSchema(schema);
-//    }
     
     @SneakyThrows(InterruptedException.class)
     private boolean isSwitchFailed() {
