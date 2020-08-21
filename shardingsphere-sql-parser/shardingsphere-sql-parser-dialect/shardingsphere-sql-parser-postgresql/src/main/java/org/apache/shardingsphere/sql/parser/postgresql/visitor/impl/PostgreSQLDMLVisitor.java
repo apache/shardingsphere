@@ -206,7 +206,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             result.addAll(expressions);
         }
         Collection<ExpressionSegment> expressions = createInsertValuesSegments(ctx.exprList());
-        InsertValuesSegment insertValuesSegment = new InsertValuesSegment(ctx.exprList().start.getStartIndex(), ctx.exprList().stop.getStopIndex(), (List<ExpressionSegment>) expressions);
+        InsertValuesSegment insertValuesSegment = new InsertValuesSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), (List<ExpressionSegment>) expressions);
         result.add(insertValuesSegment);
         return result;
     }
@@ -217,9 +217,8 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             Collection<ExpressionSegment> tmpResult = createInsertValuesSegments(ctx.exprList());
             result.addAll(tmpResult);
         }
-        visit(ctx.aExpr());
-        CommonExpressionSegment expressionSegment = new CommonExpressionSegment(ctx.aExpr().start.getStartIndex(), ctx.aExpr().stop.getStopIndex(), ctx.aExpr().getText());
-        result.add(expressionSegment);
+        ExpressionSegment expr = (ExpressionSegment) visit(ctx.aExpr());
+        result.add(expr);
         return result;
     }
     
