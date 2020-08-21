@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.database.metadata.dialect.SQLServerDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
@@ -31,8 +30,10 @@ import java.util.Collections;
 @EqualsAndHashCode
 public final class SQLServerDatabaseType implements DatabaseType {
     
-    @Getter
-    private final String name = "SQLServer";
+    @Override
+    public String getName() {
+        return "SQLServer";
+    }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

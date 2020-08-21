@@ -30,11 +30,14 @@ import java.util.Collections;
 /**
  * Database type of H2.
  */
+@Getter
 @EqualsAndHashCode
 public final class H2DatabaseType implements BranchDatabaseType {
     
-    @Getter
-    private final String name = "H2";
+    @Override
+    public String getName() {
+        return "H2";
+    }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

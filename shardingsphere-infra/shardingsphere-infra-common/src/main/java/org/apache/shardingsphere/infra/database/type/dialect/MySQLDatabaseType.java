@@ -28,11 +28,14 @@ import java.util.Collection;
 /**
  * Database type of MySQL.
  */
+@Getter
 @EqualsAndHashCode
 public final class MySQLDatabaseType implements DatabaseType {
     
-    @Getter
-    private final String name = "MySQL";
+    @Override
+    public String getName() {
+        return "MySQL";
+    }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

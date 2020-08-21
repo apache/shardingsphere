@@ -30,11 +30,14 @@ import java.util.Collections;
 /**
  * Database type of Mariadb.
  */
+@Getter
 @EqualsAndHashCode
 public final class MariaDBDatabaseType implements BranchDatabaseType {
     
-    @Getter
-    private final String name = "MariaDB";
+    @Override
+    public String getName() {
+        return "MariaDB";
+    }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

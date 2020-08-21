@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
@@ -31,8 +30,10 @@ import java.util.Collections;
 @EqualsAndHashCode
 public final class PostgreSQLDatabaseType implements DatabaseType {
     
-    @Getter
-    private final String name = "PostgreSQL"; 
+    @Override
+    public String getName() {
+        return "PostgreSQL";
+    }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

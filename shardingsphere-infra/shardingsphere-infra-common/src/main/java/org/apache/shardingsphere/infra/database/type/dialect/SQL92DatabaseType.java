@@ -28,11 +28,14 @@ import java.util.Collections;
 /**
  * Database type of SQL92.
  */
+@Getter
 @EqualsAndHashCode
 public final class SQL92DatabaseType implements DatabaseType {
-    
-    @Getter
-    private final String name = "SQL92"; 
+
+    @Override
+    public String getName() {
+        return "SQL92";
+    }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
