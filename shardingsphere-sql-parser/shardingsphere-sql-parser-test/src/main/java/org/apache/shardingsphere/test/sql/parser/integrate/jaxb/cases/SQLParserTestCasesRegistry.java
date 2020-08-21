@@ -79,7 +79,7 @@ public final class SQLParserTestCasesRegistry {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 String name = entries.nextElement().getName();
-                if (name.startsWith(path + "/") && name.endsWith(".xml")) {
+                if (name.startsWith(path) && name.endsWith(".xml")) {
                     result.add(SQLParserTestCasesRegistry.class.getClassLoader().getResourceAsStream(name));
                 }
             }

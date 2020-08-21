@@ -30,7 +30,7 @@ public final class UnsupportedSQLCasesRegistry {
     private final SQLCasesLoader sqlCasesLoader;
     
     private UnsupportedSQLCasesRegistry() {
-        sqlCasesLoader = new SQLCasesLoader("sql/unsupported");
+        sqlCasesLoader = new SQLCasesLoader("sql/unsupported/");
     }
     
     /**
