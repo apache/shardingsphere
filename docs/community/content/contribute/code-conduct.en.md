@@ -27,7 +27,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Use linux line separators.
  - Keep indents (including blank lines) consistent with the previous one.
  - Keep one blank line after class definition.
- - No meaningless blank lines.
+ - No meaningless blank lines. Please extract private methods to instead of blank lines if too long method body or different logic code fragments.
  - Use meaningful class, method and variable names, avoid to use abbreviate. 
  - Return values are named with `result`; Variables in the loop structure are named with `each`; Replace `each` with `entry` in map.
  - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
