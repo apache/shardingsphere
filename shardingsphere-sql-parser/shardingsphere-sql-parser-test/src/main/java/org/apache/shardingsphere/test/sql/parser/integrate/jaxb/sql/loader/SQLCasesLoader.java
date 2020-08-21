@@ -104,7 +104,7 @@ public final class SQLCasesLoader {
     }
     
     private String getSQLFromMap(final String id, final Map<String, SQLCase> sqlCaseMap) {
-        Preconditions.checkState(sqlCaseMap.containsKey(id), "Can't find SQL of id: %s", id);
+        Preconditions.checkState(sqlCaseMap.containsKey(id), "Can't find SQL of ID: %s", id);
         SQLCase statement = sqlCaseMap.get(id);
         return statement.getValue();
     }
@@ -117,8 +117,7 @@ public final class SQLCasesLoader {
         if (null == parameters || parameters.isEmpty()) {
             return sql;
         }
-        return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
-                .replace("%%", "%").replace("'%'", "'%%'");
+        return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
     }
     
     /**
