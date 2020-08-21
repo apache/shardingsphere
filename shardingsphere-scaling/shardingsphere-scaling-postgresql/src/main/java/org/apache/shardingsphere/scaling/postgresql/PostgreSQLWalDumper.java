@@ -26,6 +26,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
 import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalEventConverter;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
@@ -80,7 +81,7 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<W
             while (isRunning()) {
                 ByteBuffer msg = stream.readPending();
                 if (msg == null) {
-                    sleep();
+                    ThreadUtil.sleep(10L);
                     continue;
                 }
                 AbstractWalEvent event = decodingPlugin.decode(msg, stream.getLastReceiveLSN());
@@ -88,13 +89,6 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<W
             }
         } catch (final SQLException ex) {
             throw new SyncTaskExecuteException(ex);
-        }
-    }
-    
-    private void sleep() {
-        try {
-            Thread.sleep(10L);
-        } catch (final InterruptedException ignored) {
         }
     }
     

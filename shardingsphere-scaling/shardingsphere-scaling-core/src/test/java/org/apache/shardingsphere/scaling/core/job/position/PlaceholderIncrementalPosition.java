@@ -21,9 +21,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * Finished position.
+ * Placeholder inventory position.
  */
-public final class FinishedPosition implements InventoryPosition {
+public final class PlaceholderIncrementalPosition implements IncrementalPosition {
     
     @Override
     public JsonElement toJson() {

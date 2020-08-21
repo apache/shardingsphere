@@ -82,14 +82,24 @@ public final class MySQLDataSourceCheckerTest {
         dataSourceChecker.checkPrivilege(dataSources);
         verify(preparedStatement, Mockito.times(1)).executeQuery();
     }
-
+    
     @Test
-    public void assertCheckPrivilegeFailure() throws SQLException {
+    public void assertCheckPrivilegeLackPrivileges() throws SQLException {
         when(resultSet.next()).thenReturn(false);
         try {
             dataSourceChecker.checkPrivilege(dataSources);
         } catch (final PrepareFailedException ex) {
             assertThat(ex.getMessage(), is("Source datasource is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges."));
+        }
+    }
+    
+    @Test
+    public void assertCheckPrivilegeFailure() throws SQLException {
+        when(resultSet.next()).thenThrow(new SQLException());
+        try {
+            dataSourceChecker.checkPrivilege(dataSources);
+        } catch (final PrepareFailedException ex) {
+            assertThat(ex.getMessage(), is("Source datasource check privileges failed."));
         }
     }
     
@@ -102,14 +112,23 @@ public final class MySQLDataSourceCheckerTest {
     }
     
     @Test
-    public void assertCheckVariableFailure() throws SQLException {
+    public void assertCheckVariableWithWrongVariable() throws SQLException {
         when(resultSet.next()).thenReturn(true, true);
         when(resultSet.getString(2)).thenReturn("OFF", "ROW");
         try {
             dataSourceChecker.checkVariable(dataSources);
-        } catch (final PrepareFailedException checkFailedEx) {
-            assertThat(checkFailedEx.getMessage(), is("Source datasource required LOG_BIN = ON, now is OFF"));
+        } catch (final PrepareFailedException ex) {
+            assertThat(ex.getMessage(), is("Source datasource required LOG_BIN = ON, now is OFF"));
         }
     }
     
+    @Test
+    public void assertCheckVariableFailure() throws SQLException {
+        when(resultSet.next()).thenThrow(new SQLException());
+        try {
+            dataSourceChecker.checkVariable(dataSources);
+        } catch (final PrepareFailedException ex) {
+            assertThat(ex.getMessage(), is("Source datasource check variables failed."));
+        }
+    }
 }

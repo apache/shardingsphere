@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
+import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -54,11 +55,7 @@ public final class MemoryChannel implements Channel {
             if (timeout * 1000L <= System.currentTimeMillis() - start) {
                 break;
             }
-            try {
-                Thread.sleep(100L);
-            } catch (final InterruptedException ignored) {
-                break;
-            }
+            ThreadUtil.sleep(100L);
         }
         queue.drainTo(records, batchSize);
         toBeAcknowledgeRecords.addAll(records);

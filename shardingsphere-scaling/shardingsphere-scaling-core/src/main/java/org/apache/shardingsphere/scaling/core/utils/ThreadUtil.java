@@ -17,31 +17,19 @@
 
 package org.apache.shardingsphere.scaling.core.utils;
 
-import com.google.gson.Gson;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
-
-import java.util.List;
-
 /**
- * Inventory position util.
+ * Thread util.
  */
-public final class InventoryPositionUtil {
-    
-    private static final Gson GSON = new Gson();
+public final class ThreadUtil {
     
     /**
-     * Transform primary key position from json to object.
-     *
-     * @param json json data
-     * @return primary key position
+     * Sleep ignored InterruptedException.
+     * @param millis sleep time.
      */
-    public static InventoryPosition fromJson(final String json) {
-        List<Double> values = GSON.<List<Double>>fromJson(json, List.class);
-        if (2 == values.size()) {
-            return new PrimaryKeyPosition(values.get(0).longValue(), values.get(1).longValue());
+    public static void sleep(final long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ignored) {
         }
-        return new PlaceholderInventoryPosition();
     }
 }
