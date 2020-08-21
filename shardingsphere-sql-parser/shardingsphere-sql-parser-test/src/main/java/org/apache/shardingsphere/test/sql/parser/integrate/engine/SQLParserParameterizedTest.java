@@ -51,7 +51,7 @@ public abstract class SQLParserParameterizedTest {
     private final SQLCaseType sqlCaseType;
     
     protected static Collection<Object[]> getTestParameters(final String... databaseTypes) {
-//        checkTestCases();
+        checkTestCases();
         Collection<Object[]> result = new LinkedList<>();
         for (Object[] each : SQL_CASES_LOADER.getSQLTestParameters(Arrays.asList(databaseTypes))) {
             if (!isPlaceholderWithoutParameter(each)) {
