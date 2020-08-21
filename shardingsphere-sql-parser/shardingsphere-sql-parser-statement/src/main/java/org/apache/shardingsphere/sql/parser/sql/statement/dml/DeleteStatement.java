@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
@@ -37,6 +39,10 @@ public final class DeleteStatement extends DMLStatement {
     
     private WhereSegment where;
     
+    private OrderBySegment orderBy;
+
+    private LimitSegment limit;
+    
     /**
      * Get where.
      *
@@ -44,5 +50,23 @@ public final class DeleteStatement extends DMLStatement {
      */
     public Optional<WhereSegment> getWhere() {
         return Optional.ofNullable(where);
+    }
+    
+    /**
+     * Get order by segment.
+     *
+     * @return order by segment
+     */
+    public Optional<OrderBySegment> getOrderBy() {
+        return Optional.ofNullable(orderBy);
+    }
+
+    /**
+     * Get order by segment.
+     *
+     * @return order by segment
+     */
+    public Optional<LimitSegment> getLimit() {
+        return Optional.ofNullable(limit);
     }
 }

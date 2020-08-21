@@ -31,4 +31,5 @@
     <sql-case id="update_with_column_equal_column" value="update t_order set order_id = order_id, status = 'init' where order_id = order_id AND order_id = ?" db-types="MySQL"/>
     <sql-case id="update_with_case_when" value="update stock_freeze_detail set row_status=case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end,
     update_user=case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end, update_time=case WHEN (id=?) THEN ? end where  tenant_id = ?" db-types="MySQL"/>
+    <sql-case id="update_with_order_by_row_count" value="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ? ORDER BY order_id LIMIT ?" db-types="MySQL"/>
 </sql-cases>

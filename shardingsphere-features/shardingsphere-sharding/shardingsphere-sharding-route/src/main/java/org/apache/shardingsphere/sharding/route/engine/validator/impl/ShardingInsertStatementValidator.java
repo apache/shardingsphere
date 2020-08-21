@@ -48,12 +48,12 @@ public final class ShardingInsertStatementValidator implements ShardingStatement
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = sqlStatement.getOnDuplicateKeyColumns();
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(shardingRule, onDuplicateKeyColumnsSegment.get(), tableName)) {
-            throw new ShardingSphereException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support update for sharding column.");
+            throw new ShardingSphereException("INSERT INTO ... ON DUPLICATE KEY UPDATE can not support update for sharding column.");
         }
         Optional<SubquerySegment> insertSelectSegment = sqlStatement.getInsertSelect();
         if (insertSelectSegment.isPresent() && isContainsKeyGenerateStrategy(shardingRule, tableName)
                 && !isContainsKeyGenerateColumn(shardingRule, sqlStatement.getColumns(), tableName)) {
-            throw new ShardingSphereException("INSERT INTO .... SELECT can not support applying keyGenerator to absent generateKeyColumn.");
+            throw new ShardingSphereException("INSERT INTO ... SELECT can not support applying keyGenerator to absent generateKeyColumn.");
         }
         TablesContext tablesContext = sqlStatementContext.getTablesContext();
         if (insertSelectSegment.isPresent() && !isAllSameTables(tablesContext.getTableNames()) && !shardingRule.isAllBindingTables(tablesContext.getTableNames())) {

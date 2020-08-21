@@ -19,11 +19,17 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.where.WhereClauseAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.limit.LimitClauseAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.orderby.OrderByClauseAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.where.WhereClauseAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
+
+import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -44,6 +50,8 @@ public final class DeleteStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertWhereClause(assertContext, actual, expected);
+        assertOrderByClause(assertContext, actual, expected);
+        assertLimitClause(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
@@ -56,6 +64,26 @@ public final class DeleteStatementAssert {
             WhereClauseAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhereClause());
         } else {
             assertFalse(assertContext.getText("Actual where segment should not exist."), actual.getWhere().isPresent());
+        }
+    }
+    
+    private static void assertOrderByClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
+        if (null != expected.getOrderByClause()) {
+            assertTrue(assertContext.getText("Actual order by segment should exist."), actual.getOrderBy().isPresent());
+            OrderByClauseAssert.assertIs(assertContext, actual.getOrderBy().get(), expected.getOrderByClause());
+        } else {
+            assertFalse(assertContext.getText("Actual order by segment should not exist."), actual.getOrderBy().isPresent());
+        }
+    }
+
+    private static void assertLimitClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
+        Optional<LimitSegment> limitSegment = actual.getLimit();
+        if (null != expected.getLimitClause()) {
+            assertTrue(assertContext.getText("Actual limit segment should exist."), limitSegment.isPresent());
+            LimitClauseAssert.assertRowCount(assertContext, limitSegment.get().getRowCount().orElse(null), expected.getLimitClause().getRowCount());
+            SQLSegmentAssert.assertIs(assertContext, limitSegment.get(), expected.getLimitClause());
+        } else {
+            assertFalse(assertContext.getText("Actual limit segment should not exist."), limitSegment.isPresent());
         }
     }
 }
