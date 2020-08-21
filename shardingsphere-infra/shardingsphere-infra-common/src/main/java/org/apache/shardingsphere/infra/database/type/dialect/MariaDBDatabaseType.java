@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MariaDBDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -30,7 +29,6 @@ import java.util.Collections;
 /**
  * Database type of Mariadb.
  */
-@Getter
 @EqualsAndHashCode
 public final class MariaDBDatabaseType implements BranchDatabaseType {
     
