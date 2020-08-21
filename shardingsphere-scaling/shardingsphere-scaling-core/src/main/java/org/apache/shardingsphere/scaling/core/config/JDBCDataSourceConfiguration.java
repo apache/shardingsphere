@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
  */
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "databaseType")
 public final class JDBCDataSourceConfiguration implements DataSourceConfiguration {
     
     private String jdbcUrl;
