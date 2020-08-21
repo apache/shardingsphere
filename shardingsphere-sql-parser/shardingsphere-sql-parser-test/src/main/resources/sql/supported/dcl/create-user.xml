@@ -37,10 +37,10 @@
     <sql-case id="create_user_with_options" value="CREATE USER user1 DEFAULT ROLE role1 MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT ACCOUNT LOCK" db-types="MySQL" />
     <sql-case id="create_external_user" value="CREATE USER user1 IDENTIFIED EXTERNALLY" db-types="Oracle" />
     <sql-case id="create_global_user" value="CREATE USER user1 IDENTIFIED GLOBALLY" db-types="Oracle" />
-    <sql-case id="create_user_with_password" value="CREATE USER user1 IDENTIFIED BY RANDOM password default role role1" />
+    <sql-case id="create_user_with_password" value="CREATE USER user1 IDENTIFIED BY RANDOM password default role role1" db-types="H2,MySQL,PostgreSQL,Oracle,SQLServer" />
     <sql-case id="create_user_with_tablespace" value="CREATE USER user1 IDENTIFIED BY password DEFAULT TABLESPACE tablespace1" db-types="Oracle" />
     <sql-case id="create_user_with_quota_option" value="CREATE USER user1 IDENTIFIED BY password QUOTA 1M ON tablespace1" db-types="Oracle" />
-    <sql-case id="create_user_with_password_expire_lock" value="CREATE USER user1 IDENTIFIED BY RANDOM password default role role1 PASSWORD EXPIRE ACCOUNT LOCK" />
+    <sql-case id="create_user_with_password_expire_lock" value="CREATE USER user1 IDENTIFIED BY RANDOM password default role role1 PASSWORD EXPIRE ACCOUNT LOCK" db-types="H2,MySQL,PostgreSQL,Oracle,SQLServer" />
     <sql-case id="create_user_only_with_name" value="CREATE USER user1" db-types="PostgreSQL,SQLServer" />
     <sql-case id="create_user_with_password_postgresql" value="CREATE USER user1 WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
     <sql-case id="create_user_with_option_postgresql" value="CREATE USER user1 WITH SUPERUSER" db-types="PostgreSQL" />

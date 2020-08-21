@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="truncate_table" value="TRUNCATE TABLE t_log" />
+    <sql-case id="truncate_table" value="TRUNCATE TABLE t_log" db-types="H2,MySQL,PostgreSQL,Oracle,SQLServer" />
     <sql-case id="truncate_table_only" value="TRUNCATE TABLE ONLY t_log" db-types="PostgreSQL" />
     <sql-case id="truncate_table_with_space" value="    TRUNCATE TABLE
         t_order    " db-types="MySQL" />

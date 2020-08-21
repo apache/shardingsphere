@@ -161,7 +161,7 @@ public final class SQLCasesLoader {
     }
     
     private static Collection<String> getALlDatabaseTypes() {
-        return Arrays.asList("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer");
+        return Arrays.asList("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer", "SQL92");
     }
     
     /**

@@ -38,7 +38,7 @@
     <sql-case id="select_distinct_with_count_sum" value="SELECT COUNT(DISTINCT order_id), SUM(DISTINCT order_id) FROM t_order WHERE order_id &lt; 1100" db-types="MySQL" />
     <sql-case id="select_distinct_with_single_count_group_by" value="SELECT order_id, COUNT(DISTINCT order_id) c FROM t_order WHERE order_id &lt; 1100 GROUP BY order_id ORDER BY order_id" />
     <sql-case id="select_distinct_with_count_group_by" value="SELECT COUNT(DISTINCT order_id) c, order_id FROM t_order GROUP BY order_id ORDER BY order_id" />
-    <sql-case id="select_distinct_function" value="SELECT DISTINCT(item_id) FROM t_order_item ORDER BY item_id" />
+    <sql-case id="select_distinct_function" value="SELECT DISTINCT(item_id) FROM t_order_item ORDER BY item_id" db-types="H2,MySQL,PostgreSQL,Oracle,SQLServer" />
     <sql-case id="select_distinct_with_count_calculation" value="SELECT COUNT(DISTINCT user_id + order_id) c FROM t_order WHERE order_id &lt; 1100" />
     <sql-case id="select_distinct_with_aggregation_functions" value="SELECT SUM(DISTINCT order_id),count(DISTINCT order_id),count(order_id)  FROM t_order WHERE order_id &lt; 1100" />
 </sql-cases>
