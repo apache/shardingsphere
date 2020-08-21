@@ -33,6 +33,6 @@ public final class MasterSlaveLoadBalanceAlgorithmFactoryBean extends ShardingSp
     }
     
     public MasterSlaveLoadBalanceAlgorithmFactoryBean(final String type, final Properties props) {
-        super(type, props, MasterSlaveLoadBalanceAlgorithm.class);
+        super(MasterSlaveLoadBalanceAlgorithm.class, type, props);
     }
 }

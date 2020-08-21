@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata.table;
 
-import java.sql.ResultSet;
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.MetaDataConnection;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaDataLoader;
+import org.apache.shardingsphere.sql.parser.binder.metadata.util.JdbcUtil;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import org.apache.shardingsphere.sql.parser.binder.metadata.util.JdbcUtil;
+import java.util.Optional;
 
 /**
  * Table meta data loader.

@@ -7,4 +7,4 @@ chapter = true
 
 ## 导览
 
-本章节将介绍ShardingSphere-UI相关使用。
+本章节将介绍 ShardingSphere-UI 相关使用。

@@ -19,16 +19,12 @@ grammar RDLStatement;
 
 import Keyword, Literals, Symbol;
 
-createSchema
-    : CREATE SCHEMA schemaName
+createDataSources
+    : CREATE DATASOURCES LP dataSource (COMMA dataSource)* RP
     ;
 
-createDatasource
-    : CREATE DATASOURCE dataSource (COMMA dataSource)*
-    ;
-
-createShardingRule
-    : CREATE SHARDINGRULE tableRule (COMMA tableRule)*
+createShardingRules
+    : CREATE SHARDINGRULES LP tableRule (COMMA tableRule)* RP
     ;
 
 tableRule
@@ -40,7 +36,7 @@ dataSource
     ;
        
 dataSourceDefinition
-    : hostName COLON port COLON dbName COLON user COLON password
+    : hostName COLON port COLON dbName (COLON user (COLON password)?)?
     ;
 
 tableRuleDefinition
@@ -64,10 +60,6 @@ strategyProp
     ;
 
 dataSourceName
-    : IDENTIFIER
-    ;
- 
-schemaName
     : IDENTIFIER
     ;
 

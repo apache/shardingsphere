@@ -447,4 +447,40 @@
             </and-predicate>
         </where>
     </update>
+
+    <update sql-case-id="update_with_case_when" parameters="3, 2, 4, 2, 10, 2, 3, 'll', 4, 'll', 10, 'll', 3, '2020-08-10T17:15:25.979+0800', 'jd'">
+        <table name="stock_freeze_detail" start-index="7" stop-index="25" />
+        <set start-index="27" stop-index="230" literal-stop-index="270" literal-start-index="27" >
+            <assignment start-index="31" stop-index="106" literal-start-index="31" literal-stop-index="107">
+                <column name="row_status" start-index="31" stop-index="40" />
+                <assignment-value>
+                    <common-expression text="case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end" literal-text="case WHEN (id=3) THEN 2 WHEN (id=4) THEN 2 WHEN (id=10) THEN 2 end" start-index="42" stop-index="106" literal-start-index="42" literal-stop-index="107"/>
+                </assignment-value>
+            </assignment>
+            <assignment start-index="113" stop-index="189" literal-start-index="114" literal-stop-index="200">
+                <column name="update_user" start-index="113" stop-index="123" literal-start-index="114" literal-stop-index="124"/>
+                <assignment-value>
+                    <common-expression text="case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end" literal-text="case WHEN (id=3) THEN 'll' WHEN (id=4) THEN 'll' WHEN (id=10) THEN 'll' end" start-index="125" stop-index="189" literal-start-index="126" literal-stop-index="200"/>
+                </assignment-value>
+            </assignment>
+            <assignment start-index="192" stop-index="230" literal-start-index="203" literal-stop-index="270">
+                <column name="update_time" start-index="192" stop-index="202" literal-start-index="203" literal-stop-index="213" />
+                <assignment-value>
+                    <common-expression text="case WHEN (id=?) THEN ? end" literal-text="case WHEN (id=3) THEN '2020-08-10T17:15:25.979+0800' end" start-index="204" stop-index="230" literal-start-index="215" literal-stop-index="270"/>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="232" stop-index="251" literal-start-index="272" literal-stop-index="294">
+            <and-predicate>
+                <predicate start-index="239" stop-index="251" literal-start-index="279" literal-stop-index="294">
+                    <column-left-value name="tenant_id" start-index="239" stop-index="247" literal-start-index="279" literal-stop-index="287" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="14" start-index="251" stop-index="251"/>
+                        <literal-expression value="jd" literal-start-index="291" literal-stop-index="294"/>
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </update>
 </sql-parser-test-cases>

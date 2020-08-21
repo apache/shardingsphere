@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.masterslave.spring.boot;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.masterslave.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.spring.boot.algorithm.MasterSlaveAlgorithmProvidedBeanRegistry;
 import org.apache.shardingsphere.masterslave.spring.boot.condition.MasterSlaveSpringBootCondition;
+import org.apache.shardingsphere.masterslave.spring.boot.rule.YamlMasterSlaveRuleSpringBootConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.swapper.MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapper;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -39,37 +42,28 @@ import java.util.Optional;
  * Rule spring boot configuration for master-slave.
  */
 @Configuration
+@EnableConfigurationProperties(YamlMasterSlaveRuleSpringBootConfiguration.class)
 @ConditionalOnClass(YamlMasterSlaveRuleConfiguration.class)
 @Conditional(MasterSlaveSpringBootCondition.class)
+@RequiredArgsConstructor
 public class MasterSlaveRuleSpringbootConfiguration {
     
     private final MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapper swapper = new MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapper();
     
-    /**
-     * YAML rule spring boot configuration for master-slave.
-     *
-     * @return YAML rule configuration
-     */
-    @Bean
-    @ConfigurationProperties(prefix = "spring.shardingsphere.rules.master-slave")
-    public YamlMasterSlaveRuleConfiguration masterSlaveConfig() {
-        return new YamlMasterSlaveRuleConfiguration();
-    }
+    private final YamlMasterSlaveRuleSpringBootConfiguration yamlConfig;
     
     /**
      * Master slave rule configuration for spring boot.
      *
-     * @param yamlRuleConfiguration YAML master slave rule configuration
      * @param loadBalanceAlgorithms load balance algorithms
      * @return master slave rule configuration
      */
     @Bean
-    public RuleConfiguration masterSlaveRuleConfiguration(final YamlMasterSlaveRuleConfiguration yamlRuleConfiguration,
-                                                          final ObjectProvider<Map<String, MasterSlaveLoadBalanceAlgorithm>> loadBalanceAlgorithms) {
-        AlgorithmProvidedMasterSlaveRuleConfiguration ruleConfiguration = swapper.swapToObject(yamlRuleConfiguration);
+    public RuleConfiguration masterSlaveRuleConfiguration(final ObjectProvider<Map<String, MasterSlaveLoadBalanceAlgorithm>> loadBalanceAlgorithms) {
+        AlgorithmProvidedMasterSlaveRuleConfiguration result = swapper.swapToObject(yamlConfig.getMasterSlave());
         Map<String, MasterSlaveLoadBalanceAlgorithm> balanceAlgorithmMap = Optional.ofNullable(loadBalanceAlgorithms.getIfAvailable()).orElse(Collections.emptyMap());
-        ruleConfiguration.setLoadBalanceAlgorithms(balanceAlgorithmMap);
-        return ruleConfiguration;
+        result.setLoadBalanceAlgorithms(balanceAlgorithmMap);
+        return result;
     }
     
     /**
@@ -83,4 +77,3 @@ public class MasterSlaveRuleSpringbootConfiguration {
         return new MasterSlaveAlgorithmProvidedBeanRegistry(environment);
     }
 }
-

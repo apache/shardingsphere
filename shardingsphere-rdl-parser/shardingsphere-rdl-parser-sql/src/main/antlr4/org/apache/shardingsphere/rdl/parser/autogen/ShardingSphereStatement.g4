@@ -20,8 +20,7 @@ grammar ShardingSphereStatement;
 import Symbol, RDLStatement;
 
 execute
-    : (createSchema
-    | createDatasource
-    | createShardingRule
+    : (createDataSources
+    | createShardingRules
     ) SEMI?
     ;
