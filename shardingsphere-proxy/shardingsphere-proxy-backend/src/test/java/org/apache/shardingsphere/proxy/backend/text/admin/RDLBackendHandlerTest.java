@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -30,9 +33,13 @@ import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesState
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDatabaseStatement;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -41,11 +48,19 @@ import static org.mockito.Mockito.when;
 
 public final class RDLBackendHandlerTest {
     
+    @Before
+    @SneakyThrows(ReflectiveOperationException.class)
+    public void setUp() {
+        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        schemaContexts.setAccessible(true);
+        schemaContexts.set(ProxySchemaContexts.getInstance(),
+                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+    }
+    
     @Test
     public void assertExecuteCreateDatabaseContext() {
-        SchemaContext context = new SchemaContext("sharding_db", null, null);
         BackendConnection connection = mock(BackendConnection.class);
-        when(connection.getSchema()).thenReturn(context);
+        when(connection.getSchema()).thenReturn("schema");
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new CreateDatabaseStatement("new_db"));
         BackendResponse response = executeEngine.execute();
         assertThat(response, instanceOf(ErrorResponse.class));
@@ -54,11 +69,15 @@ public final class RDLBackendHandlerTest {
         assertThat(response, instanceOf(UpdateResponse.class));
     }
     
+    private Map<String, SchemaContext> getSchemaContextMap() {
+        SchemaContext result = new SchemaContext("schema", null, null);
+        return Collections.singletonMap("schema", result);
+    }
+    
     @Test
     public void assertExecuteDataSourcesContext() {
-        SchemaContext context = new SchemaContext("sharding_db", null, null);
         BackendConnection connection = mock(BackendConnection.class);
-        when(connection.getSchema()).thenReturn(context);
+        when(connection.getSchema()).thenReturn("schema");
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, mock(CreateDataSourcesStatement.class));
         BackendResponse response = executeEngine.execute();
         assertThat(response, instanceOf(ErrorResponse.class));
@@ -69,9 +88,8 @@ public final class RDLBackendHandlerTest {
     
     @Test
     public void assertExecuteShardingRuleContext() {
-        SchemaContext context = new SchemaContext("sharding_db", null, null);
         BackendConnection connection = mock(BackendConnection.class);
-        when(connection.getSchema()).thenReturn(context);
+        when(connection.getSchema()).thenReturn("schema");
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, mock(CreateShardingRuleStatement.class));
         BackendResponse response = executeEngine.execute();
         assertThat(response, instanceOf(ErrorResponse.class));

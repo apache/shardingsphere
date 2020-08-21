@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
-import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -60,7 +59,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private static final int POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME = 1;
     
-    private volatile SchemaContext schema;
+    private volatile String schema;
     
     private TransactionType transactionType;
     
@@ -119,8 +118,12 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (isSwitchFailed()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
-        schema = ProxySchemaContexts.getInstance().getSchema(schemaName);
+        schema = schemaName;
     }
+//
+//    public SchemaContext getSchema() {
+//        return ProxySchemaContexts.getInstance().getSchema(schema);
+//    }
     
     @SneakyThrows(InterruptedException.class)
     private boolean isSwitchFailed() {
@@ -187,7 +190,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> getConnectionFromUnderlying(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return ProxySchemaContexts.getInstance().getBackendDataSource().getConnections(schema.getName(), dataSourceName, connectionSize, connectionMode);
+        return ProxySchemaContexts.getInstance().getBackendDataSource().getConnections(schema, dataSourceName, connectionSize, connectionMode);
     }
     
     @Override

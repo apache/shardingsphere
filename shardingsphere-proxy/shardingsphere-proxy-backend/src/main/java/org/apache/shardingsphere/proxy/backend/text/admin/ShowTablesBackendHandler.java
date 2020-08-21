@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
+import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
@@ -52,11 +54,12 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     
     @Override
     public BackendResponse execute() {
-        if (null == backendConnection.getSchema()) {
+        SchemaContext context = ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema());
+        if (null == context) {
             return new ErrorResponse(new NoDatabaseSelectedException());
         }
-        if (!backendConnection.getSchema().isComplete()) {
-            return getDefaultQueryResponse(backendConnection.getSchema().getName());
+        if (!context.isComplete()) {
+            return getDefaultQueryResponse(backendConnection.getSchema());
         }
         // TODO Get all tables from meta data.
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
