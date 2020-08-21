@@ -142,10 +142,10 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     }
     
     private ClusterConfiguration swap(final YamlClusterConfiguration yamlClusterConfiguration) {
-        return null == yamlClusterConfiguration ? null : new ClusterConfigurationYamlSwapper().swapToObject(root.getCluster());
+        return null == yamlClusterConfiguration ? null : new ClusterConfigurationYamlSwapper().swapToObject(yamlClusterConfiguration);
     }
     
     private MetricsConfiguration swap(final YamlMetricsConfiguration yamlMetricsConfiguration) {
-        return null == yamlMetricsConfiguration ? null : new MetricsConfigurationYamlSwapper().swapToObject(root.getMetrics());
+        return null == yamlMetricsConfiguration ? null : new MetricsConfigurationYamlSwapper().swapToObject(yamlMetricsConfiguration);
     }
 }
