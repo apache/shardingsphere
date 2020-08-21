@@ -24,8 +24,8 @@
     <sql-case id="create_global_temporary_table" value="CREATE GLOBAL TEMPORARY TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle,PostgreSQL" />
     <sql-case id="create_local_temp_table" value="CREATE LOCAL TEMP TABLE t_temp_log(id int, status varchar(10))" db-types="PostgreSQL" />
     <sql-case id="create_unlogged_table" value="CREATE UNLOGGED TABLE t_log(id int, status varchar(10))" db-types="PostgreSQL" />
-    <sql-case id="create_index" value="CREATE INDEX t_log_index ON t_log (id)" />
-    <sql-case id="create_unique_index" value="CREATE UNIQUE INDEX t_log_index ON t_log (id)" />
+    <sql-case id="create_index" value="CREATE INDEX t_log_index ON t_log (id)" db-types="H2,MySQL,PostgreSQL,Oracle,SQLServer" />
+    <sql-case id="create_unique_index" value="CREATE UNIQUE INDEX t_log_index ON t_log (id)" db-types="H2,MySQL,PostgreSQL,Oracle,SQLServer" />
     
     <sql-case id="create_table_with_space" value="    CREATE TABLE t_order_item (
         item_id INT,
@@ -72,7 +72,7 @@
     ON
         t_order (order_id)    " db-types="MySQL,SQLServer" />
     <sql-case id="create_index_with_back_quota" value="CREATE INDEX `order_index` ON `t_order` (`order_id`)" db-types="MySQL" />
-    <sql-case id="create_composite_index" value="CREATE INDEX order_index ON t_order (order_id, user_id, status)" />
+    <sql-case id="create_composite_index" value="CREATE INDEX order_index ON t_order (order_id, user_id, status)" db-types="H2,MySQL,PostgreSQL,Oracle,SQLServer" />
     <sql-case id="create_btree_index" value="CREATE INDEX order_index ON t_order USING BTREE (order_id)" db-types="PostgreSQL" />
     <sql-case id="create_table_with_quota" value="CREATE TABLE &quot;t_order&quot; (&quot;order_id&quot; NUMBER(10), &quot;user_id&quot; NUMBER(10), &quot;status&quot; VARCHAR2(10), &quot;column1&quot; VARCHAR2(10), &quot;column2&quot; VARCHAR2(10), &quot;column3&quot; VARCHAR2(10))" db-types="Oracle" />
     <sql-case id="create_table_with_column_on_null_default" value="CREATE TABLE t_order (order_id NUMBER(10) DEFAULT ON NULL 0, user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle" />
