@@ -25,12 +25,19 @@ import org.apache.shardingsphere.test.sql.parser.integrate.jaxb.cases.domain.sta
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * SQL parser test cases registry.
@@ -43,30 +50,56 @@ public final class SQLParserTestCasesRegistry {
         sqlParserTestCases = load(rootDirectory);
     }
     
-    @SneakyThrows(URISyntaxException.class)
+    @SneakyThrows({URISyntaxException.class, IOException.class})
     private Map<String, SQLParserTestCase> load(final String directory) {
-        URL url = SQLParserTestCasesRegistry.class.getClassLoader().getResource(directory);
-        Preconditions.checkNotNull(url, "Can not find SQL parser test cases.");
-        File[] files = new File(url.toURI().getPath()).listFiles();
-        Preconditions.checkNotNull(files, "Can not find SQL parser test cases.");
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
-        for (File each : files) {
-            putAll(load(each), result);
+        File file = new File(SQLParserTestCasesRegistry.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        if (file.isFile()) {
+            for (InputStream each : loadInputStreamsFromJar(directory, file)) {
+                putAll(getSQLParserTestCases(each), result);
+            }
+        } else {
+            URL url = SQLParserTestCasesRegistry.class.getClassLoader().getResource(directory);
+            Preconditions.checkNotNull(url, "Can not find SQL parser test cases.");
+            File filePath = new File(url.toURI().getPath());
+            File[] files = filePath.listFiles();
+            if (null == files) {
+                return result;
+            }
+            for (File each : files) {
+                putAll(loadTestCasesFromDirectory(each), result);
+            }
         }
         return result;
     }
     
-    private Map<String, SQLParserTestCase> load(final File file) {
+    private Collection<InputStream> loadInputStreamsFromJar(final String path, final File file) throws IOException {
+        Collection<InputStream> result = new LinkedList<>();
+        try (JarFile jar = new JarFile(file)) {
+            Enumeration<JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                String name = entries.nextElement().getName();
+                if (name.startsWith(path + "/") && name.endsWith(".xml")) {
+                    result.add(SQLParserTestCasesRegistry.class.getClassLoader().getResourceAsStream(name));
+                }
+            }
+        }
+        return result;
+    }
+    
+    private Map<String, SQLParserTestCase> loadTestCasesFromDirectory(final File file) throws IOException {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (null != files) {
                 for (File each : files) {
-                    putAll(load(each), result);
+                    putAll(loadTestCasesFromDirectory(each), result);
                 }
             }
         } else {
-            putAll(getSQLParserTestCases(file), result);
+            try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                putAll(getSQLParserTestCases(fileInputStream), result);
+            }
         }
         return result;
     }
@@ -78,9 +111,9 @@ public final class SQLParserTestCasesRegistry {
         target.putAll(sqlParserTestCases);
     }
     
-    private Map<String, SQLParserTestCase> getSQLParserTestCases(final File file) {
+    private Map<String, SQLParserTestCase> getSQLParserTestCases(final InputStream inputStream) {
         try {
-            return ((SQLParserTestCases) JAXBContext.newInstance(SQLParserTestCases.class).createUnmarshaller().unmarshal(file)).getAllSQLParserTestCases();
+            return ((SQLParserTestCases) JAXBContext.newInstance(SQLParserTestCases.class).createUnmarshaller().unmarshal(inputStream)).getAllSQLParserTestCases();
         } catch (final JAXBException ex) {
             throw new RuntimeException(ex);
         }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.oracle;
 
 import org.apache.shardingsphere.test.sql.parser.integrate.engine.UnsupportedSQLParserParameterizedTest;
 import org.apache.shardingsphere.test.sql.parser.integrate.jaxb.sql.SQLCaseType;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -27,7 +26,6 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-@Ignore
 public final class UnsupportedOracleParserParameterizedTest extends UnsupportedSQLParserParameterizedTest {
     
     public UnsupportedOracleParserParameterizedTest(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
