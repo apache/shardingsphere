@@ -24,24 +24,21 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.sql.parser.integrate.jaxb.sql.SQLCase;
 import org.apache.shardingsphere.test.sql.parser.integrate.jaxb.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.integrate.jaxb.sql.SQLCases;
+import org.apache.shardingsphere.test.sql.parser.integrate.loader.TestCaseFileLoader;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**
  * SQL test cases loader.
@@ -57,57 +54,23 @@ public final class SQLCasesLoader {
     @SneakyThrows({JAXBException.class, IOException.class})
     private Map<String, SQLCase> loadSQLCases(final String path) {
         File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-        return file.isFile() ? loadSQLCasesFromJar(path, file) : loadSQLCasesFromTargetDirectory(path);
+        return file.isFile() ? loadFromJar(file, path) : loadFromTargetDirectory(path);
     }
     
-    private Map<String, SQLCase> loadSQLCasesFromJar(final String path, final File file) throws IOException, JAXBException {
+    private Map<String, SQLCase> loadFromJar(final File file, final String path) throws JAXBException {
         Map<String, SQLCase> result = new TreeMap<>();
-        try (JarFile jar = new JarFile(file)) {
-            Enumeration<JarEntry> entries = jar.entries();
-            while (entries.hasMoreElements()) {
-                String name = entries.nextElement().getName();
-                if (name.startsWith(path) && name.endsWith(".xml")) {
-                    fillSQLMap(result, SQLCasesLoader.class.getClassLoader().getResourceAsStream(name));
-                }
-            }
+        for (String each : TestCaseFileLoader.loadFileNamesFromJar(file, path)) {
+            fillSQLMap(result, SQLCasesLoader.class.getClassLoader().getResourceAsStream(each));
         }
         return result;
     }
     
-    @SneakyThrows(URISyntaxException.class)
-    private Map<String, SQLCase> loadSQLCasesFromTargetDirectory(final String path) {
+    private Map<String, SQLCase> loadFromTargetDirectory(final String path) throws JAXBException, FileNotFoundException {
         Map<String, SQLCase> result = new TreeMap<>();
-        URL url = SQLCasesLoader.class.getClassLoader().getResource(path);
-        if (null == url) {
-            return result;
-        }
-        File filePath = new File(url.toURI().getPath());
-        if (!filePath.exists()) {
-            return result;
-        }
-        File[] files = filePath.listFiles();
-        if (null == files) {
-            return result;
-        }
-        for (File each : files) {
-            loadSQLCasesFromDirectory(result, each);
+        for (File each : TestCaseFileLoader.loadFilesFromTargetDirectory(path)) {
+            fillSQLMap(result, new FileInputStream(each));
         }
         return result;
-    }
-    
-    @SneakyThrows({JAXBException.class, IOException.class})
-    private void loadSQLCasesFromDirectory(final Map<String, SQLCase> sqlStatementMap, final File file) {
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            if (null == files) {
-                return;
-            }
-            for (File each : files) {
-                loadSQLCasesFromDirectory(sqlStatementMap, each);
-            }
-        } else {
-            fillSQLMap(sqlStatementMap, new FileInputStream(file));
-        }
     }
     
     private void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {

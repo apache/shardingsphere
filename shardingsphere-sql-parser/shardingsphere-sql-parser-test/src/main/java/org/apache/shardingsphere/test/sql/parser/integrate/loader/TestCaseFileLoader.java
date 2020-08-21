@@ -85,7 +85,7 @@ public final class TestCaseFileLoader {
             
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes) {
-                if (file.endsWith(FILE_EXTENSION)) {
+                if (file.toString().endsWith(FILE_EXTENSION)) {
                     result.add(file.toFile());
                 }
                 return FileVisitResult.CONTINUE;
