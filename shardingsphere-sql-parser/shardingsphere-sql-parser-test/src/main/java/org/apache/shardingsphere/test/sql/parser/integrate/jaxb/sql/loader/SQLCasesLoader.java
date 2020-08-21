@@ -48,11 +48,11 @@ public final class SQLCasesLoader {
     private final Map<String, SQLCase> sqlCases;
     
     public SQLCasesLoader(final String rootDirection) {
-        sqlCases = loadSQLCases(rootDirection);
+        sqlCases = load(rootDirection);
     }
     
     @SneakyThrows({JAXBException.class, IOException.class})
-    private Map<String, SQLCase> loadSQLCases(final String path) {
+    private Map<String, SQLCase> load(final String path) {
         File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         return file.isFile() ? loadFromJar(file, path) : loadFromTargetDirectory(path);
     }
