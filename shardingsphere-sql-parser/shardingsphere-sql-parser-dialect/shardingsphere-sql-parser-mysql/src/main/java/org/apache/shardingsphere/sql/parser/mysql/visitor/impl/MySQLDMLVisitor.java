@@ -264,6 +264,12 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        }
         result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
@@ -323,6 +329,12 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
         return result;
