@@ -32,7 +32,6 @@ public final class JDBCDataSourceConfigurationTest {
         JDBCDataSourceConfiguration sourceConfiguration = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
         JDBCDataSourceConfiguration targetConfiguration = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
         assertThat(sourceConfiguration, is(targetConfiguration));
-        
         sourceConfiguration.setDatabaseType(new MariaDBDatabaseType());
         targetConfiguration.setDatabaseType(new MariaDBDatabaseType());
         assertThat(sourceConfiguration, is(targetConfiguration));
@@ -43,7 +42,6 @@ public final class JDBCDataSourceConfigurationTest {
         JDBCDataSourceConfiguration sourceConfiguration = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "sa", "root");
         JDBCDataSourceConfiguration targetConfiguration = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
         assertThat(sourceConfiguration, not(targetConfiguration));
-
         sourceConfiguration.setUsername(targetConfiguration.getUsername());
         assertThat(sourceConfiguration, is(targetConfiguration));
         sourceConfiguration.setDatabaseType(new H2DatabaseType());
