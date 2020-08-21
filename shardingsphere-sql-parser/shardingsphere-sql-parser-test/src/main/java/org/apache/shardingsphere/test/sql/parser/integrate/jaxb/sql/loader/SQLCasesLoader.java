@@ -55,12 +55,12 @@ public final class SQLCasesLoader {
     }
     
     @SneakyThrows({JAXBException.class, IOException.class})
-    private static Map<String, SQLCase> loadSQLCases(final String path) {
+    private Map<String, SQLCase> loadSQLCases(final String path) {
         File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         return file.isFile() ? loadSQLCasesFromJar(path, file) : loadSQLCasesFromTargetDirectory(path);
     }
     
-    private static Map<String, SQLCase> loadSQLCasesFromJar(final String path, final File file) throws IOException, JAXBException {
+    private Map<String, SQLCase> loadSQLCasesFromJar(final String path, final File file) throws IOException, JAXBException {
         Map<String, SQLCase> result = new TreeMap<>();
         try (JarFile jar = new JarFile(file)) {
             Enumeration<JarEntry> entries = jar.entries();
@@ -75,7 +75,7 @@ public final class SQLCasesLoader {
     }
     
     @SneakyThrows(URISyntaxException.class)
-    private static Map<String, SQLCase> loadSQLCasesFromTargetDirectory(final String path) {
+    private Map<String, SQLCase> loadSQLCasesFromTargetDirectory(final String path) {
         Map<String, SQLCase> result = new TreeMap<>();
         URL url = SQLCasesLoader.class.getClassLoader().getResource(path);
         if (null == url) {
@@ -96,7 +96,7 @@ public final class SQLCasesLoader {
     }
     
     @SneakyThrows({JAXBException.class, IOException.class})
-    private static void loadSQLCasesFromDirectory(final Map<String, SQLCase> sqlStatementMap, final File file) {
+    private void loadSQLCasesFromDirectory(final Map<String, SQLCase> sqlStatementMap, final File file) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (null == files) {
@@ -110,7 +110,7 @@ public final class SQLCasesLoader {
         }
     }
     
-    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {
+    private void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {
         SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
         for (SQLCase each : sqlCases.getSqlCases()) {
             if (null == each.getDatabaseTypes()) {
