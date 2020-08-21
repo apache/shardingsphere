@@ -66,7 +66,7 @@ public final class SQLCasesLoader {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 String name = entries.nextElement().getName();
-                if (name.startsWith(path + "/") && name.endsWith(".xml")) {
+                if (name.startsWith(path) && name.endsWith(".xml")) {
                     fillSQLMap(result, SQLCasesLoader.class.getClassLoader().getResourceAsStream(name));
                 }
             }

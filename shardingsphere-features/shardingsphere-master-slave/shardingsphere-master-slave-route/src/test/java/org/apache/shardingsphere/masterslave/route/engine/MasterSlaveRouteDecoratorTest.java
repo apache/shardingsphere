@@ -66,7 +66,7 @@ public final class MasterSlaveRouteDecoratorTest {
     private MasterSlaveRule masterSlaveRule;
     
     @Mock
-    private SQLStatementContext sqlStatementContext;
+    private SQLStatementContext<SQLStatement> sqlStatementContext;
     
     @Mock
     private InsertStatement insertStatement;
@@ -79,14 +79,12 @@ public final class MasterSlaveRouteDecoratorTest {
     static {
         ShardingSphereServiceLoader.register(RouteDecorator.class);
     }
-
+    
     @Before
     public void setUp() {
         masterSlaveRule = new MasterSlaveRule(new MasterSlaveRuleConfiguration(
                 Collections.singleton(new MasterSlaveDataSourceRuleConfiguration(DATASOURCE_NAME, MASTER_DATASOURCE, Collections.singletonList(SLAVE_DATASOURCE), null)), Collections.emptyMap()));
-        routeDecorator = (MasterSlaveRouteDecorator) OrderedSPIRegistry
-                .getRegisteredServices(Collections.singleton(masterSlaveRule), RouteDecorator.class)
-                .get(masterSlaveRule);
+        routeDecorator = (MasterSlaveRouteDecorator) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(masterSlaveRule), RouteDecorator.class).get(masterSlaveRule);
     }
     
     @After
@@ -157,7 +155,7 @@ public final class MasterSlaveRouteDecoratorTest {
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
         assertThat(actual.getParameters().get(0), is("true"));
     }
-
+    
     private RouteContext mockSQLRouteContext(final SQLStatement sqlStatement) {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         return new RouteContext(sqlStatementContext, Collections.emptyList(), mockRouteResult());
