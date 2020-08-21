@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.convert;
 
+import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStatementContext;
 import org.apache.shardingsphere.rdl.parser.binder.generator.SQLStatementContextConverter;
@@ -34,10 +35,16 @@ public final class CreateDataSourcesStatementContextConverter implements SQLStat
     public Map<String, YamlDataSourceParameter> convert(final CreateDataSourcesStatementContext context) {
         Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(context.getSqlStatement().getConnectionInfos().size(), 1);
         for (DataSourceConnectionSegment each : context.getSqlStatement().getConnectionInfos()) {
+            DataSourceParameter parameter = new DataSourceParameter();
             YamlDataSourceParameter dataSource = new YamlDataSourceParameter();
             dataSource.setUrl(context.getUrl(each));
             dataSource.setUsername(each.getUser());
             dataSource.setPassword(each.getPassword());
+            dataSource.setMinPoolSize(parameter.getMinPoolSize());
+            dataSource.setMaxPoolSize(parameter.getMaxPoolSize());
+            dataSource.setConnectionTimeoutMilliseconds(parameter.getConnectionTimeoutMilliseconds());
+            dataSource.setIdleTimeoutMilliseconds(parameter.getIdleTimeoutMilliseconds());
+            dataSource.setMaintenanceIntervalMilliseconds(parameter.getMaintenanceIntervalMilliseconds());
             result.put(each.getName(), dataSource);
         }
         return result;

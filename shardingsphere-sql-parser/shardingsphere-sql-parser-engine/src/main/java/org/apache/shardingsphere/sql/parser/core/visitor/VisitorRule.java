@@ -140,6 +140,8 @@ public enum VisitorRule {
     
     DESC("Desc", SQLStatementType.DAL),
     
+    EXPLAIN("Explain", SQLStatementType.DAL),
+    
     SHOW_DATABASES("ShowDatabases", SQLStatementType.DAL),
     
     SHOW_TABLES("ShowTables", SQLStatementType.DAL),
