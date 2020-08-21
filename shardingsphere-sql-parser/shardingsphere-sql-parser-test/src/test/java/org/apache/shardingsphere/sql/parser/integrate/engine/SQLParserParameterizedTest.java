@@ -57,7 +57,6 @@ public final class SQLParserParameterizedTest {
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        // TODO resume me after all test cases passed 
         checkTestCases();
         return getSQLTestParameters();
     }
@@ -72,7 +71,6 @@ public final class SQLParserParameterizedTest {
     
     private static Collection<Object[]> getSQLTestParameters() {
         Collection<Object[]> result = new LinkedList<>();
-        // TODO resume me after all test cases passed 
         for (Object[] each : SQL_CASES_LOADER.getSQLTestParameters()) {
             if (!isPlaceholderWithoutParameter(each)) {
                 result.add(each);
