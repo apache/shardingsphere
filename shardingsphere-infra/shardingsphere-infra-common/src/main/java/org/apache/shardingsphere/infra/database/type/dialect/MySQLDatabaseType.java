@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
-import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
@@ -27,7 +26,6 @@ import java.util.Collection;
 /**
  * Database type of MySQL.
  */
-@EqualsAndHashCode
 public final class MySQLDatabaseType implements DatabaseType {
     
     @Override

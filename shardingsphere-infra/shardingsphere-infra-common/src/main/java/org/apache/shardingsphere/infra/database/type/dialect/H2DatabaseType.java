@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
-import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.infra.database.metadata.dialect.H2DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -29,7 +28,6 @@ import java.util.Collections;
 /**
  * Database type of H2.
  */
-@EqualsAndHashCode
 public final class H2DatabaseType implements BranchDatabaseType {
     
     @Override

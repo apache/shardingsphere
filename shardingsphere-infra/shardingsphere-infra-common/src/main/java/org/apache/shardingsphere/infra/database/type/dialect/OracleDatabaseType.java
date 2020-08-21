@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
-import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.infra.database.metadata.dialect.OracleDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
@@ -27,7 +26,6 @@ import java.util.Collections;
 /**
  * Database type of Oracle.
  */
-@EqualsAndHashCode
 public final class OracleDatabaseType implements DatabaseType {
     
     @Override
