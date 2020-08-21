@@ -98,7 +98,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     private List<QueryHeader> getQueryHeaders(final ProjectionsContext projectionsContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
         List<QueryHeader> result = new LinkedList<>();
         for (int columnIndex = 1; columnIndex <= projectionsContext.getExpandProjections().size(); columnIndex++) {
-            result.add(QueryHeaderBuilder.build(projectionsContext, resultSetMetaData, backendConnection.getSchema(), columnIndex));
+            result.add(QueryHeaderBuilder.build(projectionsContext, resultSetMetaData, ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema()), columnIndex));
         }
         return result;
     }
@@ -106,7 +106,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     private List<QueryHeader> getQueryHeaders(final ResultSetMetaData resultSetMetaData) throws SQLException {
         List<QueryHeader> result = new LinkedList<>();
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-            result.add(QueryHeaderBuilder.build(resultSetMetaData, backendConnection.getSchema(), columnIndex));
+            result.add(QueryHeaderBuilder.build(resultSetMetaData, ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema()), columnIndex));
         }
         return result;
     }
