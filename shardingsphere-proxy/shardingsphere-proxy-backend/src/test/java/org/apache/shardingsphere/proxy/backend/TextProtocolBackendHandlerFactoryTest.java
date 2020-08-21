@@ -17,12 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend;
 
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStateHandler;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.admin.BroadcastBackendHandler;
@@ -43,6 +49,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -57,13 +68,22 @@ public final class TextProtocolBackendHandlerFactoryTest {
     private BackendConnection backendConnection;
     
     @Before
+    @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
         when(backendConnection.getTransactionType()).thenReturn(TransactionType.LOCAL);
+        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        schemaContexts.setAccessible(true);
+        schemaContexts.set(ProxySchemaContexts.getInstance(),
+                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        when(backendConnection.getSchema()).thenReturn("schema");
+    }
+    
+    private Map<String, SchemaContext> getSchemaContextMap() {
+        SchemaContext result = mock(SchemaContext.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        SchemaContext schema = mock(SchemaContext.class);
         when(runtimeContext.getTransactionManagerEngine()).thenReturn(mock(ShardingTransactionManagerEngine.class));
-        when(schema.getRuntimeContext()).thenReturn(runtimeContext);
-        when(backendConnection.getSchema()).thenReturn(schema);
+        when(result.getRuntimeContext()).thenReturn(runtimeContext);
+        return Collections.singletonMap("schema", result);
     }
     
     @Test

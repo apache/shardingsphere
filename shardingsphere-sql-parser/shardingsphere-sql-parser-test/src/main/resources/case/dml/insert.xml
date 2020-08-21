@@ -474,6 +474,40 @@
         </on-duplicate-key-columns>
     </insert>
 
+    <insert sql-case-id="insert_on_duplicate_key_update_with_placeholders" parameters="1, 1, 'init', 'init'">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="56" stop-index="56" />
+                    <literal-expression value="1" start-index="56" stop-index="56" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" start-index="59" stop-index="59" />
+                    <literal-expression value="1" start-index="59" stop-index="59" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="2" start-index="62" stop-index="62" />
+                    <literal-expression value="init" start-index="62" stop-index="67" />
+                </assignment-value>
+            </value>
+        </values>
+        <on-duplicate-key-columns start-index="65" stop-index="98" literal-start-index="70" literal-stop-index="108">
+            <assignment start-index="89" stop-index="98" literal-start-index="94" literal-stop-index="108">
+                <column name="status" start-index="89" stop-index="94" literal-start-index="94" literal-stop-index="99" />
+                <assignment-value>
+                    <parameter-marker-expression value="3" start-index="98" stop-index="98" />
+                    <literal-expression value="init" start-index="103" stop-index="108" />
+                </assignment-value>
+            </assignment>
+        </on-duplicate-key-columns>
+    </insert>
+
     <insert sql-case-id="insert_set_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
         <table name="t_order" start-index="12" stop-index="18" />
         <set start-index="20" stop-index="84" literal-stop-index="89">

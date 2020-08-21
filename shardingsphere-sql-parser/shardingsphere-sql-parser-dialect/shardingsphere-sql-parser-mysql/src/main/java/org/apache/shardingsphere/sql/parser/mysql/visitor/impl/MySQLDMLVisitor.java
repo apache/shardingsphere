@@ -192,7 +192,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         Collection<AssignmentSegment> columns = new LinkedList<>();
         for (AssignmentContext each : ctx.assignment()) {
             columns.add((AssignmentSegment) visit(each));
-            visit(each.assignmentValue());
         }
         return new OnDuplicateKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columns);
     }
