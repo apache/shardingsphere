@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 ## Who are using ShardingSphere?
 
-Total: 141 companies.
+Total: 142 companies.
 
 ### Financial Industry
 <ul>
@@ -215,6 +215,7 @@ Total: 141 companies.
     <li><a href="http://www.gaojihealth.com/" rel="nofollow">GaoJiHealth</a></li>
     <li><a href="https://www.zyhealth.com/" rel="nofollow">ZYHealth</a></li>
     <li><a href="https://www.ddky.com/" rel="nofollow">DDKY</a></li>
+    <li><a href="https://www.keep.com/">Keep</a></li>
 </ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
