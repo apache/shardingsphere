@@ -24,16 +24,12 @@ import org.apache.shardingsphere.test.sql.parser.integrate.jaxb.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.integrate.jaxb.sql.loader.SQLCasesLoader;
 import org.apache.shardingsphere.test.sql.parser.integrate.jaxb.sql.loader.UnsupportedSQLCasesRegistry;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 import java.util.Collections;
 
-@RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class UnsupportedSQLParserParameterizedTest {
+public abstract class UnsupportedSQLParserParameterizedTest {
     
     private static final SQLCasesLoader SQL_CASES_LOADER = UnsupportedSQLCasesRegistry.getInstance().getSqlCasesLoader();
     
@@ -43,14 +39,14 @@ public final class UnsupportedSQLParserParameterizedTest {
     
     private final SQLCaseType sqlCaseType;
     
-    @Parameters(name = "{0} ({2}) -> {1}")
-    public static Collection<Object[]> getTestParameters() {
-        return SQL_CASES_LOADER.getSQLTestParameters(Collections.singleton("MySQL"));
+    protected static Collection<Object[]> getTestParameters(final String databaseType) {
+        return SQL_CASES_LOADER.getSQLTestParameters(Collections.singleton(databaseType));
     }
     
     @Test(expected = SQLParsingException.class)
-    public void assertUnsupportedSQL() {
+    public final void assertUnsupportedSQL() {
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
-        SQLParserEngineFactory.getSQLParserEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
+        String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
+        SQLParserEngineFactory.getSQLParserEngine(databaseType).parse(sql, false);
     }
 }
