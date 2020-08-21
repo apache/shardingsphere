@@ -40,6 +40,8 @@ public final class ResponseContentUtilTest {
     @Test
     public void assertHandleException() {
         ResponseContent<?> responseContent = ResponseContentUtil.handleException(ERROR_MESSAGE);
+        assertThat(responseContent.getErrorMsg(), is(ERROR_MESSAGE));
         assertThat(responseContent.getErrorCode(), is(ResponseCode.SERVER_ERROR));
+        assertNull(responseContent.getModel());
     }
 }

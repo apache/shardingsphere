@@ -24,6 +24,7 @@ public final class ThreadUtil {
     
     /**
      * Sleep ignored InterruptedException.
+     *
      * @param millis sleep time.
      */
     public static void sleep(final long millis) {
