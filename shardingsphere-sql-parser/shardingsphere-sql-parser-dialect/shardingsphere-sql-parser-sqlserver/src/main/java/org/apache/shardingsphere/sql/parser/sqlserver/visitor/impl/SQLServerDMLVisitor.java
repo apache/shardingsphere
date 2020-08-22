@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Ali
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentValuesContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameWithSortContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DuplicateSpecificationContext;
@@ -461,7 +461,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         }
         if (null != ctx.USING()) {
             Collection<ColumnSegment> columnSegmentList = new LinkedList<>();
-            for (ColumnNameWithSortContext each : ctx.columnNames().columnNameWithSort()) {
+            for (ColumnNameContext each : ctx.columnNames().columnName()) {
                 columnSegmentList.add((ColumnSegment) visit(each));
             }
             result.getUsingColumns().addAll(columnSegmentList);
