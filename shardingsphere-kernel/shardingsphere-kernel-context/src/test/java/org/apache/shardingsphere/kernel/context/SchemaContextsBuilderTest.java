@@ -17,15 +17,21 @@
 
 package org.apache.shardingsphere.kernel.context;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.kernel.context.fixture.FixtureRule;
+import org.apache.shardingsphere.kernel.context.fixture.FixtureRuleConfiguration;
+import org.apache.shardingsphere.test.MockedDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -34,16 +40,56 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class SchemaContextsBuilderTest {
     
-    @Mock
-    private DatabaseType databaseType;
-    
     @Test
-    public void assertBuildWithEmptyConfiguration() throws SQLException {
+    public void assertBuildWithoutConfiguration() throws SQLException {
+        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("FixtureDB");
         SchemaContexts actual = new SchemaContextsBuilder(databaseType, Collections.emptyMap(), Collections.emptyMap(), null).build();
         assertThat(actual.getDatabaseType(), is(databaseType));
         assertTrue(actual.getSchemaContexts().isEmpty());
         assertTrue(actual.getAuthentication().getUsers().isEmpty());
         assertTrue(actual.getProps().getProps().isEmpty());
         assertFalse(actual.isCircuitBreak());
+    }
+    
+    @Test
+    public void assertBuildWithConfigurationsButWithoutDataSource() throws SQLException {
+        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("FixtureDB");
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "1");
+        SchemaContexts actual = new SchemaContextsBuilder(databaseType, Collections.singletonMap("logic_db", Collections.emptyMap()), 
+                Collections.singletonMap("logic_db", Collections.singleton(new FixtureRuleConfiguration())), props).build();
+        assertThat(actual.getDatabaseType(), is(databaseType));
+        assertRules(actual);
+        assertTrue(actual.getSchemaContexts().get("logic_db").getSchema().getDataSources().isEmpty());
+        assertTrue(actual.getAuthentication().getUsers().isEmpty());
+        assertThat(actual.getProps().getProps().size(), is(1));
+        assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(1));
+        assertFalse(actual.isCircuitBreak());
+    }
+    
+    @Test
+    public void assertBuildWithConfigurationsAndDataSources() throws SQLException {
+        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("FixtureDB");
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "1");
+        SchemaContexts actual = new SchemaContextsBuilder(databaseType, Collections.singletonMap("logic_db", Collections.singletonMap("ds", new MockedDataSource())),
+                Collections.singletonMap("logic_db", Collections.singleton(new FixtureRuleConfiguration())), props).build();
+        assertThat(actual.getDatabaseType(), is(databaseType));
+        assertRules(actual);
+        assertDataSources(actual);
+        assertTrue(actual.getAuthentication().getUsers().isEmpty());
+        assertThat(actual.getProps().getProps().size(), is(1));
+        assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(1));
+        assertFalse(actual.isCircuitBreak());
+    }
+    
+    private void assertRules(final SchemaContexts actual) {
+        assertThat(actual.getSchemaContexts().get("logic_db").getSchema().getRules().size(), is(1));
+        assertThat(actual.getSchemaContexts().get("logic_db").getSchema().getRules().iterator().next(), instanceOf(FixtureRule.class));
+    }
+    
+    private void assertDataSources(final SchemaContexts actual) {
+        assertThat(actual.getSchemaContexts().get("logic_db").getSchema().getDataSources().size(), is(1));
+        assertThat(actual.getSchemaContexts().get("logic_db").getSchema().getDataSources().get("ds"), instanceOf(MockedDataSource.class));
     }
 }

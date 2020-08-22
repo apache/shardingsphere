@@ -104,7 +104,6 @@ public final class SchemaContextsBuilder {
     }
     
     private Optional<CachedDatabaseMetaData> createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
-        // TODO 1. if dataSources.isEmpty() is true, the code this.dataSources.get(schemaName) will throw exception
         if (dataSources.isEmpty()) {
             return Optional.empty();
         }
@@ -120,7 +119,6 @@ public final class SchemaContextsBuilder {
     }
     
     private ShardingSphereSchema createShardingSphereSchema(final String schemaName) throws SQLException {
-        // TODO 2. if dataSources.isEmpty() is true, will throw exception here
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
         Collection<RuleConfiguration> ruleConfigs = this.ruleConfigs.get(schemaName);
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigs, dataSources.keySet());
