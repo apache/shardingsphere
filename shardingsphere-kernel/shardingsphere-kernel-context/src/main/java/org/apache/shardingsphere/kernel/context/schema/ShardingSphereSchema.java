@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.kernel.context.schema;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -25,31 +26,22 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
  * ShardingSphere schema.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ShardingSphereSchema {
     
-    private final Collection<RuleConfiguration> configurations = new LinkedList<>();
+    private final Collection<RuleConfiguration> configurations;
     
-    private final Collection<ShardingSphereRule> rules = new LinkedList<>();
+    private final Collection<ShardingSphereRule> rules;
     
-    private final Map<String, DataSource> dataSources = new LinkedHashMap<>();
+    private final Map<String, DataSource> dataSources;
     
     private final ShardingSphereMetaData metaData;
-    
-    public ShardingSphereSchema(final Collection<RuleConfiguration> configurations, final Collection<ShardingSphereRule> rules,
-                                final Map<String, DataSource> dataSourceMap, final ShardingSphereMetaData shardingSphereMetaData) {
-        this.configurations.addAll(configurations);
-        this.rules.addAll(rules);
-        dataSources.putAll(dataSourceMap);
-        metaData = shardingSphereMetaData;
-    }
     
     /**
      * Close data sources.
