@@ -59,7 +59,7 @@ public final class SchemaContextsBuilder {
     
     private final Map<String, Map<String, DataSource>> dataSources;
     
-    private final Map<String, Collection<RuleConfiguration>> ruleConfigurations;
+    private final Map<String, Collection<RuleConfiguration>> ruleConfigs;
     
     private final Authentication authentication;
     
@@ -68,15 +68,15 @@ public final class SchemaContextsBuilder {
     private final ExecutorKernel executorKernel;
     
     public SchemaContextsBuilder(final DatabaseType databaseType, final Map<String, Map<String, DataSource>> dataSources,
-                                 final Map<String, Collection<RuleConfiguration>> ruleConfigurations, final Properties props) {
-        this(databaseType, dataSources, ruleConfigurations, new Authentication(), props);
+                                 final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Properties props) {
+        this(databaseType, dataSources, ruleConfigs, new Authentication(), props);
     }
     
     public SchemaContextsBuilder(final DatabaseType databaseType, final Map<String, Map<String, DataSource>> dataSources,
-                                 final Map<String, Collection<RuleConfiguration>> ruleConfigurations, final Authentication authentication, final Properties props) {
+                                 final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Authentication authentication, final Properties props) {
         this.databaseType = databaseType;
         this.dataSources = dataSources;
-        this.ruleConfigurations = ruleConfigurations;
+        this.ruleConfigs = ruleConfigs;
         this.authentication = authentication;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
         executorKernel = new ExecutorKernel(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
@@ -89,8 +89,8 @@ public final class SchemaContextsBuilder {
      * @return schema contexts
      */
     public SchemaContexts build() throws SQLException {
-        Map<String, SchemaContext> schemaContexts = new LinkedHashMap<>(ruleConfigurations.size(), 1);
-        for (String each : ruleConfigurations.keySet()) {
+        Map<String, SchemaContext> schemaContexts = new LinkedHashMap<>(ruleConfigs.size(), 1);
+        for (String each : ruleConfigs.keySet()) {
             schemaContexts.put(each, createSchemaContext(each));
         }
         return new StandardSchemaContexts(schemaContexts, authentication, props, databaseType);
@@ -120,7 +120,7 @@ public final class SchemaContextsBuilder {
     
     private ShardingSphereSchema createShardingSphereSchema(final String schemaName) throws SQLException {
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
-        Collection<RuleConfiguration> ruleConfigurations = this.ruleConfigurations.get(schemaName);
+        Collection<RuleConfiguration> ruleConfigurations = this.ruleConfigs.get(schemaName);
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigurations, dataSources.keySet());
         return new ShardingSphereSchema(ruleConfigurations, rules, dataSources, createMetaData(dataSources, rules));
     }
