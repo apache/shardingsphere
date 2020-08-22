@@ -234,7 +234,7 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     }
     
     @Override
-    public ASTNode visitColumnNamesWithSort(ColumnNamesWithSortContext ctx) {
+    public ASTNode visitColumnNamesWithSort(final ColumnNamesWithSortContext ctx) {
         CollectionValue<ColumnSegment> result = new CollectionValue<>();
         for (ColumnNameWithSortContext each : ctx.columnNameWithSort()) {
             result.getValue().add((ColumnSegment) visit(each));
