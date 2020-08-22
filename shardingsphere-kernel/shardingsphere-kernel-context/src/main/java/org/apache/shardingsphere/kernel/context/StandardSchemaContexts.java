@@ -47,6 +47,7 @@ public final class StandardSchemaContexts implements SchemaContexts {
     private final boolean isCircuitBreak;
     
     public StandardSchemaContexts() {
+        // TODO MySQLDatabaseType is invalid because it can not update again
         this(new HashMap<>(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType(), false);
     }
     
