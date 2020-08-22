@@ -41,6 +41,6 @@ public final class SchemaContext {
      * @return is complete schema context or not
      */
     public boolean isComplete() {
-        return null != schema && null != runtimeContext && !schema.getRules().isEmpty() && !schema.getDataSources().isEmpty();
+        return !schema.getRules().isEmpty() && !schema.getDataSources().isEmpty();
     }
 }
