@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol;
 
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
@@ -26,19 +27,27 @@ public final class PostgreSQLUnspecifiedBinaryProtocolValue implements PostgreSQ
     
     @Override
     public int getColumnLength(final Object value) {
-        return ((byte[]) value).length;
+        if (null == value) {
+            return 0;
+        }
+        return value instanceof byte[] ? ((byte[]) value).length : value.toString().length();
     }
     
     @Override
     public Object read(final PostgreSQLPacketPayload payload) {
         payload.getByteBuf().readerIndex(payload.getByteBuf().readerIndex() - 4);
-        byte[] result = new byte[payload.readInt4()];
-        payload.getByteBuf().readBytes(result);
-        return result;
+        byte[] bytes = new byte[payload.readInt4()];
+        payload.getByteBuf().readBytes(bytes);
+        String result = new String(bytes);
+        return new PostgreSQLTypeUnspecifiedSQLParameter(result);
     }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeBytes((byte[]) value);
+        if (value instanceof byte[]) {
+            payload.writeBytes((byte[]) value);
+        } else {
+            payload.writeStringEOF(value.toString());
+        }
     }
 }
