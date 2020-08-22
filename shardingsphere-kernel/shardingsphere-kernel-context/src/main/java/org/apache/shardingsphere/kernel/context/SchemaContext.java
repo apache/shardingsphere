@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.kernel.context;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 
 /**
  * Schema context.
  */
+@RequiredArgsConstructor
 @Getter
 public final class SchemaContext {
     
@@ -33,16 +35,10 @@ public final class SchemaContext {
     
     private final RuntimeContext runtimeContext;
     
-    public SchemaContext(final String name, final ShardingSphereSchema schema, final RuntimeContext runtimeContext) {
-        this.name = name;
-        this.schema = schema;
-        this.runtimeContext = runtimeContext;
-    }
-    
     /**
-     * Is complete schema Context.
+     * Is complete schema context.
      *
-     * @return is complete schema Context or not
+     * @return is complete schema context or not
      */
     public boolean isComplete() {
         return null != schema && null != runtimeContext && !schema.getRules().isEmpty() && !schema.getDataSources().isEmpty();
