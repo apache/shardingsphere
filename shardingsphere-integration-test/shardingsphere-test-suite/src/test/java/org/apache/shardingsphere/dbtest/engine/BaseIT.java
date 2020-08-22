@@ -118,7 +118,7 @@ public abstract class BaseIT {
                 SchemaEnvironmentManager.createDatabase(each);
             }
         } catch (final JAXBException | IOException | SQLException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
     
@@ -128,7 +128,7 @@ public abstract class BaseIT {
                 SchemaEnvironmentManager.createTable(each);
             }
         } catch (final JAXBException | IOException | SQLException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
     
@@ -138,7 +138,7 @@ public abstract class BaseIT {
                 SchemaEnvironmentManager.dropDatabase(each);
             }
         } catch (final JAXBException | IOException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
     
@@ -148,7 +148,7 @@ public abstract class BaseIT {
                 SchemaEnvironmentManager.dropTable(each);
             }
         } catch (final JAXBException | IOException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
     
@@ -163,7 +163,7 @@ public abstract class BaseIT {
         int retryCount = 1;
         while (!isProxyAvailable() && retryCount < 30) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(1000L);
             } catch (final InterruptedException ignore) {
             }
             retryCount++;

@@ -66,8 +66,8 @@ public enum MySQLStatusFlag {
      * @return MySQL status flag
      */
     public static MySQLStatusFlag valueOf(final int value) {
-        for (MySQLStatusFlag each : MySQLStatusFlag.values()) {
-            if (each.getValue() == value) {
+        for (MySQLStatusFlag each : values()) {
+            if (each.value == value) {
                 return each;
             }
         }

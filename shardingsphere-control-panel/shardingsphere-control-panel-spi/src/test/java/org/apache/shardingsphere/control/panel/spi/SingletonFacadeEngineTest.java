@@ -17,25 +17,27 @@
 
 package org.apache.shardingsphere.control.panel.spi;
 
-import java.util.Optional;
 import org.apache.shardingsphere.control.panel.spi.engine.SingletonFacadeEngine;
 import org.apache.shardingsphere.control.panel.spi.fixture.FirstMetricsTrackerFacade;
 import org.apache.shardingsphere.control.panel.spi.metrics.MetricsHandlerFacade;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class SingletonFacadeEngineTest {
     
     @Test
     public void assertBuild() {
         Optional<MetricsHandlerFacade> facade = SingletonFacadeEngine.buildMetrics();
-        assertThat(facade.isPresent(), is(true));
+        assertTrue(facade.isPresent());
         MetricsHandlerFacade first = facade.get();
         assertThat(first.getClass().getName(), is(FirstMetricsTrackerFacade.class.getName()));
         Optional<MetricsHandlerFacade> facadeSecond = SingletonFacadeEngine.buildMetrics();
-        assertThat(facadeSecond.isPresent(), is(true));
+        assertTrue(facadeSecond.isPresent());
         MetricsHandlerFacade second = facadeSecond.get();
         assertThat(first, is(second));
     }

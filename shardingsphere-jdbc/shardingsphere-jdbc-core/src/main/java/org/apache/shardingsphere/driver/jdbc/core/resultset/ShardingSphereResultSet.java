@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
-import java.sql.Array;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -26,6 +25,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
@@ -364,6 +364,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
         return getObject(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getObject(final int columnIndex, final Class<T> type) throws SQLException {
         if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type)) {

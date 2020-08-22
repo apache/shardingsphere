@@ -112,6 +112,30 @@ public final class HintManagerTest {
     }
     
     @Test
+    public void assertAddDatabaseShardingValueOnlyDatabaseSharding() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.setDatabaseShardingValue(1);
+            assertTrue(HintManager.isDatabaseShardingOnly());
+            hintManager.addDatabaseShardingValue("logic_table", 2);
+            assertFalse(HintManager.isDatabaseShardingOnly());
+            assertThat(HintManager.getDatabaseShardingValues("logic_table").size(), is(1));
+            assertTrue(HintManager.getDatabaseShardingValues("logic_table").contains(2));
+        }
+    }
+    
+    @Test
+    public void assertAddTableShardingValueOnlyDatabaseSharding() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.setDatabaseShardingValue(1);
+            assertTrue(HintManager.isDatabaseShardingOnly());
+            hintManager.addTableShardingValue("logic_table", 2);
+            assertFalse(HintManager.isDatabaseShardingOnly());
+            assertThat(HintManager.getTableShardingValues("logic_table").size(), is(1));
+            assertTrue(HintManager.getTableShardingValues("logic_table").contains(2));
+        }
+    }
+    
+    @Test
     public void assertSetMasterRouteOnly() {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setMasterRouteOnly();

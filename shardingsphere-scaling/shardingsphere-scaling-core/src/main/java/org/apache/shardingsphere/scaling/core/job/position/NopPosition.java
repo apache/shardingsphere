@@ -23,12 +23,10 @@ import com.google.gson.JsonObject;
 /**
  * Nop position.
  */
-public final class NopPosition implements Position<NopPosition> {
-    
-    private static final long serialVersionUID = 1946907178847169020L;
+public final class NopPosition implements Position {
     
     @Override
-    public int compareTo(final NopPosition nopPosition) {
+    public int compareTo(final Position position) {
         return 0;
     }
     

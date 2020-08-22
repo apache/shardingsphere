@@ -67,14 +67,15 @@ public final class DataSourceConfiguration {
      */
     public static DataSourceConfiguration getDataSourceConfiguration(final DataSource dataSource) {
         DataSourceConfiguration result = new DataSourceConfiguration(dataSource.getClass().getName());
-        result.getProps().putAll(findAllGetterProperties(dataSource));
+        result.props.putAll(findAllGetterProperties(dataSource));
         return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static Map<String, Object> findAllGetterProperties(final Object target) {
-        Map<String, Object> result = new LinkedHashMap<>();
-        for (Method each : findAllGetterMethods(target.getClass())) {
+        Collection<Method> allGetterMethods = findAllGetterMethods(target.getClass());
+        Map<String, Object> result = new LinkedHashMap<>(allGetterMethods.size(), 1);
+        for (Method each : allGetterMethods) {
             String propertyName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, each.getName().substring(GETTER_PREFIX.length()));
             if (GENERAL_CLASS_TYPE.contains(each.getReturnType()) && !SKIPPED_PROPERTY_NAMES.contains(propertyName)) {
                 result.put(propertyName, each.invoke(target));
@@ -84,8 +85,9 @@ public final class DataSourceConfiguration {
     }
     
     private static Collection<Method> findAllGetterMethods(final Class<?> clazz) {
-        Collection<Method> result = new HashSet<>();
-        for (Method each : clazz.getMethods()) {
+        Method[] methods = clazz.getMethods();
+        Collection<Method> result = new HashSet<>(methods.length);
+        for (Method each : methods) {
             if (each.getName().startsWith(GETTER_PREFIX) && 0 == each.getParameterTypes().length) {
                 result.add(each);
             }
@@ -100,7 +102,7 @@ public final class DataSourceConfiguration {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public DataSource createDataSource() {
-        DataSource result = (DataSource) Class.forName(dataSourceClassName).newInstance();
+        DataSource result = (DataSource) Class.forName(dataSourceClassName).getConstructor().newInstance();
         Method[] methods = result.getClass().getMethods();
         for (Entry<String, Object> entry : props.entrySet()) {
             if (SKIPPED_PROPERTY_NAMES.contains(entry.getKey())) {
@@ -124,17 +126,33 @@ public final class DataSourceConfiguration {
         return Optional.empty();
     }
     
+    /**
+     * Add property alias to shared configuration.
+     *
+     * @param originalName original key for data source configuration property
+     * @param alias property alias for configuration
+     */
+    public void addPropertyAlias(final String originalName, final String alias) {
+        if (props.containsKey(originalName)) {
+            props.put(alias, props.get(originalName));
+        }
+        // TODO fixes by #6709
+        if (props.containsKey(alias)) {
+            props.put(originalName, props.get(alias));
+        }
+    }
+    
     @Override
     public boolean equals(final Object obj) {
         return this == obj || null != obj && getClass() == obj.getClass() && equalsByProperties((DataSourceConfiguration) obj);
     }
     
-    private boolean equalsByProperties(final DataSourceConfiguration dataSourceConfiguration) {
-        if (!this.dataSourceClassName.equals(dataSourceConfiguration.getDataSourceClassName())) {
+    private boolean equalsByProperties(final DataSourceConfiguration dataSourceConfig) {
+        if (!dataSourceClassName.equals(dataSourceConfig.dataSourceClassName)) {
             return false;
         }
         for (Entry<String, Object> entry : props.entrySet()) {
-            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceConfiguration.getProps().get(entry.getKey())))) {
+            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceConfig.props.get(entry.getKey())))) {
                 return false;
             }
         }
@@ -145,28 +163,8 @@ public final class DataSourceConfiguration {
     public int hashCode() {
         StringBuilder stringBuilder = new StringBuilder();
         for (Entry<String, Object> entry : props.entrySet()) {
-            stringBuilder.append(entry.getKey()).append(entry.getValue().toString());
+            stringBuilder.append(entry.getKey()).append(entry.getValue());
         }
         return Objects.hashCode(dataSourceClassName, stringBuilder.toString());
-    }
-
-    /**
-     * Add alias to share configuration.
-     *
-     * @param alias alias for configuration
-     */
-    public void addAlias(final String... alias) {
-        Object value = null;
-        for (String each : alias) {
-            if (props.containsKey(each)) {
-                value = props.get(each);
-            }
-        }
-        if (null == value) {
-            return;
-        }
-        for (String each : alias) {
-            props.put(each, value);
-        }
     }
 }

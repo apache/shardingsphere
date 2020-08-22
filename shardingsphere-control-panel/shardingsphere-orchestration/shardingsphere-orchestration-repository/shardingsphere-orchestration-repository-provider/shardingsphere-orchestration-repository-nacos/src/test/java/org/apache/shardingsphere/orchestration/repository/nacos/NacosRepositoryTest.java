@@ -89,7 +89,7 @@ public final class NacosRepositoryTest {
     @Test
     public void assertWatch() throws NacosException {
         final String expectValue = "expectValue";
-        final String[] actualValue = {null};
+        String[] actualValue = {null};
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue))).when(configService).addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = dataChangedEvent -> actualValue[0] = dataChangedEvent.getValue();
         REPOSITORY.watch("/sharding/test", listener);
@@ -117,8 +117,8 @@ public final class NacosRepositoryTest {
     @Test
     public void assertWatchUpdatedChangedType() throws NacosException {
         final String expectValue = "expectValue";
-        final String[] actualValue = {null};
-        final ChangedType[] actualType = {null};
+        String[] actualValue = {null};
+        ChangedType[] actualType = {null};
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue))).when(configService).addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = dataChangedEvent -> {
             actualValue[0] = dataChangedEvent.getValue();
@@ -131,7 +131,7 @@ public final class NacosRepositoryTest {
     
     @Test
     public void assertWatchDeletedChangedType() throws NacosException {
-        final ChangedType[] actualType = {null};
+        ChangedType[] actualType = {null};
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(null))).when(configService).addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = dataChangedEvent -> actualType[0] = dataChangedEvent.getChangedType();
         REPOSITORY.watch("/sharding/test", listener);
@@ -156,10 +156,8 @@ public final class NacosRepositoryTest {
     @SneakyThrows
     @Test
     public void assertWatchWhenThrowException() {
-        final ChangedType[] actualType = {null};
-        doThrow(NacosException.class)
-                .when(configService)
-                .addListener(anyString(), anyString(), any(Listener.class));
+        ChangedType[] actualType = {null};
+        doThrow(NacosException.class).when(configService).addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = dataChangedEvent -> actualType[0] = dataChangedEvent.getChangedType();
         REPOSITORY.watch("/sharding/test", listener);
         assertNull(actualType[0]);

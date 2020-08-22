@@ -30,13 +30,14 @@ import java.util.Collections;
  */
 public final class P6SpyDriverRecognizer implements JDBCDriverComposeURLRecognizer {
     
-    protected static final String DRIVER_CLASS_NAME = "com.p6spy.engine.spy.P6SpyDriver";
+    public static final String DRIVER_CLASS_NAME = "com.p6spy.engine.spy.P6SpyDriver";
     
     @Override
     public JDBCDriverURLRecognizer getDriverURLRecognizer(final String url) {
         String realUrl = extractRealUrl(url);
         JDBCDriverURLRecognizer driverURLRecognizer = JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(realUrl);
         return new JDBCDriverURLRecognizer() {
+            
             @Override
             public Collection<String> getURLPrefixes() {
                 return driverURLRecognizer.getURLPrefixes();

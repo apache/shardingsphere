@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.query;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
+import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -25,9 +27,14 @@ import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedExcep
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
+import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collections;
 
 /**
  * Backend handler with query.
@@ -39,22 +46,32 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     
     private final String sql;
     
+    private final SQLStatement sqlStatement;
+    
     private final BackendConnection backendConnection;
     
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
     public BackendResponse execute() {
-        if (null == backendConnection.getSchema()) {
+        SchemaContext context = ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema());
+        if (null == context) {
             return new ErrorResponse(new NoDatabaseSelectedException());
         }
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getSchema(), sql, backendConnection);
+        if (!context.isComplete()) {
+            return getDefaultQueryResponse(backendConnection.getSchema());
+        }
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
         return databaseCommunicationEngine.execute();
+    }
+    
+    private QueryResponse getDefaultQueryResponse(final String schemaName) {
+        return new QueryResponse(Collections.singletonList(new QueryHeader(schemaName, "", "", "", 255, Types.VARCHAR, 0, false, false, false, false)));
     }
     
     @Override
     public boolean next() throws SQLException {
-        return databaseCommunicationEngine.next();
+        return null != databaseCommunicationEngine && databaseCommunicationEngine.next();
     }
     
     @Override

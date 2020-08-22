@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.spi.order;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
@@ -27,6 +29,7 @@ import java.util.TreeMap;
 /**
  * Ordered SPI registry.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrderedSPIRegistry {
     
     /**
@@ -37,10 +40,11 @@ public final class OrderedSPIRegistry {
      * @param <T> type of ordered SPI class
      * @return registered services
      */
-    public static <T extends OrderedSPI> Map<Class<?>, T> getRegisteredServicesByClass(final Collection<Class<?>> types, final Class<T> orderedSPIClass) {
-        Map<Class<?>, T> result = new LinkedHashMap<>();
-        for (T each : getRegisteredServices(orderedSPIClass)) {
-            types.stream().filter(type -> isSameTypeClass(each, type)).forEach(type -> result.put(type, each));
+    public static <T extends OrderedSPI<?>> Map<Class<?>, T> getRegisteredServicesByClass(final Collection<Class<?>> types, final Class<T> orderedSPIClass) {
+        Collection<T> registeredServices = getRegisteredServices(orderedSPIClass);
+        Map<Class<?>, T> result = new LinkedHashMap<>(registeredServices.size(), 1);
+        for (T each : registeredServices) {
+            types.stream().filter(type -> ((OrderedSPI<?>) each).getTypeClass() == type).forEach(type -> result.put(type, each));
         }
         return result;
     }
@@ -54,23 +58,20 @@ public final class OrderedSPIRegistry {
      * @param <V> type of ordered SPI class
      * @return registered services
      */
-    public static <K, V extends OrderedSPI> Map<K, V> getRegisteredServices(final Collection<K> types, final Class<V> orderedSPIClass) {
-        Map<K, V> result = new LinkedHashMap<>();
-        for (V each : getRegisteredServices(orderedSPIClass)) {
-            types.stream().filter(type -> isSameTypeClass(each, type.getClass())).forEach(type -> result.put(type, each));
+    public static <K, V extends OrderedSPI<?>> Map<K, V> getRegisteredServices(final Collection<K> types, final Class<V> orderedSPIClass) {
+        Collection<V> registeredServices = getRegisteredServices(orderedSPIClass);
+        Map<K, V> result = new LinkedHashMap<>(registeredServices.size(), 1);
+        for (V each : registeredServices) {
+            types.stream().filter(type -> each.getTypeClass() == type.getClass()).forEach(type -> result.put(type, each));
         }
         return result;
     }
     
-    private static <T extends OrderedSPI> Collection<T> getRegisteredServices(final Class<T> orderedSPIClass) {
+    private static <T extends OrderedSPI<?>> Collection<T> getRegisteredServices(final Class<T> orderedSPIClass) {
         Map<Integer, T> result = new TreeMap<>();
         for (T each : ShardingSphereServiceLoader.newServiceInstances(orderedSPIClass)) {
             result.put(each.getOrder(), each);
         }
         return result.values();
-    }
-    
-    private static boolean isSameTypeClass(final OrderedSPI<?> orderedSPI, final Class<?> typeClass) {
-        return orderedSPI.getTypeClass() == typeClass;
     }
 }

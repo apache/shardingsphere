@@ -47,12 +47,12 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class OracleXAConnectionWrapperTest {
     
+    private static final short MINIMUM_VERSION_OF_XA_SUPPORTED = 8171;
+    
     private XADataSource xaDataSource;
     
     @Mock
     private Connection connection;
-    
-    private final short minimumVersionOfXaSupported = 8171;
     
     @SneakyThrows(ReflectiveOperationException.class)
     @Before
@@ -63,7 +63,7 @@ public final class OracleXAConnectionWrapperTest {
         xaDataSource = XADataSourceFactory.build(DatabaseTypes.getActualDatabaseType("Oracle"), dataSource);
         when(this.connection.unwrap(any())).thenReturn(connection);
         Method getVersionNumberMethod = connection.getClass().getDeclaredMethod("getVersionNumber");
-        when(getVersionNumberMethod.invoke(connection)).thenReturn(minimumVersionOfXaSupported);
+        when(getVersionNumberMethod.invoke(connection)).thenReturn(MINIMUM_VERSION_OF_XA_SUPPORTED);
         Method getLogicalConnectionMethod = connection.getClass().getDeclaredMethod("getLogicalConnection", Class.forName("oracle.jdbc.pool.OraclePooledConnection"), Boolean.TYPE);
         Connection logicalConnection = (Connection) mock(Class.forName("oracle.jdbc.driver.LogicalConnection"));
         when(getLogicalConnectionMethod.invoke(connection, any(), anyBoolean())).thenReturn(logicalConnection);

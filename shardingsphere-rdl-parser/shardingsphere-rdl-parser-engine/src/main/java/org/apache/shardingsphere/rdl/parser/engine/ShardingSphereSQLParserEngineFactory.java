@@ -19,7 +19,7 @@ package org.apache.shardingsphere.rdl.parser.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
 
 /**
@@ -35,7 +35,7 @@ public final class ShardingSphereSQLParserEngineFactory {
      * @return SQL parser engine
      */
     public static ShardingSphereSQLParserEngine getSQLParserEngine(final String databaseTypeName) {
-        SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(databaseTypeName);
-        return new ShardingSphereSQLParserEngine(sqlParserEngine);
+        StandardSQLParserEngine standardSqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(databaseTypeName);
+        return new ShardingSphereSQLParserEngine(standardSqlParserEngine);
     }
 }

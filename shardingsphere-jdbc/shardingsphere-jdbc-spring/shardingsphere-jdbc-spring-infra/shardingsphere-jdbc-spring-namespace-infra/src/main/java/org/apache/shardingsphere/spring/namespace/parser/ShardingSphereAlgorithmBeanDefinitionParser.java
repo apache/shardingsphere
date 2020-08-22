@@ -35,7 +35,7 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public final class ShardingSphereAlgorithmBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
-    private final Class<? extends ShardingSphereAlgorithmFactoryBean> beanClass;
+    private final Class<? extends ShardingSphereAlgorithmFactoryBean<?>> beanClass;
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {

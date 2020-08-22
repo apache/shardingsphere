@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.proxy.convert;
 
+import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStatementContext;
-import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStatementContext.DataSourceConnectionUrl;
 import org.apache.shardingsphere.rdl.parser.binder.generator.SQLStatementContextConverter;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.DataSourceConnectionSegment;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -28,16 +29,22 @@ import java.util.Map;
 /**
  * Create dataSource statement context converter.
  */
-public class CreateDataSourcesStatementContextConverter implements SQLStatementContextConverter<CreateDataSourcesStatementContext, Map<String, YamlDataSourceParameter>> {
+public final class CreateDataSourcesStatementContextConverter implements SQLStatementContextConverter<CreateDataSourcesStatementContext, Map<String, YamlDataSourceParameter>> {
     
     @Override
-    public Map<String, YamlDataSourceParameter> convert(final CreateDataSourcesStatementContext sqlStatement) {
-        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>();
-        for (DataSourceConnectionUrl each : sqlStatement.getUrls()) {
+    public Map<String, YamlDataSourceParameter> convert(final CreateDataSourcesStatementContext context) {
+        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(context.getSqlStatement().getConnectionInfos().size(), 1);
+        for (DataSourceConnectionSegment each : context.getSqlStatement().getConnectionInfos()) {
+            DataSourceParameter parameter = new DataSourceParameter();
             YamlDataSourceParameter dataSource = new YamlDataSourceParameter();
-            dataSource.setUrl(each.getUrl());
-            dataSource.setUsername(each.getUserName());
+            dataSource.setUrl(context.getUrl(each));
+            dataSource.setUsername(each.getUser());
             dataSource.setPassword(each.getPassword());
+            dataSource.setMinPoolSize(parameter.getMinPoolSize());
+            dataSource.setMaxPoolSize(parameter.getMaxPoolSize());
+            dataSource.setConnectionTimeoutMilliseconds(parameter.getConnectionTimeoutMilliseconds());
+            dataSource.setIdleTimeoutMilliseconds(parameter.getIdleTimeoutMilliseconds());
+            dataSource.setMaintenanceIntervalMilliseconds(parameter.getMaintenanceIntervalMilliseconds());
             result.put(each.getName(), dataSource);
         }
         return result;

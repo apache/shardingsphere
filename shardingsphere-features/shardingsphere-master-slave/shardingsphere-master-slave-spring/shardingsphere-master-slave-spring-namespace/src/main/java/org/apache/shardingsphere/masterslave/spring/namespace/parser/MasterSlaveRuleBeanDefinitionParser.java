@@ -22,7 +22,7 @@ import org.apache.shardingsphere.masterslave.algorithm.config.AlgorithmProvidedM
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.spring.namespace.factorybean.MasterSlaveLoadBalanceAlgorithmFactoryBean;
 import org.apache.shardingsphere.masterslave.spring.namespace.tag.MasterSlaveRuleBeanDefinitionTag;
-import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanRegistry;
+import org.apache.shardingsphere.spring.namespace.registry.ShardingSphereAlgorithmBeanRegistry;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

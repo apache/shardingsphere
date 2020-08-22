@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.proxy.convert;
 
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStatementContext;
-import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStatementContext.DataSourceConnectionUrl;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.DataSourceConnectionSegment;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,8 +33,6 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class CreateDataSourcesStatementContextConverterTest {
     
@@ -40,16 +40,20 @@ public final class CreateDataSourcesStatementContextConverterTest {
     
     @Before
     public void setUp() {
-        sqlStatement = mock(CreateDataSourcesStatementContext.class);
-        when(sqlStatement.getUrls()).thenReturn(createDataSourceContexts());
+        sqlStatement = new CreateDataSourcesStatementContext(new CreateDataSourcesStatement(createDataSourceConnectionSegments()), new MySQLDatabaseType());
     }
     
-    private Collection<DataSourceConnectionUrl> createDataSourceContexts() {
-        Collection<DataSourceConnectionUrl> result = new LinkedList<>();
+    private Collection<DataSourceConnectionSegment> createDataSourceConnectionSegments() {
+        Collection<DataSourceConnectionSegment> result = new LinkedList<>();
         for (int i = 0; i < 2; i++) {
-            DataSourceConnectionUrl context =
-                    new DataSourceConnectionUrl("ds" + i, "jdbc:mysql://127.0.0.1:3306/demo_ds_" + i + "?serverTimezone=UTC&useSSL=false", "root" + i, "root" + i);
-            result.add(context);
+            DataSourceConnectionSegment segment = new DataSourceConnectionSegment();
+            segment.setName("ds" + i);
+            segment.setHostName("127.0.0.1");
+            segment.setPassword("3306");
+            segment.setDb("demo_ds_" + i);
+            segment.setUser("root" + i);
+            segment.setPassword("root" + i);
+            result.add(segment);
         }
         return result;
     }

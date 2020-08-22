@@ -17,13 +17,17 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Array column types for PostgreSQL.
  */
-public class PostgreSQLArrayColumnType {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PostgreSQLArrayColumnType {
     
     private static final String ORIGINAL_RECORD_LINES =
         "_aclitem 1034\n"
@@ -121,8 +125,8 @@ public class PostgreSQLArrayColumnType {
     /**
      * Get type oid by database-specific column type name.
      *
-     * @param columnTypeName PostgreSQL column type name, e.g. <code>int4</code>
-     * @return type oid, e.g. <code>23</code> for <code>int4</code>
+     * @param columnTypeName PostgreSQL column type name, e.g. {@code int4}
+     * @return type oid, e.g. {@code 23} for {@code int4}
      * @throws IllegalArgumentException if no type oid could be found
      */
     public static int getTypeOidByColumnTypeName(final String columnTypeName) throws IllegalArgumentException {

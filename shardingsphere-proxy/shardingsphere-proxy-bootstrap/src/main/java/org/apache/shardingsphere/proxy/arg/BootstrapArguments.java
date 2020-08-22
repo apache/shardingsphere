@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.arg;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.constant.Constants;
 
 /**
  * Bootstrap arguments.
@@ -27,6 +26,8 @@ import org.apache.shardingsphere.infra.constant.Constants;
 public final class BootstrapArguments {
     
     private static final String DEFAULT_CONFIG_PATH = "/conf/";
+    
+    private static final int DEFAULT_PORT = 3307;
     
     private final int port;
     
@@ -39,8 +40,7 @@ public final class BootstrapArguments {
     
     private int getPort(final String[] args) {
         if (0 == args.length) {
-            // TODO move Constants.DEFAULT_PORT to private attributes of BootstrapArguments
-            return Constants.DEFAULT_PORT;
+            return DEFAULT_PORT;
         }
         try {
             return Integer.parseInt(args[0]);

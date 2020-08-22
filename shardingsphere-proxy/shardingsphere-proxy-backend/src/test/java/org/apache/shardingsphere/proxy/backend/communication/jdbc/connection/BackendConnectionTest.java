@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
@@ -42,15 +43,16 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -81,7 +83,8 @@ public final class BackendConnectionTest {
     private void setSchemaContexts() throws NoSuchFieldException, IllegalAccessException {
         Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        field.set(ProxySchemaContexts.getInstance(), new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties())));
+        field.set(ProxySchemaContexts.getInstance(),
+                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
@@ -148,7 +151,7 @@ public final class BackendConnectionTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setMethodInvocation() {
         MethodInvocation invocation = mock(MethodInvocation.class);
-        Collection<MethodInvocation> methodInvocations = new ArrayList<>();
+        Collection<MethodInvocation> methodInvocations = new LinkedList<>();
         methodInvocations.add(invocation);
         Field field = backendConnection.getClass().getDeclaredField("methodInvocations");
         field.setAccessible(true);
@@ -229,7 +232,7 @@ public final class BackendConnectionTest {
         } catch (final SQLException ex) {
             assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
         }
-        assert actual != null;
+        assertNotNull(actual);
         assertThat(actual.getConnectionSize(), is(0));
         assertTrue(actual.getCachedConnections().isEmpty());
         assertTrue(actual.getCachedResultSets().isEmpty());

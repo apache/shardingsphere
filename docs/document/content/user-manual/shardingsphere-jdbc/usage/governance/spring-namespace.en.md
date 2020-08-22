@@ -43,9 +43,10 @@ weight = 4
          <prop key="operation-timeout-milliseconds">3000</prop>
      </util:properties>
      <orchestration:reg-center id="regCenter" type="Zookeeper" server-lists="localhost:2181" />
-     <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" reg-center-ref="regCenter" overwrite="true" />
-     <orchestration:slave-data-source id="masterSlaveDataSource" data-source-ref="realMasterSlaveDataSource" reg-center-ref="regCenter" overwrite="true" />
-     <orchestration:data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" reg-center-ref="regCenter" overwrite="true" />
+     <orchestration:config-center id="configCenter" type="ZooKeeper" server-lists="localhost:2182" />
+     <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" reg-center-ref="regCenter" config-center-ref="configCenter" overwrite="true" />
+     <orchestration:slave-data-source id="masterSlaveDataSource" data-source-ref="realMasterSlaveDataSource" reg-center-ref="regCenter" config-center-ref="configCenter" overwrite="true" />
+     <orchestration:data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" reg-center-ref="regCenter" config-center-ref="configCenter" overwrite="true" />
 </beans>
 ```
 

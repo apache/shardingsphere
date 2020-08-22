@@ -32,10 +32,13 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 
-public class YamlOrchestrationShardingSphereDataSourceFactoryTest extends AbstractYamlDataSourceTest {
+public final class YamlOrchestrationShardingSphereDataSourceFactoryTest extends AbstractYamlDataSourceTest {
     
     private static final List<String> CONFIG_FILES = Arrays.asList("/yaml/integrate/sharding_ms/configWithDataSourceWithProps.yaml",
-            "/yaml/integrate/sharding_ms/configWithoutDataSourceWithProps.yaml", "/yaml/integrate/sharding_ms/configWithDataSourceWithoutRules.yaml");
+            "/yaml/integrate/sharding_ms/configWithoutDataSourceWithProps.yaml",
+            "/yaml/integrate/sharding_ms/configWithDataSourceWithoutRules.yaml",
+            "/yaml/integrate/sharding_ms/configWithoutDataSourceWithCluster.yaml",
+            "/yaml/integrate/sharding_ms/configWithDataSourceWithCluster.yaml");
     
     private static DataSource dataSource;
     
@@ -51,8 +54,31 @@ public class YamlOrchestrationShardingSphereDataSourceFactoryTest extends Abstra
         });
     }
     
+    @Test
+    public void assertCreateDataSourceByYamlBytes() {
+        CONFIG_FILES.forEach(each -> {
+            try {
+                File yamlFile = new File(YamlOrchestrationShardingSphereDataSourceFactoryTest.class.getResource(each).toURI());
+                executeSQL(getYamlBytes(yamlFile));
+            } catch (final URISyntaxException | SQLException | IOException ex) {
+                throw new ShardingSphereException(ex);
+            }
+        });
+    }
+    
     private void executeSQL(final File yamlFile) throws SQLException, IOException {
         dataSource = YamlOrchestrationShardingSphereDataSourceFactory.createDataSource(yamlFile);
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute(String.format("INSERT INTO t_order(user_id,status) values(%d, %s)", 10, "'insert'"));
+            statement.executeQuery("SELECT * FROM t_order");
+            statement.executeQuery("SELECT * FROM t_order_item");
+            statement.executeQuery("SELECT * FROM config");
+        }
+    }
+    
+    private void executeSQL(final byte[] yamlBytes) throws SQLException, IOException {
+        dataSource = YamlOrchestrationShardingSphereDataSourceFactory.createDataSource(yamlBytes);
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute(String.format("INSERT INTO t_order(user_id,status) values(%d, %s)", 10, "'insert'"));

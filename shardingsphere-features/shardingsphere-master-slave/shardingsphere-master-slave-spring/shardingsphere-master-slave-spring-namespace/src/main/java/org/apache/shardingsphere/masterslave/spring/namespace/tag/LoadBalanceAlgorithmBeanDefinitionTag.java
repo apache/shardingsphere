@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.masterslave.spring.namespace.tag;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Load balance algorithm bean definition tag.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LoadBalanceAlgorithmBeanDefinitionTag {
     
     public static final String ROOT_TAG = "load-balance-algorithm";

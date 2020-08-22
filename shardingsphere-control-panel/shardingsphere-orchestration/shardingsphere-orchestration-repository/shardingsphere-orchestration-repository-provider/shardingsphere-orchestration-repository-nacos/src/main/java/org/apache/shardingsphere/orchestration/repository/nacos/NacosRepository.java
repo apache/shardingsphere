@@ -59,12 +59,12 @@ public final class NacosRepository implements ConfigurationRepository {
      * @param config config center configuration
      */
     @Override
-    public void init(final String namespace, final OrchestrationCenterConfiguration config) {
+    public void init(final String name, final OrchestrationCenterConfiguration config) {
         try {
             nacosProperties = new NacosProperties(props);
             Properties props = new Properties();
-            props.put(PropertyKeyConst.SERVER_ADDR, config.getServerLists());
-            props.put(PropertyKeyConst.NAMESPACE, null == namespace ? "" : namespace);
+            props.setProperty(PropertyKeyConst.SERVER_ADDR, config.getServerLists());
+            props.setProperty(PropertyKeyConst.NAMESPACE, null == name ? "" : name);
             configService = NacosFactory.createConfigService(props);
         } catch (final NacosException ex) {
             log.error("Init nacos config center exception for: {}", ex.toString());

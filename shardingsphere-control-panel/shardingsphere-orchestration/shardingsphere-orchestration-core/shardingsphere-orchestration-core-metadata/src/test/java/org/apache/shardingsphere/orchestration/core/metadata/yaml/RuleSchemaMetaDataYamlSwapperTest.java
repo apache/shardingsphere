@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.metadata.yaml;
 
-import org.apache.shardingsphere.orchestration.core.metadata.MetaDataTest;
+import org.apache.shardingsphere.orchestration.core.metadata.MetaDataJson;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public final class RuleSchemaMetaDataYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlRuleSchemaMetaData() {
-        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(MetaDataTest.META_DATA, YamlRuleSchemaMetaData.class));
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(MetaDataJson.META_DATA, YamlRuleSchemaMetaData.class));
         YamlRuleSchemaMetaData yamlRuleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToYamlConfiguration(ruleSchemaMetaData);
         assertNotNull(yamlRuleSchemaMetaData);
         assertNotNull(yamlRuleSchemaMetaData.getConfiguredSchemaMetaData());
@@ -48,7 +48,7 @@ public final class RuleSchemaMetaDataYamlSwapperTest {
     
     @Test
     public void assertSwapToRuleSchemaMetaData() {
-        YamlRuleSchemaMetaData yamlRuleSchemaMetaData = YamlEngine.unmarshal(MetaDataTest.META_DATA, YamlRuleSchemaMetaData.class);
+        YamlRuleSchemaMetaData yamlRuleSchemaMetaData = YamlEngine.unmarshal(MetaDataJson.META_DATA, YamlRuleSchemaMetaData.class);
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(yamlRuleSchemaMetaData);
         assertNotNull(ruleSchemaMetaData);
         assertNotNull(ruleSchemaMetaData.getConfiguredSchemaMetaData());

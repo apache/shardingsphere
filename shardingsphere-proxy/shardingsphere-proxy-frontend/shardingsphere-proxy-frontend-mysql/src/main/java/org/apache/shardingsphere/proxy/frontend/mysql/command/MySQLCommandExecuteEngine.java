@@ -61,12 +61,12 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     }
     
     @Override
-    public DatabasePacket getErrorPacket(final Exception cause) {
+    public DatabasePacket<?> getErrorPacket(final Exception cause) {
         return MySQLErrPacketFactory.newInstance(1, cause);
     }
     
     @Override
-    public Optional<DatabasePacket> getOtherPacket() {
+    public Optional<DatabasePacket<?>> getOtherPacket() {
         return Optional.empty();
     }
     
@@ -86,7 +86,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
                 context.flush();
                 backendConnection.getResourceSynchronizer().doAwaitUntil();
             }
-            DatabasePacket dataValue = queryCommandExecutor.getQueryData();
+            DatabasePacket<?> dataValue = queryCommandExecutor.getQueryData();
             context.write(dataValue);
             if (flushThreshold == count) {
                 context.flush();

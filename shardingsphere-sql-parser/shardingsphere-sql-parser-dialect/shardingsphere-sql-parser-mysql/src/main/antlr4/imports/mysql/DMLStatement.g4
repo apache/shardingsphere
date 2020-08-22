@@ -206,7 +206,7 @@ unionClause
     ;
 
 selectClause
-    : LP_? SELECT selectSpecification* projections fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause? selectIntoExpression_? lockClause? RP_?
+    : LP_? SELECT selectSpecification* projections selectIntoExpression_? fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause? selectIntoExpression_? lockClause? RP_?
     ;
 
 selectSpecification
@@ -222,7 +222,7 @@ projections
     ;
 
 projection
-    : (columnName | expr) (AS? alias)? | qualifiedShorthand
+    : expr (AS? alias)? | qualifiedShorthand
     ;
 
 unqualifiedShorthand
@@ -320,7 +320,7 @@ selectFieldsInto_
     ;
 
 selectIntoExpression_
-    : INTO identifier (COMMA_ identifier )* | INTO DUMPFILE STRING_
+    : INTO variable (COMMA_ variable )* | INTO DUMPFILE STRING_
     | (INTO OUTFILE STRING_ (CHARACTER SET IDENTIFIER_)?((FIELDS | COLUMNS) selectFieldsInto_+)? (LINES selectLinesInto_+)?)
     ;
 

@@ -18,10 +18,14 @@
 package org.apache.shardingsphere.scaling.core.execute.engine;
 
 import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
-import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 public final class ShardingScalingExecuteEngineTest {
     
@@ -30,11 +34,39 @@ public final class ShardingScalingExecuteEngineTest {
         ShardingScalingExecuteEngine executeEngine = new ShardingScalingExecuteEngine(2);
         try {
             for (int i = 0; i < 5; i++) {
-                executeEngine.submit(mockShardingScalingExecutor());
+                Future<?> submit = executeEngine.submit(mockShardingScalingExecutor());
+                assertFalse(submit.isCancelled());
             }
-        } catch (RejectedExecutionException ex) {
-            Assert.fail();
+        } catch (final RejectedExecutionException ex) {
+            fail();
         }
+    }
+    
+    @Test
+    public void assertSubmitAllMoreThanMaxWorkerNumber() {
+        ShardingScalingExecuteEngine executeEngine = new ShardingScalingExecuteEngine(2);
+        try {
+            for (int i = 0; i < 5; i++) {
+                Future<?> submit = executeEngine.submitAll(Collections.singletonList(mockShardingScalingExecutor()), mockExecuteCallback());
+                assertFalse(submit.isCancelled());
+            }
+        } catch (final RejectedExecutionException ex) {
+            fail();
+        }
+    }
+    
+    private ExecuteCallback mockExecuteCallback() {
+        return new ExecuteCallback() {
+            @Override
+            public void onSuccess() {
+        
+            }
+    
+            @Override
+            public void onFailure(final Throwable throwable) {
+        
+            }
+        };
     }
     
     private ShardingScalingExecutor mockShardingScalingExecutor() {
@@ -42,20 +74,17 @@ public final class ShardingScalingExecuteEngineTest {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ignored) {
-                
+                    Thread.sleep(100L);
+                } catch (final InterruptedException ignored) {
                 }
             }
             
             @Override
             public void start() {
-            
             }
             
             @Override
             public void stop() {
-            
             }
         };
     }

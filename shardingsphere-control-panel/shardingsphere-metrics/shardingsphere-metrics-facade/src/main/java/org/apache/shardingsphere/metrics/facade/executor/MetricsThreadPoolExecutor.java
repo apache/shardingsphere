@@ -47,11 +47,11 @@ public final class MetricsThreadPoolExecutor extends ThreadPoolExecutor {
     public MetricsThreadPoolExecutor(final String nameFormat, final int threadCount, final int queueSize) {
         super(threadCount, threadCount, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(queueSize),
                 new ThreadFactoryBuilder().setDaemon(true).setNameFormat(nameFormat).build(), buildRejectedExecutionHandler(queueSize));
-        this.name = nameFormat;
+        name = nameFormat;
     }
     
     private static RejectedExecutionHandler buildRejectedExecutionHandler(final int size) {
-        return (r, executor) -> {
+        return (runnable, executor) -> {
             BlockingQueue<Runnable> queue = executor.getQueue();
             while (queue.size() >= size) {
                 if (executor.isShutdown()) {
@@ -60,7 +60,7 @@ public final class MetricsThreadPoolExecutor extends ThreadPoolExecutor {
                 ((MetricsThreadPoolExecutor) executor).onRejected();
             }
             if (!executor.isShutdown()) {
-                executor.execute(r);
+                executor.execute(runnable);
             }
         };
     }

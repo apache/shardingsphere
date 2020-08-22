@@ -81,6 +81,9 @@ public final class DataSourceUtil {
         if ("Oracle".equals(databaseType.getName())) {
             result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dataSourceName));
         }
+        if ("MySQL".equals(databaseType.getName())) {
+            result.setConnectionInitSqls(Collections.singleton("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))"));
+        }
         return result;
     }
     
@@ -96,6 +99,9 @@ public final class DataSourceUtil {
         result.setConnectionTestQuery("SELECT 1");
         if ("Oracle".equals(databaseType.getName())) {
             result.setConnectionInitSql("ALTER SESSION SET CURRENT_SCHEMA = " + dataSourceName);
+        }
+        if ("MySQL".equals(databaseType.getName())) {
+            result.setConnectionInitSql("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
         }
         return new HikariDataSource(result);
     }

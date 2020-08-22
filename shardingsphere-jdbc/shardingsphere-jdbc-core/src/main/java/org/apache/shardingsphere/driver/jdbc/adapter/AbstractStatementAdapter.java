@@ -42,7 +42,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     private final ForceExecuteTemplate<Statement> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void close() throws SQLException {
         closed = true;
@@ -63,7 +63,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         return poolable;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setPoolable(final boolean poolable) throws SQLException {
         this.poolable = poolable;
@@ -76,22 +76,22 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         return fetchSize;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setFetchSize(final int rows) throws SQLException {
-        this.fetchSize = rows;
+        fetchSize = rows;
         recordMethodInvocation(targetClass, "setFetchSize", new Class[] {int.class}, new Object[] {rows});
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setFetchSize(rows));
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setEscapeProcessing(final boolean enable) throws SQLException {
         recordMethodInvocation(targetClass, "setEscapeProcessing", new Class[] {boolean.class}, new Object[] {enable});
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setEscapeProcessing(enable));
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void cancel() throws SQLException {
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::cancel);
@@ -154,7 +154,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         return getRoutedStatements().isEmpty() ? 0 : getRoutedStatements().iterator().next().getMaxFieldSize();
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setMaxFieldSize(final int max) throws SQLException {
         recordMethodInvocation(targetClass, "setMaxFieldSize", new Class[] {int.class}, new Object[] {max});
@@ -167,7 +167,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         return getRoutedStatements().isEmpty() ? -1 : getRoutedStatements().iterator().next().getMaxRows();
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setMaxRows(final int max) throws SQLException {
         recordMethodInvocation(targetClass, "setMaxRows", new Class[] {int.class}, new Object[] {max});
@@ -179,7 +179,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         return getRoutedStatements().isEmpty() ? 0 : getRoutedStatements().iterator().next().getQueryTimeout();
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setQueryTimeout(final int seconds) throws SQLException {
         recordMethodInvocation(targetClass, "setQueryTimeout", new Class[] {int.class}, new Object[] {seconds});

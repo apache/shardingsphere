@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.example.transaction.xa.bitronix.raw.jdbc;
 
-import java.io.File;
-import javax.sql.DataSource;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 
-public class ExampleMain {
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+
+public final class ExampleMain {
     
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables.yaml"));
         ExampleExecuteTemplate.run(getExampleService(dataSource));
         ExampleExecuteTemplate.runFailure(getExampleService(dataSource));
@@ -35,7 +38,7 @@ public class ExampleMain {
         return new File(ExampleMain.class.getResource(fileName).getFile());
     }
     
-    private static ExampleService getExampleService(DataSource dataSource) {
+    private static ExampleService getExampleService(final DataSource dataSource) {
         return new OrderServiceImpl(dataSource);
     }
 }

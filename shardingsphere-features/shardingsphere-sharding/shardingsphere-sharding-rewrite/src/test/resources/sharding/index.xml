@@ -24,9 +24,9 @@
     </rewrite-assertion>
     
     <rewrite-assertion id="create_index_for_postgresql" db-type="PostgreSQL">
-        <input sql="CREATE INDEX index_name ON t_account ('status')" />
-        <output sql="CREATE INDEX index_name_t_account_0 ON t_account_0 ('status')" />
-        <output sql="CREATE INDEX index_name_t_account_1 ON t_account_1 ('status')" />
+        <input sql="CREATE INDEX index_name ON t_account (status)" />
+        <output sql="CREATE INDEX index_name_t_account_0 ON t_account_0 (status)" />
+        <output sql="CREATE INDEX index_name_t_account_1 ON t_account_1 (status)" />
     </rewrite-assertion>
     
     <rewrite-assertion id="drop_index_for_mysql" db-type="MySQL">

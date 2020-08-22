@@ -36,8 +36,6 @@ public final class CircuitBreakerConnectionTest {
     
     private final CircuitBreakerConnection connection = new CircuitBreakerConnection();
     
-    private final String sql = "select 1";
-    
     @Test
     public void assertGetMetaData() {
         assertTrue(connection.getMetaData() instanceof CircuitBreakerDatabaseMetaData);
@@ -109,6 +107,7 @@ public final class CircuitBreakerConnectionTest {
     
     @Test
     public void assertPrepareStatement() {
+        String sql = "SELECT 1";
         assertTrue(connection.prepareStatement(sql) instanceof CircuitBreakerPreparedStatement);
         assertTrue(connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY) instanceof CircuitBreakerPreparedStatement);
         assertTrue(connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT) instanceof CircuitBreakerPreparedStatement);

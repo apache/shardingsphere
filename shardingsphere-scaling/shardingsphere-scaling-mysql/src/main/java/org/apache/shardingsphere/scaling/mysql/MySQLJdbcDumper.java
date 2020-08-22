@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
+import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.AbstractJDBCDumper;
 import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
@@ -36,10 +36,22 @@ import java.util.Map.Entry;
  */
 public final class MySQLJdbcDumper extends AbstractJDBCDumper {
     
-    public MySQLJdbcDumper(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
-        super(rdbmsConfiguration, dataSourceManager);
-        JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) getRdbmsConfiguration().getDataSourceConfiguration();
+    public MySQLJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfiguration, final DataSourceManager dataSourceManager) {
+        super(inventoryDumperConfiguration, dataSourceManager);
+        JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) getInventoryDumperConfiguration().getDataSourceConfiguration();
         jdbcDataSourceConfiguration.setJdbcUrl(fixMySQLUrl(jdbcDataSourceConfiguration.getJdbcUrl()));
+    }
+    
+    private String fixMySQLUrl(final String url) {
+        JdbcUri uri = new JdbcUri(url);
+        return String.format("jdbc:%s://%s/%s?%s", uri.getScheme(), uri.getHost(), uri.getDatabase(), fixMySQLParams(uri.getParameters()));
+    }
+    
+    private String fixMySQLParams(final Map<String, String> parameters) {
+        if (!parameters.containsKey("yearIsDateType")) {
+            parameters.put("yearIsDateType", "false");
+        }
+        return formatMySQLParams(parameters);
     }
     
     private String formatMySQLParams(final Map<String, String> params) {
@@ -53,18 +65,6 @@ public final class MySQLJdbcDumper extends AbstractJDBCDumper {
         }
         result.deleteCharAt(result.length() - 1);
         return result.toString();
-    }
-    
-    private String fixMySQLUrl(final String url) {
-        JdbcUri uri = new JdbcUri(url);
-        return String.format("jdbc:%s://%s/%s?%s", uri.getScheme(), uri.getHost(), uri.getDatabase(), fixMySQLParams(uri.getParameters()));
-    }
-    
-    private String fixMySQLParams(final Map<String, String> parameters) {
-        if (!parameters.containsKey("yearIsDateType")) {
-            parameters.put("yearIsDateType", "false");
-        }
-        return formatMySQLParams(parameters);
     }
     
     @Override
@@ -83,7 +83,7 @@ public final class MySQLJdbcDumper extends AbstractJDBCDumper {
     @Override
     protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
         PreparedStatement result = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        result.setFetchSize(Integer.MIN_VALUE);
+        result.setFetchSize(100);
         return result;
     }
 }

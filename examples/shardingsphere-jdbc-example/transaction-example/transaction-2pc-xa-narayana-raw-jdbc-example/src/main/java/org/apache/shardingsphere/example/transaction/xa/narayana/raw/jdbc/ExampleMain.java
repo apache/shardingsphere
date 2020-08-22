@@ -23,11 +23,13 @@ import org.apache.shardingsphere.example.core.api.service.ExampleService;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
 
 //FIXME main class could not terminal after execute.
-public class ExampleMain {
+public final class ExampleMain {
     
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables.yaml"));
         ExampleExecuteTemplate.run(getExampleService(dataSource));
         ExampleExecuteTemplate.runFailure(getExampleService(dataSource));

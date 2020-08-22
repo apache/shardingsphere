@@ -17,25 +17,40 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class MD5EncryptAlgorithmTest {
     
-    private final MD5EncryptAlgorithm encryptAlgorithm = new MD5EncryptAlgorithm();
+    static {
+        ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
+    }
     
-    @Test
-    public void assertGetType() {
-        assertThat(encryptAlgorithm.getType(), is("MD5"));
+    private EncryptAlgorithm encryptAlgorithm;
+    
+    @Before
+    public void setUp() {
+        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("Md5", new Properties()), EncryptAlgorithm.class);
     }
     
     @Test
     public void assertEncode() {
         assertThat(encryptAlgorithm.encrypt("test"), is("098f6bcd4621d373cade4e832627b4f6"));
+    }
+    
+    @Test
+    public void assertEncryptWithNullPlaintext() {
+        assertNull(encryptAlgorithm.encrypt(null));
     }
     
     @Test
@@ -48,6 +63,6 @@ public final class MD5EncryptAlgorithmTest {
         Properties props = new Properties();
         props.setProperty("key1", "value1");
         encryptAlgorithm.setProps(props);
-        assertThat(encryptAlgorithm.getProps().get("key1").toString(), is("value1"));
+        assertThat(encryptAlgorithm.getProps().getProperty("key1"), is("value1"));
     }
 }

@@ -39,9 +39,9 @@ public final class YamlOrchestrationRepositoryConfigurationSwapperUtil {
      */
     public static OrchestrationConfiguration marshal(final YamlOrchestrationConfiguration orchestration) {
         if (null == orchestration.getAdditionalConfigCenter()) {
-            return new OrchestrationConfiguration(orchestration.getNamespace(), SWAPPER.swapToObject(orchestration.getRegistryCenter()), orchestration.isOverwrite());
+            return new OrchestrationConfiguration(orchestration.getName(), SWAPPER.swapToObject(orchestration.getRegistryCenter()), orchestration.isOverwrite());
         }
-        return new OrchestrationConfiguration(orchestration.getNamespace(), 
+        return new OrchestrationConfiguration(orchestration.getName(),
                 SWAPPER.swapToObject(orchestration.getRegistryCenter()), SWAPPER.swapToObject(orchestration.getAdditionalConfigCenter()), orchestration.isOverwrite());
     }
 }

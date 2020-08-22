@@ -54,7 +54,7 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(hashShardingValue(shardingValue.getValue()) % shardingCount + "")) {
+            if (each.endsWith(String.valueOf(hashShardingValue(shardingValue.getValue()) % shardingCount))) {
                 return each;
             }
         }

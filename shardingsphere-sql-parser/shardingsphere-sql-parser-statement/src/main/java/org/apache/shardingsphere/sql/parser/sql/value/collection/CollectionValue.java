@@ -37,6 +37,6 @@ public final class CollectionValue<T> implements ValueASTNode<Collection> {
      * @param collectionValue collection value
      */
     public void combine(final CollectionValue<T> collectionValue) {
-        value.addAll(collectionValue.getValue());
+        value.addAll(collectionValue.value);
     }
 }

@@ -21,9 +21,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.scaling.core.config.utils.RdbmsConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
@@ -31,10 +32,13 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.job.position.FinishedInventoryPosition;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
+import org.apache.shardingsphere.scaling.core.utils.RdbmsConfigurationUtil;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import java.sql.Connection;
@@ -47,10 +51,10 @@ import java.sql.SQLException;
  * Abstract JDBC dumper implement.
  */
 @Slf4j
-public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor implements JDBCDumper {
+public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor<InventoryPosition> implements JDBCDumper {
     
     @Getter(AccessLevel.PROTECTED)
-    private final RdbmsConfiguration rdbmsConfiguration;
+    private final InventoryDumperConfiguration inventoryDumperConfiguration;
     
     private final DataSourceManager dataSourceManager;
     
@@ -59,44 +63,43 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     @Setter
     private Channel channel;
     
-    public AbstractJDBCDumper(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
-        if (!JDBCDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
+    protected AbstractJDBCDumper(final InventoryDumperConfiguration inventoryDumperConfiguration, final DataSourceManager dataSourceManager) {
+        if (!JDBCDataSourceConfiguration.class.equals(inventoryDumperConfiguration.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("AbstractJDBCDumper only support JDBCDataSourceConfiguration");
         }
-        this.rdbmsConfiguration = rdbmsConfiguration;
+        this.inventoryDumperConfiguration = inventoryDumperConfiguration;
         this.dataSourceManager = dataSourceManager;
-        this.tableMetaData = createTableMetaData();
+        tableMetaData = createTableMetaData();
     }
     
     private TableMetaData createTableMetaData() {
-        MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()));
-        return metaDataManager.getTableMetaData(rdbmsConfiguration.getTableName());
+        MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(inventoryDumperConfiguration.getDataSourceConfiguration()));
+        return metaDataManager.getTableMetaData(inventoryDumperConfiguration.getTableName());
     }
     
     @Override
     public final void start() {
         super.start();
-        dump(channel);
+        dump();
     }
     
-    @Override
-    public final void dump(final Channel channel) {
-        try (Connection conn = dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()).getConnection()) {
-            String sql = String.format("SELECT * FROM %s %s", rdbmsConfiguration.getTableName(), RdbmsConfigurationUtil.getWhereCondition(rdbmsConfiguration));
+    private void dump() {
+        try (Connection conn = dataSourceManager.getDataSource(inventoryDumperConfiguration.getDataSourceConfiguration()).getConnection()) {
+            String sql = String.format("SELECT * FROM %s %s", inventoryDumperConfiguration.getTableName(), RdbmsConfigurationUtil.getWhereCondition(inventoryDumperConfiguration));
             PreparedStatement ps = createPreparedStatement(conn, sql);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
             while (isRunning() && rs.next()) {
-                DataRecord record = new DataRecord(newPrimaryKeyPosition(rs), metaData.getColumnCount());
-                record.setType("BOOTSTRAP-INSERT");
-                record.setTableName(rdbmsConfiguration.getTableNameMap().get(rdbmsConfiguration.getTableName()));
+                DataRecord record = new DataRecord(newInventoryPosition(rs), metaData.getColumnCount());
+                record.setType(ScalingConstant.INSERT);
+                record.setTableName(inventoryDumperConfiguration.getTableNameMap().get(inventoryDumperConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
                     record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i)));
                 }
                 pushRecord(record);
             }
-            pushRecord(new FinishedRecord(new PrimaryKeyPosition.FinishedPosition()));
-        } catch (SQLException ex) {
+            pushRecord(new FinishedRecord(new FinishedInventoryPosition()));
+        } catch (final SQLException ex) {
             stop();
             channel.close();
             throw new SyncTaskExecuteException(ex);
@@ -105,31 +108,15 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
         }
     }
     
-    private PrimaryKeyPosition newPrimaryKeyPosition(final ResultSet rs) throws SQLException {
-        if (null == rdbmsConfiguration.getPrimaryKey()) {
-            return new PrimaryKeyPosition.PlaceholderPosition();
+    private InventoryPosition newInventoryPosition(final ResultSet rs) throws SQLException {
+        if (null == inventoryDumperConfiguration.getPrimaryKey()) {
+            return new PlaceholderInventoryPosition();
         }
-        return new PrimaryKeyPosition(rs.getLong(rdbmsConfiguration.getPrimaryKey()), ((PrimaryKeyPosition) rdbmsConfiguration.getPositionManager().getCurrentPosition()).getEndValue());
+        return new PrimaryKeyPosition(rs.getLong(inventoryDumperConfiguration.getPrimaryKey()), ((PrimaryKeyPosition) inventoryDumperConfiguration.getPositionManager().getPosition()).getEndValue());
     }
     
-    /**
-     * Create prepared statement.
-     *
-     * @param connection connection
-     * @param sql prepared sql
-     * @return prepared statement
-     * @throws SQLException SQL exception
-     */
     protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;
     
-    /**
-     * Read value from {@code ResultSet}.
-     *
-     * @param resultSet result set
-     * @param index of read column
-     * @return value
-     * @throws SQLException sql exception
-     */
     protected Object readValue(final ResultSet resultSet, final int index) throws SQLException {
         return resultSet.getObject(index);
     }
@@ -137,7 +124,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     private void pushRecord(final Record record) {
         try {
             channel.pushRecord(record);
-        } catch (InterruptedException ignored) {
+        } catch (final InterruptedException ignored) {
         }
     }
 }

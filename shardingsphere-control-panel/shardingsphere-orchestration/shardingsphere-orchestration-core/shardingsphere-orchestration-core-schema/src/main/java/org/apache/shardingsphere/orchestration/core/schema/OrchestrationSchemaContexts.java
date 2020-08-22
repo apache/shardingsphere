@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.core.schema;
 
-import com.google.common.base.Joiner;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.facade.init.ClusterInitFacade;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -43,7 +41,6 @@ import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.facade.MetricsTrackerManagerFacade;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
@@ -81,7 +78,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     
     private volatile SchemaContexts schemaContexts;
     
-    public OrchestrationSchemaContexts(final SchemaContexts schemaContexts, final OrchestrationFacade orchestrationFacade) {
+    protected OrchestrationSchemaContexts(final SchemaContexts schemaContexts, final OrchestrationFacade orchestrationFacade) {
         this.orchestrationFacade = orchestrationFacade;
         this.schemaContexts = schemaContexts;
         OrchestrationEventBus.getInstance().register(this);
@@ -89,25 +86,38 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         persistMetaData();
     }
     
-    // TODO decouple masterslave rule
     private void disableDataSources() {
         Collection<String> disabledDataSources = orchestrationFacade.getRegistryCenter().loadDisabledDataSources();
         if (!disabledDataSources.isEmpty()) {
             schemaContexts.getSchemaContexts().forEach((key, value)
-                -> value.getSchema().getRules().stream().filter(each -> each instanceof MasterSlaveRule).forEach(each -> disableDataSources((MasterSlaveRule) each, disabledDataSources, key)));
+                -> value.getSchema().getRules().stream().filter(each -> each instanceof StatusContainedRule).forEach(each -> disableDataSources((StatusContainedRule) each, disabledDataSources, key)));
         }
     }
     
-    private void disableDataSources(final MasterSlaveRule masterSlaveRule, final Collection<String> disabledDataSources, final String schemaName) {
-        masterSlaveRule.getSingleDataSourceRule().getSlaveDataSourceNames().forEach(each -> {
-            if (disabledDataSources.contains(Joiner.on(".").join(schemaName, each))) {
-                masterSlaveRule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true));
-            }
-        });
+    private void disableDataSources(final StatusContainedRule statusContainedRule, final Collection<String> disabledDataSources, final String schemaName) {
+        disabledDataSources.stream().filter(each -> each.startsWith(schemaName)).map(this::getDataSourceName).forEach(each ->
+                statusContainedRule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true))
+        );
+    }
+    
+    private String getDataSourceName(final String disableDataSource) {
+        return new OrchestrationSchema(disableDataSource).getDataSourceName();
     }
     
     private void persistMetaData() {
         schemaContexts.getSchemaContexts().forEach((key, value) -> orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(key, value.getSchema().getMetaData().getSchema()));
+    }
+    
+    @Override
+    public DatabaseType getDatabaseType() {
+        return schemaContexts.getDatabaseType();
+    }
+    
+    private DatabaseType getDatabaseType(final Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap) {
+        if (dataSourceParametersMap.isEmpty() || dataSourceParametersMap.values().iterator().next().isEmpty()) {
+            return schemaContexts.getDatabaseType();
+        }
+        return DatabaseTypes.getDatabaseTypeByURL(dataSourceParametersMap.values().iterator().next().values().iterator().next().getUrl());
     }
     
     @Override
@@ -151,8 +161,9 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         String schemaName = schemaAddedEvent.getShardingSchemaName();
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContexts());
         schemas.put(schemaName, getAddedSchemaContext(schemaAddedEvent));
-        schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps());
-        OrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.getSchemaContexts().get(schemaName).getSchema().getMetaData().getSchema());
+        schemaContexts =
+                new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.getSchemaContexts().get(schemaName).getSchema().getMetaData().getSchema());
     }
     
     /**
@@ -164,7 +175,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     public synchronized void renew(final SchemaDeletedEvent schemaDeletedEvent) {
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContexts());
         schemas.remove(schemaDeletedEvent.getShardingSchemaName());
-        schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps());
+        schemaContexts =
+                new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
     }
     
     /**
@@ -174,9 +186,9 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
-        ConfigurationLogger.log(event.getProps());
         ConfigurationProperties props = new ConfigurationProperties(event.getProps());
-        schemaContexts = new StandardSchemaContexts(getChangedSchemaContexts(props), schemaContexts.getAuthentication(), props);
+        schemaContexts =
+                new StandardSchemaContexts(getChangedSchemaContexts(props), schemaContexts.getAuthentication(), props, schemaContexts.getDatabaseType());
     }
     
     /**
@@ -186,8 +198,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final AuthenticationChangedEvent event) {
-        ConfigurationLogger.log(event.getAuthentication());
-        schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemaContexts(), event.getAuthentication(), schemaContexts.getProps());
+        schemaContexts =
+                new StandardSchemaContexts(schemaContexts.getSchemaContexts(), event.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
     }
     
     /**
@@ -221,7 +233,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
                 schemaContexts.put(entry.getKey(), entry.getValue());
             }
         }
-        this.schemaContexts = new StandardSchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps());
+        this.schemaContexts =
+                new StandardSchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps(), this.schemaContexts.getDatabaseType());
     }
     
     /**
@@ -236,8 +249,9 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         String schemaName = ruleConfigurationsChangedEvent.getShardingSchemaName();
         schemaContexts.remove(schemaName);
         schemaContexts.put(schemaName, getChangedSchemaContext(this.schemaContexts.getSchemaContexts().get(schemaName), ruleConfigurationsChangedEvent.getRuleConfigurations()));
-        this.schemaContexts = new StandardSchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps());
-        OrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.get(schemaName).getSchema().getMetaData().getSchema());
+        this.schemaContexts =
+                new StandardSchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps(), this.schemaContexts.getDatabaseType());
+        orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.get(schemaName).getSchema().getMetaData().getSchema());
     }
     
     /**
@@ -268,7 +282,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         Map<String, SchemaContext> schemaContexts = new HashMap<>(this.schemaContexts.getSchemaContexts());
         schemaContexts.remove(schemaName);
         schemaContexts.put(schemaName, getChangedSchemaContext(this.schemaContexts.getSchemaContexts().get(schemaName), dataSourceChangedEvent.getDataSourceConfigurations()));
-        this.schemaContexts = new StandardSchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps());
+        this.schemaContexts =
+                new StandardSchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps(), this.schemaContexts.getDatabaseType());
     }
     
     /**
@@ -278,7 +293,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent event) {
-        this.schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemaContexts(), schemaContexts.getAuthentication(), schemaContexts.getProps(), event.isCircuitBreak());
+        schemaContexts =
+                new StandardSchemaContexts(schemaContexts.getSchemaContexts(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType(), event.isCircuitBreak());
     }
     
     /**
@@ -320,22 +336,15 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         String schemaName = schemaAddedEvent.getShardingSchemaName();
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
         Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap = createDataSourceParametersMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
-        DatabaseType databaseType = getDatabaseType(dataSourceParametersMap.values().iterator().next().values().iterator().next());
+        DatabaseType databaseType = getDatabaseType(dataSourceParametersMap);
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(dataSourcesMap, databaseType, 
                 Collections.singletonMap(schemaName, schemaAddedEvent.getRuleConfigurations()), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
         return schemaContextsBuilder.build().getSchemaContexts().get(schemaName);
     }
     
-    private DatabaseType getDatabaseType(final DataSourceParameter parameter) {
-        if (!schemaContexts.getSchemaContexts().isEmpty()) {
-            schemaContexts.getSchemaContexts().values().iterator().next().getSchema().getDatabaseType();
-        }
-        return DatabaseTypes.getDatabaseTypeByURL(parameter.getUrl());
-    }
-    
     private Map<String, SchemaContext> getChangedSchemaContexts(final ConfigurationProperties props) {
         Map<String, SchemaContext> result = new HashMap<>(schemaContexts.getSchemaContexts().size());
-        for (Entry<String, SchemaContext> entry : this.schemaContexts.getSchemaContexts().entrySet()) {
+        for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContexts().entrySet()) {
             RuntimeContext runtimeContext = entry.getValue().getRuntimeContext();
             result.put(entry.getKey(), new SchemaContext(entry.getValue().getName(), entry.getValue().getSchema(), new RuntimeContext(runtimeContext.getCachedDatabaseMetaData(),
                     new ExecutorKernel(props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE)), runtimeContext.getSqlParserEngine(), runtimeContext.getTransactionManagerEngine())));
@@ -345,14 +354,14 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     
     private ShardingSphereSchema getChangedShardingSphereSchema(final ShardingSphereSchema oldShardingSphereSchema, final RuleSchemaMetaData newRuleSchemaMetaData) {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(oldShardingSphereSchema.getMetaData().getDataSources(), newRuleSchemaMetaData);
-        return new ShardingSphereSchema(oldShardingSphereSchema.getDatabaseType(), oldShardingSphereSchema.getConfigurations(),
+        return new ShardingSphereSchema(oldShardingSphereSchema.getConfigurations(),
                 oldShardingSphereSchema.getRules(), oldShardingSphereSchema.getDataSources(), metaData);
     }
     
     private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Collection<RuleConfiguration> configurations) throws SQLException {
         ShardingSphereSchema oldSchema = oldSchemaContext.getSchema();
         SchemaContextsBuilder builder = new SchemaContextsBuilder(Collections.singletonMap(oldSchemaContext.getName(), oldSchema.getDataSources()),
-                oldSchema.getDatabaseType(), Collections.singletonMap(oldSchemaContext.getName(), configurations), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
+                schemaContexts.getDatabaseType(), Collections.singletonMap(oldSchemaContext.getName(), configurations), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
         return builder.build().getSchemaContexts().values().iterator().next();
     }
     
@@ -364,7 +373,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         oldSchemaContext.getRuntimeContext().getTransactionManagerEngine().close();
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldSchemaContext.getName(), getNewDataSources(oldSchemaContext.getSchema().getDataSources(), 
                 deletedDataSources, getAddedDataSources(oldSchemaContext, newDataSources), modifiedDataSources));
-        return new SchemaContextsBuilder(dataSourcesMap, oldSchemaContext.getSchema().getDatabaseType(), 
+        return new SchemaContextsBuilder(dataSourcesMap, schemaContexts.getDatabaseType(),
                 Collections.singletonMap(oldSchemaContext.getName(), oldSchemaContext.getSchema().getConfigurations()), schemaContexts.getAuthentication(), 
                 schemaContexts.getProps().getProps()).build().getSchemaContexts().get(oldSchemaContext.getName());
     }
@@ -374,8 +383,12 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         Map<String, DataSource> result = new LinkedHashMap<>(oldDataSources);
         result.keySet().removeAll(deletedDataSources);
         result.keySet().removeAll(modifiedDataSources.keySet());
-        result.putAll(modifiedDataSources);
-        result.putAll(addedDataSources);
+        if (null != modifiedDataSources) {
+            result.putAll(modifiedDataSources);
+        }
+        if (null != addedDataSources) {
+            result.putAll(addedDataSources);
+        }
         return result;
     }
     

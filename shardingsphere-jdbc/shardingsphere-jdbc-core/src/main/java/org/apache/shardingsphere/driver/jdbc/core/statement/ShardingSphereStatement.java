@@ -364,7 +364,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
         SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
-        MergeEngine mergeEngine = new MergeEngine(schemaContext.getSchema().getDatabaseType(), 
+        MergeEngine mergeEngine = new MergeEngine(schemaContexts.getDatabaseType(),
                 schemaContext.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }

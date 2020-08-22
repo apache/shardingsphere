@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLComQueryPacketExecutorTest {
+public final class MySQLComQueryPacketExecutorTest {
     
     @Mock
     private SQLException sqlException;
@@ -53,7 +53,6 @@ public class MySQLComQueryPacketExecutorTest {
     @SneakyThrows
     public void assertIsErrorResponse() {
         FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
-        when(sqlException.getCause()).thenReturn(new Exception());
         when(textProtocolBackendHandler.execute()).thenReturn(new ErrorResponse(sqlException));
         mysqlComQueryPacketExecutor.execute();
         assertThat(mysqlComQueryPacketExecutor.isErrorResponse(), Matchers.is(true));

@@ -31,34 +31,34 @@ public final class ColumnSegmentTest {
         ColumnSegment actual = new ColumnSegment(0, 0, new IdentifierValue("col"));
         assertThat(actual.getQualifiedName(), is("col"));
     }
-
+    
     @Test
     public void assertGetQualifiedNameWithoutOwner2() {
         ColumnSegment actual = new ColumnSegment(0, 0, new IdentifierValue("`col`"));
         assertThat(actual.getQualifiedName(), is("`col`"));
     }
-
+    
     @Test
     public void assertGetQualifiedNameWithOwner() {
         ColumnSegment actual = new ColumnSegment(0, 0, new IdentifierValue("col"));
         actual.setOwner(new OwnerSegment(0, 0, new IdentifierValue("tbl")));
         assertThat(actual.getQualifiedName(), is("tbl.col"));
     }
-
+    
     @Test
     public void assertGetQualifiedNameWithOwner2() {
         ColumnSegment actual = new ColumnSegment(0, 0, new IdentifierValue("`col`"));
         actual.setOwner(new OwnerSegment(0, 0, new IdentifierValue("tbl")));
         assertThat(actual.getQualifiedName(), is("tbl.`col`"));
     }
-
+    
     @Test
     public void assertGetQualifiedNameWithOwner3() {
         ColumnSegment actual = new ColumnSegment(0, 0, new IdentifierValue("col"));
         actual.setOwner(new OwnerSegment(0, 0, new IdentifierValue("`tbl`")));
         assertThat(actual.getQualifiedName(), is("`tbl`.col"));
     }
-
+    
     @Test
     public void assertGetQualifiedNameWithOwner4() {
         ColumnSegment actual = new ColumnSegment(0, 0, new IdentifierValue("`col`"));

@@ -55,7 +55,7 @@ public abstract class BaseOpenTracingHookTest {
     }
     
     @Before
-    public void resetTracer() {
+    public final void resetTracer() {
         TRACER.reset();
     }
     
@@ -66,7 +66,7 @@ public abstract class BaseOpenTracingHookTest {
     }
     
     protected final void assertSpanError(final Class<? extends Throwable> expectedException, final String expectedErrorMessage) {
-        final MockSpan actual = getActualSpan();
+        MockSpan actual = getActualSpan();
         assertTrue((Boolean) actual.tags().get(Tags.ERROR.getKey()));
         List<MockSpan.LogEntry> actualLogEntries = actual.logEntries();
         assertThat(actualLogEntries.size(), is(1));

@@ -1,17 +1,25 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.explain;
 
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -36,22 +44,27 @@ import static org.mockito.Mockito.when;
  * limitations under the License.
  */
 
-public class ShardingCTLExplainBackendHandlerTest {
+public final class ShardingCTLExplainBackendHandlerTest {
     
     private ShardingCTLExplainBackendHandler handler;
     
     @Before
+    @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
         BackendConnection connection = mock(BackendConnection.class);
-        when(connection.getSchema()).thenReturn(createSchemaContext());
+        when(connection.getSchema()).thenReturn("schema");
         handler = new ShardingCTLExplainBackendHandler("sctl:explain select 1", connection);
+        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        schemaContexts.setAccessible(true);
+        schemaContexts.set(ProxySchemaContexts.getInstance(),
+                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
-    private SchemaContext createSchemaContext() {
-        RuntimeContext runtimeContext = new RuntimeContext(null, null, new ShardingSphereSQLParserEngine(new SQLParserEngine("MySQL")), null);
-        ShardingSphereSchema schema = new ShardingSphereSchema(new MySQLDatabaseType(), Collections.emptyList(),
+    private Map<String, SchemaContext> getSchemaContextMap() {
+        RuntimeContext runtimeContext = new RuntimeContext(null, null, new ShardingSphereSQLParserEngine(new StandardSQLParserEngine("MySQL")), null);
+        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.emptyList(),
                 Collections.emptyList(), Collections.singletonMap("ds0", mock(DataSource.class)), null);
-        return new SchemaContext("c1", schema, runtimeContext);
+        return Collections.singletonMap("schema", new SchemaContext("schema", schema, runtimeContext));
     }
     
     @Test

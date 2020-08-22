@@ -87,7 +87,7 @@ It is basically the same as the previous rehearsal command, but deleting -DdryRu
 After making sure there is no mistake in local files, submit them to GitHub.
 
 ```shell
-git push
+git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
 
@@ -330,31 +330,6 @@ Checklist for reference:
 
 2. Announce the vote result:
 
-Body:
-
-```
-The vote to release Apache ShardingSphere ElasticJob-${RELEASE.VERSION} has passed.
-
-7 PMC member +1 binding votes:
-
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-
-1 community +1 non-binding vote:
-xxx
-
-Thank you everyone for taking the time to review the release and help us. 
-```
-
-3. Announce the vote result:
-
-**Notice: Please include the votes from ShardingSphere community above.**
-
 Title：
 
 ```
@@ -394,8 +369,10 @@ svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.a
 ```shell
 git checkout master
 git merge origin/${RELEASE.VERSION}-release
-git push
+git pull
+git push origin master
 git push --delete origin ${RELEASE.VERSION}-release
+git branch -d ${RELEASE.VERSION}-release
 ```
 
 ### Update the download page
@@ -417,6 +394,7 @@ Install docker locally and start the docker service
 #### Compile Docker Image
 
 ```shell
+git checkout ${RELEASE.VERSION}
 cd ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/
 mvn clean package -Prelease,docker
 ```

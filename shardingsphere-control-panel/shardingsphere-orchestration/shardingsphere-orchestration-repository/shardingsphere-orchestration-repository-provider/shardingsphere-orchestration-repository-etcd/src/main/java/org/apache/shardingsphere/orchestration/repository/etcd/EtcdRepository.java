@@ -57,8 +57,8 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     private EtcdProperties etcdProperties;
 
     @Override
-    public void init(final String namespace, final OrchestrationCenterConfiguration config) { 
-        this.etcdProperties = new EtcdProperties(props);
+    public void init(final String name, final OrchestrationCenterConfiguration config) {
+        etcdProperties = new EtcdProperties(props);
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).build();
     }
     
@@ -81,7 +81,7 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     
     private String getSubNodeKeyName(final String prefix, final String fullPath) {
         String pathWithoutPrefix = fullPath.substring(prefix.length());
-        return pathWithoutPrefix.contains("/") ? pathWithoutPrefix.substring(0, pathWithoutPrefix.indexOf("/")) : pathWithoutPrefix;
+        return pathWithoutPrefix.contains("/") ? pathWithoutPrefix.substring(0, pathWithoutPrefix.indexOf('/')) : pathWithoutPrefix;
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
@@ -93,7 +93,7 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public void persistEphemeral(final String key, final String value) {
-        long leaseId = client.getLeaseClient().grant(this.etcdProperties.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
+        long leaseId = client.getLeaseClient().grant(etcdProperties.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
         client.getLeaseClient().keepAlive(leaseId, Observers.observer(response -> { }));
         client.getKVClient().put(ByteSequence.from(key, Charsets.UTF_8), ByteSequence.from(value, Charsets.UTF_8), PutOption.newBuilder().withLeaseId(leaseId).build()).get();
     }

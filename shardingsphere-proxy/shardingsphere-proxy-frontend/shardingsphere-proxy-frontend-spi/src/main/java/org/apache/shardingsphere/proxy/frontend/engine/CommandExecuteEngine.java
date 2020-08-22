@@ -69,14 +69,14 @@ public interface CommandExecuteEngine {
      * @param cause cause of error
      * @return error packet
      */
-    DatabasePacket getErrorPacket(Exception cause);
+    DatabasePacket<?> getErrorPacket(Exception cause);
     
     /**
      * Get other packet.
      *
      * @return other packet
      */
-    Optional<DatabasePacket> getOtherPacket();
+    Optional<DatabasePacket<?>> getOtherPacket();
     
     /**
      * Write query data.

@@ -23,8 +23,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PrometheusMetricsTrackerFactoryTest {
@@ -32,8 +32,8 @@ public final class PrometheusMetricsTrackerFactoryTest {
     @Test
     public void assertCreate() {
         PrometheusMetricsTrackerFactory factory = new PrometheusMetricsTrackerFactory();
-        assertThat(factory.create(MetricsTypeEnum.COUNTER.name(), MetricsLabelEnum.REQUEST_LATENCY.getName()).isPresent(), is(false));
-        assertThat(factory.create(MetricsTypeEnum.COUNTER.name(), MetricsLabelEnum.REQUEST_TOTAL.getName()).isPresent(), is(true));
+        assertFalse(factory.create(MetricsTypeEnum.COUNTER.name(), MetricsLabelEnum.REQUEST_LATENCY.getName()).isPresent());
+        assertTrue(factory.create(MetricsTypeEnum.COUNTER.name(), MetricsLabelEnum.REQUEST_TOTAL.getName()).isPresent());
     }
 }
 

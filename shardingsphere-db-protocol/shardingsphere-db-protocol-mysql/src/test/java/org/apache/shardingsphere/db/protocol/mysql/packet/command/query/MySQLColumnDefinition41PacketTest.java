@@ -63,7 +63,7 @@ public final class MySQLColumnDefinition41PacketTest {
         when(payload.readInt1()).thenReturn(1, MySQLColumnType.MYSQL_TYPE_LONG.getValue(), 0);
         when(payload.readInt2()).thenReturn(MySQLServerInfo.CHARSET, 0);
         when(payload.readInt4()).thenReturn(10);
-        when(payload.readIntLenenc()).thenReturn((long) 0x0c);
+        when(payload.readIntLenenc()).thenReturn(0x0cL);
         when(payload.readStringLenenc()).thenReturn("def", "logic_db", "tbl", "tbl", "id", "id");
         MySQLColumnDefinition41Packet actual = new MySQLColumnDefinition41Packet(payload);
         assertThat(actual.getSequenceId(), is(1));

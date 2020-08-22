@@ -25,7 +25,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 
-public class YamlDataSourceFactory {
+public final class YamlDataSourceFactory {
     
     public static DataSource createDataSource(final File yamlFile) throws IOException {
         DatasourceConfiguration datasourceConfig = YamlEngine.unmarshal(yamlFile, DatasourceConfiguration.class);

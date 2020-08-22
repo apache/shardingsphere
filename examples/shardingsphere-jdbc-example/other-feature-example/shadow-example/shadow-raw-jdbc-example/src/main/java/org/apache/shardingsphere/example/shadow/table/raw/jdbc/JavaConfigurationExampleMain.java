@@ -31,7 +31,7 @@ import org.apache.shardingsphere.example.type.ShardingType;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public class JavaConfigurationExampleMain {
+public final class JavaConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHADOW;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE_SHADOW;

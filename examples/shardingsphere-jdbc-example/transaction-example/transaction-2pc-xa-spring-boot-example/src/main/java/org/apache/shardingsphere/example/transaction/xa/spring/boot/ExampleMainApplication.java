@@ -31,7 +31,7 @@ import javax.annotation.PostConstruct;
 public class ExampleMainApplication {
     
     @Autowired
-    XAOrderService orderService;
+    private XAOrderService orderService;
     
     public static void main(final String[] args) {
         SpringApplication.run(ExampleMainApplication.class, args);

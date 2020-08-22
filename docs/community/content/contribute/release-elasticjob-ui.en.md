@@ -41,15 +41,15 @@ https://github.com/apache/shardingsphere-elasticjob-ui/blob/master/RELEASE-NOTES
 ### Create Release Branch
 
 Suppose ElasticJob-UI source codes downloaded from github is under `~/elasticjob-ui/` directory and the version to be released is `${RELEASE.VERSION}`. 
-Create `${RELEASE.VERSION}-release-ui` branch, where all the following operations are performed.
+Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
 
 ```shell
 ## ${name} is the properly branch, e.g. master, dev-4.x
 git clone --branch ${name} https://github.com/apache/shardingsphere-elasticjob-ui.git ~/elasticjob-ui
 cd ~/elasticjob-ui/
 git pull
-git checkout -b ${RELEASE.VERSION}-release-ui
-git push origin ${RELEASE.VERSION}-release-ui
+git checkout -b ${RELEASE.VERSION}-release
+git push origin ${RELEASE.VERSION}-release
 ```
 
 ### Pre-Release Check
@@ -88,7 +88,7 @@ It is basically the same as the previous rehearsal command, but deleting -DdryRu
 After making sure there is no mistake in local files, submit them to GitHub.
 
 ```shell
-git push
+git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
 
@@ -258,7 +258,7 @@ After at least 72 hours and with at least 3 `+1 PMC member` votes, it can come t
 Title:
 
 ```
-[VOTE] Release Apache ElasticJob UI ${RELEASE.VERSION}
+[VOTE] Release Apache ShardingSphere ElasticJob UI ${RELEASE.VERSION}
 
 ```
 
@@ -319,31 +319,6 @@ Checklist for reference:
 
 2. Announce the vote result:
 
-Body:
-
-```
-The vote to release Apache ShardingSphere ElasticJob UI ${RELEASE.VERSION} has passed.
-
-7 PMC member +1 binding votes:
-
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-
-1 community +1 non-binding vote:
-xxx
-
-Thank you everyone for taking the time to review the release and help us. 
-```
-
-3. Announce the vote result:
-
-**Notice: Please include the votes from ShardingSphere community above.**
-
 Title：
 
 ```
@@ -380,9 +355,11 @@ svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.a
 
 ```shell
 git checkout master
-git merge origin/${RELEASE.VERSION}-release-ui
-git push
-git push --delete origin ${RELEASE.VERSION}-release-ui
+git merge origin/${RELEASE.VERSION}-release
+git pull
+git push origin master
+git push --delete origin ${RELEASE.VERSION}-release
+git branch -d ${RELEASE.VERSION}-release
 ```
 
 ### Update the download page
@@ -404,6 +381,7 @@ Install docker locally and start the docker service
 #### Compile Docker Image
 
 ```shell
+git checkout ${RELEASE.VERSION}
 cd ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-cloud-ui-bin-distribution/
 mvn clean package -Prelease,docker
 ```

@@ -31,7 +31,6 @@ import java.sql.Statement;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -462,7 +461,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
                     count++;
                 }
             }
-            assertEquals(result.size(), count);
+            assertThat(result.size(), is(count));
         }
     }
     

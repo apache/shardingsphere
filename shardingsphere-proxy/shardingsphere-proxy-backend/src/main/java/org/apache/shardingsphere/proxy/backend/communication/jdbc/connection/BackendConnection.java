@@ -24,13 +24,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
-import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -59,7 +59,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private static final int POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME = 1;
     
-    private volatile SchemaContext schema;
+    private volatile String schema;
     
     private TransactionType transactionType;
     
@@ -77,7 +77,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
     
-    private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
+    private final Collection<MethodInvocation> methodInvocations = new LinkedList<>();
     
     @Getter
     private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
@@ -86,7 +86,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     public BackendConnection(final TransactionType transactionType) {
         this.transactionType = transactionType;
-        this.supportHint = false;
+        supportHint = false;
     }
     
     public BackendConnection(final TransactionType transactionType, final boolean supportHint) {
@@ -118,7 +118,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (isSwitchFailed()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
-        this.schema = ProxySchemaContexts.getInstance().getSchema(schemaName);
+        schema = schemaName;
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -186,7 +186,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> getConnectionFromUnderlying(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return ProxySchemaContexts.getInstance().getBackendDataSource().getConnections(schema.getName(), dataSourceName, connectionSize, connectionMode);
+        return ProxySchemaContexts.getInstance().getBackendDataSource().getConnections(schema, dataSourceName, connectionSize, connectionMode);
     }
     
     @Override
@@ -213,9 +213,10 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        if (schema.getSchema().getDatabaseType() instanceof MySQLDatabaseType) {
+        DatabaseType databaseType = ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType();
+        if (databaseType instanceof MySQLDatabaseType) {
             statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
-        } else if (schema.getSchema().getDatabaseType() instanceof PostgreSQLDatabaseType) {
+        } else if (databaseType instanceof PostgreSQLDatabaseType) {
             statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
         }
     }
@@ -326,7 +327,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (exceptions.isEmpty()) {
             return;
         }
-        SQLException ex = new SQLException();
+        SQLException ex = new SQLException("");
         for (SQLException each : exceptions) {
             ex.setNextException(each);
         }

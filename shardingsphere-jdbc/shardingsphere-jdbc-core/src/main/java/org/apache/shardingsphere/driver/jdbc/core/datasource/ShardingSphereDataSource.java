@@ -51,6 +51,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private final SchemaContexts schemaContexts;
     
+    @SuppressWarnings("UseOfSystemOutOrSystemErr")
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
     
@@ -72,7 +73,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private DatabaseType createDatabaseType(final DataSource dataSource) throws SQLException {
         if (dataSource instanceof ShardingSphereDataSource) {
-            return ((ShardingSphereDataSource) dataSource).schemaContexts.getSchemaContexts().get(DefaultSchema.LOGIC_NAME).getSchema().getDatabaseType();
+            return ((ShardingSphereDataSource) dataSource).schemaContexts.getDatabaseType();
         }
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());

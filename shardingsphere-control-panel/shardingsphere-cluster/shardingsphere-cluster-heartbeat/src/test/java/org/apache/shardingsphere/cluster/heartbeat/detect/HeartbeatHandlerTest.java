@@ -23,7 +23,7 @@ import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
-import org.junit.Assert;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,14 +38,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.hamcrest.CoreMatchers.is;
 
 public final class HeartbeatHandlerTest {
     
@@ -74,8 +74,8 @@ public final class HeartbeatHandlerTest {
     public void assertHandleWithoutRetry() {
         handler.init(getHeartbeatConfiguration(false));
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
-        Assert.assertNotNull(response);
-        Assert.assertNotNull(response.getHeartbeatResultMap());
+        assertNotNull(response);
+        assertNotNull(response.getHeartbeatResultMap());
         assertTrue(response.getHeartbeatResultMap().containsKey(SCHEMA_NAME));
         assertThat(response.getHeartbeatResultMap().get(SCHEMA_NAME).size(), is(1));
         HeartbeatResult heartbeatResult = response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().next();
@@ -89,8 +89,8 @@ public final class HeartbeatHandlerTest {
         enableExecuteQuery = false;
         handler.init(getHeartbeatConfiguration(false));
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
-        Assert.assertNotNull(response);
-        Assert.assertNotNull(response.getHeartbeatResultMap());
+        assertNotNull(response);
+        assertNotNull(response.getHeartbeatResultMap());
         assertTrue(response.getHeartbeatResultMap().containsKey(SCHEMA_NAME));
         assertThat(response.getHeartbeatResultMap().get(SCHEMA_NAME).size(), is(1));
         HeartbeatResult heartbeatResult = response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().next();
@@ -103,8 +103,8 @@ public final class HeartbeatHandlerTest {
     public void assertHandleWithRetry() {
         handler.init(getHeartbeatConfiguration(true));
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
-        Assert.assertNotNull(response);
-        Assert.assertNotNull(response.getHeartbeatResultMap());
+        assertNotNull(response);
+        assertNotNull(response.getHeartbeatResultMap());
         assertTrue(response.getHeartbeatResultMap().containsKey(SCHEMA_NAME));
         assertThat(response.getHeartbeatResultMap().get(SCHEMA_NAME).size(), is(1));
         HeartbeatResult heartbeatResult = response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().next();
@@ -118,8 +118,8 @@ public final class HeartbeatHandlerTest {
         enableExecuteQuery = false;
         handler.init(getHeartbeatConfiguration(true));
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
-        Assert.assertNotNull(response);
-        Assert.assertNotNull(response.getHeartbeatResultMap());
+        assertNotNull(response);
+        assertNotNull(response.getHeartbeatResultMap());
         assertTrue(response.getHeartbeatResultMap().containsKey(SCHEMA_NAME));
         assertThat(response.getHeartbeatResultMap().get(SCHEMA_NAME).size(), is(1));
         HeartbeatResult heartbeatResult = response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().next();
@@ -133,8 +133,8 @@ public final class HeartbeatHandlerTest {
         multipleDataSource = true;
         handler.init(getHeartbeatConfiguration(false));
         HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
-        Assert.assertNotNull(response);
-        Assert.assertNotNull(response.getHeartbeatResultMap());
+        assertNotNull(response);
+        assertNotNull(response.getHeartbeatResultMap());
         assertTrue(response.getHeartbeatResultMap().containsKey(SCHEMA_NAME));
         assertThat(response.getHeartbeatResultMap().get(SCHEMA_NAME).size(), is(2));
         assertTrue(response.getHeartbeatResultMap().get(SCHEMA_NAME).stream().map(HeartbeatResult::getDataSourceName)
@@ -142,57 +142,77 @@ public final class HeartbeatHandlerTest {
         response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().forEachRemaining(each -> assertTrue(each.isEnable()));
     }
     
+    @Test
+    public void assertHandleWithDisableDataSource() {
+        handler.init(getHeartbeatConfiguration(true));
+        HeartbeatResponse response = handler.handle(getSchemaContext(), Arrays.asList("sharding_db.ds_0"));
+        assertNotNull(response);
+        assertNotNull(response.getHeartbeatResultMap());
+        assertTrue(response.getHeartbeatResultMap().containsKey(SCHEMA_NAME));
+        assertThat(response.getHeartbeatResultMap().get(SCHEMA_NAME).size(), is(1));
+        HeartbeatResult heartbeatResult = response.getHeartbeatResultMap().get(SCHEMA_NAME).iterator().next();
+        assertNotNull(heartbeatResult);
+        assertThat(heartbeatResult.getDataSourceName(), is(DATA_SOURCE_0));
+        assertFalse(heartbeatResult.isEnable());
+        assertTrue(heartbeatResult.isDisabled());
+    }
+    
     private HeartbeatConfiguration getHeartbeatConfiguration(final boolean retry) {
-        HeartbeatConfiguration configuration = new HeartbeatConfiguration();
-        configuration.setSql(DETECT_SQL);
-        configuration.setThreadCount(50);
-        configuration.setInterval(10);
-        configuration.setRetryEnable(retry);
-        configuration.setRetryMaximum(3);
-        configuration.setRetryInterval(1);
-        return configuration;
+        HeartbeatConfiguration result = new HeartbeatConfiguration();
+        result.setSql(DETECT_SQL);
+        result.setThreadCount(50);
+        result.setInterval(10);
+        result.setRetryEnable(retry);
+        result.setRetryMaximum(3);
+        result.setRetryInterval(1);
+        return result;
     }
     
     private Map<String, SchemaContext> getSchemaContext() {
-        Map<String, SchemaContext> schemaContexts = new HashMap<>();
+        Map<String, SchemaContext> result = new HashMap<>(1, 1);
         SchemaContext schemaContext = mock(SchemaContext.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schemaContext.getSchema()).thenReturn(schema);
         Map<String, DataSource> dataSources = getDataSources();
         when(schema.getDataSources()).thenReturn(dataSources);
-        schemaContexts.put(SCHEMA_NAME, schemaContext);
-        return schemaContexts;
+        result.put(SCHEMA_NAME, schemaContext);
+        return result;
     }
     
     private Map<String, DataSource> getDataSources() {
-        Map<String, DataSource> dataSources = new HashMap<>();
-        dataSources.put(DATA_SOURCE_0, getDataSource());
+        Map<String, DataSource> result = new HashMap<>(2, 1);
+        result.put(DATA_SOURCE_0, getDataSource());
         if (multipleDataSource) {
-            dataSources.put(DATA_SOURCE_1, getDataSource());
+            result.put(DATA_SOURCE_1, getDataSource());
         }
-        return dataSources;
+        return result;
     }
     
     @SneakyThrows(SQLException.class)
     private DataSource getDataSource() {
-        DataSource dataSource = mock(DataSource.class);
+        DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         PreparedStatement preparedStatement = getStatement();
-        when(dataSource.getConnection()).thenReturn(connection);
+        when(result.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(DETECT_SQL)).thenReturn(preparedStatement);
-        return dataSource;
+        return result;
     }
     
     @SneakyThrows(SQLException.class)
     private PreparedStatement getStatement() {
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        PreparedStatement result = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
         if (enableExecuteQuery) {
-            when(preparedStatement.executeQuery()).thenReturn(resultSet);
+            when(result.executeQuery()).thenReturn(resultSet);
             when(resultSet.next()).thenReturn(true);
         } else {
-            doThrow(SQLException.class).when(preparedStatement).executeQuery();
+            doThrow(SQLException.class).when(result).executeQuery();
         }
-        return preparedStatement;
+        return result;
+    }
+    
+    @After
+    public void close() {
+        handler.close();
     }
 }

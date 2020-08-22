@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.scaling.core.job.task.incremental;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.ImporterFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.ArrayList;
@@ -43,9 +45,13 @@ import java.util.concurrent.Future;
  * Incremental data execute task.
  */
 @Slf4j
-public final class IncrementalDataScalingTask extends AbstractShardingScalingExecutor implements ScalingTask {
+public final class IncrementalDataScalingTask extends AbstractShardingScalingExecutor<IncrementalPosition> implements ScalingTask<IncrementalPosition> {
     
-    private final SyncConfiguration syncConfiguration;
+    private final int concurrency;
+    
+    private final DumperConfiguration dumperConfiguration;
+    
+    private final ImporterConfiguration importerConfiguration;
     
     private final DataSourceManager dataSourceManager;
     
@@ -53,20 +59,22 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     
     private long delayMillisecond;
     
-    public IncrementalDataScalingTask(final SyncConfiguration syncConfiguration) {
-        this.syncConfiguration = syncConfiguration;
-        this.dataSourceManager = new DataSourceManager();
-        setTaskId(syncConfiguration.getDumperConfiguration().getDataSourceName());
-        setPositionManager(syncConfiguration.getDumperConfiguration().getPositionManager());
+    @SuppressWarnings("unchecked")
+    public IncrementalDataScalingTask(final int concurrency, final DumperConfiguration dumperConfiguration, final ImporterConfiguration importerConfiguration) {
+        this.concurrency = concurrency;
+        this.dumperConfiguration = dumperConfiguration;
+        this.importerConfiguration = importerConfiguration;
+        dataSourceManager = new DataSourceManager();
+        setTaskId(dumperConfiguration.getDataSourceName());
+        setPositionManager(dumperConfiguration.getPositionManager());
     }
     
     @Override
     public void start() {
-        syncConfiguration.getDumperConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
-        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), getPositionManager().getCurrentPosition());
+        dumper = DumperFactory.newInstanceLogDumper(dumperConfiguration, getPositionManager().getPosition());
         Collection<Importer> importers = instanceImporters();
         instanceChannel(importers);
-        Future future = ScalingContext.getInstance().getTaskExecuteEngine().submitAll(importers, new ExecuteCallback() {
+        Future<?> future = ScalingContext.getInstance().getTaskExecuteEngine().submitAll(importers, new ExecuteCallback() {
             
             @Override
             public void onSuccess() {
@@ -84,9 +92,9 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     }
     
     private List<Importer> instanceImporters() {
-        List<Importer> result = new ArrayList<>(syncConfiguration.getConcurrency());
-        for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
-            result.add(ImporterFactory.newInstance(syncConfiguration.getImporterConfiguration(), dataSourceManager));
+        List<Importer> result = new ArrayList<>(concurrency);
+        for (int i = 0; i < concurrency; i++) {
+            result.add(ImporterFactory.newInstance(importerConfiguration, dataSourceManager));
         }
         return result;
     }
@@ -94,7 +102,9 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     private void instanceChannel(final Collection<Importer> importers) {
         DistributionChannel channel = new DistributionChannel(importers.size(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
-            getPositionManager().updateCurrentPosition(lastHandledRecord.getPosition());
+            if (lastHandledRecord.getPosition() instanceof IncrementalPosition) {
+                getPositionManager().setPosition((IncrementalPosition) lastHandledRecord.getPosition());
+            }
             delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();
         });
         dumper.setChannel(channel);
@@ -103,11 +113,11 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
         }
     }
     
-    private void waitForResult(final Future future) {
+    private void waitForResult(final Future<?> future) {
         try {
             future.get();
-        } catch (InterruptedException ignored) {
-        } catch (ExecutionException ex) {
+        } catch (final InterruptedException ignored) {
+        } catch (final ExecutionException ex) {
             throw new SyncTaskExecuteException(String.format("Task %s execute failed ", getTaskId()), ex.getCause());
         }
     }
@@ -122,7 +132,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     
     @Override
     public SyncProgress getProgress() {
-        return new IncrementalDataSyncTaskProgress(getTaskId(), delayMillisecond, getPositionManager().getCurrentPosition());
+        return new IncrementalDataSyncTaskProgress(getTaskId(), delayMillisecond, getPositionManager().getPosition());
     }
     
 }

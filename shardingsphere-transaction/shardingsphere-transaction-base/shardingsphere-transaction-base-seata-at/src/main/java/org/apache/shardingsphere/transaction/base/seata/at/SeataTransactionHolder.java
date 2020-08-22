@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.seata.tm.api.GlobalTransaction;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Seata transaction holder.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class SeataTransactionHolder {
     
     private static final ThreadLocal<GlobalTransaction> CONTEXT = new ThreadLocal<>();

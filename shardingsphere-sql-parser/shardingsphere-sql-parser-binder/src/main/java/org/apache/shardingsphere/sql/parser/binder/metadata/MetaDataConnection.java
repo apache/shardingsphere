@@ -50,7 +50,7 @@ public final class MetaDataConnection implements Connection {
     public String getCatalog() {
         try {
             return connection.getCatalog();
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             return null;
         }
     }
@@ -64,7 +64,7 @@ public final class MetaDataConnection implements Connection {
     public String getSchema() {
         try {
             return connection.getSchema();
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             return null;
         }
     }

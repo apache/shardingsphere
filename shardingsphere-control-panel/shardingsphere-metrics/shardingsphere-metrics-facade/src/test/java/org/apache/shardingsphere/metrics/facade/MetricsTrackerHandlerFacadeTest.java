@@ -28,8 +28,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MetricsTrackerHandlerFacadeTest {
@@ -54,14 +54,14 @@ public final class MetricsTrackerHandlerFacadeTest {
     @Test
     public void assertHistogramAndSummary() {
         Supplier<Boolean> histogramDelegate = metricsTrackerHandlerFacade.histogramStartTimer("request");
-        assertThat(histogramDelegate.get(), is(false));
+        assertFalse(histogramDelegate.get());
         Supplier<Boolean> summaryDelegate = metricsTrackerHandlerFacade.summaryStartTimer("request");
-        assertThat(summaryDelegate.get(), is(false));
+        assertFalse(summaryDelegate.get());
         init();
         Supplier<Boolean> emptyHistogram = metricsTrackerHandlerFacade.histogramStartTimer("request");
-        assertThat(emptyHistogram.get(), is(true));
+        assertTrue(emptyHistogram.get());
         Supplier<Boolean> empty = metricsTrackerHandlerFacade.summaryStartTimer("request");
-        assertThat(empty.get(), is(true));
+        assertTrue(empty.get());
     }
     
     private void init() {

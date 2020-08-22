@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -30,7 +31,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MetaDataConnectionTest {
+public final class MetaDataConnectionTest {
     
     private static final String TEST_CATALOG = "catalog";
     

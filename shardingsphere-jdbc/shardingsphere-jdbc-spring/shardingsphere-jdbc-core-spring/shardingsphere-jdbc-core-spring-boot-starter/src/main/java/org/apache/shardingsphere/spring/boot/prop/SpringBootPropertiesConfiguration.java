@@ -29,7 +29,7 @@ import java.util.Properties;
 @ConfigurationProperties(prefix = "spring.shardingsphere")
 @Getter
 @Setter
-public class SpringBootPropertiesConfiguration {
+public final class SpringBootPropertiesConfiguration {
     
     private Properties props = new Properties();
 }

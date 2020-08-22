@@ -37,8 +37,8 @@ public final class MetaDataCenter {
     private final OrchestrationRepository repository;
     
     public MetaDataCenter(final String name, final OrchestrationRepository orchestrationRepository) {
-        this.node = new MetaDataCenterNode(name);
-        this.repository = orchestrationRepository;
+        node = new MetaDataCenterNode(name);
+        repository = orchestrationRepository;
         MetaDataCallback.getInstance().register(this::persistMetaDataCenterNode);
     }
     

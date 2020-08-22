@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.scaling.core.execute.executor.dumper.AbstractJDBCDumper;
+import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.execute.executor.dumper.AbstractJDBCDumper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,14 +31,14 @@ import java.sql.SQLException;
  */
 public final class PostgreSQLJdbcDumper extends AbstractJDBCDumper {
     
-    public PostgreSQLJdbcDumper(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
-        super(rdbmsConfiguration, dataSourceManager);
+    public PostgreSQLJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfiguration, final DataSourceManager dataSourceManager) {
+        super(inventoryDumperConfiguration, dataSourceManager);
     }
     
     @Override
     protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
         PreparedStatement result = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        result.setFetchSize(1);
+        result.setFetchSize(100);
         return result;
     }
 }

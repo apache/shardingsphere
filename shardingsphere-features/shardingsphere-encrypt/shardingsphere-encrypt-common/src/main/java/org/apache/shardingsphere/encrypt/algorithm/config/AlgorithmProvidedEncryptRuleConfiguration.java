@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.config;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Algorithm provided encrypt rule configuration.
@@ -41,8 +42,7 @@ public final class AlgorithmProvidedEncryptRuleConfiguration implements RuleConf
     public AlgorithmProvidedEncryptRuleConfiguration() {
     }
     
-    public AlgorithmProvidedEncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables,
-                                                     final Map<String, EncryptAlgorithm> encryptors) {
+    public AlgorithmProvidedEncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, EncryptAlgorithm> encryptors) {
         this.tables = tables;
         this.encryptors = encryptors;
     }

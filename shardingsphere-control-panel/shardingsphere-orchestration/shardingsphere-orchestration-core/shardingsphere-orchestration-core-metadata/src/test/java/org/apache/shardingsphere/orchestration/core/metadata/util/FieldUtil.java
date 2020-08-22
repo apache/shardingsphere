@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.orchestration.core.metadata.util;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 
 /**
- * Field util.
+ * Field utility.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FieldUtil {
     
     /**

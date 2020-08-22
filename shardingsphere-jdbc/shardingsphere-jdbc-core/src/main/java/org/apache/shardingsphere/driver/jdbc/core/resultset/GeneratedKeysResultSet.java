@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedGeneratedKeysResultSet;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Collections;
@@ -171,7 +173,7 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) {
         checkStateForGetData();
-        return new BigDecimal(getString(columnIndex)).setScale(scale, BigDecimal.ROUND_HALF_UP);
+        return new BigDecimal(getString(columnIndex)).setScale(scale, RoundingMode.HALF_UP);
     }
     
     @Override
@@ -193,7 +195,7 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     @Override
     public byte[] getBytes(final int columnIndex) {
         checkStateForGetData();
-        return getString(columnIndex).getBytes();
+        return getString(columnIndex).getBytes(StandardCharsets.UTF_8);
     }
     
     @Override

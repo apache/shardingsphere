@@ -29,7 +29,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class ExampleMain {
+public final class ExampleMain {
     
     private static final HintType TYPE = HintType.DATABASE_TABLES;
 //    private static final HintType TYPE = HintType.DATABASE_ONLY;

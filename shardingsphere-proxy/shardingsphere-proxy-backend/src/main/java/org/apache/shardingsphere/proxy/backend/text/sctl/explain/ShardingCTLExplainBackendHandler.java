@@ -27,6 +27,7 @@ import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 
@@ -56,7 +57,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         if (!explainStatement.isPresent()) {
             return new ErrorResponse(new InvalidShardingCTLFormatException(sql));
         }
-        SchemaContext schema = backendConnection.getSchema();
+        SchemaContext schema = ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema());
         StatementExecutorWrapper statementExecutorWrapper =
                 new StatementExecutorWrapper(schema, schema.getRuntimeContext().getSqlParserEngine().parse(explainStatement.get().getSql(), false));
         executionUnits = statementExecutorWrapper.execute(explainStatement.get().getSql()).getExecutionUnits().iterator();

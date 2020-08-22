@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.math.BigDecimal;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Safe range operation utility class.
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SafeRangeOperationUtils {
     
     /**

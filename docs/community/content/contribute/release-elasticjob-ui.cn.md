@@ -41,15 +41,15 @@ https://github.com/apache/shardingsphere-elasticjob-ui/blob/master/RELEASE-NOTES
 ### 创建发布分支
 
 假设从github下载的ElasticJob-UI源代码在`~/elasticjob-ui/`目录；假设即将发布的版本为`${RELEASE.VERSION}`。
-创建`${RELEASE.VERSION}-release-ui`分支，接下来的操作都在该分支进行。
+创建`${RELEASE.VERSION}-release`分支，接下来的操作都在该分支进行。
 
 ```shell
 ## ${name}为源码所在分支，如：master，dev-4.x
 git clone --branch ${name} https://github.com/apache/shardingsphere-elasticjob-ui.git ~/elasticjob-ui
 cd ~/elasticjob-ui/
 git pull
-git checkout -b ${RELEASE.VERSION}-release-ui
-git push origin ${RELEASE.VERSION}-release-ui
+git checkout -b ${RELEASE.VERSION}-release
+git push origin ${RELEASE.VERSION}-release
 ```
 
 ### 发布预校验
@@ -88,7 +88,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 将本地文件检查无误后，提交至github。
 
 ```shell
-git push
+git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
 
@@ -254,7 +254,7 @@ diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src/ shardingsphe
 标题：
 
 ```
-[VOTE] Release Apache ElasticJob UI ${RELEASE.VERSION}
+[VOTE] Release Apache ShardingSphere ElasticJob UI ${RELEASE.VERSION}
 ```
 
 正文：
@@ -314,29 +314,6 @@ Checklist for reference:
 
 2. 宣布投票结果模板：
 
-正文：
-
-```
-The vote to release Apache ShardingSphere ElasticJob UI ${RELEASE.VERSION} has passed.
-
-7 PMC member +1 binding votes:
-
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-
-1 community +1 non-binding vote:
-xxx
-
-Thank you everyone for taking the time to review the release and help us. 
-```
-
-3. 宣布投票结果模板：
-
 标题：
 
 ```
@@ -372,9 +349,11 @@ svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.a
 
 ```shell
 git checkout master
-git merge origin/${RELEASE.VERSION}-release-ui
-git push
-git push --delete origin ${RELEASE.VERSION}-release-ui
+git merge origin/${RELEASE.VERSION}-release
+git pull
+git push origin master
+git push --delete origin ${RELEASE.VERSION}-release
+git branch -d ${RELEASE.VERSION}-release
 ```
 
 ### 更新下载页面
@@ -396,6 +375,7 @@ GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `
 #### 编译Docker镜像
 
 ```shell
+git checkout ${RELEASE.VERSION}
 cd ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-cloud-ui-bin-distribution/
 mvn clean package -Prelease,docker
 ```

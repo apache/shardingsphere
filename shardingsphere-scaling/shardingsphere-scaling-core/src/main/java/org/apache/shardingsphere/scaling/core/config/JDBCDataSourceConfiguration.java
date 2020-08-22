@@ -17,20 +17,19 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 
 /**
  * JDBC data source configuration.
  */
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = {"databaseType"})
+@EqualsAndHashCode(exclude = "databaseType")
 public final class JDBCDataSourceConfiguration implements DataSourceConfiguration {
     
     private String jdbcUrl;

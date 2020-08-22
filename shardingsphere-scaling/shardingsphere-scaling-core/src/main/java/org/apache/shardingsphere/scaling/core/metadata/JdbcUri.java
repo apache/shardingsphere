@@ -31,7 +31,7 @@ public final class JdbcUri {
     private final URI jdbcUri;
     
     public JdbcUri(final String jdbcUrl) {
-        this.jdbcUri = URI.create(jdbcUrl.substring(5));
+        jdbcUri = URI.create(jdbcUrl.substring(5));
     }
     
     /**
@@ -75,7 +75,7 @@ public final class JdbcUri {
      * @return database name
      */
     public String getDatabase() {
-        return jdbcUri.getPath().replaceFirst("/", "");
+        return null == jdbcUri.getPath() ? "" : jdbcUri.getPath().replaceFirst("/", "");
     }
     
     /**

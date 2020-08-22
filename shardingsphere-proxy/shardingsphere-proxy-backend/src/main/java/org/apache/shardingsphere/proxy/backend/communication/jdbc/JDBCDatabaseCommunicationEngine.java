@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
@@ -75,8 +75,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     public JDBCDatabaseCommunicationEngine(final String sql, final BackendConnection backendConnection, final SQLExecuteEngine sqlExecuteEngine) {
         this.sql = sql;
         connection = backendConnection;
-        this.executeEngine = sqlExecuteEngine;
-        schema = backendConnection.getSchema();
+        executeEngine = sqlExecuteEngine;
+        schema = ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema());
     }
     
     @Override
@@ -126,15 +126,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(schema.getSchema().getMetaData(),
-                    schema.getSchema().getDatabaseType(), schema.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
+            refreshStrategy.get().refreshMetaData(schema.getSchema().getMetaData(), ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType(),
+                    schema.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
             MetaDataCallback.getInstance().run(schema.getName(), schema.getSchema().getMetaData().getSchema());
         }
     }
     
     private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
         RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(schema.getSchema().getRules());
-        return loader.load(schema.getSchema().getDatabaseType(),
+        return loader.load(ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType(),
                 schema.getSchema().getDataSources(), tableName, ProxySchemaContexts.getInstance().getSchemaContexts().getProps());
     }
     
@@ -159,7 +159,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(schema.getSchema().getDatabaseType(), 
+        MergeEngine mergeEngine = new MergeEngine(ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType(),
                 schema.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), ProxySchemaContexts.getInstance().getSchemaContexts().getProps(), schema.getSchema().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }

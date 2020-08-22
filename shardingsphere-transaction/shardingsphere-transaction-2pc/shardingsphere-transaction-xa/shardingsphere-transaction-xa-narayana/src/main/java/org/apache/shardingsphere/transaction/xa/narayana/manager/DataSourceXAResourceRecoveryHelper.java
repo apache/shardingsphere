@@ -81,11 +81,11 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     }
     
     private boolean connect() {
-        if (null == this.delegate) {
+        if (null == delegate) {
             try {
-                this.xaConnection = getXaConnection();
-                this.delegate = this.xaConnection.getXAResource();
-            } catch (SQLException ex) {
+                xaConnection = getXaConnection();
+                delegate = xaConnection.getXAResource();
+            } catch (final SQLException ex) {
                 log.warn("Failed to create connection", ex);
                 return false;
             }
@@ -94,10 +94,10 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     }
     
     private XAConnection getXaConnection() throws SQLException {
-        if (null == this.user && null == this.password) {
-            return this.xaDataSource.getXAConnection();
+        if (null == user && null == password) {
+            return xaDataSource.getXAConnection();
         }
-        return this.xaDataSource.getXAConnection(this.user, this.password);
+        return xaDataSource.getXAConnection(user, password);
     }
     
     @Override
@@ -113,12 +113,12 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     
     private void disconnect() {
         try {
-            this.xaConnection.close();
-        } catch (SQLException ex) {
+            xaConnection.close();
+        } catch (final SQLException ex) {
             log.warn("Failed to close connection", ex);
         } finally {
-            this.xaConnection = null;
-            this.delegate = null;
+            xaConnection = null;
+            delegate = null;
         }
     }
     
@@ -168,9 +168,9 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     }
     
     private XAResource getDelegate() {
-        if (null == this.delegate) {
+        if (null == delegate) {
             throw new IllegalStateException("Connection has not been opened");
         }
-        return this.delegate;
+        return delegate;
     }
 }

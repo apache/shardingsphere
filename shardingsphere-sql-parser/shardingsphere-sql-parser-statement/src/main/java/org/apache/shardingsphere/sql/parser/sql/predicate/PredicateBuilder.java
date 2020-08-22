@@ -69,13 +69,13 @@ public final class PredicateBuilder {
     }
     
     private void addAndPredicates(final OrPredicateSegment orPredicateSegment, final Collection<AndPredicate> leftPredicates, final Collection<AndPredicate> rightPredicates) {
-        if (0 == leftPredicates.size() && 0 == rightPredicates.size()) {
+        if (leftPredicates.isEmpty() && rightPredicates.isEmpty()) {
             return;
         }
-        if (0 == leftPredicates.size()) {
+        if (leftPredicates.isEmpty()) {
             orPredicateSegment.getAndPredicates().addAll(rightPredicates);
         }
-        if (0 == rightPredicates.size()) {
+        if (rightPredicates.isEmpty()) {
             orPredicateSegment.getAndPredicates().addAll(leftPredicates);
         }
         for (AndPredicate eachLeft : leftPredicates) {

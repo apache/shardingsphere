@@ -25,8 +25,6 @@ import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngi
 import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.constant.Constants;
-import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
@@ -64,7 +62,6 @@ public final class Bootstrap {
     public static void main(final String[] args) throws Exception {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         int port = bootstrapArgs.getPort();
-        System.setProperty(Constants.PORT_KEY, String.valueOf(port));
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
         if (null == yamlConfig.getServerConfiguration().getOrchestration()) {
             init(new YamlProxyConfigurationSwapper().swap(yamlConfig), port, false);
@@ -76,17 +73,10 @@ public final class Bootstrap {
     }
     
     private static void init(final ProxyConfiguration proxyConfig, final int port, final boolean orchestrationEnabled) throws SQLException {
-        log(proxyConfig);
         initSchemaContexts(proxyConfig, orchestrationEnabled);
         initControlPanelFacade(proxyConfig);
         setDatabaseServerInfo();
         ShardingSphereProxy.getInstance().start(port);
-    }
-    
-    private static void log(final ProxyConfiguration proxyConfig) {
-        proxyConfig.getSchemaRules().values().forEach(ConfigurationLogger::log);
-        ConfigurationLogger.log(proxyConfig.getAuthentication());
-        ConfigurationLogger.log(proxyConfig.getProps());
     }
     
     private static void initSchemaContexts(final ProxyConfiguration proxyConfig, final boolean orchestrationEnabled) throws SQLException {

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <create-index sql-case-id="create_index">
+        <table name="t_log" start-index="28" stop-index="32" />
+    </create-index>
+    
+    <create-index sql-case-id="create_unique_index">
+        <table name="t_log" start-index="35" stop-index="39" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_with_space">
+        <table name="t_order" start-index="52" stop-index="58" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_with_back_quota">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="30" stop-index="38" />
+    </create-index>
+    
+    <create-index sql-case-id="create_composite_index">
+        <table name="t_order" start-index="28" stop-index="34" />
+    </create-index>
+    
+    <create-index sql-case-id="create_btree_index">
+        <table name="t_order" start-index="28" stop-index="34" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_with_quota">
+        <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="30" stop-index="38" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_with_function">
+        <table name="t_order" start-index="33" stop-index="39" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_with_double_quota">
+        <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="30" stop-index="38" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_with_double_quota_and_uescape">
+        <!-- FIXME table index error -->
+        <table name="u&amp;t_order" start-index="58" stop-index="68" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_concurrently">
+        <table name="t_order" start-index="41" stop-index="47" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_if_not_exists">
+        <table name="t_order" start-index="42" stop-index="48" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_using_btree">
+        <table name="t_order" start-index="28" stop-index="34" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_with_bracket">
+        <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="30" stop-index="38" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_with_no_default_fill_factor">
+        <table name="t_order" start-index="35" stop-index="41" />
+    </create-index>
+</sql-parser-test-cases>

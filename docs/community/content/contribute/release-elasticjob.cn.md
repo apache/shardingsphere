@@ -87,7 +87,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 将本地文件检查无误后，提交至github。
 
 ```shell
-git push
+git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
 
@@ -326,29 +326,6 @@ Checklist for reference:
 
 2. 宣布投票结果模板：
 
-正文：
-
-```
-The vote to release Apache ShardingSphere ElasticJob-${RELEASE.VERSION} has passed.
-
-7 PMC member +1 binding votes:
-
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-
-1 community +1 non-binding vote:
-xxx
-
-Thank you everyone for taking the time to review the release and help us. 
-```
-
-3. 宣布投票结果模板：
-
 标题：
 
 ```
@@ -387,8 +364,10 @@ svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.a
 ```shell
 git checkout master
 git merge origin/${RELEASE.VERSION}-release
-git push
+git pull
+git push origin master
 git push --delete origin ${RELEASE.VERSION}-release
+git branch -d ${RELEASE.VERSION}-release
 ```
 
 ### 更新下载页面
@@ -410,6 +389,7 @@ GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `
 #### 编译Docker镜像
 
 ```shell
+git checkout ${RELEASE.VERSION}
 cd ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/
 mvn clean package -Prelease,docker
 ```

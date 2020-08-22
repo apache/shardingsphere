@@ -17,19 +17,8 @@
 
 package org.apache.shardingsphere.transaction.xa.bitronix.manager;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import bitronix.tm.internal.XAResourceHolderState;
 import bitronix.tm.resource.common.XAResourceHolder;
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
-import javax.transaction.xa.XAResource;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,8 +26,19 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
+import javax.transaction.xa.XAResource;
+import java.sql.SQLException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
-public class BitronixRecoveryResourceTest {
+public final class BitronixRecoveryResourceTest {
     
     @Mock
     private SingleXAResource singleXAResource;
@@ -54,27 +54,24 @@ public class BitronixRecoveryResourceTest {
     
     private BitronixRecoveryResource bitronixRecoveryResource;
     
-    @SneakyThrows
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         when(singleXAResource.getResourceName()).thenReturn("ds1");
         when(xaDataSource.getXAConnection()).thenReturn(xaConnection);
         when(xaConnection.getXAResource()).thenReturn(xaResource);
         bitronixRecoveryResource = new BitronixRecoveryResource("ds1", xaDataSource);
     }
     
-    @SneakyThrows
     @Test
-    public void assertRecovery() {
+    public void assertRecovery() throws SQLException {
         XAResourceHolderState xaResourceHolderState = bitronixRecoveryResource.startRecovery();
-        assertEquals(xaResourceHolderState.getUniqueName(), "ds1");
+        assertThat(xaResourceHolderState.getUniqueName(), is("ds1"));
         XAResourceHolder xaResourceHolder = xaResourceHolderState.getXAResourceHolder();
         assertThat(xaResourceHolder.getXAResource(), is(xaResource));
         bitronixRecoveryResource.endRecovery();
         verify(xaConnection).close();
     }
     
-    @SneakyThrows
     @Test
     public void assertFindXAResourceHolder() {
         assertNotNull(bitronixRecoveryResource.findXAResourceHolder(singleXAResource));

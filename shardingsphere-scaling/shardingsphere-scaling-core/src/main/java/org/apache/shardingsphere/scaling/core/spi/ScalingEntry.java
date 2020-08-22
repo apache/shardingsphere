@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.spi;
 
+import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
@@ -48,7 +49,7 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
      *
      * @return position manager type
      */
-    Class<? extends PositionManager> getPositionManager();
+    Class<? extends PositionManager<? extends IncrementalPosition>> getPositionManager();
     
     /**
      * Get importer type.

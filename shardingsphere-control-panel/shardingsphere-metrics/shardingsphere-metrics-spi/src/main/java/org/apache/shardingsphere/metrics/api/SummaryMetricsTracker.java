@@ -30,7 +30,7 @@ public interface SummaryMetricsTracker extends MetricsTracker {
      * @param labelValues label values
      * @return Summary metrics tracker delegate
      */
-    default SummaryMetricsTrackerDelegate startTimer(String... labelValues) {
+    default SummaryMetricsTrackerDelegate startTimer(final String... labelValues) {
         return new NoneSummaryMetricsTrackerDelegate();
     }
     
@@ -39,7 +39,7 @@ public interface SummaryMetricsTracker extends MetricsTracker {
      *
      * @param amount amount
      */
-    default void observer(long amount) {
+    default void observer(final long amount) {
     }
     
     /**

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.exception;
 /**
  * Prepare failed exception.
  */
-public class PrepareFailedException extends RuntimeException {
+public final class PrepareFailedException extends RuntimeException {
     
     private static final long serialVersionUID = 1409505606319197767L;
     

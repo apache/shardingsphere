@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfig
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.callback.orchestration.DataSourceCallback;
 import org.apache.shardingsphere.infra.callback.orchestration.RuleCallback;
+import org.apache.shardingsphere.infra.callback.orchestration.SchemaNameCallback;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
@@ -68,10 +69,11 @@ public final class ConfigCenter {
     private final ConfigurationRepository repository;
     
     public ConfigCenter(final String name, final ConfigurationRepository repository) {
-        this.node = new ConfigCenterNode(name);
+        node = new ConfigCenterNode(name);
         this.repository = repository;
         DataSourceCallback.getInstance().register(this::persistDataSourceConfiguration);
         RuleCallback.getInstance().register(this::persistRuleConfigurations);
+        SchemaNameCallback.getInstance().register(this::persistSchemaName);
     }
     
     /**
@@ -103,9 +105,10 @@ public final class ConfigCenter {
     }
     
     private void persistDataSourceConfiguration(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
-        if (isOverwrite) {
-            persistDataSourceConfiguration(schemaName, dataSourceConfigurations);
+        if (dataSourceConfigurations.isEmpty() || !isOverwrite) {
+            return;
         }
+        persistDataSourceConfiguration(schemaName, dataSourceConfigurations);
     }
     
     private void persistDataSourceConfiguration(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
@@ -127,12 +130,12 @@ public final class ConfigCenter {
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof ShardingRuleConfiguration) {
                 ShardingRuleConfiguration config = (ShardingRuleConfiguration) each;
-                Preconditions.checkState(!config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy(),
+                Preconditions.checkState(hasAvailableTableConfigurations(config),
                         "No available rule configurations in `%s` for orchestration.", schemaName);
                 configurations.add(each);
             } else if (each instanceof AlgorithmProvidedShardingRuleConfiguration) {
                 AlgorithmProvidedShardingRuleConfiguration config = (AlgorithmProvidedShardingRuleConfiguration) each;
-                Preconditions.checkState(!config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy(),
+                Preconditions.checkState(hasAvailableTableConfigurations(config),
                         "No available rule configurations in `%s` for orchestration.", schemaName);
                 configurations.add(each);
             } else if (each instanceof AlgorithmProvidedMasterSlaveRuleConfiguration) {
@@ -162,6 +165,14 @@ public final class ConfigCenter {
         YamlRootRuleConfigurations yamlRuleConfigurations = new YamlRootRuleConfigurations();
         yamlRuleConfigurations.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(configurations));
         repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(yamlRuleConfigurations));
+    }
+    
+    private boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration configuration) {
+        return !configuration.getTables().isEmpty() || null != configuration.getDefaultTableShardingStrategy() || !configuration.getAutoTables().isEmpty();
+    }
+    
+    private boolean hasAvailableTableConfigurations(final AlgorithmProvidedShardingRuleConfiguration configuration) {
+        return !configuration.getTables().isEmpty() || null != configuration.getDefaultTableShardingStrategy() || !configuration.getAutoTables().isEmpty();
     }
     
     /**

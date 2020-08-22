@@ -46,7 +46,7 @@ rules:
         - db_slave_1
 
 orchestration:
-  namespace: test_ms_registry_name
+  name: test_ms_registry_name
   registryCenter:
     type: REG_TEST
     serverLists: localhost:3181

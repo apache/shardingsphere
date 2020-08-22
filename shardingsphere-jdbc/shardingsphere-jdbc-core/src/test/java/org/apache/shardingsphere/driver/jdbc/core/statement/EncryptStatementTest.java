@@ -203,7 +203,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
             ResultSet resultSet = statement.executeQuery(SHOW_COLUMNS_SQL);
             int count = 0;
             while (resultSet.next()) {
-                if (resultSet.getString("FIELD").equals("pwd")) {
+                if ("pwd".equals(resultSet.getString("FIELD"))) {
                     count++;
                 }
             }

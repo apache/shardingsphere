@@ -26,11 +26,11 @@ WS
 CREATE
     : C R E A T E
     ;
-    
-DATASOURCE
-    : D A T A S O U R C E
+
+DATASOURCES
+    : D A T A S O U R C E S
     ;
     
-SHARDINGRULE
-    : S H A R D I N G R U L E
+SHARDINGRULES
+    : S H A R D I N G R U L E S
     ;

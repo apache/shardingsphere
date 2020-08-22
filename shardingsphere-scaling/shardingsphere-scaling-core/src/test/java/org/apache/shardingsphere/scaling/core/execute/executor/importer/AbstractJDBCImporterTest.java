@@ -21,7 +21,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
@@ -84,8 +84,8 @@ public final class AbstractJDBCImporterTest {
     private AbstractJDBCImporter jdbcImporter;
     
     @Before
-    public void setUp() throws Exception {
-        jdbcImporter = new AbstractJDBCImporter(getRdbmsConfiguration(), dataSourceManager) {
+    public void setUp() throws SQLException {
+        jdbcImporter = new AbstractJDBCImporter(getImporterConfiguration(), dataSourceManager) {
             
             @Override
             protected AbstractSqlBuilder createSqlBuilder() {
@@ -158,9 +158,8 @@ public final class AbstractJDBCImporterTest {
         return result;
     }
     
-    private RdbmsConfiguration getRdbmsConfiguration() {
-        RdbmsConfiguration result = new RdbmsConfiguration();
-        result.setTableName(TABLE_NAME);
+    private ImporterConfiguration getImporterConfiguration() {
+        ImporterConfiguration result = new ImporterConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);
         Map<String, Set<String>> shardingColumnsMap = Maps.newHashMap();
         shardingColumnsMap.put("test_table", Sets.newHashSet("user"));

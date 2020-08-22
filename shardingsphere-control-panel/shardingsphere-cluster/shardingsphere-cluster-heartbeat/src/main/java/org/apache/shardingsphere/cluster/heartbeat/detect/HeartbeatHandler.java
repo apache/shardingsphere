@@ -19,13 +19,13 @@ package org.apache.shardingsphere.cluster.heartbeat.detect;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
-import org.apache.shardingsphere.orchestration.core.registry.RegistryCenterNodeStatus;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,9 +86,9 @@ public final class HeartbeatHandler {
         schemaContexts.forEach((key, value) -> value.getSchema().getDataSources().forEach((innerKey, innerValue) -> {
             futureTasks.add(executorService.submit(new HeartbeatDetect(key, innerKey, innerValue, configuration, isDisabled(key, innerKey))));
         }));
-        HeartbeatResponse heartbeatResponse = buildHeartbeatResponse(futureTasks);
+        HeartbeatResponse result = buildHeartbeatResponse(futureTasks);
         closeExecutor(executorService);
-        return heartbeatResponse;
+        return result;
     }
     
     /**
@@ -99,12 +99,12 @@ public final class HeartbeatHandler {
     }
     
     private HeartbeatResponse buildHeartbeatResponse(final List<Future<Map<String, HeartbeatResult>>> futureTasks) {
-        Map<String, Collection<HeartbeatResult>> heartbeatResultMap = futureTasks.stream().map(e -> {
+        Map<String, Collection<HeartbeatResult>> heartbeatResultMap = futureTasks.stream().map(each -> {
             try {
-                return e.get();
+                return each.get();
             } catch (InterruptedException | ExecutionException ex) {
                 log.error("Heartbeat report error", ex);
-                e.cancel(true);
+                each.cancel(true);
                 return new HashMap<String, HeartbeatResult>();
             }
         }).flatMap(map -> map.entrySet().stream()).collect(Collectors.groupingBy(Entry::getKey, HashMap::new, Collectors.mapping(Entry::getValue, Collectors.toCollection(ArrayList::new))));
@@ -118,14 +118,10 @@ public final class HeartbeatHandler {
     }
     
     private boolean isDisabled(final String schemaName, final String dataSourceName) {
-        return disabledDataSources.isEmpty() ? Boolean.FALSE : isDisabled(Joiner.on(".").join(schemaName, dataSourceName));
+        return disabledDataSources.isEmpty() ? Boolean.FALSE : disabledDataSources.contains(Joiner.on(".").join(schemaName, dataSourceName));
     }
     
-    private boolean isDisabled(final String schemaDataSourceName) {
-        return disabledDataSources.contains(schemaDataSourceName) && RegistryCenterNodeStatus.DISABLED.toString()
-                .equals(OrchestrationFacade.getInstance().getRegistryCenter().getDataSourcesNodeData(schemaDataSourceName));
-    }
-    
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class HeartbeatHandlerHolder {
         
         public static final HeartbeatHandler INSTANCE = new HeartbeatHandler();

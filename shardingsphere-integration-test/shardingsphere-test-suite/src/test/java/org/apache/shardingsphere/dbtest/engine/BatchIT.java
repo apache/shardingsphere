@@ -57,7 +57,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@Getter(value = AccessLevel.PROTECTED)
+@Getter(AccessLevel.PROTECTED)
 public abstract class BatchIT extends BaseIT {
     
     private static DataSetEnvironmentManager dataSetEnvironmentManager;
@@ -68,8 +68,8 @@ public abstract class BatchIT extends BaseIT {
     
     private final Collection<String> expectedDataFiles;
     
-    public BatchIT(final IntegrateTestCase integrateTestCase,
-                   final String ruleType, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
+    protected BatchIT(final IntegrateTestCase integrateTestCase, 
+                      final String ruleType, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
         super(ruleType, databaseType);
         this.integrateTestCase = integrateTestCase;
         this.sql = sql;
@@ -102,9 +102,9 @@ public abstract class BatchIT extends BaseIT {
     
     protected final void assertDataSet(final int[] actualUpdateCounts) throws SQLException, IOException, JAXBException {
         Collection<DataSet> expectedList = new LinkedList<>();
-        assertThat(actualUpdateCounts.length, is(getExpectedDataFiles().size()));
+        assertThat(actualUpdateCounts.length, is(expectedDataFiles.size()));
         int count = 0;
-        for (String each : getExpectedDataFiles()) {
+        for (String each : expectedDataFiles) {
             try (FileReader reader = new FileReader(each)) {
                 DataSet expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
                 assertThat(actualUpdateCounts[count], is(expected.getUpdateCount()));

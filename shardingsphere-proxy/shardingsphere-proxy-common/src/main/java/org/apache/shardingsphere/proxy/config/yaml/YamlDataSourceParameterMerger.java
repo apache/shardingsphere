@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.config.yaml;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
@@ -26,6 +28,7 @@ import java.util.Map;
 /**
  * YAML datasource parameter merged.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlDataSourceParameterMerger {
     
     /**
@@ -42,7 +45,7 @@ public final class YamlDataSourceParameterMerger {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
-            if (field.getName().equals("serialVersionUID")) {
+            if ("serialVersionUID".equals(field.getName())) {
                 continue;
             }
             //filter JacocoData field

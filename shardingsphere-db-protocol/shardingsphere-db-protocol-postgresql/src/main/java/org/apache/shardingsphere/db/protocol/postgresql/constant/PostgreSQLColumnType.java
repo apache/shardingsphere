@@ -151,7 +151,7 @@ public enum PostgreSQLColumnType {
     
     POSTGRESQL_TYPE_REF_CURSOR_ARRAY(2201);
     
-    private static final Map<Integer, PostgreSQLColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(PostgreSQLColumnType.values().length, 1);
+    private static final Map<Integer, PostgreSQLColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
     
     private final int value;
     
@@ -193,7 +193,7 @@ public enum PostgreSQLColumnType {
      * @return PostgreSQL column type
      */
     public static PostgreSQLColumnType valueOf(final int value) {
-        for (PostgreSQLColumnType each : PostgreSQLColumnType.values()) {
+        for (PostgreSQLColumnType each : values()) {
             if (value == each.value) {
                 return each;
             }

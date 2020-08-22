@@ -28,7 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class YamlConfigurationExampleMain {
+public final class YamlConfigurationExampleMain {
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(getFile());

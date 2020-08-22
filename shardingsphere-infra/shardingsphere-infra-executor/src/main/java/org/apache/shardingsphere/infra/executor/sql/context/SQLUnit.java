@@ -29,7 +29,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(of = { "sql" })
+@EqualsAndHashCode(of = "sql")
 @ToString
 public final class SQLUnit {
     

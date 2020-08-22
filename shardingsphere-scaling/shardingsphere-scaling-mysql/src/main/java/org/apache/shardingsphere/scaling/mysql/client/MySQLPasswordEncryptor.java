@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.scaling.mysql.client;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
  * MySQL Password Encryptor.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLPasswordEncryptor {
     
     /**

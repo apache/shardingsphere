@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.constant.AggregationType;
 
 /**
  * Aggregation unit factory.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AggregationUnitFactory {
     
     /**

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.example.type.ShardingType;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public class DataSourceFactory {
+public final class DataSourceFactory {
     
     public static DataSource newInstance(final ShardingType shardingType) throws SQLException {
         switch (shardingType) {

@@ -38,7 +38,7 @@ public final class LocalShardingTablesConfiguration implements ExampleConfigurat
     
     private final OrchestrationConfiguration orchestrationConfiguration;
     
-    public LocalShardingTablesConfiguration(OrchestrationConfiguration orchestrationConfiguration) {
+    public LocalShardingTablesConfiguration(final OrchestrationConfiguration orchestrationConfiguration) {
         this.orchestrationConfiguration = orchestrationConfiguration;
     }
     

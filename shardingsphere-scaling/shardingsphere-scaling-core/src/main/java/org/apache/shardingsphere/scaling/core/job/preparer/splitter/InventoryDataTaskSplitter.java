@@ -18,12 +18,15 @@
 package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPositionManager;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.SyncTaskFactory;
@@ -55,21 +58,21 @@ public final class InventoryDataTaskSplitter {
      * @param dataSourceManager data source manager
      * @return split inventory data task
      */
-    public Collection<ScalingTask> splitInventoryData(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
-        Collection<ScalingTask> result = new LinkedList<>();
-        for (SyncConfiguration each : splitConfiguration(syncConfiguration, dataSourceManager)) {
-            result.add(syncTaskFactory.createInventoryDataSyncTask(each));
+    public Collection<ScalingTask<InventoryPosition>> splitInventoryData(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+        Collection<ScalingTask<InventoryPosition>> result = new LinkedList<>();
+        for (InventoryDumperConfiguration each : splitDumperConfiguration(syncConfiguration.getConcurrency(), syncConfiguration.getDumperConfiguration(), dataSourceManager)) {
+            result.add(syncTaskFactory.createInventoryDataSyncTask(each, syncConfiguration.getImporterConfiguration()));
         }
         return result;
     }
     
-    private Collection<SyncConfiguration> splitConfiguration(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
-        Collection<SyncConfiguration> result = new LinkedList<>();
-        DataSource dataSource = dataSourceManager.getDataSource(syncConfiguration.getDumperConfiguration().getDataSourceConfiguration());
+    private Collection<InventoryDumperConfiguration> splitDumperConfiguration(final int concurrency, final DumperConfiguration dumperConfiguration, final DataSourceManager dataSourceManager) {
+        Collection<InventoryDumperConfiguration> result = new LinkedList<>();
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfiguration.getDataSourceConfiguration());
         MetaDataManager metaDataManager = new MetaDataManager(dataSource);
-        for (SyncConfiguration each : splitByTable(syncConfiguration)) {
-            if (isSpiltByPrimaryKeyRange(each.getDumperConfiguration(), metaDataManager)) {
-                result.addAll(splitByPrimaryKeyRange(each, metaDataManager, dataSource));
+        for (InventoryDumperConfiguration each : splitByTable(dumperConfiguration)) {
+            if (isSpiltByPrimaryKeyRange(each, metaDataManager)) {
+                result.addAll(splitByPrimaryKeyRange(concurrency, each, metaDataManager, dataSource));
             } else {
                 result.add(each);
             }
@@ -77,36 +80,35 @@ public final class InventoryDataTaskSplitter {
         return result;
     }
     
-    private Collection<SyncConfiguration> splitByTable(final SyncConfiguration syncConfiguration) {
-        Collection<SyncConfiguration> result = new LinkedList<>();
-        for (String each : syncConfiguration.getTableNameMap().keySet()) {
-            RdbmsConfiguration dumperConfig = RdbmsConfiguration.clone(syncConfiguration.getDumperConfiguration());
+    private Collection<InventoryDumperConfiguration> splitByTable(final DumperConfiguration dumperConfiguration) {
+        Collection<InventoryDumperConfiguration> result = new LinkedList<>();
+        for (String each : dumperConfiguration.getTableNameMap().keySet()) {
+            InventoryDumperConfiguration dumperConfig = new InventoryDumperConfiguration(dumperConfiguration);
             dumperConfig.setTableName(each);
-            dumperConfig.setPositionManager(new PrimaryKeyPositionManager(new PrimaryKeyPosition.PlaceholderPosition()));
-            result.add(new SyncConfiguration(syncConfiguration.getConcurrency(), syncConfiguration.getTableNameMap(),
-                dumperConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration())));
+            dumperConfig.setPositionManager(new InventoryPositionManager<>(new PlaceholderInventoryPosition()));
+            result.add(dumperConfig);
         }
         return result;
     }
     
-    private boolean isSpiltByPrimaryKeyRange(final RdbmsConfiguration rdbmsConfiguration, final MetaDataManager metaDataManager) {
-        TableMetaData tableMetaData = metaDataManager.getTableMetaData(rdbmsConfiguration.getTableName());
+    private boolean isSpiltByPrimaryKeyRange(final InventoryDumperConfiguration inventoryDumperConfiguration, final MetaDataManager metaDataManager) {
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(inventoryDumperConfiguration.getTableName());
         if (null == tableMetaData) {
-            log.warn("Can't split range for table {}, reason: can not get table metadata ", rdbmsConfiguration.getTableName());
+            log.warn("Can't split range for table {}, reason: can not get table metadata ", inventoryDumperConfiguration.getTableName());
             return false;
         }
         List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
-        if (null == primaryKeys || 0 == primaryKeys.size()) {
-            log.warn("Can't split range for table {}, reason: no primary key", rdbmsConfiguration.getTableName());
+        if (null == primaryKeys || primaryKeys.isEmpty()) {
+            log.warn("Can't split range for table {}, reason: no primary key", inventoryDumperConfiguration.getTableName());
             return false;
         }
         if (primaryKeys.size() > 1) {
-            log.warn("Can't split range for table {}, reason: primary key is union primary", rdbmsConfiguration.getTableName());
+            log.warn("Can't split range for table {}, reason: primary key is union primary", inventoryDumperConfiguration.getTableName());
             return false;
         }
         int index = tableMetaData.findColumnIndex(primaryKeys.get(0));
         if (isNotIntegerPrimary(tableMetaData.getColumnMetaData(index).getDataType())) {
-            log.warn("Can't split range for table {}, reason: primary key is not integer number", rdbmsConfiguration.getTableName());
+            log.warn("Can't split range for table {}, reason: primary key is not integer number", inventoryDumperConfiguration.getTableName());
             return false;
         }
         return true;
@@ -116,33 +118,31 @@ public final class InventoryDataTaskSplitter {
         return Types.INTEGER != columnType && Types.BIGINT != columnType && Types.SMALLINT != columnType && Types.TINYINT != columnType;
     }
     
-    private Collection<SyncConfiguration> splitByPrimaryKeyRange(final SyncConfiguration syncConfiguration, final MetaDataManager metaDataManager, final DataSource dataSource) {
-        int concurrency = syncConfiguration.getConcurrency();
-        Collection<SyncConfiguration> result = new LinkedList<>();
-        RdbmsConfiguration dumperConfiguration = syncConfiguration.getDumperConfiguration();
-        String primaryKey = metaDataManager.getTableMetaData(dumperConfiguration.getTableName()).getPrimaryKeyColumns().get(0);
-        dumperConfiguration.setPrimaryKey(primaryKey);
+    private Collection<InventoryDumperConfiguration> splitByPrimaryKeyRange(final int concurrency, final InventoryDumperConfiguration inventoryDumperConfiguration,
+                                                                   final MetaDataManager metaDataManager, final DataSource dataSource) {
+        Collection<InventoryDumperConfiguration> result = new LinkedList<>();
+        String primaryKey = metaDataManager.getTableMetaData(inventoryDumperConfiguration.getTableName()).getPrimaryKeyColumns().get(0);
+        inventoryDumperConfiguration.setPrimaryKey(primaryKey);
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement(String.format("SELECT MIN(%s),MAX(%s) FROM %s LIMIT 1", primaryKey, primaryKey, dumperConfiguration.getTableName()));
+            PreparedStatement ps = connection.prepareStatement(String.format("SELECT MIN(%s),MAX(%s) FROM %s LIMIT 1", primaryKey, primaryKey, inventoryDumperConfiguration.getTableName()));
             ResultSet rs = ps.executeQuery();
             rs.next();
             long min = rs.getLong(1);
             long max = rs.getLong(2);
             long step = (max - min) / concurrency;
             for (int i = 0; i < concurrency && min <= max; i++) {
-                RdbmsConfiguration splitDumperConfig = RdbmsConfiguration.clone(dumperConfiguration);
+                InventoryDumperConfiguration splitDumperConfig = new InventoryDumperConfiguration(inventoryDumperConfiguration);
                 if (i < concurrency - 1) {
-                    splitDumperConfig.setPositionManager(new PrimaryKeyPositionManager(new PrimaryKeyPosition(min, min + step)));
-                    min = min + step + 1;
+                    splitDumperConfig.setPositionManager(new InventoryPositionManager<>(new PrimaryKeyPosition(min, min + step)));
+                    min += step + 1;
                 } else {
-                    splitDumperConfig.setPositionManager(new PrimaryKeyPositionManager(new PrimaryKeyPosition(min, max)));
+                    splitDumperConfig.setPositionManager(new InventoryPositionManager<>(new PrimaryKeyPosition(min, max)));
                 }
                 splitDumperConfig.setSpiltNum(i);
-                result.add(new SyncConfiguration(concurrency, syncConfiguration.getTableNameMap(),
-                    splitDumperConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration())));
+                result.add(splitDumperConfig);
             }
-        } catch (SQLException ex) {
-            throw new PrepareFailedException(String.format("Split task for table %s by primary key %s error", dumperConfiguration.getTableName(), primaryKey), ex);
+        } catch (final SQLException ex) {
+            throw new PrepareFailedException(String.format("Split task for table %s by primary key %s error", inventoryDumperConfiguration.getTableName(), primaryKey), ex);
         }
         return result;
     }

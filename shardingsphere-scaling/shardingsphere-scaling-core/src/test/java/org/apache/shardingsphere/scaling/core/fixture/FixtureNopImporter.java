@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.fixture;
 
 import java.util.List;
 
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
@@ -32,7 +32,7 @@ public final class FixtureNopImporter implements Importer {
     
     private Channel channel;
     
-    public FixtureNopImporter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public FixtureNopImporter(final ImporterConfiguration importerConfiguration, final DataSourceManager dataSourceManager) {
     }
     
     @Override

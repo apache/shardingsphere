@@ -34,6 +34,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -54,16 +55,16 @@ public final class MetaDataCenterTest {
     
     @Test
     public void assertPersistMetaDataCenterNode() {
-        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(MetaDataTest.META_DATA, YamlRuleSchemaMetaData.class));
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(MetaDataJson.META_DATA, YamlRuleSchemaMetaData.class));
         metaDataCenter.persistMetaDataCenterNode("schema", ruleSchemaMetaData);
         verify(repository).persist(eq("/test/metadata/schema"), anyString());
     }
     
     @Test
     public void assertLoadRuleSchemaMetaData() {
-        when(repository.get("/test/metadata/schema")).thenReturn(MetaDataTest.META_DATA);
+        when(repository.get("/test/metadata/schema")).thenReturn(MetaDataJson.META_DATA);
         Optional<RuleSchemaMetaData> optionalRuleSchemaMetaData = metaDataCenter.loadRuleSchemaMetaData("schema");
-        assertThat(optionalRuleSchemaMetaData.isPresent(), is(true));
+        assertTrue(optionalRuleSchemaMetaData.isPresent());
         Optional<RuleSchemaMetaData> empty = metaDataCenter.loadRuleSchemaMetaData("test");
         assertThat(empty, is(Optional.empty()));
         RuleSchemaMetaData ruleSchemaMetaData = optionalRuleSchemaMetaData.get();

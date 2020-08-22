@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
@@ -24,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.Complex
 /**
  * Expression judgment tool for route.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExpressionConditionUtils {
 
     /**

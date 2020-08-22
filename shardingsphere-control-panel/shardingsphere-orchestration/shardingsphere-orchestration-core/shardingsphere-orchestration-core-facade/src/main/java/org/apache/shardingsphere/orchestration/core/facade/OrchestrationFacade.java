@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.orchestration.core.facade;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
@@ -64,10 +66,10 @@ public final class OrchestrationFacade implements AutoCloseable {
     public void init(final OrchestrationConfiguration config, final Collection<String> schemaNames) {
         isOverwrite = config.isOverwrite();
         repositoryFacade = new OrchestrationRepositoryFacade(config);
-        registryCenter = new RegistryCenter(config.getNamespace(), repositoryFacade.getRegistryRepository());
-        configCenter = new ConfigCenter(config.getNamespace(), repositoryFacade.getConfigurationRepository());
-        metaDataCenter = new MetaDataCenter(config.getNamespace(), repositoryFacade.getConfigurationRepository());
-        listenerManager = new OrchestrationListenerManager(config.getNamespace(), 
+        registryCenter = new RegistryCenter(config.getName(), repositoryFacade.getRegistryRepository());
+        configCenter = new ConfigCenter(config.getName(), repositoryFacade.getConfigurationRepository());
+        metaDataCenter = new MetaDataCenter(config.getName(), repositoryFacade.getConfigurationRepository());
+        listenerManager = new OrchestrationListenerManager(config.getName(),
                 repositoryFacade.getRegistryRepository(), repositoryFacade.getConfigurationRepository(), schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);
     }
     
@@ -129,6 +131,7 @@ public final class OrchestrationFacade implements AutoCloseable {
         return OrchestrationFacadeHolder.INSTANCE;
     }
     
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class OrchestrationFacadeHolder {
         
         public static final OrchestrationFacade INSTANCE = new OrchestrationFacade();

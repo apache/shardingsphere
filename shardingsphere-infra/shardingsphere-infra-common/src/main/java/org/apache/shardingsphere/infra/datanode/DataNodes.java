@@ -77,7 +77,7 @@ public final class DataNodes {
     }
     
     private Collection<DataNode> regenerate(final Collection<String> dataSources, final String table) {
-        Collection<DataNode> result = new LinkedHashSet<>();
+        Collection<DataNode> result = new LinkedHashSet<>(dataSources.size(), 1);
         for (String each : dataSources) {
             result.add(new DataNode(each, table));
         }

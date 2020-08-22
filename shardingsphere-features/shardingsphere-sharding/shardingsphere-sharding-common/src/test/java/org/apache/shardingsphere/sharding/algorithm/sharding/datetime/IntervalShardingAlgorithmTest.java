@@ -28,23 +28,22 @@ import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class IntervalShardingAlgorithmTest {
     
-    private final List<String> availableTablesForMonthStrategy = new ArrayList<>();
+    private final Collection<String> availableTablesForMonthStrategy = new LinkedList<>();
     
-    private final List<String> availableTablesForQuarterStrategy = new ArrayList<>();
+    private final Collection<String> availableTablesForQuarterStrategy = new LinkedList<>();
     
     private StandardShardingStrategy shardingStrategyByMonth;
     
@@ -65,7 +64,7 @@ public final class IntervalShardingAlgorithmTest {
         shardingAlgorithm.getProps().setProperty("datetime.interval.amount", "3");
         shardingAlgorithm.getProps().setProperty("datetime.interval.unit", "Months");
         shardingAlgorithm.init();
-        this.shardingStrategyByQuarter = new StandardShardingStrategy("create_time", shardingAlgorithm);
+        shardingStrategyByQuarter = new StandardShardingStrategy("create_time", shardingAlgorithm);
         for (int i = 2016; i <= 2020; i++) {
             for (int j = 1; j <= 4; j++) {
                 availableTablesForQuarterStrategy.add(String.format("t_order_%04d%02d", i, j));
@@ -82,7 +81,7 @@ public final class IntervalShardingAlgorithmTest {
         shardingAlgorithm.getProps().setProperty("datetime.interval.amount", "1");
         shardingAlgorithm.getProps().setProperty("datetime.interval.unit", "Months");
         shardingAlgorithm.init();
-        this.shardingStrategyByMonth = new StandardShardingStrategy("create_time", shardingAlgorithm);
+        shardingStrategyByMonth = new StandardShardingStrategy("create_time", shardingAlgorithm);
         for (int i = 2016; i <= 2020; i++) {
             for (int j = 1; j <= 12; j++) {
                 availableTablesForMonthStrategy.add(String.format("t_order_%04d%02d", i, j));
@@ -149,7 +148,7 @@ public final class IntervalShardingAlgorithmTest {
         LocalDateTime localDateTime = LocalDateTime.parse(value.substring(0, inputFormat.length()), DateTimeFormatter.ofPattern(inputFormat));
         String tableNameShardedByQuarter = localDateTime.format(DateTimeFormatter.ofPattern(tableFormatByQuarter));
         String tableNameShardedByMonth = localDateTime.format(DateTimeFormatter.ofPattern(tableFormatByMonth));
-        assertEquals("202004", tableNameShardedByQuarter);
-        assertEquals("202010", tableNameShardedByMonth);
+        assertThat(tableNameShardedByQuarter, is("202004"));
+        assertThat(tableNameShardedByMonth, is("202010"));
     }
 }

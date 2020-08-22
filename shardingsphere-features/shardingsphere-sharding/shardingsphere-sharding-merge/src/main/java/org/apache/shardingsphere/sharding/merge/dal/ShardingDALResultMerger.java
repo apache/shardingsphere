@@ -49,7 +49,7 @@ public final class ShardingDALResultMerger implements ResultMerger {
     private final ShardingRule shardingRule;
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
         if (dalStatement instanceof ShowDatabasesStatement) {
             return new SingleLocalDataMergedResult(Collections.singletonList(DefaultSchema.LOGIC_NAME));

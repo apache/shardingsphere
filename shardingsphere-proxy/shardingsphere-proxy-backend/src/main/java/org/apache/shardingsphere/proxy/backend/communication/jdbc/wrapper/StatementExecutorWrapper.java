@@ -60,8 +60,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     public ExecutionContext execute(final String sql) {
         Collection<ShardingSphereRule> rules = schema.getSchema().getRules();
         if (rules.isEmpty()) {
-            return new ExecutionContext(
-                    new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(schema.getSchema().getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
+            return createExecutionContext(sql);
         }
         RouteContext routeContext = 
                 new DataNodeRouter(schema.getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).route(sqlStatement, sql, Collections.emptyList());
@@ -74,6 +73,12 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     @Override
     public boolean execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
+    }
+    
+    private ExecutionContext createExecutionContext(final String sql) {
+        String dataSource = schema.getSchema().getDataSources().isEmpty() ? "" : schema.getSchema().getDataSources().keySet().iterator().next();
+        return new ExecutionContext(
+                new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(dataSource, new SQLUnit(sql, Collections.emptyList())));
     }
     
     @Override

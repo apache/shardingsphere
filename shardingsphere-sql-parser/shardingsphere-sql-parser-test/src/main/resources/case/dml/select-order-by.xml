@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <select sql-case-id="select_order_by_asc_and_index_desc">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="14" stop-index="22" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="33" stop-index="42">
+                <owner name="o" start-index="33" stop-index="33" />
+            </column-item>
+            <index-item index="2" order-direction="DESC" start-index="45" stop-index="45" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_order_by_desc_and_index_asc">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            </table-factor>
+        </table-reference>
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" alias="i" start-index="27" stop-index="40" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="42" stop-index="92">
+            <and-predicate>
+                <predicate start-index="48" stop-index="70">
+                    <column-left-value name="order_id" start-index="48" stop-index="57">
+                        <owner name="o" start-index="48" stop-index="48" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <column-right-value name="order_id" start-index="61" stop-index="70">
+                        <owner name="i" start-index="61" stop-index="61" />
+                    </column-right-value>
+                </predicate>
+                <predicate start-index="76" stop-index="92">
+                    <column-left-value name="status" start-index="76" stop-index="83">
+                        <owner name="o" start-index="76" stop-index="76" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="init" start-index="87" stop-index="92" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="order_id" order-direction="DESC" start-index="103" stop-index="112">
+                <owner name="o" start-index="103" stop-index="103" />
+            </column-item>
+            <index-item index="1" start-index="120" stop-index="120" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_order_by_with_ordered_column">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="40" stop-index="48" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="33">
+            <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
+                <owner name="o" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="59" stop-index="68">
+                <owner name="o" start-index="59" stop-index="59" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_order_by_with_date">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            </table-factor>
+        </table-reference>
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" alias="i" start-index="27" stop-index="40" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="42" stop-index="92">
+            <and-predicate>
+                <predicate start-index="48" stop-index="70">
+                    <column-left-value name="order_id" start-index="48" stop-index="57">
+                        <owner name="o" start-index="48" stop-index="48" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <column-right-value name="order_id" start-index="61" stop-index="70">
+                        <owner name="i" start-index="61" stop-index="61" />
+                    </column-right-value>
+                </predicate>
+                <predicate start-index="76" stop-index="92">
+                    <column-left-value name="status" start-index="76" stop-index="83">
+                        <owner name="o" start-index="76" stop-index="76" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="init" start-index="87" stop-index="92" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="creation_date" order-direction="DESC" start-index="103" stop-index="117">
+                <owner name="i" start-index="103" stop-index="103" />
+            </column-item>
+            <column-item name="order_id" order-direction="DESC" start-index="125" stop-index="134">
+                <owner name="o" start-index="125" stop-index="125" />
+            </column-item>
+            <column-item name="item_id" start-index="142" stop-index="150">
+                <owner name="i" start-index="142" stop-index="142" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <!-- //TODO add order-by-null-type -->
+    <select sql-case-id="select_order_by_for_nulls_first">
+        <table-reference>
+            <table-factor>
+                <table  name="t_order" alias="o" start-index="40" stop-index="48" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="33">
+            <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
+                <owner name="o" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="59" stop-index="68">
+                <owner name="o" start-index="59" stop-index="59" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <!-- //TODO add order-by-null-type -->
+    <select sql-case-id="select_order_by_for_nulls_last">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="40" stop-index="48" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="33">
+            <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
+                <owner name="o" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="59" stop-index="68">
+                <owner name="o" start-index="59" stop-index="59" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_order_by_with_multiple_stars">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="29" stop-index="37" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="22">
+            <shorthand-projection start-index="7" stop-index="7" />
+            <shorthand-projection start-index="20" stop-index="22">
+                <owner name="o" start-index="20" stop-index="20" />
+            </shorthand-projection>
+            <column-projection name="order_id" start-index="10" stop-index="17" />
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="48" stop-index="57">
+                <owner name="o" start-index="48" stop-index="48" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_order_by_with_alias_star_alias_name">
+        <table-reference>
+            <table-factor>
+                <table  name="t_order" alias="o" start-index="16" stop-index="24" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="o" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="35" stop-index="44">
+                <owner name="o" start-index="35" stop-index="35" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_order_by_with_star_table_alias">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="14" stop-index="22" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="33" stop-index="40" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_order_by_with_table_star_table_name">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="22" stop-index="28" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="15">
+            <shorthand-projection start-index="7" stop-index="15">
+                <owner name="t_order" start-index="7" stop-index="13" />
+            </shorthand-projection>
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="39" stop-index="54">
+                <owner name="t_order" start-index="39" stop-index="45" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_order_by_with_star_no_table_alias">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="31" stop-index="38" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_order_by_with_table_star_without_table_name">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="21" stop-index="29" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="36" stop-index="49" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="54" stop-index="74">
+                            <column-left-value name="user_id" start-index="54" stop-index="62">
+                                <owner name="o" start-index="54" stop-index="54" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="66" stop-index="74">
+                                <owner name="i" start-index="66" stop-index="66" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="80" stop-index="102">
+                            <column-left-value name="order_id" start-index="80" stop-index="89">
+                                <owner name="o" start-index="80" stop-index="80" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="93" stop-index="102">
+                                <owner name="i" start-index="93" stop-index="93" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+        </table-reference>
+        <projections start-index="7" stop-index="14">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+            <shorthand-projection start-index="12" stop-index="14">
+                <owner name="o" start-index="12" stop-index="12" />
+            </shorthand-projection>
+        </projections>
+        <order-by>
+            <column-item name="item_id" start-index="113" stop-index="119" />
+        </order-by>
+    </select>
+</sql-parser-test-cases>

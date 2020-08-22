@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.standard;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
 import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
-import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
@@ -51,8 +51,8 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingRule shardingRule = createAllShardingRule();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildRuleSchemaMetaData());
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
-        RouteContext routeContext = new DataNodeRouter(metaData, props, Collections.singletonList(shardingRule)).route(sqlParserEngine.parse(sql, false), sql, parameters);
+        StandardSQLParserEngine standardSqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
+        RouteContext routeContext = new DataNodeRouter(metaData, props, Collections.singletonList(shardingRule)).route(standardSqlParserEngine.parse(sql, false), sql, parameters);
         ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator();
         RouteContext result = shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, props);
         assertThat(result.getRouteResult().getRouteUnits().size(), is(1));
@@ -60,11 +60,11 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     }
     
     private DataSourceMetas buildDataSourceMetas() {
-        Map<String, DatabaseAccessConfiguration> dataSourceInfoMap = new HashMap<>();
-        DatabaseAccessConfiguration mainDatabaseAccessConfiguration = new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/actual_db", "test", null);
-        DatabaseAccessConfiguration databaseAccessConfiguration0 = new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/actual_db", "test", null);
-        DatabaseAccessConfiguration databaseAccessConfiguration1 = new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/actual_db", "test", null);
-        dataSourceInfoMap.put("main", mainDatabaseAccessConfiguration);
+        Map<String, DatabaseAccessConfiguration> dataSourceInfoMap = new HashMap<>(3, 1);
+        DatabaseAccessConfiguration mainDatabaseAccessConfig = new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
+        DatabaseAccessConfiguration databaseAccessConfiguration0 = new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
+        DatabaseAccessConfiguration databaseAccessConfiguration1 = new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
+        dataSourceInfoMap.put("main", mainDatabaseAccessConfig);
         dataSourceInfoMap.put("ds_0", databaseAccessConfiguration0);
         dataSourceInfoMap.put("ds_1", databaseAccessConfiguration1);
         return new DataSourceMetas(DatabaseTypes.getActualDatabaseType("MySQL"), dataSourceInfoMap);

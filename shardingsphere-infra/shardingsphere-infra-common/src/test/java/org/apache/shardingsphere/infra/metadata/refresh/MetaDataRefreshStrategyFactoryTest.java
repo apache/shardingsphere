@@ -29,8 +29,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MetaDataRefreshStrategyFactoryTest {
@@ -58,13 +58,12 @@ public final class MetaDataRefreshStrategyFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        assertThat(MetaDataRefreshStrategyFactory.newInstance(createTableStatementContext).isPresent(), is(true));
-        assertThat(MetaDataRefreshStrategyFactory.newInstance(createIndexStatementContext).isPresent(), is(true));
-        assertThat(MetaDataRefreshStrategyFactory.newInstance(alterIndexStatementContext).isPresent(), is(false));
-        assertThat(MetaDataRefreshStrategyFactory.newInstance(alterTableStatementContext).isPresent(), is(true));
-        assertThat(MetaDataRefreshStrategyFactory.newInstance(dropIndexStatementContext).isPresent(), is(true));
-        assertThat(MetaDataRefreshStrategyFactory.newInstance(dropTableStatementContext).isPresent(), is(true));
-        assertThat(MetaDataRefreshStrategyFactory.newInstance(truncateStatementContext).isPresent(), is(false));
+        assertTrue(MetaDataRefreshStrategyFactory.newInstance(createTableStatementContext).isPresent());
+        assertTrue(MetaDataRefreshStrategyFactory.newInstance(createIndexStatementContext).isPresent());
+        assertFalse(MetaDataRefreshStrategyFactory.newInstance(alterIndexStatementContext).isPresent());
+        assertTrue(MetaDataRefreshStrategyFactory.newInstance(alterTableStatementContext).isPresent());
+        assertTrue(MetaDataRefreshStrategyFactory.newInstance(dropIndexStatementContext).isPresent());
+        assertTrue(MetaDataRefreshStrategyFactory.newInstance(dropTableStatementContext).isPresent());
+        assertFalse(MetaDataRefreshStrategyFactory.newInstance(truncateStatementContext).isPresent());
     }
 }
-

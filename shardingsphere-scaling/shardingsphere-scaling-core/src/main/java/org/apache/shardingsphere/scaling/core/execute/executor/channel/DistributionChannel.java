@@ -70,26 +70,24 @@ public final class DistributionChannel implements Channel {
     }
     
     private void scheduleAckRecords() {
-        this.scheduleAckRecordsExecutor = Executors.newSingleThreadScheduledExecutor();
+        scheduleAckRecordsExecutor = Executors.newSingleThreadScheduledExecutor();
         scheduleAckRecordsExecutor.scheduleAtFixedRate(this::ackRecords0, 5, 1, TimeUnit.SECONDS);
     }
     
-    private void ackRecords0() {
-        synchronized (DistributionChannel.this) {
-            List<Record> result = new LinkedList<>();
-            while (!toBeAcknowledgeRecords.isEmpty()) {
-                Record record = toBeAcknowledgeRecords.peek();
-                if (pendingAcknowledgeRecords.containsKey(record.getPosition())) {
-                    result.add(record);
-                    toBeAcknowledgeRecords.poll();
-                    pendingAcknowledgeRecords.remove(record.getPosition());
-                } else {
-                    break;
-                }
+    private synchronized void ackRecords0() {
+        List<Record> result = new LinkedList<>();
+        while (!toBeAcknowledgeRecords.isEmpty()) {
+            Record record = toBeAcknowledgeRecords.peek();
+            if (pendingAcknowledgeRecords.containsKey(record.getPosition())) {
+                result.add(record);
+                toBeAcknowledgeRecords.poll();
+                pendingAcknowledgeRecords.remove(record.getPosition());
+            } else {
+                break;
             }
-            if (result.size() > 0) {
-                ackCallback.onAck(result);
-            }
+        }
+        if (!result.isEmpty()) {
+            ackCallback.onAck(result);
         }
     }
     
@@ -157,7 +155,7 @@ public final class DistributionChannel implements Channel {
         }
     }
     
-    private class SingleChannelAckCallback implements AckCallback {
+    private final class SingleChannelAckCallback implements AckCallback {
         
         @Override
         public void onAck(final List<Record> records) {

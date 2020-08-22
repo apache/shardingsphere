@@ -54,12 +54,12 @@ public final class YamlRootRuleConfigurationsForYamlMasterSlaveRuleConfiguration
                 BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
-                yamlContent.append(line).append("\n");
+                yamlContent.append(line).append(System.lineSeparator());
             }
         }
-        YamlRootRuleConfigurations rootRuleConfigurations = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootRuleConfigurations.class);
-        assertThat(rootRuleConfigurations.getRules().size(), is(1));
-        assertMasterSlaveRule((YamlMasterSlaveRuleConfiguration) rootRuleConfigurations.getRules().iterator().next());
+        YamlRootRuleConfigurations rootRuleConfigs = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootRuleConfigurations.class);
+        assertThat(rootRuleConfigs.getRules().size(), is(1));
+        assertMasterSlaveRule((YamlMasterSlaveRuleConfiguration) rootRuleConfigs.getRules().iterator().next());
     }
     
     private void assertMasterSlaveRule(final YamlMasterSlaveRuleConfiguration actual) {

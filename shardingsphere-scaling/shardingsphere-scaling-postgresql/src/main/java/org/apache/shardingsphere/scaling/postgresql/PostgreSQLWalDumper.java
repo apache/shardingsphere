@@ -18,22 +18,21 @@
 package org.apache.shardingsphere.scaling.postgresql;
 
 import lombok.Setter;
-
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
 import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalEventConverter;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.TestDecodingPlugin;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
-import org.postgresql.PGConnection;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.PGReplicationStream;
 
@@ -44,13 +43,11 @@ import java.sql.SQLException;
 /**
  * PostgreSQL WAL dumper.
  */
-public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor implements LogDumper {
+public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<WalPosition> implements LogDumper {
     
     private final WalPosition walPosition;
     
-    private final RdbmsConfiguration rdbmsConfiguration;
-    
-    private DecodingPlugin decodingPlugin;
+    private final DumperConfiguration dumperConfiguration;
     
     private final LogicalReplication logicalReplication = new LogicalReplication();
     
@@ -59,51 +56,45 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
     @Setter
     private Channel channel;
     
-    public PostgreSQLWalDumper(final RdbmsConfiguration rdbmsConfiguration, final Position position) {
+    public PostgreSQLWalDumper(final DumperConfiguration dumperConfiguration, final Position position) {
         walPosition = (WalPosition) position;
-        if (!JDBCDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
+        if (!JDBCDataSourceConfiguration.class.equals(dumperConfiguration.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");
         }
-        this.rdbmsConfiguration = rdbmsConfiguration;
-        walEventConverter = new WalEventConverter(rdbmsConfiguration);
+        this.dumperConfiguration = dumperConfiguration;
+        walEventConverter = new WalEventConverter(dumperConfiguration);
     }
     
     @Override
     public void start() {
         super.start();
-        dump(channel);
+        dump();
     }
     
-    @Override
-    public void dump(final Channel channel) {
+    private void dump() {
         try {
-            PGConnection pgConnection = logicalReplication.createPgConnection((JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration());
-            decodingPlugin = new TestDecodingPlugin(((Connection) pgConnection).unwrap(PgConnection.class).getTimestampUtils());
+            Connection pgConnection = logicalReplication.createPgConnection((JDBCDataSourceConfiguration) dumperConfiguration.getDataSourceConfiguration());
+            DecodingPlugin decodingPlugin = new TestDecodingPlugin(pgConnection.unwrap(PgConnection.class).getTimestampUtils());
             PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection,
                     PostgreSQLPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
             while (isRunning()) {
                 ByteBuffer msg = stream.readPending();
                 if (msg == null) {
-                    try {
-                        Thread.sleep(10L);
-                        continue;
-                    } catch (InterruptedException ignored) {
-                    
-                    }
+                    ThreadUtil.sleep(10L);
+                    continue;
                 }
                 AbstractWalEvent event = decodingPlugin.decode(msg, stream.getLastReceiveLSN());
-                pushRecord(channel, walEventConverter.convert(event));
+                pushRecord(walEventConverter.convert(event));
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new SyncTaskExecuteException(ex);
         }
     }
     
-    private void pushRecord(final Channel channel, final Record record) {
+    private void pushRecord(final Record record) {
         try {
             channel.pushRecord(record);
-        } catch (InterruptedException ignored) {
-        
+        } catch (final InterruptedException ignored) {
         }
     }
 }

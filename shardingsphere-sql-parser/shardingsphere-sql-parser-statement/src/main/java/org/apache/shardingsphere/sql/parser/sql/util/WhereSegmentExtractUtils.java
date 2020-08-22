@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.util;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinedTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableFactorSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 /**
  * Where segment extract utility class.
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WhereSegmentExtractUtils {
     
     /**

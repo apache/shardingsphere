@@ -36,6 +36,6 @@ public final class ResourceDataSource {
     public ResourceDataSource(final String originalName, final DataSource dataSource) {
         this.originalName = originalName;
         this.dataSource = dataSource;
-        this.uniqueResourceName = ResourceIDGenerator.getInstance().nextId() + originalName;
+        uniqueResourceName = ResourceIDGenerator.getInstance().nextId() + originalName;
     }
 }

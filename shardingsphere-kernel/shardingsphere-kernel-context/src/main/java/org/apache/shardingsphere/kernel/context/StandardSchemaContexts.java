@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,14 +42,17 @@ public final class StandardSchemaContexts implements SchemaContexts {
     
     private final ConfigurationProperties props;
     
+    private final DatabaseType databaseType;
+    
     private final boolean isCircuitBreak;
     
     public StandardSchemaContexts() {
-        this(new HashMap<>(), new Authentication(), new ConfigurationProperties(new Properties()), false);
+        this(new HashMap<>(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType(), false);
     }
     
-    public StandardSchemaContexts(final Map<String, SchemaContext> schemaContexts, final Authentication authentication, final ConfigurationProperties props) {
-        this(schemaContexts, authentication, props, false);
+    public StandardSchemaContexts(final Map<String, SchemaContext> schemaContexts,
+                                  final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
+        this(schemaContexts, authentication, props, databaseType, false);
     }
     
     @Override

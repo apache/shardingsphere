@@ -27,7 +27,7 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class XAOrderServiceTest {
+public final class XAOrderServiceTest {
     
     private XAOrderService orderService;
     

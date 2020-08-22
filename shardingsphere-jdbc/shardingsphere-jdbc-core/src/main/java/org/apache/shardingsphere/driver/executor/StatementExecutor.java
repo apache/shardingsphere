@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.executor;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
@@ -71,20 +70,19 @@ public final class StatementExecutor {
      */
     public List<QueryResult> executeQuery(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        DatabaseType databaseType = schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType();
-        SQLExecutorCallback<QueryResult> sqlExecutorCallback = new DefaultSQLExecutorCallback<QueryResult>(databaseType, isExceptionThrown) {
+        SQLExecutorCallback<QueryResult> sqlExecutorCallback = new DefaultSQLExecutorCallback<QueryResult>(schemaContexts.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return createQueryResult(sql, statement, connectionMode);
             }
+            
+            private QueryResult createQueryResult(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                ResultSet resultSet = statement.executeQuery(sql);
+                return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
+            }
         };
         return sqlExecutor.execute(inputGroups, sqlExecutorCallback);
-    }
-    
-    private QueryResult createQueryResult(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-        ResultSet resultSet = statement.executeQuery(sql);
-        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     
     /**
@@ -141,8 +139,7 @@ public final class StatementExecutor {
     @SuppressWarnings("unchecked")
     private int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final Updater updater, final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        DatabaseType databaseType = schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType();
-        SQLExecutorCallback sqlExecutorCallback = new DefaultSQLExecutorCallback<Integer>(databaseType, isExceptionThrown) {
+        SQLExecutorCallback sqlExecutorCallback = new DefaultSQLExecutorCallback<Integer>(schemaContexts.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -224,8 +221,7 @@ public final class StatementExecutor {
     @SuppressWarnings("unchecked")
     private boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final Executor executor, final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        DatabaseType databaseType = schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType();
-        SQLExecutorCallback sqlExecutorCallback = new DefaultSQLExecutorCallback<Boolean>(databaseType, isExceptionThrown) {
+        SQLExecutorCallback sqlExecutorCallback = new DefaultSQLExecutorCallback<Boolean>(schemaContexts.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -248,8 +244,8 @@ public final class StatementExecutor {
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
             RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(schemaContext.getSchema().getRules());
-            refreshStrategy.get().refreshMetaData(schemaContext.getSchema().getMetaData(), schemaContext.getSchema().getDatabaseType(), dataSourceMap, sqlStatementContext,
-                tableName -> metaDataLoader.load(schemaContext.getSchema().getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
+            refreshStrategy.get().refreshMetaData(schemaContext.getSchema().getMetaData(), schemaContexts.getDatabaseType(), dataSourceMap, sqlStatementContext,
+                tableName -> metaDataLoader.load(schemaContexts.getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
             MetaDataCallback.getInstance().run(DefaultSchema.LOGIC_NAME, schemaContext.getSchema().getMetaData().getSchema());
         }
     }

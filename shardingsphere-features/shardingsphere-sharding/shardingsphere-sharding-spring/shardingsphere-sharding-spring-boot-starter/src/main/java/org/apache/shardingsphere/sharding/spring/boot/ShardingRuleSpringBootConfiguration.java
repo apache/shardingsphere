@@ -17,67 +17,62 @@
 
 package org.apache.shardingsphere.sharding.spring.boot;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.spring.boot.algorithm.ShardingAlgorithmProvidedBeanRegistry;
 import org.apache.shardingsphere.sharding.spring.boot.condition.ShardingSpringBootCondition;
+import org.apache.shardingsphere.sharding.spring.boot.rule.YamlShardingRuleSpringBootConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleAlgorithmProviderConfigurationYamlSwapper;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * Sharding rule configuration for spring boot.
  */
 @Configuration
+@EnableConfigurationProperties(YamlShardingRuleSpringBootConfiguration.class)
 @ConditionalOnClass(YamlShardingRuleConfiguration.class)
 @Conditional(ShardingSpringBootCondition.class)
+@RequiredArgsConstructor
 public class ShardingRuleSpringBootConfiguration {
     
     private final ShardingRuleAlgorithmProviderConfigurationYamlSwapper swapper = new ShardingRuleAlgorithmProviderConfigurationYamlSwapper();
     
-    /**
-     * Sharding YAML rule spring boot configuration.
-     *
-     * @return YAML rule configuration
-     */
-    @Bean
-    @ConfigurationProperties(prefix = "spring.shardingsphere.rules.sharding")
-    public YamlShardingRuleConfiguration shardingConfig() {
-        return new YamlShardingRuleConfiguration();
-    }
+    private final YamlShardingRuleSpringBootConfiguration yamlConfig;
     
     /**
-     * Sharding rule configuration.
+     * Create sharding rule configuration bean.
      *
-     * @param yamlShardingRuleConfiguration YAML sharding rule configuration
      * @param shardingAlgorithmProvider sharding algorithm provider
      * @param keyGenerateAlgorithmProvider key generate algorithm provider
-     * @return the rule configuration
+     * @return sharding rule configuration
      */
     @Bean
-    public RuleConfiguration shardingRuleConfiguration(final YamlShardingRuleConfiguration yamlShardingRuleConfiguration,
-                                                       final ObjectProvider<Map<String, ShardingAlgorithm>> shardingAlgorithmProvider,
+    public RuleConfiguration shardingRuleConfiguration(final ObjectProvider<Map<String, ShardingAlgorithm>> shardingAlgorithmProvider, 
                                                        final ObjectProvider<Map<String, KeyGenerateAlgorithm>> keyGenerateAlgorithmProvider) {
         Map<String, ShardingAlgorithm> shardingAlgorithmMap = Optional.ofNullable(shardingAlgorithmProvider.getIfAvailable()).orElse(Collections.emptyMap());
         Map<String, KeyGenerateAlgorithm> keyGenerateAlgorithmMap = Optional.ofNullable(keyGenerateAlgorithmProvider.getIfAvailable()).orElse(Collections.emptyMap());
-        AlgorithmProvidedShardingRuleConfiguration ruleConfiguration = swapper.swapToObject(yamlShardingRuleConfiguration);
-        ruleConfiguration.setShardingAlgorithms(shardingAlgorithmMap);
-        ruleConfiguration.setKeyGenerators(keyGenerateAlgorithmMap);
-        return ruleConfiguration;
+        AlgorithmProvidedShardingRuleConfiguration result = swapper.swapToObject(yamlConfig.getSharding());
+        result.setShardingAlgorithms(shardingAlgorithmMap);
+        result.setKeyGenerators(keyGenerateAlgorithmMap);
+        return result;
     }
     
     /**
-     * Sharding algorithm provided bean registry.
+     * Create sharding algorithm provided bean registry.
      *
      * @param environment environment
      * @return sharding algorithm provided bean registry

@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.core.facade.util;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
@@ -25,7 +26,7 @@ import java.lang.reflect.Field;
 /**
  * Field Utility.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FieldUtil {
     
     /**

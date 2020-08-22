@@ -39,5 +39,4 @@ public interface ShadowDataSourceRouter {
                 || (value instanceof Integer && 1 == (Integer) value)
                 || (value instanceof String && Boolean.parseBoolean((String) value));
     }
-    
 }

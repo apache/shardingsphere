@@ -28,12 +28,12 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLAuthSwitchResponsePacketTest {
+public final class MySQLAuthSwitchResponsePacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
-    private final byte[] authPluginResponse = new byte[]{0x22, 0x33};
+    private final byte[] authPluginResponse = {0x22, 0x33};
     
     @Test
     public void assertMySQLAuthSwitchResponsePacket() {

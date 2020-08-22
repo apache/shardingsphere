@@ -19,70 +19,71 @@ grammar RDLStatement;
 
 import Keyword, Literals, Symbol;
 
-createDatasource
-    : CREATE DATASOURCE datasource (COMMA datasource)*
+createDataSources
+    : CREATE DATASOURCES LP dataSource (COMMA dataSource)* RP
     ;
 
-createShardingrule
-    : CREATE SHARDINGRULE shardingrule (COMMA shardingrule)*
+createShardingRules
+    : CREATE SHARDINGRULES LP tableRule (COMMA tableRule)* RP
     ;
 
-shardingrule
-    : key EQ shardingruleValue
+tableRule
+    : tableName EQ tableRuleDefinition
     ;
 
-datasource
-    : key EQ datasourceValue
+dataSource
+    : dataSourceName EQ dataSourceDefinition
     ;
-    
-key
-    : IDENTIFIER
-    ;
-    
-datasourceValue
-    : hostName COLON port COLON dbName COLON user COLON password
+       
+dataSourceDefinition
+    : hostName COLON port COLON dbName (COLON user (COLON password)?)?
     ;
 
-shardingruleValue
-    : strategyType LP strategyValue RP
+tableRuleDefinition
+    : strategyType LP strategyDefinition RP
     ;
 
 strategyType
     : IDENTIFIER
     ;
 
-strategyValue
-    : tableName COMMA columName COMMA strategyProps+
+strategyDefinition
+    : columName COMMA strategyProps
     ;
 
 strategyProps
     : strategyProp (COMMA strategyProp)*
     ;
+    
 strategyProp
     : IDENTIFIER | NUMBER | INT
     ;
 
+dataSourceName
+    : IDENTIFIER
+    ;
+
 tableName
-    : IDENTIFIER UL* IDENTIFIER*
+    : IDENTIFIER
     ;
 
 columName
-    : IDENTIFIER UL* IDENTIFIER*
+    : IDENTIFIER
     ;
 
 hostName
-    : ip | IDENTIFIER
+    : IDENTIFIER | ip
     ;
 
 ip
-    : NUMBER+ INT
+    : NUMBER+
     ;
 port
     : INT
     ;
     
 dbName
-    : IDENTIFIER | NUMBER
+    : IDENTIFIER
     ;
 
 user
@@ -90,5 +91,5 @@ user
     ;
 
 password
-    : IDENTIFIER | NUMBER
+    : IDENTIFIER | NUMBER | STRING
     ;

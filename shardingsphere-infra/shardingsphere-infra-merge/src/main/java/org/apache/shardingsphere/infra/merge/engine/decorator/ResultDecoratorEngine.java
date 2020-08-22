@@ -41,5 +41,5 @@ public interface ResultDecoratorEngine<T extends ShardingSphereRule> extends Res
      * @param sqlStatementContext SQL statement context
      * @return new instance of result decorator
      */
-    ResultDecorator newInstance(DatabaseType databaseType, SchemaMetaData schemaMetaData, T rule, ConfigurationProperties props, SQLStatementContext sqlStatementContext);
+    ResultDecorator newInstance(DatabaseType databaseType, SchemaMetaData schemaMetaData, T rule, ConfigurationProperties props, SQLStatementContext<?> sqlStatementContext);
 }

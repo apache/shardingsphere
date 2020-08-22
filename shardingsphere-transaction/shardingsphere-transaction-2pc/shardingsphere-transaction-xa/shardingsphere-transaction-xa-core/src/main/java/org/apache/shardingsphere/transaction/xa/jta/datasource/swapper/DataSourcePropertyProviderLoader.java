@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl.DefaultDataSourcePropertyProvider;
 
 import javax.sql.DataSource;
@@ -27,6 +29,7 @@ import java.util.ServiceLoader;
 /**
  * Data source property provider loader.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePropertyProviderLoader {
     
     private static final Map<String, DataSourcePropertyProvider> DATA_SOURCE_PROPERTY_PROVIDERS = new HashMap<>();

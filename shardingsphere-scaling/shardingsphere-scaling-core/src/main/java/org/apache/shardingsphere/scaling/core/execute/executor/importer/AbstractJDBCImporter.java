@@ -19,7 +19,8 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
+import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -43,9 +45,9 @@ import java.util.List;
  * Abstract JDBC importer implementation.
  */
 @Slf4j
-public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecutor implements Importer {
+public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecutor<IncrementalPosition> implements Importer {
     
-    private final RdbmsConfiguration rdbmsConfiguration;
+    private final ImporterConfiguration importerConfiguration;
     
     private final DataSourceManager dataSourceManager;
     
@@ -54,8 +56,8 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     @Setter
     private Channel channel;
     
-    public AbstractJDBCImporter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
-        this.rdbmsConfiguration = rdbmsConfiguration;
+    protected AbstractJDBCImporter(final ImporterConfiguration importerConfiguration, final DataSourceManager dataSourceManager) {
+        this.importerConfiguration = importerConfiguration;
         this.dataSourceManager = dataSourceManager;
         sqlBuilder = createSqlBuilder();
     }
@@ -77,8 +79,8 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     public final void write() {
         while (isRunning()) {
             List<Record> records = channel.fetchRecords(100, 3);
-            if (null != records && records.size() > 0) {
-                flush(dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()), records);
+            if (null != records && !records.isEmpty()) {
+                flush(dataSourceManager.getDataSource(importerConfiguration.getDataSourceConfiguration()), records);
                 if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
                     channel.ack();
                     break;
@@ -96,11 +98,11 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     }
     
     private boolean tryFlush(final DataSource dataSource, final List<Record> buffer) {
-        int retryTimes = rdbmsConfiguration.getRetryTimes();
+        int retryTimes = importerConfiguration.getRetryTimes();
         List<Record> unflushed = buffer;
         do {
             unflushed = doFlush(dataSource, unflushed);
-        } while (isRunning() && unflushed.size() > 0 && retryTimes-- > 0);
+        } while (isRunning() && !unflushed.isEmpty() && retryTimes-- > 0);
         return unflushed.isEmpty();
     }
     
@@ -110,7 +112,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
             for (; i < buffer.size(); i++) {
                 execute(connection, buffer.get(i));
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             log.error("flush failed: {}", buffer.get(i), ex);
             return buffer.subList(i, buffer.size());
         }
@@ -121,14 +123,13 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
         if (DataRecord.class.equals(record.getClass())) {
             DataRecord dataRecord = (DataRecord) record;
             switch (dataRecord.getType()) {
-                case "BOOTSTRAP-INSERT":
-                case "INSERT":
+                case ScalingConstant.INSERT:
                     executeInsert(connection, dataRecord);
                     break;
-                case "UPDATE":
+                case ScalingConstant.UPDATE:
                     executeUpdate(connection, dataRecord);
                     break;
-                case "DELETE":
+                case ScalingConstant.DELETE:
                     executeDelete(connection, dataRecord);
                     break;
                 default:
@@ -146,12 +147,12 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
                 ps.setObject(i + 1, record.getColumn(i).getValue());
             }
             ps.execute();
-        } catch (SQLIntegrityConstraintViolationException ignored) {
+        } catch (final SQLIntegrityConstraintViolationException ignored) {
         }
     }
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
-        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, rdbmsConfiguration.getShardingColumnsMap().get(record.getTableName()));
+        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfiguration.getShardingColumnsMap().get(record.getTableName()));
         List<Column> values = new ArrayList<>();
         values.addAll(RecordUtil.extractUpdatedColumns(record));
         values.addAll(conditionColumns);
@@ -164,7 +165,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     }
     
     private void executeDelete(final Connection connection, final DataRecord record) throws SQLException {
-        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, rdbmsConfiguration.getShardingColumnsMap().get(record.getTableName()));
+        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfiguration.getShardingColumnsMap().get(record.getTableName()));
         String deleteSql = sqlBuilder.buildDeleteSQL(record, conditionColumns);
         PreparedStatement ps = connection.prepareStatement(deleteSql);
         for (int i = 0; i < conditionColumns.size(); i++) {

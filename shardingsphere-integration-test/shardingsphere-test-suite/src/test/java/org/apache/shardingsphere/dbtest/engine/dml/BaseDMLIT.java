@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbtest.engine.dml;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;
@@ -51,12 +52,13 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+@Slf4j
 public abstract class BaseDMLIT extends SingleIT {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public BaseDMLIT(final String path, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
-                     final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+    protected BaseDMLIT(final String path, final DMLIntegrateTestCaseAssertion assertion, final String ruleType, 
+                        final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(path, assertion, ruleType, databaseType, caseType, sql);
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getRuleType()), getDataSourceMap());
     }
@@ -98,7 +100,7 @@ public abstract class BaseDMLIT extends SingleIT {
                 }
             }
         } catch (final AssertionError ex) {
-            System.out.println(String.format("[ERROR] SQL::%s, Parameter::[%s], Expect::%s", getOriginalSQL(), getAssertion().getParameters(), getAssertion().getExpectedDataFile()));
+            log.error("[ERROR] SQL::{}, Parameter::{}, Expect::{}", getOriginalSQL(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
             throw ex;
         }
     }

@@ -26,7 +26,7 @@ package org.apache.shardingsphere.example.transaction.base.seata.raw.jdbc;
  - config.ype = "file"
  - service.vgroup_mapping.my_test_tx_group = "default"
  */
-public class ExampleMain {
+public final class ExampleMain {
     
     public static void main(final String[] args) throws Exception {
         SeataATOrderService orderService = new SeataATOrderService("/META-INF/sharding-databases-tables.yaml");

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.metrics.configuration.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Properties;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public final class MetricsConfiguration implements ControlPanelConfiguration {
     
     public static final int DEFAULT_PORT = 9190;
