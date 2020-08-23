@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.junit.Test;
 
-public final class DatabaseFrontendEngineFactoryTest {
+public final class DatabaseProtocolFrontendEngineFactoryTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWhenUnsupported() {
