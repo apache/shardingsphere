@@ -45,8 +45,8 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -54,31 +54,29 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class MySQLAuthenticationEngineTest {
-
+    
     private final MySQLAuthenticationHandler authenticationHandler = mock(MySQLAuthenticationHandler.class);
-
+    
     private final MySQLAuthenticationEngine authenticationEngine = new MySQLAuthenticationEngine();
-
+    
     private final byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-
+    
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         initAuthenticationHandlerForAuthenticationEngine();
     }
-
+    
     private void initAuthenticationHandlerForAuthenticationEngine() throws NoSuchFieldException, IllegalAccessException {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("authenticationHandler");
         field.setAccessible(true);
         field.set(authenticationEngine, authenticationHandler);
     }
-
+    
     @Test
     public void assertHandshake() {
         ChannelHandlerContext context = getContext();
-        BackendConnection backendConnection = mock(BackendConnection.class);
-        authenticationEngine.handshake(context, backendConnection);
+        assertTrue(authenticationEngine.handshake(context) > 0);
         verify(context).writeAndFlush(any(MySQLHandshakePacket.class));
-        verify(backendConnection).setConnectionId(anyInt());
     }
     
     @Test
@@ -100,7 +98,7 @@ public final class MySQLAuthenticationEngineTest {
         authenticationEngine.auth(channelHandlerContext, payload, mock(BackendConnection.class));
         assertThat(getAuthResponse(), is(authResponse));
     }
-
+    
     @Test
     public void assertAuthWithLoginFail() throws NoSuchFieldException, IllegalAccessException {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
@@ -110,7 +108,7 @@ public final class MySQLAuthenticationEngineTest {
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
     }
-
+    
     @Test
     public void assertAuthWithAbsentDatabase() throws NoSuchFieldException, IllegalAccessException {
         ChannelHandlerContext context = getContext();
@@ -119,7 +117,7 @@ public final class MySQLAuthenticationEngineTest {
         authenticationEngine.auth(context, getPayload("root", "ABSENT DATABASE", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
     }
-
+    
     @Test
     public void assertAuth() throws NoSuchFieldException, IllegalAccessException {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
@@ -145,19 +143,19 @@ public final class MySQLAuthenticationEngineTest {
         when(result.readStringNulByBytes()).thenReturn(authResponse);
         return result;
     }
-
+    
     private ChannelHandlerContext getContext() {
         ChannelHandlerContext result = mock(ChannelHandlerContext.class);
         doReturn(getChannel()).when(result).channel();
         return result;
     }
-
+    
     private Channel getChannel() {
         Channel result = mock(Channel.class);
         doReturn(getRemoteAddress()).when(result).remoteAddress();
         return result;
     }
-
+    
     private SocketAddress getRemoteAddress() {
         SocketAddress result = mock(SocketAddress.class);
         when(result.toString()).thenReturn("127.0.0.1");

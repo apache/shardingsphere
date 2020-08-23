@@ -30,9 +30,9 @@ public interface AuthenticationEngine {
      * Handshake.
      *
      * @param context channel handler context
-     * @param backendConnection backend connection
+     * @return connection ID
      */
-    void handshake(ChannelHandlerContext context, BackendConnection backendConnection);
+    int handshake(ChannelHandlerContext context);
     
     /**
      * Authentication.
