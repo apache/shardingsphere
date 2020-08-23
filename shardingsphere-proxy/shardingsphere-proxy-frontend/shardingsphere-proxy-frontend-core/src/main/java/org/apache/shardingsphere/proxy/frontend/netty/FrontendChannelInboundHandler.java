@@ -58,6 +58,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     public void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
         databaseProtocolFrontendEngine.getAuthEngine().handshake(context, backendConnection);
+        // TODO should be SPI for metrics build
         SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.gaugeIncrement(MetricsLabelEnum.CHANNEL_COUNT.getName()));
     }
     
