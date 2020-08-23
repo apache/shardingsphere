@@ -99,22 +99,24 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
     }
     
     private void handleEvent(final JdbcUri uri, final AbstractBinlogEvent event) {
-        if (event instanceof WriteRowsEvent) {
-            handleWriteRowsEvent(uri, (WriteRowsEvent) event);
-        } else if (event instanceof UpdateRowsEvent) {
-            handleUpdateRowsEvent(uri, (UpdateRowsEvent) event);
-        } else if (event instanceof DeleteRowsEvent) {
-            handleDeleteRowsEvent(uri, (DeleteRowsEvent) event);
-        } else if (event instanceof PlaceholderEvent) {
-            createPlaceholderRecord(event);
-        }
-    }
-    
-    private void handleWriteRowsEvent(final JdbcUri uri, final WriteRowsEvent event) {
-        if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
+        if (event instanceof PlaceholderEvent || filter(uri.getDatabase(), (AbstractRowsEvent) event)) {
             createPlaceholderRecord(event);
             return;
         }
+        if (event instanceof WriteRowsEvent) {
+            handleWriteRowsEvent((WriteRowsEvent) event);
+        } else if (event instanceof UpdateRowsEvent) {
+            handleUpdateRowsEvent((UpdateRowsEvent) event);
+        } else if (event instanceof DeleteRowsEvent) {
+            handleDeleteRowsEvent((DeleteRowsEvent) event);
+        }
+    }
+    
+    private boolean filter(final String database, final AbstractRowsEvent event) {
+        return !event.getSchemaName().equals(database) || !dumperConfiguration.getTableNameMap().containsKey(event.getTableName());
+    }
+    
+    private void handleWriteRowsEvent(final WriteRowsEvent event) {
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getAfterRows()) {
             DataRecord record = createDataRecord(event, each.length);
@@ -126,11 +128,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
         }
     }
     
-    private void handleUpdateRowsEvent(final JdbcUri uri, final UpdateRowsEvent event) {
-        if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
-            createPlaceholderRecord(event);
-            return;
-        }
+    private void handleUpdateRowsEvent(final UpdateRowsEvent event) {
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (int i = 0; i < event.getBeforeRows().size(); i++) {
             Serializable[] beforeValues = event.getBeforeRows().get(i);
@@ -146,11 +144,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
         }
     }
     
-    private void handleDeleteRowsEvent(final JdbcUri uri, final DeleteRowsEvent event) {
-        if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
-            createPlaceholderRecord(event);
-            return;
-        }
+    private void handleDeleteRowsEvent(final DeleteRowsEvent event) {
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getBeforeRows()) {
             DataRecord record = createDataRecord(event, each.length);
@@ -180,9 +174,5 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
             channel.pushRecord(record);
         } catch (final InterruptedException ignored) {
         }
-    }
-    
-    private boolean filter(final String database, final String schemaName, final String tableName) {
-        return !schemaName.equals(database) || !dumperConfiguration.getTableNameMap().containsKey(tableName);
     }
 }

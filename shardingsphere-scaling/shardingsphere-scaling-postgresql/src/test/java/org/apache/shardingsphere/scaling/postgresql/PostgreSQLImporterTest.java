@@ -42,8 +42,8 @@ public final class PostgreSQLImporterTest {
     
     @Test
     public void assertCreateSqlBuilder() {
-        PostgreSQLImporter mySQLImporter = new PostgreSQLImporter(importerConfiguration, dataSourceManager);
-        String insertSQL = mySQLImporter.createSqlBuilder().buildInsertSQL(mockDataRecord());
+        PostgreSQLImporter postgreSQLImporter = new PostgreSQLImporter(importerConfiguration, dataSourceManager);
+        String insertSQL = postgreSQLImporter.createSqlBuilder().buildInsertSQL(mockDataRecord());
         assertThat(insertSQL, is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
     }
     
