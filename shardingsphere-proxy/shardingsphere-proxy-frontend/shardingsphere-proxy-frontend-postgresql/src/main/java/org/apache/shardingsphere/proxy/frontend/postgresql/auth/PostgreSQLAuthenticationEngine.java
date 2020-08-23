@@ -57,10 +57,10 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     private volatile byte[] md5Salt;
     
     @Override
-    public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
-        int connectionId = ConnectionIdGenerator.getInstance().nextId();
-        backendConnection.setConnectionId(connectionId);
-        BinaryStatementRegistry.getInstance().register(connectionId);
+    public int handshake(final ChannelHandlerContext context) {
+        int result = ConnectionIdGenerator.getInstance().nextId();
+        BinaryStatementRegistry.getInstance().register(result);
+        return result;
     }
     
     @Override

@@ -58,7 +58,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     @Override
     public void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
-        databaseProtocolFrontendEngine.getAuthEngine().handshake(context, backendConnection);
+        backendConnection.setConnectionId(databaseProtocolFrontendEngine.getAuthEngine().handshake(context));
         // TODO ref #7013
         SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.gaugeIncrement(MetricsLabelEnum.CHANNEL_COUNT.getName()));
     }
