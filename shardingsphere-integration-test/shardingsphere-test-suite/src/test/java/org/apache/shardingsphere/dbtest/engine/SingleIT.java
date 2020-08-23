@@ -66,4 +66,8 @@ public abstract class SingleIT extends BaseIT {
         return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
             .replace("%%", "%").replace("'%'", "'%%'");
     }
+    
+    protected void printExceptionContext(final Exception ex) {
+        System.err.println(String.format("ruleType=%s, databaseType=%s, expectedDataFile=%s, sql=%s, ex.msg=%s", getRuleType(), getDatabaseType().getName(), expectedDataFile, sql, ex.getMessage()));
+    }
 }
