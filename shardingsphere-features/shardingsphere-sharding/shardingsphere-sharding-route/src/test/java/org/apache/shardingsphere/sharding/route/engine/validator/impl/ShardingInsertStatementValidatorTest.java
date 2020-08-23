@@ -57,21 +57,21 @@ public final class ShardingInsertStatementValidatorTest {
     public void assertValidateInsertModifyMultiTables() {
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(createMultiTablesContext().getTables());
-        new ShardingInsertStatementValidator().validate(shardingRule, sqlStatementContext, Collections.emptyList());
+        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList());
     }
 
     @Test
     public void assertValidateOnDuplicateKeyWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement());
-        new ShardingInsertStatementValidator().validate(shardingRule, sqlStatementContext, Collections.emptyList());
+        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList());
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateOnDuplicateKeyWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement());
-        new ShardingInsertStatementValidator().validate(shardingRule, sqlStatementContext, Collections.emptyList());
+        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList());
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -80,7 +80,7 @@ public final class ShardingInsertStatementValidatorTest {
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(false);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(createSingleTablesContext().getTables());
-        new ShardingInsertStatementValidator().validate(shardingRule, sqlStatementContext, Collections.emptyList());
+        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList());
     }
     
     @Test
@@ -89,7 +89,7 @@ public final class ShardingInsertStatementValidatorTest {
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(true);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(createSingleTablesContext().getTables());
-        new ShardingInsertStatementValidator().validate(shardingRule, sqlStatementContext, Collections.emptyList());
+        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList());
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -100,7 +100,7 @@ public final class ShardingInsertStatementValidatorTest {
         when(shardingRule.isAllBindingTables(multiTablesContext.getTableNames())).thenReturn(false);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(multiTablesContext.getTables());
-        new ShardingInsertStatementValidator().validate(shardingRule, sqlStatementContext, Collections.emptyList());
+        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList());
     }
     
     @Test
@@ -111,7 +111,7 @@ public final class ShardingInsertStatementValidatorTest {
         when(shardingRule.isAllBindingTables(multiTablesContext.getTableNames())).thenReturn(true);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(multiTablesContext.getTables());
-        new ShardingInsertStatementValidator().validate(shardingRule, sqlStatementContext, Collections.emptyList());
+        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList());
     }
     
     private InsertStatement createInsertStatement() {

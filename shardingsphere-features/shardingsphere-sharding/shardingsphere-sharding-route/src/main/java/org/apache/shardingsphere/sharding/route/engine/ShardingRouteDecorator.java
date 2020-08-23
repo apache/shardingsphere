@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -32,6 +31,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.engine.InsertCl
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
+import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidatorFactory;
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -45,8 +45,6 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatement
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 
 import java.util.Collections;
 import java.util.List;
@@ -63,8 +61,8 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
         List<Object> parameters = routeContext.getParameters();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        ShardingStatementValidatorFactory.newInstance(
-                sqlStatement).ifPresent(validator -> validator.validate(shardingRule, sqlStatementContext, parameters));
+        Optional<ShardingStatementValidator> shardingStatementValidator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
+        shardingStatementValidator.ifPresent(validator -> validator.preValidate(shardingRule, sqlStatementContext, parameters));
         ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, metaData.getSchema().getConfiguredSchemaMetaData(), shardingRule);
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext, shardingRule);
         if (sqlStatement instanceof DMLStatement && needMergeShardingValues) {
@@ -73,16 +71,8 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         }
         ShardingRouteEngine shardingRouteEngine = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         RouteResult routeResult = shardingRouteEngine.route(shardingRule);
-        if (containsUpdateDeletePagination(sqlStatement) && routeResult.getRouteUnits().size() > 1) {
-            throw new ShardingSphereException("UPDATE ... LIMIT and DELETE ... LIMIT can not support sharding route to multiple data nodes.");
-        }
+        shardingStatementValidator.ifPresent(validator -> validator.postValidate(sqlStatement, routeResult));
         return new RouteContext(sqlStatementContext, parameters, routeResult);
-    }
-
-    private boolean containsUpdateDeletePagination(final SQLStatement sqlStatement) {
-        boolean containsUpdatePagination = sqlStatement instanceof UpdateStatement && ((UpdateStatement) sqlStatement).getLimit().isPresent();
-        boolean containsDeletePagination = sqlStatement instanceof DeleteStatement && ((DeleteStatement) sqlStatement).getLimit().isPresent();
-        return containsUpdatePagination || containsDeletePagination;
     }
 
     private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext,
