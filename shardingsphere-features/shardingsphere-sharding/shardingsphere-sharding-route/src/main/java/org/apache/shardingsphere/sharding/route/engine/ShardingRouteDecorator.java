@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.engine.InsertCl
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
+import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidatorFactory;
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -60,8 +61,8 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
         List<Object> parameters = routeContext.getParameters();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        ShardingStatementValidatorFactory.newInstance(
-                sqlStatement).ifPresent(validator -> validator.validate(shardingRule, sqlStatementContext, parameters));
+        Optional<ShardingStatementValidator> shardingStatementValidator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
+        shardingStatementValidator.ifPresent(validator -> validator.preValidate(shardingRule, sqlStatementContext, parameters));
         ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, metaData.getSchema().getConfiguredSchemaMetaData(), shardingRule);
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext, shardingRule);
         if (sqlStatement instanceof DMLStatement && needMergeShardingValues) {
@@ -70,9 +71,10 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         }
         ShardingRouteEngine shardingRouteEngine = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         RouteResult routeResult = shardingRouteEngine.route(shardingRule);
+        shardingStatementValidator.ifPresent(validator -> validator.postValidate(sqlStatement, routeResult));
         return new RouteContext(sqlStatementContext, parameters, routeResult);
     }
-    
+
     private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext,
                                                      final SchemaMetaData schemaMetaData, final ShardingRule shardingRule) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {

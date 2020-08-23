@@ -126,4 +126,42 @@
             </and-predicate>
         </where>
     </delete>
+
+    <delete sql-case-id="delete_with_order_by_row_count" parameters="1000, 1001, 'init', 10">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <where start-index="20" stop-index="66" literal-stop-index="77">
+            <and-predicate>
+                <predicate start-index="26" stop-index="37" literal-stop-index="40">
+                    <column-left-value name="order_id" start-index="26" stop-index="33" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="37" stop-index="37" />
+                        <literal-expression value="1000" start-index="37" stop-index="40" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="43" stop-index="53" literal-start-index="46" literal-stop-index="59">
+                    <column-left-value name="user_id" start-index="43" stop-index="49" literal-start-index="46" literal-stop-index="52" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="53" stop-index="53" />
+                        <literal-expression value="1001" start-index="56" stop-index="59" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="59" stop-index="66" literal-start-index="65" literal-stop-index="77">
+                    <column-left-value name="status" start-index="59" stop-index="64" literal-start-index="65" literal-stop-index="70" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="66" stop-index="66" />
+                        <literal-expression value="init" start-index="72" stop-index="77" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="order_id" start-index="77" stop-index="84" literal-start-index="88" literal-stop-index="95" />
+        </order-by>
+        <limit start-index="86" stop-index="92" literal-start-index="97" literal-stop-index="104">
+            <row-count value="10" parameter-index="3" start-index="92" stop-index="92" literal-start-index="103" literal-stop-index="104" />
+        </limit>
+    </delete>
 </sql-parser-test-cases>

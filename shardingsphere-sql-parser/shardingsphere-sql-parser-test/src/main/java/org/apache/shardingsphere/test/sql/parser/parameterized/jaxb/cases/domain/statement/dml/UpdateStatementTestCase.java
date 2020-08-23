@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.limit.ExpectedLimitClause;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.orderby.ExpectedOrderByClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.predicate.ExpectedWhereClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
@@ -43,4 +45,10 @@ public final class UpdateStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "where")
     private ExpectedWhereClause whereClause;
+
+    @XmlElement(name = "order-by")
+    private ExpectedOrderByClause orderByClause;
+
+    @XmlElement(name = "limit")
+    private ExpectedLimitClause limitClause;
 }

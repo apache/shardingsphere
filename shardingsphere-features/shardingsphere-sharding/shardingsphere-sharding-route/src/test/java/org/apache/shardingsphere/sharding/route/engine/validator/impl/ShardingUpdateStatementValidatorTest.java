@@ -57,26 +57,26 @@ public final class ShardingUpdateStatementValidatorTest {
     public void assertValidateUpdateModifyMultiTables() {
         SQLStatementContext<UpdateStatement> sqlStatementContext = new UpdateStatementContext(createUpdateStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(createMultiTablesContext().getTables());
-        new ShardingUpdateStatementValidator().validate(shardingRule, sqlStatementContext, Collections.emptyList());
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList());
     }
 
     @Test
     public void assertValidateUpdateWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        new ShardingUpdateStatementValidator().validate(shardingRule, new UpdateStatementContext(createUpdateStatement()), Collections.emptyList());
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), Collections.emptyList());
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        new ShardingUpdateStatementValidator().validate(shardingRule, new UpdateStatementContext(createUpdateStatement()), Collections.emptyList());
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), Collections.emptyList());
     }
     
     @Test
     public void assertValidateUpdateWithoutShardingKeyAndParameters() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().validate(shardingRule, new UpdateStatementContext(createUpdateStatement()), parameters);
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), parameters);
     }
     
     @Test
@@ -84,7 +84,7 @@ public final class ShardingUpdateStatementValidatorTest {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
         SQLStatementContext<UpdateStatement> updateStatementContext = new UpdateStatementContext(createUpdateStatementAndParameters(1));
-        new ShardingUpdateStatementValidator().validate(shardingRule, updateStatementContext, parameters);
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, updateStatementContext, parameters);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -92,7 +92,7 @@ public final class ShardingUpdateStatementValidatorTest {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
         SQLStatementContext<UpdateStatement> updateStatementContext = new UpdateStatementContext(createUpdateStatementAndParameters(2));
-        new ShardingUpdateStatementValidator().validate(shardingRule, updateStatementContext, parameters);
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, updateStatementContext, parameters);
     }
     
     private UpdateStatement createUpdateStatement() {
