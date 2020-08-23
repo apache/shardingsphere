@@ -66,7 +66,7 @@ public final class PostgreSQLPositionManager extends BasePositionManager<WalPosi
             createIfNotExists(connection);
             setPosition(getWalPosition(connection));
         } catch (final SQLException ex) {
-            throw new RuntimeException("markPosition error", ex);
+            throw new RuntimeException("init position failed.", ex);
         }
     }
     
