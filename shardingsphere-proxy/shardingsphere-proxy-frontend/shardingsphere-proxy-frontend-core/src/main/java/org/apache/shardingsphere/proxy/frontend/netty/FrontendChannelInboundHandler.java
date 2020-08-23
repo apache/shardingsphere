@@ -34,6 +34,7 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Frontend channel inbound handler.
@@ -58,7 +59,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     public void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
         databaseProtocolFrontendEngine.getAuthEngine().handshake(context, backendConnection);
-        // TODO should be SPI for metrics build
+        // TODO ref #7013
         SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.gaugeIncrement(MetricsLabelEnum.CHANNEL_COUNT.getName()));
     }
     
@@ -69,8 +70,9 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             return;
         }
         SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.REQUEST_TOTAL.getName()));
-        CommandExecutorSelector.getExecutor(databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection(), backendConnection.isSupportHint(),
-                backendConnection.getTransactionType(), context.channel().id()).execute(new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message));
+        ExecutorService executorService = CommandExecutorSelector.getExecutor(databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection(), 
+                backendConnection.isSupportHint(), backendConnection.getTransactionType(), context.channel().id());
+        executorService.execute(new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message));
     }
     
     private boolean auth(final ChannelHandlerContext context, final ByteBuf message) {
@@ -79,6 +81,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
+            // TODO ref #7014
             log.error("Exception occur: ", ex);
             context.write(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
         }
@@ -92,6 +95,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         backendConnection.close(true);
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
         SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.gaugeDecrement(MetricsLabelEnum.CHANNEL_COUNT.getName()));
+        // TODO #7011
     }
     
     @Override
