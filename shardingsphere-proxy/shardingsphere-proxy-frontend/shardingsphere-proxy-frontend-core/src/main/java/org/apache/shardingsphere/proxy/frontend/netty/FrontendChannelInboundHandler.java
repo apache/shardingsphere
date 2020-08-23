@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.frontend.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.control.panel.spi.engine.SingletonFacadeEngine;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
@@ -39,17 +38,21 @@ import java.sql.SQLException;
 /**
  * Frontend channel inbound handler.
  */
-@RequiredArgsConstructor
 @Slf4j
 public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAdapter {
     
     private final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine;
     
+    private final BackendConnection backendConnection;
+    
     private volatile boolean authorized;
     
-    private final BackendConnection backendConnection = new BackendConnection(
-            TransactionType.valueOf(ProxySchemaContexts.getInstance().getSchemaContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE)),
-            ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
+    public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine) {
+        this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
+        TransactionType transactionType = TransactionType.valueOf(ProxySchemaContexts.getInstance().getSchemaContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE));
+        boolean supportHint = ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED);
+        backendConnection = new BackendConnection(transactionType, supportHint);
+    }
     
     @Override
     public void channelActive(final ChannelHandlerContext context) {
