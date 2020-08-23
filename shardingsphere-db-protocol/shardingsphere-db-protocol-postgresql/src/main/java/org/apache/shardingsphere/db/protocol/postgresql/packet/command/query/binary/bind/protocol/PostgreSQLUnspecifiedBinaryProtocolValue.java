@@ -27,10 +27,7 @@ public final class PostgreSQLUnspecifiedBinaryProtocolValue implements PostgreSQ
     
     @Override
     public int getColumnLength(final Object value) {
-        if (null == value) {
-            return 0;
-        }
-        return value instanceof byte[] ? ((byte[]) value).length : value.toString().length();
+        throw new UnsupportedOperationException();
     }
     
     @Override
@@ -44,10 +41,6 @@ public final class PostgreSQLUnspecifiedBinaryProtocolValue implements PostgreSQ
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        if (value instanceof byte[]) {
-            payload.writeBytes((byte[]) value);
-        } else {
-            payload.writeStringEOF(value.toString());
-        }
+        throw new UnsupportedOperationException();
     }
 }
