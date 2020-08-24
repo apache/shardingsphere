@@ -33,6 +33,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.io.IOException;
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -63,6 +66,10 @@ public final class OrchestrationBootstrapTest {
     }
     
     private void assertProxyConfiguration(final ProxyConfiguration actual) {
-        // TODO
+        assertThat(actual.getSchemaDataSources().size(), is(1));
+        assertTrue(actual.getSchemaDataSources().containsKey("db"));
+        assertTrue(actual.getSchemaDataSources().get("db").containsKey("db"));
+        assertThat(actual.getSchemaRules().size(), is(1));
+        assertTrue(actual.getSchemaRules().containsKey("db"));
     }
 }
