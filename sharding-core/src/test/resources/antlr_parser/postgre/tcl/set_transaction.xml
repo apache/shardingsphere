@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<parser-result-sets namespace="postgre.tcl.setTransaction">
-    <parser-result sql-case-id="set_transaction" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.SetTransactionStatement" />
-    <parser-result sql-case-id="set_transaction_read_only" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.SetTransactionStatement" />
-    <parser-result sql-case-id="set_transaction_snapshot" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.SetTransactionStatement" />
-    <parser-result sql-case-id="set_session_transaction" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.SetTransactionStatement" />
-</parser-result-sets>

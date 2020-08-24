@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<parser-result-sets namespace="mysql.tcl.rollback">
-    <parser-result sql-case-id="rollback" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.RollbackStatement" />
-    <parser-result sql-case-id="rollback_to_savepoint" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.RollbackStatement" />
-</parser-result-sets>

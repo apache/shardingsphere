@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <!--  
+    <sql-case id="assertSelectDistinctWithSingleTable" value="SELECT DISTINCT item_id FROM t_order_item ORDER BY item_id" />
+    <sql-case id="assertSelectIntoSQL" value="SELECT * INTO t_order_new FROM t_order" />
+    -->
+    <!--<sql-case id="assertSelectWindow" value="SELECT * FROM t_order WINDOW w AS (PARTITION BY order_id)" db-types="PostgreSQL" />-->
+    <!--<sql-case id="assertSelectFetch" value="SELECT * FROM t_order FETCH NEXT 1 ROW ONLY" db-types="PostgreSQL" />-->
+    <!--<sql-case id="assertSelectFor" value="SELECT * FROM t_order FOR UPDATE OF t_order" db-types="PostgreSQL" />-->
+    <!--<sql-case id="assertSelectRowNumberAndPartition" value="SELECT ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY order_id ASC) AS row_, user_id, order_id FROM t_order" db-types="SQLServer" />-->
+    <!--<sql-case id="assertSelectWithStartWith" value="SELECT * FROM t_order_item START WITH order_id = %s CONNECT BY NOCYCLE PRIOR item_id=item_id-1" db-types="Oracle" />-->
+    <!--<sql-case id="assertSelectWithModelIn" value="SELECT order_id_value,order_item_id_value FROM (select 1001 as order_id_value, 100001 as order_item_id_value from dual) MODEL RETURN UPDATED ROWS DIMENSION BY(order_item_id_value) MEASURES(order_id_value) RULES(order_id_value[1] = 10001)" db-types="Oracle" />-->
+    <!--<sql-case id="assertInsertWithAll" value="INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />-->
+    <!--<sql-case id="assertInsertWithFirst" value="INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />-->
+    <!--<sql-case id="assertDeleteMultipleTable" value="DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2" db-types="MySQL" />-->
+    <!--<sql-case id="assertDeleteMultipleTableWithUsing" value="DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2" db-types="MySQL" />-->
+</sql-cases>

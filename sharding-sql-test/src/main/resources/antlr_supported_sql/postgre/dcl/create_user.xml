@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="PostgreSQL" namespace="postgre.dcl.createUser">
-    <sql-case id="create_user" value="CREATE USER user1" />
-    <sql-case id="create_user_with_role" value="CREATE USER user1 WITH ROLE role1" />
-    <sql-case id="create_user_with_roles" value="CREATE USER user1 WITH ROLE role1, role2" />
-    <sql-case id="create_user_with_password" value="CREATE USER user1 WITH ENCRYPTED PASSWORD 'password'" />
-    <sql-case id="create_user_with_option" value="CREATE USER user1 WITH SUPERUSER" />
-    <sql-case id="create_user_with_options" value="CREATE USER user1 WITH CREATEDB CREATEROLE" />
-</sql-cases>

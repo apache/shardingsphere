@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <select sql-case-id="select_or_with_same_sharding_columns" parameters="1, 2">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="55">
+            <and-predicate>
+                <predicate start-index="28" stop-index="39">
+                    <column-left-value name="order_id" start-index="28" stop-index="35" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                        <literal-expression value="1" start-index="39" stop-index="39" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="44" stop-index="55">
+                    <column-left-value name="order_id" start-index="44" stop-index="51" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="55" stop-index="55" />
+                        <literal-expression value="2" start-index="55" stop-index="55" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_or_with_different_sharding_columns" parameters="1, 2">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="54">
+            <and-predicate>
+                <predicate start-index="28" stop-index="39">
+                    <column-left-value name="order_id" start-index="28" stop-index="35" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                        <literal-expression value="1" start-index="39" stop-index="39" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="44" stop-index="54">
+                    <column-left-value name="user_id" start-index="44" stop-index="50" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="54" stop-index="54" />
+                        <literal-expression value="2" start-index="54" stop-index="54" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_or_with_none_sharding_columns" parameters="1, 'init'">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="53" literal-stop-index="58">
+            <and-predicate>
+                <predicate start-index="28" stop-index="39">
+                    <column-left-value name="order_id" start-index="28" stop-index="35" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                        <literal-expression value="1" start-index="39" stop-index="39" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="44" stop-index="53" literal-stop-index="58">
+                    <column-left-value name="status" start-index="44" stop-index="49" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="53" stop-index="53" />
+                        <literal-expression value="init" start-index="53" stop-index="58" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_or_mix_and_for_simple_pattern" parameters="1, 'init', 3">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="71" literal-stop-index="76">
+            <and-predicate>
+                <predicate start-index="29" stop-index="40">
+                    <column-left-value name="order_id" start-index="29" stop-index="36" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="40" stop-index="40" />
+                        <literal-expression value="1" start-index="40" stop-index="40" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="61" stop-index="71" literal-start-index="66" literal-stop-index="76">
+                    <column-left-value name="user_id" start-index="61" stop-index="67" literal-start-index="66" literal-stop-index="72" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="71" stop-index="71" />
+                        <literal-expression value="3" start-index="76" stop-index="76" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="45" stop-index="54" literal-stop-index="59">
+                    <column-left-value name="status" start-index="45" stop-index="50" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="54" stop-index="54" />
+                        <literal-expression value="init" start-index="54" stop-index="59" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="61" stop-index="71" literal-start-index="66" literal-stop-index="76">
+                    <column-left-value name="user_id" start-index="61" stop-index="67" literal-start-index="66" literal-stop-index="72" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="71" stop-index="71" />
+                        <literal-expression value="3" start-index="76" stop-index="76" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_or_mix_and_for_complex_pattern" parameters="'init', 1, 2, 3, 4">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="113" literal-stop-index="118">
+            <and-predicate>
+                <predicate start-index="30" stop-index="39" literal-stop-index="44">
+                    <column-left-value name="status" start-index="30" stop-index="35" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                        <literal-expression value="init" start-index="39" stop-index="44" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="46" stop-index="57" literal-start-index="51" literal-stop-index="62">
+                    <column-left-value name="order_id" start-index="46" stop-index="53" literal-start-index="51" literal-stop-index="58" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="57" stop-index="57" />
+                        <literal-expression value="1" start-index="62" stop-index="62" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="83" stop-index="93" literal-start-index="88" literal-stop-index="98">
+                    <column-left-value name="user_id" start-index="83" stop-index="89" literal-start-index="88" literal-stop-index="94" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="3" start-index="93" stop-index="93" />
+                        <literal-expression value="3" start-index="98" stop-index="98" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="30" stop-index="39" literal-stop-index="44">
+                    <column-left-value name="status" start-index="30" stop-index="35" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                        <literal-expression value="init" start-index="39" stop-index="44" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="46" stop-index="57" literal-start-index="51" literal-stop-index="62">
+                    <column-left-value name="order_id" start-index="46" stop-index="53" literal-start-index="51" literal-stop-index="58" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="57" stop-index="57" />
+                        <literal-expression value="1" start-index="62" stop-index="62" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="99" stop-index="109" literal-start-index="104" literal-stop-index="114">
+                    <column-left-value name="user_id" start-index="99" stop-index="105" literal-start-index="104" literal-stop-index="110" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" start-index="109" stop-index="109" />
+                        <literal-expression value="4" start-index="114" stop-index="114" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="30" stop-index="39" literal-stop-index="44">
+                    <column-left-value name="status" start-index="30" stop-index="35" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                        <literal-expression value="init" start-index="39" stop-index="44" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="63" stop-index="74" literal-start-index="68" literal-stop-index="79">
+                    <column-left-value name="order_id" start-index="63" stop-index="70" literal-start-index="68" literal-stop-index="75" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="74" stop-index="74" />
+                        <literal-expression value="2" start-index="79" stop-index="79" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="83" stop-index="93" literal-start-index="88" literal-stop-index="98">
+                    <column-left-value name="user_id" start-index="83" stop-index="89" literal-start-index="88" literal-stop-index="94" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="3" start-index="93" stop-index="93" />
+                        <literal-expression value="3" start-index="98" stop-index="98" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="30" stop-index="39" literal-stop-index="44">
+                    <column-left-value name="status" start-index="30" stop-index="35" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                        <literal-expression value="init" start-index="39" stop-index="44" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="63" stop-index="74" literal-start-index="68" literal-stop-index="79">
+                    <column-left-value name="order_id" start-index="63" stop-index="70" literal-start-index="68" literal-stop-index="75" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="74" stop-index="74" />
+                        <literal-expression value="2" start-index="79" stop-index="79" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="99" stop-index="109" literal-start-index="104" literal-stop-index="114">
+                    <column-left-value name="user_id" start-index="99" stop-index="105" literal-start-index="104" literal-stop-index="110" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" start-index="109" stop-index="109" />
+                        <literal-expression value="4" start-index="114" stop-index="114" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_or_mix_and_with_binding_tables" parameters="1, 2, 3">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="49" stop-index="69">
+                            <column-left-value name="user_id" start-index="49" stop-index="57">
+                                <owner name="o" start-index="49" stop-index="49" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="61" stop-index="69">
+                                <owner name="i" start-index="61" stop-index="61" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="75" stop-index="97">
+                            <column-left-value name="order_id" start-index="75" stop-index="84">
+                                <owner name="o" start-index="75" stop-index="75" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="88" stop-index="97">
+                                <owner name="i" start-index="88" stop-index="88" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+        </table-reference>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="99" stop-index="156">
+            <and-predicate>
+                <predicate start-index="106" stop-index="119">
+                    <column-left-value name="order_id" start-index="106" stop-index="115">
+                        <owner name="o" start-index="106" stop-index="106" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="119" stop-index="119" />
+                        <literal-expression value="1" start-index="119" stop-index="119" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="144" stop-index="156">
+                    <column-left-value name="user_id" start-index="144" stop-index="152">
+                        <owner name="o" start-index="144" stop-index="144" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="156" stop-index="156" />
+                        <literal-expression value="3" start-index="156" stop-index="156" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="124" stop-index="137">
+                    <column-left-value name="order_id" start-index="124" stop-index="133">
+                        <owner name="o" start-index="124" stop-index="124" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="137" stop-index="137" />
+                        <literal-expression value="2" start-index="137" stop-index="137" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="144" stop-index="156">
+                    <column-left-value name="user_id" start-index="144" stop-index="152">
+                        <owner name="o" start-index="144" stop-index="144" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="156" stop-index="156" />
+                        <literal-expression value="3" start-index="156" stop-index="156" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_or_mix_and_with_binding_and_broadcast_tables" parameters="1, 2, 3, 'init'">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="49" stop-index="69">
+                            <column-left-value name="user_id" start-index="49" stop-index="57">
+                                <owner name="o" start-index="49" stop-index="49" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="61" stop-index="69">
+                                <owner name="i" start-index="61" stop-index="61" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="75" stop-index="97">
+                            <column-left-value name="order_id" start-index="75" stop-index="84">
+                                <owner name="o" start-index="75" stop-index="75" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="88" stop-index="97">
+                                <owner name="i" start-index="88" stop-index="88" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+            <join-table>
+                <table-factor>
+                    <table name="t_broadcast_table" alias="c" start-index="104" stop-index="122" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="127" stop-index="145">
+                            <column-left-value name="status" start-index="127" stop-index="134">
+                                <owner name="o" start-index="127" stop-index="127" />
+                            </column-left-value>
+                            <column-right-value name="status" start-index="138" stop-index="145">
+                                <owner name="c" start-index="138" stop-index="138" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+        </table-reference>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="147" stop-index="221" literal-stop-index="226">
+            <and-predicate>
+                <predicate start-index="154" stop-index="167">
+                    <column-left-value name="order_id" start-index="154" stop-index="163">
+                        <owner name="o" start-index="154" stop-index="154" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="167" stop-index="167" />
+                        <literal-expression value="1" start-index="167" stop-index="167" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="192" stop-index="204">
+                    <column-left-value name="user_id" start-index="192" stop-index="200">
+                        <owner name="o" start-index="192" stop-index="192" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="204" stop-index="204" />
+                        <literal-expression value="3" start-index="204" stop-index="204" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="210" stop-index="221" literal-stop-index="226">
+                    <column-left-value name="status" start-index="210" stop-index="217">
+                        <owner name="o" start-index="210" stop-index="210" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="3" start-index="221" stop-index="221" />
+                        <literal-expression value="init" start-index="221" stop-index="226" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="172" stop-index="185">
+                    <column-left-value name="order_id" start-index="172" stop-index="181">
+                        <owner name="o" start-index="172" stop-index="172" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="185" stop-index="185" />
+                        <literal-expression value="2" start-index="185" stop-index="185" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="192" stop-index="204">
+                    <column-left-value name="user_id" start-index="192" stop-index="200">
+                        <owner name="o" start-index="192" stop-index="192" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="204" stop-index="204" />
+                        <literal-expression value="3" start-index="204" stop-index="204" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="210" stop-index="221" literal-stop-index="226">
+                    <column-left-value name="status" start-index="210" stop-index="217">
+                        <owner name="o" start-index="210" stop-index="210" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="3" start-index="221" stop-index="221" />
+                        <literal-expression value="init" start-index="221" stop-index="226" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+</sql-parser-test-cases>

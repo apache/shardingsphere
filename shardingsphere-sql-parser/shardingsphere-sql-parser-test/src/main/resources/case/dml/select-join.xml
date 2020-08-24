@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <select sql-case-id="select_inner_join_related_with_alias" parameters="1000">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="37" stop-index="50" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="55" stop-index="77">
+                            <column-left-value name="order_id" start-index="55" stop-index="64">
+                                <owner name="o" start-index="55" stop-index="55" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="68" stop-index="77">
+                                <owner name="i" start-index="68" stop-index="68" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+        </table-reference>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="79" stop-index="98" literal-stop-index="101">
+            <and-predicate>
+                <predicate start-index="85" stop-index="98" literal-stop-index="101">
+                    <column-left-value name="order_id" start-index="85" stop-index="94">
+                        <owner name="o" start-index="85" stop-index="85" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="98" stop-index="98" />
+                        <literal-expression value="1000" start-index="98" stop-index="101" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_inner_join_related_with_name" parameters="1000">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="27" stop-index="33" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" start-index="40" stop-index="51" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="56" stop-index="95">
+                            <column-left-value name="order_id" start-index="56" stop-index="71">
+                                <owner name="t_order" start-index="56" stop-index="62" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="75" stop-index="95">
+                                <owner name="t_order_item" start-index="75" stop-index="86" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+        </table-reference>
+        <projections start-index="7" stop-index="20">
+            <shorthand-projection start-index="7" stop-index="20">
+                <owner name="t_order_item" start-index="7" stop-index="18" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="97" stop-index="122" literal-stop-index="125">
+            <and-predicate>
+                <predicate start-index="103" stop-index="122" literal-stop-index="125">
+                    <column-left-value name="order_id" start-index="103" stop-index="118">
+                        <owner name="t_order" start-index="103" stop-index="109" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="122" stop-index="122" />
+                        <literal-expression value="1000" start-index="122" stop-index="125" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_join_using" parameters="1000">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
+                </table-factor>
+                <joinSpecification />
+            </join-table>
+        </table-reference>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="62" stop-index="81" literal-stop-index="84">
+            <and-predicate>
+                <predicate start-index="68" stop-index="81" literal-stop-index="84">
+                    <column-left-value name="order_id" start-index="68" stop-index="77">
+                        <owner name="o" start-index="68" stop-index="68" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="81" stop-index="81" />
+                        <literal-expression value="1000" start-index="81" stop-index="84" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+</sql-parser-test-cases>

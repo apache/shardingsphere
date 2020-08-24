@@ -1,0 +1,28 @@
+baseURL = "https://shardingsphere.apache.org/community/"
+canonifyurls = true
+languageCode = "en-us"
+title = "ShardingSphere"
+theme = "hugo-theme-learn"
+defaultContentLanguage = "en"
+defaultContentLanguageInSubdir= true
+
+[Languages]
+[Languages.en]
+title = "ShardingSphere"
+weight = 1
+languageName = "English"
+
+[Languages.cn]
+title = "ShardingSphere"
+weight = 2
+languageName = "简体中文"
+[params]
+  # Change default color scheme with a variant one. Can be "red", "blue", "green".
+  themeVariant = "black"
+  # Disable search function. It will hide search bar
+  disableSearch = true
+
+[markup]
+[markup.goldmark]
+[markup.goldmark.renderer]
+unsafe = true

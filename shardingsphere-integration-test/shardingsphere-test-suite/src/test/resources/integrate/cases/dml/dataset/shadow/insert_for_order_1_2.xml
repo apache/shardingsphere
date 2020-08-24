@@ -1,0 +1,66 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset update-count="1">
+    <metadata data-nodes="db.t_order">
+        <column name="order_id" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
+    <row data-node="db.t_order" values="1, 1, insert" />
+    <row data-node="db.t_order" values="2, 2, insert" />
+    <row data-node="db.t_order" values="1000, 10, init" />
+    <row data-node="db.t_order" values="1001, 10, init" />
+    <row data-node="db.t_order" values="1100, 11, init" />
+    <row data-node="db.t_order" values="1101, 11, init" />
+    <row data-node="db.t_order" values="1200, 12, init" />
+    <row data-node="db.t_order" values="1201, 12, init" />
+    <row data-node="db.t_order" values="1300, 13, init" />
+    <row data-node="db.t_order" values="1301, 13, init" />
+    <row data-node="db.t_order" values="1400, 14, init" />
+    <row data-node="db.t_order" values="1401, 14, init" />
+    <row data-node="db.t_order" values="1500, 15, init" />
+    <row data-node="db.t_order" values="1501, 15, init" />
+    <row data-node="db.t_order" values="1600, 16, init" />
+    <row data-node="db.t_order" values="1601, 16, init" />
+    <row data-node="db.t_order" values="1700, 17, init" />
+    <row data-node="db.t_order" values="1701, 17, init" />
+    <row data-node="db.t_order" values="1800, 18, init" />
+    <row data-node="db.t_order" values="1801, 18, init" />
+    <row data-node="db.t_order" values="1900, 19, init" />
+    <row data-node="db.t_order" values="1901, 19, init" />
+    <row data-node="db.t_order" values="2000, 20, init" />
+    <row data-node="db.t_order" values="2001, 20, init" />
+    <row data-node="db.t_order" values="2100, 21, init" />
+    <row data-node="db.t_order" values="2101, 21, init" />
+    <row data-node="db.t_order" values="2200, 22, init" />
+    <row data-node="db.t_order" values="2201, 22, init" />
+    <row data-node="db.t_order" values="2300, 23, init" />
+    <row data-node="db.t_order" values="2301, 23, init" />
+    <row data-node="db.t_order" values="2400, 24, init" />
+    <row data-node="db.t_order" values="2401, 24, init" />
+    <row data-node="db.t_order" values="2500, 25, init" />
+    <row data-node="db.t_order" values="2501, 25, init" />
+    <row data-node="db.t_order" values="2600, 26, init" />
+    <row data-node="db.t_order" values="2601, 26, init" />
+    <row data-node="db.t_order" values="2700, 27, init" />
+    <row data-node="db.t_order" values="2701, 27, init" />
+    <row data-node="db.t_order" values="2800, 28, init" />
+    <row data-node="db.t_order" values="2801, 28, init" />
+    <row data-node="db.t_order" values="2900, 29, init" />
+    <row data-node="db.t_order" values="2901, 29, init" />
+</dataset>

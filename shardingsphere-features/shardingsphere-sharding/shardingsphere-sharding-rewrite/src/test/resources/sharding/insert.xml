@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<rewrite-assertions yaml-rule="yaml/sharding/sharding-rule.yaml">
+    <rewrite-assertion id="insert_values_with_columns_with_id_for_parameters">
+        <input sql="INSERT INTO t_account (account_id, amount, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE amount = VALUES(amount)" parameters="100, 1000, OK" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE amount = VALUES(amount)" parameters="100, 1000, OK" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_with_columns_with_id_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) VALUES (100, 1000, 'OK') ON DUPLICATE KEY UPDATE amount = VALUES(amount)" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) VALUES (100, 1000, 'OK') ON DUPLICATE KEY UPDATE amount = VALUES(amount)" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_with_columns_without_id_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account (amount, status) VALUES (?, ?)" parameters="1000, OK" />
+        <output sql="INSERT INTO t_account_1 (amount, status, account_id) VALUES (?, ?, ?)" parameters="1000, OK, 1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_values_with_columns_without_id_for_parameters_for_postgresql" db-type="PostgreSQL">
+        <input sql="INSERT INTO t_account (amount, status) VALUES (?, ?)" parameters="1000, OK" />
+        <output sql="INSERT INTO t_account_1 (amount, status, account_id) VALUES (?, ?, ?)" parameters="1000, OK, 1" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_with_columns_without_id_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account (amount, status) VALUES (1000, 'OK')" />
+        <output sql="INSERT INTO t_account_1 (amount, status, account_id) VALUES (1000, 'OK', 1)" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_without_columns_with_id_for_parameters">
+        <input sql="INSERT INTO t_account VALUES (?, ?, ?)" parameters="100, 1000, OK" />
+        <output sql="INSERT INTO t_account_0 VALUES (?, ?, ?)" parameters="100, 1000, OK" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_without_columns_with_id_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account VALUES (100, 1000, 'OK')" />
+        <output sql="INSERT INTO t_account_0 VALUES (100, 1000, 'OK')" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_without_columns_without_id_for_parameters">
+        <input sql="INSERT INTO t_account VALUES (?, ?)" parameters="1000, OK" />
+        <output sql="INSERT INTO t_account_1(amount, status, account_id) VALUES (?, ?, ?)" parameters="1000, OK, 1" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_without_columns_without_id_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account VALUES (1000, 'OK')" />
+        <output sql="INSERT INTO t_account_1(amount, status, account_id) VALUES (1000, 'OK', 1)" />
+    </rewrite-assertion>
+
+     <rewrite-assertion id="insert_values_without_columns_without_id_for_emojis" db-type="MySQL">
+        <input sql="INSERT INTO t_account VALUES (1000, 'test🍎😀')" />
+        <output sql="INSERT INTO t_account_1(amount, status, account_id) VALUES (1000, 'test🍎😀', 1)" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_multiple_values_with_columns_with_id_for_parameters">
+        <input sql="INSERT INTO t_account (account_id, amount, status) VALUES (100, 0, 'OK'), (?, ?, ?), (102, 2000, 'OK'), (?, ?, ?), (?, ?, ?), (105, 5000, 'OK')" parameters="101, 1000, OK, 103, 3000, OK, 104, 4000, OK" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) VALUES (100, 0, 'OK'), (102, 2000, 'OK'), (?, ?, ?)" parameters="104, 4000, OK" />
+        <output sql="INSERT INTO t_account_1 (account_id, amount, status) VALUES (?, ?, ?), (?, ?, ?), (105, 5000, 'OK')" parameters="101, 1000, OK, 103, 3000, OK" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_multiple_values_with_columns_with_id_for_literals">
+        <input sql="INSERT INTO t_account (account_id, amount, status) VALUES (100, 0, 'OK'), (101, 1000, 'OK'), (102, 2000, 'OK'), (103, 3000, 'OK'), (104, 4000, 'OK'), (105, 5000, 'OK')" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) VALUES (100, 0, 'OK'), (102, 2000, 'OK'), (104, 4000, 'OK')" />
+        <output sql="INSERT INTO t_account_1 (account_id, amount, status) VALUES (101, 1000, 'OK'), (103, 3000, 'OK'), (105, 5000, 'OK')" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_multiple_values_with_columns_without_id_for_parameters">
+        <input sql="INSERT INTO t_account (amount, status) VALUES (?, ?), (1000, 'OK')" parameters="1000, OK" />
+        <output sql="INSERT INTO t_account_1 (amount, status, account_id) VALUES (?, ?, ?), (1000, 'OK', 1)" parameters="1000, OK, 1" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_multiple_values_with_columns_without_id_for_literals">
+        <input sql="INSERT INTO t_account (amount, status) VALUES (1000, 'OK'), (1000, 'OK')" />
+        <output sql="INSERT INTO t_account_1 (amount, status, account_id) VALUES (1000, 'OK', 1), (1000, 'OK', 1)" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_multiple_values_without_columns_with_id_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account VALUES (?, ?, ?), (101, 1000, 'OK')" parameters="100, 0, OK" />
+        <output sql="INSERT INTO t_account_0 VALUES (?, ?, ?)" parameters="100, 0, OK" />
+        <output sql="INSERT INTO t_account_1 VALUES (101, 1000, 'OK')" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_multiple_values_without_columns_with_id_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account VALUES (100, 0, 'OK'), (101, 1000, 'OK')" />
+        <output sql="INSERT INTO t_account_0 VALUES (100, 0, 'OK')" />
+        <output sql="INSERT INTO t_account_1 VALUES (101, 1000, 'OK')" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_multiple_values_without_columns_without_id_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account VALUES (?, ?), (1000, 'OK')" parameters="1000, OK" />
+        <output sql="INSERT INTO t_account_1(amount, status, account_id) VALUES (?, ?, ?), (1000, 'OK', 1)" parameters="1000, OK, 1" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_multiple_values_without_columns_without_id_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account VALUES (1000, 'OK'), (1000, 'OK')" />
+        <output sql="INSERT INTO t_account_1(amount, status, account_id) VALUES (1000, 'OK', 1), (1000, 'OK', 1)" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_set_with_columns_with_id_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account SET account_id = ?, amount = ?, status = ?" parameters="100, 1000, OK" />
+        <output sql="INSERT INTO t_account_0 SET account_id = ?, amount = ?, status = ?" parameters="100, 1000, OK" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_set_with_columns_with_id_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account SET account_id = 100, amount = 1000, status = 'OK'" />
+        <output sql="INSERT INTO t_account_0 SET account_id = 100, amount = 1000, status = 'OK'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_set_with_columns_without_id_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account SET amount = ?, status = ?" parameters="1000, OK" />
+        <output sql="INSERT INTO t_account_1 SET amount = ?, status = ?, account_id = ?" parameters="1000, OK, 1" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_set_with_columns_without_id_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account SET amount = 1000, status = 'OK'" />
+        <output sql="INSERT INTO t_account_1 SET amount = 1000, status = 'OK', account_id = 1" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_into_with_columns_without_id_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account SET amount = ?, status = ?" parameters="1000, OK" />
+        <output sql="INSERT INTO t_account_1 SET amount = ?, status = ?, account_id = ?" parameters="1000, OK, 1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_multiple_values_with_columns_with_id_for_parameters_and_on_duplicate_update" db-type="MySQL">
+        <input sql="INSERT INTO t_account VALUES (100, 1000, 'OK'), (101, 2000, 'OK'), (102, 1000, 'OK')  ON DUPLICATE KEY UPDATE status = ?" parameters="OK_UPDATE" />
+        <output sql="INSERT INTO t_account_0 VALUES (100, 1000, 'OK'), (102, 1000, 'OK')  ON DUPLICATE KEY UPDATE status = ?" parameters="OK_UPDATE" />
+        <output sql="INSERT INTO t_account_1 VALUES (101, 2000, 'OK')  ON DUPLICATE KEY UPDATE status = ?" parameters="OK_UPDATE" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_all_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE account_id = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="100, 20" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="100, 20" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_all_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE amount = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="1000, 20" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE amount = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="1000, 20" />
+        <output sql="INSERT INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_1 WHERE amount = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="1000, 20" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_all_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE account_id = 100 ON DUPLICATE KEY UPDATE amount = 20" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100 ON DUPLICATE KEY UPDATE amount = 20" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_all_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE amount = 1000 ON DUPLICATE KEY UPDATE amount = 20" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE amount = 1000 ON DUPLICATE KEY UPDATE amount = 20" />
+        <output sql="INSERT INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_1 WHERE amount = 1000 ON DUPLICATE KEY UPDATE amount = 20" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_without_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account SELECT account_id, amount, status FROM t_account WHERE account_id = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="100, 20" />
+        <output sql="INSERT INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="100, 20" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_without_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account SELECT account_id, amount, status FROM t_account WHERE amount = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="1000, 20" />
+        <output sql="INSERT INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE amount = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="1000, 20" />
+        <output sql="INSERT INTO t_account_1 SELECT account_id, amount, status FROM t_account_1 WHERE amount = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="1000, 20" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_without_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account SELECT account_id, amount, status FROM t_account WHERE account_id = 100 ON DUPLICATE KEY UPDATE amount = 20" />
+        <output sql="INSERT INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100 ON DUPLICATE KEY UPDATE amount = 20" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_without_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account SELECT account_id, amount, status FROM t_account WHERE amount = 1000 ON DUPLICATE KEY UPDATE amount = 20" />
+        <output sql="INSERT INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE amount = 1000 ON DUPLICATE KEY UPDATE amount = 20" />
+        <output sql="INSERT INTO t_account_1 SELECT account_id, amount, status FROM t_account_1 WHERE amount = 1000 ON DUPLICATE KEY UPDATE amount = 20" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_binding_table_with_all_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail WHERE account_id = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="100, 20" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_0 WHERE account_id = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="100, 20" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_binding_table_with_all_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail WHERE amount = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="1000, 20" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_0 WHERE amount = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="1000, 20" />
+        <output sql="INSERT INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_1 WHERE amount = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="1000, 20" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_binding_table_with_all_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail WHERE account_id = 100 ON DUPLICATE KEY UPDATE amount = VALUES(amount)" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_0 WHERE account_id = 100 ON DUPLICATE KEY UPDATE amount = VALUES(amount)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_binding_table_with_all_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail WHERE amount = 1000 ON DUPLICATE KEY UPDATE amount = VALUES(amount)" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_0 WHERE amount = 1000 ON DUPLICATE KEY UPDATE amount = VALUES(amount)" />
+        <output sql="INSERT INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_1 WHERE amount = 1000 ON DUPLICATE KEY UPDATE amount = VALUES(amount)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_binding_table_without_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account SELECT account_id, amount, status FROM t_account_detail WHERE account_id = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="100, 20" />
+        <output sql="INSERT INTO t_account_0 SELECT account_id, amount, status FROM t_account_detail_0 WHERE account_id = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="100, 20" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_binding_table_without_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account SELECT account_id, amount, status FROM t_account_detail WHERE amount = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="1000, 20" />
+        <output sql="INSERT INTO t_account_0 SELECT account_id, amount, status FROM t_account_detail_0 WHERE amount = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="1000, 20" />
+        <output sql="INSERT INTO t_account_1 SELECT account_id, amount, status FROM t_account_detail_1 WHERE amount = ? ON DUPLICATE KEY UPDATE amount = ?" parameters="1000, 20" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_binding_table_without_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account SELECT account_id, amount, status FROM t_account_detail WHERE account_id = 100 ON DUPLICATE KEY UPDATE amount = 20" />
+        <output sql="INSERT INTO t_account_0 SELECT account_id, amount, status FROM t_account_detail_0 WHERE account_id = 100 ON DUPLICATE KEY UPDATE amount = 20" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_binding_table_without_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account SELECT account_id, amount, status FROM t_account_detail WHERE amount = 1000 ON DUPLICATE KEY UPDATE amount = 20" />
+        <output sql="INSERT INTO t_account_0 SELECT account_id, amount, status FROM t_account_detail_0 WHERE amount = 1000 ON DUPLICATE KEY UPDATE amount = 20" />
+        <output sql="INSERT INTO t_account_1 SELECT account_id, amount, status FROM t_account_detail_1 WHERE amount = 1000 ON DUPLICATE KEY UPDATE amount = 20" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_subquery_with_all_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account WHERE account_id = ?) t WHERE t.account_id = ?" parameters="100, 100" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ?) t WHERE t.account_id = ?" parameters="100, 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_subquery_with_all_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account WHERE account_id = 100) t WHERE t.account_id = 100" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100) t WHERE t.account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_subquery_without_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account WHERE account_id = ?) t WHERE t.account_id = ?" parameters="100, 100" />
+        <output sql="INSERT INTO t_account_0 SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ?) t WHERE t.account_id = ?" parameters="100, 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_subquery_without_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account WHERE account_id = 100) t WHERE t.account_id = 100" />
+        <output sql="INSERT INTO t_account_0 SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100) t WHERE t.account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_pagination_with_all_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE account_id = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ? LIMIT ?, ?" parameters="100, 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_pagination_with_all_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="INSERT INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_1 WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_pagination_with_all_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE account_id = 100 LIMIT 1, 2" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100 LIMIT 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_pagination_with_all_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE amount = 100 LIMIT 1, 2" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE amount = 100 LIMIT 1, 2" />
+        <output sql="INSERT INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_1 WHERE amount = 100 LIMIT 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_pagination_without_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account SELECT account_id, amount, status FROM t_account WHERE account_id = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="INSERT INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ? LIMIT ?, ?" parameters="100, 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_pagination_without_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account SELECT account_id, amount, status FROM t_account WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="INSERT INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="INSERT INTO t_account_1 SELECT account_id, amount, status FROM t_account_1 WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_pagination_without_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account SELECT account_id, amount, status FROM t_account WHERE account_id = 100 LIMIT 1, 2" />
+        <output sql="INSERT INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100 LIMIT 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_select_with_pagination_without_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account SELECT account_id, amount, status FROM t_account WHERE amount = 100 LIMIT 1, 2" />
+        <output sql="INSERT INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE amount = 100 LIMIT 1, 2" />
+        <output sql="INSERT INTO t_account_1 SELECT account_id, amount, status FROM t_account_1 WHERE amount = 100 LIMIT 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_values_with_columns_with_id_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) VALUES (?, ?, ?)" parameters="100, 1000, OK" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) VALUES (?, ?, ?)" parameters="100, 1000, OK" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_values_with_columns_with_id_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) VALUES (100, 1000, 'OK')" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) VALUES (100, 1000, 'OK')" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_values_with_columns_without_id_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (amount, status) VALUES (?, ?)" parameters="1000, OK" />
+        <output sql="REPLACE INTO t_account_1 (amount, status, account_id) VALUES (?, ?, ?)" parameters="1000, OK, 1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_values_with_columns_without_id_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (amount, status) VALUES (1000, 'OK')" />
+        <output sql="REPLACE INTO t_account_1 (amount, status, account_id) VALUES (1000, 'OK', 1)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_values_without_columns_with_id_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account VALUES (?, ?, ?)" parameters="100, 1000, OK" />
+        <output sql="REPLACE INTO t_account_0 VALUES (?, ?, ?)" parameters="100, 1000, OK" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_values_without_columns_with_id_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account VALUES (100, 1000, 'OK')" />
+        <output sql="REPLACE INTO t_account_0 VALUES (100, 1000, 'OK')" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_values_without_columns_without_id_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account VALUES (?, ?)" parameters="1000, OK" />
+        <output sql="REPLACE INTO t_account_1(amount, status, account_id) VALUES (?, ?, ?)" parameters="1000, OK, 1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_values_without_columns_without_id_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account VALUES (1000, 'OK')" />
+        <output sql="REPLACE INTO t_account_1(amount, status, account_id) VALUES (1000, 'OK', 1)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_multiple_values_with_columns_with_id_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) VALUES (100, 0, 'OK'), (?, ?, ?), (102, 2000, 'OK'), (?, ?, ?), (?, ?, ?), (105, 5000, 'OK')" parameters="101, 1000, OK, 103, 3000, OK, 104, 4000, OK" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) VALUES (100, 0, 'OK'), (102, 2000, 'OK'), (?, ?, ?)" parameters="104, 4000, OK" />
+        <output sql="REPLACE INTO t_account_1 (account_id, amount, status) VALUES (?, ?, ?), (?, ?, ?), (105, 5000, 'OK')" parameters="101, 1000, OK, 103, 3000, OK" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_multiple_values_with_columns_with_id_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) VALUES (100, 0, 'OK'), (101, 1000, 'OK'), (102, 2000, 'OK'), (103, 3000, 'OK'), (104, 4000, 'OK'), (105, 5000, 'OK')" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) VALUES (100, 0, 'OK'), (102, 2000, 'OK'), (104, 4000, 'OK')" />
+        <output sql="REPLACE INTO t_account_1 (account_id, amount, status) VALUES (101, 1000, 'OK'), (103, 3000, 'OK'), (105, 5000, 'OK')" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_multiple_values_with_columns_without_id_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (amount, status) VALUES (?, ?), (1001, 'OK')" parameters="1000, OK" />
+        <output sql="REPLACE INTO t_account_1 (amount, status, account_id) VALUES (?, ?, ?), (1001, 'OK', 1)" parameters="1000, OK, 1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_multiple_values_with_columns_without_id_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (amount, status) VALUES (1000, 'OK'), (1001, 'OK')" />
+        <output sql="REPLACE INTO t_account_1 (amount, status, account_id) VALUES (1000, 'OK', 1), (1001, 'OK', 1)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_multiple_values_without_columns_with_id_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account VALUES (?, ?, ?), (101, 1000, 'OK')" parameters="100, 0, OK" />
+        <output sql="REPLACE INTO t_account_0 VALUES (?, ?, ?)" parameters="100, 0, OK" />
+        <output sql="REPLACE INTO t_account_1 VALUES (101, 1000, 'OK')" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_multiple_values_without_columns_with_id_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account VALUES (100, 0, 'OK'), (101, 1000, 'OK')" />
+        <output sql="REPLACE INTO t_account_0 VALUES (100, 0, 'OK')" />
+        <output sql="REPLACE INTO t_account_1 VALUES (101, 1000, 'OK')" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_multiple_values_without_columns_without_id_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account VALUES (?, ?), (1001, 'OK')" parameters="1000, OK" />
+        <output sql="REPLACE INTO t_account_1(amount, status, account_id) VALUES (?, ?, ?), (1001, 'OK', 1)" parameters="1000, OK, 1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_multiple_values_without_columns_without_id_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account VALUES (1000, 'OK'), (1001, 'OK')" />
+        <output sql="REPLACE INTO t_account_1(amount, status, account_id) VALUES (1000, 'OK', 1), (1001, 'OK', 1)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_set_with_columns_with_id_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SET account_id = ?, amount = ?, status = ?" parameters="100, 1000, OK" />
+        <output sql="REPLACE INTO t_account_0 SET account_id = ?, amount = ?, status = ?" parameters="100, 1000, OK" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_set_with_columns_with_id_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SET account_id = 100, amount = 1000, status = 'OK'" />
+        <output sql="REPLACE INTO t_account_0 SET account_id = 100, amount = 1000, status = 'OK'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_set_with_columns_without_id_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SET amount = ?, status = ?" parameters="1000, OK" />
+        <output sql="REPLACE INTO t_account_1 SET amount = ?, status = ?, account_id = ?" parameters="1000, OK, 1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_set_with_columns_without_id_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SET amount = 1000, status = 'OK'" />
+        <output sql="REPLACE INTO t_account_1 SET amount = 1000, status = 'OK', account_id = 1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_all_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE account_id = ?" parameters="100" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_all_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_1 WHERE amount = ?" parameters="1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_all_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE account_id = 100" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_all_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_1 WHERE amount = 1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_without_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE account_id = ?" parameters="100" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_without_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_1 SELECT account_id, amount, status FROM t_account_1 WHERE amount = ?" parameters="1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_without_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE account_id = 100" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_without_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_1 SELECT account_id, amount, status FROM t_account_1 WHERE amount = 1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_with_all_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail WHERE account_id = ?" parameters="100" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_0 WHERE account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_with_all_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_0 WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_1 WHERE amount = ?" parameters="1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_with_all_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail WHERE account_id = 100" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_0 WHERE account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_with_all_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_0 WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_detail_1 WHERE amount = 1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_without_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account_detail WHERE account_id = ?" parameters="100" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_detail_0 WHERE account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_without_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account_detail WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_detail_0 WHERE amount = ?" parameters="1000" />
+        <output sql="REPLACE INTO t_account_1 SELECT account_id, amount, status FROM t_account_detail_1 WHERE amount = ?" parameters="1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_without_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account_detail WHERE account_id = 100" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_detail_0 WHERE account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_binding_table_without_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account_detail WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_detail_0 WHERE amount = 1000" />
+        <output sql="REPLACE INTO t_account_1 SELECT account_id, amount, status FROM t_account_detail_1 WHERE amount = 1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_subquery_with_all_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account WHERE account_id = ?) t WHERE t.account_id = ?" parameters="100, 100" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ?) t WHERE t.account_id = ?" parameters="100, 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_subquery_with_all_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account WHERE account_id = 100) t WHERE t.account_id = 100" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100) t WHERE t.account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_subquery_without_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account WHERE account_id = ?) t WHERE t.account_id = ?" parameters="100, 100" />
+        <output sql="REPLACE INTO t_account_0 SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ?) t WHERE t.account_id = ?" parameters="100, 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_subquery_without_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account WHERE account_id = 100) t WHERE t.account_id = 100" />
+        <output sql="REPLACE INTO t_account_0 SELECT t.account_id, t.amount, t.status FROM (SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100) t WHERE t.account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_with_all_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE account_id = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ? LIMIT ?, ?" parameters="100, 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_with_all_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="REPLACE INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_1 WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_with_all_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE account_id = 100 LIMIT 1, 2" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100 LIMIT 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_with_all_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account (account_id, amount, status) SELECT account_id, amount, status FROM t_account WHERE amount = 100 LIMIT 1, 2" />
+        <output sql="REPLACE INTO t_account_0 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_0 WHERE amount = 100 LIMIT 1, 2" />
+        <output sql="REPLACE INTO t_account_1 (account_id, amount, status) SELECT account_id, amount, status FROM t_account_1 WHERE amount = 100 LIMIT 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_without_columns_with_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE account_id = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE account_id = ? LIMIT ?, ?" parameters="100, 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_without_columns_without_sharding_column_for_parameters" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+        <output sql="REPLACE INTO t_account_1 SELECT account_id, amount, status FROM t_account_1 WHERE amount = ? LIMIT ?, ?" parameters="100, 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_without_columns_with_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE account_id = 100 LIMIT 1, 2" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE account_id = 100 LIMIT 1, 2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="replace_select_with_pagination_without_columns_without_sharding_column_for_literals" db-type="MySQL">
+        <input sql="REPLACE INTO t_account SELECT account_id, amount, status FROM t_account WHERE amount = 100 LIMIT 1, 2" />
+        <output sql="REPLACE INTO t_account_0 SELECT account_id, amount, status FROM t_account_0 WHERE amount = 100 LIMIT 1, 2" />
+        <output sql="REPLACE INTO t_account_1 SELECT account_id, amount, status FROM t_account_1 WHERE amount = 100 LIMIT 1, 2" />
+    </rewrite-assertion>
+</rewrite-assertions>

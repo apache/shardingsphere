@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="SQLServer" namespace="sqlserver.dcl.dropLogin">
-    <sql-case id="drop_login" value="DROP LOGIN login1" />
-</sql-cases>

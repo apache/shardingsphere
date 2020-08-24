@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="MySQL" namespace="mysql.dcl.dropUser">
-    <sql-case id="drop_user" value="DROP USER user1" />
-    <sql-case id="drop_users" value="DROP USER user1, user2" />
-    <sql-case id="drop_user_if_exists" value="DROP USER IF EXISTS user1" />
-</sql-cases>

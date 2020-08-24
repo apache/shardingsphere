@@ -1,0 +1,1983 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <select sql-case-id="select_constant_without_table" >
+        <projections start-index="7" stop-index="12">
+            <expression-projection alias="a" start-index="7" stop-index="12" />
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_with_function_name" >
+        <projections start-index="7" stop-index="23">
+            <expression-projection start-index="7" stop-index="23" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_same_table_name_and_alias" parameters="1, 1">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="t_order" start-index="22" stop-index="36" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="15">
+            <shorthand-projection start-index="7" stop-index="15">
+                <owner name="t_order" start-index="7" stop-index="13" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="38" stop-index="71">
+            <and-predicate>
+                <predicate start-index="44" stop-index="54">
+                    <column-left-value name="user_id" start-index="44" stop-index="50" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="54" stop-index="54" />
+                        <literal-expression value="1" start-index="54" stop-index="54" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="60" stop-index="71">
+                    <column-left-value name="order_id" start-index="60" stop-index="67" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="71" stop-index="71" />
+                        <literal-expression value="1" start-index="71" stop-index="71" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_same_table_name_and_alias_column_with_owner" parameters="1, 1">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="t_order" start-index="52" stop-index="66" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="45">
+            <column-projection name="order_id" start-index="7" stop-index="22">
+                <owner name="t_order" start-index="7" stop-index="13" />
+            </column-projection>
+            <column-projection name="user_id" start-index="24" stop-index="38">
+                <owner name="t_order" start-index="24" stop-index="30" />
+            </column-projection>
+            <column-projection name="status" start-index="40" stop-index="45" />
+        </projections>
+        <where start-index="68" stop-index="109">
+            <and-predicate>
+                <predicate start-index="74" stop-index="92">
+                    <column-left-value name="user_id" start-index="74" stop-index="88">
+                        <owner name="t_order" start-index="74" stop-index="80" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="92" stop-index="92" />
+                        <literal-expression value="1" start-index="92" stop-index="92" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="98" stop-index="109">
+                    <column-left-value name="order_id" start-index="98" stop-index="105" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="109" stop-index="109" />
+                        <literal-expression value="1" start-index="109" stop-index="109" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_not_equal_with_single_table" parameters="1">
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" start-index="14" stop-index="25" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="27" stop-index="44">
+            <and-predicate>
+                <predicate start-index="33" stop-index="44">
+                    <column-left-value name="item_id" start-index="33" stop-index="39" />
+                    <operator type="&lt;&gt;" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="44" stop-index="44" />
+                        <literal-expression value="1" start-index="44" stop-index="44" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="item_id" start-index="55" stop-index="61" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_exclamation_equal_with_single_table" parameters="1">
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" start-index="14" stop-index="25" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="27" stop-index="44">
+            <and-predicate>
+                <predicate start-index="33" stop-index="44">
+                    <column-left-value name="item_id" start-index="33" stop-index="39" />
+                    <operator type="!=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="44" stop-index="44" />
+                        <literal-expression value="1" start-index="44" stop-index="44" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="item_id" start-index="55" stop-index="61" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_not_in_with_single_table" parameters="100000, 100001">
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" start-index="14" stop-index="25" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="27" stop-index="77" literal-stop-index="87">
+            <!-- FIXME cannot parse IS NOT NULL -->
+            <!--<and-predicate>-->
+                <!--<predicate start-index="33" stop-index="51">-->
+                    <!--<column-left-value name="item_id" start-index="33" stop-index="39" />-->
+                <!--</predicate>-->
+                <!--<predicate start-index="57" stop-index="77" literal-stop-index="87">-->
+                    <!--<column-left-value name="item_id" start-index="57" stop-index="63" />-->
+                <!--</predicate>-->
+            <!--</and-predicate>-->
+        </where>
+        <order-by>
+            <column-item name="item_id" start-index="88" stop-index="94" literal-start-index="98" literal-stop-index="104" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_not_between_with_single_table" parameters="100000, 100001">
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" start-index="14" stop-index="25" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="27" stop-index="83" literal-stop-index="93">
+            <!-- FIXME can not parse IS NOT NULL -->
+            <!--<and-predicate>-->
+                <!--<predicate start-index="33" stop-index="51">-->
+                    <!--<column-left-value name="item_id" start-index="33" stop-index="39" />-->
+                <!--</predicate>-->
+                <!--<predicate start-index="57" stop-index="83">-->
+                    <!--<column-left-value name="item_id" start-index="57" stop-index="63" />-->
+                <!--</predicate>-->
+            <!--</and-predicate>-->
+        </where>
+        <order-by>
+            <column-item name="item_id" start-index="94" stop-index="100" literal-start-index="104" literal-stop-index="110" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_equal_with_single_table" parameters="1, 1">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="33">
+            <and-predicate>
+                <predicate start-index="28" stop-index="38">
+                    <column-left-value name="user_id" start-index="28" stop-index="34" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="38" stop-index="38" />
+                        <literal-expression value="1" start-index="38" stop-index="38" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="44" stop-index="55">
+                    <column-left-value name="order_id" start-index="44" stop-index="51" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="55" stop-index="55" />
+                        <literal-expression value="1" start-index="55" stop-index="55" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_equal_with_same_sharding_column" parameters="1, 2">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="56">
+            <and-predicate>
+                <predicate start-index="28" stop-index="39">
+                    <column-left-value name="order_id" start-index="28" stop-index="35" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                        <literal-expression value="1" start-index="39" stop-index="39" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="45" stop-index="56">
+                    <column-left-value name="order_id" start-index="45" stop-index="52" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="56" stop-index="56" />
+                        <literal-expression value="2" start-index="56" stop-index="56" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_between_with_single_table" parameters="1, 10, 2, 5">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="107">
+            <and-predicate>
+                <predicate start-index="28" stop-index="50" literal-stop-index="51">
+                    <column-left-value name="user_id" start-index="28" stop-index="34" />
+                    <between-right-value>
+                        <between-parameter-marker-expression value="0" start-index="44" stop-index="44" />
+                        <between-literal-expression value="1" start-index="44" stop-index="44" />
+                        <and-parameter-marker-expression value="1" start-index="50" stop-index="50" />
+                        <and-literal-expression value="10" start-index="50" stop-index="51" />
+                    </between-right-value>
+                </predicate>
+                <predicate start-index="56" stop-index="79" literal-start-index="57" literal-stop-index="80">
+                    <column-left-value name="order_id" start-index="56" stop-index="63" literal-start-index="57" literal-stop-index="64" />
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" start-index="73" stop-index="73" />
+                        <between-literal-expression value="2" start-index="74" stop-index="74" />
+                        <and-parameter-marker-expression value="3" start-index="79" stop-index="79" />
+                        <and-literal-expression value="5" start-index="80" stop-index="80" />
+                    </between-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="user_id" start-index="90" stop-index="96" literal-start-index="91" literal-stop-index="97" />
+            <column-item name="order_id" start-index="99" stop-index="106" literal-start-index="100" literal-stop-index="107" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_comparison_symbol_with_single_table" parameters="1, 10, 2, 5">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="119" literal-stop-index="120">
+            <and-predicate>
+                <predicate start-index="28" stop-index="39">
+                    <column-left-value name="user_id" start-index="28" stop-index="34" />
+                    <operator type="&gt;=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                        <literal-expression value="1" start-index="39" stop-index="39" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="45" stop-index="56" literal-stop-index="57">
+                    <column-left-value name="user_id" start-index="45" stop-index="51" />
+                    <operator type="&lt;=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="56" stop-index="56" />
+                        <literal-expression value="10" start-index="56" stop-index="57" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="62" stop-index="74" literal-start-index="63" literal-stop-index="75">
+                    <column-left-value name="order_id" start-index="62" stop-index="69" literal-start-index="63" literal-stop-index="70" />
+                    <operator type="&gt;=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="74" stop-index="74" />
+                        <literal-expression value="2" start-index="75" stop-index="75" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="80" stop-index="92" literal-start-index="81" literal-stop-index="93">
+                    <column-left-value name="order_id" start-index="80" stop-index="87" literal-start-index="81" literal-stop-index="88" />
+                    <operator type="&lt;=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="3" start-index="92" stop-index="92" />
+                        <literal-expression value="5" start-index="93" stop-index="93" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="user_id" start-index="103" stop-index="109" literal-start-index="104" literal-stop-index="110" />
+            <column-item name="order_id" start-index="112" stop-index="119" literal-start-index="113" literal-stop-index="120" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_in_with_single_table" parameters="1, 2, 3, 9, 10">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="70" literal-stop-index="71">
+            <and-predicate>
+                <predicate start-index="28" stop-index="47">
+                    <column-left-value name="user_id" start-index="28" stop-index="34" />
+                    <in-right-value>
+                        <parameter-marker-expression value="0" start-index="40" stop-index="40" />
+                        <parameter-marker-expression value="1" start-index="43" stop-index="43" />
+                        <parameter-marker-expression value="2" start-index="46" stop-index="46" />
+                        <literal-expression value="1" start-index="40" stop-index="40" />
+                        <literal-expression value="2" start-index="43" stop-index="43" />
+                        <literal-expression value="3" start-index="46" stop-index="46" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="53" stop-index="70" literal-stop-index="71">
+                    <column-left-value name="order_id" start-index="53" stop-index="60" />
+                    <in-right-value>
+                        <parameter-marker-expression value="3" start-index="66" stop-index="66" />
+                        <parameter-marker-expression value="4" start-index="69" stop-index="69" />
+                        <literal-expression value="9" start-index="66" stop-index="66" />
+                        <literal-expression value="10" start-index="69" stop-index="70" />
+                    </in-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="user_id" start-index="81" stop-index="87" literal-start-index="82" literal-stop-index="88" />
+            <column-item name="order_id" start-index="90" stop-index="97" literal-start-index="91" literal-stop-index="98" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_in_with_same_sharding_column" parameters="1000, 1001, 1001, 1002">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="68" literal-stop-index="80">
+            <and-predicate>
+                <predicate start-index="28" stop-index="45" literal-stop-index="51">
+                    <column-left-value name="order_id" start-index="28" stop-index="35" />
+                    <in-right-value>
+                        <parameter-marker-expression value="0" start-index="41" stop-index="41" />
+                        <parameter-marker-expression value="1" start-index="44" stop-index="44" />
+                        <literal-expression value="1000" start-index="41" stop-index="44" />
+                        <literal-expression value="1001" start-index="47" stop-index="50" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="51" stop-index="68" literal-start-index="57" literal-stop-index="80">
+                    <column-left-value name="order_id" start-index="51" stop-index="58" literal-start-index="57" literal-stop-index="64" />
+                    <in-right-value>
+                        <parameter-marker-expression value="2" start-index="64" stop-index="64" />
+                        <parameter-marker-expression value="3" start-index="67" stop-index="67" />
+                        <literal-expression value="1001" start-index="70" stop-index="73" />
+                        <literal-expression value="1002" start-index="76" stop-index="79" />
+                    </in-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="order_id" start-index="79" stop-index="86" literal-start-index="91" literal-stop-index="98" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="37" stop-index="45" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="30">
+            <aggregation-projection type="COUNT" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="47" stop-index="142" literal-stop-index="148">
+            <and-predicate>
+                <!-- TODO assert predicate with like  -->
+                <!--<predicate start-index="62" stop-index="79">-->
+                    <!--<column-left-value name="status" start-index="53" stop-index="60">-->
+                        <!--<owner name="o" start-index="53" stop-index="53" />-->
+                    <!--</column>-->
+                <!--</predicate>-->
+                <predicate start-index="93" stop-index="111" literal-start-index="98" literal-stop-index="116">
+                    <column-left-value name="user_id" start-index="93" stop-index="101" literal-start-index="98" literal-stop-index="106">
+                        <owner name="o" start-index="93" stop-index="93" literal-start-index="98" literal-stop-index="98" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="1" start-index="107" stop-index="107" />
+                        <parameter-marker-expression value="2" start-index="110" stop-index="110" />
+                        <literal-expression value="1" start-index="112" stop-index="112" />
+                        <literal-expression value="2" start-index="115" stop-index="115" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="117" stop-index="142" literal-start-index="122" literal-stop-index="148">
+                    <column-left-value name="order_id" start-index="117" stop-index="126" literal-start-index="122" literal-stop-index="131">
+                        <owner name="o" start-index="117" stop-index="117" literal-start-index="122" literal-stop-index="122" />
+                    </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="3" start-index="136" stop-index="136" />
+                        <between-literal-expression value="9" start-index="141" stop-index="141" />
+                        <and-parameter-marker-expression value="4" start-index="142" stop-index="142" />
+                        <and-literal-expression value="10" start-index="147" stop-index="148" />
+                    </between-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_count_tilde_concat" parameters="'init', 1, 2, 9, 10">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="37" stop-index="45" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="30">
+            <aggregation-projection type="COUNT" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="47" stop-index="140" literal-stop-index="146">
+            <and-predicate>
+                <!-- TODO add predication assert for ~~ -->
+                <!--<predicate start-index="62" stop-index="79">-->
+                    <!--<column-left-value name="status" start-index="53" stop-index="60">-->
+                        <!--<owner name="o" start-index="53" stop-index="53" />-->
+                    <!--</column>-->
+                <!--</predicate>-->
+                <predicate start-index="91" stop-index="109" literal-start-index="96" literal-stop-index="114">
+                    <column-left-value name="user_id" start-index="91" stop-index="99" literal-start-index="96" literal-stop-index="104">
+                        <owner name="o" start-index="91" stop-index="91" literal-start-index="96" literal-stop-index="96" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="1" start-index="105" stop-index="105" />
+                        <parameter-marker-expression value="2" start-index="108" stop-index="108" />
+                        <literal-expression value="1" start-index="110" stop-index="110" />
+                        <literal-expression value="2" start-index="113" stop-index="113" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="115" stop-index="140" literal-start-index="120" literal-stop-index="146">
+                    <column-left-value name="order_id" start-index="115" stop-index="124" literal-start-index="120" literal-stop-index="129">
+                        <owner name="o" start-index="115" stop-index="115" literal-start-index="120" literal-stop-index="120" />
+                    </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="3" start-index="134" stop-index="134" />
+                        <between-literal-expression value="9" start-index="139" stop-index="139" />
+                        <and-parameter-marker-expression value="4" start-index="140" stop-index="140" />
+                        <and-literal-expression value="10" start-index="145" stop-index="146" />
+                    </between-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="49" stop-index="69">
+                            <column-left-value name="user_id" start-index="49" stop-index="57">
+                                <owner name="o" start-index="49" stop-index="49" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="61" stop-index="69">
+                                <owner name="i" start-index="61" stop-index="61" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="75" stop-index="97">
+                            <column-left-value name="order_id" start-index="75" stop-index="84">
+                                <owner name="o" start-index="75" stop-index="75" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="88" stop-index="97">
+                                <owner name="i" start-index="88" stop-index="88" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+        </table-reference>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="99" stop-index="154" literal-stop-index="155">
+            <and-predicate>
+                <predicate start-index="105" stop-index="123">
+                    <column-left-value name="user_id" start-index="105" stop-index="113">
+                        <owner name="o" start-index="105" stop-index="105" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="0" start-index="119" stop-index="119" />
+                        <parameter-marker-expression value="1" start-index="122" stop-index="122" />
+                        <literal-expression value="1" start-index="119" stop-index="119" />
+                        <literal-expression value="2" start-index="122" stop-index="122" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="129" stop-index="154" literal-stop-index="155">
+                    <column-left-value name="order_id" start-index="129" stop-index="138">
+                        <owner name="o" start-index="129" stop-index="129" />
+                    </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" start-index="148" stop-index="148" />
+                        <between-literal-expression value="9" start-index="148" stop-index="148" />
+                        <and-parameter-marker-expression value="3" start-index="154" stop-index="154" />
+                        <and-literal-expression value="10" start-index="154" stop-index="155" />
+                    </between-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="item_id" start-index="165" stop-index="173" literal-start-index="166" literal-stop-index="174">
+                <owner name="i" start-index="165" stop-index="165" literal-start-index="166" literal-stop-index="166" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_full_route_with_binding_tables">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="49" stop-index="69">
+                            <column-left-value name="user_id" start-index="49" stop-index="57">
+                                <owner name="o" start-index="49" stop-index="49" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="61" stop-index="69">
+                                <owner name="i" start-index="61" stop-index="61" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="75" stop-index="97">
+                            <column-left-value name="order_id" start-index="75" stop-index="84">
+                                <owner name="o" start-index="75" stop-index="75" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="88" stop-index="97">
+                                <owner name="i" start-index="88" stop-index="88" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+        </table-reference>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <order-by>
+            <column-item name="item_id" start-index="108" stop-index="116">
+                <owner name="i" start-index="108" stop-index="108" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="49" stop-index="69">
+                            <column-left-value name="user_id" start-index="49" stop-index="57">
+                                <owner name="o" start-index="49" stop-index="49" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="61" stop-index="69">
+                                <owner name="i" start-index="61" stop-index="61" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="75" stop-index="97">
+                            <column-left-value name="order_id" start-index="75" stop-index="84">
+                                <owner name="o" start-index="75" stop-index="75" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="88" stop-index="97">
+                                <owner name="i" start-index="88" stop-index="88" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+            <join-table>
+                <table-factor>
+                    <table name="t_broadcast_table" alias="c" start-index="104" stop-index="122" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="127" stop-index="145">
+                            <column-left-value name="status" start-index="127" stop-index="134">
+                                <owner name="o" start-index="127" stop-index="127" />
+                            </column-left-value>
+                            <column-right-value name="status" start-index="138" stop-index="145">
+                                <owner name="c" start-index="138" stop-index="138" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+        </table-reference>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="147" stop-index="219" literal-stop-index="225">
+            <and-predicate>
+                <predicate start-index="153" stop-index="171">
+                    <column-left-value name="user_id" start-index="153" stop-index="161">
+                        <owner name="o" start-index="153" stop-index="153" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="0" start-index="167" stop-index="167" />
+                        <parameter-marker-expression value="1" start-index="170" stop-index="170" />
+                        <literal-expression value="1" start-index="167" stop-index="167" />
+                        <literal-expression value="2" start-index="170" stop-index="170" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="177" stop-index="202" literal-stop-index="203">
+                    <column-left-value name="order_id" start-index="177" stop-index="186">
+                        <owner name="o" start-index="177" stop-index="177" />
+                    </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" start-index="196" stop-index="196" />
+                        <between-literal-expression value="9" start-index="196" stop-index="196" />
+                        <and-parameter-marker-expression value="3" start-index="202" stop-index="202" />
+                        <and-literal-expression value="10" start-index="202" stop-index="203" />
+                    </between-right-value>
+                </predicate>
+                <predicate start-index="208" stop-index="219" literal-start-index="209" literal-stop-index="225">
+                    <column-left-value name="status" start-index="208" stop-index="215" literal-start-index="209" literal-stop-index="216">
+                        <owner name="o" start-index="208" stop-index="208" literal-start-index="209" literal-stop-index="209" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" start-index="219" stop-index="219" />
+                        <literal-expression value="init" start-index="220" stop-index="225" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="item_id" start-index="230" stop-index="238" literal-start-index="236" literal-stop-index="244">
+                <owner name="i" start-index="230" stop-index="230" literal-start-index="236" literal-stop-index="236" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="49" stop-index="69">
+                            <column-left-value name="user_id" start-index="49" stop-index="57">
+                                <owner name="o" start-index="49" stop-index="49" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="61" stop-index="69">
+                                <owner name="i" start-index="61" stop-index="61" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="75" stop-index="97">
+                            <column-left-value name="order_id" start-index="75" stop-index="84">
+                                <owner name="o" start-index="75" stop-index="75" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="88" stop-index="97">
+                                <owner name="i" start-index="88" stop-index="88" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+            <join-table>
+                <table-factor>
+                    <table name="select" alias="c" start-delimiter="`" end-delimiter="`" start-index="104" stop-index="113" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="118" stop-index="136">
+                            <column-left-value name="status" start-index="118" stop-index="125">
+                                <owner name="o" start-index="118" stop-index="118" />
+                            </column-left-value>
+                            <column-right-value name="status" start-index="129" stop-index="136">
+                                <owner name="c" start-index="129" stop-index="129" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+        </table-reference>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="138" stop-index="210" literal-stop-index="216">
+            <and-predicate>
+                <predicate start-index="144" stop-index="162">
+                    <column-left-value name="user_id" start-index="144" stop-index="152">
+                        <owner name="o" start-index="144" stop-index="144" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="0" start-index="158" stop-index="158" />
+                        <parameter-marker-expression value="1" start-index="161" stop-index="161" />
+                        <literal-expression value="1" start-index="158" stop-index="158" />
+                        <literal-expression value="2" start-index="161" stop-index="161" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="168" stop-index="193" literal-stop-index="194">
+                    <column-left-value name="order_id" start-index="168" stop-index="177">
+                        <owner name="o" start-index="168" stop-index="168" />
+                    </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" start-index="187" stop-index="187" />
+                        <between-literal-expression value="9" start-index="187" stop-index="187" />
+                        <and-parameter-marker-expression value="3" start-index="193" stop-index="193" />
+                        <and-literal-expression value="10" start-index="193" stop-index="194" />
+                    </between-right-value>
+                </predicate>
+                <predicate start-index="199" stop-index="210" literal-start-index="200" literal-stop-index="216">
+                    <column-left-value name="status" start-index="199" stop-index="206" literal-start-index="200" literal-stop-index="207">
+                        <owner name="o" start-index="199" stop-index="199" literal-start-index="200" literal-stop-index="200" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" start-index="210" stop-index="210" />
+                        <literal-expression value="init" start-index="211" stop-index="216" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="item_id" start-index="221" stop-index="229" literal-start-index="227" literal-stop-index="235">
+                <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="49" stop-index="69">
+                            <column-left-value name="user_id" start-index="49" stop-index="57">
+                                <owner name="o" start-index="49" stop-index="49" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="61" stop-index="69">
+                                <owner name="i" start-index="61" stop-index="61" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="75" stop-index="97">
+                            <column-left-value name="order_id" start-index="75" stop-index="84">
+                                <owner name="o" start-index="75" stop-index="75" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="88" stop-index="97">
+                                <owner name="i" start-index="88" stop-index="88" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+            <join-table>
+                <table-factor>
+                    <table name="select" alias="c" start-delimiter="&quot;" end-delimiter="&quot;" start-index="104" stop-index="113" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="118" stop-index="136">
+                            <column-left-value name="status" start-index="118" stop-index="125">
+                                <owner name="o" start-index="118" stop-index="118" />
+                            </column-left-value>
+                            <column-right-value name="status" start-index="129" stop-index="136">
+                                <owner name="c" start-index="129" stop-index="129" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+        </table-reference>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9" >
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="138" stop-index="210" literal-stop-index="216">
+            <and-predicate>
+                <predicate start-index="144" stop-index="162">
+                    <column-left-value name="user_id" start-index="144" stop-index="152">
+                        <owner name="o" start-index="144" stop-index="144" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="0" start-index="158" stop-index="158" />
+                        <parameter-marker-expression value="1" start-index="161" stop-index="161" />
+                        <literal-expression value="1" start-index="158" stop-index="158" />
+                        <literal-expression value="2" start-index="161" stop-index="161" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="168" stop-index="193" literal-stop-index="194">
+                    <column-left-value name="order_id" start-index="168" stop-index="177">
+                        <owner name="o" start-index="168" stop-index="168" />
+                    </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" start-index="187" stop-index="187" />
+                        <between-literal-expression value="9" start-index="187" stop-index="187" />
+                        <and-parameter-marker-expression value="3" start-index="193" stop-index="193" />
+                        <and-literal-expression value="10" start-index="193" stop-index="194" />
+                    </between-right-value>
+                </predicate>
+                <predicate start-index="199" stop-index="210" literal-start-index="200" literal-stop-index="216">
+                    <column-left-value name="status" start-index="199" stop-index="206" literal-start-index="200" literal-stop-index="207">
+                        <owner name="c" start-index="199" stop-index="199" literal-start-index="200" literal-stop-index="200" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" start-index="210" stop-index="210" />
+                        <literal-expression value="init" start-index="211" stop-index="216" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="item_id" start-index="221" stop-index="229" literal-start-index="227" literal-stop-index="235">
+                <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_keyword_table_name_with_square_brackets" parameters="1, 2, 9, 10, 'init'">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="49" stop-index="69">
+                            <column-left-value name="user_id" start-index="49" stop-index="57">
+                                <owner name="o" start-index="49" stop-index="49" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="61" stop-index="69">
+                                <owner name="i" start-index="61" stop-index="61" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="75" stop-index="97">
+                            <column-left-value name="order_id" start-index="75" stop-index="84">
+                                <owner name="o" start-index="75" stop-index="75" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="88" stop-index="97">
+                                <owner name="i" start-index="88" stop-index="88" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+            <join-table>
+                <table-factor>
+                    <table name="select" alias="c" start-delimiter="[" end-delimiter="]" start-index="104" stop-index="113" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="118" stop-index="136">
+                            <column-left-value name="status" start-index="118" stop-index="125">
+                                <owner name="o" start-index="118" stop-index="118" />
+                            </column-left-value>
+                            <column-right-value name="status" start-index="129" stop-index="136">
+                                <owner name="c" start-index="129" stop-index="129" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+        </table-reference>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="138" stop-index="210" literal-stop-index="216">
+            <and-predicate>
+                <predicate start-index="144" stop-index="162">
+                    <column-left-value name="user_id" start-index="144" stop-index="152">
+                        <owner name="o" start-index="144" stop-index="144" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="0" start-index="158" stop-index="158" />
+                        <parameter-marker-expression value="1" start-index="161" stop-index="161" />
+                        <literal-expression value="1" start-index="158" stop-index="158" />
+                        <literal-expression value="2" start-index="161" stop-index="161" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="168" stop-index="193" literal-stop-index="194">
+                    <column-left-value name="order_id" start-index="168" stop-index="177">
+                        <owner name="o" start-index="168" stop-index="168" />
+                    </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" start-index="187" stop-index="187" />
+                        <between-literal-expression value="9" start-index="187" stop-index="187" />
+                        <and-parameter-marker-expression value="3" start-index="193" stop-index="193" />
+                        <and-literal-expression value="10" start-index="193" stop-index="194" />
+                    </between-right-value>
+                </predicate>
+                <predicate start-index="199" stop-index="210" literal-start-index="200" literal-stop-index="216">
+                    <column-left-value name="status" start-index="199" stop-index="206" literal-start-index="200" literal-stop-index="207">
+                        <owner name="c" start-index="199" stop-index="199" literal-start-index="200" literal-stop-index="200" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" start-index="210" stop-index="210" />
+                        <literal-expression value="init" start-index="211" stop-index="216" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="item_id" start-index="221" stop-index="229" literal-start-index="227" literal-stop-index="235">
+                <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_alias_as_keyword" parameters="1">
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" alias="length" start-index="36" stop-index="54" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="29">
+            <column-projection name="item_id" alias="password" start-index="7" stop-index="20">
+                <owner name="length" start-index="7" stop-index="12" />
+            </column-projection>>
+        </projections>
+        <where start-index="56" stop-index="79">
+            <and-predicate>
+                <predicate start-index="62" stop-index="79">
+                    <column-left-value name="item_id" start-index="62" stop-index="75">
+                        <owner name="length" start-index="62" stop-index="67" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="79" stop-index="79" />
+                        <literal-expression value="1" start-index="79" stop-index="79" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_force_index_join" parameters="1000">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="56" stop-index="69" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="74" stop-index="94">
+                            <column-left-value name="order_id" start-index="74" stop-index="83">
+                                <owner name="o" start-index="74" stop-index="74" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="85" stop-index="94">
+                                <owner name="i" start-index="85" stop-index="85" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+        </table-reference>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="96" stop-index="115" literal-stop-index="118">
+            <and-predicate>
+                <predicate start-index="102" stop-index="115" literal-stop-index="118">
+                    <column-left-value name="order_id" start-index="102" stop-index="111">
+                        <owner name="o" start-index="102" stop-index="102" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="115" stop-index="115" />
+                        <literal-expression value="1000" start-index="115" stop-index="118" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1, 2">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="148" literal-stop-index="170">
+            <and-predicate>
+                <predicate start-index="28" stop-index="42" literal-stop-index="60">
+                    <column-left-value name="rule" start-index="28" stop-index="31" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="35" stop-index="42" />
+                        <literal-expression value="'{&quot;rule2&quot;:&quot;null2&quot;}'::jsonb" start-index="35" stop-index="60" />
+                        <common-expression literal-text="'{&quot;rule2&quot;:&quot;null2&quot;}'::jsonb" start-index="35" stop-index="60" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="48" stop-index="115" literal-start-index="66" literal-stop-index="137">
+                    <column-left-value name="start_point" start-index="48" stop-index="58" literal-start-index="66" literal-stop-index="76" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <common-expression literal-start-index="78" literal-stop-index="137" start-index="60" stop-index="115" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')"/>
+                        <literal-expression start-index="78" stop-index="137" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')"/>
+                    </compare-right-value>
+                    <!-- TODO assert expression -->
+                </predicate>
+                <predicate start-index="121" stop-index="131" literal-start-index="143" literal-stop-index="153">
+                    <column-left-value name="user_id" start-index="121" stop-index="127" literal-start-index="143" literal-stop-index="149" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="3" start-index="131" stop-index="131" />
+                        <literal-expression value="1" start-index="153" stop-index="153" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="137" stop-index="148" literal-start-index="159" literal-stop-index="170">
+                    <column-left-value name="order_id" start-index="137" stop-index="144" literal-start-index="159" literal-stop-index="166" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" start-index="148" stop-index="148" />
+                        <literal-expression value="2" start-index="170" stop-index="170" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1, 2">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="161" literal-stop-index="201">
+            <and-predicate>
+                <predicate start-index="28" stop-index="55" literal-stop-index="91">
+                    <column-left-value name="rule" start-index="28" stop-index="31" />
+                    <in-right-value>
+                        <parameter-marker-expression value="0" start-index="37" stop-index="44" />
+                        <parameter-marker-expression value="1" start-index="47" stop-index="54" />
+                        <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" start-index="37" stop-index="62" />
+                        <literal-expression value="{&quot;rule3&quot;:&quot;null3&quot;}'::json" start-index="65" stop-index="90" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="61" stop-index="128" literal-start-index="97" literal-stop-index="168">
+                    <column-left-value name="start_point" start-index="61" stop-index="71" literal-start-index="97" literal-stop-index="107" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <common-expression literal-start-index="109" literal-stop-index="168" start-index="73" stop-index="128" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')"/>
+                    </compare-right-value>
+                    <!-- TODO assert expr -->
+                </predicate>
+                <predicate start-index="134" stop-index="144" literal-start-index="174" literal-stop-index="184">
+                    <column-left-value name="user_id" start-index="134" stop-index="140" literal-start-index="174" literal-stop-index="180" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" start-index="144" stop-index="144" />
+                        <literal-expression value="1" start-index="184" stop-index="184" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="150" stop-index="161" literal-start-index="190" literal-stop-index="201">
+                    <column-left-value name="order_id" start-index="150" stop-index="157" literal-start-index="190" literal-stop-index="197" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="5" start-index="161" stop-index="161" />
+                        <literal-expression value="2" start-index="201" stop-index="201" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="151" literal-stop-index="191">
+            <and-predicate>
+                <predicate start-index="28" stop-index="61" literal-stop-index="97">
+                    <column-left-value name="rule" start-index="28" stop-index="31" />
+                    <between-right-value>
+                        <between-parameter-marker-expression value="0"  start-index="41" stop-index="48" literal-start-index="48" literal-stop-index="55" />
+                        <between-literal-expression value="'{&quot;rule2&quot;:&quot;null2&quot;}'::jsonb" start-index="41" stop-index="66" />
+                        <between-common-expression value="'{&quot;rule2&quot;:&quot;null2&quot;}'::jsonb" start-index="41" stop-index="66" />
+                        <and-parameter-marker-expression value="1" start-index="54" stop-index="61" />
+                        <and-literal-expression value="'{&quot;rule3&quot;:&quot;null3&quot;}'::jsonb" start-index="72" stop-index="97" />
+                        <and-common-expression literal-text="'{&quot;rule3&quot;:&quot;null3&quot;}'::jsonb" start-index="72" stop-index="97" />
+                    </between-right-value>
+                </predicate>
+                <predicate start-index="67" stop-index="134" literal-start-index="103" literal-stop-index="174">
+                    <column-left-value name="start_point" start-index="67" stop-index="77" literal-start-index="103" literal-stop-index="113" />
+                    <operator type="=" />
+                    <!-- TODO assert right value -->
+                    <compare-right-value>
+                        <common-expression literal-start-index="115" literal-stop-index="174" start-index="79" stop-index="134" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')"/>
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="140" stop-index="151" literal-start-index="180" literal-stop-index="191">
+                    <column-left-value name="order_id" start-index="140" stop-index="147" literal-start-index="180" literal-stop-index="187" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" start-index="151" stop-index="151" />
+                        <literal-expression value="1" start-index="191" stop-index="191" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_double_quotes" parameters="1">
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" start-delimiter="&quot;" end-delimiter="&quot;" start-index="14" stop-index="27" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="29" stop-index="48">
+            <and-predicate>
+                <predicate start-index="35" stop-index="48">
+                    <column-left-value name="item_id" start-delimiter="&quot;" end-delimiter="&quot;" start-index="35" stop-index="43" />
+                    <operator type="!=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="48" stop-index="48" />
+                        <literal-expression value="1" start-index="48" stop-index="48" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="item_id" start-index="59" stop-index="67" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_distinct_with_single_column_without_order_by" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" start-index="29" stop-index="40" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="16" stop-index="22" distinct-row="true">
+            <column-projection name="item_id" start-index="16" stop-index="22" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_distinct_with_multi_column_without_order_by" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="47" stop-index="53" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="16" stop-index="40" distinct-row="true">
+            <column-projection name="order_id" start-index="16" stop-index="23" />
+            <column-projection name="user_id" start-index="26" stop-index="32" />
+            <column-projection name="status" start-index="35" stop-index="40" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_distinct_with_owner_column_without_order_by" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="38" stop-index="44" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="16" stop-index="31" distinct-row="true">
+            <column-projection name="order_id" start-index="16" stop-index="31" >
+                <owner name="t_order" start-index="16" stop-index="22" />
+            </column-projection>
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="55" stop-index="70">
+                <owner name="t_order" start-index="55" stop-index="61"/>
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_distinct_with_owner_star_without_order_by" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="54" stop-index="60" />
+            </table-factor>
+        </table-reference>
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" start-index="63" stop-index="74" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="16" stop-index="47" distinct-row="true">
+            <shorthand-projection start-index="16" stop-index="24">
+                <owner name="t_order" start-index="16" stop-index="22"/>
+            </shorthand-projection>
+            <column-projection name="order_id" start-index="27" stop-index="47" >
+                <owner name="t_order_item" start-index="27" stop-index="38" />
+            </column-projection>
+        </projections>
+        <where>
+            <and-predicate>
+                <predicate start-index="82" stop-index="121">
+                    <column-left-value name="order_id" start-index="82" stop-index="97">
+                        <owner name="t_order" start-index="82" stop-index="88"/>
+                    </column-left-value>
+                    <column-right-value name="order_id" start-index="101" stop-index="121">
+                        <owner name="t_order_item" start-index="101" stop-index="112"/>
+                    </column-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_distinct_with_owner_column_with_group_by" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="38" stop-index="44" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="16" stop-index="31" distinct-row="true">
+            <column-projection name="order_id" start-index="16" stop-index="31" >
+                <owner name="t_order" start-index="16" stop-index="22" />
+            </column-projection>
+        </projections>
+        <group-by>
+            <column-item name="order_id" start-index="55" stop-index="70">
+                <owner name="t_order" start-index="55" stop-index="61"/>
+            </column-item>
+        </group-by>
+    </select>
+
+    <select sql-case-id="select_distinct_with_single_column" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" start-index="29" stop-index="40" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="16" stop-index="22" distinct-row="true">
+            <column-projection name="item_id" start-index="16" stop-index="22" />
+        </projections>
+        <order-by>
+            <column-item name="item_id" start-index="51" stop-index="57" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_distinct_with_owner_column" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="38" stop-index="44" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="16" stop-index="31" distinct-row="true">
+            <column-projection name="order_id" start-index="16" stop-index="31">
+                <owner name="t_order" start-index="16" stop-index="22" />
+            </column-projection>
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="55" stop-index="62" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_distinct_with_multi_column" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="47" stop-index="53" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="16" stop-index="40" distinct-row="true">
+            <column-projection name="order_id" start-index="16" stop-index="23" />
+            <column-projection name="user_id" start-index="26" stop-index="32" />
+            <column-projection name="status" start-index="35" stop-index="40" />
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="64" stop-index="71" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_distinct_with_star" >
+        <table-reference>
+            <table-factor>
+                <table  name="t_order" start-index="23" stop-index="29" />
+            </table-factor>
+        </table-reference>
+        <projections distinct-row="true" start-index="16" stop-index="16">
+            <shorthand-projection start-index="16" stop-index="16" />
+        </projections>
+        <where start-index="31" stop-index="51">
+            <and-predicate>
+                <predicate start-index="37" stop-index="51">
+                    <column-left-value name="order_id" start-index="37" stop-index="44" />
+                    <operator type="&gt;" />
+                    <compare-right-value>
+                        <literal-expression value="1100" start-index="48" stop-index="51" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="order_id" start-index="62" stop-index="69" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_distinct_with_owner_star">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="54" stop-index="60" />
+            </table-factor>
+        </table-reference>
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" start-index="63" stop-index="74" />
+            </table-factor>
+        </table-reference>
+        <projections distinct-row="true" start-index="16" stop-index="47">
+            <shorthand-projection start-index="16" stop-index="24">
+                <owner name="t_order" start-index="16" stop-index="22" />
+            </shorthand-projection>
+            <column-projection name="order_id" start-index="27" stop-index="47">
+                <owner name="t_order_item" start-index="27" stop-index="38" />
+            </column-projection>
+        </projections>
+        <where start-index="76" stop-index="121">
+            <and-predicate>
+                <predicate start-index="82" stop-index="121">
+                    <column-left-value name="order_id" start-index="82" stop-index="97">
+                        <owner name="t_order" start-index="82" stop-index="88" />
+                    </column-left-value>
+                    <column-right-value name="order_id" start-index="101" stop-index="121">
+                        <owner name="t_order_item" start-index="101" stop-index="112" />
+                    </column-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="order_id" start-index="132" stop-index="147">
+                <owner name="t_order" start-index="132" stop-index="138" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_distinct_with_sum" >
+        <table-reference>
+            <table-factor>
+                <table  name="t_order" start-index="37" stop-index="43" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="30">
+            <aggregation-distinct-projection type="SUM" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="s" start-index="7" stop-index="28" />
+        </projections>
+        <where start-index="45" stop-index="65">
+            <and-predicate>
+                <predicate start-index="51" stop-index="65">
+                    <column-left-value name="order_id" start-index="51" stop-index="58" />
+                    <operator type="&lt;" />
+                    <compare-right-value>
+                        <literal-expression value="1100" start-index="62" stop-index="65" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_distinct_with_count">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="39" stop-index="45" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="32">
+            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="7" stop-index="30" />
+        </projections>
+        <where start-index="47" stop-index="67">
+            <and-predicate>
+                <predicate start-index="53" stop-index="67">
+                    <column-left-value name="order_id" start-index="53" stop-index="60" />
+                    <operator type="&lt;" />
+                    <compare-right-value>
+                        <literal-expression value="1100" start-index="64" stop-index="67" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_distinct_with_avg">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="35" stop-index="41" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="28">
+            <aggregation-distinct-projection type="AVG" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="28" />
+        </projections>
+        <where start-index="43" stop-index="63">
+            <and-predicate>
+                <predicate start-index="49" stop-index="63">
+                    <column-left-value name="order_id" start-index="49" stop-index="56" />
+                    <operator type="&lt;" />
+                    <compare-right-value>
+                        <literal-expression value="1100" start-index="60" stop-index="63" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_distinct_with_count_sum" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="61" stop-index="67" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="54">
+            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="30" />
+            <aggregation-distinct-projection type="SUM" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="33" stop-index="54" />
+        </projections>
+        <where start-index="75" stop-index="89">
+            <and-predicate>
+                <predicate start-index="75" stop-index="89">
+                    <column-left-value name="order_id" start-index="75" stop-index="82" />
+                    <operator type="&lt;" />
+                    <compare-right-value>
+                        <literal-expression value="1100" start-index="86" stop-index="89" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_distinct_with_single_count_group_by" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="49" stop-index="55" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="42">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="17" stop-index="40" />
+        </projections>
+        <where start-index="57" stop-index="77">
+            <and-predicate>
+                <predicate start-index="63" stop-index="77">
+                    <column-left-value name="order_id" start-index="63" stop-index="70" />
+                    <operator type="&lt;" />
+                    <compare-right-value>
+                        <literal-expression value="1100" start-index="74" stop-index="77" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <group-by>
+            <column-item name="order_id" start-index="88" stop-index="95" />
+        </group-by>
+        <order-by>
+            <column-item name="order_id" start-index="106" stop-index="113" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_distinct_with_count_group_by" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="49" stop-index="55" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="42">
+            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="7" stop-index="30" />
+            <column-projection name="order_id" start-index="35" stop-index="42" />
+        </projections>
+        <group-by>
+            <column-item name="order_id" start-index="66" stop-index="73" />
+        </group-by>
+        <order-by>
+            <column-item name="order_id" start-index="84" stop-index="91" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_distinct_function">
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" start-index="30" stop-index="41" />
+            </table-factor>
+        </table-reference>
+        <projections distinct-row="true" start-index="15" stop-index="23">
+            <column-projection start-index="16" stop-index="22" name="item_id"/>
+        </projections>
+        <order-by>
+            <column-item name="item_id" start-index="52" stop-index="58" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_distinct_with_count_calculation" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="49" stop-index="55" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="42">
+            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT user_id + order_id)" distinct-expression="user_id+order_id" alias="c" start-index="7" stop-index="40" />
+        </projections>
+        <where start-index="57" stop-index="77">
+            <and-predicate>
+                <predicate start-index="63" stop-index="77">
+                    <column-left-value name="order_id" start-index="63" stop-index="70" />
+                    <operator type="&lt;" />
+                    <compare-right-value>
+                        <literal-expression value="1100" start-index="74" stop-index="77" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_distinct_with_aggregation_functions" >
+        <table-reference>
+            <table-factor>
+                <table  name="t_order" start-index="77" stop-index="83" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="69">
+            <aggregation-distinct-projection type="SUM" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="28" />
+            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="30" stop-index="53" />
+            <aggregation-projection type="COUNT" inner-expression="(order_id)" start-index="55" stop-index="69" />
+        </projections>
+        <where start-index="85" stop-index="105">
+            <and-predicate>
+                <predicate start-index="91" stop-index="105">
+                    <column-left-value name="order_id" start-index="91" stop-index="98" />
+                    <operator type="&lt;" />
+                    <compare-right-value>
+                        <literal-expression value="1100" start-index="102" stop-index="105" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_schema" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="24">
+                    <owner name="db1" start-index="14" stop-index="16" />
+                </table>
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_escape_with_single_quota" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="38">
+            <and-predicate>
+                <predicate start-index="28" stop-index="38">
+                    <column-left-value name="status" start-index="28" stop-index="33" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="\'" start-index="35" stop-index="38" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_escape_with_double_quota" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="38">
+            <and-predicate>
+                <predicate start-index="28" stop-index="38">
+                    <column-left-value name="status" start-index="28" stop-index="33" />
+                    <!-- FIXME incorrect parse result as column type: "\"" -->
+                    <column-right-value name="\" start-delimiter="&quot;" end-delimiter="&quot;" start-index="35" stop-index="38" />
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_block_comment" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="83" stop-index="89" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="90" stop-index="104">
+            <and-predicate>
+                <!-- FIXME \n's index is incorrect -->
+                <predicate start-index="97" stop-index="106">
+                    <column-left-value name="status" start-index="97" stop-index="102" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="1" start-index="104" stop-index="106" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_single_comment" >
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="78" stop-index="84" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <!-- FIXME incorrect for start index and stop index with \n -->
+        <where start-index="85" stop-index="101">
+            <and-predicate>
+                <predicate start-index="92" stop-index="101">
+                    <column-left-value name="status" start-index="92" stop-index="97" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="1" start-index="99" stop-index="101" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_alias_as_single_quote_string">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="31" stop-index="37" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="24">
+            <column-projection alias="status" name="status" start-index="7" stop-index="12" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_alias_as_string_double_quote">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="31" stop-index="37" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="24">
+            <column-projection name="status" alias="status" start-index="7" stop-index="12" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_special_function_nested" parameters="12, 1000">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="48" stop-index="54" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="41">
+            <aggregation-projection type="SUM" inner-expression="(if(status=0, 1, 0))" alias="func_status" start-index="7" stop-index="29" />
+        </projections>
+        <where start-index="56" stop-index="89" literal-stop-index="93">
+            <and-predicate>
+                <predicate start-index="62" stop-index="72" literal-stop-index="73">
+                    <column-left-value name="user_id" start-index="62" stop-index="68" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="72" stop-index="72" />
+                        <literal-expression value="12" start-index="72" stop-index="73" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="78" stop-index="89" literal-start-index="79" literal-stop-index="93">
+                    <column-left-value name="order_id" start-index="78" stop-index="85" literal-start-index="79" literal-stop-index="86" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="89" stop-index="89" />
+                        <literal-expression value="1000" start-index="90" stop-index="93" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_interval_function" parameters="12, 1000">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="45" stop-index="51" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="38">
+            <expression-projection alias="func_status" start-index="7" stop-index="38" />
+        </projections>
+        <where start-index="53" stop-index="86" literal-stop-index="90">
+            <and-predicate>
+                <predicate start-index="59" stop-index="69" literal-stop-index="70">
+                    <column-left-value name="user_id" start-index="59" stop-index="65" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="69" stop-index="69" />
+                        <literal-expression value="12" start-index="69" stop-index="70" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="75" stop-index="86" literal-start-index="76" literal-stop-index="90">
+                    <column-left-value name="order_id" start-index="75" stop-index="82" literal-start-index="76" literal-stop-index="83" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="86" stop-index="86" />
+                        <literal-expression value="1000" start-index="87" stop-index="90" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_left_function">
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" start-index="44" stop-index="55" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="37">
+            <expression-projection start-index="7" stop-index="37" />
+        </projections>
+        <where start-index="57" stop-index="74">
+            <and-predicate>
+                <predicate start-index="63" stop-index="74">
+                    <column-left-value name="user_id" start-index="63" stop-index="69" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="10" start-index="73" stop-index="74" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_for_update" parameters="10">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="38" literal-stop-index="39">
+            <and-predicate>
+                <predicate start-index="28" stop-index="38" literal-stop-index="39">
+                    <column-left-value name="user_id" start-index="28" stop-index="34"  literal-stop-index="34" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="38" stop-index="38" />
+                        <literal-expression value="10" start-index="38" stop-index="39" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_database">
+        <projections start-index="7" stop-index="16">
+            <expression-projection start-index="7" stop-index="16" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_mod_function">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="47">
+            <!-- FIXME cannot parse expr in left value -->
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_date_format_function">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="79">
+            <!-- FIXME cannot parse expr in left value for predicate -->
+            <!--<and-predicate>-->
+                <!--<predicate start-index="28" stop-index="79" />-->
+            <!--</and-predicate>-->
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_spatial_function">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="106">
+            <!-- FIXME cannot parse expr in left value -->
+            <!--<and-predicate>-->
+                <!--<predicate start-index="28" stop-index="106" />-->
+            <!--</and-predicate>-->
+        </where>
+    </select>
+
+    <select sql-case-id="select_current_user">
+        <projections start-index="7" stop-index="18">
+            <expression-projection start-index="7" stop-index="18" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_match_against" parameters="hello, 10">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" start-index="14" stop-index="25" />
+            </table-factor>
+        </table-reference>
+        <where start-index="27" stop-index="116" literal-stop-index="121">
+            <and-predicate>
+                <predicate start-index="106" stop-index="116" literal-start-index="110" literal-stop-index="121">
+                    <column-left-value name="user_id" start-index="106" stop-index="112" literal-start-index="110" literal-stop-index="116" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression start-index="120" stop-index="121" value="10" />
+                        <parameter-marker-expression value="1" start-index="116" stop-index="116" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_json_separator">
+        <projections start-index="7" stop-index="75">
+            <expression-projection start-index="7" stop-index="41" alias="nation" />
+            <expression-projection start-index="43" stop-index="75" alias="title" />
+        </projections>
+        <table-reference>
+            <table-factor>
+                <table name="tb_content_json" start-index="82" stop-index="98" alias="b" />
+            </table-factor>
+        </table-reference>
+        <where start-index="100" stop-index="119" literal-stop-index="121">
+            <and-predicate>
+                <predicate start-index="106" stop-index="119">
+                    <column-left-value name="content_id" start-index="106" stop-index="117">
+                        <owner stop-index="106" start-index="106" name="b"/>
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression start-index="119" stop-index="119" value="1" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+</sql-parser-test-cases>

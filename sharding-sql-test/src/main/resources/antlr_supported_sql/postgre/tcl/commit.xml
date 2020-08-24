@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="PostgreSQL" namespace="postgre.tcl.commit">
-    <sql-case id="commit" value="COMMIT" />
-    <sql-case id="commit_prepare" value="COMMIT PREPARED transaction1" />
-</sql-cases>

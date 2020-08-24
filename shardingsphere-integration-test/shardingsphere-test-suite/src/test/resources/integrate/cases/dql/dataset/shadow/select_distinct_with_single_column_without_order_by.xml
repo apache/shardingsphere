@@ -1,0 +1,102 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="item_id" />
+    </metadata>
+    <row values="140001" />
+    <row values="140002" />
+    <row values="220002" />
+    <row values="220001" />
+    <row values="160101" />
+    <row values="160102" />
+    <row values="240102" />
+    <row values="240101" />
+    <row values="150001" />
+    <row values="150002" />
+    <row values="230002" />
+    <row values="230001" />
+    <row values="170101" />
+    <row values="170102" />
+    <row values="250102" />
+    <row values="250101" />
+    <row values="160001" />
+    <row values="160002" />
+    <row values="240002" />
+    <row values="240001" />
+    <row values="100101" />
+    <row values="100102" />
+    <row values="180102" />
+    <row values="180101" />
+    <row values="260102" />
+    <row values="260101" />
+    <row values="170001" />
+    <row values="170002" />
+    <row values="250002" />
+    <row values="250001" />
+    <row values="110101" />
+    <row values="110102" />
+    <row values="190102" />
+    <row values="190101" />
+    <row values="270102" />
+    <row values="270101" />
+    <row values="100001" />
+    <row values="100002" />
+    <row values="180002" />
+    <row values="180001" />
+    <row values="120101" />
+    <row values="120102" />
+    <row values="200102" />
+    <row values="200101" />
+    <row values="280102" />
+    <row values="260001" />
+    <row values="260002" />
+    <row values="280101" />
+    <row values="110001" />
+    <row values="110002" />
+    <row values="190002" />
+    <row values="190001" />
+    <row values="130101" />
+    <row values="130102" />
+    <row values="210102" />
+    <row values="210101" />
+    <row values="290102" />
+    <row values="270001" />
+    <row values="270002" />
+    <row values="290101" />
+    <row values="120001" />
+    <row values="120002" />
+    <row values="200002" />
+    <row values="200001" />
+    <row values="140101" />
+    <row values="220102" />
+    <row values="140102" />
+    <row values="220101" />
+    <row values="280001" />
+    <row values="280002" />
+    <row values="130001" />
+    <row values="130002" />
+    <row values="210002" />
+    <row values="210001" />
+    <row values="150101" />
+    <row values="230102" />
+    <row values="150102" />
+    <row values="230101" />
+    <row values="290001" />
+    <row values="290002" />
+</dataset>

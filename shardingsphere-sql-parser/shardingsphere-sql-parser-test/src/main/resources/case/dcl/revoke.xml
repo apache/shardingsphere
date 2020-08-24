@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <revoke sql-case-id="revoke_user_without_hostname">
+        <table name="t_order" start-index="25" stop-index="31" />
+    </revoke>
+    
+    <revoke sql-case-id="revoke_role" />
+    <revoke sql-case-id="revoke_user_from" />
+    <revoke sql-case-id="revoke_user_with_hostname" />
+    <revoke sql-case-id="revoke_user_with_hostname_on_db" />
+    
+    <revoke sql-case-id="revoke_user_with_hostname_on_table">
+        <table name="t_order" start-index="25" stop-index="31" />
+    </revoke>
+    
+    <revoke sql-case-id="revoke_user_with_hostname_on_db_and_table">
+        <table name="t_order" start-index="25" stop-index="38">
+            <owner name="master" start-index="25" stop-index="30" />
+        </table>
+    </revoke>
+    
+    <revoke sql-case-id="revoke_select" />
+    
+    <revoke sql-case-id="revoke_select_column">
+        <table name="t_order" start-index="28" stop-index="39">
+            <owner name="ds_0" start-index="28" stop-index="31" />
+        </table>
+    </revoke>
+    
+    <revoke sql-case-id="revoke_select_from_local_user" />
+    <revoke sql-case-id="revoke_crud" />
+    <revoke sql-case-id="revoke_all" />
+    <revoke sql-case-id="revoke_all_on_schema" />
+    
+    <revoke sql-case-id="revoke_all_on_table">
+        <table name="t_order" start-index="25" stop-index="36">
+            <owner name="ds_0" start-index="25" stop-index="28" />
+        </table>
+    </revoke>
+    
+    <revoke sql-case-id="revoke_role_from_user" />
+    <revoke sql-case-id="revoke_roles_from_users"/>
+    <revoke sql-case-id="revoke_system_privilege" />
+    <revoke sql-case-id="revoke_system_privileges" />
+    <revoke sql-case-id="revoke_all_system_privileges" />
+    <revoke sql-case-id="revoke_system_privilege_from_users" />
+    
+    <revoke sql-case-id="revoke_object_privilege">
+        <table name="t_order" start-index="17" stop-index="28">
+            <owner name="ds_0" start-index="17" stop-index="20" />
+        </table>
+    </revoke>
+    
+    <revoke sql-case-id="revoke_object_privileges">
+        <table name="t_order" start-index="41" stop-index="52">
+            <owner name="ds_0" start-index="41" stop-index="44" />
+        </table>
+    </revoke>
+    
+    <revoke sql-case-id="revoke_all_object_privileges">
+        <table name="t_order" start-index="25" stop-index="36">
+            <owner name="ds_0" start-index="25" stop-index="28" />
+        </table>
+    </revoke>
+    
+    <revoke sql-case-id="revoke_object_privilege_from_users">
+        <table name="t_order" start-index="17" stop-index="28">
+            <owner name="ds_0" start-index="17" stop-index="20" />
+        </table>
+    </revoke>
+    
+    <revoke sql-case-id="revoke_object_privilege_column">
+        <table name="t_order" start-index="28" stop-index="39">
+            <owner name="ds_0" start-index="28" stop-index="31" />
+        </table>
+    </revoke>
+    
+    <revoke sql-case-id="revoke_program" />
+    <revoke sql-case-id="revoke_roles_from_programs" />
+    
+    <revoke sql-case-id="revoke_all_on_table_from_roles">
+        <table name="t_order" start-index="31" stop-index="37" />
+    </revoke>
+    
+    <revoke sql-case-id="revoke_select_on_tables">
+        <table name="t_order" start-index="23" stop-index="29" />
+        <table name="t_order_item" start-index="32" stop-index="43" />
+    </revoke>
+    
+    <revoke sql-case-id="revoke_select_on_all_tables" />
+    
+    <revoke sql-case-id="revoke_all_column_on_table">
+        <table name="t_order" start-index="42" stop-index="48" />
+    </revoke>
+    
+    <revoke sql-case-id="revoke_all_column_on_table_from_roles">
+        <table name="t_order" start-index="42" stop-index="48" />
+    </revoke>
+    
+    <revoke sql-case-id="revoke_select_column_on_table">
+        <table name="t_order" start-index="34" stop-index="40" />
+    </revoke>
+    
+    <revoke sql-case-id="revoke_select_column_on_tables">
+        <table name="t_order" start-index="34" stop-index="40" />
+        <table name="t_order_item" start-index="43" stop-index="54" />
+    </revoke>
+    
+    <revoke sql-case-id="revoke_all_on_sequence" />
+    <revoke sql-case-id="revoke_all_on_sequence_from_roles" />
+    <revoke sql-case-id="revoke_select_on_sequence" />
+    <revoke sql-case-id="revoke_select_on_sequences" />
+    <revoke sql-case-id="revoke_select_on_all_sequences" />
+    <revoke sql-case-id="revoke_all_on_database" />
+    <revoke sql-case-id="revoke_all_on_database_from_roles" />
+    <revoke sql-case-id="revoke_create_on_database" />
+    <revoke sql-case-id="revoke_create_on_databases" />
+    <revoke sql-case-id="revoke_all_on_domain" />
+    <revoke sql-case-id="revoke_all_on_domain_from_roles" />
+    <revoke sql-case-id="revoke_usage_on_domain" />
+    <revoke sql-case-id="revoke_usage_on_domains" />
+    <revoke sql-case-id="revoke_all_on_foreign_data_wrapper" />
+    <revoke sql-case-id="revoke_all_on_foreign_data_wrapper_from_roles" />
+    <revoke sql-case-id="revoke_usage_on_foreign_data_wrapper" />
+    <revoke sql-case-id="revoke_usage_on_foreign_data_wrappers" />
+    <revoke sql-case-id="revoke_all_on_foreign_server" />
+    <revoke sql-case-id="revoke_all_on_foreign_server_from_roles" />
+    <revoke sql-case-id="revoke_usage_on_foreign_server" />
+    <revoke sql-case-id="revoke_usage_on_foreign_servers" />
+    <revoke sql-case-id="revoke_all_on_function" />
+    <revoke sql-case-id="revoke_all_on_function_from_roles" />
+    <revoke sql-case-id="revoke_execute_on_function" />
+    <revoke sql-case-id="revoke_execute_on_functions" />
+    <revoke sql-case-id="revoke_execute_on_all_functions" />
+    <revoke sql-case-id="revoke_all_on_language" />
+    <revoke sql-case-id="revoke_all_on_language_from_roles" />
+    <revoke sql-case-id="revoke_usage_on_language" />
+    <revoke sql-case-id="revoke_usage_on_languages" />
+    <revoke sql-case-id="revoke_all_on_large_object" />
+    <revoke sql-case-id="revoke_all_on_large_object_from_roles" />
+    <revoke sql-case-id="revoke_select_large_object" />
+    <revoke sql-case-id="revoke_all_on_schema_from_role" />
+    <revoke sql-case-id="revoke_select_on_large_objects" />
+    <revoke sql-case-id="revoke_all_on_schema_from_roles" />
+    <revoke sql-case-id="revoke_create_on_schema" />
+    <revoke sql-case-id="revoke_create_on_schemas" />
+    <revoke sql-case-id="revoke_all_on_tablespace" />
+    <revoke sql-case-id="revoke_all_on_tablespace_from_roles" />
+    <revoke sql-case-id="revoke_create_on_tablespace" />
+    <revoke sql-case-id="revoke_create_on_tablespaces" />
+    <revoke sql-case-id="revoke_all_on_type" />
+    <revoke sql-case-id="revoke_all_on_type_from_roles" />
+    <revoke sql-case-id="revoke_usage_on_type" />
+    <revoke sql-case-id="revoke_usage_on_types" />
+    <revoke sql-case-id="revoke_roles" />
+    
+    <revoke sql-case-id="revoke_select_to_users">
+        <table name="t_order" start-index="28" stop-index="34" />
+    </revoke>
+    
+    <revoke sql-case-id="revoke_crud_on_table">
+        <table name="t_order" start-index="41" stop-index="47" />
+    </revoke>
+    
+    <revoke sql-case-id="revoke_select_on_table_for_postgresql">
+        <table name="t_order" start-index="23" stop-index="29" />
+    </revoke>
+    
+    <revoke sql-case-id="revoke_select_on_table_for_sqlserver">
+        <table name="t_order" start-index="17" stop-index="23" />
+    </revoke>
+</sql-parser-test-cases>

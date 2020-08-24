@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:orchestration="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
+       xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
+                           http://www.springframework.org/schema/util
+                           https://www.springframework.org/schema/util/spring-util.xsd
+                           ">
+    <import resource="namespace/shardingDataSourceNamespace.xml" />
+    
+    <util:properties id="instance-props">
+        <prop key="max-retries">3</prop>
+        <prop key="operation-timeout-milliseconds">1000</prop>
+    </util:properties>
+    
+    <orchestration:reg-center id="registryRepository" type="TestRegistry" server-lists="localhost:3181">
+        <props>
+            <prop key="max-retries">3</prop>
+            <prop key="operation-timeout-milliseconds">1000</prop>
+        </props>
+    </orchestration:reg-center>
+    
+    <orchestration:data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="shardingRuleWithAttributesDataSourceOrchestration" data-source-ref="shardingRuleWithAttributesDataSource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="multiTableRulesDataSourceOrchestration" data-source-ref="multiTableRulesDataSource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="propsDataSourceOrchestration" data-source-ref="propsDataSource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="tableRuleWithAttributesDataSourceOrchestration" data-source-ref="tableRuleWithAttributesDataSource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="bindingTableRuleDatasourceOrchestration" data-source-ref="bindingTableRuleDatasource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="multiBindingTableRulesDatasourceOrchestration" data-source-ref="multiBindingTableRulesDatasource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="broadcastTableRuleDatasourceOrchestration" data-source-ref="broadcastTableRuleDatasource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="multiBroadcastTableRulesDatasourceOrchestration" data-source-ref="multiBroadcastTableRulesDatasource" reg-center-ref="registryRepository" />
+</beans>

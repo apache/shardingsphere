@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <drop-table sql-case-id="drop_table">
+        <table name="t_log" start-index="11" stop-index="15" />
+    </drop-table>
+    
+    <drop-table sql-case-id="drop_table_if_exists">
+        <table name="t_log" start-index="21" stop-index="25" />
+    </drop-table>
+    
+    <drop-table sql-case-id="drop_temporary_table_if_exists">
+        <table name="t_temp_log" start-index="31" stop-index="40" />
+    </drop-table>
+    
+    <drop-table sql-case-id="drop_table_restrict">
+        <table name="t_log" start-index="11" stop-index="15" />
+    </drop-table>
+    
+    <drop-table sql-case-id="drop_table_cascade">
+        <table name="t_log" start-index="11" stop-index="15" />
+    </drop-table>
+    
+    <drop-table sql-case-id="drop_table_cascade_constraints_and_purge">
+        <table name="t_log" start-index="11" stop-index="15" />
+    </drop-table>
+    
+    <drop-table sql-case-id="drop_table_with_space">
+        <table name="t_order" start-index="23" stop-index="29" />
+    </drop-table>
+    
+    <drop-table sql-case-id="drop_table_with_back_quota">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="11" stop-index="19" />
+    </drop-table>
+    
+    <drop-table sql-case-id="drop_tables">
+        <table name="t_order_item" start-index="11" stop-index="22" />
+        <table name="t_order" start-index="25" stop-index="31" />
+    </drop-table>
+    
+    <drop-table sql-case-id="drop_temporary_table">
+        <table name="t_order" start-index="21" stop-index="27" />
+    </drop-table>
+    
+    <drop-table sql-case-id="drop_table_with_quota">
+        <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="11" stop-index="19" />
+    </drop-table>
+    
+    <drop-table sql-case-id="drop_table_with_double_quota">
+        <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="11" stop-index="19" />
+    </drop-table>
+    
+    <drop-table sql-case-id="drop_table_with_bracket">
+        <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="11" stop-index="19" />
+    </drop-table>
+</sql-parser-test-cases>

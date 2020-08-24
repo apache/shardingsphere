@@ -1,0 +1,111 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+rules:
+- !SHARDING
+  tables:
+    config:
+      actualDataNodes: db_ms_${0..9}.t_config
+    t_order:
+      actualDataNodes: db_ms_${0..9}.t_order_${0..9}
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: standard_test
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: standard_test
+    t_order_item:
+      actualDataNodes: db_ms_${0..9}.t_order_item_${0..9}
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: standard_test
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: standard_test
+      keyGenerateStrategy:
+        column: item_id
+        keyGeneratorName: constant
+  bindingTables:
+    - t_order,t_order_item
+  
+  shardingAlgorithms:
+    standard_test:
+      type: STANDARD_TEST
+  
+  keyGenerators:
+    constant:
+      type: Constant
+      
+- !MASTER_SLAVE
+  dataSources:
+    db_ms_0:
+      masterDataSourceName: master_db_0
+      slaveDataSourceNames:
+        - slave_db_0
+      loadBalancerName: roundRobin
+    db_ms_1:
+      masterDataSourceName: master_db_1
+      slaveDataSourceNames:
+        - slave_db_1
+      loadBalancerName: roundRobin
+    db_ms_2:
+      masterDataSourceName: master_db_2
+      slaveDataSourceNames:
+        - slave_db_2
+      loadBalancerName: roundRobin
+    db_ms_3:
+      masterDataSourceName: master_db_3
+      slaveDataSourceNames:
+        - slave_db_3
+      loadBalancerName: roundRobin
+    db_ms_4:
+      masterDataSourceName: master_db_4
+      slaveDataSourceNames:
+        - slave_db_4
+      loadBalancerName: roundRobin
+    db_ms_5:
+      masterDataSourceName: master_db_5
+      slaveDataSourceNames:
+        - slave_db_5
+      loadBalancerName: roundRobin
+    db_ms_6:
+      masterDataSourceName: master_db_6
+      slaveDataSourceNames:
+        - slave_db_6
+      loadBalancerName: roundRobin
+    db_ms_7:
+      masterDataSourceName: master_db_7
+      slaveDataSourceNames:
+        - slave_db_7
+      loadBalancerName: roundRobin
+    db_ms_8:
+      masterDataSourceName: master_db_8
+      slaveDataSourceNames:
+        - slave_db_8
+      loadBalancerName: roundRobin
+    db_ms_9:
+      masterDataSourceName: master_db_9
+      slaveDataSourceNames:
+        - slave_db_9
+      loadBalancerName: roundRobin
+  loadBalancers:
+    roundRobin:
+      type: ROUND_ROBIN

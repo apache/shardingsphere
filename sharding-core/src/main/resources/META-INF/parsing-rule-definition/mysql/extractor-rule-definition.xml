@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<extractor-rule-definition>
-    <extractor-rule id="addColumnDefinition" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.ddl.column.dialect.mysql.MySQLAddColumnDefinitionExtractor" />
-    <extractor-rule id="modifyColumnDefinition" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.ddl.column.dialect.mysql.MySQLModifyColumnDefinitionExtractor" />
-    <extractor-rule id="changeColumnDefinition" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.ddl.column.dialect.mysql.MySQLChangeColumnDefinitionExtractor" />
-    <extractor-rule id="dropPrimaryKey" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.ddl.constraint.dialect.mysql.MySQLDropPrimaryKeyExtractor" />
-    <extractor-rule id="setAutoCommit" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.SetAutoCommitExtractor" />
-</extractor-rule-definition>

@@ -1,0 +1,67 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<authority>
+    <sqlset db-types="Oracle,SQLServer,PostgreSQL">
+        <user-create>
+            <sql>CREATE ROLE role_dev</sql>
+        </user-create>
+        <user-drop>
+            <sql>DROP ROLE role_dev</sql>
+            <sql>DROP ROLE role_dev_new</sql>
+            <sql>DROP USER user_dev</sql>
+            <sql>DROP USER user_dev_new</sql>
+        </user-drop>
+    </sqlset>
+    <sqlset db-types="SQLServer">
+        <user-create>
+            <sql>CREATE LOGIN login_dev</sql>
+            <sql>CREATE USER user_dev FOR LOGIN login_dev</sql>
+        </user-create>
+        <user-drop>
+            <sql>DROP LOGIN login_dev</sql>
+            <sql>DROP LOGIN login_dev_new</sql>
+        </user-drop>
+    </sqlset>
+    <sqlset db-types="MySQL">
+        <user-create>
+            <sql>CREATE ROLE default_role</sql>
+            <sql>CREATE USER user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on master.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on master.t_order to user_dev@localhost</sql>
+        </user-create>
+        <user-drop>
+            <sql>DROP ROLE default_role</sql>
+            <sql>DROP ROLE role_dev</sql>
+            <sql>DROP ROLE role_dev_new</sql>
+            <sql>DROP USER user_dev@localhost</sql>
+            <sql>DROP USER user_dev_new@localhost</sql>
+            <sql>DROP USER user_dev@127.0.0.1</sql>
+            <sql>FLUSH PRIVILEGES</sql>
+        </user-drop>
+    </sqlset>
+    <sqlset db-types="Oracle">
+        <user-create>
+            <sql>CREATE USER user_dev identified by passwd_dev</sql>
+        </user-create>
+    </sqlset>
+    <sqlset db-types="PostgreSQL">
+        <user-create>
+            <sql>CREATE USER user_dev PASSWORD 'passwd_dev'</sql>
+        </user-create>
+    </sqlset>
+</authority>

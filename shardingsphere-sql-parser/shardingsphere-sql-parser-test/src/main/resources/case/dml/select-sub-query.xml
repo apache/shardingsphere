@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <select sql-case-id="select_sub_query_with_project">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="40" stop-index="46" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="33">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+            <subquery-projection start-index="17" stop-index="26" alias="num">
+                <subquery>
+                    <select>
+                        <projections start-index="25" stop-index="25">
+                            <expression-projection start-index="25" stop-index="25" />
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_sub_query_with_table" parameters="3, 4">
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner start-index="7" stop-index="7" name="t"/>
+            </shorthand-projection>
+        </projections>
+        <table-reference>
+            <table-factor>
+                <subqueryTable alias="t">
+                    <subquery>
+                        <select>
+                            <projections start-index="24" stop-index="24">
+                                <shorthand-projection start-index="24" stop-index="24" />
+                            </projections>
+                            <table-reference>
+                                <table-factor>
+                                    <table start-index="31" stop-index="37" name="t_order"/>
+                                </table-factor>
+                            </table-reference>
+                            <where start-index="39" stop-index="62">
+                                <and-predicate>
+                                    <predicate start-index="45" stop-index="62">
+                                        <column-left-value start-index="45" stop-index="52" name="order_id" />
+                                        <in-right-value>
+                                            <literal-expression start-index="58" stop-index="58" value="3" />
+                                            <parameter-marker-expression start-index="58" stop-index="58" value="0" />
+                                            <literal-expression start-index="61" stop-index="61" value="4" />
+                                            <parameter-marker-expression start-index="61" stop-index="61" value="1"/>
+                                        </in-right-value>
+                                    </predicate>
+                                </and-predicate>
+                            </where>
+                        </select>
+                    </subquery>
+                </subqueryTable>
+            </table-factor>
+        </table-reference>
+        <tables>
+            <subquery-table start-index="17" stop-index="62" alias="t">
+                <select>
+                    <tables>
+                        <simple-table name="t_order" start-index="31" stop-index="37" />
+                    </tables>
+                    <projections start-index="24" stop-index="24">
+                        <shorthand-projection start-index="24" stop-index="24" />
+                    </projections>
+                    <where start-index="39" stop-index="62" literal-stop-index="62">
+                        <and-predicate>
+                            <predicate start-index="45" stop-index="62" literal-stop-index="62">
+                                <column-left-value name="order_id" start-index="45" stop-index="52" />
+                                <in-right-value>
+                                    <parameter-marker-expression value="1" />
+                                    <parameter-marker-expression value="2" />
+                                    <literal-expression value="3" />
+                                    <literal-expression value="4" />
+                                </in-right-value>
+                            </predicate>
+                        </and-predicate>
+                    </where>
+                </select>
+            </subquery-table>
+        </tables>
+    </select>
+
+    <select sql-case-id="select_with_equal_subquery">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="85">
+            <and-predicate>
+                <predicate start-index="28" literal-stop-index="85">
+                    <column-left-value name="user_id" start-index="28" stop-index="34" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <subquery-expression start-index="38" stop-index="85" literal-start-index="38" literal-stop-index="85">
+                            <select>
+                                <table-reference>
+                                    <table-factor>
+                                        <table name="t_order_item" start-index="59" stop-index="70" />
+                                    </table-factor>
+                                </table-reference>
+                                <projections start-index="46" stop-index="52">
+                                    <column-projection name="user_id" start-index="46" stop-index="52" />
+                                </projections>
+                                <where start-index="72" stop-index="85">
+                                    <and-predicate>
+                                        <predicate start-index="78" literal-stop-index="84">
+                                            <column-left-value name="id" start-index="78" stop-index="79" />
+                                            <operator type="=" />
+                                            <compare-right-value>
+                                                <literal-expression value="10" start-index="83" stop-index="84" />
+                                            </compare-right-value>
+                                        </predicate>
+                                    </and-predicate>
+                                </where>
+                            </select>
+                        </subquery-expression>
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_in_subquery">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="93">
+            <and-predicate>
+                <predicate start-index="28" literal-stop-index="93">
+                    <column-left-value name="user_id" start-index="28" stop-index="34" />
+                    <in-right-value>
+                        <subquery-expression start-index="39" stop-index="93" literal-start-index="39" literal-stop-index="93">
+                            <select>
+                                <table-reference>
+                                    <table-factor>
+                                        <table name="t_order_item" start-index="60" stop-index="71" />
+                                    </table-factor>
+                                </table-reference>
+                                <projections start-index="47" stop-index="53">
+                                    <column-projection name="user_id" start-index="47" stop-index="53" />
+                                </projections>
+                                <where start-index="73" stop-index="92">
+                                    <and-predicate>
+                                        <predicate start-index="79" literal-stop-index="92">
+                                            <column-left-value name="id" start-index="79" stop-index="80"  />
+                                            <in-right-value>
+                                                <literal-expression value="10" start-index="86" stop-index="87" />
+                                                <literal-expression value="11" start-index="90" stop-index="91" />
+                                            </in-right-value>
+                                        </predicate>
+                                    </and-predicate>
+                                </where>
+                            </select>
+                        </subquery-expression>
+                    </in-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_between_subquery" parameters="12">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="106">
+            <and-predicate>
+                <predicate start-index="28" stop-index="103" literal-stop-index="104">
+                    <column-left-value name="user_id" start-index="28" stop-index="34" />
+                    <between-right-value>
+                        <between-subquery-expression start-index="44" stop-index="97" literal-start-index="44" literal-stop-index="97" >
+                            <select>
+                                <table-reference>
+                                    <table-factor>
+                                        <table name="t_order_item" start-index="65" stop-index="76" />
+                                    </table-factor>
+                                </table-reference>
+                                <projections start-index="52" stop-index="58">
+                                    <column-projection name="user_id" start-index="52" stop-index="58" />
+                                </projections>
+                                <where start-index="78" stop-index="96">
+                                    <and-predicate>
+                                        <predicate start-index="84" stop-index="96" literal-stop-index="96">
+                                            <column-left-value name="order_id" start-index="84" stop-index="91" />
+                                            <operator type="=" />
+                                            <compare-right-value>
+                                                <literal-expression value="10" start-index="95" stop-index="96" />
+                                            </compare-right-value>
+                                        </predicate>
+                                    </and-predicate>
+                                </where>
+                            </select>
+                        </between-subquery-expression>
+                        <and-parameter-marker-expression value="0" start-index="103" stop-index="103" />
+                        <and-literal-expression value="12" start-index="103" stop-index="104" />
+                    </between-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+</sql-parser-test-cases>

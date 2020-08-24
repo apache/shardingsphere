@@ -1,0 +1,188 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<integrate-test-cases>
+   <dml-test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)">
+       <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
+       <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="INSERT INTO t_order_item (item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())" db-types="MySQL">
+        <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_now_function.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert')">
+        <assertion expected-data-file="insert_for_order_1.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'insert')" db-types="MySQL">
+        <assertion expected-data-file="insert_for_order_1.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="INSERT /*+ index(field1) */ INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') RETURNING order_id" db-types="PostgreSQL">
+        <assertion expected-data-file="insert_for_order_1.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert'), (2, 2, 'insert2')" db-types="MySQL">
+        <assertion expected-data-file="insert_multiple_values_for_order_1_2.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL">
+        <assertion parameters="1000:int, 10:int, update:String" expected-data-file="insert_on_duplicate_key_update.xml" />
+    </dml-test-case>
+    
+    <!-- TODO fixme -->
+    <!--<dml-test-case sql="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?)">-->
+        <!--<assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
+        <!--<assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />-->
+    <!--</dml-test-case>-->
+    
+    <dml-test-case sql="INSERT INTO t_order VALUES (?, ?, ?)">
+        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
+        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="INSERT INTO t_order SET order_id = ?, user_id = ?, status = ?" db-types="MySQL">
+        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
+        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
+    </dml-test-case>
+    
+    <!-- TODO fixme -->
+    <!--<dml-test-case sql="INSERT INTO t_order SET t_order.order_id = ?, t_order.user_id = ?, t_order.status = ?" db-types="MySQL">-->
+        <!--<assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
+        <!--<assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />-->
+    <!--</dml-test-case>-->
+    
+    <dml-test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, 'insert')" >
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_for_order_1.xml" />
+        <assertion parameters="2:int, 2:int" expected-data-file="insert_for_order_2.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="INSERT INTO t_order SET order_id = ?, user_id = ?, status = 'insert'" db-types="MySQL">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_for_order_1.xml" />
+        <assertion parameters="2:int, 2:int" expected-data-file="insert_for_order_2.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'insert', '2017-08-08')">
+        <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="INSERT INTO t_order_item values(?, ?, ?, 'insert', '2017-08-08')">
+        <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="INSERT INTO t_order_item SET item_id = ?, order_id = ?, user_id = ?, status = 'insert', creation_date='2017-08-08'" db-types="MySQL">
+        <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="INSERT INTO t_order_item values(?, ?, 'insert', '2017-08-08')">
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
+        <!-- TODO add gen column on create table -->
+        <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />-->
+    </dml-test-case>
+    
+    <dml-test-case sql="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'insert', '2017-08-08')">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
+    </dml-test-case>
+
+    <dml-test-case sql="INSERT INTO t_order_item SET order_id = ?, user_id = ?, status = 'insert', creation_date='2017-08-08'" db-types="MySQL">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?), (?, ?, ?)">
+        <assertion parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />
+    </dml-test-case>
+
+    <dml-test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, 1, 'insert'), (?, ?, ?)">
+        <assertion parameters="1:int, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />
+    </dml-test-case>
+
+    <!--<dml-test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, SUBSTR(?, 1)), (?, ?, SUBSTR(?, 1))" db-types="H2,MySQL" >-->
+        <!--<assertion parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />-->
+    <!--</dml-test-case>-->
+    
+    <dml-test-case sql="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'insert', '2017-08-08'), (?, ?, ?, 'insert', '2017-08-08')">
+        <assertion parameters="1:int, 1:int, 1:int, 2:int, 2:int, 2:int" expected-data-file="batch_insert_with_generate_key_column.xml" />
+    </dml-test-case>
+    
+    <!--<dml-test-case sql="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'insert', '2017-08-08'), (?, ?, 'insert', '2017-08-08')">-->
+        <!--<assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />-->
+        <!--&lt;!&ndash; TODO add gen column on create table &ndash;&gt;-->
+        <!--&lt;!&ndash;<assertion parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />&ndash;&gt;-->
+    <!--</dml-test-case>-->
+    
+    <dml-test-case sql="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?">
+        <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?" db-types="MySQL,H2">
+        <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,H2">
+        <assertion expected-data-file="update_without_condition.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="UPDATE LOW_PRIORITY IGNORE t_order SET status = ? WHERE order_id = ? AND user_id = ?" db-types="MySQL">
+        <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="UPDATE `t_order` SET `status` = ? WHERE `order_id` = ? AND user_id = ?" db-types="MySQL">
+        <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
+    </dml-test-case>
+
+    <dml-test-case sql="UPDATE /*+ index(field1) */ ONLY t_order SET status=? WHERE order_id = ? AND user_id = ? RETURN * LOG ERRORS INTO TABLE_LOG" db-types="Oracle">
+        <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
+    </dml-test-case>
+
+    <dml-test-case sql="UPDATE t_order SET status = 'update' WHERE order_id = 1000 AND user_id = 10">
+        <assertion expected-data-file="update.xml" />
+    </dml-test-case>
+
+    <dml-test-case sql="UPDATE t_order SET status = 'update' WHERE (order_id = ? OR order_id = ?) AND user_id = ?">
+        <assertion parameters="1000:int, 0:int, 10:int" expected-data-file="update.xml" />
+    </dml-test-case>
+
+    <dml-test-case sql="update t_order set status = status where user_id = user_id AND order_id = 1000">
+        <assertion expected-data-file="update_with_column_equal_column.xml" />
+    </dml-test-case>
+
+    <dml-test-case sql="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status=?">
+        <assertion parameters="1000:int, 10:int, init:String" expected-data-file="delete_with_sharding_value.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="DELETE FROM t_order WHERE status=?">
+        <assertion parameters="init:String" expected-data-file="delete_without_sharding_value.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="DELETE FROM `t_order` WHERE `status`='init'" db-types="MySQL">
+        <assertion expected-data-file="delete_without_sharding_value.xml" />
+    </dml-test-case>
+
+    <dml-test-case sql="DELETE /*+ index(status) */ ONLY t_order WHERE status=1 RETURN * LOG ERRORS INTO TABLE_LOG" db-types="Oracle">
+        <assertion expected-data-file="delete_with_special_comments_return_without_sharding_value.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql="DELETE /*+ index(status) */ ONLY (t_order) WHERE status=1 RETURNING *" db-types="Oracle">
+        <assertion expected-data-file="delete_with_special_comments_returning_without_sharding_value.xml" />
+    </dml-test-case>
+
+    <!-- Can't support delete multiple tables-->
+    <!--<dml-test-case sql="DELETE o FROM t_order AS o WHERE status=?" db-types="MySQL,Oracle,SQLServer">-->
+        <!--<assertion parameters="init:String" expected-data-file="delete_with_alias.xml" />-->
+    <!--</dml-test-case>-->
+</integrate-test-cases>

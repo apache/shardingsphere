@@ -1,0 +1,43 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+version: '3.7'
+services:
+  mysql:
+    image: "mysql/mysql-server:5.7"
+    container_name: mysql-5.7
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d/
+    ports:
+      - "33060:3306"
+  shardingsphere-proxy:
+      image: apache/shardingsphere-proxy-test
+      container_name: shardingsphere-proxy
+      ports:
+        - "33070:3307"
+      links:
+        - "mysql:db.mysql"
+      volumes:
+        - ./proxy/conf:/opt/shardingsphere-proxy/conf
+      depends_on:
+        - mysql
+      environment:
+        - WAIT_HOSTS=mysql:3306
+        - WAIT_HOSTS_TIMEOUT=300
+        - WAIT_SLEEP_INTERVAL=5
+        - WAIT_HOST_CONNECT_TIMEOUT=30

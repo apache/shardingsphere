@@ -1,6 +1,0 @@
-<dataset>
-    <metadata>
-        <column name="avg(distinct order_id)" />
-    </metadata>
-    <row values="1000.5000" />
-</dataset>
