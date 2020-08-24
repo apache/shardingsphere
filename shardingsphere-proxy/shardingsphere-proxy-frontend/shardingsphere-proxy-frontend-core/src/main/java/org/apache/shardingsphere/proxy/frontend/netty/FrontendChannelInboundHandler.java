@@ -81,7 +81,6 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            // TODO ref #7014
             log.error("Exception occur: ", ex);
             context.write(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
         }
