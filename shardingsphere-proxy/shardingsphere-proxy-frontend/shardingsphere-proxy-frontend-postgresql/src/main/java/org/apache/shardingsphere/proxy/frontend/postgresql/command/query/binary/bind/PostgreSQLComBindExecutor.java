@@ -63,7 +63,8 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
             
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
-    private volatile boolean isQuery;
+    @Getter
+    private volatile boolean isQueryResponse;
     
     @Getter
     private volatile boolean isUpdateResponse;
@@ -118,7 +119,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
         List<PostgreSQLColumnDescription> columnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
-        isQuery = !columnDescriptions.isEmpty();
+        isQueryResponse = !columnDescriptions.isEmpty();
         if (columnDescriptions.isEmpty() || packet.isBinaryRowData()) {
             return Optional.empty();
         }
@@ -134,11 +135,6 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
             result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength(), resultSetMetaData));
         }
         return result;
-    }
-    
-    @Override
-    public boolean isQueryResponse() {
-        return isQuery;
     }
     
     @Override
