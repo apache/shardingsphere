@@ -68,30 +68,15 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     @Override
     public boolean auth(final ChannelHandlerContext context, final PacketPayload payload, final BackendConnection backendConnection) {
         if (MySQLConnectionPhase.AUTH_PHASE_FAST_PATH == connectionPhase) {
-            MySQLHandshakeResponse41Packet response41 = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
-            username = response41.getUsername();
-            authResponse = response41.getAuthResponse();
-            database = response41.getDatabase();
-            sequenceId = response41.getSequenceId();
-            if (!Strings.isNullOrEmpty(database) && !ProxySchemaContexts.getInstance().schemaExists(database)) {
-                context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_BAD_DB_ERROR, database));
-                return false;
-            }
-            if (0 != (response41.getCapabilityFlags() & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue())
-                && !MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName().equals(response41.getAuthPluginName())) {
-                connectionPhase = MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH;
-                context.writeAndFlush(new MySQLAuthSwitchRequestPacket(++sequenceId,
-                    MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName(), authenticationHandler.getAuthPluginData()));
+            if (!authPhaseFastPath(context, payload)) {
                 return false;
             }
         } else if (MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH == connectionPhase) {
-            MySQLAuthSwitchResponsePacket authSwitchResponsePacket = new MySQLAuthSwitchResponsePacket((MySQLPacketPayload) payload);
-            sequenceId = authSwitchResponsePacket.getSequenceId();
-            authResponse = authSwitchResponsePacket.getAuthPluginResponse();
+            authenticationMethodMismatch((MySQLPacketPayload) payload);
         }
         Optional<MySQLServerErrorCode> errorCode = authenticationHandler.login(username, authResponse, database);
         if (errorCode.isPresent()) {
-            context.writeAndFlush(getMySQLErrPacket(errorCode.get(), context));
+            context.writeAndFlush(createMySQLErrPacket(errorCode.get(), context));
         } else {
             backendConnection.setCurrentSchema(database);
             backendConnection.setUserName(username);
@@ -100,7 +85,35 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         return true;
     }
     
-    private MySQLErrPacket getMySQLErrPacket(final MySQLServerErrorCode errorCode, final ChannelHandlerContext context) {
+    private boolean authPhaseFastPath(final ChannelHandlerContext context, final PacketPayload payload) {
+        MySQLHandshakeResponse41Packet packet = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
+        username = packet.getUsername();
+        authResponse = packet.getAuthResponse();
+        database = packet.getDatabase();
+        sequenceId = packet.getSequenceId();
+        if (!Strings.isNullOrEmpty(database) && !ProxySchemaContexts.getInstance().schemaExists(database)) {
+            context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_BAD_DB_ERROR, database));
+            return false;
+        }
+        if (isClientPluginAuth(packet) && !MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName().equals(packet.getAuthPluginName())) {
+            connectionPhase = MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH;
+            context.writeAndFlush(new MySQLAuthSwitchRequestPacket(++sequenceId, MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName(), authenticationHandler.getAuthPluginData()));
+            return false;
+        }
+        return true;
+    }
+    
+    private boolean isClientPluginAuth(final MySQLHandshakeResponse41Packet packet) {
+        return 0 != (packet.getCapabilityFlags() & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
+    }
+    
+    private void authenticationMethodMismatch(final MySQLPacketPayload payload) {
+        MySQLAuthSwitchResponsePacket packet = new MySQLAuthSwitchResponsePacket(payload);
+        sequenceId = packet.getSequenceId();
+        authResponse = packet.getAuthPluginResponse();
+    }
+    
+    private MySQLErrPacket createMySQLErrPacket(final MySQLServerErrorCode errorCode, final ChannelHandlerContext context) {
         return MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR == errorCode
                 ? new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR, username, getHostAddress(context), database)
                 : new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, username, getHostAddress(context), getErrorMessage());
