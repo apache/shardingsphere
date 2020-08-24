@@ -83,7 +83,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     @SuppressWarnings("unchecked")
     @Override
     public BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
-        SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = executionContext.getSqlStatementContext();
         boolean isReturnGeneratedKeys = sqlStatementContext.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<ExecuteResult> executeResults;
