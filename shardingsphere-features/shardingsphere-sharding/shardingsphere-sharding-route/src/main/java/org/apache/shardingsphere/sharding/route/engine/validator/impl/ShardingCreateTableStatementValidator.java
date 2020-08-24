@@ -17,34 +17,31 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
+import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 
 /**
- * Sharding delete statement validator.
+ * Sharding create table statement validator.
  */
-public final class ShardingDeleteStatementValidator implements ShardingStatementValidator<DeleteStatement> {
+public final class ShardingCreateTableStatementValidator implements ShardingStatementValidator<CreateTableStatement> {
 
     @Override
     public void preValidate(final ShardingRule shardingRule, final RouteContext routeContext, final ShardingSphereMetaData metaData) {
-        SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
-        if (1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
-            throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
+        CreateTableStatementContext sqlStatementContext = (CreateTableStatementContext) routeContext.getSqlStatementContext();
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        if (metaData.getSchema().getAllTableNames().contains(tableName)) {
+            throw new TableExistsException(tableName);
         }
     }
 
     @Override
     public void postValidate(final SQLStatement sqlStatement, final RouteResult routeResult) {
-        if (((DeleteStatement) sqlStatement).getLimit().isPresent() && routeResult.getRouteUnits().size() > 1) {
-            throw new ShardingSphereException("DELETE ... LIMIT can not support sharding route to multiple data nodes.");
-        }
     }
 }

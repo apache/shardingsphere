@@ -28,6 +28,7 @@ import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
+import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.executor.CommandExecutorSelector;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
@@ -77,7 +78,12 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private boolean auth(final ChannelHandlerContext context, final ByteBuf message) {
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload(message)) {
-            return databaseProtocolFrontendEngine.getAuthEngine().auth(context, payload, backendConnection);
+            AuthenticationResult authResult = databaseProtocolFrontendEngine.getAuthEngine().auth(context, payload, backendConnection);
+            if (authResult.isFinished()) {
+                backendConnection.setUserName(authResult.getUsername());
+                backendConnection.setCurrentSchema(authResult.getDatabase());
+            }
+            return authResult.isFinished();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
