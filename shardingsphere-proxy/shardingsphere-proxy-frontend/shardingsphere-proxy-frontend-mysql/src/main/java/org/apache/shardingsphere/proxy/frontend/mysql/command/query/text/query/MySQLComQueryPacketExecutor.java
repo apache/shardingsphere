@@ -77,24 +77,16 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
             return Collections.singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
-        if (backendResponse instanceof ErrorResponse) {
-            isErrorResponse = true;
-            return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
+        if (backendResponse instanceof QueryResponse) {
+            isQueryResponse = true;
+            return createQueryPackets((QueryResponse) backendResponse);
         }
         if (backendResponse instanceof UpdateResponse) {
             isUpdateResponse = true;
             return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
-        isQueryResponse = true;
-        return createQueryPackets((QueryResponse) backendResponse);
-    }
-    
-    private MySQLErrPacket createErrorPacket(final Exception cause) {
-        return MySQLErrPacketFactory.newInstance(1, cause);
-    }
-    
-    private MySQLOKPacket createUpdatePacket(final UpdateResponse updateResponse) {
-        return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
+        isErrorResponse = true;
+        return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
     }
     
     private Collection<DatabasePacket<?>> createQueryPackets(final QueryResponse backendResponse) {
@@ -124,6 +116,14 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
             result += MySQLColumnFieldDetailFlag.AUTO_INCREMENT.getValue();
         }
         return result;
+    }
+    
+    private MySQLOKPacket createUpdatePacket(final UpdateResponse updateResponse) {
+        return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
+    }
+    
+    private MySQLErrPacket createErrorPacket(final Exception cause) {
+        return MySQLErrPacketFactory.newInstance(1, cause);
     }
     
     @Override

@@ -22,7 +22,6 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -65,7 +64,7 @@ public class PostgreSQLPacketCodecEngineTest {
         when(byteBuf.readInt()).thenReturn(50);
         List<Object> out = new LinkedList<>();
         new PostgreSQLPacketCodecEngine().decode(context, byteBuf, out, 54);
-        assertThat(out.size(), CoreMatchers.is(1));
+        assertThat(out.size(), is(1));
     }
     
     @Test
