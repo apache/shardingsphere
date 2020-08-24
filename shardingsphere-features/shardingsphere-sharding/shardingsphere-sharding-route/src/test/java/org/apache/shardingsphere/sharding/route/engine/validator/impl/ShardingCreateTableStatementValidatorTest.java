@@ -17,44 +17,39 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
+import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.dml.DeleteStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Test;
 import org.mockito.Mock;
 
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public final class ShardingDeleteStatementValidatorTest {
+public final class ShardingCreateTableStatementValidatorTest {
 
     @Mock
     private ShardingRule shardingRule;
 
-    @Test(expected = ShardingSphereException.class)
-    public void assertValidateDeleteModifyMultiTables() {
-        DeleteStatement sqlStatement = new DeleteStatement();
-        sqlStatement.getTables().addAll(createMultiTablesContext().getTables());
-        SQLStatementContext<DeleteStatement> sqlStatementContext = new DeleteStatementContext(sqlStatement);
+    @Test(expected = TableExistsException.class)
+    public void assertValidateCreateTable() {
+        CreateTableStatement sqlStatement = new CreateTableStatement(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")));
+        SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
         RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
-        new ShardingDeleteStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
-    }
-
-    private TablesContext createMultiTablesContext() {
-        List<SimpleTableSegment> result = new LinkedList<>();
-        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
-        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
-        return new TablesContext(result);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
+        when(ruleSchemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
+        when(metaData.getSchema()).thenReturn(ruleSchemaMetaData);
+        new ShardingCreateTableStatementValidator().preValidate(shardingRule, routeContext, metaData);
     }
 }
