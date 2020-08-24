@@ -86,14 +86,6 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         return Collections.singletonList(createErrorPacket((ErrorResponse) backendResponse));
     }
     
-    private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
-        return PostgreSQLErrPacketFactory.newInstance(errorResponse.getCause());
-    }
-    
-    private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponse updateResponse) {
-        return new PostgreSQLCommandCompletePacket(updateResponse.getType(), updateResponse.getUpdateCount());
-    }
-    
     private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
         List<PostgreSQLColumnDescription> columnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
         isQueryResponse = !columnDescriptions.isEmpty();
@@ -112,6 +104,14 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
             result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength(), resultSetMetaData));
         }
         return result;
+    }
+    
+    private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponse updateResponse) {
+        return new PostgreSQLCommandCompletePacket(updateResponse.getType(), updateResponse.getUpdateCount());
+    }
+    
+    private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
+        return PostgreSQLErrPacketFactory.newInstance(errorResponse.getCause());
     }
     
     @Override
