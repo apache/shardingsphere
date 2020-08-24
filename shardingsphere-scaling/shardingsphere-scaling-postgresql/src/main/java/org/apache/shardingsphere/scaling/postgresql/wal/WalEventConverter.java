@@ -92,28 +92,28 @@ public final class WalEventConverter {
     }
     
     private DataRecord handleWriteRowsEvent(final WriteRowEvent writeRowEvent) {
-        DataRecord record = createDataRecord(writeRowEvent, writeRowEvent.getAfterRow().size());
-        record.setType(ScalingConstant.INSERT);
-        putColumnsIntoDataRecord(record, metaDataManager.getTableMetaData(writeRowEvent.getTableName()), writeRowEvent.getAfterRow());
-        return record;
+        DataRecord result = createDataRecord(writeRowEvent, writeRowEvent.getAfterRow().size());
+        result.setType(ScalingConstant.INSERT);
+        putColumnsIntoDataRecord(result, metaDataManager.getTableMetaData(writeRowEvent.getTableName()), writeRowEvent.getAfterRow());
+        return result;
     }
     
     private DataRecord handleUpdateRowsEvent(final UpdateRowEvent updateRowEvent) {
-        DataRecord record = createDataRecord(updateRowEvent, updateRowEvent.getAfterRow().size());
-        record.setType(ScalingConstant.UPDATE);
-        putColumnsIntoDataRecord(record, metaDataManager.getTableMetaData(updateRowEvent.getTableName()), updateRowEvent.getAfterRow());
-        return record;
+        DataRecord result = createDataRecord(updateRowEvent, updateRowEvent.getAfterRow().size());
+        result.setType(ScalingConstant.UPDATE);
+        putColumnsIntoDataRecord(result, metaDataManager.getTableMetaData(updateRowEvent.getTableName()), updateRowEvent.getAfterRow());
+        return result;
     }
     
     private DataRecord handleDeleteRowsEvent(final DeleteRowEvent event) {
         //TODO completion columns
-        DataRecord record = createDataRecord(event, event.getPrimaryKeys().size());
-        record.setType(ScalingConstant.DELETE);
+        DataRecord result = createDataRecord(event, event.getPrimaryKeys().size());
+        result.setType(ScalingConstant.DELETE);
         List<String> primaryKeyColumns = metaDataManager.getTableMetaData(event.getTableName()).getPrimaryKeyColumns();
         for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
-            record.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), true, true));
+            result.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), true, true));
         }
-        return record;
+        return result;
     }
     
     private DataRecord createDataRecord(final AbstractRowEvent rowsEvent, final int columnCount) {
