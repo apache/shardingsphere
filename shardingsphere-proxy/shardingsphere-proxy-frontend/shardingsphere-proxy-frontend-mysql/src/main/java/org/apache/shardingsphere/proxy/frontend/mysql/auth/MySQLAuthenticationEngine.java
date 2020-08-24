@@ -89,7 +89,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         if (isClientPluginAuth(packet) && !MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName().equals(packet.getAuthPluginName())) {
             connectionPhase = MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH;
             context.writeAndFlush(new MySQLAuthSwitchRequestPacket(++sequenceId, MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName(), authenticationHandler.getAuthPluginData()));
-            return AuthenticationResult.continued();
+            return AuthenticationResult.continued(packet.getUsername(), packet.getDatabase());
         }
         return AuthenticationResult.finished(packet.getUsername(), packet.getDatabase());
     }
