@@ -36,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationEngine;
+import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationResult;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -56,6 +57,8 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     
     private volatile byte[] md5Salt;
     
+    private AuthenticationResult currentAuthResult;
+    
     @Override
     public int handshake(final ChannelHandlerContext context) {
         int result = ConnectionIdGenerator.getInstance().nextId();
@@ -64,10 +67,10 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     }
     
     @Override
-    public boolean auth(final ChannelHandlerContext context, final PacketPayload payload, final BackendConnection backendConnection) {
+    public AuthenticationResult auth(final ChannelHandlerContext context, final PacketPayload payload, final BackendConnection backendConnection) {
         if (SSL_REQUEST_PAYLOAD_LENGTH == payload.getByteBuf().markReaderIndex().readInt() && SSL_REQUEST_CODE == payload.getByteBuf().readInt()) {
             context.writeAndFlush(new PostgreSQLSSLNegativePacket());
-            return false;
+            return AuthenticationResult.continued();
         }
         payload.getByteBuf().resetReaderIndex();
         if (!startupMessageReceived.get()) {
@@ -79,7 +82,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
                     String.format("database \"%s\" does not exist", databaseName));
                 context.writeAndFlush(responsePacket);
                 context.close();
-                return false;
+                return AuthenticationResult.continued();
             }
             backendConnection.setCurrentSchema(databaseName);
             String userName = comStartupPacket.getParametersMap().get(USER_NAME_KEYWORD);
@@ -88,12 +91,12 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
                     "user not set in StartupMessage");
                 context.writeAndFlush(responsePacket);
                 context.close();
-                return false;
+                return AuthenticationResult.continued();
             }
             backendConnection.setUserName(userName);
             md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);
             context.writeAndFlush(new PostgreSQLAuthenticationMD5PasswordPacket(md5Salt));
-            return false;
+            return AuthenticationResult.continued(userName, databaseName);
         } else {
             char messageType = (char) ((PostgreSQLPacketPayload) payload).readInt1();
             if ('p' != messageType) {
@@ -101,7 +104,8 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
                     "PasswordMessage is expected, message type 'p', but not '" + messageType + "'");
                 context.writeAndFlush(responsePacket);
                 context.close();
-                return false;
+                currentAuthResult = AuthenticationResult.continued();
+                return currentAuthResult;
             }
             PostgreSQLPasswordMessagePacket passwordMessagePacket = new PostgreSQLPasswordMessagePacket((PostgreSQLPacketPayload) payload);
             PostgreSQLLoginResult loginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(
@@ -111,7 +115,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
                     loginResult.getErrorMessage());
                 context.writeAndFlush(responsePacket);
                 context.close();
-                return false;
+                return AuthenticationResult.continued();
             } else {
                 // TODO implement PostgreSQLServerInfo like MySQLServerInfo
                 context.write(new PostgreSQLAuthenticationOKPacket(true));
@@ -119,7 +123,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
                 context.write(new PostgreSQLParameterStatusPacket("client_encoding", "UTF8"));
                 context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
                 context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
-                return true;
+                return AuthenticationResult.finished(currentAuthResult.getUsername(), currentAuthResult.getDatabase());
             }
         }
     }

@@ -40,7 +40,7 @@ public interface AuthenticationEngine {
      * @param context channel handler context
      * @param payload packet payload
      * @param backendConnection backend connection
-     * @return auth finish or not
+     * @return authentication result
      */
-    boolean auth(ChannelHandlerContext context, PacketPayload payload, BackendConnection backendConnection);
+    AuthenticationResult auth(ChannelHandlerContext context, PacketPayload payload, BackendConnection backendConnection);
 }
