@@ -79,17 +79,17 @@ public final class SyncPositionResumer {
         return result;
     }
     
-    private InventoryDumperConfiguration newInventoryDumperConfiguration(final DumperConfiguration dumperConfiguration, final MetaDataManager metaDataManager,
-                                                                final Entry<String, PositionManager<InventoryPosition>> entry) {
+    private InventoryDumperConfiguration newInventoryDumperConfiguration(
+            final DumperConfiguration dumperConfiguration, final MetaDataManager metaDataManager, final Entry<String, PositionManager<InventoryPosition>> entry) {
         String[] splitTable = entry.getKey().split("#");
-        InventoryDumperConfiguration splitDumperConfig = new InventoryDumperConfiguration(dumperConfiguration);
-        splitDumperConfig.setTableName(splitTable[0].split("\\.")[1]);
-        splitDumperConfig.setPositionManager(entry.getValue());
+        InventoryDumperConfiguration result = new InventoryDumperConfiguration(dumperConfiguration);
+        result.setTableName(splitTable[0].split("\\.")[1]);
+        result.setPositionManager(entry.getValue());
         if (2 == splitTable.length) {
-            splitDumperConfig.setSpiltNum(Integer.parseInt(splitTable[1]));
+            result.setSpiltNum(Integer.parseInt(splitTable[1]));
         }
-        splitDumperConfig.setPrimaryKey(metaDataManager.getTableMetaData(splitDumperConfig.getTableName()).getPrimaryKeyColumns().get(0));
-        return splitDumperConfig;
+        result.setPrimaryKey(metaDataManager.getTableMetaData(result.getTableName()).getPrimaryKeyColumns().get(0));
+        return result;
     }
     
     private Map<String, PositionManager<InventoryPosition>> getInventoryPositionMap(
