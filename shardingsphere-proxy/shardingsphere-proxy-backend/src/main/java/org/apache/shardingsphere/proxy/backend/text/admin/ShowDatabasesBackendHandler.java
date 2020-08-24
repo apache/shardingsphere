@@ -53,7 +53,7 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     private Collection getSchemaNames() {
         Collection<String> result = new LinkedList<>(ProxySchemaContexts.getInstance().getSchemaNames());
-        Collection<String> authorizedSchemas = ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas();
+        Collection<String> authorizedSchemas = ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get(backendConnection.getUsername()).getAuthorizedSchemas();
         if (!authorizedSchemas.isEmpty()) {
             result.retainAll(authorizedSchemas);
         }
