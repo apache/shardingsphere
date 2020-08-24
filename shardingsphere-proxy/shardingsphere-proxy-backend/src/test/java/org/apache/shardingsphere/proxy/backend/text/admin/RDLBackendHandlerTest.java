@@ -25,6 +25,7 @@ import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.OrchestrationSchemaContextsFixture;
+import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
@@ -69,6 +70,19 @@ public final class RDLBackendHandlerTest {
         assertThat(response, instanceOf(UpdateResponse.class));
     }
     
+    @Test
+    public void assertExecuteCreateDatabaseContextWithException() {
+        BackendConnection connection = mock(BackendConnection.class);
+        when(connection.getSchema()).thenReturn("schema");
+        RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new CreateDatabaseStatement("schema"));
+        BackendResponse response = executeEngine.execute();
+        assertThat(response, instanceOf(ErrorResponse.class));
+        setOrchestrationSchemaContexts(true);
+        response = executeEngine.execute();
+        assertThat(response, instanceOf(ErrorResponse.class));
+        assertThat(((ErrorResponse) response).getCause(), instanceOf(DBCreateExistsException.class));
+    }
+    
     private Map<String, SchemaContext> getSchemaContextMap() {
         SchemaContext result = new SchemaContext("schema", null, null);
         return Collections.singletonMap("schema", result);
@@ -103,7 +117,7 @@ public final class RDLBackendHandlerTest {
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
         if (isOrchestration) {
-            schemaContexts.set(ProxySchemaContexts.getInstance(), mock(OrchestrationSchemaContextsFixture.class));
+            schemaContexts.set(ProxySchemaContexts.getInstance(), new OrchestrationSchemaContextsFixture());
         } else {
             schemaContexts.set(ProxySchemaContexts.getInstance(), new StandardSchemaContexts());
         }

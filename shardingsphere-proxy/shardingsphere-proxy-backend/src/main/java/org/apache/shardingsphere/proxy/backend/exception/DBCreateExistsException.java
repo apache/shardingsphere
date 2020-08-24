@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
+package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Create database statement.
+ * DB create exists exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateDatabaseStatement extends DDLStatement {
+public final class DBCreateExistsException extends BackendException {
+    
+    private static final long serialVersionUID = 779787160167652641L;
     
     private final String databaseName;
 }
