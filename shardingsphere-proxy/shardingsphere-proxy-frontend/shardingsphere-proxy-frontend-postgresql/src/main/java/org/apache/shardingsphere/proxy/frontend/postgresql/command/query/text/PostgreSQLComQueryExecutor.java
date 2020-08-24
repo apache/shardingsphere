@@ -74,16 +74,16 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
             return Collections.singletonList(new PostgreSQLErrorResponsePacket());
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
-        if (backendResponse instanceof ErrorResponse) {
-            isErrorResponse = true;
-            return Collections.singletonList(createErrorPacket((ErrorResponse) backendResponse));
+        if (backendResponse instanceof QueryResponse) {
+            Optional<PostgreSQLRowDescriptionPacket> result = createQueryPacket((QueryResponse) backendResponse);
+            return result.<List<DatabasePacket<?>>>map(Collections::singletonList).orElseGet(Collections::emptyList);
         }
         if (backendResponse instanceof UpdateResponse) {
             isUpdateResponse = true;
             return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
-        Optional<PostgreSQLRowDescriptionPacket> result = createQueryPacket((QueryResponse) backendResponse);
-        return result.<List<DatabasePacket<?>>>map(Collections::singletonList).orElseGet(Collections::emptyList);
+        isErrorResponse = true;
+        return Collections.singletonList(createErrorPacket((ErrorResponse) backendResponse));
     }
     
     private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
