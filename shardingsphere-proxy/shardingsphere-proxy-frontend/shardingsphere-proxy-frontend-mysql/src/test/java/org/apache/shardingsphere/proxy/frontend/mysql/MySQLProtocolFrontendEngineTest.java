@@ -37,6 +37,7 @@ import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.ConnectionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.mysql.auth.MySQLAuthenticationEngine;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +54,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.isA;
@@ -101,7 +105,10 @@ public final class MySQLProtocolFrontendEngineTest {
         ProxyUser proxyUser = new ProxyUser("", Collections.singleton("db1"));
         setAuthentication(proxyUser);
         when(payload.readStringNul()).thenReturn("root");
-        assertTrue(mysqlProtocolFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
+        AuthenticationResult actual = mysqlProtocolFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class));
+        assertThat(actual.getUsername(), is("root"));
+        assertNull(actual.getDatabase());
+        assertTrue(actual.isFinished());
         verify(context).writeAndFlush(isA(MySQLOKPacket.class));
     }
     
@@ -114,7 +121,10 @@ public final class MySQLProtocolFrontendEngineTest {
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
         when(context.channel()).thenReturn(channel);
-        assertTrue(mysqlProtocolFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
+        AuthenticationResult actual = mysqlProtocolFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class));
+        assertThat(actual.getUsername(), is("root"));
+        assertNull(actual.getDatabase());
+        assertTrue(actual.isFinished());
         verify(context).writeAndFlush(isA(MySQLErrPacket.class));
     }
 
@@ -128,7 +138,10 @@ public final class MySQLProtocolFrontendEngineTest {
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(context.channel()).thenReturn(channel);
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress(InetAddress.getByAddress(new byte[] {(byte) 192, (byte) 168, (byte) 0, (byte) 102}), 3307));
-        assertTrue(mysqlProtocolFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
+        AuthenticationResult actual = mysqlProtocolFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class));
+        assertThat(actual.getUsername(), is("root"));
+        assertNull(actual.getDatabase());
+        assertTrue(actual.isFinished());
         verify(context).writeAndFlush(argThat(
                 (ArgumentMatcher<MySQLErrPacket>) argument -> "Access denied for user 'root'@'192.168.0.102' (using password: YES)".equals(argument.getErrorMessage())));
     }
