@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <delete sql-case-id="delete_with_sharding_value" parameters="1000, 1001, 'init'">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <where start-index="20" stop-index="66" literal-stop-index="77">
+            <and-predicate>
+                <predicate start-index="26" stop-index="37" literal-stop-index="40">
+                    <column-left-value name="order_id" start-index="26" stop-index="33" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="37" stop-index="37" />
+                        <literal-expression value="1000" start-index="37" stop-index="40" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="43" stop-index="53" literal-start-index="46" literal-stop-index="59">
+                    <column-left-value name="user_id" start-index="43" stop-index="49" literal-start-index="46" literal-stop-index="52" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="53" stop-index="53" />
+                        <literal-expression value="1001" start-index="56" stop-index="59" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="59" stop-index="66" literal-start-index="65" literal-stop-index="77">
+                    <column-left-value name="status" start-index="59" stop-index="64" literal-start-index="65" literal-stop-index="70" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="66" stop-index="66" />
+                        <literal-expression value="init" start-index="72" stop-index="77" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </delete>
+
+    <delete sql-case-id="delete_without_sharding_value" parameters="'init'">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <where start-index="20" stop-index="33" literal-stop-index="38">
+            <and-predicate>
+                <predicate start-index="26" stop-index="33" literal-stop-index="38">
+                    <column-left-value name="status" start-index="26" stop-index="31" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="33" stop-index="33" />
+                        <literal-expression value="init" start-index="33" stop-index="38" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </delete>
+
+    <delete sql-case-id="delete_with_special_character_without_sharding_value">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="12" stop-index="20" />
+        <where start-index="22" stop-index="42">
+            <and-predicate>
+                <predicate start-index="28" stop-index="42">
+                    <column-left-value name="status" start-delimiter="`" end-delimiter="`" start-index="28" stop-index="35" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="init" start-index="37" stop-index="42"/>
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </delete>
+
+    <delete sql-case-id="delete_with_special_comments_return_without_sharding_value">
+        <table name="t_order" start-index="33" stop-index="39" />
+        <where start-index="41" stop-index="54">
+            <and-predicate>
+                <predicate start-index="47" stop-index="54">
+                    <column-left-value name="status" start-index="47" stop-index="52" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="1" start-index="54" stop-index="54" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </delete>
+
+    <delete sql-case-id="delete_with_special_comments_returning_without_sharding_value">
+        <table name="t_order" start-index="34" stop-index="40" />
+        <where start-index="43" stop-index="56">
+            <and-predicate>
+                <predicate start-index="49" stop-index="56">
+                    <column-left-value name="status" start-index="49" stop-index="54" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="1" start-index="56" stop-index="56" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </delete>
+
+    <delete sql-case-id="delete_with_alias" parameters="'init'">
+        <table name="o" start-index="7" stop-index="7" />
+        <table name="t_order" alias="o" start-index="14" stop-index="25" />
+        <where start-index="27" stop-index="40" literal-stop-index="46">
+            <and-predicate>
+                <predicate start-index="33" stop-index="40" literal-stop-index="45">
+                    <column-left-value name="status" start-index="33" stop-index="38" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="40" stop-index="40" />
+                        <literal-expression value="init" start-index="40" stop-index="45" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </delete>
+
+    <delete sql-case-id="delete_with_order_by_row_count" parameters="1000, 1001, 'init', 10">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <where start-index="20" stop-index="66" literal-stop-index="77">
+            <and-predicate>
+                <predicate start-index="26" stop-index="37" literal-stop-index="40">
+                    <column-left-value name="order_id" start-index="26" stop-index="33" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="37" stop-index="37" />
+                        <literal-expression value="1000" start-index="37" stop-index="40" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="43" stop-index="53" literal-start-index="46" literal-stop-index="59">
+                    <column-left-value name="user_id" start-index="43" stop-index="49" literal-start-index="46" literal-stop-index="52" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="53" stop-index="53" />
+                        <literal-expression value="1001" start-index="56" stop-index="59" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="59" stop-index="66" literal-start-index="65" literal-stop-index="77">
+                    <column-left-value name="status" start-index="59" stop-index="64" literal-start-index="65" literal-stop-index="70" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="66" stop-index="66" />
+                        <literal-expression value="init" start-index="72" stop-index="77" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="order_id" start-index="77" stop-index="84" literal-start-index="88" literal-stop-index="95" />
+        </order-by>
+        <limit start-index="86" stop-index="92" literal-start-index="97" literal-stop-index="104">
+            <row-count value="10" parameter-index="3" start-index="92" stop-index="92" literal-start-index="103" literal-stop-index="104" />
+        </limit>
+    </delete>
+</sql-parser-test-cases>

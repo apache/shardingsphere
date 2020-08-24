@@ -82,7 +82,7 @@ public final class OrchestrationBootstrap {
     }
     
     private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
-        Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>();
+        Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>(ruleConfigs.size(), 1);
         for (Entry<String, YamlProxyRuleConfiguration> entry : ruleConfigs.entrySet()) {
             result.put(entry.getKey(), DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(entry.getValue().getDataSources())));
         }
@@ -95,8 +95,9 @@ public final class OrchestrationBootstrap {
     }
     
     private ProxyConfiguration loadProxyConfiguration() {
-        Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap();
-        Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules();
+        Collection<String> schemaNames = orchestrationFacade.getConfigCenter().getAllSchemaNames();
+        Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
+        Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
         Authentication authentication = orchestrationFacade.getConfigCenter().loadAuthentication();
         ClusterConfiguration clusterConfig = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
         MetricsConfiguration metricsConfig = orchestrationFacade.getConfigCenter().loadMetricsConfiguration();
@@ -104,17 +105,17 @@ public final class OrchestrationBootstrap {
         return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, clusterConfig, metricsConfig, props);
     }
     
-    private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap() {
-        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
-        for (String each : orchestrationFacade.getConfigCenter().getAllSchemaNames()) {
+    private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
+        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>(schemaNames.size(), 1);
+        for (String each : schemaNames) {
             result.put(each, DataSourceConverter.getDataSourceParameterMap(orchestrationFacade.getConfigCenter().loadDataSourceConfigurations(each)));
         }
         return result;
     }
     
-    private Map<String, Collection<RuleConfiguration>> loadSchemaRules() {
-        Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>();
-        for (String each : orchestrationFacade.getConfigCenter().getAllSchemaNames()) {
+    private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
+        Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>(schemaNames.size(), 1);
+        for (String each : schemaNames) {
             result.put(each, orchestrationFacade.getConfigCenter().loadRuleConfigurations(each));
         }
         return result;

@@ -47,6 +47,6 @@ public final class DatabaseServerInfo {
     
     @Override
     public String toString() {
-        return String.format("database name is `%s`, version is `%s`", databaseName, databaseVersion);
+        return String.format("Database name is `%s`, version is `%s`", databaseName, databaseVersion);
     }
 }

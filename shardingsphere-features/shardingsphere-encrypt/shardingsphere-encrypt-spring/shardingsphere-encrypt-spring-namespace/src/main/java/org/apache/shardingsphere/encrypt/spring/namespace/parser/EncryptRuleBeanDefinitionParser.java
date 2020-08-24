@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spring.namespace.factorybean.EncryptAlgorithmFactoryBean;
 import org.apache.shardingsphere.encrypt.spring.namespace.tag.EncryptRuleBeanDefinitionTag;
-import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanRegistry;
+import org.apache.shardingsphere.spring.namespace.registry.ShardingSphereAlgorithmBeanRegistry;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

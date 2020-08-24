@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.IntervalExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.BitValueLiteralsContext;
@@ -60,7 +61,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.Unreser
 import org.apache.shardingsphere.sql.parser.sql.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateBuilder;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
@@ -248,7 +248,8 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
             return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()));
         }
         //TODO deal with IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
@@ -262,19 +263,20 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
     
     private ASTNode createPredicateRightValue(final BooleanPrimaryContext ctx) {
         if (null != ctx.subquery()) {
-            new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()));
+            return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()));
         }
-        SQLSegment rightValue = (SQLSegment) visit(ctx.predicate());
+        ASTNode rightValue = visit(ctx.predicate());
         return createPredicateRightValue(ctx, rightValue);
     }
     
-    private ASTNode createPredicateRightValue(final BooleanPrimaryContext ctx, final SQLSegment rightValue) {
+    private ASTNode createPredicateRightValue(final BooleanPrimaryContext ctx, final ASTNode rightValue) {
         if (rightValue instanceof ColumnSegment) {
             return rightValue;
         }
-        return rightValue instanceof SubquerySegment ? new PredicateCompareRightValue(((SubquerySegment) rightValue).getStartIndex(), ((SubquerySegment) rightValue).getStopIndex(),
+        return rightValue instanceof SubquerySegment ? new PredicateCompareRightValue(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(),
                 ctx.comparisonOperator().getText(), new SubqueryExpressionSegment((SubquerySegment) rightValue))
-                : new PredicateCompareRightValue(rightValue.getStartIndex(), rightValue.getStopIndex(), ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue);
+                : new PredicateCompareRightValue(ctx.predicate().start.getStartIndex(), ctx.predicate().stop.getStopIndex(), ctx.comparisonOperator().getText(),
+                (ExpressionSegment) rightValue);
     }
     
     @Override
@@ -293,8 +295,10 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
     
     private PredicateSegment createInSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(ctx.LP_().getSymbol().getStartIndex(),
-                ctx.RP_().getSymbol().getStopIndex(), getExpressionSegments(ctx)));
+        PredicateInRightValue predicateInRightValue = null != ctx.subquery() ? new PredicateInRightValue(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(),
+                getExpressionSegments(ctx))
+                : new PredicateInRightValue(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), getExpressionSegments(ctx));
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, predicateInRightValue);
     }
     
     private Collection<ExpressionSegment> getExpressionSegments(final PredicateContext ctx) {
@@ -330,7 +334,8 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
         if (null != ctx.predicate()) {
             visit(ctx.predicate());
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
@@ -339,7 +344,8 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
             return createExpressionSegment(visit(ctx.simpleExpr()), ctx);
         }
         visitRemainBitExpr(ctx);
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
@@ -359,7 +365,7 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
             return new SubqueryExpressionSegment((SubquerySegment) astNode);
         }
         if (astNode instanceof OtherLiteralValue) {
-            return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(), context.getText());
+            return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(), ((OtherLiteralValue) astNode).getValue());
         }
         return astNode;
     }
@@ -390,6 +396,12 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
         }
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
+
+    @Override
+    public final ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
+        calculateParameterCount(Collections.singleton(ctx.expr()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
     
     @Override
     public final ASTNode visitFunctionCall(final FunctionCallContext ctx) {
@@ -408,8 +420,9 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
     @Override
     public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
         String aggregationType = ctx.aggregationFunctionName().getText();
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return AggregationType.isAggregationType(aggregationType)
-                ? createAggregationSegment(ctx, aggregationType) : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+                ? createAggregationSegment(ctx, aggregationType) : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
@@ -434,19 +447,22 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
         if (null != ctx.castFunction()) {
             return visit(ctx.castFunction());
         }
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override

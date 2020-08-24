@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +52,8 @@ public final class MySQLPositionManagerTest {
     private Connection connection;
     
     @Before
-    public void setUp() throws Exception {
+    @SneakyThrows(SQLException.class)
+    public void setUp() {
         when(dataSource.getConnection()).thenReturn(connection);
         PreparedStatement positionStatement = mockPositionStatement();
         when(connection.prepareStatement("SHOW MASTER STATUS")).thenReturn(positionStatement);
@@ -64,6 +66,14 @@ public final class MySQLPositionManagerTest {
         MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(dataSource);
         BinlogPosition actual = mysqlPositionManager.getPosition();
         assertThat(actual.getServerId(), is(SERVER_ID));
+        assertThat(actual.getFilename(), is(LOG_FILE_NAME));
+        assertThat(actual.getPosition(), is(LOG_POSITION));
+    }
+    
+    @Test
+    public void assertInitPositionByJson() {
+        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(new BinlogPosition(LOG_FILE_NAME, LOG_POSITION).toJson().toString());
+        BinlogPosition actual = mysqlPositionManager.getPosition();
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));
     }

@@ -21,8 +21,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>shardingsphere-kernel</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
+        <artifactId>shardingsphere-kernel</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-kernel-context</artifactId>
@@ -48,6 +48,13 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-transaction-core</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

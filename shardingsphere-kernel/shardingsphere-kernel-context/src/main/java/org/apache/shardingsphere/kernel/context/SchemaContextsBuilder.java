@@ -46,19 +46,20 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
  * Schema contexts builder.
  */
-@Slf4j(topic = "ShardingSphere-schemaContexts")
+@Slf4j
 public final class SchemaContextsBuilder {
     
     private final DatabaseType databaseType;
     
     private final Map<String, Map<String, DataSource>> dataSources;
     
-    private final Map<String, Collection<RuleConfiguration>> ruleConfigurations;
+    private final Map<String, Collection<RuleConfiguration>> ruleConfigs;
     
     private final Authentication authentication;
     
@@ -66,30 +67,30 @@ public final class SchemaContextsBuilder {
     
     private final ExecutorKernel executorKernel;
     
-    public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
-                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> ruleConfigurations, final Properties props) {
-        this(dataSources, databaseType, ruleConfigurations, new Authentication(), props);
+    public SchemaContextsBuilder(final DatabaseType databaseType, final Map<String, Map<String, DataSource>> dataSources,
+                                 final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Properties props) {
+        this(databaseType, dataSources, ruleConfigs, new Authentication(), props);
     }
     
-    public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
-                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> ruleConfigurations, final Authentication authentication, final Properties props) {
-        this.dataSources = dataSources;
+    public SchemaContextsBuilder(final DatabaseType databaseType, final Map<String, Map<String, DataSource>> dataSources,
+                                 final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Authentication authentication, final Properties props) {
         this.databaseType = databaseType;
-        this.ruleConfigurations = ruleConfigurations;
+        this.dataSources = dataSources;
+        this.ruleConfigs = ruleConfigs;
         this.authentication = authentication;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
         executorKernel = new ExecutorKernel(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
     }
     
     /**
-     *  Build.
+     * Build schema contexts.
      * 
-     * @exception SQLException sql exception
-     * @return SchemaContexts
+     * @exception SQLException SQL exception
+     * @return schema contexts
      */
     public SchemaContexts build() throws SQLException {
-        Map<String, SchemaContext> schemaContexts = new LinkedHashMap<>();
-        for (String each : ruleConfigurations.keySet()) {
+        Map<String, SchemaContext> schemaContexts = new LinkedHashMap<>(ruleConfigs.size(), 1);
+        for (String each : ruleConfigs.keySet()) {
             schemaContexts.put(each, createSchemaContext(each));
         }
         return new StandardSchemaContexts(schemaContexts, authentication, props, databaseType);
@@ -97,17 +98,17 @@ public final class SchemaContextsBuilder {
     
     private SchemaContext createSchemaContext(final String schemaName) throws SQLException {
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
-        RuntimeContext runtimeContext = new RuntimeContext(createCachedDatabaseMetaData(dataSources),
+        RuntimeContext runtimeContext = new RuntimeContext(createCachedDatabaseMetaData(dataSources).orElse(null),
                 executorKernel, ShardingSphereSQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)), createShardingTransactionManagerEngine(dataSources));
         return new SchemaContext(schemaName, createShardingSphereSchema(schemaName), runtimeContext);
     }
     
-    private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
+    private Optional<CachedDatabaseMetaData> createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
         if (dataSources.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
         try (Connection connection = dataSources.values().iterator().next().getConnection()) {
-            return new CachedDatabaseMetaData(connection.getMetaData());
+            return Optional.of(new CachedDatabaseMetaData(connection.getMetaData()));
         }
     }
     
@@ -119,9 +120,9 @@ public final class SchemaContextsBuilder {
     
     private ShardingSphereSchema createShardingSphereSchema(final String schemaName) throws SQLException {
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
-        Collection<RuleConfiguration> ruleConfigurations = this.ruleConfigurations.get(schemaName);
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigurations, dataSources.keySet());
-        return new ShardingSphereSchema(ruleConfigurations, rules, dataSources, createMetaData(dataSources, rules));
+        Collection<RuleConfiguration> ruleConfigs = this.ruleConfigs.get(schemaName);
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigs, dataSources.keySet());
+        return new ShardingSphereSchema(ruleConfigs, rules, dataSources, createMetaData(dataSources, rules));
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
@@ -129,7 +130,7 @@ public final class SchemaContextsBuilder {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(databaseType, dataSourceMap, props, executorKernel.getExecutorService().getExecutorService());
         ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
-        log.info("Meta data load finished, cost {} milliseconds.", System.currentTimeMillis() - start);
+        log.info("Load meta data finished, cost {} milliseconds.", System.currentTimeMillis() - start);
         return result;
     }
     

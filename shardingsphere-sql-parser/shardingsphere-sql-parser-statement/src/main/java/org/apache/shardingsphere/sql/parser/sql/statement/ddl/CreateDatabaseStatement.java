@@ -27,5 +27,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class CreateDatabaseStatement extends DDLStatement {
     
-    private final String schemaName;
+    private final String databaseName;
 }

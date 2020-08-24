@@ -41,7 +41,7 @@ public final class OrchestrationSchemaContextsFixture implements SchemaContexts 
     
     @Override
     public Map<String, SchemaContext> getSchemaContexts() {
-        return Collections.emptyMap();
+        return Collections.singletonMap("schema", mock(SchemaContext.class));
     }
     
     @Override

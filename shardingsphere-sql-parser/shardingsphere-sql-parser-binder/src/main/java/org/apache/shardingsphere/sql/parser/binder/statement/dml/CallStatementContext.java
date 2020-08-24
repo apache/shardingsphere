@@ -22,6 +22,9 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.CallStatement;
 
+/**
+ * Call statement context.
+ */
 @Getter
 @ToString(callSuper = true)
 public final class CallStatementContext extends CommonSQLStatementContext<CallStatement> {

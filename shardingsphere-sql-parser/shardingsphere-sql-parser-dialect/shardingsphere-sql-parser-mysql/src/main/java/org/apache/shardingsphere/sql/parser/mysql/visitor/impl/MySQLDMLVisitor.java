@@ -192,7 +192,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         Collection<AssignmentSegment> columns = new LinkedList<>();
         for (AssignmentContext each : ctx.assignment()) {
             columns.add((AssignmentSegment) visit(each));
-            visit(each.assignmentValue());
         }
         return new OnDuplicateKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columns);
     }
@@ -265,6 +264,12 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        }
         result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
@@ -324,6 +329,12 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
         return result;

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
@@ -72,7 +73,10 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private BackendResponse execute(final CreateDatabaseStatementContext context) {
-        SchemaNameCallback.getInstance().run(context.getSqlStatement().getSchemaName(), true);
+        if (ProxySchemaContexts.getInstance().getSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
+            return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
+        }
+        SchemaNameCallback.getInstance().run(context.getSqlStatement().getDatabaseName(), true);
         // TODO Need to get the executed feedback from registry center for returning.
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
@@ -83,7 +87,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         Map<String, YamlDataSourceParameter> parameters = new CreateDataSourcesStatementContextConverter().convert(context);
         Map<String, DataSourceConfiguration> dataSources = DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(parameters));
         // TODO Need to get the executed feedback from registry center for returning.
-        DataSourceCallback.getInstance().run(backendConnection.getSchema().getName(), dataSources);
+        DataSourceCallback.getInstance().run(backendConnection.getSchema(), dataSources);
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
@@ -93,7 +97,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         YamlShardingRuleConfiguration configurations = new CreateShardingRuleStatementContextConverter().convert(context);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(configurations));
         // TODO Need to get the executed feedback from registry center for returning.
-        RuleCallback.getInstance().run(backendConnection.getSchema().getName(), rules);
+        RuleCallback.getInstance().run(backendConnection.getSchema(), rules);
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;

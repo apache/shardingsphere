@@ -57,8 +57,8 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         DatabaseType databaseType = createDatabaseType(dataSourceMap);
-        schemaContexts = new SchemaContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
-                databaseType, Collections.singletonMap(DefaultSchema.LOGIC_NAME, configurations), props).build();
+        schemaContexts = new SchemaContextsBuilder(databaseType, Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, configurations), props).build();
     }
     
     private DatabaseType createDatabaseType(final Map<String, DataSource> dataSourceMap) throws SQLException {
