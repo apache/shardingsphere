@@ -28,6 +28,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingEx
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -73,13 +74,13 @@ public final class ShardingScalingExecuteEngine {
      * @return execute future of all
      */
     public Future<?> submitAll(final Collection<? extends ShardingScalingExecutor> shardingScalingExecutors, final ExecuteCallback executeCallback) {
-        Collection<ListenableFuture<Object>> listenableFutures = new ArrayList<>(shardingScalingExecutors.size());
+        Collection<ListenableFuture<?>> listenableFutures = new ArrayList<>(shardingScalingExecutors.size());
         for (ShardingScalingExecutor each : shardingScalingExecutors) {
-            ListenableFuture listenableFuture = executorService.submit(each);
+            ListenableFuture<?> listenableFuture = executorService.submit(each);
             listenableFutures.add(listenableFuture);
         }
-        ListenableFuture result = Futures.allAsList(listenableFutures);
-        Futures.addCallback(result, new ExecuteFutureCallback<Collection<Object>>(executeCallback), executorService);
+        ListenableFuture<List<Object>> result = Futures.allAsList(listenableFutures);
+        Futures.addCallback(result, new ExecuteFutureCallback<Collection<?>>(executeCallback), executorService);
         return result;
     }
     

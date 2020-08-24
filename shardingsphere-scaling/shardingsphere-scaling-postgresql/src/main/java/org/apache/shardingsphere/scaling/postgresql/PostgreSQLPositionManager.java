@@ -47,7 +47,7 @@ public final class PostgreSQLPositionManager extends BasePositionManager<WalPosi
     }
     
     public PostgreSQLPositionManager(final String position) {
-        setPosition(new WalPosition(LogSequenceNumber.valueOf(position)));
+        setPosition(new WalPosition(LogSequenceNumber.valueOf(Long.parseLong(position))));
     }
     
     @Override
@@ -66,7 +66,7 @@ public final class PostgreSQLPositionManager extends BasePositionManager<WalPosi
             createIfNotExists(connection);
             setPosition(getWalPosition(connection));
         } catch (final SQLException ex) {
-            throw new RuntimeException("markPosition error", ex);
+            throw new RuntimeException("init position failed.", ex);
         }
     }
     

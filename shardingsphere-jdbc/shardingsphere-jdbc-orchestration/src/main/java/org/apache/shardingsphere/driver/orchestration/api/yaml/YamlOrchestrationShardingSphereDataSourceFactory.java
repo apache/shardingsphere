@@ -123,8 +123,8 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
         if (null == yamlClusterConfiguration && null == yamlMetricsConfiguration) {
             return new OrchestrationShardingSphereDataSource(YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(orchestration));
         } else {
-            ClusterConfiguration clusterConfiguration = new ClusterConfigurationYamlSwapper().swapToObject(yamlClusterConfiguration);
-            MetricsConfiguration metricsConfiguration = new MetricsConfigurationYamlSwapper().swapToObject(yamlMetricsConfiguration);
+            ClusterConfiguration clusterConfiguration = swap(yamlClusterConfiguration);
+            MetricsConfiguration metricsConfiguration = swap(yamlMetricsConfiguration);
             return new OrchestrationShardingSphereDataSource(YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(orchestration),
                    clusterConfiguration, metricsConfiguration);
         }
@@ -138,8 +138,8 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
             return new OrchestrationShardingSphereDataSource(shardingSphereDataSource,
                     YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(orchestration));
         } else {
-            ClusterConfiguration clusterConfiguration = new ClusterConfigurationYamlSwapper().swapToObject(yamlClusterConfiguration);
-            MetricsConfiguration metricsConfiguration = new MetricsConfigurationYamlSwapper().swapToObject(yamlMetricsConfiguration);
+            ClusterConfiguration clusterConfiguration = swap(yamlClusterConfiguration);
+            MetricsConfiguration metricsConfiguration = swap(yamlMetricsConfiguration);
             return new OrchestrationShardingSphereDataSource(shardingSphereDataSource,
                     YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(orchestration), clusterConfiguration, metricsConfiguration);
         }
@@ -151,5 +151,13 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
     
     private static YamlOrchestrationRootRuleConfigurations unmarshal(final byte[] yamlBytes) throws IOException {
         return YamlEngine.unmarshal(yamlBytes, YamlOrchestrationRootRuleConfigurations.class);
+    }
+    
+    private static ClusterConfiguration swap(final YamlClusterConfiguration yamlClusterConfiguration) {
+        return null == yamlClusterConfiguration ? null : new ClusterConfigurationYamlSwapper().swapToObject(yamlClusterConfiguration);
+    }
+    
+    private static MetricsConfiguration swap(final YamlMetricsConfiguration yamlMetricsConfiguration) {
+        return null == yamlMetricsConfiguration ? null : new MetricsConfigurationYamlSwapper().swapToObject(yamlMetricsConfiguration);
     }
 }

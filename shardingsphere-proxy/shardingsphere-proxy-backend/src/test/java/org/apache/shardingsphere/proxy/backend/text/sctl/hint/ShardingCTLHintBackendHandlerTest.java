@@ -18,11 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.hint;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
@@ -30,6 +35,7 @@ import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
@@ -41,9 +47,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -159,14 +168,14 @@ public final class ShardingCTLHintBackendHandlerTest {
     }
     
     @Test
+    @SneakyThrows(ReflectiveOperationException.class)
     public void assertShowTableStatus() throws SQLException {
         clearThreadLocal();
-        SchemaContext schema = mock(SchemaContext.class);
-        ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
-        when(schema.getSchema()).thenReturn(shardingSphereSchema);
-        when(shardingSphereSchema.getMetaData()).thenReturn(
-                new ShardingSphereMetaData(mock(DataSourceMetas.class), new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap())));
-        when(backendConnection.getSchema()).thenReturn(schema);
+        when(backendConnection.getSchema()).thenReturn("schema");
+        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        schemaContexts.setAccessible(true);
+        schemaContexts.set(ProxySchemaContexts.getInstance(),
+                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         String sql = "sctl:hint show table status";
         ShardingCTLHintBackendHandler defaultShardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         BackendResponse backendResponse = defaultShardingCTLHintBackendHandler.execute();
@@ -194,6 +203,15 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertThat(updateQueryData.getData().get(1).toString(), is("100"));
         assertThat(updateQueryData.getData().get(2).toString(), is("200,300"));
         assertFalse(updateShardingCTLHintBackendHandler.next());
+    }
+    
+    private Map<String, SchemaContext> getSchemaContextMap() {
+        SchemaContext result = mock(SchemaContext.class);
+        ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
+        when(result.getSchema()).thenReturn(shardingSphereSchema);
+        when(shardingSphereSchema.getMetaData()).thenReturn(
+                new ShardingSphereMetaData(mock(DataSourceMetas.class), new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap())));
+        return Collections.singletonMap("schema", result);
     }
     
     @Test

@@ -42,7 +42,7 @@ public final class ShardingDeleteStatementValidatorTest {
         DeleteStatement sqlStatement = new DeleteStatement();
         sqlStatement.getTables().addAll(createMultiTablesContext().getTables());
         SQLStatementContext<DeleteStatement> sqlStatementContext = new DeleteStatementContext(sqlStatement);
-        new ShardingDeleteStatementValidator().validate(shardingRule, sqlStatementContext, Collections.emptyList());
+        new ShardingDeleteStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList());
     }
 
     private TablesContext createMultiTablesContext() {

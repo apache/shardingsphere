@@ -91,7 +91,7 @@ public final class MySQLProtocolFrontendEngineTest {
     
     @Test
     public void assertHandshake() {
-        mysqlProtocolFrontendEngine.getAuthEngine().handshake(context, mock(BackendConnection.class));
+        assertTrue(mysqlProtocolFrontendEngine.getAuthEngine().handshake(context) > 0);
         verify(context).writeAndFlush(isA(MySQLHandshakePacket.class));
     }
     

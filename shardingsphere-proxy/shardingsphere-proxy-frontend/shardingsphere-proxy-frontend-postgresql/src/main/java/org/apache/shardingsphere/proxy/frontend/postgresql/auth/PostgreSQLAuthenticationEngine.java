@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.auth;
 
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
@@ -37,6 +36,8 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationEngine;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Authentication engine for PostgreSQL.
@@ -56,10 +57,10 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     private volatile byte[] md5Salt;
     
     @Override
-    public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
-        int connectionId = ConnectionIdGenerator.getInstance().nextId();
-        backendConnection.setConnectionId(connectionId);
-        BinaryStatementRegistry.getInstance().register(connectionId);
+    public int handshake(final ChannelHandlerContext context) {
+        int result = ConnectionIdGenerator.getInstance().nextId();
+        BinaryStatementRegistry.getInstance().register(result);
+        return result;
     }
     
     @Override
@@ -104,7 +105,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
             }
             PostgreSQLPasswordMessagePacket passwordMessagePacket = new PostgreSQLPasswordMessagePacket((PostgreSQLPacketPayload) payload);
             PostgreSQLLoginResult loginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(
-                backendConnection.getUserName(), backendConnection.getSchema().getName(), md5Salt, passwordMessagePacket);
+                backendConnection.getUserName(), backendConnection.getSchema(), md5Salt, passwordMessagePacket);
             if (PostgreSQLErrorCode.SUCCESSFUL_COMPLETION != loginResult.getErrorCode()) {
                 PostgreSQLErrorResponsePacket responsePacket = createPostgreSQLErrorResponsePacket(loginResult.getErrorCode(),
                     loginResult.getErrorMessage());

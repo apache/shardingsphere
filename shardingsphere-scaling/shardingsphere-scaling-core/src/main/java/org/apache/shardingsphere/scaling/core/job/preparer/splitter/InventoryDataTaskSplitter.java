@@ -25,7 +25,7 @@ import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
@@ -85,7 +85,7 @@ public final class InventoryDataTaskSplitter {
         for (String each : dumperConfiguration.getTableNameMap().keySet()) {
             InventoryDumperConfiguration dumperConfig = new InventoryDumperConfiguration(dumperConfiguration);
             dumperConfig.setTableName(each);
-            dumperConfig.setPositionManager(new InventoryPositionManager<>(new PlaceholderPosition()));
+            dumperConfig.setPositionManager(new InventoryPositionManager<>(new PlaceholderInventoryPosition()));
             result.add(dumperConfig);
         }
         return result;

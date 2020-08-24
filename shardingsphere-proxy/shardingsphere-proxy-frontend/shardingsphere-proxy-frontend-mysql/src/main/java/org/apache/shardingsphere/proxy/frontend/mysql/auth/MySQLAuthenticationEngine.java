@@ -58,11 +58,11 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     private String database;
     
     @Override
-    public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
-        int connectionId = ConnectionIdGenerator.getInstance().nextId();
-        backendConnection.setConnectionId(connectionId);
+    public int handshake(final ChannelHandlerContext context) {
+        int result = ConnectionIdGenerator.getInstance().nextId();
         connectionPhase = MySQLConnectionPhase.AUTH_PHASE_FAST_PATH;
-        context.writeAndFlush(new MySQLHandshakePacket(connectionId, authenticationHandler.getAuthPluginData()));
+        context.writeAndFlush(new MySQLHandshakePacket(result, authenticationHandler.getAuthPluginData()));
+        return result;
     }
     
     @Override
