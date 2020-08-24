@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -34,6 +32,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.SQLException;
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -50,29 +49,26 @@ public final class MySQLComQueryPacketExecutorTest {
     private final MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(mock(MySQLComQueryPacket.class), null);
     
     @Test
-    @SneakyThrows
-    public void assertIsErrorResponse() {
-        FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
-        when(textProtocolBackendHandler.execute()).thenReturn(new ErrorResponse(sqlException));
-        mysqlComQueryPacketExecutor.execute();
-        assertThat(mysqlComQueryPacketExecutor.isErrorResponse(), Matchers.is(true));
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertIsUpdateResponse() {
-        FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
-        when(textProtocolBackendHandler.execute()).thenReturn(new UpdateResponse());
-        mysqlComQueryPacketExecutor.execute();
-        assertThat(mysqlComQueryPacketExecutor.isUpdateResponse(), Matchers.is(true));
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertIsQuery() {
+    public void assertIsQueryResponse() throws SQLException, NoSuchFieldException {
         FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
         when(textProtocolBackendHandler.execute()).thenReturn(new QueryResponse(Collections.singletonList(mock(QueryHeader.class))));
         mysqlComQueryPacketExecutor.execute();
-        assertThat(mysqlComQueryPacketExecutor.isQueryResponse(), Matchers.is(true));
+        assertThat(mysqlComQueryPacketExecutor.isQueryResponse(), is(true));
+    }
+    
+    @Test
+    public void assertIsUpdateResponse() throws SQLException, NoSuchFieldException {
+        FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
+        when(textProtocolBackendHandler.execute()).thenReturn(new UpdateResponse());
+        mysqlComQueryPacketExecutor.execute();
+        assertThat(mysqlComQueryPacketExecutor.isUpdateResponse(), is(true));
+    }
+    
+    @Test
+    public void assertIsErrorResponse() throws SQLException, NoSuchFieldException {
+        FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
+        when(textProtocolBackendHandler.execute()).thenReturn(new ErrorResponse(sqlException));
+        mysqlComQueryPacketExecutor.execute();
+        assertThat(mysqlComQueryPacketExecutor.isErrorResponse(), is(true));
     }
 }
