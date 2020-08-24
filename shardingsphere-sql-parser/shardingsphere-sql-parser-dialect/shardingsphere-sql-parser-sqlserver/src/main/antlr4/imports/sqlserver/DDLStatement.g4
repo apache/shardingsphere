@@ -24,7 +24,7 @@ createTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification_ INDEX indexName ON tableName columnNames
+    : CREATE createIndexSpecification_ INDEX indexName ON tableName columnNameWithSort
     ;
 
 alterTable
