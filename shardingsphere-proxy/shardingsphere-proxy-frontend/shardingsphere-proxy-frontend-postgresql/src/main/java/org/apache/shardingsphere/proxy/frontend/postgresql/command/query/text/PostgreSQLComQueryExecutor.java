@@ -55,7 +55,8 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
-    private volatile boolean isQuery;
+    @Getter
+    private volatile boolean isQueryResponse;
     
     @Getter
     private volatile boolean isUpdateResponse;
@@ -95,7 +96,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
         List<PostgreSQLColumnDescription> columnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
-        isQuery = !columnDescriptions.isEmpty();
+        isQueryResponse = !columnDescriptions.isEmpty();
         if (columnDescriptions.isEmpty()) {
             return Optional.empty();
         }
@@ -105,17 +106,12 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     private List<PostgreSQLColumnDescription> getPostgreSQLColumnDescriptions(final QueryResponse queryResponse) {
         List<PostgreSQLColumnDescription> result = new LinkedList<>();
         List<QueryResult> queryResults = queryResponse.getQueryResults();
-        ResultSetMetaData resultSetMetaData = !queryResults.isEmpty() ? queryResults.get(0).getResultSetMetaData() : null;
+        ResultSetMetaData resultSetMetaData = queryResults.isEmpty() ? null : queryResults.get(0).getResultSetMetaData();
         int columnIndex = 0;
         for (QueryHeader each : queryResponse.getQueryHeaders()) {
             result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength(), resultSetMetaData));
         }
         return result;
-    }
-    
-    @Override
-    public boolean isQuery() {
-        return isQuery;
     }
     
     @Override

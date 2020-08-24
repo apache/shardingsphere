@@ -56,7 +56,8 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
-    private volatile boolean isQuery;
+    @Getter
+    private volatile boolean isQueryResponse;
     
     @Getter
     private volatile boolean isUpdateResponse;
@@ -84,7 +85,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
             isUpdateResponse = true;
             return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
-        isQuery = true;
+        isQueryResponse = true;
         return createQueryPackets((QueryResponse) backendResponse);
     }
     
@@ -123,11 +124,6 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
             result += MySQLColumnFieldDetailFlag.AUTO_INCREMENT.getValue();
         }
         return result;
-    }
-    
-    @Override
-    public boolean isQuery() {
-        return isQuery;
     }
     
     @Override
