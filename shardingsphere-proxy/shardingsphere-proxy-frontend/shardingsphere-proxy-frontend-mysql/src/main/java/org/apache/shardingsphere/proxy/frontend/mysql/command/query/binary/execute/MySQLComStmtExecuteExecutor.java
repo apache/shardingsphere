@@ -113,7 +113,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     }
     
     @Override
-    public boolean isQuery() {
+    public boolean isQueryResponse() {
         return isQuery;
     }
     

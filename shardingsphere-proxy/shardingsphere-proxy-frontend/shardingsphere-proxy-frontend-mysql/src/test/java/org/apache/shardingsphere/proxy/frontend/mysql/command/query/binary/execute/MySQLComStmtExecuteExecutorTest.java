@@ -111,6 +111,6 @@ public final class MySQLComStmtExecuteExecutorTest {
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
         when(databaseCommunicationEngine.execute()).thenReturn(new QueryResponse(Collections.singletonList(mock(QueryHeader.class))));
         mysqlComStmtExecuteExecutor.execute();
-        assertThat(mysqlComStmtExecuteExecutor.isQuery(), Matchers.is(true));
+        assertThat(mysqlComStmtExecuteExecutor.isQueryResponse(), Matchers.is(true));
     }
 }

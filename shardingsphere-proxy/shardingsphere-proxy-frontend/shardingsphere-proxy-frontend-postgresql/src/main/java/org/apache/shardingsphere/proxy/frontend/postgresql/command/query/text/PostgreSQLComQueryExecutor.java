@@ -114,7 +114,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     }
     
     @Override
-    public boolean isQuery() {
+    public boolean isQueryResponse() {
         return isQuery;
     }
     

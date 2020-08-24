@@ -44,7 +44,7 @@ public final class PostgreSQLCommandExecuteEngineTest {
     @SneakyThrows
     public void assertWriteQueryDataWithError() {
         PostgreSQLCommandExecuteEngine postgreSQLCommandExecuteEngine = new PostgreSQLCommandExecuteEngine();
-        when(queryCommandExecutor.isQuery()).thenReturn(false);
+        when(queryCommandExecutor.isQueryResponse()).thenReturn(false);
         when(queryCommandExecutor.isErrorResponse()).thenReturn(true);
         postgreSQLCommandExecuteEngine.writeQueryData(channelHandlerContext, null, queryCommandExecutor, 0);
         verify(channelHandlerContext, times(1)).write(isA(PostgreSQLReadyForQueryPacket.class));
