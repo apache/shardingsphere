@@ -120,7 +120,13 @@ public class SpringBootStarterTest {
     }
     
     private void assertEncryptRule(final EncryptRule rule) {
-        // TODO
+        assertThat(rule.getEncryptTableNames(), is(Sets.newLinkedHashSet(Arrays.asList("t_order"))));
+        assertThat(rule.getCipherColumn("t_order", "pwd"), is("pwd_cipher"));
+        assertThat(rule.getAssistedQueryColumns("t_order"), is(Collections.singletonList("pwd_assisted_query_cipher")));
+        assertThat(rule.getLogicAndCipherColumns("t_order"), is(Collections.singletonMap("pwd", "pwd_cipher")));
+        assertThat(rule.getLogicColumnOfCipher("t_order", "pwd_cipher"), is("pwd"));
+        assertThat(rule.getEncryptValues("t_order", "pwd", Collections.singletonList("pwd_plain")), is(Collections.singletonList("V/RkV1+dVv80Y3csT3cR4g==")));
+        assertThat(rule.getAssistedQueryAndPlainColumns("t_order"), is(Arrays.asList("pwd_assisted_query_cipher", "pwd_plain")));
     }
     
     private void assertShadowRule(final ShadowRule rule) {
