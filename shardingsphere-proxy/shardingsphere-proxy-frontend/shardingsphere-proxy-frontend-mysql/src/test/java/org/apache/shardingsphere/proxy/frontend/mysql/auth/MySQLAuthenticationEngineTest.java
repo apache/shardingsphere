@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,7 +84,7 @@ public final class MySQLAuthenticationEngineTest {
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
-        authenticationEngine.auth(channelHandlerContext, payload, mock(BackendConnection.class));
+        authenticationEngine.auth(channelHandlerContext, payload);
         assertThat(getConnectionPhase(), is(MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH));
     }
     
@@ -95,7 +94,7 @@ public final class MySQLAuthenticationEngineTest {
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
         when(payload.readStringEOFByBytes()).thenReturn(authResponse);
-        authenticationEngine.auth(channelHandlerContext, payload, mock(BackendConnection.class));
+        authenticationEngine.auth(channelHandlerContext, payload);
         assertThat(getAuthResponse(), is(authResponse));
     }
     
@@ -105,7 +104,7 @@ public final class MySQLAuthenticationEngineTest {
         ChannelHandlerContext context = getContext();
         setSchemas();
         when(authenticationHandler.login(anyString(), any(), anyString())).thenReturn(Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
-        authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
+        authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
     }
     
@@ -114,7 +113,7 @@ public final class MySQLAuthenticationEngineTest {
         ChannelHandlerContext context = getContext();
         setSchemas();
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
-        authenticationEngine.auth(context, getPayload("root", "ABSENT DATABASE", authResponse), mock(BackendConnection.class));
+        authenticationEngine.auth(context, getPayload("root", "ABSENT DATABASE", authResponse));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
     }
     
@@ -124,7 +123,7 @@ public final class MySQLAuthenticationEngineTest {
         ChannelHandlerContext context = getContext();
         when(authenticationHandler.login(anyString(), any(), anyString())).thenReturn(Optional.empty());
         setSchemas();
-        authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
+        authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse));
         verify(context).writeAndFlush(any(MySQLOKPacket.class));
     }
     
@@ -136,10 +135,10 @@ public final class MySQLAuthenticationEngineTest {
                         new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
-    private MySQLPacketPayload getPayload(final String userName, final String database, final byte[] authResponse) {
+    private MySQLPacketPayload getPayload(final String username, final String database, final byte[] authResponse) {
         MySQLPacketPayload result = mock(MySQLPacketPayload.class);
         when(result.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue());
-        when(result.readStringNul()).thenReturn(userName).thenReturn(database);
+        when(result.readStringNul()).thenReturn(username).thenReturn(database);
         when(result.readStringNulByBytes()).thenReturn(authResponse);
         return result;
     }
