@@ -77,7 +77,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     @SneakyThrows
     public void writeQueryData(final ChannelHandlerContext context,
                                final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) {
-        if (queryCommandExecutor.isQuery() && !context.channel().isActive()) {
+        if (queryCommandExecutor.isQueryResponse() && !context.channel().isActive()) {
             context.write(new PostgreSQLCommandCompletePacket());
             context.write(new PostgreSQLReadyForQueryPacket());
             return;

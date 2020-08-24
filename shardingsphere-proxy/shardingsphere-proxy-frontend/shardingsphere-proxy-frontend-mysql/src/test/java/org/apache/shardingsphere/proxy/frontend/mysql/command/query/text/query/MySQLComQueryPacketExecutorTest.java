@@ -73,6 +73,6 @@ public final class MySQLComQueryPacketExecutorTest {
         FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
         when(textProtocolBackendHandler.execute()).thenReturn(new QueryResponse(Collections.singletonList(mock(QueryHeader.class))));
         mysqlComQueryPacketExecutor.execute();
-        assertThat(mysqlComQueryPacketExecutor.isQuery(), Matchers.is(true));
+        assertThat(mysqlComQueryPacketExecutor.isQueryResponse(), Matchers.is(true));
     }
 }
