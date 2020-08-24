@@ -81,16 +81,16 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
             return Collections.singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
         }
         BackendResponse backendResponse = databaseCommunicationEngine.execute();
-        if (backendResponse instanceof ErrorResponse) {
-            isErrorResponse = true;
-            return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
+        if (backendResponse instanceof QueryResponse) {
+            isQueryResponse = true;
+            return createQueryPacket((QueryResponse) backendResponse);
         }
         if (backendResponse instanceof UpdateResponse) {
             isUpdateResponse = true;
             return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
-        isQueryResponse = true;
-        return createQueryPacket((QueryResponse) backendResponse);
+        isErrorResponse = true;
+        return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
     }
     
     private MySQLErrPacket createErrorPacket(final Exception cause) {

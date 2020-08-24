@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
@@ -50,17 +49,15 @@ public final class MySQLComQueryPacketExecutorTest {
     private final MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(mock(MySQLComQueryPacket.class), null);
     
     @Test
-    @SneakyThrows
-    public void assertIsErrorResponse() {
+    public void assertIsQueryResponse() throws SQLException, NoSuchFieldException {
         FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
-        when(textProtocolBackendHandler.execute()).thenReturn(new ErrorResponse(sqlException));
+        when(textProtocolBackendHandler.execute()).thenReturn(new QueryResponse(Collections.singletonList(mock(QueryHeader.class))));
         mysqlComQueryPacketExecutor.execute();
-        assertThat(mysqlComQueryPacketExecutor.isErrorResponse(), Matchers.is(true));
+        assertThat(mysqlComQueryPacketExecutor.isQueryResponse(), Matchers.is(true));
     }
     
     @Test
-    @SneakyThrows
-    public void assertIsUpdateResponse() {
+    public void assertIsUpdateResponse() throws SQLException, NoSuchFieldException {
         FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
         when(textProtocolBackendHandler.execute()).thenReturn(new UpdateResponse());
         mysqlComQueryPacketExecutor.execute();
@@ -68,11 +65,10 @@ public final class MySQLComQueryPacketExecutorTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertIsQuery() {
+    public void assertIsErrorResponse() throws SQLException, NoSuchFieldException {
         FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
-        when(textProtocolBackendHandler.execute()).thenReturn(new QueryResponse(Collections.singletonList(mock(QueryHeader.class))));
+        when(textProtocolBackendHandler.execute()).thenReturn(new ErrorResponse(sqlException));
         mysqlComQueryPacketExecutor.execute();
-        assertThat(mysqlComQueryPacketExecutor.isQueryResponse(), Matchers.is(true));
+        assertThat(mysqlComQueryPacketExecutor.isErrorResponse(), Matchers.is(true));
     }
 }
