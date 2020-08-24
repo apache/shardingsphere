@@ -54,7 +54,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Backer handler for rdl.
+ * Backer handler for RDL.
  */
 @RequiredArgsConstructor
 public final class RDLBackendHandler implements TextProtocolBackendHandler {
@@ -65,7 +65,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public BackendResponse execute() {
-        SQLStatementContext context = getSqlStatementContext();
+        SQLStatementContext<?> context = getSQLStatementContext();
         if (!isRegistryCenterExisted()) {
             return new ErrorResponse(new SQLException("No Registry center to execute `%s` SQL", context.getClass().getSimpleName()));
         }
@@ -103,7 +103,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         return result;
     }
     
-    private SQLStatementContext<?> getSqlStatementContext() {
+    private SQLStatementContext<?> getSQLStatementContext() {
         DatabaseType databaseType = ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType();
         if (sqlStatement instanceof CreateDataSourcesStatement) {
             return new CreateDataSourcesStatementContext((CreateDataSourcesStatement) sqlStatement, databaseType);
@@ -113,7 +113,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         return new CreateDatabaseStatementContext((CreateDatabaseStatement) sqlStatement);
     }
     
-    private BackendResponse getBackendResponse(final SQLStatementContext context) {
+    private BackendResponse getBackendResponse(final SQLStatementContext<?> context) {
         if (context instanceof CreateDatabaseStatementContext) {
             return execute((CreateDatabaseStatementContext) context);
         }
