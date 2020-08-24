@@ -63,7 +63,6 @@ public class PostgreSQLPacketCodecEngineTest {
     public void assertDecode() {
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
         when(byteBuf.readInt()).thenReturn(50);
-        when(byteBuf.readRetainedSlice(51)).thenReturn(byteBuf);
         List<Object> out = new LinkedList<>();
         new PostgreSQLPacketCodecEngine().decode(context, byteBuf, out, 54);
         assertThat(out.size(), CoreMatchers.is(1));
