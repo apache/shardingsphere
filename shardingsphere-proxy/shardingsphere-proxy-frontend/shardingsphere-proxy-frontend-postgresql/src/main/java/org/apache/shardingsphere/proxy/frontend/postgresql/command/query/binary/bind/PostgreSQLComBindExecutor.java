@@ -95,16 +95,16 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
             return result;
         }
         BackendResponse backendResponse = databaseCommunicationEngine.execute();
-        if (backendResponse instanceof ErrorResponse) {
-            isErrorResponse = true;
-            result.add(createErrorPacket((ErrorResponse) backendResponse));
+        if (backendResponse instanceof QueryResponse) {
+            createQueryPacket((QueryResponse) backendResponse).ifPresent(result::add);
         }
         if (backendResponse instanceof UpdateResponse) {
             isUpdateResponse = true;
             result.add(createUpdatePacket((UpdateResponse) backendResponse));
         }
-        if (backendResponse instanceof QueryResponse) {
-            createQueryPacket((QueryResponse) backendResponse).ifPresent(result::add);
+        if (backendResponse instanceof ErrorResponse) {
+            isErrorResponse = true;
+            result.add(createErrorPacket((ErrorResponse) backendResponse));
         }
         return result;
     }
@@ -129,7 +129,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     private List<PostgreSQLColumnDescription> getPostgreSQLColumnDescriptions(final QueryResponse queryResponse) {
         List<PostgreSQLColumnDescription> result = new LinkedList<>();
         List<QueryResult> queryResults = queryResponse.getQueryResults();
-        ResultSetMetaData resultSetMetaData = !queryResults.isEmpty() ? queryResults.get(0).getResultSetMetaData() : null;
+        ResultSetMetaData resultSetMetaData = queryResults.isEmpty() ? null : queryResults.get(0).getResultSetMetaData();
         int columnIndex = 0;
         for (QueryHeader each : queryResponse.getQueryHeaders()) {
             result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength(), resultSetMetaData));
