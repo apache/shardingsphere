@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.masterslave.algorithm.RandomMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.rule.MasterSlaveDataSourceRule;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
@@ -47,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -71,7 +74,7 @@ public class SpringBootStarterTest {
     @Test
     public void assertRules() {
         Collection<ShardingSphereRule> rules = dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getRules();
-        assertThat(rules.size(), is(2));
+        assertThat(rules.size(), is(4));
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {
                 assertShardingRule((ShardingRule) each);
@@ -116,7 +119,14 @@ public class SpringBootStarterTest {
     }
     
     private void assertMasterSlaveRule(final MasterSlaveRule rule) {
-        // TODO
+        assertThat(rule.getDataSourceMapper(), is(Collections.singletonMap("ds_ms", Arrays.asList("ds_master", "ds_slave_0", "ds_slave_1"))));
+        MasterSlaveDataSourceRule masterSlaveDataSourceRule = rule.getSingleDataSourceRule();
+        assertNotNull(masterSlaveDataSourceRule);
+        assertThat(masterSlaveDataSourceRule.getName(), is("ds_ms"));
+        assertThat(masterSlaveDataSourceRule.getMasterDataSourceName(), is("ds_master"));
+        assertThat(masterSlaveDataSourceRule.getSlaveDataSourceNames(), is(Arrays.asList("ds_slave_0", "ds_slave_1")));
+        assertThat(masterSlaveDataSourceRule.getLoadBalancer(), instanceOf(RandomMasterSlaveLoadBalanceAlgorithm.class));
+        assertThat(masterSlaveDataSourceRule.getDataSourceMapper(), is(Collections.singletonMap("ds_ms", Arrays.asList("ds_master", "ds_slave_0", "ds_slave_1"))));
     }
     
     private void assertEncryptRule(final EncryptRule rule) {
@@ -130,7 +140,8 @@ public class SpringBootStarterTest {
     }
     
     private void assertShadowRule(final ShadowRule rule) {
-        // TODO
+        assertThat(rule.getColumn(), is("shadow"));
+        assertThat(rule.getShadowMappings(), is(Collections.singletonMap("ds", "shadow_ds")));
     }
     
     @Test
