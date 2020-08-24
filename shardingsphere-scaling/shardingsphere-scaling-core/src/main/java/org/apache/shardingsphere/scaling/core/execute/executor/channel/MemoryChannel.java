@@ -49,7 +49,7 @@ public final class MemoryChannel implements Channel {
     
     @Override
     public List<Record> fetchRecords(final int batchSize, final int timeout) {
-        List<Record> records = new ArrayList<>(batchSize);
+        List<Record> result = new ArrayList<>(batchSize);
         long start = System.currentTimeMillis();
         while (batchSize > queue.size()) {
             if (timeout * 1000L <= System.currentTimeMillis() - start) {
@@ -57,9 +57,9 @@ public final class MemoryChannel implements Channel {
             }
             ThreadUtil.sleep(100L);
         }
-        queue.drainTo(records, batchSize);
-        toBeAcknowledgeRecords.addAll(records);
-        return records;
+        queue.drainTo(result, batchSize);
+        toBeAcknowledgeRecords.addAll(result);
+        return result;
     }
     
     @Override

@@ -109,8 +109,8 @@ public final class ShardingScalingJobPreparer {
     }
     
     private PositionManager<? extends IncrementalPosition> instancePositionManager(final String databaseType, final DataSource dataSource) {
-        PositionManager<? extends IncrementalPosition> positionManager = PositionManagerFactory.newInstance(databaseType, dataSource);
-        positionManager.getPosition();
-        return positionManager;
+        PositionManager<? extends IncrementalPosition> result = PositionManagerFactory.newInstance(databaseType, dataSource);
+        result.getPosition();
+        return result;
     }
 }

@@ -61,10 +61,9 @@ public final class MySQLJdbcDumperTest {
     }
     
     private DumperConfiguration mockDumperConfiguration() {
-        DumperConfiguration dumperConfiguration = new DumperConfiguration();
-        dumperConfiguration.setDataSourceConfiguration(
-                new JDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
-        return dumperConfiguration;
+        DumperConfiguration result = new DumperConfiguration();
+        result.setDataSourceConfiguration(new JDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
+        return result;
     }
     
     @SneakyThrows(SQLException.class)
