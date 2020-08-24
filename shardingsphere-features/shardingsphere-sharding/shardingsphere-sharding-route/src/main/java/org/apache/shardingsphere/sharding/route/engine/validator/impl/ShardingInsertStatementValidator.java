@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -42,11 +42,12 @@ import java.util.Optional;
 public final class ShardingInsertStatementValidator implements ShardingStatementValidator<InsertStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, final List<Object> parameters) {
+    public void preValidate(final ShardingRule shardingRule, final RouteContext routeContext) {
+        SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
         if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext() && 1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
-        InsertStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        InsertStatement sqlStatement = (InsertStatement) sqlStatementContext.getSqlStatement();
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = sqlStatement.getOnDuplicateKeyColumns();
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(shardingRule, onDuplicateKeyColumnsSegment.get(), tableName)) {
