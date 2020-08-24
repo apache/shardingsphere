@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -42,7 +44,8 @@ public final class ShardingDeleteStatementValidatorTest {
         DeleteStatement sqlStatement = new DeleteStatement();
         sqlStatement.getTables().addAll(createMultiTablesContext().getTables());
         SQLStatementContext<DeleteStatement> sqlStatementContext = new DeleteStatementContext(sqlStatement);
-        new ShardingDeleteStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList());
+        RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        new ShardingDeleteStatementValidator().preValidate(shardingRule, routeContext);
     }
 
     private TablesContext createMultiTablesContext() {
