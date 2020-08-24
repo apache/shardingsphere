@@ -65,8 +65,8 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_subquery_for_where_in_predicate" db-type="MySQL">
-        <input sql="SELECT * FROM t_account WHERE account_id = ? OR amount IN (SELECT amount FROM t_account WHERE account_id = ?)"  parameters="100, 1000"/>
-        <output sql="SELECT * FROM t_account_0 WHERE account_id = ? OR amount IN (SELECT amount FROM t_account_0 WHERE account_id = ?)"  parameters="100, 1000"/>
+        <input sql="SELECT * FROM t_account WHERE account_id = ? AND amount IN (SELECT amount FROM t_account WHERE account_id = ?)"  parameters="100, 100"/>
+        <output sql="SELECT * FROM t_account_0 WHERE account_id = ? AND amount IN (SELECT amount FROM t_account_0 WHERE account_id = ?)"  parameters="100, 100"/>
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_subquery_for_where_between_and_predicate" db-type="MySQL">

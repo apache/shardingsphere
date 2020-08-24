@@ -237,10 +237,12 @@ public final class TableExtractUtils {
         } 
         if (predicate.getRightValue() instanceof PredicateBetweenRightValue) {
             if (((PredicateBetweenRightValue) predicate.getRightValue()).getBetweenExpression() instanceof SubqueryExpressionSegment) {
-                result.addAll(TableExtractUtils.getTablesFromSelect(((SubqueryExpressionSegment) (((PredicateBetweenRightValue) predicate.getRightValue()).getBetweenExpression())).getSubquery().getSelect()));    
+                SelectStatement subquerySelect = ((SubqueryExpressionSegment) (((PredicateBetweenRightValue) predicate.getRightValue()).getBetweenExpression())).getSubquery().getSelect();
+                result.addAll(TableExtractUtils.getTablesFromSelect(subquerySelect));    
             }
             if (((PredicateBetweenRightValue) predicate.getRightValue()).getAndExpression() instanceof SubqueryExpressionSegment) {
-                result.addAll(TableExtractUtils.getTablesFromSelect(((SubqueryExpressionSegment) (((PredicateBetweenRightValue) predicate.getRightValue()).getAndExpression())).getSubquery().getSelect()));
+                SelectStatement subquerySelect = ((SubqueryExpressionSegment) (((PredicateBetweenRightValue) predicate.getRightValue()).getAndExpression())).getSubquery().getSelect();
+                result.addAll(TableExtractUtils.getTablesFromSelect(subquerySelect));
             }
         } 
         if (predicate.getRightValue() instanceof ColumnSegment) {
