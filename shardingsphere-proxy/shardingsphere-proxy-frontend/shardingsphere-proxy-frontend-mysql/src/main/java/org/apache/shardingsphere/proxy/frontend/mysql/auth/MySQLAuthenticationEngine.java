@@ -101,12 +101,13 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     }
     
     private MySQLErrPacket getMySQLErrPacket(final MySQLServerErrorCode errorCode, final ChannelHandlerContext context) {
-        if (MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR == errorCode) {
-            return new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR, username, getHostAddress(context), database);
-        } else {
-            return new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, username, getHostAddress(context),
-                    0 == authResponse.length ? "NO" : "YES");
-        }
+        return MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR == errorCode
+                ? new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR, username, getHostAddress(context), database)
+                : new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, username, getHostAddress(context), getErrorMessage());
+    }
+    
+    private String getErrorMessage() {
+        return 0 == authResponse.length ? "NO" : "YES";
     }
     
     private String getHostAddress(final ChannelHandlerContext context) {
