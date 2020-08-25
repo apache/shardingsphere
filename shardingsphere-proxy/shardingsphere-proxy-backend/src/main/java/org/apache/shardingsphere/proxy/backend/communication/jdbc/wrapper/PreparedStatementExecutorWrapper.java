@@ -69,8 +69,8 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         }
         RouteContext routeContext = new DataNodeRouter(schema.getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).route(sqlStatement, sql, parameters);
         routeMetricsCollect(routeContext, rules);
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(schema.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(),
-                PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).rewrite(sql, new ArrayList<>(parameters), routeContext);
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schema.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules);
+        SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(sql, new ArrayList<>(parameters), routeContext);
         return new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(schema.getSchema().getMetaData(), sqlRewriteResult));
     }
     
@@ -79,14 +79,14 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         return ((PreparedStatement) statement).execute();
     }
     
+    private void routeMetricsCollect(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
+        MetricsUtils.buriedShardingMetrics(routeContext.getRouteResult().getRouteUnits());
+        MetricsUtils.buriedShardingRuleMetrics(routeContext, rules);
+    }
+    
     @Override
     public ExecuteGroupEngine<?> getExecuteGroupEngine(final BackendConnection backendConnection, final StatementOption option) {
         int maxConnectionsSizePerQuery = PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
-    }
-    
-    private void routeMetricsCollect(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
-        MetricsUtils.buriedShardingMetrics(routeContext.getRouteResult().getRouteUnits());
-        MetricsUtils.buriedShardingRuleMetrics(routeContext, rules);
     }
 }
