@@ -85,13 +85,17 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     public BackendResponse execute() {
         try {
             ExecutionContext executionContext = executeEngine.generateExecutionContext(sql);
-            if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
-                SQLLogger.logSQL(sql, ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
-            }
+            logSQL(executionContext);
             return execute(executionContext);
         } catch (final TableExistsException | ShardingSphereConfigurationException | SQLException ex) {
             // TODO Particular handling needed for `createTable` without shardingRule and dataNode.
             return new ErrorResponse(ex);
+        }
+    }
+    
+    private void logSQL(final ExecutionContext executionContext) {
+        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
+            SQLLogger.logSQL(sql, ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }
     }
     
