@@ -77,6 +77,4 @@ public class PostgreSQLBinaryProtocolValueFactoryTest {
     public void assertGetBinaryProtocolValueExThrown() {
         PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.POSTGRESQL_TYPE_XML);
     }
-    
 }
-
