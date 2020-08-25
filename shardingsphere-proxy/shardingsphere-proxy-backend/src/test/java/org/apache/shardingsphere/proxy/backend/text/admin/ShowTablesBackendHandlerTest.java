@@ -54,7 +54,7 @@ public class ShowTablesBackendHandlerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
         BackendConnection backendConnection = mock(BackendConnection.class);
-        when(backendConnection.getUserName()).thenReturn("root");
+        when(backendConnection.getUsername()).thenReturn("root");
         tablesBackendHandler = new ShowTablesBackendHandler("show tables", mock(SQLStatement.class), backendConnection);
         Map<String, SchemaContext> schemaContextMap = getSchemaContextMap();
         when(backendConnection.getSchema()).thenReturn("schema_0");

@@ -483,4 +483,43 @@
             </and-predicate>
         </where>
     </update>
+
+    <update sql-case-id="update_with_order_by_row_count" parameters="'update', 1, 1, 10">
+        <table name="t_order" start-index="7" stop-index="13" />
+        <set start-index="15" stop-index="28" literal-stop-index="35">
+            <assignment start-index="19" stop-index="28" literal-stop-index="35">
+                <column name="status" start-index="19" stop-index="24" />
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="28" stop-index="28" />
+                    <literal-expression value="update" start-index="28" stop-index="35" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="30" stop-index="63" literal-start-index="43" literal-stop-index="54">
+            <and-predicate>
+                <predicate start-index="36" stop-index="47" literal-start-index="43" literal-stop-index="54">
+                    <column-left-value name="order_id" start-index="36" stop-index="43" literal-start-index="43" literal-stop-index="50" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="47" stop-index="47" />
+                        <literal-expression value="1" start-index="54" stop-index="54" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="53" stop-index="63" literal-start-index="60" literal-stop-index="70">
+                    <column-left-value name="user_id" start-index="53" stop-index="59" literal-start-index="60" literal-stop-index="66" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="63" stop-index="63" />
+                        <literal-expression value="1" start-index="70" stop-index="70" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="order_id" start-index="74" stop-index="81" literal-start-index="81" literal-stop-index="88"/>
+        </order-by>
+        <limit start-index="83" stop-index="89" literal-start-index="90" literal-stop-index="97">
+            <row-count value="10" parameter-index="3" start-index="89" stop-index="89" literal-start-index="96" literal-stop-index="97" />
+        </limit>
+    </update>
 </sql-parser-test-cases>

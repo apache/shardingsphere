@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class ExecutorGroupTest {
+public final class CommandExecutorSelectorTest {
     
     @Test
     public void assertGetExecutorServiceWithLocal() {

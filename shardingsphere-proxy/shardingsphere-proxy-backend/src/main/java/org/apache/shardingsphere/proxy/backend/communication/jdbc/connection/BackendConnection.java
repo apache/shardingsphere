@@ -71,7 +71,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     private int connectionId;
     
     @Setter
-    private String userName;
+    private String username;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     

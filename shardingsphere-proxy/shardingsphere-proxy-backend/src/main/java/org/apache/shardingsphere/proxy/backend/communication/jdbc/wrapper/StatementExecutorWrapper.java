@@ -55,15 +55,14 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private final SQLStatement sqlStatement;
     
-    @SuppressWarnings("unchecked")
     @Override
-    public ExecutionContext execute(final String sql) {
+    public ExecutionContext generateExecutionContext(final String sql) {
         Collection<ShardingSphereRule> rules = schema.getSchema().getRules();
         if (rules.isEmpty()) {
             return createExecutionContext(sql);
         }
-        RouteContext routeContext = 
-                new DataNodeRouter(schema.getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).route(sqlStatement, sql, Collections.emptyList());
+        DataNodeRouter router = new DataNodeRouter(schema.getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules);
+        RouteContext routeContext = router.route(sqlStatement, sql, Collections.emptyList());
         routeMetricsCollect(routeContext, rules);
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(schema.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(),
                 PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).rewrite(sql, Collections.emptyList(), routeContext);
@@ -75,20 +74,20 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
     }
     
+    @SuppressWarnings("unchecked")
     private ExecutionContext createExecutionContext(final String sql) {
         String dataSource = schema.getSchema().getDataSources().isEmpty() ? "" : schema.getSchema().getDataSources().keySet().iterator().next();
-        return new ExecutionContext(
-                new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(dataSource, new SQLUnit(sql, Collections.emptyList())));
-    }
-    
-    @Override
-    public ExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, final StatementOption option) {
-        int maxConnectionsSizePerQuery = PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
+        return new ExecutionContext(new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(dataSource, new SQLUnit(sql, Collections.emptyList())));
     }
     
     private void routeMetricsCollect(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
-        MetricsUtils.buriedShardingMetrics(routeContext.getRouteResult().getRouteUnits());
-        MetricsUtils.buriedShardingRuleMetrics(routeContext, rules);
+        MetricsUtils.collectRouteUnitMetrics(routeContext.getRouteResult().getRouteUnits());
+        MetricsUtils.collectShardingRuleMetrics(routeContext, rules);
+    }
+    
+    @Override
+    public ExecuteGroupEngine<?> getExecuteGroupEngine(final BackendConnection backendConnection, final StatementOption option) {
+        int maxConnectionsSizePerQuery = PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
     }
 }

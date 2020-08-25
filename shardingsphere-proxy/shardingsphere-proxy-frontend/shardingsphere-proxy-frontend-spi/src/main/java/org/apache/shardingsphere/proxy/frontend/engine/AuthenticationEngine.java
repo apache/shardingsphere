@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.engine;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 
 /**
  * Authentication engine.
@@ -30,17 +29,16 @@ public interface AuthenticationEngine {
      * Handshake.
      *
      * @param context channel handler context
-     * @param backendConnection backend connection
+     * @return connection ID
      */
-    void handshake(ChannelHandlerContext context, BackendConnection backendConnection);
+    int handshake(ChannelHandlerContext context);
     
     /**
      * Authentication.
      *
      * @param context channel handler context
      * @param payload packet payload
-     * @param backendConnection backend connection
-     * @return auth finish or not
+     * @return authentication result
      */
-    boolean auth(ChannelHandlerContext context, PacketPayload payload, BackendConnection backendConnection);
+    AuthenticationResult auth(ChannelHandlerContext context, PacketPayload payload);
 }

@@ -15,15 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend;
+package org.apache.shardingsphere.kernel.context.fixture;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
-public final class DatabaseFrontendEngineFactoryTest {
-    
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertNewInstanceWhenUnsupported() {
-        DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("Oracle"));
-    }
+public final class FixtureRuleConfiguration implements RuleConfiguration {
 }

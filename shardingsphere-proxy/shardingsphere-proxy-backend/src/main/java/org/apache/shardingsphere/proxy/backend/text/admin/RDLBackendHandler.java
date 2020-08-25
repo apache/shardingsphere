@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
@@ -53,7 +54,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Backer handler for rdl.
+ * Backer handler for RDL.
  */
 @RequiredArgsConstructor
 public final class RDLBackendHandler implements TextProtocolBackendHandler {
@@ -64,7 +65,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public BackendResponse execute() {
-        SQLStatementContext context = getSqlStatementContext();
+        SQLStatementContext<?> context = getSQLStatementContext();
         if (!isRegistryCenterExisted()) {
             return new ErrorResponse(new SQLException("No Registry center to execute `%s` SQL", context.getClass().getSimpleName()));
         }
@@ -72,7 +73,10 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private BackendResponse execute(final CreateDatabaseStatementContext context) {
-        SchemaNameCallback.getInstance().run(context.getSqlStatement().getSchemaName(), true);
+        if (ProxySchemaContexts.getInstance().getSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
+            return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
+        }
+        SchemaNameCallback.getInstance().run(context.getSqlStatement().getDatabaseName(), true);
         // TODO Need to get the executed feedback from registry center for returning.
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
@@ -99,7 +103,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         return result;
     }
     
-    private SQLStatementContext<?> getSqlStatementContext() {
+    private SQLStatementContext<?> getSQLStatementContext() {
         DatabaseType databaseType = ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType();
         if (sqlStatement instanceof CreateDataSourcesStatement) {
             return new CreateDataSourcesStatementContext((CreateDataSourcesStatement) sqlStatement, databaseType);
@@ -109,7 +113,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         return new CreateDatabaseStatementContext((CreateDatabaseStatement) sqlStatement);
     }
     
-    private BackendResponse getBackendResponse(final SQLStatementContext context) {
+    private BackendResponse getBackendResponse(final SQLStatementContext<?> context) {
         if (context instanceof CreateDatabaseStatementContext) {
             return execute((CreateDatabaseStatementContext) context);
         }
