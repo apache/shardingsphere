@@ -29,7 +29,7 @@ import java.util.Collections;
 public final class MetricsUtilsTest {
     
     @Test
-    public void testBuriedShardingMetrics() {
+    public void assertCollectRouteUnitMetrics() {
         RouteMapper dataSourceMapper = new RouteMapper("ds", "ds_0");
         RouteMapper tableMapper = new RouteMapper("t_order", "t_order_0");
         RouteUnit unit = new RouteUnit(dataSourceMapper, Collections.singletonList(tableMapper));
@@ -37,7 +37,7 @@ public final class MetricsUtilsTest {
     }
     
     @Test
-    public void testBuriedTransactionMetric() {
+    public void assertCollectTransactionMetric() {
         MetricsUtils.collectTransactionMetric("begin");
         MetricsUtils.collectTransactionMetric("commit");
         MetricsUtils.collectTransactionMetric("rollback");
