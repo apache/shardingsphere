@@ -35,9 +35,9 @@ public final class DataSourceStateChangedListener extends PostOrchestrationRepos
     
     private final RegistryCenterNode registryCenterNode;
     
-    public DataSourceStateChangedListener(final String name, final RegistryRepository registryRepository) {
-        super(registryRepository, Collections.singleton(new RegistryCenterNode(name).getDataSourcesNodeFullRootPath()));
-        registryCenterNode = new RegistryCenterNode(name);
+    public DataSourceStateChangedListener(final RegistryRepository registryRepository) {
+        super(registryRepository, Collections.singleton(new RegistryCenterNode().getDataSourcesNodeFullRootPath()));
+        registryCenterNode = new RegistryCenterNode();
     }
     
     @Override

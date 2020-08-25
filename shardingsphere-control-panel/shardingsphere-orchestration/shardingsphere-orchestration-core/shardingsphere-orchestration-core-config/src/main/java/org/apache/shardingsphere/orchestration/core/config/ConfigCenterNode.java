@@ -54,15 +54,13 @@ public final class ConfigCenterNode {
     
     private static final String PATH_SEPARATOR = "/";
     
-    private final String name;
-    
     /**
      * Get schema path.
      *
      * @return schema path
      */
     public String getSchemaPath() {
-        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, SCHEMA_NODE);
+        return Joiner.on(PATH_SEPARATOR).join("", ROOT, SCHEMA_NODE);
     }
     
     /**
@@ -72,7 +70,7 @@ public final class ConfigCenterNode {
      * @return schema name path
      */
     public String getSchemaNamePath(final String schemaName) {
-        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, SCHEMA_NODE, schemaName);
+        return Joiner.on(PATH_SEPARATOR).join("", ROOT, SCHEMA_NODE, schemaName);
     }
     
     /**
@@ -114,11 +112,11 @@ public final class ConfigCenterNode {
     }
     
     private String getFullPath(final String schemaName, final String node) {
-        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, SCHEMA_NODE, schemaName, node);
+        return Joiner.on(PATH_SEPARATOR).join("", ROOT, SCHEMA_NODE, schemaName, node);
     }
     
     private String getFullPath(final String node) {
-        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, node);
+        return Joiner.on(PATH_SEPARATOR).join("", ROOT, node);
     }
     
     /**

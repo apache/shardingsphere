@@ -68,8 +68,8 @@ public final class ConfigCenter {
     
     private final ConfigurationRepository repository;
     
-    public ConfigCenter(final String name, final ConfigurationRepository repository) {
-        node = new ConfigCenterNode(name);
+    public ConfigCenter(final ConfigurationRepository repository) {
+        node = new ConfigCenterNode();
         this.repository = repository;
         DataSourceCallback.getInstance().register(this::persistDataSourceConfiguration);
         RuleCallback.getInstance().register(this::persistRuleConfigurations);

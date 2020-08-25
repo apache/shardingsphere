@@ -42,7 +42,7 @@ public final class RegistryCenterTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        registryCenter = new RegistryCenter("test", registryRepository);
+        registryCenter = new RegistryCenter(registryRepository);
         Field field = registryCenter.getClass().getDeclaredField("repository");
         field.setAccessible(true);
         field.set(registryCenter, registryRepository);
@@ -57,7 +57,7 @@ public final class RegistryCenterTest {
     @Test
     public void assertPersistDataSourcesNode() {
         registryCenter.persistDataSourcesNode();
-        verify(registryRepository).persist("/test/registry/datasources", "");
+        verify(registryRepository).persist("/registry/datasources", "");
     }
     
     @Test

@@ -33,8 +33,8 @@ import java.util.Collections;
  */
 public final class MetricsConfigurationChangedListener extends PostOrchestrationRepositoryEventListener {
     
-    public MetricsConfigurationChangedListener(final String name, final ConfigurationRepository configurationRepository) {
-        super(configurationRepository, Collections.singletonList(new ConfigCenterNode(name).getMetricsPath()));
+    public MetricsConfigurationChangedListener(final ConfigurationRepository configurationRepository) {
+        super(configurationRepository, Collections.singletonList(new ConfigCenterNode().getMetricsPath()));
     }
     
     @Override

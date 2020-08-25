@@ -46,7 +46,7 @@ public final class ClusterConfigurationChangedListenerTest {
     
     @Before
     public void setUp() {
-        clusterConfigurationChangedListener = new ClusterConfigurationChangedListener("test", configurationRepository);
+        clusterConfigurationChangedListener = new ClusterConfigurationChangedListener(configurationRepository);
     }
     
     @Test
