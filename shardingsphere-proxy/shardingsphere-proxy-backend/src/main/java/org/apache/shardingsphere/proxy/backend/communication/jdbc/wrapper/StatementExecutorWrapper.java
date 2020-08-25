@@ -61,8 +61,8 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         if (rules.isEmpty()) {
             return createExecutionContext(sql);
         }
-        RouteContext routeContext = 
-                new DataNodeRouter(schema.getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).route(sqlStatement, sql, Collections.emptyList());
+        DataNodeRouter router = new DataNodeRouter(schema.getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules);
+        RouteContext routeContext = router.route(sqlStatement, sql, Collections.emptyList());
         routeMetricsCollect(routeContext, rules);
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(schema.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(),
                 PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).rewrite(sql, Collections.emptyList(), routeContext);
