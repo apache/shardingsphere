@@ -55,7 +55,6 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private final SQLStatement sqlStatement;
     
-    @SuppressWarnings("unchecked")
     @Override
     public ExecutionContext execute(final String sql) {
         Collection<ShardingSphereRule> rules = schema.getSchema().getRules();
@@ -75,6 +74,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
     }
     
+    @SuppressWarnings("unchecked")
     private ExecutionContext createExecutionContext(final String sql) {
         String dataSource = schema.getSchema().getDataSources().isEmpty() ? "" : schema.getSchema().getDataSources().keySet().iterator().next();
         return new ExecutionContext(
@@ -82,7 +82,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     @Override
-    public ExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, final StatementOption option) {
+    public ExecuteGroupEngine<?> getExecuteGroupEngine(final BackendConnection backendConnection, final StatementOption option) {
         int maxConnectionsSizePerQuery = PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
     }
