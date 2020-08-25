@@ -33,8 +33,8 @@ import java.util.Collections;
  */
 public final class AuthenticationChangedListener extends PostOrchestrationRepositoryEventListener {
     
-    public AuthenticationChangedListener(final String name, final ConfigurationRepository configurationRepository) {
-        super(configurationRepository, Collections.singletonList(new ConfigCenterNode(name).getAuthenticationPath()));
+    public AuthenticationChangedListener(final ConfigurationRepository configurationRepository) {
+        super(configurationRepository, Collections.singletonList(new ConfigCenterNode().getAuthenticationPath()));
     }
     
     @Override

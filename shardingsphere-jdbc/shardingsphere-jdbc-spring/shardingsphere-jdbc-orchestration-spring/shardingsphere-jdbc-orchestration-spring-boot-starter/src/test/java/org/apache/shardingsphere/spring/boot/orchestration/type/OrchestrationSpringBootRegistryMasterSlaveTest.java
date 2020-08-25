@@ -43,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = OrchestrationSpringBootRegistryMasterSlaveTest.class)
 @SpringBootApplication
-@ActiveProfiles("registry")
+@ActiveProfiles("registry-masterslave")
 public class OrchestrationSpringBootRegistryMasterSlaveTest {
     
     @Resource
@@ -53,29 +53,29 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
     public static void init() {
         EmbedTestingServer.start();
         TestOrchestrationRepository repository = new TestOrchestrationRepository();
-        repository.persist("/orchestration-spring-boot-test/config/schema/logic_db/datasource", ""
+        repository.persist("/config/schema/logic_db/datasource", ""
                 + "ds_master: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
                 + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
                 + "  props:\n"
                 + "    url: jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
                 + "    maxTotal: 16\n"
-                + "    password: ''\n"
-                + "    username: root\n"
+                + "    password: \n"
+                + "    username: sa\n"
                 + "ds_slave_0: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
                 + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
                 + "  props:\n"
                 + "    url: jdbc:h2:mem:demo_ds_slave_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
                 + "    maxTotal: 16\n"
-                + "    password: ''\n"
-                + "    username: root\n"
+                + "    password: \n"
+                + "    username: sa\n"
                 + "ds_slave_1: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
                 + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
                 + "  props:\n"
                 + "    url: jdbc:h2:mem:demo_ds_slave_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
                 + "    maxTotal: 16\n"
-                + "    password: ''\n"
-                + "    username: root\n");
-        repository.persist("/orchestration-spring-boot-test/config/schema/logic_db/rule", ""
+                + "    password: \n"
+                + "    username: sa\n");
+        repository.persist("/config/schema/logic_db/rule", ""
                 + "rules:\n"
                 + "- !MASTER_SLAVE\n"
                 + "  loadBalancers:\n"
@@ -89,8 +89,8 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
                 + "      slaveDataSourceNames: \n"
                 + "        - ds_slave_0\n" 
                 + "        - ds_slave_1\n");
-        repository.persist("/orchestration-spring-boot-test/config/props", "{}\n");
-        repository.persist("/orchestration-spring-boot-test/registry/datasources", "");
+        repository.persist("/config/props", "{}\n");
+        repository.persist("/registry/datasources", "");
     }
     
     @Test
@@ -102,7 +102,7 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
         ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) field.get(dataSource);
         for (DataSource each : shardingSphereDataSource.getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
-            assertThat(((BasicDataSource) each).getUsername(), is("root"));
+            assertThat(((BasicDataSource) each).getUsername(), is("sa"));
         }
     }
 }

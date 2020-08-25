@@ -59,10 +59,10 @@ public final class SchemaChangedListener extends PostOrchestrationRepositoryEven
     
     private final Collection<String> existedSchemaNames = new LinkedHashSet<>();
     
-    public SchemaChangedListener(final String name, final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
-        super(configurationRepository, new ConfigCenterNode(name).getAllSchemaConfigPaths(schemaNames));
-        configurationService = new ConfigCenter(name, configurationRepository);
-        configurationNode = new ConfigCenterNode(name);
+    public SchemaChangedListener(final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
+        super(configurationRepository, new ConfigCenterNode().getAllSchemaConfigPaths(schemaNames));
+        configurationService = new ConfigCenter(configurationRepository);
+        configurationNode = new ConfigCenterNode();
         existedSchemaNames.addAll(schemaNames);
     }
     

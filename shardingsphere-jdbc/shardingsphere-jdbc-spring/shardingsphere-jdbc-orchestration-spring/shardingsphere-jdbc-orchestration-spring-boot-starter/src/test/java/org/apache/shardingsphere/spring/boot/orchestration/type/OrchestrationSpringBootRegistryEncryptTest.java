@@ -64,10 +64,10 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         String encryptRule = readYAML(ENCRYPT_RULE_FILE);
         TestOrchestrationRepository repository = new TestOrchestrationRepository();
-        repository.persist("/orchestration-spring-boot-test/config/schema/logic_db/datasource", dataSource);
-        repository.persist("/orchestration-spring-boot-test/config/schema/logic_db/rule", encryptRule);
-        repository.persist("/orchestration-spring-boot-test/config/props", "sql.show: 'true'\n");
-        repository.persist("/orchestration-spring-boot-test/registry/datasources", "");
+        repository.persist("/config/schema/logic_db/datasource", dataSource);
+        repository.persist("/config/schema/logic_db/rule", encryptRule);
+        repository.persist("/config/props", "sql.show: 'true'\n");
+        repository.persist("/registry/datasources", "");
     }
     
     @Test

@@ -35,8 +35,8 @@ import java.util.Collections;
  */
 public final class InstanceStateChangedListener extends PostOrchestrationRepositoryEventListener {
     
-    public InstanceStateChangedListener(final String name, final RegistryRepository registryRepository) {
-        super(registryRepository, Collections.singleton(new RegistryCenterNode(name).getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId())));
+    public InstanceStateChangedListener(final RegistryRepository registryRepository) {
+        super(registryRepository, Collections.singleton(new RegistryCenterNode().getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId())));
     }
     
     @Override

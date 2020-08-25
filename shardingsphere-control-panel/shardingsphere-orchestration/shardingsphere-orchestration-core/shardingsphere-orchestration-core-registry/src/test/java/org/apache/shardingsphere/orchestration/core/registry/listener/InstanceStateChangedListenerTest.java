@@ -40,17 +40,17 @@ public final class InstanceStateChangedListenerTest {
     
     @Before
     public void setUp() {
-        instanceStateChangedListener = new InstanceStateChangedListener("test", registryRepository);
+        instanceStateChangedListener = new InstanceStateChangedListener(registryRepository);
     }
     
     @Test
     public void assertCreateOrchestrationEventWhenEnabled() {
-        assertFalse(instanceStateChangedListener.createOrchestrationEvent(new DataChangedEvent("test/test_ds", "", ChangedType.UPDATED)).isCircuitBreak());
+        assertFalse(instanceStateChangedListener.createOrchestrationEvent(new DataChangedEvent("/test_ds", "", ChangedType.UPDATED)).isCircuitBreak());
     }
     
     @Test
     public void assertCreateOrchestrationEventWhenDisabled() {
-        assertTrue(instanceStateChangedListener.createOrchestrationEvent(new DataChangedEvent("test/test_ds",
+        assertTrue(instanceStateChangedListener.createOrchestrationEvent(new DataChangedEvent("/test_ds",
                 "state: " + RegistryCenterNodeStatus.DISABLED.name(), ChangedType.UPDATED)).isCircuitBreak());
     }
 }
