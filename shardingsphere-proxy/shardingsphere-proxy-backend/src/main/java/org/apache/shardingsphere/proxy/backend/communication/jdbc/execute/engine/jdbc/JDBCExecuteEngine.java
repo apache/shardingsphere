@@ -80,44 +80,53 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         return jdbcExecutorWrapper.generateExecutionContext(sql);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
         SQLStatementContext<?> sqlStatementContext = executionContext.getSqlStatementContext();
-        boolean isReturnGeneratedKeys = sqlStatementContext.getSqlStatement() instanceof InsertStatement;
-        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        Collection<ExecuteResult> executeResults;
-        if (ExecutorConstant.MANAGED_RESOURCE) {
-            ExecuteGroupEngine executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine(backendConnection, new StatementOption(isReturnGeneratedKeys));
-            Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits());
-            executeResults = sqlExecutor.execute(inputGroups,
-                    new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
-                    new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
-        } else {
-            int maxConnectionsSizePerQuery = ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-            Collection<InputGroup<RawSQLExecuteUnit>> inputGroups = new RawExecuteGroupEngine(maxConnectionsSizePerQuery,
-                    ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema()).getSchema().getRules()).generate(executionContext.getExecutionUnits());
-            // TODO handle query header
-            executeResults = rawExecutor.execute(inputGroups, new RawSQLExecutorCallback());
-        }
+        Collection<ExecuteResult> executeResults = execute(executionContext, 
+                sqlStatementContext, sqlStatementContext.getSqlStatement() instanceof InsertStatement, ExecutorExceptionHandler.isExceptionThrown());
         ExecuteResult executeResult = executeResults.iterator().next();
         if (executeResult instanceof ExecuteQueryResult) {
             SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), "SELECT"));
             return getExecuteQueryResponse(((ExecuteQueryResult) executeResult).getQueryHeaders(), executeResults);
         } else {
-            UpdateResponse updateResponse = new UpdateResponse(executeResults);
+            UpdateResponse result = new UpdateResponse(executeResults);
             if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
-                updateResponse.setType("INSERT");
+                result.setType("INSERT");
             } else if (sqlStatementContext.getSqlStatement() instanceof DeleteStatement) {
-                updateResponse.setType("DELETE");
+                result.setType("DELETE");
             } else if (sqlStatementContext.getSqlStatement() instanceof UpdateStatement) {
-                updateResponse.setType("UPDATE");
+                result.setType("UPDATE");
             }
-            if (!Strings.isNullOrEmpty(updateResponse.getType())) {
-                SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), updateResponse.getType()));
+            if (!Strings.isNullOrEmpty(result.getType())) {
+                SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), result.getType()));
             }
-            return updateResponse;
+            return result;
         }
+    }
+    
+    private Collection<ExecuteResult> execute(final ExecutionContext executionContext, 
+                                              final SQLStatementContext<?> sqlStatementContext, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+        return ExecutorConstant.MANAGED_RESOURCE
+                ? executeWithManagedResource(executionContext, sqlStatementContext, isReturnGeneratedKeys, isExceptionThrown) : executeWithUnmanagedResource(executionContext);
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Collection<ExecuteResult> executeWithManagedResource(final ExecutionContext executionContext, final SQLStatementContext<?> sqlStatementContext, 
+                                                                 final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+        ExecuteGroupEngine executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine(backendConnection, new StatementOption(isReturnGeneratedKeys));
+        Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits());
+        return sqlExecutor.execute(inputGroups,
+                new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
+                new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
+    }
+    
+    private Collection<ExecuteResult> executeWithUnmanagedResource(final ExecutionContext executionContext) throws SQLException {
+        int maxConnectionsSizePerQuery = ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        Collection<InputGroup<RawSQLExecuteUnit>> inputGroups = new RawExecuteGroupEngine(maxConnectionsSizePerQuery,
+                ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema()).getSchema().getRules()).generate(executionContext.getExecutionUnits());
+        // TODO handle query header
+        return rawExecutor.execute(inputGroups, new RawSQLExecutorCallback());
     }
     
     private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResults) {
