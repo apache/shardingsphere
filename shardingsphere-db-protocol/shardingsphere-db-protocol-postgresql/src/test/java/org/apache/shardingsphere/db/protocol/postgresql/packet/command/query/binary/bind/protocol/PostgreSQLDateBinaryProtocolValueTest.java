@@ -53,5 +53,4 @@ public class PostgreSQLDateBinaryProtocolValueTest {
         new PostgreSQLDateBinaryProtocolValue().write(payload, data);
         verify(payload).writeInt8(data.getTime());
     }
-    
 }

@@ -51,5 +51,4 @@ public class PostgreSQLDoubleBinaryProtocolValueTest {
         new PostgreSQLDoubleBinaryProtocolValue().write(new PostgreSQLPacketPayload(byteBuf), 1D);
         verify(byteBuf).writeDouble(1.0d);
     }
-    
 }
