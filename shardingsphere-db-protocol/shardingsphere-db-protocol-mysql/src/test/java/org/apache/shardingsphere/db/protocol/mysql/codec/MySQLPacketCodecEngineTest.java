@@ -66,7 +66,16 @@ public final class MySQLPacketCodecEngineTest {
         new MySQLPacketCodecEngine().decode(context, byteBuf, out, 54);
         assertThat(out.size(), is(1));
     }
-    
+
+    @Test
+    public void assertDecodeWithEmptyPacket() {
+        when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
+        when(byteBuf.readMediumLE()).thenReturn(0);
+        List<Object> out = new LinkedList<>();
+        new MySQLPacketCodecEngine().decode(context, byteBuf, out, 4);
+        assertThat(out.size(), is(1));
+    }
+
     @Test
     public void assertDecodeWithStickyPacket() {
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
