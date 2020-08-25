@@ -117,10 +117,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private String getTableName(final SQLStatementContext<?> sqlStatementContext) {
-        if (sqlStatementContext instanceof TableAvailable) {
-            if (((TableAvailable) sqlStatementContext).getAllTables().isEmpty()) {
-                return "unknown_table";
-            }
+        if (sqlStatementContext instanceof TableAvailable && !((TableAvailable) sqlStatementContext).getAllTables().isEmpty()) {
             return ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         }
         return "unknown_table";
