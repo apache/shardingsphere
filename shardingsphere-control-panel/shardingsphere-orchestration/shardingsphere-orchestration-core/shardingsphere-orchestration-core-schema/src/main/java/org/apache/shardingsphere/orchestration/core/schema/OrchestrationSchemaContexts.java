@@ -39,7 +39,6 @@ import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
-import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.facade.MetricsTrackerManagerFacade;
@@ -59,6 +58,7 @@ import org.apache.shardingsphere.orchestration.core.registry.event.DisabledState
 import org.apache.shardingsphere.orchestration.core.registry.schema.OrchestrationSchema;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -113,11 +113,14 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         return schemaContexts.getDatabaseType();
     }
     
-    private DatabaseType getDatabaseType(final Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap) {
-        if (dataSourceParametersMap.isEmpty() || dataSourceParametersMap.values().iterator().next().isEmpty()) {
+    private DatabaseType getDatabaseType(final Map<String, Map<String, DataSource>> dataSourcesMap) throws SQLException {
+        if (dataSourcesMap.isEmpty() || dataSourcesMap.values().iterator().next().isEmpty()) {
             return schemaContexts.getDatabaseType();
         }
-        return DatabaseTypes.getDatabaseTypeByURL(dataSourceParametersMap.values().iterator().next().values().iterator().next().getUrl());
+        DataSource dataSource = dataSourcesMap.values().iterator().next().values().iterator().next();
+        try (Connection connection = dataSource.getConnection()) {
+            return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
+        }
     }
     
     @Override
@@ -335,8 +338,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     private SchemaContext getAddedSchemaContext(final SchemaAddedEvent schemaAddedEvent) throws Exception {
         String schemaName = schemaAddedEvent.getShardingSchemaName();
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
-        Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap = createDataSourceParametersMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
-        DatabaseType databaseType = getDatabaseType(dataSourceParametersMap);
+        DatabaseType databaseType = getDatabaseType(dataSourcesMap);
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(databaseType, dataSourcesMap,  
                 Collections.singletonMap(schemaName, schemaAddedEvent.getRuleConfigurations()), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
         return schemaContextsBuilder.build().getSchemaContexts().get(schemaName);
@@ -403,12 +405,4 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     protected abstract Map<String, DataSource> getModifiedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSources) throws Exception;
     
     protected abstract Map<String, Map<String, DataSource>> createDataSourcesMap(Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) throws Exception;
-    
-    /**
-     * Create data source parameters map.
-     * 
-     * @param dataSourcesMap data source map
-     * @return data source parameters map
-     */
-    public abstract Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap);
 }
