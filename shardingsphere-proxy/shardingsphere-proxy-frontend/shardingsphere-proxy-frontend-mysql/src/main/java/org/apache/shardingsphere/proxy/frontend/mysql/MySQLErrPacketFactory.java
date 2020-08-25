@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseExceptio
 import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLErrorCode;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.ShardingCTLException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.sql.SQLException;
 
@@ -69,6 +71,9 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof TableExistsException) {
             return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_TABLE_EXISTS_ERROR, ((TableExistsException) cause).getTableName());
+        }
+        if (cause instanceof ShardingSphereConfigurationException || cause instanceof SQLParsingException) {
+            return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_NOT_SUPPORTED_YET, cause.getMessage());
         }
         return new MySQLErrPacket(sequenceId, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
