@@ -57,5 +57,5 @@ public interface JDBCExecutorWrapper {
      * @param option statement option
      * @return execute group engine
      */
-    ExecuteGroupEngine getExecuteGroupEngine(BackendConnection backendConnection, StatementOption option);
+    ExecuteGroupEngine<?> getExecuteGroupEngine(BackendConnection backendConnection, StatementOption option);
 }
