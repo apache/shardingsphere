@@ -86,7 +86,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         try {
             ExecutionContext executionContext = executeEngine.generateExecutionContext(sql);
             logSQL(executionContext);
-            return execute(executionContext);
+            return doExecute(executionContext);
         } catch (final TableExistsException | ShardingSphereConfigurationException | SQLException ex) {
             // TODO Particular handling needed for `createTable` without shardingRule and dataNode.
             return new ErrorResponse(ex);
@@ -99,7 +99,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
     }
     
-    private BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
+    private BackendResponse doExecute(final ExecutionContext executionContext) throws SQLException {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponse();
         }
