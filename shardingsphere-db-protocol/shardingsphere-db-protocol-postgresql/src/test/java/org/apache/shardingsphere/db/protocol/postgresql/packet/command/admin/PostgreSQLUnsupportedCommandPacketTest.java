@@ -46,7 +46,4 @@ public class PostgreSQLUnsupportedCommandPacketTest {
         PostgreSQLUnsupportedCommandPacket rowPacket = new PostgreSQLUnsupportedCommandPacket(PostgreSQLCommandPacketType.AUTHENTICATION_OK.getValue());
         assertThat(rowPacket.getMessageType(), is(PostgreSQLCommandPacketType.AUTHENTICATION_OK.getValue()));
     }
-    
 }
-
-

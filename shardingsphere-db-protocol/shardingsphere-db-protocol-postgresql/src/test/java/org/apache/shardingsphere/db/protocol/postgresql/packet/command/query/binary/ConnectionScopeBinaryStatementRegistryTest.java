@@ -52,6 +52,4 @@ public class ConnectionScopeBinaryStatementRegistryTest {
         PostgreSQLBinaryStatement binaryStatement = statementRegistry.getBinaryStatement("stat-id");
         assertNotNull(binaryStatement);
     }
-    
 }
-

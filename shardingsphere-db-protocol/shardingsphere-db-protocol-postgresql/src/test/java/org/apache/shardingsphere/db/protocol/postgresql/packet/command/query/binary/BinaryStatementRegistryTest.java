@@ -62,5 +62,4 @@ public class BinaryStatementRegistryTest {
         ConnectionScopeBinaryStatementRegistry actual = BinaryStatementRegistry.getInstance().get(1);
         assertNull(actual);
     }
-    
 }
