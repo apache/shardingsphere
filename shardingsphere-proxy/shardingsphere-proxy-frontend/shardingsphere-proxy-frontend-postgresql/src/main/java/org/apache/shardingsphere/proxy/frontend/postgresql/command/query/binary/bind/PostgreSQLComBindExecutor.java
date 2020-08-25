@@ -94,7 +94,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         if (null == databaseCommunicationEngine) {
             return result;
         }
-        BackendResponse backendResponse = databaseCommunicationEngine.execute();
+        BackendResponse backendResponse = getBackendResponse();
         if (backendResponse instanceof QueryResponse) {
             createQueryPacket((QueryResponse) backendResponse).ifPresent(result::add);
         }
@@ -105,6 +105,18 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         if (backendResponse instanceof ErrorResponse) {
             isErrorResponse = true;
             result.add(createErrorPacket((ErrorResponse) backendResponse));
+        }
+        return result;
+    }
+    
+    private BackendResponse getBackendResponse() {
+        BackendResponse result;
+        try {
+            result = databaseCommunicationEngine.execute();
+        // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+        // CHECKSTYLE:OFF
+            result = new ErrorResponse(ex);
         }
         return result;
     }

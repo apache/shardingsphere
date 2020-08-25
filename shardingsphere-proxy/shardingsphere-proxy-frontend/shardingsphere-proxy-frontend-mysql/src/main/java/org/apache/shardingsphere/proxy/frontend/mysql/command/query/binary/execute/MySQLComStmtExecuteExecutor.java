@@ -97,7 +97,9 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         BackendResponse result;
         try {
             result = databaseCommunicationEngine.execute();
+        // CHECKSTYLE:OFF
         } catch (final Exception ex) {
+        // CHECKSTYLE:OFF
             result = new ErrorResponse(ex);
         }
         return result;
