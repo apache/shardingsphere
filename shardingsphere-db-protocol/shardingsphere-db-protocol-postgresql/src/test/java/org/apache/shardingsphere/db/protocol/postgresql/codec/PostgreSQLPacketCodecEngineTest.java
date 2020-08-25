@@ -97,5 +97,4 @@ public class PostgreSQLPacketCodecEngineTest {
     public void assertCreatePacketPayload() {
         assertThat(new PostgreSQLPacketCodecEngine().createPacketPayload(byteBuf).getByteBuf(), is(byteBuf));
     }
-    
 }
