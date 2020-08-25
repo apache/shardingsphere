@@ -28,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactio
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLErrorCode;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.ShardingCTLException;
+import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 
 import java.sql.SQLException;
 
@@ -64,7 +65,10 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_NO_DB_ERROR);
         }
         if (cause instanceof DBCreateExistsException) {
-            return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_DB_CREATE_EXISTS, ((DBCreateExistsException) cause).getDatabaseName());
+            return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_DB_CREATE_EXISTS_ERROR, ((DBCreateExistsException) cause).getDatabaseName());
+        }
+        if (cause instanceof TableExistsException) {
+            return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_TABLE_EXISTS_ERROR, ((TableExistsException) cause).getTableName());
         }
         return new MySQLErrPacket(sequenceId, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
