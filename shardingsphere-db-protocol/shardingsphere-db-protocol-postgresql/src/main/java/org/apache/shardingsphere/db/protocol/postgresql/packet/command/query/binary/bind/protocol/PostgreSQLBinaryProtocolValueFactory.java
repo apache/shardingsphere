@@ -34,6 +34,7 @@ public final class PostgreSQLBinaryProtocolValueFactory {
     private static final Map<PostgreSQLColumnType, PostgreSQLBinaryProtocolValue> BINARY_PROTOCOL_VALUES = new HashMap<>();
     
     static {
+        setUnspecifiedBinaryProtocolValue();
         setStringLenencBinaryProtocolValue();
         setInt8BinaryProtocolValue();
         setInt4BinaryProtocolValue();
@@ -42,6 +43,11 @@ public final class PostgreSQLBinaryProtocolValueFactory {
         setFloatBinaryProtocolValue();
         setDateBinaryProtocolValue();
         setTimeBinaryProtocolValue();
+    }
+    
+    private static void setUnspecifiedBinaryProtocolValue() {
+        PostgreSQLUnspecifiedBinaryProtocolValue binaryProtocolValue = new PostgreSQLUnspecifiedBinaryProtocolValue();
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED, binaryProtocolValue);
     }
     
     private static void setStringLenencBinaryProtocolValue() {
