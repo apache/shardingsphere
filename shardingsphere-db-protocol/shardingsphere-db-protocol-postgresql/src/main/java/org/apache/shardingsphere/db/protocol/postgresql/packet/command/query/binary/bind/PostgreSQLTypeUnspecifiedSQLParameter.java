@@ -32,7 +32,6 @@ public final class PostgreSQLTypeUnspecifiedSQLParameter implements TypeUnspecif
     
     @Override
     public String toString() {
-        // must be parameter value itself
         return parameterValue;
     }
 }
