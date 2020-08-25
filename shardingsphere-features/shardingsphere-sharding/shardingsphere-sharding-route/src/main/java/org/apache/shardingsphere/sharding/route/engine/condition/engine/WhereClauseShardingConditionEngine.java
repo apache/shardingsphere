@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredica
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.util.SafeRangeOperationUtils;
+import org.apache.shardingsphere.sql.parser.sql.util.SafeNumberOperationUtils;
 import org.apache.shardingsphere.sql.parser.sql.util.WhereSegmentExtractUtils;
 
 import java.util.ArrayList;
@@ -171,13 +171,13 @@ public final class WhereClauseShardingConditionEngine {
     }
     
     private Range<Comparable<?>> mergeRangeRouteValues(final Range<Comparable<?>> value1, final Range<Comparable<?>> value2) {
-        return null == value2 ? value1 : SafeRangeOperationUtils.safeIntersection(value1, value2);
+        return null == value2 ? value1 : SafeNumberOperationUtils.safeIntersection(value1, value2);
     }
     
     private Collection<Comparable<?>> mergeListAndRangeRouteValues(final Collection<Comparable<?>> listValue, final Range<Comparable<?>> rangeValue) {
         Collection<Comparable<?>> result = new LinkedList<>();
         for (Comparable<?> each : listValue) {
-            if (SafeRangeOperationUtils.safeContains(rangeValue, each)) {
+            if (SafeNumberOperationUtils.safeContains(rangeValue, each)) {
                 result.add(each);
             }
         }
