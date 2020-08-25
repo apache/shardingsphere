@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStateme
  * Sharding create table statement validator.
  */
 public final class ShardingCreateTableStatementValidator implements ShardingStatementValidator<CreateTableStatement> {
-
+    
     @Override
     public void preValidate(final ShardingRule shardingRule, final RouteContext routeContext, final ShardingSphereMetaData metaData) {
         CreateTableStatementContext sqlStatementContext = (CreateTableStatementContext) routeContext.getSqlStatementContext();
@@ -40,7 +40,7 @@ public final class ShardingCreateTableStatementValidator implements ShardingStat
             throw new TableExistsException(tableName);
         }
     }
-
+    
     @Override
     public void postValidate(final SQLStatement sqlStatement, final RouteResult routeResult) {
     }
