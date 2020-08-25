@@ -56,7 +56,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     private final SQLStatement sqlStatement;
     
     @Override
-    public ExecutionContext execute(final String sql) {
+    public ExecutionContext generateExecutionContext(final String sql) {
         Collection<ShardingSphereRule> rules = schema.getSchema().getRules();
         if (rules.isEmpty()) {
             return createExecutionContext(sql);

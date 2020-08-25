@@ -76,8 +76,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     @Override
-    public ExecutionContext execute(final String sql) throws SQLException {
-        return jdbcExecutorWrapper.execute(sql);
+    public ExecutionContext generateExecutionContext(final String sql) throws SQLException {
+        return jdbcExecutorWrapper.generateExecutionContext(sql);
     }
     
     @SuppressWarnings("unchecked")

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -83,12 +84,13 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public BackendResponse execute() {
         try {
-            ExecutionContext executionContext = executeEngine.execute(sql);
+            ExecutionContext executionContext = executeEngine.generateExecutionContext(sql);
             if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
                 SQLLogger.logSQL(sql, ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
             }
             return execute(executionContext);
-        } catch (final TableExistsException | SQLException ex) {
+        } catch (final TableExistsException | ShardingSphereConfigurationException | SQLException ex) {
+            // TODO Particular handling needed for `createTable` without shardingRule and dataNode.
             return new ErrorResponse(ex);
         }
     }
