@@ -61,7 +61,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     @SuppressWarnings("unchecked")
     @Override
-    public ExecutionContext execute(final String sql) {
+    public ExecutionContext generateExecutionContext(final String sql) {
         Collection<ShardingSphereRule> rules = schema.getSchema().getRules();
         if (rules.isEmpty()) {
             return new ExecutionContext(
