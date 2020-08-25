@@ -28,13 +28,13 @@ import java.sql.SQLException;
 public interface SQLExecuteEngine {
     
     /**
-     * Execute SQL.
+     * Generate execution context.
      *
-     * @param sql SQL to be routed
+     * @param sql SQL
      * @return execution context
      * @throws SQLException SQL exception
      */
-    ExecutionContext execute(String sql) throws SQLException;
+    ExecutionContext generateExecutionContext(String sql) throws SQLException;
     
     /**
      * Execute SQL.

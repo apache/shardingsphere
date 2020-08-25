@@ -83,7 +83,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public BackendResponse execute() {
         try {
-            ExecutionContext executionContext = executeEngine.execute(sql);
+            ExecutionContext executionContext = executeEngine.generateExecutionContext(sql);
             if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
                 SQLLogger.logSQL(sql, ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
             }
