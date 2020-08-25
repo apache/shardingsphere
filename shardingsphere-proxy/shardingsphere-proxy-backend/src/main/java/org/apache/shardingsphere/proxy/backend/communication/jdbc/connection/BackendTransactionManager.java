@@ -58,7 +58,7 @@ public final class BackendTransactionManager implements TransactionManager {
         } else {
             shardingTransactionManager.begin();
         }
-        MetricsUtils.buriedTransactionMetric("begin");
+        MetricsUtils.collectTransactionMetric("begin");
     }
     
     @Override
@@ -70,7 +70,7 @@ public final class BackendTransactionManager implements TransactionManager {
                 } else {
                     shardingTransactionManager.commit();
                 }
-                MetricsUtils.buriedTransactionMetric("commit");
+                MetricsUtils.collectTransactionMetric("commit");
             } finally {
                 connection.getStateHandler().setStatus(ConnectionStatus.TERMINATED);
             }
@@ -86,7 +86,7 @@ public final class BackendTransactionManager implements TransactionManager {
                 } else {
                     shardingTransactionManager.rollback();
                 }
-                MetricsUtils.buriedTransactionMetric("rollback");
+                MetricsUtils.collectTransactionMetric("rollback");
             } finally {
                 connection.getStateHandler().setStatus(ConnectionStatus.TERMINATED);
             }

@@ -52,6 +52,9 @@ public final class GeneralDCLIT extends BaseDCLIT {
             } else {
                 connection.prepareStatement(getSql()).executeUpdate();
             }
+        } catch (final SQLException ex) {
+            printExceptionContext(ex);
+            throw ex;
         }
     }
     
@@ -63,6 +66,9 @@ public final class GeneralDCLIT extends BaseDCLIT {
             } else {
                 connection.prepareStatement(getSql()).execute();
             }
+        } catch (final SQLException ex) {
+            printExceptionContext(ex);
+            throw ex;
         }
     }
 }

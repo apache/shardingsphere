@@ -31,13 +31,13 @@ import java.sql.Statement;
 public interface JDBCExecutorWrapper {
     
     /**
-     * Execute SQL.
+     * Generate execution context.
      * 
      * @param sql SQL to be routed
      * @return execution context
      * @throws SQLException SQL exception
      */
-    ExecutionContext execute(String sql) throws SQLException;
+    ExecutionContext generateExecutionContext(String sql) throws SQLException;
     
     /**
      * Execute SQL.
@@ -57,5 +57,5 @@ public interface JDBCExecutorWrapper {
      * @param option statement option
      * @return execute group engine
      */
-    ExecuteGroupEngine getExecuteGroupEngine(BackendConnection backendConnection, StatementOption option);
+    ExecuteGroupEngine<?> getExecuteGroupEngine(BackendConnection backendConnection, StatementOption option);
 }
