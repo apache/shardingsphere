@@ -19,10 +19,12 @@ package org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.en
 
 import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 import java.util.Collections;
@@ -60,10 +62,16 @@ public final class PaginationContextEngine {
     }
     
     private Optional<TopProjectionSegment> findTopProjection(final SelectStatement selectStatement) {
-        for (ProjectionSegment each : selectStatement.getProjections().getProjections()) {
-            if (each instanceof TopProjectionSegment) {
-                return Optional.of((TopProjectionSegment) each);
+        for (TableReferenceSegment tableReferenceSegment : selectStatement.getTableReferences()) {
+            if (!(tableReferenceSegment.getTableFactor().getTable() instanceof SubqueryTableSegment)) {
+                continue;
             }
+            SelectStatement subquerySelect = ((SubqueryTableSegment) tableReferenceSegment.getTableFactor().getTable()).getSubquery().getSelect();
+            for (ProjectionSegment each : subquerySelect.getProjections().getProjections()) {
+                if (each instanceof TopProjectionSegment) {
+                    return Optional.of((TopProjectionSegment) each);
+                }
+            }   
         }
         return Optional.empty();
     }

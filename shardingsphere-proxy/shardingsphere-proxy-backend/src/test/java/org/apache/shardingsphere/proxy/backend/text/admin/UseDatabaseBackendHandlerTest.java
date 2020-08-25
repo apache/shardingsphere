@@ -58,7 +58,7 @@ public final class UseDatabaseBackendHandlerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
         backendConnection = mock(BackendConnection.class);
-        when(backendConnection.getUserName()).thenReturn("root");
+        when(backendConnection.getUsername()).thenReturn("root");
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
         schemaContexts.set(ProxySchemaContexts.getInstance(),
