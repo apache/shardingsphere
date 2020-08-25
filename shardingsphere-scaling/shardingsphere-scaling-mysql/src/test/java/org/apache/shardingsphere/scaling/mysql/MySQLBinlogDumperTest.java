@@ -73,14 +73,12 @@ public final class MySQLBinlogDumperTest {
     }
     
     private DumperConfiguration mockDumperConfiguration() {
-        JDBCDataSourceConfiguration jdbcDataSourceConfiguration =
-                new JDBCDataSourceConfiguration(URL, "root", "root");
-        DumperConfiguration dumperConfiguration = new DumperConfiguration();
-        dumperConfiguration.setDataSourceConfiguration(jdbcDataSourceConfiguration);
+        DumperConfiguration result = new DumperConfiguration();
+        result.setDataSourceConfiguration(new JDBCDataSourceConfiguration(URL, "root", "root"));
         Map<String, String> tableNameMap = new HashedMap<>(1);
         tableNameMap.put("t_order", "t_order");
-        dumperConfiguration.setTableNameMap(tableNameMap);
-        return dumperConfiguration;
+        result.setTableNameMap(tableNameMap);
+        return result;
     }
     
     @SneakyThrows(SQLException.class)

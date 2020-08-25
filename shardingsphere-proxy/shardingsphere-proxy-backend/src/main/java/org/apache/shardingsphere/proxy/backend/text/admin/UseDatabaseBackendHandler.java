@@ -53,7 +53,7 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     }
     
     private boolean isAuthorizedSchema(final String schema) {
-        Collection<String> authorizedSchemas = ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas();
+        Collection<String> authorizedSchemas = ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get(backendConnection.getUsername()).getAuthorizedSchemas();
         return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
     }
     

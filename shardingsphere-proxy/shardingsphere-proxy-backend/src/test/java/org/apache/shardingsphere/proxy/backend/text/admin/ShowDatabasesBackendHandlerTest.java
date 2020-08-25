@@ -56,7 +56,7 @@ public final class ShowDatabasesBackendHandlerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
         BackendConnection backendConnection = mock(BackendConnection.class);
-        when(backendConnection.getUserName()).thenReturn("root");
+        when(backendConnection.getUsername()).thenReturn("root");
         showDatabasesBackendHandler = new ShowDatabasesBackendHandler(backendConnection);
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);

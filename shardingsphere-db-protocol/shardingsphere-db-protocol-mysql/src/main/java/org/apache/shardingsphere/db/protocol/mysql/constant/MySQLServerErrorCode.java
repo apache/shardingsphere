@@ -42,6 +42,8 @@ public enum MySQLServerErrorCode implements SQLErrorCode {
     
     ER_UNSUPPORTED_PS(1295, "HY000", "This command is not supported in the prepared statement protocol yet"),
     
+    ER_DB_CREATE_EXISTS(1007, "HY000", "Message: Can't create database '%s'; database exists"),
+    
     ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE(3176, "HY000", 
             "Please do not modify the %s table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. " 
                     + "Although modifying it can lead to an inconsistent GTID state, if neccessary you can modify it with a non-XA transaction.");

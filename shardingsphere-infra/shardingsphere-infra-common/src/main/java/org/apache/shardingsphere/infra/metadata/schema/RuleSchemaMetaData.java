@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -43,6 +45,19 @@ public final class RuleSchemaMetaData {
         SchemaMetaData result = new SchemaMetaData();
         unconfiguredSchemaMetaDataMap.values().forEach(result::merge);
         result.merge(configuredSchemaMetaData);
+        return result;
+    }
+    
+    /**
+     * Get all table names.
+     *
+     * @return all table names
+     */
+    public Collection<String> getAllTableNames() {
+        Collection<String> result = new LinkedList<>(configuredSchemaMetaData.getAllTableNames());
+        for (SchemaMetaData each : unconfiguredSchemaMetaDataMap.values()) {
+            result.addAll(each.getAllTableNames());
+        }
         return result;
     }
 }
