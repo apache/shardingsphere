@@ -77,8 +77,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     @SuppressWarnings("unchecked")
     private ExecutionContext createExecutionContext(final String sql) {
         String dataSource = schema.getSchema().getDataSources().isEmpty() ? "" : schema.getSchema().getDataSources().keySet().iterator().next();
-        return new ExecutionContext(
-                new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(dataSource, new SQLUnit(sql, Collections.emptyList())));
+        return new ExecutionContext(new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(dataSource, new SQLUnit(sql, Collections.emptyList())));
     }
     
     @Override
