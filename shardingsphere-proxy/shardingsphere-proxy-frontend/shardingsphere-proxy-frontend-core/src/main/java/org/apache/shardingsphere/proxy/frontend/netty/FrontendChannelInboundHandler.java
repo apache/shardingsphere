@@ -78,9 +78,9 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private boolean auth(final ChannelHandlerContext context, final ByteBuf message) {
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload(message)) {
-            AuthenticationResult authResult = databaseProtocolFrontendEngine.getAuthEngine().auth(context, payload, backendConnection);
+            AuthenticationResult authResult = databaseProtocolFrontendEngine.getAuthEngine().auth(context, payload);
             if (authResult.isFinished()) {
-                backendConnection.setUserName(authResult.getUsername());
+                backendConnection.setUsername(authResult.getUsername());
                 backendConnection.setCurrentSchema(authResult.getDatabase());
             }
             return authResult.isFinished();

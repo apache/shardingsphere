@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStateHandler;
 import org.apache.shardingsphere.proxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.engine.CommandExecuteEngine;
@@ -70,8 +71,9 @@ public final class CommandExecutorTask implements Runnable {
         boolean isNeedFlush = false;
         try (BackendConnection backendConnection = this.backendConnection;
              PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message)) {
-            backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
-            backendConnection.getStateHandler().setRunningStatusIfNecessary();
+            ConnectionStateHandler stateHandler = backendConnection.getStateHandler();
+            stateHandler.waitUntilConnectionReleasedIfNecessary();
+            stateHandler.setRunningStatusIfNecessary();
             isNeedFlush = executeCommand(context, payload, backendConnection);
             connectionSize = backendConnection.getConnectionSize();
             // CHECKSTYLE:OFF
