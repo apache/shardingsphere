@@ -83,8 +83,12 @@ public final class AuthorityEnvironmentManager {
         try (Connection connection = dataSource.getConnection()) {
             for (String each : sqls) {
                 try (Statement statement = connection.createStatement()) {
-                    statement.execute(each);
-                } catch (final SQLException ignored) {
+                    boolean executeRet = statement.execute(each);
+                    if (!executeRet) {
+                        System.err.println("execute '" + each + "' failed");
+                    }
+                } catch (final SQLException ex) {
+                    System.err.println("execute '" + each + "' failed, ex.msg=" + ex.getMessage());
                 }
             }
         }

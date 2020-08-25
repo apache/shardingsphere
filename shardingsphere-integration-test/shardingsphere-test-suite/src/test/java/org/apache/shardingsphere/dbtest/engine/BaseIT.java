@@ -100,7 +100,11 @@ public abstract class BaseIT {
         if (new File(result).exists()) {
             return result;
         }
-        return Joiner.on("/").join(prefix, "dataset", expectedDataFile);
+        result = Joiner.on("/").join(prefix, "dataset", expectedDataFile);
+        if (new File(result).exists()) {
+            return result;
+        }
+        throw new IllegalArgumentException(String.format("%s not found, path=%s, ruleType=%s, databaseType=%s, expectedDataFile=%s", result, path, ruleType, databaseType.getName(), expectedDataFile));
     }
     
     protected static void createDatabasesAndTables() {

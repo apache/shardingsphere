@@ -26,19 +26,20 @@ import lombok.SneakyThrows;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Safe range operation utility class.
+ * Safe number operation utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SafeRangeOperationUtils {
+public final class SafeNumberOperationUtils {
     
     /**
-     * Execute intersection method by safe mode.
+     * Execute range intersection method by safe mode.
      *
      * @param range range
      * @param connectedRange connected range
@@ -63,7 +64,7 @@ public final class SafeRangeOperationUtils {
     }
     
     /**
-     * Execute closed method by safe mode.
+     * Execute range closed method by safe mode.
      *
      * @param lowerEndpoint lower endpoint
      * @param upperEndpoint upper endpoint
@@ -82,7 +83,7 @@ public final class SafeRangeOperationUtils {
     }
     
     /**
-     * Execute contains method by safe mode.
+     * Execute range contains method by safe mode.
      *
      * @param range range
      * @param endpoint endpoint
@@ -101,6 +102,25 @@ public final class SafeRangeOperationUtils {
             Range<Comparable<?>> newRange = createTargetNumericTypeRange(range, clazz);
             return newRange.contains(parseNumberByClazz(endpoint.toString(), clazz));
         }
+    }
+
+    /**
+     * Execute collection equals method by safe mode.
+     *
+     * @param sourceCollection source collection
+     * @param targetCollection target collection
+     * @return whether the element in source collection and target collection are all same
+     */
+    public static boolean safeEquals(final Collection<Comparable<?>> sourceCollection, final Collection<Comparable<?>> targetCollection) {
+        List<Comparable<?>> collection = Lists.newArrayList(sourceCollection);
+        collection.addAll(targetCollection);
+        Class<?> clazz = getTargetNumericType(collection);
+        if (null == clazz) {
+            return sourceCollection.equals(targetCollection);
+        }
+        List<Comparable<?>> sourceClazzCollection = sourceCollection.stream().map(number -> parseNumberByClazz(number.toString(), clazz)).collect(Collectors.toList());
+        List<Comparable<?>> targetClazzCollection = targetCollection.stream().map(number -> parseNumberByClazz(number.toString(), clazz)).collect(Collectors.toList());
+        return sourceClazzCollection.equals(targetClazzCollection);
     }
     
     private static Range<Comparable<?>> createTargetNumericTypeRange(final Range<Comparable<?>> range, final Class<?> clazz) {

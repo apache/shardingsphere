@@ -80,7 +80,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     @Override
-    public ExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, final StatementOption option) {
+    public ExecuteGroupEngine<?> getExecuteGroupEngine(final BackendConnection backendConnection, final StatementOption option) {
         int maxConnectionsSizePerQuery = PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
     }

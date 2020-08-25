@@ -37,6 +37,12 @@ public final class PostgreSQLColumnDescriptionTest {
     }
     
     @Test
+    public void assertStringTypeOid() {
+        PostgreSQLColumnDescription description = new PostgreSQLColumnDescription("name", 1, Types.VARCHAR, 4, null);
+        assertThat(description.getTypeOID(), is(1043));
+    }
+    
+    @Test
     public void assertIntegerArrayTypeOid() throws SQLException {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnTypeName(2)).thenReturn("_int4");
