@@ -65,7 +65,6 @@ public class PostgreSQLPacketCodecEngineTest {
         List<Object> out = new LinkedList<>();
         new PostgreSQLPacketCodecEngine().decode(context, byteBuf, out, 54);
         assertThat(out.size(), is(1));
-        assertThat(out.size(), is(1));
     }
     
     @Test
