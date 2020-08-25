@@ -73,7 +73,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         if (ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new PostgreSQLErrorResponsePacket());
         }
-        BackendResponse backendResponse = textProtocolBackendHandler.execute();
+        BackendResponse backendResponse = getBackendResponse();
         if (backendResponse instanceof QueryResponse) {
             Optional<PostgreSQLRowDescriptionPacket> result = createQueryPacket((QueryResponse) backendResponse);
             return result.<List<DatabasePacket<?>>>map(Collections::singletonList).orElseGet(Collections::emptyList);
@@ -84,6 +84,18 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         }
         isErrorResponse = true;
         return Collections.singletonList(createErrorPacket((ErrorResponse) backendResponse));
+    }
+    
+    private BackendResponse getBackendResponse() {
+        BackendResponse result;
+        try {
+            result = textProtocolBackendHandler.execute();
+        // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+        // CHECKSTYLE:OFF
+            result = new ErrorResponse(ex);
+        }
+        return result;
     }
     
     private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
