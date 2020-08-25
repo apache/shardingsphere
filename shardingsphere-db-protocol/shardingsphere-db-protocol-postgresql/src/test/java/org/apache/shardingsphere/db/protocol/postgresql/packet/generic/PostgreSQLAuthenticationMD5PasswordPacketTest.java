@@ -17,27 +17,32 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
+import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationMD5PasswordPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class PostgreSQLCommandCompletePacketTest {
+public final class PostgreSQLAuthenticationMD5PasswordPacketTest {
     
     @Test
     public void assertReadWrite() {
-        String sqlCommand = "SELECT * FROM t_order LIMIT 1";
-        long rowCount = 1;
-        String expectedString = sqlCommand + " " + rowCount;
-        int expectedStringLength = expectedString.length();
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1));
-        PostgreSQLCommandCompletePacket packet = new PostgreSQLCommandCompletePacket(sqlCommand, rowCount);
-        assertThat(packet.getMessageType(), is(PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue()));
+        byte[] md5Salt = "salt".getBytes();
+        int expectedLength = 4 + md5Salt.length;
+        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLAuthenticationMD5PasswordPacket packet = new PostgreSQLAuthenticationMD5PasswordPacket(md5Salt);
+        assertThat(packet.getMessageType(), is(PostgreSQLCommandPacketType.AUTHENTICATION_MD5_PASSWORD.getValue()));
         packet.write(payload);
-        assertThat(payload.readStringNul(), is(expectedString));
+        assertThat(byteBuf.writerIndex(), is(expectedLength));
+        assertThat(byteBuf.readInt(), is(5));
+        byte[] actualMd5Salt = new byte[4];
+        byteBuf.readBytes(actualMd5Salt);
+        assertThat(actualMd5Salt, is(md5Salt));
     }
     
 }

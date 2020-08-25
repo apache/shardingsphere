@@ -17,27 +17,32 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
+import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class PostgreSQLCommandCompletePacketTest {
+public final class PostgreSQLPasswordMessagePacketTest {
     
     @Test
     public void assertReadWrite() {
-        String sqlCommand = "SELECT * FROM t_order LIMIT 1";
-        long rowCount = 1;
-        String expectedString = sqlCommand + " " + rowCount;
-        int expectedStringLength = expectedString.length();
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1));
-        PostgreSQLCommandCompletePacket packet = new PostgreSQLCommandCompletePacket(sqlCommand, rowCount);
-        assertThat(packet.getMessageType(), is(PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue()));
+        String md5Digest = "ce98bac7fc97f20584ea9536e744dabb";
+        int expectedLength = 4 + md5Digest.length() + 1;
+        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        payload.writeInt4(expectedLength);
+        payload.writeStringNul(md5Digest);
+        PostgreSQLPasswordMessagePacket packet = new PostgreSQLPasswordMessagePacket(payload);
+        assertThat(packet.getMessageType(), is(PostgreSQLCommandPacketType.PASSWORD_MESSAGE.getValue()));
+        assertThat(packet.getMd5Digest(), is(md5Digest));
+        
         packet.write(payload);
-        assertThat(payload.readStringNul(), is(expectedString));
+        assertThat(byteBuf.writerIndex(), is(expectedLength));
     }
     
 }

@@ -17,27 +17,26 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
+import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class PostgreSQLCommandCompletePacketTest {
+public final class PostgreSQLSSLNegativePacketTest {
     
     @Test
     public void assertReadWrite() {
-        String sqlCommand = "SELECT * FROM t_order LIMIT 1";
-        long rowCount = 1;
-        String expectedString = sqlCommand + " " + rowCount;
-        int expectedStringLength = expectedString.length();
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1));
-        PostgreSQLCommandCompletePacket packet = new PostgreSQLCommandCompletePacket(sqlCommand, rowCount);
-        assertThat(packet.getMessageType(), is(PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue()));
+        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(1);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLSSLNegativePacket packet = new PostgreSQLSSLNegativePacket();
+        assertThat(packet.getMessageType(), is('\0'));
         packet.write(payload);
-        assertThat(payload.readStringNul(), is(expectedString));
+        assertThat(byteBuf.writerIndex(), is(1));
+        assertThat(payload.readInt1(), is((int) 'N'));
     }
     
 }

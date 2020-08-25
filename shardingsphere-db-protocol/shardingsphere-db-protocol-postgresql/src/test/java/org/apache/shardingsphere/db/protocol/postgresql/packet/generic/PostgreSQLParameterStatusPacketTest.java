@@ -17,27 +17,31 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
+import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class PostgreSQLCommandCompletePacketTest {
+public final class PostgreSQLParameterStatusPacketTest {
     
     @Test
     public void assertReadWrite() {
-        String sqlCommand = "SELECT * FROM t_order LIMIT 1";
-        long rowCount = 1;
-        String expectedString = sqlCommand + " " + rowCount;
-        int expectedStringLength = expectedString.length();
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1));
-        PostgreSQLCommandCompletePacket packet = new PostgreSQLCommandCompletePacket(sqlCommand, rowCount);
-        assertThat(packet.getMessageType(), is(PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue()));
+        String key = "key1";
+        String value = "value1";
+        int expectedLength = key.length() + 1 + value.length() + 1;
+        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLParameterStatusPacket packet = new PostgreSQLParameterStatusPacket(key, value);
+        assertThat(packet.getMessageType(), is(PostgreSQLCommandPacketType.PARAMETER_STATUS.getValue()));
         packet.write(payload);
-        assertThat(payload.readStringNul(), is(expectedString));
+        assertThat(byteBuf.writerIndex(), is(expectedLength));
+        assertThat(payload.readStringNul(), is(key));
+        assertThat(payload.readStringNul(), is(value));
     }
     
 }
