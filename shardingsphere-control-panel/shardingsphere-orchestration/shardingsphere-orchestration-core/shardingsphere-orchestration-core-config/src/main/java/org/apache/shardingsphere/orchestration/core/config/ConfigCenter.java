@@ -220,7 +220,7 @@ public final class ConfigCenter {
      * @param schemaName schema name
      * @return data source configurations
      */
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings("unchecked")
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String schemaName) {
         if (!hasDataSourceConfiguration(schemaName)) {
             return new LinkedHashMap<>();
