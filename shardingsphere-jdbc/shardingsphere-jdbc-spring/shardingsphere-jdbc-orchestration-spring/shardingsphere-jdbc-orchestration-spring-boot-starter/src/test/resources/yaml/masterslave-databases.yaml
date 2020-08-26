@@ -15,25 +15,24 @@
 # limitations under the License.
 #
 
-ds: !!org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration
+ds_master: !!org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration
   dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
   props:
-    url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     maxTotal: 16
-    password: ''
+    password:
     username: sa
-ds_0: !!org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration
+ds_slave_0: !!org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration
   dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
   props:
-    url: jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:demo_ds_slave_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     maxTotal: 16
-    password: ''
+    password:
     username: sa
-ds_1: !!org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration
+ds_slave_1: !!org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration
   dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
   props:
-    url: jdbc:h2:mem:ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:demo_ds_slave_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     maxTotal: 16
-    password: ''
+    password:
     username: sa
-

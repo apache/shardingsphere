@@ -21,7 +21,6 @@ import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
-import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.spring.boot.orchestration.registry.TestOrchestrationRepository;
 import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
 import org.junit.BeforeClass;
@@ -35,6 +34,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -46,6 +48,10 @@ import static org.junit.Assert.assertTrue;
 @ActiveProfiles("registry-masterslave")
 public class OrchestrationSpringBootRegistryMasterSlaveTest {
     
+    private static final String DATA_SOURCE_FILE = "yaml/masterslave-databases.yaml";
+    
+    private static final String RULE_FILE = "yaml/masterslave-rule.yaml";
+    
     @Resource
     private DataSource dataSource;
     
@@ -53,42 +59,8 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
     public static void init() {
         EmbedTestingServer.start();
         TestOrchestrationRepository repository = new TestOrchestrationRepository();
-        repository.persist("/config/schema/logic_db/datasource", ""
-                + "ds_master: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
-                + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-                + "  props:\n"
-                + "    url: jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
-                + "    maxTotal: 16\n"
-                + "    password: \n"
-                + "    username: sa\n"
-                + "ds_slave_0: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
-                + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-                + "  props:\n"
-                + "    url: jdbc:h2:mem:demo_ds_slave_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
-                + "    maxTotal: 16\n"
-                + "    password: \n"
-                + "    username: sa\n"
-                + "ds_slave_1: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
-                + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-                + "  props:\n"
-                + "    url: jdbc:h2:mem:demo_ds_slave_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
-                + "    maxTotal: 16\n"
-                + "    password: \n"
-                + "    username: sa\n");
-        repository.persist("/config/schema/logic_db/rule", ""
-                + "rules:\n"
-                + "- !MASTER_SLAVE\n"
-                + "  loadBalancers:\n"
-                + "    roundRobin:\n"
-                + "      type: ROUND_ROBIN\n"
-                + "  dataSources:\n" 
-                + "    ds_ms:\n" 
-                + "      loadBalancerName: roundRobin\n" 
-                + "      masterDataSourceName: ds_master\n" 
-                + "      name: ds_ms\n" 
-                + "      slaveDataSourceNames: \n"
-                + "        - ds_slave_0\n" 
-                + "        - ds_slave_1\n");
+        repository.persist("/config/schema/logic_db/datasource", readYAML(DATA_SOURCE_FILE));
+        repository.persist("/config/schema/logic_db/rule", readYAML(RULE_FILE));
         repository.persist("/config/props", "{}\n");
         repository.persist("/registry/datasources", "");
     }
@@ -104,5 +76,10 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("sa"));
         }
+    }
+    
+    @SneakyThrows
+    private static String readYAML(final String yamlFile) {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }
