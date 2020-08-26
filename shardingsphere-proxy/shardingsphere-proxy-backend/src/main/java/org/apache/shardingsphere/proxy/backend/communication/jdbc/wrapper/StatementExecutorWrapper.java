@@ -70,6 +70,12 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     @Override
+    public ExecuteGroupEngine<?> getExecuteGroupEngine(final BackendConnection backendConnection, final StatementOption option) {
+        int maxConnectionsSizePerQuery = PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
+    }
+    
+    @Override
     public boolean execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
     }
@@ -83,11 +89,5 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     private void routeMetricsCollect(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
         MetricsUtils.buriedShardingMetrics(routeContext.getRouteResult().getRouteUnits());
         MetricsUtils.buriedShardingRuleMetrics(routeContext, rules);
-    }
-    
-    @Override
-    public ExecuteGroupEngine<?> getExecuteGroupEngine(final BackendConnection backendConnection, final StatementOption option) {
-        int maxConnectionsSizePerQuery = PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
     }
 }
