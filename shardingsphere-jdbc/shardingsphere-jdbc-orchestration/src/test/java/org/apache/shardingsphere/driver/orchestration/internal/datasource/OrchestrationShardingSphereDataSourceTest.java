@@ -57,13 +57,11 @@ import static org.junit.Assert.assertThat;
 
 public final class OrchestrationShardingSphereDataSourceTest {
     
-    private static OrchestrationShardingSphereDataSource orchestrationDataSource;
-    
     private static JDBCOrchestrationSchemaContexts schemaContexts;
     
     @BeforeClass
     public static void setUp() throws SQLException, IOException, URISyntaxException {
-        orchestrationDataSource = new OrchestrationShardingSphereDataSource(getShardingSphereDataSource(), getOrchestrationConfiguration());
+        OrchestrationShardingSphereDataSource orchestrationDataSource = new OrchestrationShardingSphereDataSource(getShardingSphereDataSource(), getOrchestrationConfiguration());
         schemaContexts = (JDBCOrchestrationSchemaContexts) orchestrationDataSource.getSchemaContexts();
     }
     
