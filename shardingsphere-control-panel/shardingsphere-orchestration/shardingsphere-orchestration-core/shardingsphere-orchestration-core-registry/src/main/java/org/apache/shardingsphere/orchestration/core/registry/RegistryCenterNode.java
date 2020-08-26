@@ -33,8 +33,6 @@ public final class RegistryCenterNode {
     
     private static final String DATA_SOURCES_NODE_PATH = "datasources";
     
-    private final String name;
-    
     /**
      * Get instance node full path.
      *
@@ -42,7 +40,7 @@ public final class RegistryCenterNode {
      * @return instance node full path
      */
     public String getInstancesNodeFullPath(final String instanceId) {
-        return Joiner.on("/").join("", name, ROOT, INSTANCES_NODE_PATH, instanceId);
+        return Joiner.on("/").join("", ROOT, INSTANCES_NODE_PATH, instanceId);
     }
     
     /**
@@ -51,7 +49,7 @@ public final class RegistryCenterNode {
      * @return data source node full root path
      */
     public String getDataSourcesNodeFullRootPath() {
-        return Joiner.on("/").join("", name, ROOT, DATA_SOURCES_NODE_PATH);
+        return Joiner.on("/").join("", ROOT, DATA_SOURCES_NODE_PATH);
     }
     
     /**
@@ -61,7 +59,7 @@ public final class RegistryCenterNode {
      * @return data source node full path
      */
     public String getDataSourcesNodeFullPath(final String schemaDataSourceName) {
-        return Joiner.on("/").join("", name, ROOT, DATA_SOURCES_NODE_PATH, schemaDataSourceName);
+        return Joiner.on("/").join("", ROOT, DATA_SOURCES_NODE_PATH, schemaDataSourceName);
     }
     
     /**

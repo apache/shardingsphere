@@ -85,8 +85,7 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
         return result;
     }
     
-    @Override
-    public Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSources) {
+    private Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSources) {
         Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>(dataSources.size(), 1);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSources.entrySet()) {
             result.put(entry.getKey(), DataSourceConverter.getDataSourceParameterMap(entry.getValue()));

@@ -33,8 +33,8 @@ import java.util.Collections;
  */
 public final class ClusterConfigurationChangedListener extends PostOrchestrationRepositoryEventListener {
     
-    public ClusterConfigurationChangedListener(final String name, final ConfigurationRepository configurationRepository) {
-        super(configurationRepository, Collections.singletonList(new ConfigCenterNode(name).getClusterPath()));
+    public ClusterConfigurationChangedListener(final ConfigurationRepository configurationRepository) {
+        super(configurationRepository, Collections.singletonList(new ConfigCenterNode().getClusterPath()));
     }
     
     @Override

@@ -31,8 +31,6 @@ public final class MetaDataCenterNode {
     
     private static final String ROOT = "metadata";
     
-    private final String name;
-    
     /**
      * Get meta data node full path.
      *
@@ -40,7 +38,7 @@ public final class MetaDataCenterNode {
      * @return meta data node full path
      */
     public String getMetaDataCenterNodeFullPath(final String schemaName) {
-        return Joiner.on("/").join("", name, ROOT, schemaName);
+        return Joiner.on("/").join("", ROOT, schemaName);
     }
     
     /**

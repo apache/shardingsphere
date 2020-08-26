@@ -41,7 +41,7 @@ public final class PropertiesChangedListenerTest {
     
     @Before
     public void setUp() {
-        propertiesChangedListener = new PropertiesChangedListener("test", configurationRepository);
+        propertiesChangedListener = new PropertiesChangedListener(configurationRepository);
     }
     
     @Test
