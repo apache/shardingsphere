@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.core.facade;
 
-import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
-import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
@@ -107,19 +105,6 @@ public final class OrchestrationFacadeTest {
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataSourcesNode();
         verify(listenerManager).init();
-    }
-    
-    @Test
-    public void assertInitClusterConfiguration() {
-        HeartbeatConfiguration heartBeatConfiguration = new HeartbeatConfiguration();
-        heartBeatConfiguration.setSql("select 1");
-        heartBeatConfiguration.setInterval(60);
-        heartBeatConfiguration.setRetryEnable(true);
-        heartBeatConfiguration.setRetryMaximum(3);
-        ClusterConfiguration clusterConfiguration = new ClusterConfiguration();
-        clusterConfiguration.setHeartbeat(heartBeatConfiguration);
-        orchestrationFacade.initClusterConfiguration(clusterConfiguration);
-        verify(configCenter).persistClusterConfiguration(clusterConfiguration, false);
     }
     
     @Test

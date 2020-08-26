@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.proxy.orchestration;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
-import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
@@ -74,7 +72,6 @@ public final class OrchestrationBootstrap {
                     getRuleConfigurations(ruleConfigs), new AuthenticationYamlSwapper().swapToObject(serverConfig.getAuthentication()), serverConfig.getProps());
         }
         orchestrationFacade.initMetricsConfiguration(Optional.ofNullable(serverConfig.getMetrics()).map(new MetricsConfigurationYamlSwapper()::swapToObject).orElse(null));
-        orchestrationFacade.initClusterConfiguration(Optional.ofNullable(serverConfig.getCluster()).map(new ClusterConfigurationYamlSwapper()::swapToObject).orElse(null));
     }
     
     private boolean isEmptyLocalConfiguration(final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
@@ -99,10 +96,9 @@ public final class OrchestrationBootstrap {
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
         Authentication authentication = orchestrationFacade.getConfigCenter().loadAuthentication();
-        ClusterConfiguration clusterConfig = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
         MetricsConfiguration metricsConfig = orchestrationFacade.getConfigCenter().loadMetricsConfiguration();
         Properties props = orchestrationFacade.getConfigCenter().loadProperties();
-        return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, clusterConfig, metricsConfig, props);
+        return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, metricsConfig, props);
     }
     
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {

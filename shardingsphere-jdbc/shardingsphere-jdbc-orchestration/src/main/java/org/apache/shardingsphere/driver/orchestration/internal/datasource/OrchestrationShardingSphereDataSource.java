@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.orchestration.internal.datasource;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
 import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
@@ -75,59 +74,21 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         initControlPanel();
     }
     
-    public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration,
+    public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig,
                                                  final MetricsConfiguration metricsConfiguration) throws SQLException {
         init(orchestrationConfig);
         schemaContexts = new JDBCOrchestrationSchemaContexts(createSchemaContexts(), orchestrationFacade);
         dataSource = loadDataSource();
-        initConfigurations(clusterConfiguration, metricsConfiguration);
-        initControlPanel();
-    }
-    
-    public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) throws SQLException {
-        init(orchestrationConfig);
-        schemaContexts = new JDBCOrchestrationSchemaContexts(createSchemaContexts(), orchestrationFacade);
-        dataSource = loadDataSource();
-        initConfigurations(clusterConfiguration, null);
-        initControlPanel();
-    }
-    
-    public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig, final MetricsConfiguration metricsConfiguration) throws SQLException {
-        init(orchestrationConfig);
-        schemaContexts = new JDBCOrchestrationSchemaContexts(createSchemaContexts(), orchestrationFacade);
-        dataSource = loadDataSource();
-        initConfigurations(null, metricsConfiguration);
-        initControlPanel();
-    }
-    
-    public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) {
-        init(orchestrationConfig);
-        schemaContexts = new JDBCOrchestrationSchemaContexts(dataSource.getSchemaContexts(), orchestrationFacade);
-        this.dataSource = dataSource;
-        initWithLocalConfiguration();
+        initConfigurations(metricsConfiguration);
         initControlPanel();
     }
     
     public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource dataSource,
-                                                 final OrchestrationConfiguration orchestrationConfig,
-                                                 final ClusterConfiguration clusterConfiguration,
-                                                 final MetricsConfiguration metricsConfiguration) {
+                                                 final OrchestrationConfiguration orchestrationConfig) {
         init(orchestrationConfig);
         schemaContexts = new JDBCOrchestrationSchemaContexts(dataSource.getSchemaContexts(), orchestrationFacade);
         this.dataSource = dataSource;
         initWithLocalConfiguration();
-        initConfigurations(clusterConfiguration, metricsConfiguration);
-        initControlPanel();
-    }
-    
-    public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource dataSource,
-                                                 final OrchestrationConfiguration orchestrationConfig,
-                                                 final ClusterConfiguration clusterConfiguration) {
-        init(orchestrationConfig);
-        schemaContexts = new JDBCOrchestrationSchemaContexts(dataSource.getSchemaContexts(), orchestrationFacade);
-        this.dataSource = dataSource;
-        initWithLocalConfiguration();
-        initConfigurations(clusterConfiguration, null);
         initControlPanel();
     }
     
@@ -138,7 +99,7 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         schemaContexts = new JDBCOrchestrationSchemaContexts(dataSource.getSchemaContexts(), orchestrationFacade);
         this.dataSource = dataSource;
         initWithLocalConfiguration();
-        initConfigurations(null, metricsConfiguration);
+        initConfigurations(metricsConfiguration);
         initControlPanel();
     }
     
@@ -152,8 +113,10 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         Map<String, DataSourceConfiguration> dataSourceConfigs = configCenter.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
         Collection<RuleConfiguration> ruleConfigurations = configCenter.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(dataSourceConfigs);
-        SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(createDatabaseType(dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap),
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), new Authentication(), configCenter.loadProperties());
+        SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(createDatabaseType(dataSourceMap), 
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap),
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), 
+                new Authentication(), configCenter.loadProperties());
         return schemaContextsBuilder.build();
     }
     
@@ -185,25 +148,19 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         Collection<RuleConfiguration> ruleConfigurations = dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations();
         Properties props = dataSource.getSchemaContexts().getProps().getProps();
         orchestrationFacade.onlineInstance(
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigs), Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), null, props);
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigs), 
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), null, props);
     }
     
-    private void initConfigurations(final ClusterConfiguration clusterConfiguration, final MetricsConfiguration metricsConfiguration) {
-        if (null != clusterConfiguration) {
-            orchestrationFacade.initClusterConfiguration(clusterConfiguration);
-        }
+    private void initConfigurations(final MetricsConfiguration metricsConfiguration) {
         if (null != metricsConfiguration) {
             orchestrationFacade.initMetricsConfiguration(metricsConfiguration);
         }
     }
     
     private void initControlPanel() {
-        ClusterConfiguration clusterConfiguration = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
         MetricsConfiguration metricsConfiguration = orchestrationFacade.getConfigCenter().loadMetricsConfiguration();
         Collection<ControlPanelConfiguration> controlPanelConfigs = new LinkedList<>();
-        if (null != clusterConfiguration && null != clusterConfiguration.getHeartbeat()) {
-            controlPanelConfigs.add(clusterConfiguration);
-        }
         if (null != metricsConfiguration) {
             controlPanelConfigs.add(metricsConfiguration);
         }

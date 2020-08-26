@@ -100,9 +100,6 @@ public final class Bootstrap {
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
             controlPanelConfigs.add(new OpenTracingConfiguration());
         }
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
-            controlPanelConfigs.add(proxyConfig.getCluster());
-        }
         new ControlPanelFacadeEngine().init(controlPanelConfigs);
     }
     
