@@ -105,24 +105,26 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     private Collection<ExecuteResult> execute(final ExecutionContext executionContext, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
-        return ExecutorConstant.MANAGED_RESOURCE ? executeWithManagedResource(executionContext, isReturnGeneratedKeys, isExceptionThrown) : executeWithUnmanagedResource(executionContext);
+        int maxConnectionsSizePerQuery = ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        return ExecutorConstant.MANAGED_RESOURCE ? executeWithManagedResource(executionContext, maxConnectionsSizePerQuery, isReturnGeneratedKeys, isExceptionThrown)
+                : executeWithUnmanagedResource(executionContext, maxConnectionsSizePerQuery);
     }
     
-    private Collection<ExecuteResult> executeWithManagedResource(final ExecutionContext executionContext, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
-        return sqlExecutor.execute(generateInputGroups(executionContext.getExecutionUnits(), isReturnGeneratedKeys),
+    private Collection<ExecuteResult> executeWithManagedResource(final ExecutionContext executionContext, 
+                                                                 final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+        return sqlExecutor.execute(generateInputGroups(executionContext.getExecutionUnits(), maxConnectionsSizePerQuery, isReturnGeneratedKeys),
                 new ProxySQLExecutorCallback(executionContext.getSqlStatementContext(), backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
                 new ProxySQLExecutorCallback(executionContext.getSqlStatementContext(), backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<InputGroup<StatementExecuteUnit>> generateInputGroups(final Collection<ExecutionUnit> executionUnits, final boolean isReturnGeneratedKeys) throws SQLException {
-        int maxConnectionsSizePerQuery = ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+    private Collection<InputGroup<StatementExecuteUnit>> generateInputGroups(final Collection<ExecutionUnit> executionUnits, 
+                                                                             final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys) throws SQLException {
         ExecuteGroupEngine executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine(backendConnection, maxConnectionsSizePerQuery, new StatementOption(isReturnGeneratedKeys));
         return (Collection<InputGroup<StatementExecuteUnit>>) executeGroupEngine.generate(executionUnits);
     }
     
-    private Collection<ExecuteResult> executeWithUnmanagedResource(final ExecutionContext executionContext) throws SQLException {
-        int maxConnectionsSizePerQuery = ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+    private Collection<ExecuteResult> executeWithUnmanagedResource(final ExecutionContext executionContext, final int maxConnectionsSizePerQuery) throws SQLException {
         Collection<InputGroup<RawSQLExecuteUnit>> inputGroups = new RawExecuteGroupEngine(maxConnectionsSizePerQuery,
                 ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema()).getSchema().getRules()).generate(executionContext.getExecutionUnits());
         // TODO handle query header
