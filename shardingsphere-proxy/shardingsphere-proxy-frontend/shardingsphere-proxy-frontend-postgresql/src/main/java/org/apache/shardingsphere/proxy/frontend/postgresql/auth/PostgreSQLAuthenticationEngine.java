@@ -91,7 +91,8 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
             }
             md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);
             context.writeAndFlush(new PostgreSQLAuthenticationMD5PasswordPacket(md5Salt));
-            return AuthenticationResult.continued(username, databaseName);
+            currentAuthResult = AuthenticationResult.continued(username, databaseName);
+            return currentAuthResult;
         } else {
             char messageType = (char) ((PostgreSQLPacketPayload) payload).readInt1();
             if ('p' != messageType) {
