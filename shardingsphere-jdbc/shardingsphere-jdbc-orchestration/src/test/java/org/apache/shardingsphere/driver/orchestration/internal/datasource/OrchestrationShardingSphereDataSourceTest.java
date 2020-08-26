@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.orchestration.internal.datasource;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
@@ -43,7 +42,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -149,12 +147,5 @@ public final class OrchestrationShardingSphereDataSourceTest {
     @Test
     public void assertRenewDisabledState() {
         schemaContexts.renew(new DisabledStateChangedEvent(new OrchestrationSchema("logic_db.ds_s"), true));
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private ShardingSphereDataSource getDataSource() {
-        Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("dataSource");
-        field.setAccessible(true);
-        return (ShardingSphereDataSource) field.get(orchestrationDataSource);
     }
 }
