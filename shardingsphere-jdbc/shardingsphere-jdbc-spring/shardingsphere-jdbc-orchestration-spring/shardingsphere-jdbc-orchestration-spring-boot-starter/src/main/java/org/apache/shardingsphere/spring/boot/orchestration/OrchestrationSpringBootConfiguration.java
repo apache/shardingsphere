@@ -19,9 +19,6 @@ package org.apache.shardingsphere.spring.boot.orchestration;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
-import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
-import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -124,25 +121,20 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private DataSource createDataSourceWithRules(final List<RuleConfiguration> ruleConfigurations,
                                                  final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        if (null == root.getCluster() && null == root.getMetrics()) {
+        if (null == root.getMetrics()) {
             return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration);
         } else {
-            return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration,
-                    swap(root.getCluster()), swap(root.getMetrics()));
+            return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, 
+                    root.getProps()), orchestrationConfiguration, swap(root.getMetrics()));
         }
     }
     
     private DataSource createDataSourceWithoutRules(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        if (null == root.getCluster() && null == root.getMetrics()) {
+        if (null == root.getMetrics()) {
             return new OrchestrationShardingSphereDataSource(orchestrationConfiguration);
         } else {
-            return new OrchestrationShardingSphereDataSource(orchestrationConfiguration,
-                    swap(root.getCluster()), swap(root.getMetrics()));
+            return new OrchestrationShardingSphereDataSource(orchestrationConfiguration, swap(root.getMetrics()));
         }
-    }
-    
-    private ClusterConfiguration swap(final YamlClusterConfiguration yamlClusterConfiguration) {
-        return null == yamlClusterConfiguration ? null : new ClusterConfigurationYamlSwapper().swapToObject(yamlClusterConfiguration);
     }
     
     private MetricsConfiguration swap(final YamlMetricsConfiguration yamlMetricsConfiguration) {

@@ -36,9 +36,7 @@ public final class YamlOrchestrationShardingSphereDataSourceFactoryTest extends 
     
     private static final List<String> CONFIG_FILES = Arrays.asList("/yaml/integrate/sharding_ms/configWithDataSourceWithProps.yaml",
             "/yaml/integrate/sharding_ms/configWithoutDataSourceWithProps.yaml",
-            "/yaml/integrate/sharding_ms/configWithDataSourceWithoutRules.yaml",
-            "/yaml/integrate/sharding_ms/configWithoutDataSourceWithCluster.yaml",
-            "/yaml/integrate/sharding_ms/configWithDataSourceWithCluster.yaml");
+            "/yaml/integrate/sharding_ms/configWithDataSourceWithoutRules.yaml");
     
     private static DataSource dataSource;
     

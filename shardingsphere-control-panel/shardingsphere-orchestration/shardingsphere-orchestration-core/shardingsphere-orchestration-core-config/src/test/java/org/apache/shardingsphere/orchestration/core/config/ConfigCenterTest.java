@@ -19,9 +19,6 @@ package org.apache.shardingsphere.orchestration.core.config;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
-import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
-import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
@@ -60,7 +57,6 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -89,8 +85,6 @@ public final class ConfigCenterTest {
     private static final String PROPS_YAML = "sql.show: false\n";
     
     private static final String DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL = "yaml/configCenter/data-source-init-sql.yaml";
-    
-    private static final String DATA_CLUSTER_YAML = "yaml/configCenter/data-cluster.yaml";
     
     private static final String DATA_METRICS_YAML = "yaml/configCenter/data-metrics.yaml";
     
@@ -425,30 +419,6 @@ public final class ConfigCenterTest {
         assertThat(actual.size(), is(2));
         assertDataSourceConfigurationWithConnectionInitSqls(actual.get("ds_0"), createDataSourceConfiguration(createDataSourceWithConnectionInitSqls("ds_0")));
         assertDataSourceConfigurationWithConnectionInitSqls(actual.get("ds_1"), createDataSourceConfiguration(createDataSourceWithConnectionInitSqls("ds_1")));
-    }
-    
-    @Test
-    public void assertPersistClusterConfiguration() {
-        ClusterConfiguration clusterConfiguration = new ClusterConfigurationYamlSwapper()
-                .swapToObject(YamlEngine.unmarshal(readYAML(DATA_CLUSTER_YAML), YamlClusterConfiguration.class));
-        ConfigCenter configurationService = new ConfigCenter(configurationRepository);
-        configurationService.persistClusterConfiguration(clusterConfiguration, true);
-        verify(configurationRepository, times(0)).persist(eq("/config/cluster"), eq(readYAML(DATA_CLUSTER_YAML)));
-    }
-    
-    @Test
-    public void loadClusterConfiguration() {
-        when(configurationRepository.get("/config/cluster")).thenReturn(readYAML(DATA_CLUSTER_YAML));
-        ConfigCenter configurationService = new ConfigCenter(configurationRepository);
-        ClusterConfiguration clusterConfiguration = configurationService.loadClusterConfiguration();
-        assertNotNull(clusterConfiguration);
-        assertNotNull(clusterConfiguration.getHeartbeat());
-        assertThat(clusterConfiguration.getHeartbeat().getSql(), is("select 1"));
-        assertThat(clusterConfiguration.getHeartbeat().getThreadCount(), is(1));
-        assertThat(clusterConfiguration.getHeartbeat().getInterval(), is(60));
-        assertFalse(clusterConfiguration.getHeartbeat().isRetryEnable());
-        assertThat(clusterConfiguration.getHeartbeat().getRetryMaximum(), is(3));
-        assertThat(clusterConfiguration.getHeartbeat().getRetryInterval(), is(3));
     }
     
     private DataSource createDataSourceWithConnectionInitSqls(final String name) {

@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.orchestration.core.schema;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.cluster.facade.ClusterFacade;
-import org.apache.shardingsphere.cluster.facade.init.ClusterInitFacade;
-import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -43,7 +40,6 @@ import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.facade.MetricsTrackerManagerFacade;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.ClusterConfigurationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.MetricsConfigurationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
@@ -298,41 +294,6 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     public synchronized void renew(final CircuitStateChangedEvent event) {
         schemaContexts =
                 new StandardSchemaContexts(schemaContexts.getSchemaContexts(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType(), event.isCircuitBreak());
-    }
-    
-    /**
-     * Renew cluster facade.
-     *
-     * @param event cluster configuration changed event
-     */
-    @Subscribe
-    public void renew(final ClusterConfigurationChangedEvent event) {
-        if (ClusterInitFacade.isEnabled()) {
-            ClusterInitFacade.restart(event.getClusterConfiguration());
-        }
-    }
-    
-    /**
-     * Heart beat detect.
-     *
-     * @param event heart beat detect notice event
-     */
-    @Subscribe
-    public synchronized void heartbeat(final HeartbeatDetectNoticeEvent event) {
-        if (ClusterInitFacade.isEnabled()) {
-            ClusterFacade.getInstance().detectHeartbeat(schemaContexts.getSchemaContexts());
-        }
-    }
-    
-    /**
-     *  Enable cluster facade after properties changed.
-     *
-     * @param event properties changed event
-     */
-    @Subscribe
-    public void enable(final PropertiesChangedEvent event) {
-        boolean clusterEnabled = new ConfigurationProperties(event.getProps()).<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED);
-        ClusterInitFacade.enable(clusterEnabled);
     }
     
     private SchemaContext getAddedSchemaContext(final SchemaAddedEvent schemaAddedEvent) throws Exception {

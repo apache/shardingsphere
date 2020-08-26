@@ -36,8 +36,6 @@ public final class DataSourceBeanDefinitionTag {
     
     public static final String CONFIG_CENTER_REF_ATTRIBUTE = "config-center-ref";
     
-    public static final String CLUSTER_REF_ATTRIBUTE = "cluster-ref";
-    
     public static final String METRICS_REF_ATTRIBUTE = "metrics-ref";
     
     public static final String OVERWRITE_ATTRIBUTE = "overwrite";

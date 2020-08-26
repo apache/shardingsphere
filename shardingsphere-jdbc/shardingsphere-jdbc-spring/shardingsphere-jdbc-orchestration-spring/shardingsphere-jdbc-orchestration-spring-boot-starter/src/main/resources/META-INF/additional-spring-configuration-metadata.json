@@ -82,12 +82,6 @@
       "description": "Customize ShardingSphere orchestration instance."
     },
     {
-      "name": "spring.shardingsphere.cluster",
-      "type": "org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration",
-      "sourceType": "org.apache.shardingsphere.spring.boot.orchestration.common.OrchestrationSpringBootRootConfiguration",
-      "description": "Customize ShardingSphere cluster instance."
-    },
-    {
       "name": "spring.shardingsphere.datasource.names",
       "type": "java.lang.String",
       "sourceType": "org.apache.shardingsphere.spring.boot.orchestration.OrchestrationSpringBootConfiguration"

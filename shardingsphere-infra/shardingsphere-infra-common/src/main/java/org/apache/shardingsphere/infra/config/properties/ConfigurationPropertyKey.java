@@ -96,12 +96,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether enable hint for ShardingSphere-Proxy.
      */
-    PROXY_HINT_ENABLED("proxy.hint.enabled", String.valueOf(Boolean.FALSE), boolean.class),
-    
-    /**
-     * Enable cluster for ShardingSphere-Proxy.
-     */
-    PROXY_CLUSTER_ENABLED("proxy.cluster.enabled", String.valueOf(Boolean.FALSE), boolean.class);
+    PROXY_HINT_ENABLED("proxy.hint.enabled", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
     

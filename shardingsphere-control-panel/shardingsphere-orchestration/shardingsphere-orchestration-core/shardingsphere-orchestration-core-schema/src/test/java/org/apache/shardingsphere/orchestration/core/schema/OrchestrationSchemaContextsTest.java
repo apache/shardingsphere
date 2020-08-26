@@ -19,7 +19,6 @@ package org.apache.shardingsphere.orchestration.core.schema;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.cluster.facade.init.ClusterInitFacade;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -265,12 +264,5 @@ public final class OrchestrationSchemaContextsTest {
         MetricsConfigurationChangedEvent event = new MetricsConfigurationChangedEvent(mock(MetricsConfiguration.class));
         orchestrationSchemaContexts.renew(event);
         assertFalse(MetricsTrackerManagerFacade.getEnabled());
-    }
-    
-    @Test
-    public void assertEnableCluster() {
-        PropertiesChangedEvent event = new PropertiesChangedEvent(new Properties());
-        orchestrationSchemaContexts.enable(event);
-        assertFalse(ClusterInitFacade.isEnabled());
     }
 }

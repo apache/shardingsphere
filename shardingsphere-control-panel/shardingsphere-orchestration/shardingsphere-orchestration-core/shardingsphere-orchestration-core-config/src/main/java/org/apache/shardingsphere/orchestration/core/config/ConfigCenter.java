@@ -21,9 +21,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
-import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
-import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -187,18 +184,6 @@ public final class ConfigCenter {
         }
     }
     
-    /**
-     * Persist cluster configuration.
-     *
-     * @param clusterConfiguration cluster configuration
-     * @param isOverwrite is overwrite config center's configuration
-     */
-    public void persistClusterConfiguration(final ClusterConfiguration clusterConfiguration, final boolean isOverwrite) {
-        if (null != clusterConfiguration && isOverwrite) {
-            repository.persist(node.getClusterPath(), YamlEngine.marshal(new ClusterConfigurationYamlSwapper().swapToYamlConfiguration(clusterConfiguration)));
-        }
-    }
-    
     private void persistAuthentication(final Authentication authentication, final boolean isOverwrite) {
         if (null != authentication && isOverwrite) {
             repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication)));
@@ -283,16 +268,6 @@ public final class ConfigCenter {
      */
     public Properties loadProperties() {
         return YamlEngine.unmarshalProperties(repository.get(node.getPropsPath()));
-    }
-    
-    /**
-     * Load cluster configuration.
-     *
-     * @return cluster configuration
-     */
-    public ClusterConfiguration loadClusterConfiguration() {
-        return Strings.isNullOrEmpty(repository.get(node.getClusterPath())) ? null
-                : new ClusterConfigurationYamlSwapper().swapToObject(YamlEngine.unmarshal(repository.get(node.getClusterPath()), YamlClusterConfiguration.class));
     }
     
     /**
