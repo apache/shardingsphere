@@ -18,6 +18,7 @@
 
 <sql-cases>
     <sql-case id="create_table" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10))" />
+    <sql-case id="create_table_with_engin_charset" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" db-types="MySQL" />
     <sql-case id="create_table_with_keyword" value="CREATE TABLE t_log(id int PRIMARY KEY, status boolean)" db-types="PostgreSQL" />
     <sql-case id="create_table_if_not_exists" value="CREATE TABLE IF NOT EXISTS t_log(id int, status varchar(10))" db-types="MySQL,PostgreSQL" />
     <sql-case id="create_temporary_table_if_not_exists" value="CREATE TEMPORARY TABLE IF NOT EXISTS t_temp_log(id int, status varchar(10))" db-types="MySQL,PostgreSQL" />
