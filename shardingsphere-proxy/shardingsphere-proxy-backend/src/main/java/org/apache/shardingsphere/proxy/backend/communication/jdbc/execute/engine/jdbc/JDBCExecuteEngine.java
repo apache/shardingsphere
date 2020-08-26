@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.control.panel.spi.engine.SingletonFacadeEngine;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ExecutorConstant;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -112,9 +113,10 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private Collection<ExecuteResult> executeWithManagedResource(final ExecutionContext executionContext, 
                                                                  final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+        DatabaseType databaseType = ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType();
         return sqlExecutor.execute(generateInputGroups(executionContext.getExecutionUnits(), maxConnectionsSizePerQuery, isReturnGeneratedKeys),
-                new ProxySQLExecutorCallback(executionContext.getSqlStatementContext(), backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
-                new ProxySQLExecutorCallback(executionContext.getSqlStatementContext(), backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
+                new ProxySQLExecutorCallback(databaseType, executionContext.getSqlStatementContext(), backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
+                new ProxySQLExecutorCallback(databaseType, executionContext.getSqlStatementContext(), backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

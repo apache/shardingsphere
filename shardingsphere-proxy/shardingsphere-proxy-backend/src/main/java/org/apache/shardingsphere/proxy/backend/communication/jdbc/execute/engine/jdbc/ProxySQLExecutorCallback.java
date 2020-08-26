@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.jdbc;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
@@ -58,9 +59,10 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     
     private boolean hasMetaData;
 
-    public ProxySQLExecutorCallback(final SQLStatementContext<?> sqlStatementContext, final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper,
+    public ProxySQLExecutorCallback(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, 
+                                    final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper,
                                     final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
-        super(ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType(), isExceptionThrown);
+        super(databaseType, isExceptionThrown);
         this.sqlStatementContext = sqlStatementContext;
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
