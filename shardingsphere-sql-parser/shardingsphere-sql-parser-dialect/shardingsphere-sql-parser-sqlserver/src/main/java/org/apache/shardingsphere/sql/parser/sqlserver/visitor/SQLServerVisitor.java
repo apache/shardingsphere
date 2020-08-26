@@ -46,7 +46,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Ind
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NullValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NumberLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ParameterMarkerContext;
@@ -74,11 +73,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.Subque
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
@@ -484,20 +481,6 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         for (ExprContext each : exprContexts) {
             visit(each);
         }
-    }
-    
-    @Override
-    public final ASTNode visitOrderByClause(final OrderByClauseContext ctx) {
-        Collection<OrderByItemSegment> items = new LinkedList<>();
-        for (OrderByItemContext each : ctx.orderByItem()) {
-            items.add((OrderByItemSegment) visit(each));
-        }
-        if (null != ctx.expr()) {
-            for (ExprContext each : ctx.expr()) {
-                visit(each);
-            }
-        }
-        return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
     
     @Override
