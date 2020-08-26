@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ExecutorConstant;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
@@ -44,7 +45,6 @@ import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
@@ -82,20 +82,19 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     @Override
     public BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
-        SQLStatementContext<?> sqlStatementContext = executionContext.getSqlStatementContext();
-        Collection<ExecuteResult> executeResults = execute(executionContext, 
-                sqlStatementContext, sqlStatementContext.getSqlStatement() instanceof InsertStatement, ExecutorExceptionHandler.isExceptionThrown());
+        Collection<ExecuteResult> executeResults = execute(executionContext,
+                executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement, ExecutorExceptionHandler.isExceptionThrown());
         ExecuteResult executeResult = executeResults.iterator().next();
         if (executeResult instanceof ExecuteQueryResult) {
             SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), "SELECT"));
             return getExecuteQueryResponse(((ExecuteQueryResult) executeResult).getQueryHeaders(), executeResults);
         } else {
             UpdateResponse result = new UpdateResponse(executeResults);
-            if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
+            if (executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement) {
                 result.setType("INSERT");
-            } else if (sqlStatementContext.getSqlStatement() instanceof DeleteStatement) {
+            } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof DeleteStatement) {
                 result.setType("DELETE");
-            } else if (sqlStatementContext.getSqlStatement() instanceof UpdateStatement) {
+            } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof UpdateStatement) {
                 result.setType("UPDATE");
             }
             if (!Strings.isNullOrEmpty(result.getType())) {
@@ -105,21 +104,21 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
     }
     
-    private Collection<ExecuteResult> execute(final ExecutionContext executionContext, 
-                                              final SQLStatementContext<?> sqlStatementContext, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
-        return ExecutorConstant.MANAGED_RESOURCE
-                ? executeWithManagedResource(executionContext, sqlStatementContext, isReturnGeneratedKeys, isExceptionThrown) : executeWithUnmanagedResource(executionContext);
+    private Collection<ExecuteResult> execute(final ExecutionContext executionContext, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+        return ExecutorConstant.MANAGED_RESOURCE ? executeWithManagedResource(executionContext, isReturnGeneratedKeys, isExceptionThrown) : executeWithUnmanagedResource(executionContext);
+    }
+    
+    private Collection<ExecuteResult> executeWithManagedResource(final ExecutionContext executionContext, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+        return sqlExecutor.execute(generateInputGroups(executionContext.getExecutionUnits(), isReturnGeneratedKeys),
+                new ProxySQLExecutorCallback(executionContext.getSqlStatementContext(), backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
+                new ProxySQLExecutorCallback(executionContext.getSqlStatementContext(), backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<ExecuteResult> executeWithManagedResource(final ExecutionContext executionContext, final SQLStatementContext<?> sqlStatementContext, 
-                                                                 final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+    private Collection<InputGroup<StatementExecuteUnit>> generateInputGroups(final Collection<ExecutionUnit> executionUnits, final boolean isReturnGeneratedKeys) throws SQLException {
         int maxConnectionsSizePerQuery = ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         ExecuteGroupEngine executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine(backendConnection, maxConnectionsSizePerQuery, new StatementOption(isReturnGeneratedKeys));
-        Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits());
-        return sqlExecutor.execute(inputGroups,
-                new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
-                new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
+        return (Collection<InputGroup<StatementExecuteUnit>>) executeGroupEngine.generate(executionUnits);
     }
     
     private Collection<ExecuteResult> executeWithUnmanagedResource(final ExecutionContext executionContext) throws SQLException {
