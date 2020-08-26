@@ -31,10 +31,10 @@ import java.util.Collection;
 public interface ExecuteGroupEngine<T> {
     
     /**
-     * Generate storage resource execute unit groups.
+     * Generate execution input groups.
      *
      * @param executionUnits execution units
-     * @return storage resource execute unit groups
+     * @return execution input groups
      * @throws SQLException SQL exception
      */
     Collection<InputGroup<T>> generate(Collection<ExecutionUnit> executionUnits) throws SQLException;

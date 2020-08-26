@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Named execute group engine.
+ * Abstract execute group engine.
  * 
  * @param <T> type of input value
  */
@@ -53,13 +53,13 @@ public abstract class AbstractExecuteGroupEngine<T> implements ExecuteGroupEngin
     @Override
     public final Collection<InputGroup<T>> generate(final Collection<ExecutionUnit> executionUnits) throws SQLException {
         Collection<InputGroup<T>> result = new LinkedList<>();
-        for (Entry<String, List<SQLUnit>> entry : getSQLUnitGroups(executionUnits).entrySet()) {
+        for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
             result.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue()));
         }
         return decorate(result);
     }
     
-    private Map<String, List<SQLUnit>> getSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
+    private Map<String, List<SQLUnit>> aggregateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
         Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);
         for (ExecutionUnit each : executionUnits) {
             if (!result.containsKey(each.getDataSourceName())) {
