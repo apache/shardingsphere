@@ -114,7 +114,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<ExecuteResult> executeWithManagedResource(final ExecutionContext executionContext, final SQLStatementContext<?> sqlStatementContext, 
                                                                  final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
-        ExecuteGroupEngine executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine(backendConnection, new StatementOption(isReturnGeneratedKeys));
+        int maxConnectionsSizePerQuery = ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        ExecuteGroupEngine executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine(backendConnection, maxConnectionsSizePerQuery, new StatementOption(isReturnGeneratedKeys));
         Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits());
         return sqlExecutor.execute(inputGroups,
                 new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
