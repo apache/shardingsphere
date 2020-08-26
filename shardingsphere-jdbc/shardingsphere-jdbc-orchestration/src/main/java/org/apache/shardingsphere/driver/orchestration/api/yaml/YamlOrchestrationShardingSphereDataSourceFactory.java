@@ -133,7 +133,7 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
     private static DataSource createDataSourceWithRules(final ShardingSphereDataSource shardingSphereDataSource,
                                                         final YamlOrchestrationConfiguration orchestration,
                                                         final YamlClusterConfiguration yamlClusterConfiguration,
-                                                        final YamlMetricsConfiguration yamlMetricsConfiguration) {
+                                                        final YamlMetricsConfiguration yamlMetricsConfiguration) throws SQLException {
         if (null == yamlClusterConfiguration && null == yamlMetricsConfiguration) {
             return new OrchestrationShardingSphereDataSource(shardingSphereDataSource,
                     YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(orchestration));

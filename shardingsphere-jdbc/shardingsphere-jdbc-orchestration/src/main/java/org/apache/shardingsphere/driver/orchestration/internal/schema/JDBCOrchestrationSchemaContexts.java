@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  */
 public final class JDBCOrchestrationSchemaContexts extends OrchestrationSchemaContexts {
     
-    protected JDBCOrchestrationSchemaContexts(final SchemaContexts schemaContexts, final OrchestrationFacade orchestrationFacade) {
+    public JDBCOrchestrationSchemaContexts(final SchemaContexts schemaContexts, final OrchestrationFacade orchestrationFacade) {
         super(schemaContexts, orchestrationFacade);
     }
     
