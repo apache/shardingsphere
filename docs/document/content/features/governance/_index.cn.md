@@ -31,11 +31,6 @@ chapter = true
 - 实现注册中心：支持 Zookeeper/etcd，管理各个 Proxy 示例的状态。
 - 实现元数据中心：支持 Zookeeper/etcd，管理 LogicSchema 的元数据。
 
-对于集群管理功能，目标如下：
-
-- 实现节点心跳检测：支持 Sharding-JDBC、Sharding-Proxy，使用可配置策略探活。
-- 实现集群状态拓扑管理：更新和管理集群状态拓扑图。
-
 对于可观测性，目标如下：
 
 - 支持 OpenTracing/Skywalking 集成，实现调用链的跟踪；
