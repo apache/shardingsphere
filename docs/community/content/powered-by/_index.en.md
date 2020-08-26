@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 ## Who are using ShardingSphere?
 
-Total: 142 companies.
+Total: 143 companies.
 
 ### Financial Industry
 <ul>
@@ -58,6 +58,7 @@ Total: 142 companies.
     <li><a href="https://www.miaomaifang.com/" rel="nofollow">MiaoMaiFang</a></li>
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://zowiesunglasses.com/" rel="nofollow">Zowie</a></li>
+     <li><a href="https://m.51tiangou.com/">51tiangou</a></li>
 </ul>
 
 ### Digitalization and Cloud Services
