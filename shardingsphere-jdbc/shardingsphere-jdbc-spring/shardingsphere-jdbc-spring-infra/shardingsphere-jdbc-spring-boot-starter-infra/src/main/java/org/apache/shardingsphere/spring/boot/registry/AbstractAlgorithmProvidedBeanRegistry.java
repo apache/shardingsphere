@@ -42,13 +42,15 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractAlgorithmProvidedBeanRegistry implements BeanDefinitionRegistryPostProcessor, BeanPostProcessor {
-    
+
     private final Environment environment;
-    
+
     @SuppressWarnings("all")
     protected void registerBean(final String preFix, final Class clazz, final BeanDefinitionRegistry registry) {
         Map<String, Object> paramMap = PropertyUtil.handle(environment, preFix, Map.class);
-        Set<String> keySet = paramMap.keySet().stream().map(key -> key.substring(0, key.indexOf("."))).collect(Collectors.toSet());
+        Set<String> keySet = paramMap.keySet().stream().map(key -> {
+            return key.endsWith(".") ? key.substring(0, key.indexOf(".")) : key;
+        }).collect(Collectors.toSet());
         Map<String, YamlShardingSphereAlgorithmConfiguration> shardingAlgorithmMap = new LinkedHashMap<>();
         keySet.forEach(key -> {
             String type = environment.getProperty(preFix + key + ".type");
@@ -66,16 +68,16 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry implements BeanDefin
             registry.registerBeanDefinition(k, builder.getBeanDefinition());
         });
     }
-    
+
     @Override
     public void postProcessBeanFactory(final ConfigurableListableBeanFactory configurableListableBeanFactory) {
     }
-    
+
     @Override
     public Object postProcessBeforeInitialization(final Object bean, final String beanName) {
         return bean;
     }
-    
+
     @Override
     public Object postProcessAfterInitialization(final Object bean, final String beanName) {
         if (bean instanceof ShardingSphereAlgorithmPostProcessor) {
