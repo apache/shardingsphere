@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExec
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
@@ -127,8 +128,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     private Collection<ExecuteResult> executeWithUnmanagedResource(final ExecutionContext executionContext, final int maxConnectionsSizePerQuery) throws SQLException {
-        Collection<InputGroup<RawSQLExecuteUnit>> inputGroups = new RawExecuteGroupEngine(maxConnectionsSizePerQuery,
-                ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema()).getSchema().getRules()).generate(executionContext.getExecutionUnits());
+        Collection<ShardingSphereRule> rules = ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema()).getSchema().getRules();
+        Collection<InputGroup<RawSQLExecuteUnit>> inputGroups = new RawExecuteGroupEngine(maxConnectionsSizePerQuery, rules).generate(executionContext.getExecutionUnits());
         // TODO handle query header
         return rawExecutor.execute(inputGroups, new RawSQLExecutorCallback());
     }
