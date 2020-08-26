@@ -72,12 +72,11 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     
     @Override
     public ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-        boolean withMetaData = false;
         if (fetchMetaData && !hasMetaData) {
             hasMetaData = true;
-            withMetaData = true;
+            return executeSQL(statement, sql, connectionMode, true);
         }
-        return executeSQL(statement, sql, connectionMode, withMetaData);
+        return executeSQL(statement, sql, connectionMode, false);
     }
     
     private ExecuteResult executeSQL(final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean withMetadata) throws SQLException {
