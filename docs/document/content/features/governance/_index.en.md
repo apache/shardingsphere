@@ -31,11 +31,6 @@ For the governance function, the goals are as follows:
 - Realize the registration center: support Zookeeper/etcd, manage the status of each Proxy example.
 - Implement metadata center: support Zookeeper/etcd, manage metadata of LogicSchema.
 
-For the cluster management function, the goals are as follows:
-
-- Achieve node heartbeat detection: support Sharding-JDBC, Sharding-Proxy, use configurable strategy to detect live.
-- Implement cluster state topology management: update and manage cluster state topology maps.
-
 For observability, the goals are as follows:
 
 - Support OpenTracing/Skywalking integration and realize call chain tracking;
