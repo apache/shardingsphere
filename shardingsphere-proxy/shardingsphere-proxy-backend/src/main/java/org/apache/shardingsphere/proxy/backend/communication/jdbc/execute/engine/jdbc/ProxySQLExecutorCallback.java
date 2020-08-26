@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.jdbc;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
@@ -46,7 +47,7 @@ import java.util.List;
  */
 public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<ExecuteResult> {
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     private final BackendConnection backendConnection;
     
@@ -58,9 +59,10 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     
     private boolean hasMetaData;
 
-    public ProxySQLExecutorCallback(final SQLStatementContext sqlStatementContext, final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper,
+    public ProxySQLExecutorCallback(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, 
+                                    final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper,
                                     final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
-        super(ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType(), isExceptionThrown);
+        super(databaseType, isExceptionThrown);
         this.sqlStatementContext = sqlStatementContext;
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
@@ -70,12 +72,11 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     
     @Override
     public ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-        boolean withMetaData = false;
         if (fetchMetaData && !hasMetaData) {
             hasMetaData = true;
-            withMetaData = true;
+            return executeSQL(statement, sql, connectionMode, true);
         }
-        return executeSQL(statement, sql, connectionMode, withMetaData);
+        return executeSQL(statement, sql, connectionMode, false);
     }
     
     private ExecuteResult executeSQL(final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean withMetadata) throws SQLException {
@@ -88,7 +89,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
         return new ExecuteUpdateResult(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
     }
     
-    private List<QueryHeader> getQueryHeaders(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
+    private List<QueryHeader> getQueryHeaders(final SQLStatementContext<?> sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
         if (sqlStatementContext instanceof SelectStatementContext) {
             return getQueryHeaders(((SelectStatementContext) sqlStatementContext).getProjectionsContext(), resultSetMetaData);
         }

@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
-import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.DataNodeRouter;
@@ -70,6 +68,11 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     @Override
+    public StatementExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, final int maxConnectionsSizePerQuery, final StatementOption option) {
+        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
+    }
+    
+    @Override
     public boolean execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
     }
@@ -83,11 +86,5 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     private void routeMetricsCollect(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
         MetricsUtils.collectRouteUnitMetrics(routeContext.getRouteResult().getRouteUnits());
         MetricsUtils.collectShardingRuleMetrics(routeContext, rules);
-    }
-    
-    @Override
-    public ExecuteGroupEngine<?> getExecuteGroupEngine(final BackendConnection backendConnection, final StatementOption option) {
-        int maxConnectionsSizePerQuery = PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
     }
 }

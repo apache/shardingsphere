@@ -43,13 +43,13 @@ public final class JDBCOrchestrationSchemaContexts extends OrchestrationSchemaCo
     }
     
     @Override
-    protected Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
+    protected Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
         Map<String, DataSourceConfiguration> newDataSourceConfigs = Maps.filterKeys(newDataSources, each -> !oldSchemaContext.getSchema().getDataSources().containsKey(each));
         return DataSourceConverter.getDataSourceMap(newDataSourceConfigs);
     }
     
     @Override
-    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
+    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
         Map<String, DataSourceConfiguration> modifiedDataSourceConfigs =
                 newDataSources.entrySet().stream().filter(this::isModifiedDataSource).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (key, repeatKey) -> key, LinkedHashMap::new));
         return DataSourceConverter.getDataSourceMap(modifiedDataSourceConfigs);
@@ -61,7 +61,7 @@ public final class JDBCOrchestrationSchemaContexts extends OrchestrationSchemaCo
     }
     
     @Override
-    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) throws Exception {
+    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
         Map<String, Map<String, DataSource>> result = new LinkedMap<>(dataSourcesMap.size());
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesMap.entrySet()) {
             result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(entry.getValue()));
