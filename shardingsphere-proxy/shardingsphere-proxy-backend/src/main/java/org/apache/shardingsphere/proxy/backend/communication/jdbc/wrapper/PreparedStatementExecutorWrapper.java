@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.PreparedStatementExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
@@ -66,14 +67,14 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
                     new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(schema.getSchema().getDataSources().keySet().iterator().next(), new SQLUnit(sql, parameters)));
         }
         RouteContext routeContext = new DataNodeRouter(schema.getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).route(sqlStatement, sql, parameters);
-        routeMetricsCollect(routeContext, rules);
+        collectRouteMetrics(routeContext, rules);
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schema.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules);
         SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(sql, new ArrayList<>(parameters), routeContext);
         return new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(schema.getSchema().getMetaData(), sqlRewriteResult));
     }
     
     @Override
-    public PreparedStatementExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, final int maxConnectionsSizePerQuery, final StatementOption option) {
+    public ExecuteGroupEngine<?> getExecuteGroupEngine(final BackendConnection backendConnection, final int maxConnectionsSizePerQuery, final StatementOption option) {
         return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
     }
     
@@ -82,8 +83,8 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         return ((PreparedStatement) statement).execute();
     }
     
-    private void routeMetricsCollect(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
-        MetricsUtils.buriedShardingMetrics(routeContext.getRouteResult().getRouteUnits());
-        MetricsUtils.buriedShardingRuleMetrics(routeContext, rules);
+    private void collectRouteMetrics(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
+        MetricsUtils.collectRouteUnitMetrics(routeContext.getRouteResult().getRouteUnits());
+        MetricsUtils.collectShardingRuleMetrics(routeContext, rules);
     }
 }

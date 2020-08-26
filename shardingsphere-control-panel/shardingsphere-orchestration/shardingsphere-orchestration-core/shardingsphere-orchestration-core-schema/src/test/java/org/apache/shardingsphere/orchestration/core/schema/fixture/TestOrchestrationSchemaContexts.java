@@ -31,6 +31,7 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 public final class TestOrchestrationSchemaContexts extends OrchestrationSchemaContexts {
@@ -40,12 +41,12 @@ public final class TestOrchestrationSchemaContexts extends OrchestrationSchemaCo
     }
     
     @Override
-    protected Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
+    protected Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
         return Collections.singletonMap("ds_2", buildDataSource(getDataSourceParameter()));
     }
     
     @Override
-    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
+    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
         return Collections.singletonMap("ds_1", buildDataSource(getDataSourceParameter()));
     }
     
@@ -58,26 +59,26 @@ public final class TestOrchestrationSchemaContexts extends OrchestrationSchemaCo
     }
     
     @Override
-    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) throws Exception {
-        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>();
-        for (Map.Entry<String, Map<String, DataSourceParameter>> entry : createDataSourceParametersMap(dataSourcesMap).entrySet()) {
+    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
+        Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap = createDataSourceParametersMap(dataSourcesMap);
+        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourceParametersMap.size(), 1);
+        for (Entry<String, Map<String, DataSourceParameter>> entry : dataSourceParametersMap.entrySet()) {
             result.put(entry.getKey(), createDataSources(entry.getValue()));
         }
         return result;
     }
     
-    private Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) throws Exception {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Map.Entry<String, DataSourceParameter> entry: dataSourceParameters.entrySet()) {
+    private Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
+        for (Entry<String, DataSourceParameter> entry: dataSourceParameters.entrySet()) {
             result.put(entry.getKey(), buildDataSource(entry.getValue()));
         }
         return result;
     }
     
-    @Override
-    public Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
-        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
-        for (Map.Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesMap.entrySet()) {
+    private Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
+        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>(dataSourcesMap.size(), 1);
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesMap.entrySet()) {
             result.put(entry.getKey(), getDataSourceParameterMap(entry.getValue()));
         }
         return result;
@@ -99,7 +100,7 @@ public final class TestOrchestrationSchemaContexts extends OrchestrationSchemaCo
     
     private Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
         return dataSourceConfigurationMap.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfig) {

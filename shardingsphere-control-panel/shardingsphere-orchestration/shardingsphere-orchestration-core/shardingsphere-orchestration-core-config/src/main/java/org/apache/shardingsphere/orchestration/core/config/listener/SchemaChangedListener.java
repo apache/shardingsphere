@@ -59,10 +59,10 @@ public final class SchemaChangedListener extends PostOrchestrationRepositoryEven
     
     private final Collection<String> existedSchemaNames = new LinkedHashSet<>();
     
-    public SchemaChangedListener(final String name, final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
-        super(configurationRepository, new ConfigCenterNode(name).getAllSchemaConfigPaths(schemaNames));
-        configurationService = new ConfigCenter(name, configurationRepository);
-        configurationNode = new ConfigCenterNode(name);
+    public SchemaChangedListener(final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
+        super(configurationRepository, new ConfigCenterNode().getAllSchemaConfigPaths(schemaNames));
+        configurationService = new ConfigCenter(configurationRepository);
+        configurationNode = new ConfigCenterNode();
         existedSchemaNames.addAll(schemaNames);
     }
     
@@ -124,7 +124,7 @@ public final class SchemaChangedListener extends PostOrchestrationRepositoryEven
                 ? createDataSourceChangedEvent(shardingSchemaName, event) : createRuleChangedEvent(shardingSchemaName, event);
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     private DataSourceChangedEvent createDataSourceChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
         Map<String, YamlDataSourceConfiguration> dataSourceConfigurations = (Map) YamlEngine.unmarshal(event.getValue());
         Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data sources to load for orchestration.");

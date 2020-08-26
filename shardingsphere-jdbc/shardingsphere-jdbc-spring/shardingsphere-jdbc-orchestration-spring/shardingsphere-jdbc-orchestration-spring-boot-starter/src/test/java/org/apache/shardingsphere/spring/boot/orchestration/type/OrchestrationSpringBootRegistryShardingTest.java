@@ -68,12 +68,12 @@ public class OrchestrationSpringBootRegistryShardingTest {
         String shardingDatabases = readYAML(SHARDING_DATABASES_FILE);
         String shardingRule = readYAML(SHARDING_RULE_FILE);
         TestOrchestrationRepository repository = new TestOrchestrationRepository();
-        repository.persist("/orchestration-spring-boot-test/config/schema/logic_db/datasource", shardingDatabases);
-        repository.persist("/orchestration-spring-boot-test/config/schema/logic_db/rule", shardingRule);
-        repository.persist("/orchestration-spring-boot-test/config/props", ""
+        repository.persist("/config/schema/logic_db/datasource", shardingDatabases);
+        repository.persist("/config/schema/logic_db/rule", shardingRule);
+        repository.persist("/config/props", ""
                 + "executor.size: '100'\n"
                 + "sql.show: 'true'\n");
-        repository.persist("/orchestration-spring-boot-test/registry/datasources", "");
+        repository.persist("/registry/datasources", "");
     }
     
     @Test
@@ -86,7 +86,6 @@ public class OrchestrationSpringBootRegistryShardingTest {
         }
         assertTrue(schemaContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertTrue(schemaContexts.getProps().getValue(ConfigurationPropertyKey.SQL_SHOW));
-        assertThat(schemaContexts.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(100));
     }
     
     @Test

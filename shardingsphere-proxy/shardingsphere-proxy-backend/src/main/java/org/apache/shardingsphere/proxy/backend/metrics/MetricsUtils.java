@@ -36,11 +36,11 @@ import java.util.Collection;
 public final class MetricsUtils {
     
     /**
-     * Buried sharding metrics.
+     * Collect sharding metrics.
      *
      * @param routeUnits route units
      */
-    public static void buriedShardingMetrics(final Collection<RouteUnit> routeUnits) {
+    public static void collectRouteUnitMetrics(final Collection<RouteUnit> routeUnits) {
         if (!routeUnits.isEmpty()) {
             for (RouteUnit each : routeUnits) {
                 Collection<RouteMapper> tableMappers = each.getTableMappers();
@@ -55,21 +55,21 @@ public final class MetricsUtils {
     }
     
     /**
-     * Buried transaction metric.
+     * Collect transaction metric.
      *
      * @param labelValue label value
      */
-    public static void buriedTransactionMetric(final String labelValue) {
+    public static void collectTransactionMetric(final String labelValue) {
         SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.TRANSACTION.getName(), labelValue));
     }
     
     /**
-     * Buried sharding rule metrics.
+     * Collect sharding rule metrics.
      *
      * @param routeContext route context
      * @param rules rules
      */
-    public static void buriedShardingRuleMetrics(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
+    public static void collectShardingRuleMetrics(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
         routeContext.getRouteResult().getActualDataSourceNames().forEach(dataSourceName -> rules.forEach(each -> {
             if (each instanceof ShadowRule && ((ShadowRule) each).getShadowMappings().containsValue(dataSourceName)) {
                 SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.SHADOW_HIT_TOTAL.getName()));

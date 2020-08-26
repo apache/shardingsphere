@@ -42,7 +42,7 @@ public final class AuthenticationChangedListenerTest {
     
     @Before
     public void setUp() {
-        authenticationChangedListener = new AuthenticationChangedListener("test", configurationRepository);
+        authenticationChangedListener = new AuthenticationChangedListener(configurationRepository);
     }
     
     @Test

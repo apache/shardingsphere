@@ -84,7 +84,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     private void routeMetricsCollect(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
-        MetricsUtils.buriedShardingMetrics(routeContext.getRouteResult().getRouteUnits());
-        MetricsUtils.buriedShardingRuleMetrics(routeContext, rules);
+        MetricsUtils.collectRouteUnitMetrics(routeContext.getRouteResult().getRouteUnits());
+        MetricsUtils.collectShardingRuleMetrics(routeContext, rules);
     }
 }

@@ -31,8 +31,8 @@ import java.util.Collections;
  */
 public final class PropertiesChangedListener extends PostOrchestrationRepositoryEventListener {
     
-    public PropertiesChangedListener(final String name, final ConfigurationRepository configurationRepository) {
-        super(configurationRepository, Collections.singletonList(new ConfigCenterNode(name).getPropsPath()));
+    public PropertiesChangedListener(final ConfigurationRepository configurationRepository) {
+        super(configurationRepository, Collections.singletonList(new ConfigCenterNode().getPropsPath()));
     }
     
     @Override

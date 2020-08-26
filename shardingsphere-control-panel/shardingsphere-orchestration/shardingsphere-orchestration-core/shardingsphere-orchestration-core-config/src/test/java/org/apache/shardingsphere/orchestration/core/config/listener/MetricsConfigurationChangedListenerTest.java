@@ -48,7 +48,7 @@ public final class MetricsConfigurationChangedListenerTest {
     
     @Before
     public void setUp() {
-        metricsConfigurationChangedListener = new MetricsConfigurationChangedListener("test", configurationRepository);
+        metricsConfigurationChangedListener = new MetricsConfigurationChangedListener(configurationRepository);
     }
     
     @Test
