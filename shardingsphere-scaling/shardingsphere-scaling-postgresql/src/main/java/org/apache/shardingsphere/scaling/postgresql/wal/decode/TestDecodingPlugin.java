@@ -85,14 +85,14 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     }
     
     private AbstractRowEvent readWriteRowEvent(final ByteBuffer data) {
-        WriteRowEvent writeRowEvent = new WriteRowEvent();
+        WriteRowEvent result = new WriteRowEvent();
         List<Object> afterColumns = new LinkedList<>();
         
         while (data.hasRemaining()) {
             afterColumns.add(readColumn(data));
         }
-        writeRowEvent.setAfterRow(afterColumns);
-        return writeRowEvent;
+        result.setAfterRow(afterColumns);
+        return result;
     }
     
     private AbstractRowEvent readUpdateRowEvent(final ByteBuffer data) {

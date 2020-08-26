@@ -43,7 +43,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -205,8 +204,6 @@ public final class HeartbeatHandlerTest {
         if (enableExecuteQuery) {
             when(result.executeQuery()).thenReturn(resultSet);
             when(resultSet.next()).thenReturn(true);
-        } else {
-            doThrow(SQLException.class).when(result).executeQuery();
         }
         return result;
     }

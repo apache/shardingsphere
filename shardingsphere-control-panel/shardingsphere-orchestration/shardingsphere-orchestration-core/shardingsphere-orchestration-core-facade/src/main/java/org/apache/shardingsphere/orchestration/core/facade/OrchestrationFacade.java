@@ -66,11 +66,11 @@ public final class OrchestrationFacade implements AutoCloseable {
     public void init(final OrchestrationConfiguration config, final Collection<String> schemaNames) {
         isOverwrite = config.isOverwrite();
         repositoryFacade = new OrchestrationRepositoryFacade(config);
-        registryCenter = new RegistryCenter(config.getName(), repositoryFacade.getRegistryRepository());
-        configCenter = new ConfigCenter(config.getName(), repositoryFacade.getConfigurationRepository());
-        metaDataCenter = new MetaDataCenter(config.getName(), repositoryFacade.getConfigurationRepository());
-        listenerManager = new OrchestrationListenerManager(config.getName(),
-                repositoryFacade.getRegistryRepository(), repositoryFacade.getConfigurationRepository(), schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);
+        registryCenter = new RegistryCenter(repositoryFacade.getRegistryRepository());
+        configCenter = new ConfigCenter(repositoryFacade.getConfigurationRepository());
+        metaDataCenter = new MetaDataCenter(repositoryFacade.getConfigurationRepository());
+        listenerManager = new OrchestrationListenerManager(repositoryFacade.getRegistryRepository(),
+                repositoryFacade.getConfigurationRepository(), schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);
     }
     
     /**

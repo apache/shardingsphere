@@ -7,7 +7,7 @@ chapter = true
 
 ## News! The distributed scheduling project ElasticJob set sail again
 
-[ElasticJob](https://github.com/elasticjob) is a distributed scheduling solution, providing distributed task sharding, resilience scale up and down, auto discovery. And also supports multiple type of task such as time-driven, data-driven, long-term and temporary task. Main features are as follows:
+[ElasticJob](https://github.com/elasticjob) is a distributed scheduling solution that provieds distributed task sharding, elastic scaling, fully automated discovery. , multitasking based on time-driven, data-driven, resident and ad-hoc task types, task aggregation and dynamic resource provisioning, fault detection, auto-remediation, and failover.Main features are as follows:
 
  * Task aggregation
  * Dynamic resource scheduling
@@ -18,11 +18,11 @@ chapter = true
 
 ElasticJob can fully meet enterprise user's requirements on scheduling and processing ability for task management and batch jobs.
 
-ElasticJob began to open its source code at end of 2014. Since richness functions, quite completed documents and easy to use, it earns a lot of loyal users and good word of mouth in the past five years. ElasticJob is one of the most popular distributed scheduling framework and gains more than 5.8K star on github.
+ElasticJob has been open source since the end of 2014 and has experienced more than 5 years of development, with its feature richness, comprehensive documentation, high quality code, ease of use of the framework, has accumulated a large number of loyal users and a good reputation in the industry (5.8K star), has been one of the most popular projects in the field of distributed scheduling framework.
 
-In the last two years, the core developer spent much time maintaining and contributing to Apache ShardingSphere, which caused ElasticJob to develop slowly. But with the development of Apache ShardingSphere on distributed domain, we need a distributed scheduling component to support distributed management of multi cluster, data migration and scaling. So Apache ShardingSphere community put forward a proposal to make ElasticJob as a sub-project, that makes sure ElasticJob could be maintained and updated continuously in the future.
+Over the past two years, ElasticJob has slowed down its development due to the core developers' full commitment to developing and maintaining the Apache ShardingSphere project, among other reasons. However, as the Apache ShardingSphere project continues to expand in the distributed domain, and as users are interested in the distributed management of multi-data cluster environments and the elastic scaling of data migration, a powerful distributed scheduling component is needed. As a result, the Apache ShardingSphere community has planned to initiate a proposal for a long-term ongoing update and maintenance of ElasticJob as a sub-project.
 
-We are pleased to announce the good news at the first time, and there would be more news about ElasticJob in the future.
+We were the first to make this good news public, and we'll be back with more information about ElasticJob.
 
 ## References
 * [Discussion email](https://lists.apache.org/thread.html/rd6171e2065be6bcfbeb7aba7e5c876eeed04db585c6ab78fc03a581c%40%3Cdev.shardingsphere.apache.org%3E)

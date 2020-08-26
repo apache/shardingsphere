@@ -50,25 +50,25 @@ public final class MetaDataCenterTest {
     
     @Before
     public void setUp() {
-        metaDataCenter = new MetaDataCenter("test", repository);
+        metaDataCenter = new MetaDataCenter(repository);
     }
     
     @Test
     public void assertPersistMetaDataCenterNode() {
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(MetaDataJson.META_DATA, YamlRuleSchemaMetaData.class));
         metaDataCenter.persistMetaDataCenterNode("schema", ruleSchemaMetaData);
-        verify(repository).persist(eq("/test/metadata/schema"), anyString());
+        verify(repository).persist(eq("/metadata/schema"), anyString());
     }
     
     @Test
     public void assertLoadRuleSchemaMetaData() {
-        when(repository.get("/test/metadata/schema")).thenReturn(MetaDataJson.META_DATA);
+        when(repository.get("/metadata/schema")).thenReturn(MetaDataJson.META_DATA);
         Optional<RuleSchemaMetaData> optionalRuleSchemaMetaData = metaDataCenter.loadRuleSchemaMetaData("schema");
         assertTrue(optionalRuleSchemaMetaData.isPresent());
         Optional<RuleSchemaMetaData> empty = metaDataCenter.loadRuleSchemaMetaData("test");
         assertThat(empty, is(Optional.empty()));
         RuleSchemaMetaData ruleSchemaMetaData = optionalRuleSchemaMetaData.get();
-        verify(repository).get(eq("/test/metadata/schema"));
+        verify(repository).get(eq("/metadata/schema"));
         assertNotNull(ruleSchemaMetaData);
         assertNotNull(ruleSchemaMetaData.getConfiguredSchemaMetaData());
         assertNotNull(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap());

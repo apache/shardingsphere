@@ -40,7 +40,7 @@ public final class MetaDataListenerManagerTest {
     
     @Test
     public void assertInitListeners() {
-        MetaDataListenerManager actual = new MetaDataListenerManager("test", orchestrationRepository, Collections.singleton("sharding_db"));
+        MetaDataListenerManager actual = new MetaDataListenerManager(orchestrationRepository, Collections.singleton("sharding_db"));
         FieldUtil.setField(actual, "metaDataChangedListener", metaDataChangedListener);
         actual.initListeners();
         verify(metaDataChangedListener).watch(ChangedType.UPDATED);

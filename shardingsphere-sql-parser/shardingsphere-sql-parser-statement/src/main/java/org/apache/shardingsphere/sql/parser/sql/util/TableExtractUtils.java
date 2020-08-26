@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinedTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableFactorSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
@@ -33,7 +34,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByIt
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
@@ -224,12 +227,28 @@ public final class TableExtractUtils {
             if (((PredicateCompareRightValue) predicate.getRightValue()).getExpression() instanceof SubqueryExpressionSegment) {
                 result.addAll(TableExtractUtils.getTablesFromSelect(((SubqueryExpressionSegment) ((PredicateCompareRightValue) predicate.getRightValue()).getExpression()).getSubquery().getSelect()));
             }
-        } else {
-            if (predicate.getRightValue() instanceof ColumnSegment) {
-                Preconditions.checkState(((ColumnSegment) predicate.getRightValue()).getOwner().isPresent());
-                OwnerSegment segment = ((ColumnSegment) predicate.getRightValue()).getOwner().get();
-                result.add(new SimpleTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
+        }
+        if (predicate.getRightValue() instanceof PredicateInRightValue) {
+            for (ExpressionSegment expressionSegment : ((PredicateInRightValue) predicate.getRightValue()).getSqlExpressions()) {
+                if (expressionSegment instanceof SubqueryExpressionSegment) {
+                    result.addAll(TableExtractUtils.getTablesFromSelect(((SubqueryExpressionSegment) expressionSegment).getSubquery().getSelect()));
+                }
             }
+        } 
+        if (predicate.getRightValue() instanceof PredicateBetweenRightValue) {
+            if (((PredicateBetweenRightValue) predicate.getRightValue()).getBetweenExpression() instanceof SubqueryExpressionSegment) {
+                SelectStatement subquerySelect = ((SubqueryExpressionSegment) (((PredicateBetweenRightValue) predicate.getRightValue()).getBetweenExpression())).getSubquery().getSelect();
+                result.addAll(TableExtractUtils.getTablesFromSelect(subquerySelect));    
+            }
+            if (((PredicateBetweenRightValue) predicate.getRightValue()).getAndExpression() instanceof SubqueryExpressionSegment) {
+                SelectStatement subquerySelect = ((SubqueryExpressionSegment) (((PredicateBetweenRightValue) predicate.getRightValue()).getAndExpression())).getSubquery().getSelect();
+                result.addAll(TableExtractUtils.getTablesFromSelect(subquerySelect));
+            }
+        } 
+        if (predicate.getRightValue() instanceof ColumnSegment) {
+            Preconditions.checkState(((ColumnSegment) predicate.getRightValue()).getOwner().isPresent());
+            OwnerSegment segment = ((ColumnSegment) predicate.getRightValue()).getOwner().get();
+            result.add(new SimpleTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
         }
         return result;
     }

@@ -24,11 +24,11 @@ import static org.junit.Assert.assertThat;
 
 public final class MetaDataCenterNodeTest {
     
-    private final MetaDataCenterNode metaDataCenterNode = new MetaDataCenterNode("test");
+    private final MetaDataCenterNode metaDataCenterNode = new MetaDataCenterNode();
     
     @Test
     public void assertGetMetaDataCenterNodeFullPath() {
         assertThat(metaDataCenterNode.getMetaDataCenterNodeFullPath("schema"),
-                is("/test/metadata/schema"));
+                is("/metadata/schema"));
     }
 }

@@ -36,10 +36,10 @@ public final class OrchestrationListenerManager {
     
     private final MetaDataListenerManager metaDataListenerManager;
     
-    public OrchestrationListenerManager(final String name, final RegistryRepository registryRepository, final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
-        configurationListenerManager = new ConfigurationListenerManager(name, configurationRepository, schemaNames);
-        registryListenerManager = new RegistryListenerManager(name, registryRepository);
-        metaDataListenerManager = new MetaDataListenerManager(name, configurationRepository, schemaNames);
+    public OrchestrationListenerManager(final RegistryRepository registryRepository, final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
+        configurationListenerManager = new ConfigurationListenerManager(configurationRepository, schemaNames);
+        registryListenerManager = new RegistryListenerManager(registryRepository);
+        metaDataListenerManager = new MetaDataListenerManager(configurationRepository, schemaNames);
     }
     
     /**

@@ -59,7 +59,7 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     @Override
     public void init(final String name, final OrchestrationCenterConfiguration config) {
         etcdProperties = new EtcdProperties(props);
-        client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).build();
+        client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).namespace(ByteSequence.from(name, Charsets.UTF_8)).build();
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})

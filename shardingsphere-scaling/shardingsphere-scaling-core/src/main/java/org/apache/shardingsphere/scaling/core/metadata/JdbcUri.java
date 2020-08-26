@@ -75,7 +75,7 @@ public final class JdbcUri {
      * @return database name
      */
     public String getDatabase() {
-        return jdbcUri.getPath().replaceFirst("/", "");
+        return null == jdbcUri.getPath() ? "" : jdbcUri.getPath().replaceFirst("/", "");
     }
     
     /**

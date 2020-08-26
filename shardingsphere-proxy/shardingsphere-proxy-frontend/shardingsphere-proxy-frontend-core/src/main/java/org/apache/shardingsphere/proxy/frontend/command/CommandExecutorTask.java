@@ -22,7 +22,6 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.control.panel.spi.engine.SingletonFacadeEngine;
-import org.apache.shardingsphere.control.panel.spi.metrics.MetricsHandlerFacade;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStateHandler;
 import org.apache.shardingsphere.proxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.engine.CommandExecuteEngine;
@@ -66,17 +66,14 @@ public final class CommandExecutorTask implements Runnable {
     public void run() {
         RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
         rootInvokeHook.start();
-        Supplier<Boolean> histogramSupplier = null;
-        Optional<MetricsHandlerFacade> handlerFacade = SingletonFacadeEngine.buildMetrics();
-        if (handlerFacade.isPresent()) {
-            histogramSupplier = handlerFacade.get().histogramStartTimer(MetricsLabelEnum.REQUEST_LATENCY.getName());
-        }
+        Optional<Supplier<Boolean>> histogramSupplier = SingletonFacadeEngine.buildMetrics().map(facade -> facade.histogramStartTimer(MetricsLabelEnum.REQUEST_LATENCY.getName()));
         int connectionSize = 0;
         boolean isNeedFlush = false;
         try (BackendConnection backendConnection = this.backendConnection;
              PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message)) {
-            backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
-            backendConnection.getStateHandler().setRunningStatusIfNecessary();
+            ConnectionStateHandler stateHandler = backendConnection.getStateHandler();
+            stateHandler.waitUntilConnectionReleasedIfNecessary();
+            stateHandler.setRunningStatusIfNecessary();
             isNeedFlush = executeCommand(context, payload, backendConnection);
             connectionSize = backendConnection.getConnectionSize();
             // CHECKSTYLE:OFF
@@ -91,9 +88,7 @@ public final class CommandExecutorTask implements Runnable {
                 context.flush();
             }
             rootInvokeHook.finish(connectionSize);
-            if (null != histogramSupplier) {
-                histogramSupplier.get();
-            }
+            histogramSupplier.ifPresent(Supplier::get);
         }
     }
     

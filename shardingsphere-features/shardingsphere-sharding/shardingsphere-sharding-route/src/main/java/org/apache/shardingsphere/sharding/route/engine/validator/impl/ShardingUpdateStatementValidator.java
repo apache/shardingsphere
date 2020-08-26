@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -32,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 
 import java.util.Collection;
@@ -44,20 +48,21 @@ import java.util.Optional;
 public final class ShardingUpdateStatementValidator implements ShardingStatementValidator<UpdateStatement> {
     
     @Override
-    public void validate(final ShardingRule shardingRule, final SQLStatementContext<UpdateStatement> sqlStatementContext, final List<Object> parameters) {
+    public void preValidate(final ShardingRule shardingRule, final RouteContext routeContext, final ShardingSphereMetaData metaData) {
+        SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
         if (1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
-        UpdateStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        UpdateStatement sqlStatement = (UpdateStatement) sqlStatementContext.getSqlStatement();
         String tableName = sqlStatement.getTables().iterator().next().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
             String shardingColumn = each.getColumn().getIdentifier().getValue();
             if (shardingRule.isShardingColumn(shardingColumn, tableName)) {
-                Optional<Object> shardingColumnSetAssignmentValue = getShardingColumnSetAssignmentValue(each, parameters);
+                Optional<Object> shardingColumnSetAssignmentValue = getShardingColumnSetAssignmentValue(each, routeContext.getParameters());
                 Optional<Object> shardingValue = Optional.empty();
                 Optional<WhereSegment> whereSegmentOptional = sqlStatement.getWhere();
                 if (whereSegmentOptional.isPresent()) {
-                    shardingValue = getShardingValue(whereSegmentOptional.get(), parameters, shardingColumn);
+                    shardingValue = getShardingValue(whereSegmentOptional.get(), routeContext.getParameters(), shardingColumn);
                 }
                 if (shardingColumnSetAssignmentValue.isPresent() && shardingValue.isPresent() && shardingColumnSetAssignmentValue.get().equals(shardingValue.get())) {
                     continue;
@@ -66,7 +71,14 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
             }
         }
     }
-    
+
+    @Override
+    public void postValidate(final SQLStatement sqlStatement, final RouteResult routeResult) {
+        if (((UpdateStatement) sqlStatement).getLimit().isPresent() && routeResult.getRouteUnits().size() > 1) {
+            throw new ShardingSphereException("UPDATE ... LIMIT can not support sharding route to multiple data nodes.");
+        }
+    }
+
     private Optional<Object> getShardingColumnSetAssignmentValue(final AssignmentSegment assignmentSegment, final List<Object> parameters) {
         ExpressionSegment segment = assignmentSegment.getValue();
         int shardingSetAssignIndex = -1;

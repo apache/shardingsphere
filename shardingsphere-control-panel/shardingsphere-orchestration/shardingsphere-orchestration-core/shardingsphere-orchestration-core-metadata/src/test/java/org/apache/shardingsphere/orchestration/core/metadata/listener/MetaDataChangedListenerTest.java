@@ -41,12 +41,12 @@ public final class MetaDataChangedListenerTest {
     
     @Before
     public void setUp() {
-        metaDataChangedListener = new MetaDataChangedListener("test", orchestrationRepository, Collections.singleton("schema"));
+        metaDataChangedListener = new MetaDataChangedListener(orchestrationRepository, Collections.singleton("schema"));
     }
     
     @Test
     public void createOrchestrationEvent() {
-        DataChangedEvent event = new DataChangedEvent("/test/metadata/schema", MetaDataJson.META_DATA, ChangedType.UPDATED);
+        DataChangedEvent event = new DataChangedEvent("/metadata/schema", MetaDataJson.META_DATA, ChangedType.UPDATED);
         MetaDataChangedEvent metaDataChangedEvent = (MetaDataChangedEvent) metaDataChangedListener.createOrchestrationEvent(event);
         assertNotNull(metaDataChangedEvent);
         assertThat(metaDataChangedEvent.getSchemaNames(), is(Collections.singleton("schema")));

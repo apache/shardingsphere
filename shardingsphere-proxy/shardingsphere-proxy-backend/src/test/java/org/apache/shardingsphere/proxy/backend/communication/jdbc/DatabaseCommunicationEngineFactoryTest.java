@@ -17,15 +17,24 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
@@ -38,24 +47,30 @@ import static org.mockito.Mockito.when;
 
 public final class DatabaseCommunicationEngineFactoryTest {
     
-    private SchemaContext schemaContext;
-    
-    private BackendConnection backendConnection;
-    
     @Before
+    @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        schemaContext = mock(SchemaContext.class, RETURNS_DEEP_STUBS);
-        when(schemaContext.getSchema().getRules()).thenReturn(Collections.emptyList());
-        when(schemaContext.getRuntimeContext().getSqlParserEngine().parse(anyString(), anyBoolean())).thenReturn(mock(SQLStatement.class));
-    
+        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        schemaContexts.setAccessible(true);
+        schemaContexts.set(ProxySchemaContexts.getInstance(),
+                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        BackendConnection backendConnection = mock(BackendConnection.class);
+        when(backendConnection.getSchema()).thenReturn("schema");
         backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.isSerialExecute()).thenReturn(true);
+    }
+    
+    private Map<String, SchemaContext> getSchemaContextMap() {
+        SchemaContext result = mock(SchemaContext.class, RETURNS_DEEP_STUBS);
+        when(result.getSchema().getRules()).thenReturn(Collections.emptyList());
+        when(result.getRuntimeContext().getSqlParserEngine().parse(anyString(), anyBoolean())).thenReturn(mock(SQLStatement.class));
+        return Collections.singletonMap("schema", result);
     }
     
     @Test
     public void assertNewTextProtocolInstance() {
         BackendConnection backendConnection = mock(BackendConnection.class);
-        when(backendConnection.getSchema()).thenReturn(schemaContext);
+        when(backendConnection.getSchema()).thenReturn("schema");
         DatabaseCommunicationEngine engine =
                 DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(mock(SQLStatement.class), "schemaName", backendConnection);
         assertNotNull(engine);
@@ -65,7 +80,7 @@ public final class DatabaseCommunicationEngineFactoryTest {
     @Test
     public void assertNewBinaryProtocolInstance() {
         BackendConnection backendConnection = mock(BackendConnection.class);
-        when(backendConnection.getSchema()).thenReturn(schemaContext);
+        when(backendConnection.getSchema()).thenReturn("schema");
         DatabaseCommunicationEngine engine =
                 DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatement.class), "schemaName", Collections.emptyList(), backendConnection);
         assertNotNull(engine);

@@ -24,25 +24,25 @@ import static org.junit.Assert.assertThat;
 
 public final class RegistryCenterNodeTest {
     
-    private final RegistryCenterNode registryCenterNode = new RegistryCenterNode("test");
+    private final RegistryCenterNode registryCenterNode = new RegistryCenterNode();
     
     @Test
     public void assertGetInstancesNodeFullPath() {
-        assertThat(registryCenterNode.getInstancesNodeFullPath("testId"), is("/test/registry/instances/testId"));
+        assertThat(registryCenterNode.getInstancesNodeFullPath("testId"), is("/registry/instances/testId"));
     }
     
     @Test
     public void assertGetDataSourcesNodeFullRootPath() {
-        assertThat(registryCenterNode.getDataSourcesNodeFullRootPath(), is("/test/registry/datasources"));
+        assertThat(registryCenterNode.getDataSourcesNodeFullRootPath(), is("/registry/datasources"));
     }
     
     @Test
     public void assertGetDataSourcesNodeFullPath() {
-        assertThat(registryCenterNode.getDataSourcesNodeFullPath("sharding_db"), is("/test/registry/datasources/sharding_db"));
+        assertThat(registryCenterNode.getDataSourcesNodeFullPath("sharding_db"), is("/registry/datasources/sharding_db"));
     }
     
     @Test
     public void assertGetOrchestrationShardingSchema() {
-        assertThat(registryCenterNode.getOrchestrationShardingSchema("/test/registry/datasources/master_slave_db.slave_ds_0").getSchemaName(), is("master_slave_db"));
+        assertThat(registryCenterNode.getOrchestrationShardingSchema("/registry/datasources/master_slave_db.slave_ds_0").getSchemaName(), is("master_slave_db"));
     }
 }

@@ -40,13 +40,13 @@ public final class DataSourceStateChangedListenerTest {
     
     @Before
     public void setUp() {
-        dataSourceStateChangedListener = new DataSourceStateChangedListener("test", registryRepository);
+        dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository);
     }
     
     @Test
     public void assertCreateOrchestrationEvent() {
         OrchestrationSchema expected = new OrchestrationSchema("master_slave_db", "slave_ds_0");
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/registry/datasources/master_slave_db.slave_ds_0", "disabled", ChangedType.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/registry/datasources/master_slave_db.slave_ds_0", "disabled", ChangedType.UPDATED);
         assertThat(dataSourceStateChangedListener.createOrchestrationEvent(dataChangedEvent).getOrchestrationSchema().getSchemaName(), is(expected.getSchemaName()));
     }
 }

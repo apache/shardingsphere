@@ -56,7 +56,8 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
-    private volatile boolean isQuery;
+    @Getter
+    private volatile boolean isQueryResponse;
     
     @Getter
     private volatile boolean isUpdateResponse;
@@ -75,25 +76,29 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         if (ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
         }
-        BackendResponse backendResponse = textProtocolBackendHandler.execute();
-        if (backendResponse instanceof ErrorResponse) {
-            isErrorResponse = true;
-            return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
+        BackendResponse backendResponse = getBackendResponse();
+        if (backendResponse instanceof QueryResponse) {
+            isQueryResponse = true;
+            return createQueryPackets((QueryResponse) backendResponse);
         }
         if (backendResponse instanceof UpdateResponse) {
             isUpdateResponse = true;
             return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
-        isQuery = true;
-        return createQueryPackets((QueryResponse) backendResponse);
+        isErrorResponse = true;
+        return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
     }
     
-    private MySQLErrPacket createErrorPacket(final Exception cause) {
-        return MySQLErrPacketFactory.newInstance(1, cause);
-    }
-    
-    private MySQLOKPacket createUpdatePacket(final UpdateResponse updateResponse) {
-        return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
+    private BackendResponse getBackendResponse() {
+        BackendResponse result;
+        try {
+            result = textProtocolBackendHandler.execute();
+        // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+        // CHECKSTYLE:OFF
+            result = new ErrorResponse(ex);
+        }
+        return result;
     }
     
     private Collection<DatabasePacket<?>> createQueryPackets(final QueryResponse backendResponse) {
@@ -125,9 +130,12 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         return result;
     }
     
-    @Override
-    public boolean isQuery() {
-        return isQuery;
+    private MySQLOKPacket createUpdatePacket(final UpdateResponse updateResponse) {
+        return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
+    }
+    
+    private MySQLErrPacket createErrorPacket(final Exception cause) {
+        return MySQLErrPacketFactory.newInstance(1, cause);
     }
     
     @Override

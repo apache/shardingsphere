@@ -52,7 +52,7 @@ public final class OrchestrationListenerManagerTest {
     
     @Test
     public void assertInit() {
-        OrchestrationListenerManager actual = new OrchestrationListenerManager("test_name", registryRepository, configurationRepository, Collections.emptyList());
+        OrchestrationListenerManager actual = new OrchestrationListenerManager(registryRepository, configurationRepository, Collections.emptyList());
         FieldUtil.setField(actual, "configurationListenerManager", configurationListenerManager);
         FieldUtil.setField(actual, "registryListenerManager", registryListenerManager);
         FieldUtil.setField(actual, "metaDataListenerManager", metaDataListenerManager);

@@ -767,10 +767,10 @@
                             <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
                         </ignoreMethodAnnotations>
                         <excludes>
-                            <exclude>org/apache/shardingsphere/sql/parser/autogen/*.class</exclude>
-                            <exclude>org/apache/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/**/autogen/*.class</exclude>
                             <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
                             <exclude>org/apache/shardingsphere/test/**/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/proxy/Bootstrap.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>

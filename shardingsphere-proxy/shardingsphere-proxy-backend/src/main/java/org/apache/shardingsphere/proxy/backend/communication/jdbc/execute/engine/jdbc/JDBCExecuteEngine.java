@@ -76,14 +76,14 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     @Override
-    public ExecutionContext execute(final String sql) throws SQLException {
-        return jdbcExecutorWrapper.execute(sql);
+    public ExecutionContext generateExecutionContext(final String sql) throws SQLException {
+        return jdbcExecutorWrapper.generateExecutionContext(sql);
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
-        SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = executionContext.getSqlStatementContext();
         boolean isReturnGeneratedKeys = sqlStatementContext.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<ExecuteResult> executeResults;
@@ -95,8 +95,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
                     new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
         } else {
             int maxConnectionsSizePerQuery = ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-            Collection<InputGroup<RawSQLExecuteUnit>> inputGroups = new RawExecuteGroupEngine(
-                    maxConnectionsSizePerQuery, backendConnection.getSchema().getSchema().getRules()).generate(executionContext.getExecutionUnits());
+            Collection<InputGroup<RawSQLExecuteUnit>> inputGroups = new RawExecuteGroupEngine(maxConnectionsSizePerQuery,
+                    ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema()).getSchema().getRules()).generate(executionContext.getExecutionUnits());
             // TODO handle query header
             executeResults = rawExecutor.execute(inputGroups, new RawSQLExecutorCallback());
         }

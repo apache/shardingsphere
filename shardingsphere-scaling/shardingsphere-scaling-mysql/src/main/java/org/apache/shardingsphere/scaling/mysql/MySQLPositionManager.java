@@ -61,7 +61,7 @@ public final class MySQLPositionManager extends BasePositionManager<BinlogPositi
             binlogPosition.setServerId(getServerId(connection));
             setPosition(binlogPosition);
         } catch (final SQLException ex) {
-            throw new RuntimeException("markPosition error", ex);
+            throw new RuntimeException("init position failed.", ex);
         }
     }
     

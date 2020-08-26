@@ -74,8 +74,7 @@ public final class TestOrchestrationSchemaContexts extends OrchestrationSchemaCo
         return result;
     }
     
-    @Override
-    public Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
+    private Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
         Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
         for (Map.Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesMap.entrySet()) {
             result.put(entry.getKey(), getDataSourceParameterMap(entry.getValue()));
@@ -103,7 +102,7 @@ public final class TestOrchestrationSchemaContexts extends OrchestrationSchemaCo
     }
     
     private DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfig) {
-        bindAlias(dataSourceConfig);
+        bindSynonym(dataSourceConfig);
         DataSourceParameter result = new DataSourceParameter();
         for (Field each : result.getClass().getDeclaredFields()) {
             try {
@@ -117,8 +116,8 @@ public final class TestOrchestrationSchemaContexts extends OrchestrationSchemaCo
         return result;
     }
     
-    private static void bindAlias(final DataSourceConfiguration dataSourceConfiguration) {
-        dataSourceConfiguration.addPropertyAlias("url", "jdbcUrl");
-        dataSourceConfiguration.addPropertyAlias("user", "username");
+    private static void bindSynonym(final DataSourceConfiguration dataSourceConfiguration) {
+        dataSourceConfiguration.addPropertySynonym("url", "jdbcUrl");
+        dataSourceConfiguration.addPropertySynonym("user", "username");
     }
 }
