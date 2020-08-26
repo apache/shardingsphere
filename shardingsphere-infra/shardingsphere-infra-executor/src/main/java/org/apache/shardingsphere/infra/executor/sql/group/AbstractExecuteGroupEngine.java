@@ -43,6 +43,7 @@ public abstract class AbstractExecuteGroupEngine<T> implements ExecuteGroupEngin
         ShardingSphereServiceLoader.register(ExecuteGroupDecorator.class);
     }
     
+    @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, ExecuteGroupDecorator> decorators;
     
     protected AbstractExecuteGroupEngine(final Collection<ShardingSphereRule> rules) {
@@ -71,7 +72,7 @@ public abstract class AbstractExecuteGroupEngine<T> implements ExecuteGroupEngin
     
     protected abstract List<InputGroup<T>> generateSQLExecuteGroups(String dataSourceName, List<SQLUnit> sqlUnits) throws SQLException;
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<InputGroup<T>> decorate(final Collection<InputGroup<T>> inputGroups) {
         Collection<InputGroup<T>> result = inputGroups;
         for (Entry<ShardingSphereRule, ExecuteGroupDecorator> each : decorators.entrySet()) {
