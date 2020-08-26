@@ -46,7 +46,7 @@ import java.util.List;
  */
 public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<ExecuteResult> {
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     private final BackendConnection backendConnection;
     
@@ -58,7 +58,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     
     private boolean hasMetaData;
 
-    public ProxySQLExecutorCallback(final SQLStatementContext sqlStatementContext, final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper,
+    public ProxySQLExecutorCallback(final SQLStatementContext<?> sqlStatementContext, final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper,
                                     final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
         super(ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType(), isExceptionThrown);
         this.sqlStatementContext = sqlStatementContext;
@@ -88,7 +88,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
         return new ExecuteUpdateResult(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
     }
     
-    private List<QueryHeader> getQueryHeaders(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
+    private List<QueryHeader> getQueryHeaders(final SQLStatementContext<?> sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
         if (sqlStatementContext instanceof SelectStatementContext) {
             return getQueryHeaders(((SelectStatementContext) sqlStatementContext).getProjectionsContext(), resultSetMetaData);
         }
