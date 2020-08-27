@@ -36,9 +36,6 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.masterslave.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
-import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
@@ -172,18 +169,6 @@ public final class ConfigCenter {
         return !configuration.getTables().isEmpty() || null != configuration.getDefaultTableShardingStrategy() || !configuration.getAutoTables().isEmpty();
     }
     
-    /**
-     * Persist metrics configuration.
-     *
-     * @param metricsConfiguration  metrics configuration.
-     * @param isOverwrite is overwrite config center's configuration
-     */
-    public void persistMetricsConfiguration(final MetricsConfiguration metricsConfiguration, final boolean isOverwrite) {
-        if (null != metricsConfiguration && isOverwrite) {
-            repository.persist(node.getMetricsPath(), YamlEngine.marshal(new MetricsConfigurationYamlSwapper().swapToYamlConfiguration(metricsConfiguration)));
-        }
-    }
-    
     private void persistAuthentication(final Authentication authentication, final boolean isOverwrite) {
         if (null != authentication && isOverwrite) {
             repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication)));
@@ -238,16 +223,6 @@ public final class ConfigCenter {
     public Collection<RuleConfiguration> loadRuleConfigurations(final String schemaName) {
         return hasRuleConfiguration(schemaName) ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
                 YamlEngine.unmarshal(repository.get(node.getRulePath(schemaName)), YamlRootRuleConfigurations.class).getRules()) : new LinkedList<>();
-    }
-    
-    /**
-     * Load metrics configuration.
-     *
-     * @return metrics configuration
-     */
-    public MetricsConfiguration loadMetricsConfiguration() {
-        return Strings.isNullOrEmpty(repository.get(node.getMetricsPath())) ? null
-            : new MetricsConfigurationYamlSwapper().swapToObject(YamlEngine.unmarshal(repository.get(node.getMetricsPath()), YamlMetricsConfiguration.class));
     }
     
     /**

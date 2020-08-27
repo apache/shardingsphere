@@ -37,11 +37,8 @@ import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.facade.MetricsTrackerManagerFacade;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.MetricsConfigurationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
@@ -199,21 +196,6 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     public synchronized void renew(final AuthenticationChangedEvent event) {
         schemaContexts =
                 new StandardSchemaContexts(schemaContexts.getSchemaContexts(), event.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
-    }
-    
-    /**
-     * Renew metrics configuration.
-     *
-     * @param event metrics configuration changed event
-     */
-    @Subscribe
-    public synchronized void renew(final MetricsConfigurationChangedEvent event) {
-        MetricsConfiguration metricsConfiguration = event.getMetricsConfiguration();
-        if (metricsConfiguration.getEnable()) {
-            MetricsTrackerManagerFacade.restart(metricsConfiguration);
-        } else {
-            MetricsTrackerManagerFacade.close();
-        }
     }
     
     /**

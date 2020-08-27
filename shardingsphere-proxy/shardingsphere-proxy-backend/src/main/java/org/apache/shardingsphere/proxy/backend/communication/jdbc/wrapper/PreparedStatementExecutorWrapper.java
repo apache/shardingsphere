@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.metrics.MetricsUtils;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -67,7 +66,6 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
                     new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(schema.getSchema().getDataSources().keySet().iterator().next(), new SQLUnit(sql, parameters)));
         }
         RouteContext routeContext = new DataNodeRouter(schema.getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).route(sqlStatement, sql, parameters);
-        collectRouteMetrics(routeContext, rules);
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schema.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules);
         SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(sql, new ArrayList<>(parameters), routeContext);
         return new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(schema.getSchema().getMetaData(), sqlRewriteResult));
@@ -81,10 +79,5 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     @Override
     public boolean execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return ((PreparedStatement) statement).execute();
-    }
-    
-    private void collectRouteMetrics(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
-        MetricsUtils.collectRouteUnitMetrics(routeContext.getRouteResult().getRouteUnits());
-        MetricsUtils.collectShardingRuleMetrics(routeContext, rules);
     }
 }

@@ -31,9 +31,6 @@ import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
-import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -57,9 +54,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -85,8 +80,6 @@ public final class ConfigCenterTest {
     private static final String PROPS_YAML = "sql.show: false\n";
     
     private static final String DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL = "yaml/configCenter/data-source-init-sql.yaml";
-    
-    private static final String DATA_METRICS_YAML = "yaml/configCenter/data-metrics.yaml";
     
     @Mock
     private ConfigurationRepository configurationRepository;
@@ -381,19 +374,6 @@ public final class ConfigCenterTest {
     }
     
     @Test
-    public void assertLoadMetricsConfiguration() {
-        when(configurationRepository.get("/config/metrics")).thenReturn(readYAML(DATA_METRICS_YAML));
-        ConfigCenter configurationService = new ConfigCenter(configurationRepository);
-        MetricsConfiguration actual = configurationService.loadMetricsConfiguration();
-        assertNotNull(actual);
-        assertThat(actual.getMetricsName(), is("prometheus"));
-        assertThat(actual.getPort(), is(9190));
-        assertThat(actual.getHost(), is("127.0.0.1"));
-        assertTrue(actual.getAsync());
-        assertTrue(actual.getEnable());
-    }
-    
-    @Test
     public void assertLoadProperties() {
         when(configurationRepository.get("/config/props")).thenReturn(PROPS_YAML);
         ConfigCenter configurationService = new ConfigCenter(configurationRepository);
@@ -443,15 +423,6 @@ public final class ConfigCenterTest {
     private String readYAML(final String yamlFile) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
                 .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
-    }
-    
-    @Test
-    public void assertPersistMetricsConfiguration() {
-        MetricsConfiguration metricsConfiguration = new MetricsConfigurationYamlSwapper()
-                .swapToObject(YamlEngine.unmarshal(readYAML(DATA_METRICS_YAML), YamlMetricsConfiguration.class));
-        ConfigCenter configurationService = new ConfigCenter(configurationRepository);
-        configurationService.persistMetricsConfiguration(metricsConfiguration, true);
-        verify(configurationRepository, times(0)).persist(eq("/config/metrics"), eq(readYAML(DATA_METRICS_YAML)));
     }
     
     @Test
