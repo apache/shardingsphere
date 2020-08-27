@@ -219,7 +219,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     @Subscribe
     public synchronized void renew(final RuleConfigurationsChangedEvent event) throws SQLException {
         Map<String, SchemaContext> newSchemaContexts = new HashMap<>(schemaContexts.getSchemaContexts());
-        String schemaName = event.getShardingSchemaName();
+        String schemaName = event.getSchemaName();
         newSchemaContexts.remove(schemaName);
         newSchemaContexts.put(schemaName, getChangedSchemaContext(schemaContexts.getSchemaContexts().get(schemaName), event.getRuleConfigurations()));
         schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
