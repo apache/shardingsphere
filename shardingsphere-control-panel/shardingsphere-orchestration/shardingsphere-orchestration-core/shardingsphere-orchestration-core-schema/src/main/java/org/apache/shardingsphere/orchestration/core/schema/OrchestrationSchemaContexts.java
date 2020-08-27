@@ -147,14 +147,14 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     /**
      * Renew to add new schema.
      *
-     * @param schemaAddedEvent schema add changed event
+     * @param event schema add event
      * @throws Exception exception
      */
     @Subscribe
-    public synchronized void renew(final SchemaAddedEvent schemaAddedEvent) throws Exception {
-        String schemaName = schemaAddedEvent.getSchemaName();
+    public synchronized void renew(final SchemaAddedEvent event) throws Exception {
+        String schemaName = event.getSchemaName();
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContexts());
-        schemas.put(schemaName, getAddedSchemaContext(schemaAddedEvent));
+        schemas.put(schemaName, getAddedSchemaContext(event));
         schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
         orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.getSchemaContexts().get(schemaName).getSchema().getMetaData().getSchema());
     }
@@ -162,12 +162,12 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     /**
      * Renew to delete new schema.
      *
-     * @param schemaDeletedEvent schema delete changed event
+     * @param event schema delete event
      */
     @Subscribe
-    public synchronized void renew(final SchemaDeletedEvent schemaDeletedEvent) {
+    public synchronized void renew(final SchemaDeletedEvent event) {
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContexts());
-        schemas.remove(schemaDeletedEvent.getSchemaName());
+        schemas.remove(event.getSchemaName());
         schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
     }
     
