@@ -86,10 +86,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         }
     }
     
-    private void disableDataSources(final StatusContainedRule statusContainedRule, final Collection<String> disabledDataSources, final String schemaName) {
-        disabledDataSources.stream().filter(each -> each.startsWith(schemaName))
-                .map(this::getDataSourceName).forEach(each -> statusContainedRule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true))
-        );
+    private void disableDataSources(final StatusContainedRule rule, final Collection<String> disabledDataSources, final String schemaName) {
+        disabledDataSources.stream().filter(each -> each.startsWith(schemaName)).map(this::getDataSourceName).forEach(each -> rule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true)));
     }
     
     private String getDataSourceName(final String disableDataSource) {
