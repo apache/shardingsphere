@@ -198,16 +198,16 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final MetaDataChangedEvent event) {
-        Map<String, SchemaContext> schemaContexts = new HashMap<>(this.schemaContexts.getSchemaContexts().size(), 1);
-        for (Entry<String, SchemaContext> entry : this.schemaContexts.getSchemaContexts().entrySet()) {
+        Map<String, SchemaContext> newSchemaContexts = new HashMap<>(schemaContexts.getSchemaContexts().size(), 1);
+        for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContexts().entrySet()) {
             String schemaName = entry.getKey();
             SchemaContext oldSchemaContext = entry.getValue();
             SchemaContext newSchemaContext = event.getSchemaNames().contains(schemaName) 
                     ? new SchemaContext(oldSchemaContext.getName(), getChangedShardingSphereSchema(oldSchemaContext.getSchema(), event.getRuleSchemaMetaData()), oldSchemaContext.getRuntimeContext())
                     : oldSchemaContext;
-            schemaContexts.put(schemaName, newSchemaContext);
+            newSchemaContexts.put(schemaName, newSchemaContext);
         }
-        this.schemaContexts = new StandardSchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps(), this.schemaContexts.getDatabaseType());
+        schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
     }
     
     /**
