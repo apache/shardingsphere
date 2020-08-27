@@ -85,7 +85,7 @@ public final class SchemaChangedListenerTest {
         Optional<OrchestrationEvent> actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(DataSourceChangedEvent.class));
-        assertThat(((DataSourceChangedEvent) actual.get()).getShardingSchemaName(), is("sharding_db"));
+        assertThat(((DataSourceChangedEvent) actual.get()).getSchemaName(), is("sharding_db"));
     }
     
     @Test

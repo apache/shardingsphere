@@ -227,6 +227,21 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     }
     
     /**
+     * Renew data source configuration.
+     *
+     * @param event data source changed event.
+     * @throws Exception exception
+     */
+    @Subscribe
+    public synchronized void renew(final DataSourceChangedEvent event) throws Exception {
+        String schemaName = event.getSchemaName();
+        Map<String, SchemaContext> newSchemaContexts = new HashMap<>(schemaContexts.getSchemaContexts());
+        newSchemaContexts.remove(schemaName);
+        newSchemaContexts.put(schemaName, getChangedSchemaContext(schemaContexts.getSchemaContexts().get(schemaName), event.getDataSourceConfigurations()));
+        schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+    }
+    
+    /**
      * Renew disabled data source names.
      *
      * @param event disabled state changed event
@@ -240,21 +255,6 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
                 ((StatusContainedRule) each).updateRuleStatus(new DataSourceNameDisabledEvent(orchestrationSchema.getDataSourceName(), event.isDisabled()));
             }
         }
-    }
-    
-    /**
-     * Renew data source configuration.
-     *
-     * @param event data source changed event.
-     * @throws Exception exception
-     */
-    @Subscribe
-    public synchronized void renew(final DataSourceChangedEvent event) throws Exception {
-        String schemaName = event.getShardingSchemaName();
-        Map<String, SchemaContext> schemaContexts = new HashMap<>(this.schemaContexts.getSchemaContexts());
-        schemaContexts.remove(schemaName);
-        schemaContexts.put(schemaName, getChangedSchemaContext(this.schemaContexts.getSchemaContexts().get(schemaName), event.getDataSourceConfigurations()));
-        this.schemaContexts = new StandardSchemaContexts(schemaContexts, this.schemaContexts.getAuthentication(), this.schemaContexts.getProps(), this.schemaContexts.getDatabaseType());
     }
     
     /**
