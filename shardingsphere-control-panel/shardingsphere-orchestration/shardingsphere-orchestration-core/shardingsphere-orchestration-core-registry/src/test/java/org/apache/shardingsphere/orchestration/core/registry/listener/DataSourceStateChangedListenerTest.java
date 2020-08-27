@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.core.registry.listener;
 
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
+import org.apache.shardingsphere.orchestration.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.schema.OrchestrationSchema;
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
@@ -27,8 +29,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DataSourceStateChangedListenerTest {
@@ -45,8 +50,9 @@ public final class DataSourceStateChangedListenerTest {
     
     @Test
     public void assertCreateOrchestrationEvent() {
-        OrchestrationSchema expected = new OrchestrationSchema("master_slave_db", "slave_ds_0");
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/registry/datasources/master_slave_db.slave_ds_0", "disabled", ChangedType.UPDATED);
-        assertThat(dataSourceStateChangedListener.createOrchestrationEvent(dataChangedEvent).getOrchestrationSchema().getSchemaName(), is(expected.getSchemaName()));
+        Optional<OrchestrationEvent> actual = dataSourceStateChangedListener.createOrchestrationEvent(
+                new DataChangedEvent("/registry/datasources/master_slave_db.slave_ds_0", "disabled", ChangedType.UPDATED));
+        assertTrue(actual.isPresent());
+        assertThat(((DisabledStateChangedEvent) actual.get()).getOrchestrationSchema().getSchemaName(), is(new OrchestrationSchema("master_slave_db", "slave_ds_0").getSchemaName()));
     }
 }

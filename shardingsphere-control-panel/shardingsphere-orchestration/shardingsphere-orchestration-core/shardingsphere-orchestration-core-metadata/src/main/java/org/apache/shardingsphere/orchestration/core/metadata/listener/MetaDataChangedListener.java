@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Meta data changed listener.
@@ -43,8 +44,8 @@ public final class MetaDataChangedListener extends PostOrchestrationRepositoryEv
     }
     
     @Override
-    protected OrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
+    protected Optional<OrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlRuleSchemaMetaData.class));
-        return new MetaDataChangedEvent(schemaNames, ruleSchemaMetaData);
+        return Optional.of(new MetaDataChangedEvent(schemaNames, ruleSchemaMetaData));
     }
 }

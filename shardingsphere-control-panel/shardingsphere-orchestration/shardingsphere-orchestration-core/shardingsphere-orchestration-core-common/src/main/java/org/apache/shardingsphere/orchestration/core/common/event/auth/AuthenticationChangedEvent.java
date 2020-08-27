@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.common.event;
+package org.apache.shardingsphere.orchestration.core.common.event.auth;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 
 /**
- * Master slave rule changed event.
+ * Authentication changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MasterSlaveRuleChangedEvent implements OrchestrationEvent {
+public final class AuthenticationChangedEvent implements OrchestrationEvent {
     
-    private final String shardingSchemaName;
-    
-    private final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration;
+    private final Authentication authentication;
 }
