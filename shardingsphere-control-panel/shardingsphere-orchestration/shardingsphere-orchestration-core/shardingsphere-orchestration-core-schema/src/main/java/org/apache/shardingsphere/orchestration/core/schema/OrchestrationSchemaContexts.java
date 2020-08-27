@@ -305,15 +305,15 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         oldSchemaContext.getSchema().closeDataSources(deletedDataSources);
         oldSchemaContext.getSchema().closeDataSources(modifiedDataSources.keySet());
         oldSchemaContext.getRuntimeContext().getTransactionManagerEngine().close();
-        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldSchemaContext.getName(), getNewDataSources(oldSchemaContext.getSchema().getDataSources(), 
-                deletedDataSources, getAddedDataSources(oldSchemaContext, newDataSources), modifiedDataSources));
+        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldSchemaContext.getName(), 
+                getNewDataSources(oldSchemaContext.getSchema().getDataSources(), getAddedDataSources(oldSchemaContext, newDataSources), modifiedDataSources, deletedDataSources));
         return new SchemaContextsBuilder(schemaContexts.getDatabaseType(), dataSourcesMap,
                 Collections.singletonMap(oldSchemaContext.getName(), oldSchemaContext.getSchema().getConfigurations()), schemaContexts.getAuthentication(), 
                 schemaContexts.getProps().getProps()).build().getSchemaContexts().get(oldSchemaContext.getName());
     }
     
-    private Map<String, DataSource> getNewDataSources(final Map<String, DataSource> oldDataSources, final Collection<String> deletedDataSources, 
-                                                      final Map<String, DataSource> addedDataSources, final Map<String, DataSource> modifiedDataSources) {
+    private Map<String, DataSource> getNewDataSources(final Map<String, DataSource> oldDataSources, 
+                                                      final Map<String, DataSource> addedDataSources, final Map<String, DataSource> modifiedDataSources, final Collection<String> deletedDataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(oldDataSources);
         result.keySet().removeAll(deletedDataSources);
         result.keySet().removeAll(modifiedDataSources.keySet());
