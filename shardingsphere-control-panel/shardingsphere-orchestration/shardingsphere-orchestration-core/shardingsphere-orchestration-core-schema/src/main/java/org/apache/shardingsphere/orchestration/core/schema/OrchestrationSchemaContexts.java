@@ -196,7 +196,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     /**
      * Renew meta data of the schema.
      *
-     * @param event meta data changed event.
+     * @param event meta data changed event
      */
     @Subscribe
     public synchronized void renew(final MetaDataChangedEvent event) {
@@ -215,7 +215,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     /**
      * Renew rule configurations.
      *
-     * @param ruleConfigurationsChangedEvent rule configurations changed event.
+     * @param ruleConfigurationsChangedEvent rule configurations changed event
      * @throws Exception exception
      */
     @Subscribe
