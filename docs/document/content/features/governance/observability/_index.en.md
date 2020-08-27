@@ -10,4 +10,3 @@ chapter = true
 This chapter mainly introduces the features of the observability:
 
 * APM Integration
-* Metrics

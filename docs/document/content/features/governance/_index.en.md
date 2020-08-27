@@ -21,7 +21,7 @@ On the other hand, the unified coordination and the synchronization of policies 
 
 At the same time, since the governance function itself can use appropriate third-party components as basic services, we need to abstract a unified interface, unify the standard calling APIs of various components and dock to the governance function module.
 
-Finally, for the requirements of manageability and observability, we need to improve the functions of querying, operating and controlling the system through the UI, further improving the support for tracing and APM, realizing the monitoring of Metric indicators and the support with Prometheus and Grafana for real-time monitoring.
+Finally, for the requirements of manageability and observability, we need to improve the functions of querying, operating and controlling the system through the UI, further improving the support for tracing and APM.
 
 ## Goal
 
@@ -33,5 +33,4 @@ For the governance function, the goals are as follows:
 
 For observability, the goals are as follows:
 
-- Support OpenTracing/Skywalking integration and realize call chain tracking;
-- Implement Metric support, connect Prometheus and Grafana and realize visual display of monitoring indicators.
+- Support OpenTracing/Skywalking integration and realize call chain tracking.
