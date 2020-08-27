@@ -46,8 +46,6 @@ public final class ConfigCenterNode {
     
     private static final String PROPS_NODE = "props";
     
-    private static final String METRICS_NODE = "metrics";
-    
     private static final String COMMA_SEPARATOR = ",";
     
     private static final String PATH_SEPARATOR = "/";
@@ -153,14 +151,5 @@ public final class ConfigCenterNode {
             result.add(getDataSourcePath(schemaName));
         }
         return result;
-    }
-    
-    /**
-     * Get metrics node path.
-     *
-     * @return metrics node path
-     */
-    public String getMetricsPath() {
-        return getFullPath(METRICS_NODE);
     }
 }
