@@ -29,6 +29,7 @@ public final class PostgreSQLAuthenticationMD5PasswordPacket implements PostgreS
     
     private static final int AUTH_REQ_MD5 = 5;
     
+    @Getter
     private final byte[] md5Salt;
     
     @Getter
