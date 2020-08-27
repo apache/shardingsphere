@@ -45,7 +45,7 @@ public final class RegistryCenter {
      * Persist instance online.
      */
     public void persistInstanceOnline() {
-        repository.persistEphemeral(node.getInstancesNodeFullPath(instance.getInstanceId()), "state: " + RegistryCenterNodeStatus.ONLINE);
+        repository.persistEphemeral(node.getInstancesNodeFullPath(instance.getInstanceId()), "");
     }
     
     /**
