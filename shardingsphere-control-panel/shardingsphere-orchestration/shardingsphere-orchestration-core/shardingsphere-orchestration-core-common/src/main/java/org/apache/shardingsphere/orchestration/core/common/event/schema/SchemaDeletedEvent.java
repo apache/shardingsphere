@@ -28,5 +28,5 @@ import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEv
 @Getter
 public final class SchemaDeletedEvent implements OrchestrationEvent {
     
-    private final String shardingSchemaName;
+    private final String schemaName;
 }

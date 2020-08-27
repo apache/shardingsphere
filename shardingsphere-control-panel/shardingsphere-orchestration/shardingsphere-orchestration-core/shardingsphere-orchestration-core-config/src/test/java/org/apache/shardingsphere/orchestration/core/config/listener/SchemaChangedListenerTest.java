@@ -184,7 +184,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/logic_db/datasource", dataSource, ChangedType.DELETED);
         OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaDeletedEvent.class));
-        assertThat(((SchemaDeletedEvent) actual).getShardingSchemaName(), is("logic_db"));
+        assertThat(((SchemaDeletedEvent) actual).getSchemaName(), is("logic_db"));
     }
     
     @Test
@@ -252,7 +252,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema", "sharding_db,masterslave_db", ChangedType.UPDATED);
         OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaDeletedEvent.class));
-        assertThat(((SchemaDeletedEvent) actual).getShardingSchemaName(), is("encrypt_db"));
+        assertThat(((SchemaDeletedEvent) actual).getSchemaName(), is("encrypt_db"));
     }
     
     @Test

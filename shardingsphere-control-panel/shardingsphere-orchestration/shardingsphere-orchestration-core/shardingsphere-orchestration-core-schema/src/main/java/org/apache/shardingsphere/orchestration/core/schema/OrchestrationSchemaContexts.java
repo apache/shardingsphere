@@ -167,7 +167,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     @Subscribe
     public synchronized void renew(final SchemaDeletedEvent schemaDeletedEvent) {
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContexts());
-        schemas.remove(schemaDeletedEvent.getShardingSchemaName());
+        schemas.remove(schemaDeletedEvent.getSchemaName());
         schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
     }
     
