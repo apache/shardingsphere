@@ -62,8 +62,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Control panel subscriber.
- * 
+ * Orchestration schema contexts.
  */
 public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     
