@@ -56,14 +56,11 @@
         </sharding:table-rules>
     </sharding:rule>
     
-    <shardingsphere:data-source id="simpleShardingDataSource" data-source-names="dbtbl_0" rule-refs="simpleShardingDataSourceShardingRule" />
-    
     <sharding:rule id="shardingRuleWithAttributesDataSourceShardingRule" default-database-strategy-ref="standardStrategy" default-table-strategy-ref="inlineStrategy" default-key-generate-strategy-ref="keyGenerateStrategy">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" />
         </sharding:table-rules>
     </sharding:rule>
-    <shardingsphere:data-source id="shardingRuleWithAttributesDataSource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="shardingRuleWithAttributesDataSourceShardingRule" />
 
     <sharding:rule id="tableRuleWithAttributesDataSourceShardingRule">
         <sharding:table-rules>
@@ -71,16 +68,12 @@
         </sharding:table-rules>
     </sharding:rule>
     
-    <shardingsphere:data-source id="tableRuleWithAttributesDataSource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="tableRuleWithAttributesDataSourceShardingRule" />
-    
     <sharding:rule id="multiTableRulesDataSourceShardingRule">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" />
             <sharding:table-rule logic-table="t_order_item" />
         </sharding:table-rules>
     </sharding:rule>
-    
-    <shardingsphere:data-source id="multiTableRulesDataSource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiTableRulesDataSourceShardingRule" />
     
     <sharding:rule id="bindingTableRuleDatasourceShardingRule">
         <sharding:table-rules>
@@ -91,8 +84,6 @@
             <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
         </sharding:binding-table-rules>
     </sharding:rule>
-    
-    <shardingsphere:data-source id="bindingTableRuleDatasource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="bindingTableRuleDatasourceShardingRule" />
     
     <sharding:rule id="multiBindingTableRulesDatasourceShardingRule">
         <sharding:table-rules>
@@ -107,8 +98,6 @@
         </sharding:binding-table-rules>
     </sharding:rule>
     
-    <shardingsphere:data-source id="multiBindingTableRulesDatasource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBindingTableRulesDatasourceShardingRule" />
-    
     <sharding:rule id="broadcastTableRuleDatasourceShardingRule">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" />
@@ -121,8 +110,6 @@
             <sharding:broadcast-table-rule table="t_config" />
         </sharding:broadcast-table-rules>
     </sharding:rule>
-    
-    <shardingsphere:data-source id="broadcastTableRuleDatasource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="broadcastTableRuleDatasourceShardingRule" />
     
     <sharding:rule id="multiBroadcastTableRulesDatasourceShardingRule">
         <sharding:table-rules>
@@ -138,19 +125,9 @@
         </sharding:broadcast-table-rules>
     </sharding:rule>
     
-    <shardingsphere:data-source id="multiBroadcastTableRulesDatasource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBroadcastTableRulesDatasourceShardingRule" />
-    
     <sharding:rule id="propsDataSourceShardingRule">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" />
         </sharding:table-rules>
     </sharding:rule>
-    
-    <shardingsphere:data-source id="propsDataSource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="propsDataSourceShardingRule">
-        <props>
-            <prop key="sql.show">${sql_show}</prop>
-            <prop key="executor.size">10</prop>
-            <prop key="foo">bar</prop>
-        </props>
-    </shardingsphere:data-source>
 </beans>
