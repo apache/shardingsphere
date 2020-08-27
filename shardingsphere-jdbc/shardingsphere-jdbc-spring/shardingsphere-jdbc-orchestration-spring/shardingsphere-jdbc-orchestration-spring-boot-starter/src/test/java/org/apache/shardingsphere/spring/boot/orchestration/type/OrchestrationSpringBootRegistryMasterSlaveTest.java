@@ -19,8 +19,8 @@ package org.apache.shardingsphere.spring.boot.orchestration.type;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
+import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.spring.boot.orchestration.registry.TestOrchestrationRepository;
 import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
 import org.junit.BeforeClass;
@@ -69,10 +69,10 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
     @SneakyThrows(ReflectiveOperationException.class)
     public void assertWithMasterSlaveDataSource() {
         assertTrue(dataSource instanceof OrchestrationShardingSphereDataSource);
-        Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("dataSource");
+        Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) field.get(dataSource);
-        for (DataSource each : shardingSphereDataSource.getDataSourceMap().values()) {
+        SchemaContexts schemaContexts = (SchemaContexts) field.get(dataSource);
+        for (DataSource each : schemaContexts.getDefaultSchemaContext().getSchema().getDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("sa"));
         }
