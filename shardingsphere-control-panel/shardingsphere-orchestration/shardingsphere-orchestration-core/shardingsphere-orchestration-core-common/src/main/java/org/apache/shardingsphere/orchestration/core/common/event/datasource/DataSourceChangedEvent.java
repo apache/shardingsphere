@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.common.event;
+package org.apache.shardingsphere.orchestration.core.common.event.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 
 import java.util.Map;
 
