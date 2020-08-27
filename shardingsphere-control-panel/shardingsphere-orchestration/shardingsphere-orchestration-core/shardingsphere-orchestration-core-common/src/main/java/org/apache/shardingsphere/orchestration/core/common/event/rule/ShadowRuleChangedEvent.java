@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.common.event;
+package org.apache.shardingsphere.orchestration.core.common.event.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 /**
- * Encrypt rule changed event.
+ * Shadow rule changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class EncryptRuleChangedEvent implements OrchestrationEvent {
-    
+public final class ShadowRuleChangedEvent implements OrchestrationEvent {
+
     private final String shardingSchemaName;
     
-    private final EncryptRuleConfiguration encryptRuleConfiguration;
+    private final ShadowRuleConfiguration shadowRuleConfiguration;
 }

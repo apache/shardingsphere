@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.orchestration.core.common.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;

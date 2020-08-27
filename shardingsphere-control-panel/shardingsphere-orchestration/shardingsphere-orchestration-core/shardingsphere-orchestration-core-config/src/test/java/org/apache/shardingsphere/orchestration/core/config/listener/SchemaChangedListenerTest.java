@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
