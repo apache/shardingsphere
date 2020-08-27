@@ -51,6 +51,6 @@ public final class InstanceStateChangedListenerTest {
     @Test
     public void assertCreateOrchestrationEventWhenDisabled() {
         assertTrue(instanceStateChangedListener.createOrchestrationEvent(new DataChangedEvent("/test_ds",
-                "state: " + RegistryCenterNodeStatus.DISABLED.name(), ChangedType.UPDATED)).isCircuitBreak());
+                RegistryCenterNodeStatus.DISABLED.name(), ChangedType.UPDATED)).isCircuitBreak());
     }
 }

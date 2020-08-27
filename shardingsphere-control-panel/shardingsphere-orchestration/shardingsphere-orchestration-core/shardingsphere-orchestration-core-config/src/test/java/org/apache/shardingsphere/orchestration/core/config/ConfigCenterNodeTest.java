@@ -73,11 +73,6 @@ public final class ConfigCenterNodeTest {
     }
     
     @Test
-    public void assertGetClusterPath() {
-        assertThat(configurationNode.getClusterPath(), is("/config/cluster"));
-    }
-    
-    @Test
     public void assertGetMetricsPath() {
         assertTrue(configurationNode.getMetricsPath().contains("/config/metrics"));
     }

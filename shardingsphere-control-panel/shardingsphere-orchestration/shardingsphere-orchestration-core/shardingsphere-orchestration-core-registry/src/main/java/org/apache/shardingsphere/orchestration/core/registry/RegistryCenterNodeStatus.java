@@ -25,15 +25,5 @@ public enum RegistryCenterNodeStatus {
     /**
      * Disabled state.
      */
-    DISABLED,
-    
-    /**
-     * Online state.
-     */
-    ONLINE,
-    
-    /**
-     *  Offline state.
-     */
-    OFFLINE
+    DISABLED
 }
