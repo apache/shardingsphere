@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.spi;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 
+import java.util.Collection;
+
 /**
- * Global server configuration.
+ * Elastic job entry loader.
  */
-@Setter
-@Getter
-public final class ServerConfiguration implements YamlConfiguration {
+public final class ElasticJobEntryLoader {
     
-    private int port = 8080;
-    
-    private int blockQueueSize = 10000;
-    
-    private int pushTimeout = 1000;
-    
-    private int workerThread = 30;
-    
-    private String name;
-    
-    private OrchestrationCenterConfiguration registryCenter;
-    
+    /**
+     * Init elastic job entry.
+     *
+     * @param namespace registry center namespace
+     * @param registryCenter registry center
+     */
+    public static void init(final String namespace, final OrchestrationCenterConfiguration registryCenter) {
+        ShardingSphereServiceLoader.register(ElasticJobEntry.class);
+        Collection<ElasticJobEntry> elasticJobEntries = ShardingSphereServiceLoader.newServiceInstances(ElasticJobEntry.class);
+        for (ElasticJobEntry each : elasticJobEntries) {
+            each.init(namespace, registryCenter);
+        }
+    }
 }

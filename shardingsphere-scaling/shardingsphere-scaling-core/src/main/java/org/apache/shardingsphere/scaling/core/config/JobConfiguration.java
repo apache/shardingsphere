@@ -35,6 +35,8 @@ public final class JobConfiguration {
     
     private String jobName;
     
+    private boolean running = true;
+    
     private String[] shardingTables;
     
     private int shardingItem;

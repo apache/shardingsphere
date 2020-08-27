@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
-import org.apache.shardingsphere.scaling.core.execute.engine.ShardingScalingExecuteEngine;
-
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.scaling.core.execute.engine.ShardingScalingExecuteEngine;
+import org.apache.shardingsphere.scaling.core.spi.ElasticJobEntryLoader;
 
 /**
  * Scaling context.
@@ -56,5 +57,12 @@ public final class ScalingContext {
         this.serverConfiguration = serverConfiguration;
         taskExecuteEngine = new ShardingScalingExecuteEngine(serverConfiguration.getWorkerThread());
         importerExecuteEngine = new ShardingScalingExecuteEngine(serverConfiguration.getWorkerThread());
+        initElasticJobEntry(serverConfiguration);
+    }
+    
+    private void initElasticJobEntry(final ServerConfiguration serverConfiguration) {
+        if (!Strings.isNullOrEmpty(serverConfiguration.getName()) && null != serverConfiguration.getRegistryCenter()) {
+            ElasticJobEntryLoader.init(serverConfiguration.getName(), serverConfiguration.getRegistryCenter());
+        }
     }
 }

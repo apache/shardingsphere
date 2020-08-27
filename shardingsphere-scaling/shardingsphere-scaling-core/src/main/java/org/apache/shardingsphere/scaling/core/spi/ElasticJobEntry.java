@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.spi;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 
 /**
- * Resume configuration.
+ * Elastic job entry.
  */
-@Getter
-@Setter
-public final class ResumeConfiguration {
+public interface ElasticJobEntry {
     
-    private String serverLists;
-    
-    private String namespace;
+    /**
+     * Init elastic job.
+     *
+     * @param namespace registry center namespace
+     * @param registryCenter registry center
+     */
+    void init(String namespace, OrchestrationCenterConfiguration registryCenter);
 }
