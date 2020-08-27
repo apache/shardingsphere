@@ -317,12 +317,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         Map<String, DataSource> result = new LinkedHashMap<>(oldDataSources);
         result.keySet().removeAll(deletedDataSources);
         result.keySet().removeAll(modifiedDataSources.keySet());
-        if (null != modifiedDataSources) {
-            result.putAll(modifiedDataSources);
-        }
-        if (null != addedDataSources) {
-            result.putAll(addedDataSources);
-        }
+        result.putAll(modifiedDataSources);
+        result.putAll(addedDataSources);
         return result;
     }
     
