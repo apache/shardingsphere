@@ -101,7 +101,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     }
     
     @Override
-    public DatabaseType getDatabaseType() {
+    public final DatabaseType getDatabaseType() {
         return schemaContexts.getDatabaseType();
     }
     
