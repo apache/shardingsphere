@@ -19,14 +19,13 @@ package org.apache.shardingsphere.spring.boot.orchestration;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.OrchestrationCenterConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.orchestration.common.OrchestrationSpringBootRootConfiguration;
 import org.apache.shardingsphere.spring.boot.orchestration.rule.LocalRulesCondition;
@@ -122,10 +121,9 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     private DataSource createDataSourceWithRules(final List<RuleConfiguration> ruleConfigurations,
                                                  final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         if (null == root.getMetrics()) {
-            return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration);
+            return new OrchestrationShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps(), orchestrationConfiguration);
         } else {
-            return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, 
-                    root.getProps()), orchestrationConfiguration, swap(root.getMetrics()));
+            return new OrchestrationShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps(), orchestrationConfiguration, swap(root.getMetrics()));
         }
     }
     

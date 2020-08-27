@@ -54,8 +54,7 @@ public final class OrchestrationShardingSphereDataSourceFactory {
         if (null == ruleConfigurations || ruleConfigurations.isEmpty()) {
             return createDataSource(orchestrationConfig);
         }
-        ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, props);
-        return new OrchestrationShardingSphereDataSource(shardingSphereDataSource, orchestrationConfig);
+        return new OrchestrationShardingSphereDataSource(dataSourceMap, ruleConfigurations, props, orchestrationConfig);
     }
     
     /**
@@ -103,8 +102,7 @@ public final class OrchestrationShardingSphereDataSourceFactory {
         if (null == ruleConfigurations || ruleConfigurations.isEmpty()) {
             return createDataSource(orchestrationConfig, metricsConfiguration);
         }
-        ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, props);
-        return new OrchestrationShardingSphereDataSource(shardingSphereDataSource, orchestrationConfig, metricsConfiguration);
+        return new OrchestrationShardingSphereDataSource(dataSourceMap, ruleConfigurations, props, orchestrationConfig, metricsConfiguration);
     }
     
     /**
