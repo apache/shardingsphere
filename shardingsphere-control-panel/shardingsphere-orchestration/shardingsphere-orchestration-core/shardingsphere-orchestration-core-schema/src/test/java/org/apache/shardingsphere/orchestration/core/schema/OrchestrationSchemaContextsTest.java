@@ -33,7 +33,7 @@ import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.schema.SchemaDeletedEvent;

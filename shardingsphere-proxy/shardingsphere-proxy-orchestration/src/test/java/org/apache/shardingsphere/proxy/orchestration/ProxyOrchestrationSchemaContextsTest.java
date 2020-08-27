@@ -29,7 +29,7 @@ import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.OrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenter;

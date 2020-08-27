@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.core.config.listener;
 
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;

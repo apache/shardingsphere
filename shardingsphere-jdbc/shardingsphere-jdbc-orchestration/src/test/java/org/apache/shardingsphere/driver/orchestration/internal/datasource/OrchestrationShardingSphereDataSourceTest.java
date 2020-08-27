@@ -29,7 +29,7 @@ import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.schema.OrchestrationSchema;
