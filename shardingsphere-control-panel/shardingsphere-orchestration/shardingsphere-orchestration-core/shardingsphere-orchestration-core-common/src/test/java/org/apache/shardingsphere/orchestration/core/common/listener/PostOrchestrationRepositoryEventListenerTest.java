@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -48,8 +49,8 @@ public final class PostOrchestrationRepositoryEventListenerTest {
         PostOrchestrationRepositoryEventListener postEventListener = new PostOrchestrationRepositoryEventListener(orchestrationRepository, Collections.singletonList("test")) {
             
             @Override
-            protected OrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
-                return mock(OrchestrationEvent.class);
+            protected Optional<OrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
+                return Optional.of(mock(OrchestrationEvent.class));
             }
         };
         doAnswer(invocationOnMock -> {
@@ -66,8 +67,8 @@ public final class PostOrchestrationRepositoryEventListenerTest {
         PostOrchestrationRepositoryEventListener postEventListener = new PostOrchestrationRepositoryEventListener(orchestrationRepository, Arrays.asList("test", "dev")) {
             
             @Override
-            protected OrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
-                return mock(OrchestrationEvent.class);
+            protected Optional<OrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
+                return Optional.of(mock(OrchestrationEvent.class));
             }
         };
         doAnswer(invocationOnMock -> {

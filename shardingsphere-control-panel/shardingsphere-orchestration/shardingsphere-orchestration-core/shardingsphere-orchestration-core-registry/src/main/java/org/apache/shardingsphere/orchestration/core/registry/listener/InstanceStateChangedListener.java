@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.registry.listener;
 
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenterNodeStatus;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Instance state changed listener.
@@ -37,7 +39,7 @@ public final class InstanceStateChangedListener extends PostOrchestrationReposit
     }
     
     @Override
-    protected CircuitStateChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
-        return new CircuitStateChangedEvent(RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue()));
+    protected Optional<OrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
+        return Optional.of(new CircuitStateChangedEvent(RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue())));
     }
 }

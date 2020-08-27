@@ -17,17 +17,22 @@
 
 package org.apache.shardingsphere.orchestration.core.config.listener;
 
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AuthenticationChangedListenerTest {
@@ -47,7 +52,8 @@ public final class AuthenticationChangedListenerTest {
     
     @Test
     public void assertCreateOrchestrationEvent() {
-        assertThat(authenticationChangedListener.createOrchestrationEvent(
-                new DataChangedEvent("test", AUTHENTICATION_YAML, ChangedType.UPDATED)).getAuthentication().getUsers().get("root1").getPassword(), is("root1"));
+        Optional<OrchestrationEvent> actual = authenticationChangedListener.createOrchestrationEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, ChangedType.UPDATED));
+        assertTrue(actual.isPresent());
+        assertThat(((AuthenticationChangedEvent) actual.get()).getAuthentication().getUsers().get("root1").getPassword(), is("root1"));
     }
 }

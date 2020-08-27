@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.IgnoredOrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.schema.SchemaAddedEvent;
@@ -45,6 +44,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -67,38 +67,38 @@ public final class SchemaChangedListener extends PostOrchestrationRepositoryEven
     }
     
     @Override
-    protected OrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
+    protected Optional<OrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
         // TODO Consider removing the following one.
         if (configurationNode.getSchemaPath().equals(event.getKey())) {
             return createSchemaNamesUpdatedEvent(event.getValue());
         }
         String shardingSchemaName = configurationNode.getSchemaName(event.getKey());
         if (Strings.isNullOrEmpty(shardingSchemaName) || !isValidNodeChangedEvent(shardingSchemaName, event.getKey())) {
-            return new IgnoredOrchestrationEvent();
+            return Optional.empty();
         }
         if (ChangedType.ADDED == event.getChangedType()) {
-            return createAddedEvent(shardingSchemaName);
+            return Optional.of(createAddedEvent(shardingSchemaName));
         }
         if (ChangedType.UPDATED == event.getChangedType()) {
-            return createUpdatedEvent(shardingSchemaName, event);
+            return Optional.of(createUpdatedEvent(shardingSchemaName, event));
         }
         if (ChangedType.DELETED == event.getChangedType()) {
-            return createDeletedEvent(shardingSchemaName);
+            return Optional.of(createDeletedEvent(shardingSchemaName));
         }
-        return new IgnoredOrchestrationEvent();
+        return Optional.empty();
     }
     
-    private OrchestrationEvent createSchemaNamesUpdatedEvent(final String shardingSchemaNames) {
+    private Optional<OrchestrationEvent> createSchemaNamesUpdatedEvent(final String shardingSchemaNames) {
         Collection<String> persistShardingSchemaNames = configurationNode.splitSchemaName(shardingSchemaNames);
         Set<String> addedSchemaNames = SetUtils.difference(new HashSet<>(persistShardingSchemaNames), new HashSet<>(existedSchemaNames));
         if (!addedSchemaNames.isEmpty()) {
-            return createAddedEvent(addedSchemaNames.iterator().next());
+            return Optional.of(createAddedEvent(addedSchemaNames.iterator().next()));
         }
         Set<String> deletedSchemaNames = SetUtils.difference(new HashSet<>(existedSchemaNames), new HashSet<>(persistShardingSchemaNames));
         if (!deletedSchemaNames.isEmpty()) {
-            return createDeletedEvent(deletedSchemaNames.iterator().next());
+            return Optional.of(createDeletedEvent(deletedSchemaNames.iterator().next()));
         }
-        return new IgnoredOrchestrationEvent();
+        return Optional.empty();
     }
     
     private boolean isValidNodeChangedEvent(final String shardingSchemaName, final String nodeFullPath) {
