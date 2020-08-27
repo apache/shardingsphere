@@ -147,6 +147,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     @Override
     public final void close() throws Exception {
         schemaContexts.close();
+        orchestrationFacade.close();
     }
     
     /**
