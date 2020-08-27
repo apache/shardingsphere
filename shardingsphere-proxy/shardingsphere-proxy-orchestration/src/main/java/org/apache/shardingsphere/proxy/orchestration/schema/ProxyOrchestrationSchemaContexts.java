@@ -46,13 +46,13 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
     }
     
     @Override
-    protected Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
+    protected Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
         Map<String, DataSourceConfiguration> newDataSourceConfigs = Maps.filterKeys(newDataSources, each -> !oldSchemaContext.getSchema().getDataSources().containsKey(each));
         return createDataSources(DataSourceConverter.getDataSourceParameterMap(newDataSourceConfigs));
     }
     
     @Override
-    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
+    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
         Map<String, DataSourceParameter> newDataSourceParameters = DataSourceConverter.getDataSourceParameterMap(newDataSources);
         Map<String, DataSourceParameter> parameters = new LinkedHashMap<>(newDataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry : newDataSourceParameters.entrySet()) {
@@ -68,7 +68,7 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
     }
     
     @Override
-    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) throws Exception {
+    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
         Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap = createDataSourceParametersMap(dataSourcesMap);
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourceParametersMap.size(), 1);
         for (Entry<String, Map<String, DataSourceParameter>> entry : dataSourceParametersMap.entrySet()) {
@@ -77,7 +77,7 @@ public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaC
         return result;
     }
     
-    private Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) throws Exception {
+    private Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry: dataSourceParameters.entrySet()) {
             result.put(entry.getKey(), backendDataSourceFactory.build(entry.getKey(), entry.getValue()));

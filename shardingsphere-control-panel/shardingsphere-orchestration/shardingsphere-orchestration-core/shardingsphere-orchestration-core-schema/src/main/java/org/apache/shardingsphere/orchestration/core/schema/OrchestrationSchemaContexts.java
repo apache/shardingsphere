@@ -148,10 +148,10 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
      * Renew to add new schema.
      *
      * @param event schema add event
-     * @throws Exception exception
+     * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void renew(final SchemaAddedEvent event) throws Exception {
+    public synchronized void renew(final SchemaAddedEvent event) throws SQLException {
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContexts());
         schemas.put(event.getSchemaName(), createAddedSchemaContext(event));
         schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
@@ -214,10 +214,10 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
      * Renew rule configurations.
      *
      * @param ruleConfigurationsChangedEvent rule configurations changed event
-     * @throws Exception exception
+     * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void renew(final RuleConfigurationsChangedEvent ruleConfigurationsChangedEvent) throws Exception {
+    public synchronized void renew(final RuleConfigurationsChangedEvent ruleConfigurationsChangedEvent) throws SQLException {
         Map<String, SchemaContext> schemaContexts = new HashMap<>(this.schemaContexts.getSchemaContexts());
         String schemaName = ruleConfigurationsChangedEvent.getShardingSchemaName();
         schemaContexts.remove(schemaName);
@@ -268,7 +268,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
                 schemaContexts.getSchemaContexts(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType(), event.isCircuitBreak());
     }
     
-    private SchemaContext createAddedSchemaContext(final SchemaAddedEvent schemaAddedEvent) throws Exception {
+    private SchemaContext createAddedSchemaContext(final SchemaAddedEvent schemaAddedEvent) throws SQLException {
         String schemaName = schemaAddedEvent.getSchemaName();
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
         DatabaseType databaseType = getDatabaseType(dataSourcesMap);
@@ -312,8 +312,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
                 schemaContexts.getProps().getProps()).build().getSchemaContexts().get(oldSchemaContext.getName());
     }
     
-    private Map<String, DataSource> getNewDataSources(final Map<String, DataSource> oldDataSources, final Collection<String> deletedDataSources,
-                                                                   final Map<String, DataSource> addedDataSources, final Map<String, DataSource> modifiedDataSources) {
+    private Map<String, DataSource> getNewDataSources(final Map<String, DataSource> oldDataSources, final Collection<String> deletedDataSources, 
+                                                      final Map<String, DataSource> addedDataSources, final Map<String, DataSource> modifiedDataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(oldDataSources);
         result.keySet().removeAll(deletedDataSources);
         result.keySet().removeAll(modifiedDataSources.keySet());
@@ -332,9 +332,9 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         return result;
     }
     
-    protected abstract Map<String, DataSource> getAddedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSources) throws Exception;
+    protected abstract Map<String, DataSource> getAddedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSources);
     
-    protected abstract Map<String, DataSource> getModifiedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSources) throws Exception;
+    protected abstract Map<String, DataSource> getModifiedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSources);
     
-    protected abstract Map<String, Map<String, DataSource>> createDataSourcesMap(Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) throws Exception;
+    protected abstract Map<String, Map<String, DataSource>> createDataSourcesMap(Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap);
 }
