@@ -19,7 +19,6 @@ package org.apache.shardingsphere.spring.boot.orchestration.type;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -79,9 +78,8 @@ public class OrchestrationSpringBootRegistryShardingTest {
     @Test
     public void assertWithShardingSphereDataSource() {
         assertTrue(dataSource instanceof OrchestrationShardingSphereDataSource);
-        ShardingSphereDataSource shardingSphereDataSource = getFieldValue("dataSource", OrchestrationShardingSphereDataSource.class, dataSource);
-        SchemaContexts schemaContexts = shardingSphereDataSource.getSchemaContexts();
-        for (DataSource each : shardingSphereDataSource.getDataSourceMap().values()) {
+        SchemaContexts schemaContexts = getFieldValue("schemaContexts", OrchestrationShardingSphereDataSource.class, dataSource);
+        for (DataSource each : schemaContexts.getDefaultSchemaContext().getSchema().getDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
         assertTrue(schemaContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
@@ -90,8 +88,7 @@ public class OrchestrationSpringBootRegistryShardingTest {
     
     @Test
     public void assertWithShardingSphereDataSourceNames() {
-        ShardingSphereDataSource shardingSphereDataSource = getFieldValue("dataSource", OrchestrationShardingSphereDataSource.class, dataSource);
-        SchemaContexts schemaContexts = shardingSphereDataSource.getSchemaContexts();
+        SchemaContexts schemaContexts = getFieldValue("schemaContexts", OrchestrationShardingSphereDataSource.class, dataSource);
         ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
         assertThat(shardingRule.getDataSourceNames().size(), is(2));
         assertTrue(shardingRule.getDataSourceNames().contains("ds_0"));
@@ -100,8 +97,7 @@ public class OrchestrationSpringBootRegistryShardingTest {
     
     @Test
     public void assertWithTableRules() {
-        ShardingSphereDataSource shardingSphereDataSource = getFieldValue("dataSource", OrchestrationShardingSphereDataSource.class, dataSource);
-        SchemaContexts schemaContexts = shardingSphereDataSource.getSchemaContexts();
+        SchemaContexts schemaContexts = getFieldValue("schemaContexts", OrchestrationShardingSphereDataSource.class, dataSource);
         ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
         assertThat(shardingRule.getTableRules().size(), is(2));
         TableRule orderRule = shardingRule.getTableRule("t_order");
@@ -130,8 +126,7 @@ public class OrchestrationSpringBootRegistryShardingTest {
     
     @Test
     public void assertWithBindingTableRules() {
-        ShardingSphereDataSource shardingSphereDataSource = getFieldValue("dataSource", OrchestrationShardingSphereDataSource.class, dataSource);
-        SchemaContexts schemaContexts = shardingSphereDataSource.getSchemaContexts();
+        SchemaContexts schemaContexts = getFieldValue("schemaContexts", OrchestrationShardingSphereDataSource.class, dataSource);
         ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
         assertThat(shardingRule.getBindingTableRules().size(), is(2));
         TableRule orderRule = shardingRule.getTableRule("t_order");
@@ -161,8 +156,7 @@ public class OrchestrationSpringBootRegistryShardingTest {
     
     @Test
     public void assertWithBroadcastTables() {
-        ShardingSphereDataSource shardingSphereDataSource = getFieldValue("dataSource", OrchestrationShardingSphereDataSource.class, dataSource);
-        SchemaContexts schemaContexts = shardingSphereDataSource.getSchemaContexts();
+        SchemaContexts schemaContexts = getFieldValue("schemaContexts", OrchestrationShardingSphereDataSource.class, dataSource);
         ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
         assertThat(shardingRule.getBroadcastTables().size(), is(1));
         assertThat(shardingRule.getBroadcastTables().iterator().next(), is("t_config"));
