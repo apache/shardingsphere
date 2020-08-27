@@ -31,11 +31,8 @@ import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.facade.MetricsTrackerManagerFacade;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.MetricsConfigurationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
@@ -257,12 +254,5 @@ public final class OrchestrationSchemaContextsTest {
         CircuitStateChangedEvent event = new CircuitStateChangedEvent(true);
         orchestrationSchemaContexts.renew(event);
         assertTrue(orchestrationSchemaContexts.isCircuitBreak());
-    }
-    
-    @Test
-    public void assertMetricsConfigurationChanged() {
-        MetricsConfigurationChangedEvent event = new MetricsConfigurationChangedEvent(mock(MetricsConfiguration.class));
-        orchestrationSchemaContexts.renew(event);
-        assertFalse(MetricsTrackerManagerFacade.getEnabled());
     }
 }

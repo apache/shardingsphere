@@ -26,8 +26,6 @@ import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationCenterConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
@@ -58,7 +56,6 @@ public class YamlProxyConfigurationSwapperTest {
         YamlProxyConfiguration yamlProxyConfiguration = getYamlProxyConfiguration();
         ProxyConfiguration proxyConfiguration = new YamlProxyConfigurationSwapper().swap(yamlProxyConfiguration);
         assertAuthentication(proxyConfiguration);
-        assertMetricsConfiguration(proxyConfiguration);
         assertProxyConfigurationProps(proxyConfiguration);
         assertSchemaDataSources(proxyConfiguration);
         assertSchemaRules(proxyConfiguration);
@@ -103,21 +100,6 @@ public class YamlProxyConfigurationSwapperTest {
         assertThat(proxyConfigurationProps.getProperty("key4"), is("value4"));
     }
     
-    private void assertMetricsConfiguration(final ProxyConfiguration proxyConfiguration) {
-        MetricsConfiguration metricsConfiguration = proxyConfiguration.getMetrics();
-        assertNotNull(metricsConfiguration);
-        assertThat(metricsConfiguration.getMetricsName(), is("name1"));
-        assertThat(metricsConfiguration.getHost(), is("host1"));
-        assertThat(metricsConfiguration.getPort(), is(111));
-        assertTrue(metricsConfiguration.getAsync());
-        assertTrue(metricsConfiguration.getEnable());
-        assertThat(metricsConfiguration.getThreadCount(), is(4));
-        Properties metricsProperties = metricsConfiguration.getProps();
-        assertNotNull(metricsProperties);
-        assertThat(metricsProperties.size(), is(1));
-        assertThat(metricsProperties.getProperty("key3"), is("value3"));
-    }
-    
     private void assertAuthentication(final ProxyConfiguration proxyConfiguration) {
         Authentication authentication = proxyConfiguration.getAuthentication();
         assertNotNull(authentication);
@@ -139,7 +121,6 @@ public class YamlProxyConfigurationSwapperTest {
         YamlOrchestrationConfiguration yamlOrchestrationConfiguration = prepareOrchestration(yamlProxyServerConfiguration);
         prepareRegistryCenter(yamlOrchestrationConfiguration);
         prepareAdditionalConfigCenter(yamlOrchestrationConfiguration);
-        prepareMetrics(yamlProxyServerConfiguration);
         prepareProps(yamlProxyServerConfiguration);
         YamlProxyRuleConfiguration yamlProxyRuleConfiguration = prepareRuleConfigurations(yamlProxyConfiguration);
         when(yamlProxyRuleConfiguration.getSchemaName()).thenReturn("ruleConfigSchema1");
@@ -207,20 +188,6 @@ public class YamlProxyConfigurationSwapperTest {
         Properties properties = new Properties();
         properties.put("key4", "value4");
         when(yamlProxyServerConfiguration.getProps()).thenReturn(properties);
-    }
-    
-    private void prepareMetrics(final YamlProxyServerConfiguration yamlProxyServerConfiguration) {
-        YamlMetricsConfiguration yamlMetricsConfiguration = mock(YamlMetricsConfiguration.class);
-        when(yamlProxyServerConfiguration.getMetrics()).thenReturn(yamlMetricsConfiguration);
-        when(yamlMetricsConfiguration.getName()).thenReturn("name1");
-        when(yamlMetricsConfiguration.getHost()).thenReturn("host1");
-        when(yamlMetricsConfiguration.getPort()).thenReturn(111);
-        when(yamlMetricsConfiguration.getAsync()).thenReturn(true);
-        when(yamlMetricsConfiguration.getEnable()).thenReturn(true);
-        when(yamlMetricsConfiguration.getThreadCount()).thenReturn(4);
-        Properties yamlMetricsProperties = new Properties();
-        yamlMetricsProperties.put("key3", "value3");
-        when(yamlMetricsConfiguration.getProps()).thenReturn(yamlMetricsProperties);
     }
     
     private void prepareAdditionalConfigCenter(final YamlOrchestrationConfiguration yamlOrchestrationConfiguration) {

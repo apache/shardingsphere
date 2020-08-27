@@ -59,10 +59,6 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
             factory.setDestroyMethodName("close");
         }
         factory.addConstructorArgValue(getOrchestrationConfiguration(element));
-        String metrics = element.getAttribute(DataSourceBeanDefinitionTag.METRICS_REF_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(metrics)) {
-            factory.addConstructorArgReference(metrics);
-        }
     }
     
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {

@@ -33,7 +33,6 @@
             <xsd:attribute name="rule-refs" type="xsd:string" use="required" />
             <xsd:attribute name="reg-center-ref" type="xsd:string" use="required" />
             <xsd:attribute name="config-center-ref" type="xsd:string" />
-            <xsd:attribute name="metrics-ref" type="xsd:string" />
             <xsd:attribute name="overwrite" type="xsd:string" default="false" />
         </xsd:complexType>
     </xsd:element>
