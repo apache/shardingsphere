@@ -152,11 +152,10 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent event) throws Exception {
-        String schemaName = event.getSchemaName();
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContexts());
-        schemas.put(schemaName, getAddedSchemaContext(event));
+        schemas.put(event.getSchemaName(), createAddedSchemaContext(event));
         schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
-        orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(schemaName, schemaContexts.getSchemaContexts().get(schemaName).getSchema().getMetaData().getSchema());
+        orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(event.getSchemaName(), schemaContexts.getSchemaContexts().get(event.getSchemaName()).getSchema().getMetaData().getSchema());
     }
     
     /**
@@ -269,11 +268,11 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
                 schemaContexts.getSchemaContexts(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType(), event.isCircuitBreak());
     }
     
-    private SchemaContext getAddedSchemaContext(final SchemaAddedEvent schemaAddedEvent) throws Exception {
+    private SchemaContext createAddedSchemaContext(final SchemaAddedEvent schemaAddedEvent) throws Exception {
         String schemaName = schemaAddedEvent.getSchemaName();
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
         DatabaseType databaseType = getDatabaseType(dataSourcesMap);
-        SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(databaseType, dataSourcesMap,  
+        SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(databaseType, dataSourcesMap, 
                 Collections.singletonMap(schemaName, schemaAddedEvent.getRuleConfigurations()), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
         return schemaContextsBuilder.build().getSchemaContexts().get(schemaName);
     }
