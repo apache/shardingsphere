@@ -31,7 +31,7 @@ import java.util.Collection;
 @Getter
 public final class RuleConfigurationsChangedEvent implements OrchestrationEvent {
     
-    private final String shardingSchemaName;
+    private final String schemaName;
     
     private final Collection<RuleConfiguration> ruleConfigurations;
 }

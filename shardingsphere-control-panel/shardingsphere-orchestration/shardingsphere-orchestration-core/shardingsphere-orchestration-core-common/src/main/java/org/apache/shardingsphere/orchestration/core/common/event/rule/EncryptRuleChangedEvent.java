@@ -29,7 +29,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEv
 @Getter
 public final class EncryptRuleChangedEvent implements OrchestrationEvent {
     
-    private final String shardingSchemaName;
+    private final String schemaName;
     
     private final EncryptRuleConfiguration encryptRuleConfiguration;
 }

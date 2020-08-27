@@ -85,7 +85,7 @@ public final class SchemaChangedListenerTest {
         Optional<OrchestrationEvent> actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(DataSourceChangedEvent.class));
-        assertThat(((DataSourceChangedEvent) actual.get()).getShardingSchemaName(), is("sharding_db"));
+        assertThat(((DataSourceChangedEvent) actual.get()).getSchemaName(), is("sharding_db"));
     }
     
     @Test
@@ -94,7 +94,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/sharding_db/rule", shardingRule, ChangedType.UPDATED);
         Optional<OrchestrationEvent> actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertThat(((RuleConfigurationsChangedEvent) actual.get()).getShardingSchemaName(), is("sharding_db"));
+        assertThat(((RuleConfigurationsChangedEvent) actual.get()).getSchemaName(), is("sharding_db"));
         Collection<RuleConfiguration> ruleConfigurations = ((RuleConfigurationsChangedEvent) actual.get()).getRuleConfigurations();
         assertThat(ruleConfigurations.size(), is(1));
         assertThat(((ShardingRuleConfiguration) ruleConfigurations.iterator().next()).getTables().size(), is(1));
@@ -107,7 +107,7 @@ public final class SchemaChangedListenerTest {
         Optional<OrchestrationEvent> actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         RuleConfigurationsChangedEvent event = (RuleConfigurationsChangedEvent) actual.get();
-        assertThat(event.getShardingSchemaName(), is("masterslave_db"));
+        assertThat(event.getSchemaName(), is("masterslave_db"));
         assertThat(event.getRuleConfigurations().iterator().next(), instanceOf(MasterSlaveRuleConfiguration.class));
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = (MasterSlaveRuleConfiguration) event.getRuleConfigurations().iterator().next();
         assertThat(masterSlaveRuleConfig.getDataSources().iterator().next().getMasterDataSourceName(), is("master_ds"));
@@ -120,7 +120,7 @@ public final class SchemaChangedListenerTest {
         Optional<OrchestrationEvent> actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         RuleConfigurationsChangedEvent event = (RuleConfigurationsChangedEvent) actual.get();
-        assertThat(event.getShardingSchemaName(), is("encrypt_db"));
+        assertThat(event.getSchemaName(), is("encrypt_db"));
         assertThat(event.getRuleConfigurations().iterator().next(), instanceOf(EncryptRuleConfiguration.class));
         EncryptRuleConfiguration encryptRuleConfig = (EncryptRuleConfiguration) event.getRuleConfigurations().iterator().next();
         assertThat(encryptRuleConfig.getEncryptors().size(), is(1));

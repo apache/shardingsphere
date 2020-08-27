@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 @Getter
 public final class ShadowRuleChangedEvent implements OrchestrationEvent {
 
-    private final String shardingSchemaName;
+    private final String schemaName;
     
     private final ShadowRuleConfiguration shadowRuleConfiguration;
 }

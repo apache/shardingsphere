@@ -31,7 +31,7 @@ import java.util.Map;
 @Getter
 public final class DataSourceChangedEvent implements OrchestrationEvent {
     
-    private final String shardingSchemaName;
+    private final String schemaName;
     
     private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
 }
