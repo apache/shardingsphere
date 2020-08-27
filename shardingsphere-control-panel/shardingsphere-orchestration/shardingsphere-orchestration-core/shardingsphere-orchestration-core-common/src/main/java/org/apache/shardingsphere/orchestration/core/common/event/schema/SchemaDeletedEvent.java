@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.common.event;
+package org.apache.shardingsphere.orchestration.core.common.event.schema;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 
 /**
  * Schema deleted event.
@@ -27,5 +28,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class SchemaDeletedEvent implements OrchestrationEvent {
     
-    private final String shardingSchemaName;
+    private final String schemaName;
 }

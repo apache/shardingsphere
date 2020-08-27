@@ -28,8 +28,8 @@ import org.apache.shardingsphere.orchestration.repository.api.listener.DataChang
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.IgnoredOrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.schema.SchemaAddedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Before;
@@ -184,7 +184,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/logic_db/datasource", dataSource, ChangedType.DELETED);
         OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaDeletedEvent.class));
-        assertThat(((SchemaDeletedEvent) actual).getShardingSchemaName(), is("logic_db"));
+        assertThat(((SchemaDeletedEvent) actual).getSchemaName(), is("logic_db"));
     }
     
     @Test
@@ -244,7 +244,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema", "sharding_db,masterslave_db,encrypt_db,shadow_db", ChangedType.UPDATED);
         OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
-        assertThat(((SchemaAddedEvent) actual).getShardingSchemaName(), is("shadow_db"));
+        assertThat(((SchemaAddedEvent) actual).getSchemaName(), is("shadow_db"));
     }
     
     @Test
@@ -252,7 +252,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema", "sharding_db,masterslave_db", ChangedType.UPDATED);
         OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaDeletedEvent.class));
-        assertThat(((SchemaDeletedEvent) actual).getShardingSchemaName(), is("encrypt_db"));
+        assertThat(((SchemaDeletedEvent) actual).getSchemaName(), is("encrypt_db"));
     }
     
     @Test
@@ -267,7 +267,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/shadow_db", "", ChangedType.ADDED);
         OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
-        assertThat(((SchemaAddedEvent) actual).getShardingSchemaName(), is("shadow_db"));
+        assertThat(((SchemaAddedEvent) actual).getSchemaName(), is("shadow_db"));
     }
     
     @SneakyThrows

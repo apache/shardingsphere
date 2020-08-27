@@ -35,8 +35,8 @@ import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationC
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.schema.SchemaAddedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.metadata.MetaDataCenter;
 import org.apache.shardingsphere.orchestration.core.metadata.event.MetaDataChangedEvent;

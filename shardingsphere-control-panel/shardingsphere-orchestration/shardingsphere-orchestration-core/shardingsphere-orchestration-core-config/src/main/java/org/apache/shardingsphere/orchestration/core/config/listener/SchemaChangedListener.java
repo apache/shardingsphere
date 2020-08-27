@@ -28,8 +28,8 @@ import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChang
 import org.apache.shardingsphere.orchestration.core.common.event.IgnoredOrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.schema.SchemaAddedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.DataSourceConfigurationYamlSwapper;
