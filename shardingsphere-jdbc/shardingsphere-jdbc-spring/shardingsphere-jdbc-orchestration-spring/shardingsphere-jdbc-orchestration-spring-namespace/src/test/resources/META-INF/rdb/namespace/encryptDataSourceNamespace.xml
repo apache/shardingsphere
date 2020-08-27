@@ -42,11 +42,4 @@
             <encrypt:column logic-column="order_id" cipher-column="order_encrypt" plain-column="order_decrypt" encrypt-algorithm-ref="md5_encryptor" />
         </encrypt:table>
     </encrypt:rule>
-    
-    <shardingsphere:data-source id="encryptDataSource" data-source-names="dbtbl_0" rule-refs="encryptRule">
-        <props>
-            <prop key="sql.show">${sql_show}</prop>
-            <prop key="query.with.cipher.column">false</prop>
-        </props>
-    </shardingsphere:data-source>
 </beans>

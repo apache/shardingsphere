@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.orchestration.api;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -54,8 +53,7 @@ public final class OrchestrationShardingSphereDataSourceFactory {
         if (null == ruleConfigurations || ruleConfigurations.isEmpty()) {
             return createDataSource(orchestrationConfig);
         }
-        ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, props);
-        return new OrchestrationShardingSphereDataSource(shardingSphereDataSource, orchestrationConfig);
+        return new OrchestrationShardingSphereDataSource(dataSourceMap, ruleConfigurations, props, orchestrationConfig);
     }
     
     /**
@@ -103,8 +101,7 @@ public final class OrchestrationShardingSphereDataSourceFactory {
         if (null == ruleConfigurations || ruleConfigurations.isEmpty()) {
             return createDataSource(orchestrationConfig, metricsConfiguration);
         }
-        ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, props);
-        return new OrchestrationShardingSphereDataSource(shardingSphereDataSource, orchestrationConfig, metricsConfiguration);
+        return new OrchestrationShardingSphereDataSource(dataSourceMap, ruleConfigurations, props, orchestrationConfig, metricsConfiguration);
     }
     
     /**

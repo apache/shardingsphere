@@ -19,10 +19,10 @@ package org.apache.shardingsphere.driver.orchestration.api.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.util.YamlOrchestrationRepositoryConfigurationSwapperUtil;
 import org.apache.shardingsphere.driver.orchestration.internal.yaml.YamlOrchestrationRootRuleConfigurations;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
@@ -34,6 +34,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 
@@ -107,9 +108,8 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
         if (configurations.getRules().isEmpty() || dataSourceMap.isEmpty()) {
             return createDataSourceWithoutRules(orchestration, yamlMetricsConfiguration);
         } else {
-            ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap,
-                    new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()), props);
-            return createDataSourceWithRules(shardingSphereDataSource, orchestration, yamlMetricsConfiguration);
+            return createDataSourceWithRules(dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()),
+                    props, orchestration, yamlMetricsConfiguration);
         }
     }
     
@@ -123,15 +123,15 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
         }
     }
     
-    private static DataSource createDataSourceWithRules(final ShardingSphereDataSource shardingSphereDataSource,
-                                                        final YamlOrchestrationConfiguration orchestration,
+    private static DataSource createDataSourceWithRules(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations,
+                                                        final Properties props, final YamlOrchestrationConfiguration orchestration,
                                                         final YamlMetricsConfiguration yamlMetricsConfiguration) throws SQLException {
         if (null == yamlMetricsConfiguration) {
-            return new OrchestrationShardingSphereDataSource(shardingSphereDataSource,
+            return new OrchestrationShardingSphereDataSource(dataSourceMap, ruleConfigurations, props,
                     YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(orchestration));
         } else {
             MetricsConfiguration metricsConfiguration = swap(yamlMetricsConfiguration);
-            return new OrchestrationShardingSphereDataSource(shardingSphereDataSource,
+            return new OrchestrationShardingSphereDataSource(dataSourceMap, ruleConfigurations, props,
                     YamlOrchestrationRepositoryConfigurationSwapperUtil.marshal(orchestration), metricsConfiguration);
         }
     }
