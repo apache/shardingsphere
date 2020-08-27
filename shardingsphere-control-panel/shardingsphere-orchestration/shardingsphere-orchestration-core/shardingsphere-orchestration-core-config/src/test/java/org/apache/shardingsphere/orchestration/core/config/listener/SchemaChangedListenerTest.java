@@ -244,7 +244,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema", "sharding_db,masterslave_db,encrypt_db,shadow_db", ChangedType.UPDATED);
         OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
-        assertThat(((SchemaAddedEvent) actual).getShardingSchemaName(), is("shadow_db"));
+        assertThat(((SchemaAddedEvent) actual).getSchemaName(), is("shadow_db"));
     }
     
     @Test
@@ -267,7 +267,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/shadow_db", "", ChangedType.ADDED);
         OrchestrationEvent actual = schemaChangedListener.createOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
-        assertThat(((SchemaAddedEvent) actual).getShardingSchemaName(), is("shadow_db"));
+        assertThat(((SchemaAddedEvent) actual).getSchemaName(), is("shadow_db"));
     }
     
     @SneakyThrows

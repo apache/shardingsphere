@@ -152,7 +152,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent schemaAddedEvent) throws Exception {
-        String schemaName = schemaAddedEvent.getShardingSchemaName();
+        String schemaName = schemaAddedEvent.getSchemaName();
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContexts());
         schemas.put(schemaName, getAddedSchemaContext(schemaAddedEvent));
         schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
@@ -270,7 +270,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
     }
     
     private SchemaContext getAddedSchemaContext(final SchemaAddedEvent schemaAddedEvent) throws Exception {
-        String schemaName = schemaAddedEvent.getShardingSchemaName();
+        String schemaName = schemaAddedEvent.getSchemaName();
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, schemaAddedEvent.getDataSourceConfigurations()));
         DatabaseType databaseType = getDatabaseType(dataSourcesMap);
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(databaseType, dataSourcesMap,  
