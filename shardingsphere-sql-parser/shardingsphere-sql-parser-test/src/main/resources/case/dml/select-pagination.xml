@@ -1465,6 +1465,9 @@
         <order-by>
             <column-item name="order_id" start-index="31" stop-index="38" />
         </order-by>
-        <row-count value="20" parameter-index="0" />
+        <limit literal-start-index="40" literal-stop-index="75" start-index="40" stop-index="74">
+            <offset value="0" start-index="47" stop-index="47" literal-start-index="47" literal-stop-index="47"/>
+            <row-count value="20" parameter-index="1" literal-start-index="64" literal-stop-index="65" start-index="64" stop-index="64"/>
+        </limit>
     </select>
 </sql-parser-test-cases>
