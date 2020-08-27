@@ -29,7 +29,7 @@
     <name>${project.artifactId}</name>
 
     <properties>
-        <elasticjob.version>3.0.0-beta-SNAPSHOT</elasticjob.version>
+        <elasticjob.version>3.0.0-alpha</elasticjob.version>
     </properties>
 
     <dependencies>

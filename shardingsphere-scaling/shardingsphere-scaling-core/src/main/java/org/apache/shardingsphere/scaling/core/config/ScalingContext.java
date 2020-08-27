@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.OrchestrationCenterConfigurationYamlSwapper;
 import org.apache.shardingsphere.scaling.core.execute.engine.ShardingScalingExecuteEngine;
 import org.apache.shardingsphere.scaling.core.spi.ElasticJobEntryLoader;
 
@@ -62,7 +63,7 @@ public final class ScalingContext {
     
     private void initElasticJobEntry(final ServerConfiguration serverConfiguration) {
         if (!Strings.isNullOrEmpty(serverConfiguration.getName()) && null != serverConfiguration.getRegistryCenter()) {
-            ElasticJobEntryLoader.init(serverConfiguration.getName(), serverConfiguration.getRegistryCenter());
+            ElasticJobEntryLoader.init(serverConfiguration.getName(), new OrchestrationCenterConfigurationYamlSwapper().swapToObject(serverConfiguration.getRegistryCenter()));
         }
     }
 }
