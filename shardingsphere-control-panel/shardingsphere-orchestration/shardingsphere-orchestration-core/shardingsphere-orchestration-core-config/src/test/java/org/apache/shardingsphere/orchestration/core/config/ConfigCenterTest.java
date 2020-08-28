@@ -330,7 +330,7 @@ public final class ConfigCenterTest {
                 assertThat(encryptRuleConfiguration.getEncryptors().size(), is(2));
                 ShardingSphereAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptors().get("aes_encryptor");
                 assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
-                assertThat(encryptAlgorithmConfiguration.getProps().get("aes.key.value").toString(), is("123456abcd"));
+                assertThat(encryptAlgorithmConfiguration.getProps().get("aes-key-value").toString(), is("123456abcd"));
             }
         }
     }
@@ -365,7 +365,7 @@ public final class ConfigCenterTest {
         assertThat(actual.getEncryptors().size(), is(1));
         ShardingSphereAlgorithmConfiguration encryptAlgorithmConfiguration = actual.getEncryptors().get("order_encryptor");
         assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
-        assertThat(encryptAlgorithmConfiguration.getProps().get("aes.key.value").toString(), is("123456"));
+        assertThat(encryptAlgorithmConfiguration.getProps().get("aes-key-value").toString(), is("123456"));
     }
     
     @Test

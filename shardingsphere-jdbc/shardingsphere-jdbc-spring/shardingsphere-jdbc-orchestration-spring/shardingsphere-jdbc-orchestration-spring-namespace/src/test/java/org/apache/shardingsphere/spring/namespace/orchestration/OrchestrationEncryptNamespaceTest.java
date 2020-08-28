@@ -73,7 +73,7 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
         Map<String, EncryptAlgorithm> encryptAlgorithms = configuration.getEncryptors();
         assertThat(encryptAlgorithms.size(), is(2));
         assertThat(encryptAlgorithms.get("aes_encryptor").getType(), is("AES"));
-        assertThat(encryptAlgorithms.get("aes_encryptor").getProps().getProperty("aes.key.value"), is("123456"));
+        assertThat(encryptAlgorithms.get("aes_encryptor").getProps().getProperty("aes-key-value"), is("123456"));
         assertThat(encryptAlgorithms.get("md5_encryptor").getType(), is("MD5"));
     }
     
