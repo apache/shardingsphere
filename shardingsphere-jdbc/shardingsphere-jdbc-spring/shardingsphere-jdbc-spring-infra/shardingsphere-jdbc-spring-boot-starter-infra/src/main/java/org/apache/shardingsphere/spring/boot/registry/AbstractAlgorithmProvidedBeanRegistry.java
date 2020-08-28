@@ -42,9 +42,9 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractAlgorithmProvidedBeanRegistry implements BeanDefinitionRegistryPostProcessor, BeanPostProcessor {
-
+    
     private final Environment environment;
-
+    
     @SuppressWarnings("all")
     protected void registerBean(final String preFix, final Class clazz, final BeanDefinitionRegistry registry) {
         Map<String, Object> paramMap = PropertyUtil.handle(environment, preFix, Map.class);
@@ -66,16 +66,16 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry implements BeanDefin
             registry.registerBeanDefinition(k, builder.getBeanDefinition());
         });
     }
-
+    
     @Override
     public void postProcessBeanFactory(final ConfigurableListableBeanFactory configurableListableBeanFactory) {
     }
-
+    
     @Override
     public Object postProcessBeforeInitialization(final Object bean, final String beanName) {
         return bean;
     }
-
+    
     @Override
     public Object postProcessAfterInitialization(final Object bean, final String beanName) {
         if (bean instanceof ShardingSphereAlgorithmPostProcessor) {
