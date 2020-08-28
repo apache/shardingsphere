@@ -15,26 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.callback.orchestration;
+package org.apache.shardingsphere.infra.callback.governance;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.callback.Callback;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+
+import java.util.Map;
 
 /**
- * Schema name callback.
+ * Data source callback.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaNameCallback extends Callback<Boolean> {
+public final class DataSourceCallback extends Callback<Map<String, DataSourceConfiguration>> {
     
-    private static final SchemaNameCallback INSTANCE = new SchemaNameCallback();
+    private static final DataSourceCallback INSTANCE = new DataSourceCallback();
     
     /**
      * Get instance.
      *
      * @return data source callback
      */
-    public static SchemaNameCallback getInstance() {
+    public static DataSourceCallback getInstance() {
         return INSTANCE;
     }
 }

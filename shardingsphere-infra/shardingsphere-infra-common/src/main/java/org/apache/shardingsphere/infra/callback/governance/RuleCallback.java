@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.callback.orchestration;
+package org.apache.shardingsphere.infra.callback.governance;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
