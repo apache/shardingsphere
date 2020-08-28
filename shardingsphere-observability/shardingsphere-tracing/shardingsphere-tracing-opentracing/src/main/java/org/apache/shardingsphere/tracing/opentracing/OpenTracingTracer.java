@@ -20,7 +20,6 @@ package org.apache.shardingsphere.tracing.opentracing;
 import com.google.common.base.Preconditions;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
-import lombok.Getter;
 import org.apache.shardingsphere.control.panel.spi.ControlPanelFacade;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
