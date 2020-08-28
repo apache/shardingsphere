@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 /**
  * User executor group.
  */
-public final class UserExecutorGroup implements AutoCloseable {
+public final class UserExecutorGroup {
     
     private static final ProxySchemaContexts PROXY_SCHEMA_CONTEXTS = ProxySchemaContexts.getInstance();
     
@@ -51,10 +51,5 @@ public final class UserExecutorGroup implements AutoCloseable {
      */
     public static UserExecutorGroup getInstance() {
         return INSTANCE;
-    }
-    
-    @Override
-    public void close() {
-        shardingSphereExecutorService.close();
     }
 }
