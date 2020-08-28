@@ -31,7 +31,6 @@ public class PostgreSQLPacketPayloadTest {
     public void assertReadWrite() {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(16, 128);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
-        
         byte expectedInt1 = (byte) 'i';
         payload.writeInt1(expectedInt1);
         assertThat(payload.readInt1(), is((int) expectedInt1));
@@ -44,19 +43,15 @@ public class PostgreSQLPacketPayloadTest {
         long expectedInt8 = Long.MAX_VALUE;
         payload.writeInt8(expectedInt8);
         assertThat(payload.readInt8(), is(expectedInt8));
-        
         payload.writeInt4(1);
         payload.skipReserved(4);
-        
         String expectedString = "user";
         payload.writeStringEOF(expectedString);
         assertThat(byteBuf.readCharSequence(expectedString.length(), StandardCharsets.ISO_8859_1).toString(), is(expectedString));
         payload.writeStringNul(expectedString);
         assertThat(payload.bytesBeforeZero(), is(expectedString.length()));
         assertThat(payload.readStringNul(), is(expectedString));
-        
         assertThat(payload.getByteBuf(), is(byteBuf));
         payload.close();
     }
-    
 }

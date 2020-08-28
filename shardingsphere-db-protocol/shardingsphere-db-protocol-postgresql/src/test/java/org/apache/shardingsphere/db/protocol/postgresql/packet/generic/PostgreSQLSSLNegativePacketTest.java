@@ -38,5 +38,4 @@ public final class PostgreSQLSSLNegativePacketTest {
         assertThat(byteBuf.writerIndex(), is(1));
         assertThat(payload.readInt1(), is((int) 'N'));
     }
-    
 }

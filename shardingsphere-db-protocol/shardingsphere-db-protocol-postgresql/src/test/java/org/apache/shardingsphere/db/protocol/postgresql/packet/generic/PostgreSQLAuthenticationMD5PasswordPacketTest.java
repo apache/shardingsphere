@@ -44,5 +44,4 @@ public final class PostgreSQLAuthenticationMD5PasswordPacketTest {
         byteBuf.readBytes(actualMd5Salt);
         assertThat(actualMd5Salt, is(md5Salt));
     }
-    
 }

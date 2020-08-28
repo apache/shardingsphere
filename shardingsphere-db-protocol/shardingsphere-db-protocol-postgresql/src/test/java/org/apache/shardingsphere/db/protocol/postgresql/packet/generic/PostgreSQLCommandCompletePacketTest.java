@@ -39,5 +39,4 @@ public final class PostgreSQLCommandCompletePacketTest {
         packet.write(payload);
         assertThat(payload.readStringNul(), is(expectedString));
     }
-    
 }

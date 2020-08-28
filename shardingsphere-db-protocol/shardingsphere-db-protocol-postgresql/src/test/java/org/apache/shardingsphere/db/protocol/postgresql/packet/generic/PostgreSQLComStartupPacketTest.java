@@ -52,9 +52,7 @@ public final class PostgreSQLComStartupPacketTest {
         assertThat(packet.getMessageType(), is('\0'));
         Map<String, String> actualParametersMap = packet.getParametersMap();
         assertThat(actualParametersMap, is(expectedParametersMap));
-        
         packet.write(payload);
         assertThat(byteBuf.writerIndex(), is(expectedLength));
     }
-    
 }

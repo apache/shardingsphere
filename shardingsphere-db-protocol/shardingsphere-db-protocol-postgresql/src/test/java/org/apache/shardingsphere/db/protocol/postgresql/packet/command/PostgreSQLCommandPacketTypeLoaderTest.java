@@ -40,5 +40,4 @@ public class PostgreSQLCommandPacketTypeLoaderTest {
         when(payload.readInt1()).thenReturn(0x21);
         PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload);
     }
-    
 }

@@ -33,5 +33,4 @@ public class PostgreSQLCommandPacketTypeTest {
     public void assertGetValueWithIllegalArgument() {
         PostgreSQLCommandPacketType.valueOf(-1);
     }
-    
 }
