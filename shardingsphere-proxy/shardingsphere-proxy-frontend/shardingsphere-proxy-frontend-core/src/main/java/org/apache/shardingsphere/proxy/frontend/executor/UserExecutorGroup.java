@@ -53,7 +53,6 @@ public final class UserExecutorGroup implements AutoCloseable {
         return INSTANCE;
     }
     
-    // TODO Investigate whether missing call close method 
     @Override
     public void close() {
         shardingSphereExecutorService.close();
