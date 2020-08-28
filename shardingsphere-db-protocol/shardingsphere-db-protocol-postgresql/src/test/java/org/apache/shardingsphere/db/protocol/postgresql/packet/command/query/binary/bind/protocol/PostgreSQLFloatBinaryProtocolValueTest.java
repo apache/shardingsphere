@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PostgreSQLFloatBinaryProtocolValueTest {
+public final class PostgreSQLFloatBinaryProtocolValueTest {
     
     @Mock
     private ByteBuf byteBuf;
