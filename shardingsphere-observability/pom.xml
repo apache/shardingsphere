@@ -30,6 +30,6 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>shardingsphere-observability-tracing</module>
+        <module>shardingsphere-tracing</module>
     </modules>
 </project>
