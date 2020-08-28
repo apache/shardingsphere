@@ -38,5 +38,4 @@ public final class PostgreSQLReadyForQueryPacketTest {
         assertThat(byteBuf.writerIndex(), is(1));
         assertThat(byteBuf.readByte(), is((byte) 'I'));
     }
-    
 }

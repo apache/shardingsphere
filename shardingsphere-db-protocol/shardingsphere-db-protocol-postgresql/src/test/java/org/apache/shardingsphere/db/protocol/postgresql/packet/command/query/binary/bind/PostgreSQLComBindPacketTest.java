@@ -48,23 +48,18 @@ public class PostgreSQLComBindPacketTest {
         when(payload.readStringNul()).thenReturn("");
         when(payload.readStringNul()).thenReturn("sts-id");
         when(payload.readInt2()).thenReturn(1);
-        
         BinaryStatementRegistry.getInstance().register(1);
     }
     
     @Test
     public void assertWrite() throws SQLException {
-        //mock parameters
         when(payload.readInt2()).thenReturn(1);
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt8()).thenReturn(11L);
-        
         String sql = "select * from order where id = ? ";
         BinaryStatementRegistry.getInstance().get(1).register("sts-id", sql, 1, Arrays.asList(new PostgreSQLBinaryStatementParameterType(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8)));
-        
         PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(payload, 1);
         bindPacket.write(payload);
-        
         assertThat(bindPacket.getSql(), is(sql));
         assertThat(bindPacket.getParameters().size(), is(1));
         assertThat(bindPacket.isBinaryRowData(), is(true));
@@ -84,5 +79,4 @@ public class PostgreSQLComBindPacketTest {
         PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(payload, 1);
         assertThat(bindPacket.getMessageType(), is(PostgreSQLCommandPacketType.BIND.getValue()));
     }
-    
 }

@@ -39,5 +39,4 @@ public final class PostgreSQLComTerminationPacketTest {
         packet.write(payload);
         assertThat(byteBuf.writerIndex(), is(4));
     }
-    
 }

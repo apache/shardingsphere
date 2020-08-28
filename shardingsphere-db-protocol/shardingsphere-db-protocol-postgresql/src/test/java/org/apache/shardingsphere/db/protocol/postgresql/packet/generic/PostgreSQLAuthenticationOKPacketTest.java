@@ -48,5 +48,4 @@ public final class PostgreSQLAuthenticationOKPacketTest {
         assertThat(byteBuf.writerIndex(), is(4));
         assertThat(byteBuf.readInt(), is(isSuccess ? 0 : 1));
     }
-    
 }

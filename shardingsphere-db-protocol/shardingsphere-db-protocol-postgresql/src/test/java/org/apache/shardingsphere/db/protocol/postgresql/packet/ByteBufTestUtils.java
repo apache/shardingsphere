@@ -44,5 +44,4 @@ public final class ByteBufTestUtils {
         UnpooledByteBufAllocator byteBufAllocator = UnpooledByteBufAllocator.DEFAULT;
         return new UnpooledHeapByteBuf(byteBufAllocator, initialCapacity, maxCapacity);
     }
-    
 }

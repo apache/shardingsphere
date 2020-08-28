@@ -43,5 +43,4 @@ public final class PostgreSQLParameterStatusPacketTest {
         assertThat(payload.readStringNul(), is(key));
         assertThat(payload.readStringNul(), is(value));
     }
-    
 }
