@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.preparer.resumer;
+package org.apache.shardingsphere.scaling.core.job.task.incremental;
 
 import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
@@ -23,14 +23,10 @@ import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
-import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
-import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
-import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
-import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
+import org.apache.shardingsphere.scaling.core.fixture.FixtureNopManager;
+import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
+import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,10 +36,8 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
-public final class SyncPositionResumerTest {
+public final class IncrementalDataScalingTaskTest {
     
     private static final String DATA_SOURCE_URL = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
     
@@ -51,42 +45,26 @@ public final class SyncPositionResumerTest {
     
     private static final String PASSWORD = "password";
     
-    private ShardingScalingJob shardingScalingJob;
-    
-    private ResumeBreakPointManager resumeBreakPointManager;
-    
-    private SyncPositionResumer syncPositionResumer;
-    
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
-        shardingScalingJob = new ShardingScalingJob("scalingTest", 0);
-        shardingScalingJob.getSyncConfigurations().add(mockSyncConfiguration());
-        resumeBreakPointManager = ResumeBreakPointManagerFactory.newInstance("MySQL", "/scalingTest/item-0");
-        syncPositionResumer = new SyncPositionResumer();
     }
     
     @Test
-    public void assertResumePosition() {
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0", new InventoryPositionManager<>(new PrimaryKeyPosition(0, 100)));
-        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0.t_order", new BasePositionManager<>());
-        syncPositionResumer.resumePosition(shardingScalingJob, new DataSourceManager(), resumeBreakPointManager);
-        assertThat(shardingScalingJob.getIncrementalDataTasks().size(), is(1));
-        assertTrue(shardingScalingJob.getInventoryDataTasks().isEmpty());
+    public void assertStart() {
+        IncrementalDataScalingTask incrementalDataSyncTask = new DefaultSyncTaskFactory().createIncrementalDataSyncTask(3, mockDumperConfig(), mockImporterConfiguration());
+        incrementalDataSyncTask.start();
+        SyncProgress progress = incrementalDataSyncTask.getProgress();
+        assertTrue(progress instanceof IncrementalDataSyncTaskProgress);
+        assertThat(((IncrementalDataSyncTaskProgress) progress).getId(), is("ds0"));
+        assertThat(((IncrementalDataSyncTaskProgress) progress).getDelayMillisecond(), is(0L));
+        assertTrue(((IncrementalDataSyncTaskProgress) progress).getPosition() instanceof IncrementalPosition);
     }
     
-    @Test
-    public void assertPersistPosition() {
-        ResumeBreakPointManager resumeBreakPointManager = mock(ResumeBreakPointManager.class);
-        syncPositionResumer.persistPosition(shardingScalingJob, resumeBreakPointManager);
-        verify(resumeBreakPointManager).persistIncrementalPosition();
-        verify(resumeBreakPointManager).persistInventoryPosition();
-    }
-    
-    private SyncConfiguration mockSyncConfiguration() {
-        DumperConfiguration dumperConfig = mockDumperConfig();
+    private ImporterConfiguration mockImporterConfiguration() {
         ImporterConfiguration importerConfig = new ImporterConfiguration();
-        return new SyncConfiguration(3, dumperConfig, importerConfig);
+        importerConfig.setDataSourceConfiguration(new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
+        return importerConfig;
     }
     
     private DumperConfiguration mockDumperConfig() {
@@ -97,6 +75,7 @@ public final class SyncPositionResumerTest {
         Map<String, String> tableMap = new HashMap<>();
         tableMap.put("t_order", "t_order");
         result.setTableNameMap(tableMap);
+        result.setPositionManager(new FixtureNopManager(""));
         return result;
     }
 }

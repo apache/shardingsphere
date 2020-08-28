@@ -36,12 +36,12 @@ import org.apache.shardingsphere.scaling.mysql.binlog.event.DeleteRowsEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.PlaceholderEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.WriteRowsEvent;
+import org.apache.shardingsphere.scaling.utils.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -160,8 +160,6 @@ public final class MySQLBinlogDumperTest {
     
     @SneakyThrows({NoSuchMethodException.class, ReflectiveOperationException.class})
     private void invokeHandleEvent(final JdbcUri uri, final AbstractBinlogEvent event) {
-        Method handleEvent = MySQLBinlogDumper.class.getDeclaredMethod("handleEvent", JdbcUri.class, AbstractBinlogEvent.class);
-        handleEvent.setAccessible(true);
-        handleEvent.invoke(mySQLBinlogDumper, uri, event);
+        ReflectionUtil.invokeMethod(mySQLBinlogDumper, "handleEvent", new Class[]{JdbcUri.class, AbstractBinlogEvent.class}, new Object[]{uri, event});
     }
 }
