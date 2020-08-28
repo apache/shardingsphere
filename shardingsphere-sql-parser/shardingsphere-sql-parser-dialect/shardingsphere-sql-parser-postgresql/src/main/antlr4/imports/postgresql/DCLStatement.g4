@@ -20,19 +20,19 @@ grammar DCLStatement;
 import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule, DDLStatement;
 
 grant
-    : GRANT (privilegeClause | roleClause_) TO granteeList (WITH GRANT OPTION)?
+    : GRANT (privilegeClause | roleClause_)
     ;
 
 revoke
-    : REVOKE optionForClause_? (privilegeClause FROM granteeList  | roleClause_ ) (CASCADE | RESTRICT)?
+    : REVOKE optionForClause_? (privilegeClause | roleClause_) (CASCADE | RESTRICT)?
     ;
 
 privilegeClause
-    : privileges_ ON onObjectClause
+    : privileges_ ON onObjectClause (FROM | TO) granteeList (WITH GRANT OPTION)?
     ;
     
 roleClause_
-    : privilegeList FROM roleList (GRANTED BY roleSpec)?
+    : privilegeList (FROM | TO) roleList (WITH ADMIN OPTION)? (GRANTED BY roleSpec)?
     ;
 
 optionForClause_
@@ -72,7 +72,7 @@ onObjectClause
     | TABLESPACE nameList
     | TYPE anyNameList
     | SEQUENCE qualifiedNameList
-    | TABLE? tableNames
+    | TABLE? privilegeLevel
     | FOREIGN DATA WRAPPER nameList
     | FOREIGN SERVER nameList
     | ALL TABLES IN SCHEMA nameList
@@ -80,6 +80,14 @@ onObjectClause
     | ALL FUNCTIONS IN SCHEMA nameList
     | ALL PROCEDURES IN SCHEMA nameList
     | ALL ROUTINES IN SCHEMA nameList
+    ;
+
+privilegeLevel
+    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableNames | schemaName DOT_ routineName
+    ;
+
+routineName
+    : identifier
     ;
 
 numericOnlyList

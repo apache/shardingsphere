@@ -82,6 +82,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -332,11 +333,6 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     }
     
     @Override
-    public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        return new CreateDatabaseStatement();
-    }
-    
-    @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         return new CreateViewStatement();
     }
@@ -349,5 +345,10 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
         return new DropProcedureStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
+        return new CreateDatabaseStatement(((IdentifierValue) visit(ctx.name())).getValue());
     }
 }
