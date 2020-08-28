@@ -74,13 +74,14 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     
     @Override
     protected Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException {
+        String schemaName = PATH + "_db";
         YamlRootRuleConfigurations yamlRootRuleConfigs = createYamlRootRuleConfigurations();
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(schemaName,
                 new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlRootRuleConfigs.getRules()), yamlRootRuleConfigs.getDataSources().keySet());
         StandardSQLParserEngine standardSqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingSphereMetaData metaData = createShardingSphereMetaData();
         ConfigurationProperties props = new ConfigurationProperties(yamlRootRuleConfigs.getProps());
-        RouteContext routeContext = new DataNodeRouter(metaData, props, rules).route(
+        RouteContext routeContext = new DataNodeRouter(metaData, props, rules, schemaName).route(
                 standardSqlParserEngine.parse(getTestParameters().getInputSQL(), false), getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(),
                 props, rules).rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), routeContext);

@@ -30,7 +30,7 @@ import java.util.Collection;
 public final class ShadowRuleBuilder implements ShardingSphereRuleBuilder<ShadowRule, ShadowRuleConfiguration> {
     
     @Override
-    public ShadowRule build(final ShadowRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+    public ShadowRule build(final String schemaName, final ShadowRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
         return new ShadowRule(ruleConfiguration);
     }
     

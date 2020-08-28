@@ -40,6 +40,6 @@ public final class AlgorithmProvidedShardingRuleBuilderTest {
     public void assertBuild() {
         AlgorithmProvidedShardingRuleConfiguration ruleConfig = mock(AlgorithmProvidedShardingRuleConfiguration.class);
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, Collections.singletonList("name")), instanceOf(ShardingRule.class));
+        assertThat(builder.build("sharding_db", ruleConfig, Collections.singletonList("name")), instanceOf(ShardingRule.class));
     }
 }

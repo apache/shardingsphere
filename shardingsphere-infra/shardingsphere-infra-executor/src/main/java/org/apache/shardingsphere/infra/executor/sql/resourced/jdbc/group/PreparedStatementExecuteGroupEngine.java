@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group;
 
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
@@ -35,9 +36,9 @@ import java.util.List;
  */
 public final class PreparedStatementExecuteGroupEngine extends ResourceManagedExecuteGroupEngine<StatementExecuteUnit, JDBCExecutionConnection, Connection, StatementOption> {
     
-    public PreparedStatementExecuteGroupEngine(final int maxConnectionsSizePerQuery,
-                                               final JDBCExecutionConnection executionConnection, final StatementOption option, final Collection<ShardingSphereRule> rules) {
-        super(maxConnectionsSizePerQuery, executionConnection, option, rules);
+    public PreparedStatementExecuteGroupEngine(final int maxConnectionsSizePerQuery, final JDBCExecutionConnection executionConnection, final StatementOption option,
+                                               final Collection<ShardingSphereRule> rules, final ExecutionContext executionContext) {
+        super(maxConnectionsSizePerQuery, executionConnection, option, rules, executionContext);
     }
     
     @Override

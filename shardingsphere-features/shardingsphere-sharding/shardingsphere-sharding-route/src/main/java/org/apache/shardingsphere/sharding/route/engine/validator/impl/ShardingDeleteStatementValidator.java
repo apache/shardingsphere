@@ -35,7 +35,7 @@ public final class ShardingDeleteStatementValidator implements ShardingStatement
 
     @Override
     public void preValidate(final ShardingRule shardingRule, final RouteContext routeContext, final ShardingSphereMetaData metaData) {
-        SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
+        SQLStatementContext sqlStatementContext = routeContext.getOriginRouteStageContext().getSqlStatementContext();
         if (1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }

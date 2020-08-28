@@ -21,6 +21,14 @@ import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.rewrite.sql.impl.DefaultSQLBuilder;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  * Generic SQL rewrite engine.
@@ -34,6 +42,24 @@ public final class GenericSQLRewriteEngine {
      * @return SQL rewrite result
      */
     public GenericSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new GenericSQLRewriteResult(new SQLRewriteUnit(new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getParameterBuilder().getParameters()));
+        Collection<RouteMapper> tableMappers = getTableMappers(sqlRewriteContext.getSqlStatementContext());
+        return new GenericSQLRewriteResult(new SQLRewriteUnit(new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getParameterBuilder().getParameters()),
+                new RouteUnit(null, tableMappers));
     }
+
+    private Collection<RouteMapper> getTableMappers(final SQLStatementContext sqlStatementContext) {
+        TablesContext tablesContext = null;
+        if (null != sqlStatementContext) {
+            tablesContext = sqlStatementContext.getTablesContext();
+        }
+        Collection<String> tableNames = null;
+        if (null != tablesContext) {
+            tableNames = tablesContext.getTableNames();
+        }
+        if (null != tableNames && !tableNames.isEmpty()) {
+            return tableNames.stream().map(tableName -> new RouteMapper(tableName, tableName)).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
 }

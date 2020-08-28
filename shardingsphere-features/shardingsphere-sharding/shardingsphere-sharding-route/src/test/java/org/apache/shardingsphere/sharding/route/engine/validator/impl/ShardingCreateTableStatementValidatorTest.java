@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.route.context.OriginRouteStageContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
@@ -45,7 +46,7 @@ public final class ShardingCreateTableStatementValidatorTest {
     public void assertValidateCreateTable() {
         CreateTableStatement sqlStatement = new CreateTableStatement(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")));
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
-        RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", sqlStatementContext, Collections.emptyList(), new RouteResult()));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
         when(ruleSchemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));

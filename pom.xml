@@ -801,9 +801,11 @@
                 <version>${apache-rat-plugin.version}</version>
                 <configuration>
                     <excludes>
+                        <exclude>**/gen/**</exclude>
                         <exclude>**/target/**</exclude>
                         <exclude>**/logs/**</exclude>
                         <exclude>**/*.log</exclude>
+                        <exclude>**/*.tokens</exclude>
                         <!-- IDE files -->
                         <exclude>**/*.iml</exclude>
                         <exclude>**/.idea/**</exclude>

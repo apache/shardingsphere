@@ -40,6 +40,6 @@ public final class ReplicaRuleBuilderTest {
     public void assertBuild() {
         ReplicaRuleConfiguration ruleConfig = mock(ReplicaRuleConfiguration.class);
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, Collections.emptyList()), instanceOf(ReplicaRule.class));
+        assertThat(builder.build("sharding_db", ruleConfig, Collections.emptyList()), instanceOf(ReplicaRule.class));
     }
 }

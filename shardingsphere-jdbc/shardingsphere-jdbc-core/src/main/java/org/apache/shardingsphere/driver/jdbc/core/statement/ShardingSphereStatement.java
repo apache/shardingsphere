@@ -284,10 +284,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
         SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(sql, false);
         RouteContext routeContext = new DataNodeRouter(
-                schemaContext.getSchema().getMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules()).route(sqlStatement, sql, Collections.emptyList());
+                schemaContext.getSchema().getMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules(), schemaContext.getName()).route(sqlStatement, sql, Collections.emptyList());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(schemaContext.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(),
                 schemaContexts.getProps(), schemaContext.getSchema().getRules()).rewrite(sql, Collections.emptyList(), routeContext);
-        ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(schemaContext.getSchema().getMetaData(), sqlRewriteResult));
+        ExecutionContext result = new ExecutionContext(routeContext, ExecutionContextBuilder.build(schemaContext.getSchema().getMetaData(), sqlRewriteResult));
         logSQL(sql, schemaContexts.getProps(), result);
         return result;
     }
@@ -307,13 +307,14 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private Collection<InputGroup<StatementExecuteUnit>> getInputGroups() throws SQLException {
         int maxConnectionsSizePerQuery = schemaContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, connection, statementOption, 
-                schemaContexts.getDefaultSchemaContext().getSchema().getRules()).generate(executionContext.getExecutionUnits());
+        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, connection, statementOption,
+                schemaContexts.getDefaultSchemaContext().getSchema().getRules(), executionContext).generate(executionContext.getExecutionUnits());
     }
     
     private Collection<InputGroup<RawSQLExecuteUnit>> getRawInputGroups() throws SQLException {
         int maxConnectionsSizePerQuery = schemaContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new RawExecuteGroupEngine(maxConnectionsSizePerQuery, schemaContexts.getDefaultSchemaContext().getSchema().getRules()).generate(executionContext.getExecutionUnits());
+        return new RawExecuteGroupEngine(maxConnectionsSizePerQuery, schemaContexts.getDefaultSchemaContext().getSchema().getRules(), executionContext)
+                .generate(executionContext.getExecutionUnits());
     }
     
     private void cacheStatements(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {

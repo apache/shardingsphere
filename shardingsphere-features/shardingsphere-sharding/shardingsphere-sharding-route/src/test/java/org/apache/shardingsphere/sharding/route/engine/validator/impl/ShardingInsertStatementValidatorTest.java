@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.route.context.OriginRouteStageContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -61,7 +62,7 @@ public final class ShardingInsertStatementValidatorTest {
     public void assertValidateInsertModifyMultiTables() {
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(createMultiTablesContext().getTables());
-        RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", sqlStatementContext, Collections.emptyList(), new RouteResult()));
         new ShardingInsertStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
 
@@ -69,7 +70,7 @@ public final class ShardingInsertStatementValidatorTest {
     public void assertValidateOnDuplicateKeyWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement());
-        RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", sqlStatementContext, Collections.emptyList(), new RouteResult()));
         new ShardingInsertStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
@@ -77,7 +78,7 @@ public final class ShardingInsertStatementValidatorTest {
     public void assertValidateOnDuplicateKeyWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement());
-        RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", sqlStatementContext, Collections.emptyList(), new RouteResult()));
         new ShardingInsertStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
@@ -87,7 +88,7 @@ public final class ShardingInsertStatementValidatorTest {
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(false);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(createSingleTablesContext().getTables());
-        RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", sqlStatementContext, Collections.emptyList(), new RouteResult()));
         new ShardingInsertStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
@@ -97,7 +98,7 @@ public final class ShardingInsertStatementValidatorTest {
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(true);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(createSingleTablesContext().getTables());
-        RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", sqlStatementContext, Collections.emptyList(), new RouteResult()));
         new ShardingInsertStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
@@ -109,7 +110,7 @@ public final class ShardingInsertStatementValidatorTest {
         when(shardingRule.isAllBindingTables(multiTablesContext.getTableNames())).thenReturn(false);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(multiTablesContext.getTables());
-        RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", sqlStatementContext, Collections.emptyList(), new RouteResult()));
         new ShardingInsertStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
@@ -121,7 +122,7 @@ public final class ShardingInsertStatementValidatorTest {
         when(shardingRule.isAllBindingTables(multiTablesContext.getTableNames())).thenReturn(true);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(multiTablesContext.getTables());
-        RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", sqlStatementContext, Collections.emptyList(), new RouteResult()));
         new ShardingInsertStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
