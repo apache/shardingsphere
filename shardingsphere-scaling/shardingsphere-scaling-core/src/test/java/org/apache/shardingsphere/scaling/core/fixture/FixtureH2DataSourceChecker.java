@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationCenterConfiguration;
+import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 
-/**
- * Global server configuration.
- */
-@Setter
-@Getter
-public final class ServerConfiguration implements YamlConfiguration {
+import javax.sql.DataSource;
+import java.util.Collection;
+
+public final class FixtureH2DataSourceChecker implements DataSourceChecker {
     
-    private int port = 8080;
+    @Override
+    public void checkConnection(final Collection<? extends DataSource> dataSources) {
+    }
     
-    private int blockQueueSize = 10000;
+    @Override
+    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
+    }
     
-    private int pushTimeout = 1000;
-    
-    private int workerThread = 30;
-    
-    private String name;
-    
-    private YamlOrchestrationCenterConfiguration registryCenter;
+    @Override
+    public void checkVariable(final Collection<? extends DataSource> dataSources) {
+    }
 }

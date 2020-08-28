@@ -15,19 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
+import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 
-/**
- * Resume configuration.
- */
-@Getter
-@Setter
-public final class ResumeConfiguration {
+public final class FixtureH2LogDumper implements LogDumper {
     
-    private String serverLists;
+    public FixtureH2LogDumper(final DumperConfiguration dumperConfiguration, final Position position) {
+    }
     
-    private String namespace;
+    @Override
+    public void setChannel(final Channel channel) {
+    }
+    
+    @Override
+    public void start() {
+    }
+    
+    @Override
+    public void stop() {
+    }
+    
+    @Override
+    public void run() {
+    }
 }

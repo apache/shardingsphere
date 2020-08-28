@@ -34,7 +34,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends LogDumper> getLogDumperClass() {
-        return null;
+        return FixtureH2LogDumper.class;
     }
     
     @Override
@@ -49,7 +49,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends DataSourceChecker> getCheckerClass() {
-        return null;
+        return FixtureH2DataSourceChecker.class;
     }
     
     @Override

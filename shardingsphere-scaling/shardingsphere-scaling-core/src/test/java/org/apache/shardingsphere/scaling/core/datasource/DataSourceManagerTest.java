@@ -51,7 +51,7 @@ public final class DataSourceManagerTest {
     @Test
     public void assertCreateWithConfiguration() throws NoSuchFieldException, IllegalAccessException {
         DataSourceManager dataSourceManager = new DataSourceManager(syncConfigurations);
-        Map cachedDataSources = ReflectionUtil.getFieldValueFromClass(dataSourceManager, "cachedDataSources", Map.class);
+        Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValueFromClass(dataSourceManager, "cachedDataSources", Map.class);
         assertNotNull(cachedDataSources);
         assertThat(cachedDataSources.size(), is(2));
     }
@@ -67,7 +67,7 @@ public final class DataSourceManagerTest {
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
         DataSourceManager dataSourceManager = new DataSourceManager(syncConfigurations);
         dataSourceManager.close();
-        Map cachedDataSources = ReflectionUtil.getFieldValueFromClass(dataSourceManager, "cachedDataSources", Map.class);
+        Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValueFromClass(dataSourceManager, "cachedDataSources", Map.class);
         assertNotNull(cachedDataSources);
         assertThat(cachedDataSources.size(), is(0));
     }

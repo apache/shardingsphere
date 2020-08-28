@@ -17,49 +17,30 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import java.util.List;
-
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 
 public final class FixtureNopImporter implements Importer {
-    
-    private boolean running;
-    
-    private Channel channel;
     
     public FixtureNopImporter(final ImporterConfiguration importerConfiguration, final DataSourceManager dataSourceManager) {
     }
     
     @Override
     public void setChannel(final Channel channel) {
-        this.channel = channel;
     }
     
     @Override
     public void write() {
-        while (running) {
-            List<Record> records = channel.fetchRecords(100, 1);
-            if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
-                channel.ack();
-                break;
-            }
-            channel.ack();
-        }
     }
     
     @Override
     public void start() {
-        running = true;
     }
     
     @Override
     public void stop() {
-        running = false;
     }
     
     @Override
