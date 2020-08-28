@@ -54,7 +54,7 @@ public final class InsertStatementAssert {
         assertOnDuplicateKeyColumns(assertContext, actual, expected);
         assertWithClause(assertContext, actual, expected);
     }
-
+    
     private static void assertTable(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
     }
@@ -103,7 +103,7 @@ public final class InsertStatementAssert {
             assertFalse(assertContext.getText("Actual on duplicate key columns segment should not exist."), actual.getOnDuplicateKeyColumns().isPresent());
         }
     }
-
+    
     private static void assertWithClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         if (null != expected.getWithClause()) {
             assertTrue(assertContext.getText("Actual with segment should exist."), actual.getWithSegment().isPresent());

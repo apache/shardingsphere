@@ -30,9 +30,9 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class WithSegment implements SQLSegment {
-
+    
     private final int startIndex;
-
+    
     private final int stopIndex;
     
     private final Collection<CommonTableExpressionSegment> commonTableExpressions;

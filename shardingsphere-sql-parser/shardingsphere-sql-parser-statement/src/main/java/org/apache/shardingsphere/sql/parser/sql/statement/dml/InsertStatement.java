@@ -102,7 +102,7 @@ public final class InsertStatement extends DMLStatement {
     public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
         return Optional.ofNullable(onDuplicateKeyColumns);
     }
-
+    
     /**
      * Get with segment.
      * 

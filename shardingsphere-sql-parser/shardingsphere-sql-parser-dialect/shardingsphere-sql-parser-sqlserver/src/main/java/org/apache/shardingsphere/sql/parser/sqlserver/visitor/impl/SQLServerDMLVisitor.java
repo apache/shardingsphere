@@ -130,7 +130,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
-
+    
     @Override
     public ASTNode visitWithClause_(final WithClause_Context ctx) {
         List<CteClause_Context> cteClauses = ctx.cteClause_();
@@ -148,7 +148,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         }
         return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressions);
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
@@ -171,7 +171,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
         InsertStatement result = new InsertStatement();
@@ -179,7 +179,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         result.setInsertSelect(createInsertSelectSegment(ctx));
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     private InsertColumnsSegment createInsertColumns(final ColumnNamesContext columnNames, final int startIndex) {
         if (null != columnNames) {
@@ -189,7 +189,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
             return new InsertColumnsSegment(startIndex - 1, startIndex - 1, Collections.emptyList());
         }
     }
-
+    
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
         SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
         return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement);

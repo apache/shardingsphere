@@ -34,10 +34,10 @@ public final class ExpectedCommonTableExpressionClause extends AbstractExpectedS
     
     @XmlAttribute
     private String name;
-
+    
     @XmlElement(name = "columns")
     private ExpectedCommonTableExpressColumnsClause commonTableExpressColumns;
-
+    
     @XmlElement(name = "subquery-expression")
     private ExpectedSubquery subquery;
 }

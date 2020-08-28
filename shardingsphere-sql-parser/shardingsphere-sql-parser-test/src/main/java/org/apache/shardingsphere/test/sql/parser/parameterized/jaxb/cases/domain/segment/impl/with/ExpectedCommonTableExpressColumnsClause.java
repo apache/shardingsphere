@@ -32,7 +32,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class ExpectedCommonTableExpressColumnsClause extends AbstractExpectedSQLSegment {
-
+    
     @XmlElement(name = "column")
     private List<ExpectedColumn> columns = new LinkedList<>();
 }

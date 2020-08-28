@@ -35,9 +35,9 @@ import java.util.LinkedList;
 @Getter
 @ToString
 public final class CommonTableExpressionSegment implements ExpressionSegment {
-
+    
     private final int startIndex;
-
+    
     private final int stopIndex;
     
     private final IdentifierValue identifier;
