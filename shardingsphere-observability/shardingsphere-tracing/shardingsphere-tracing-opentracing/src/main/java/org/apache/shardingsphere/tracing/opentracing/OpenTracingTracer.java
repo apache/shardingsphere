@@ -20,21 +20,14 @@ package org.apache.shardingsphere.tracing.opentracing;
 import com.google.common.base.Preconditions;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.control.panel.spi.ControlPanelFacade;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
 
 /**
  * OpenTracing tracer object container.
  */
-public final class OpenTracingTracer implements ControlPanelFacade<OpenTracingConfiguration> {
+public final class OpenTracingTracer {
     
     public static final String OPENTRACING_TRACER_CLASS_NAME = "org.apache.shardingsphere.tracing.opentracing.tracer.class";
-    
-    @Override
-    public void init(final OpenTracingConfiguration configuration) {
-        doInit();
-    }
     
     /**
      * Initialize sharding tracer.
@@ -61,16 +54,6 @@ public final class OpenTracingTracer implements ControlPanelFacade<OpenTracingCo
      */
     public static Tracer get() {
         return GlobalTracer.get();
-    }
-    
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Class<OpenTracingConfiguration> getTypeClass() {
-        return OpenTracingConfiguration.class;
     }
     
     private static void doInit() {

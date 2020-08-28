@@ -21,8 +21,6 @@ import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
-import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.tracing.opentracing.fixture.FooTracer;
 import org.junit.After;
@@ -30,7 +28,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.isA;
@@ -71,8 +68,7 @@ public final class OpenTracingTracerTest {
     
     @Test
     public void assertTracerSpiLoad() {
-        OpenTracingConfiguration openTracingConfiguration = new OpenTracingConfiguration();
-        new ControlPanelFacadeEngine().init(Collections.singleton(openTracingConfiguration));
+        OpenTracingTracer.init();
         assertThat((GlobalTracer) OpenTracingTracer.get(), isA(GlobalTracer.class));
         assertTrue(GlobalTracer.isRegistered());
         assertThat(OpenTracingTracer.get(), is(OpenTracingTracer.get()));
