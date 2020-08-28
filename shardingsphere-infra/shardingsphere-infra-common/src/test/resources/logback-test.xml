@@ -22,7 +22,7 @@
             <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="org.apache.shardingsphere" level="info" additivity="false">
+    <logger name="org.apache.shardingsphere" level="warn" additivity="false">
         <appender-ref ref="console"/>
     </logger>
     <logger name="com.zaxxer.hikari.HikariConfig" level="warn" />

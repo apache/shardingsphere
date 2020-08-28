@@ -17,38 +17,29 @@
 
 package org.apache.shardingsphere.orchestration.core.registry.listener;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
+import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.orchestration.core.registry.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.orchestration.core.registry.instance.InstanceState;
 import org.apache.shardingsphere.orchestration.core.registry.instance.OrchestrationInstance;
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Instance state changed listener.
  */
 public final class InstanceStateChangedListener extends PostOrchestrationRepositoryEventListener {
     
-    public InstanceStateChangedListener(final String name, final RegistryRepository registryRepository) {
-        super(registryRepository, Collections.singleton(new RegistryCenterNode(name).getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId())));
+    public InstanceStateChangedListener(final RegistryRepository registryRepository) {
+        super(registryRepository, Collections.singleton(new RegistryCenterNode().getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId())));
     }
     
     @Override
-    protected CircuitStateChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
-        return new CircuitStateChangedEvent(isCircuitBreak(event.getValue()));
-    }
-    
-    private boolean isCircuitBreak(final String value) {
-        if (!Strings.isNullOrEmpty(value)) {
-            return RegistryCenterNodeStatus.DISABLED.toString()
-                    .equalsIgnoreCase(YamlEngine.unmarshal(value, InstanceState.class).getState().toString());
-        }
-        return false;
+    protected Optional<OrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
+        return Optional.of(new CircuitStateChangedEvent(RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue())));
     }
 }

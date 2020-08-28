@@ -20,16 +20,14 @@ package org.apache.shardingsphere.rdl.parser.sql.visitor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementBaseVisitor;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateDatasourceContext;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateSchemaContext;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateShardingRuleContext;
+import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateShardingRulesContext;
+import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateDataSourcesContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.DataSourceContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.DataSourceDefinitionContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.StrategyPropContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.StrategyPropsContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.TableRuleContext;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateSchemaStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.DataSourceConnectionSegment;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.TableRuleSegment;
@@ -46,12 +44,7 @@ import java.util.LinkedList;
 public final class ShardingSphereVisitor extends ShardingSphereStatementBaseVisitor<ASTNode> {
     
     @Override
-    public ASTNode visitCreateSchema(final CreateSchemaContext ctx) {
-        return new CreateSchemaStatement(ctx.schemaName().getText());
-    }
-    
-    @Override
-    public ASTNode visitCreateDatasource(final CreateDatasourceContext ctx) {
+    public ASTNode visitCreateDataSources(final CreateDataSourcesContext ctx) {
         Collection<DataSourceConnectionSegment> connectionInfos = new LinkedList<>();
         for (DataSourceContext each : ctx.dataSource()) {
             connectionInfos.add((DataSourceConnectionSegment) visit(each));
@@ -78,7 +71,7 @@ public final class ShardingSphereVisitor extends ShardingSphereStatementBaseVisi
     }
     
     @Override
-    public ASTNode visitCreateShardingRule(final CreateShardingRuleContext ctx) {
+    public ASTNode visitCreateShardingRules(final CreateShardingRulesContext ctx) {
         Collection<TableRuleSegment> tables = new LinkedList<>();
         for (TableRuleContext each : ctx.tableRule()) {
             tables.add((TableRuleSegment) visit(each));
@@ -92,6 +85,7 @@ public final class ShardingSphereVisitor extends ShardingSphereStatementBaseVisi
         result.setLogicTable(ctx.tableName().getText());
         result.setAlgorithmType(ctx.tableRuleDefinition().strategyType().getText());
         result.setShardingColumn(ctx.tableRuleDefinition().strategyDefinition().columName().getText());
+        // TODO Future feature.
         result.setDataSources(new LinkedList<>());
         CollectionValue<String> props = (CollectionValue) visit(ctx.tableRuleDefinition().strategyDefinition().strategyProps());
         result.setProperties(props.getValue());

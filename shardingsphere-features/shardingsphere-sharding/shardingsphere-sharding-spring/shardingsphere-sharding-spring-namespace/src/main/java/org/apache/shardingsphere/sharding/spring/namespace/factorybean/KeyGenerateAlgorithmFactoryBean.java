@@ -33,6 +33,6 @@ public final class KeyGenerateAlgorithmFactoryBean extends ShardingSphereAlgorit
     }
     
     public KeyGenerateAlgorithmFactoryBean(final String type, final Properties props) {
-        super(type, props, KeyGenerateAlgorithm.class);
+        super(KeyGenerateAlgorithm.class, type, props);
     }
 }

@@ -18,22 +18,23 @@
 package org.apache.shardingsphere.driver.orchestration.internal.datasource;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.driver.orchestration.internal.schema.JDBCOrchestrationSchemaContexts;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.schema.OrchestrationSchema;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -42,7 +43,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -58,11 +58,14 @@ import static org.junit.Assert.assertThat;
 
 public final class OrchestrationShardingSphereDataSourceTest {
     
-    private static OrchestrationShardingSphereDataSource orchestrationDataSource;
+    private static JDBCOrchestrationSchemaContexts orchestrationSchemaContexts;
     
     @BeforeClass
     public static void setUp() throws SQLException, IOException, URISyntaxException {
-        orchestrationDataSource = new OrchestrationShardingSphereDataSource(getShardingSphereDataSource(), getOrchestrationConfiguration());
+        SchemaContexts schemaContexts = getShardingSphereDataSource().getSchemaContexts();
+        OrchestrationShardingSphereDataSource orchestrationDataSource = new OrchestrationShardingSphereDataSource(schemaContexts.getDefaultSchemaContext().getSchema().getDataSources(),
+                schemaContexts.getDefaultSchemaContext().getSchema().getConfigurations(), schemaContexts.getProps().getProps(), getOrchestrationConfiguration());
+        orchestrationSchemaContexts = (JDBCOrchestrationSchemaContexts) orchestrationDataSource.getSchemaContexts();
     }
     
     private static ShardingSphereDataSource getShardingSphereDataSource() throws IOException, SQLException, URISyntaxException {
@@ -93,9 +96,9 @@ public final class OrchestrationShardingSphereDataSourceTest {
     }
     
     @Test
-    public void assertRenewRules() {
-        orchestrationDataSource.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getMasterSlaveRuleConfiguration())));
-        assertThat(((ShardingRule) getDataSource().getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().iterator().next()).getTableRules().size(), is(1));
+    public void assertRenewRules() throws Exception {
+        orchestrationSchemaContexts.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getMasterSlaveRuleConfiguration())));
+        assertThat(((ShardingRule) orchestrationSchemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next()).getTableRules().size(), is(1));
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
@@ -111,9 +114,9 @@ public final class OrchestrationShardingSphereDataSourceTest {
     }
     
     @Test
-    public void assertRenewDataSource() {
-        orchestrationDataSource.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
-        assertThat(getDataSource().getDataSourceMap().size(), is(3));
+    public void assertRenewDataSource() throws Exception {
+        orchestrationSchemaContexts.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
+        assertThat(orchestrationSchemaContexts.getDefaultSchemaContext().getSchema().getDataSources().size(), is(3));
         
     }
     
@@ -132,8 +135,8 @@ public final class OrchestrationShardingSphereDataSourceTest {
     
     @Test
     public void assertRenewProperties() {
-        orchestrationDataSource.renew(getPropertiesChangedEvent());
-        assertThat(getDataSource().getSchemaContexts().getProps().getProps().getProperty("sql.show"), is("true"));
+        orchestrationSchemaContexts.renew(getPropertiesChangedEvent());
+        assertThat(orchestrationSchemaContexts.getProps().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {
@@ -144,13 +147,6 @@ public final class OrchestrationShardingSphereDataSourceTest {
     
     @Test
     public void assertRenewDisabledState() {
-        orchestrationDataSource.renew(new DisabledStateChangedEvent(new OrchestrationSchema("logic_db.ds_s"), true));
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private ShardingSphereDataSource getDataSource() {
-        Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("dataSource");
-        field.setAccessible(true);
-        return (ShardingSphereDataSource) field.get(orchestrationDataSource);
+        orchestrationSchemaContexts.renew(new DisabledStateChangedEvent(new OrchestrationSchema("logic_db.ds_s"), true));
     }
 }

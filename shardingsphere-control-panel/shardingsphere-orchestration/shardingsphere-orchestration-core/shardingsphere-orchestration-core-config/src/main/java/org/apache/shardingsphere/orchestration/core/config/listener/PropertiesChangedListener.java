@@ -17,26 +17,28 @@
 
 package org.apache.shardingsphere.orchestration.core.config.listener;
 
-import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenterNode;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
+import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Properties changed listener.
  */
 public final class PropertiesChangedListener extends PostOrchestrationRepositoryEventListener {
     
-    public PropertiesChangedListener(final String name, final ConfigurationRepository configurationRepository) {
-        super(configurationRepository, Collections.singletonList(new ConfigCenterNode(name).getPropsPath()));
+    public PropertiesChangedListener(final ConfigurationRepository configurationRepository) {
+        super(configurationRepository, Collections.singletonList(new ConfigCenterNode().getPropsPath()));
     }
     
     @Override
-    protected PropertiesChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
-        return new PropertiesChangedEvent(YamlEngine.unmarshalProperties(event.getValue()));
+    protected Optional<OrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
+        return Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshalProperties(event.getValue())));
     }
 }

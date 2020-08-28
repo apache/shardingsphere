@@ -26,59 +26,53 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class ConfigCenterNodeTest {
     
-    private final ConfigCenterNode configurationNode = new ConfigCenterNode("test");
+    private final ConfigCenterNode configurationNode = new ConfigCenterNode();
     
     @Test
     public void assertGetSchemaPath() {
-        assertThat(configurationNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/test/config/schema/logic_db/rule"));
+        assertThat(configurationNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/config/schema/logic_db/rule"));
     }
     
     @Test
     public void assertGetDataSourcePath() {
-        assertThat(configurationNode.getDataSourcePath(DefaultSchema.LOGIC_NAME), is("/test/config/schema/logic_db/datasource"));
+        assertThat(configurationNode.getDataSourcePath(DefaultSchema.LOGIC_NAME), is("/config/schema/logic_db/datasource"));
     }
     
     @Test
     public void assertGetRulePath() {
-        assertThat(configurationNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/test/config/schema/logic_db/rule"));
+        assertThat(configurationNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/config/schema/logic_db/rule"));
     }
     
     @Test
     public void assertGetAuthenticationPath() {
-        assertThat(configurationNode.getAuthenticationPath(), is("/test/config/authentication"));
+        assertThat(configurationNode.getAuthenticationPath(), is("/config/authentication"));
     }
     
     @Test
     public void assertGetPropsPath() {
-        assertThat(configurationNode.getPropsPath(), is("/test/config/props"));
+        assertThat(configurationNode.getPropsPath(), is("/config/props"));
     }
     
     @Test
     public void assertGetSchemaName() {
-        assertThat(configurationNode.getSchemaName("/test/config/schema/logic_db/rule"), is(DefaultSchema.LOGIC_NAME));
+        assertThat(configurationNode.getSchemaName("/config/schema/logic_db/rule"), is(DefaultSchema.LOGIC_NAME));
     }
     
     @Test
     public void assertGetAllSchemaConfigPaths() {
         Collection<String> actual = configurationNode.getAllSchemaConfigPaths(Collections.singletonList(DefaultSchema.LOGIC_NAME));
         assertThat(actual.size(), is(4));
-        assertThat(actual, hasItems("/test/config/schema"));
-        assertThat(actual, hasItems("/test/config/schema/logic_db"));
-        assertThat(actual, hasItems("/test/config/schema/logic_db/rule"));
-        assertThat(actual, hasItems("/test/config/schema/logic_db/datasource"));
+        assertThat(actual, hasItems("/config/schema"));
+        assertThat(actual, hasItems("/config/schema/logic_db"));
+        assertThat(actual, hasItems("/config/schema/logic_db/rule"));
+        assertThat(actual, hasItems("/config/schema/logic_db/datasource"));
     }
     
     @Test
-    public void assertGetClusterPath() {
-        assertThat(configurationNode.getClusterPath(), is("/test/config/cluster"));
-    }
-    
-    @Test
-    public void assertGetMetricsPath() {
-        assertTrue(configurationNode.getMetricsPath().contains("/test/config/metrics"));
+    public void assertGetSchemaNamePath() {
+        assertThat(configurationNode.getSchemaNamePath("sharding_db"), is("/config/schema/sharding_db"));
     }
 }

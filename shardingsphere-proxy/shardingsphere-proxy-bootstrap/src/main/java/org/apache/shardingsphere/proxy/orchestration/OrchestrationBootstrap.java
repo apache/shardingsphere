@@ -18,16 +18,12 @@
 package org.apache.shardingsphere.proxy.orchestration;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
-import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
@@ -40,7 +36,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -73,8 +68,6 @@ public final class OrchestrationBootstrap {
             orchestrationFacade.onlineInstance(getDataSourceConfigurationMap(ruleConfigs),
                     getRuleConfigurations(ruleConfigs), new AuthenticationYamlSwapper().swapToObject(serverConfig.getAuthentication()), serverConfig.getProps());
         }
-        orchestrationFacade.initMetricsConfiguration(Optional.ofNullable(serverConfig.getMetrics()).map(new MetricsConfigurationYamlSwapper()::swapToObject).orElse(null));
-        orchestrationFacade.initClusterConfiguration(Optional.ofNullable(serverConfig.getCluster()).map(new ClusterConfigurationYamlSwapper()::swapToObject).orElse(null));
     }
     
     private boolean isEmptyLocalConfiguration(final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
@@ -82,7 +75,7 @@ public final class OrchestrationBootstrap {
     }
     
     private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
-        Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>();
+        Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>(ruleConfigs.size(), 1);
         for (Entry<String, YamlProxyRuleConfiguration> entry : ruleConfigs.entrySet()) {
             result.put(entry.getKey(), DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(entry.getValue().getDataSources())));
         }
@@ -95,26 +88,25 @@ public final class OrchestrationBootstrap {
     }
     
     private ProxyConfiguration loadProxyConfiguration() {
-        Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap();
-        Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules();
+        Collection<String> schemaNames = orchestrationFacade.getConfigCenter().getAllSchemaNames();
+        Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
+        Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
         Authentication authentication = orchestrationFacade.getConfigCenter().loadAuthentication();
-        ClusterConfiguration clusterConfig = orchestrationFacade.getConfigCenter().loadClusterConfiguration();
-        MetricsConfiguration metricsConfig = orchestrationFacade.getConfigCenter().loadMetricsConfiguration();
         Properties props = orchestrationFacade.getConfigCenter().loadProperties();
-        return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, clusterConfig, metricsConfig, props);
+        return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, props);
     }
     
-    private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap() {
-        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
-        for (String each : orchestrationFacade.getConfigCenter().getAllSchemaNames()) {
+    private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
+        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>(schemaNames.size(), 1);
+        for (String each : schemaNames) {
             result.put(each, DataSourceConverter.getDataSourceParameterMap(orchestrationFacade.getConfigCenter().loadDataSourceConfigurations(each)));
         }
         return result;
     }
     
-    private Map<String, Collection<RuleConfiguration>> loadSchemaRules() {
-        Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>();
-        for (String each : orchestrationFacade.getConfigCenter().getAllSchemaNames()) {
+    private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
+        Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>(schemaNames.size(), 1);
+        for (String each : schemaNames) {
             result.put(each, orchestrationFacade.getConfigCenter().loadRuleConfigurations(each));
         }
         return result;

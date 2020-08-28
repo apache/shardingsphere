@@ -70,30 +70,3 @@ Nacos 属性配置
 | ----------- | --------- | ---------------------- | ---------------------------- |
 | group (?)   | String    | nacos group 配置       | SHARDING_SPHERE_DEFAULT_GROUP |
 | timeout (?) | long      | nacos 获取数据超时毫秒数 | 3000 毫秒                     |
-
-### 集群管理
-
-*配置入口*
-
-类名称：org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration
-
-可配置属性：
-
-| *名称*                    | *数据类型*                           | *说明*                                                            |
-| ------------------------ | ----------------------------------- | ----------------------------------------------------------------- |
-| heartbeat | HeartbeatConfiguration  | 心跳检测配置 |
-
-*心跳检测配置*
-
-类名称：org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration
-
-可配置属性：
-
-| *名称*       | *数据类型* | *说明*                 |
-| ----------- | --------- | ---------------------- |
-| sql   | String    | 心跳检测 SQL       |
-| interval | int      | 心跳检测间隔时间 (s) |
-| threadCount   | int    | 心跳检测线程池大小       |
-| retryEnable | Boolean      | 是否支持失败重试，可设置 true 或 false |
-| retryMaximum(?)   | int    | 最大重试次数      |
-| retryInterval(?) | int      | 重试间隔时间 (s) |

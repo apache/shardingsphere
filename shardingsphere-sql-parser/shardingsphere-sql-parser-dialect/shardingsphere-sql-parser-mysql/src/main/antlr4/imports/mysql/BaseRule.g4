@@ -539,7 +539,11 @@ caseElse_
     ;
 
 intervalExpression
-    : INTERVAL expr intervalUnit_
+    : INTERVAL intervalValue
+    ;
+    
+intervalValue
+    : expr intervalUnit_
     ;
 
 intervalUnit_
@@ -580,7 +584,7 @@ collectionOptions
     ;
 
 characterSet_
-    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_
+    : (CHARSET | CHAR SET) EQ_? ignoredIdentifier_
     ;
 
 collateClause_

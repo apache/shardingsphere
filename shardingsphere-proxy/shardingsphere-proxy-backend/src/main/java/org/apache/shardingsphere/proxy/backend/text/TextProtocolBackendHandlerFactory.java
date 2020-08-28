@@ -23,7 +23,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.admin.BroadcastBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.RDLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.ShowTablesBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.UnicastBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.query.QueryBackendHandler;
@@ -32,11 +34,14 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.proxy.backend.text.transaction.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngineFactory;
+import org.apache.shardingsphere.rdl.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
@@ -62,12 +67,15 @@ public final class TextProtocolBackendHandlerFactory {
         if (Strings.isNullOrEmpty(sql)) {
             return new SkipBackendHandler();
         }
-        // TODO : Parse sctl sql with Antlr.
+        // TODO Parse sctl SQL with ANTLR
         String trimSQL = SCTLUtils.trimComment(sql);
         if (trimSQL.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
             return ShardingCTLBackendHandlerFactory.newInstance(trimSQL, backendConnection);
         }
         SQLStatement sqlStatement = ShardingSphereSQLParserEngineFactory.getSQLParserEngine(databaseType.getName()).parse(sql, false);
+        if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement) {
+            return new RDLBackendHandler(backendConnection, sqlStatement);
+        }
         if (sqlStatement instanceof TCLStatement) {
             return createTCLBackendHandler(sql, (TCLStatement) sqlStatement, backendConnection);
         }
@@ -102,6 +110,9 @@ public final class TextProtocolBackendHandlerFactory {
         }
         if (dalStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesBackendHandler(backendConnection);
+        }
+        if (dalStatement instanceof ShowTablesStatement) {
+            return new ShowTablesBackendHandler(sql, dalStatement, backendConnection);
         }
         // FIXME: There are three SetStatement classes.
         if (dalStatement instanceof SetStatement) {

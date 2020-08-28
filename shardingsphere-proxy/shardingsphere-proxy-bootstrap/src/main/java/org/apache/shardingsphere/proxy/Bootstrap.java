@@ -41,6 +41,7 @@ import org.apache.shardingsphere.proxy.orchestration.OrchestrationBootstrap;
 import org.apache.shardingsphere.proxy.orchestration.schema.ProxyOrchestrationSchemaContexts;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -57,9 +58,10 @@ public final class Bootstrap {
      * Main entrance.
      *
      * @param args startup arguments
-     * @throws Exception exception
+     * @throws IOException IO exception
+     * @throws SQLException SQL exception
      */
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) throws IOException, SQLException {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         int port = bootstrapArgs.getPort();
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
@@ -74,7 +76,7 @@ public final class Bootstrap {
     
     private static void init(final ProxyConfiguration proxyConfig, final int port, final boolean orchestrationEnabled) throws SQLException {
         initSchemaContexts(proxyConfig, orchestrationEnabled);
-        initControlPanelFacade(proxyConfig);
+        initControlPanelFacade();
         setDatabaseServerInfo();
         ShardingSphereProxy.getInstance().start(port);
     }
@@ -82,7 +84,7 @@ public final class Bootstrap {
     private static void initSchemaContexts(final ProxyConfiguration proxyConfig, final boolean orchestrationEnabled) throws SQLException {
         ProxyDataSourceContext dataSourceContext = new ProxyDataSourceContext(proxyConfig.getSchemaDataSources());
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(
-                dataSourceContext.getDataSourcesMap(), dataSourceContext.getDatabaseType(), proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
+                dataSourceContext.getDatabaseType(), dataSourceContext.getDataSourcesMap(), proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
         ProxySchemaContexts.getInstance().init(createSchemaContexts(schemaContextsBuilder.build(), orchestrationEnabled));
     }
     
@@ -90,16 +92,10 @@ public final class Bootstrap {
         return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts(schemaContexts, OrchestrationFacade.getInstance()) : schemaContexts;
     }
     
-    private static void initControlPanelFacade(final ProxyConfiguration proxyConfig) {
+    private static void initControlPanelFacade() {
         Collection<ControlPanelConfiguration> controlPanelConfigs = new LinkedList<>();
-        if (null != proxyConfig.getMetrics() && proxyConfig.getMetrics().getEnable()) {
-            controlPanelConfigs.add(proxyConfig.getMetrics());
-        }
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
             controlPanelConfigs.add(new OpenTracingConfiguration());
-        }
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
-            controlPanelConfigs.add(proxyConfig.getCluster());
         }
         new ControlPanelFacadeEngine().init(controlPanelConfigs);
     }

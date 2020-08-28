@@ -119,6 +119,10 @@ name
     ;
 
 columnNames
+    : LP_ columnName (COMMA_ columnName)* RP_
+    ;
+
+columnNamesWithSort
     : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
     ;
 

@@ -82,7 +82,7 @@ public final class MySQLComStmtPrepareCheckerTest {
     public void assertIsStatementAllowed() {
         List<SQLStatement> statementList = Arrays.asList(new AlterTableStatement(mock(SimpleTableSegment.class)), new AlterUserStatement(), new AnalyzeTableStatement(), new CacheIndexStatement(),
             new CallStatement(), new ChangeMasterStatement(), new ChecksumTableStatement(), new CommitStatement(), new CreateIndexStatement(), new DropIndexStatement(),
-            new CreateDatabaseStatement(), new DropDatabaseStatement(), new CreateTableStatement(mock(SimpleTableSegment.class)), new DropTableStatement(), new CreateUserStatement(),
+            new CreateDatabaseStatement(""), new DropDatabaseStatement(), new CreateTableStatement(mock(SimpleTableSegment.class)), new DropTableStatement(), new CreateUserStatement(),
             new RenameUserStatement(), new DropUserStatement(), new CreateViewStatement(), new DropViewStatement(), new DeleteStatement(), new DoStatement(), new FlushStatement(),
             new GrantStatement(), new InsertStatement(), new InstallPluginStatement(), new KillStatement(), new LoadIndexInfoStatement(), new OptimizeTableStatement(), new RenameTableStatement(),
             new RepairTableStatement(), new ResetStatement(), new RevokeStatement(), new SelectStatement(), new SetStatement(), new ShowWarningsStatement(),

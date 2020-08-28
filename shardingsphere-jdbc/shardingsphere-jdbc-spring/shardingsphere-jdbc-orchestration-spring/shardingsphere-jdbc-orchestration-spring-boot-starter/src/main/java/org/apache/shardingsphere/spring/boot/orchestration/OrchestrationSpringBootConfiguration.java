@@ -19,12 +19,10 @@ package org.apache.shardingsphere.spring.boot.orchestration;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.OrchestrationCenterConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.orchestration.common.OrchestrationSpringBootRootConfiguration;
 import org.apache.shardingsphere.spring.boot.orchestration.rule.LocalRulesCondition;
@@ -96,9 +94,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Autowired(required = false)
     public DataSource localShardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules, final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         List<RuleConfiguration> ruleConfigurations = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
-        return null == root.getCluster() ? new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration)
-                : new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration,
-                new ClusterConfigurationYamlSwapper().swapToObject(root.getCluster()));
+        return createDataSourceWithRules(ruleConfigurations, orchestrationConfiguration);
     }
     
     /**
@@ -111,12 +107,20 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     @ConditionalOnMissingBean(DataSource.class)
     public DataSource dataSource(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        return null == root.getCluster() ? new OrchestrationShardingSphereDataSource(orchestrationConfiguration)
-                : new OrchestrationShardingSphereDataSource(orchestrationConfiguration, new ClusterConfigurationYamlSwapper().swapToObject(root.getCluster()));
+        return createDataSourceWithoutRules(orchestrationConfiguration);
     }
     
     @Override
     public final void setEnvironment(final Environment environment) {
         dataSourceMap.putAll(DataSourceMapSetter.getDataSourceMap(environment));
+    }
+    
+    private DataSource createDataSourceWithRules(final List<RuleConfiguration> ruleConfigurations,
+                                                 final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
+        return new OrchestrationShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps(), orchestrationConfiguration);
+    }
+    
+    private DataSource createDataSourceWithoutRules(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
+        return new OrchestrationShardingSphereDataSource(orchestrationConfiguration);
     }
 }

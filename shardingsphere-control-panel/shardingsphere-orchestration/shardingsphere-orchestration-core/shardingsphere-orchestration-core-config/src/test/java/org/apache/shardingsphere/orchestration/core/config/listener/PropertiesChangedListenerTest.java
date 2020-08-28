@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.core.config.listener;
 
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
@@ -26,8 +28,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PropertiesChangedListenerTest {
@@ -41,11 +46,13 @@ public final class PropertiesChangedListenerTest {
     
     @Before
     public void setUp() {
-        propertiesChangedListener = new PropertiesChangedListener("test", configurationRepository);
+        propertiesChangedListener = new PropertiesChangedListener(configurationRepository);
     }
     
     @Test
     public void assertCreateOrchestrationEvent() {
-        assertThat(propertiesChangedListener.createOrchestrationEvent(new DataChangedEvent("test", PROPERTIES_YAML, ChangedType.UPDATED)).getProps().get("sql.show"), is(true));
+        Optional<OrchestrationEvent> actual = propertiesChangedListener.createOrchestrationEvent(new DataChangedEvent("test", PROPERTIES_YAML, ChangedType.UPDATED));
+        assertTrue(actual.isPresent());
+        assertThat(((PropertiesChangedEvent) actual.get()).getProps().get("sql.show"), is(true));
     }
 }

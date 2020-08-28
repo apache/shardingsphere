@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.utils;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 
 import java.util.List;
@@ -42,6 +42,6 @@ public final class InventoryPositionUtil {
         if (2 == values.size()) {
             return new PrimaryKeyPosition(values.get(0).longValue(), values.get(1).longValue());
         }
-        return new PlaceholderPosition();
+        return new PlaceholderInventoryPosition();
     }
 }

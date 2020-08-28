@@ -127,18 +127,18 @@ public final class DataSourceConfiguration {
     }
     
     /**
-     * Add property alias to shared configuration.
+     * Add property synonym to shared configuration.
      *
      * @param originalName original key for data source configuration property
-     * @param alias property alias for configuration
+     * @param synonym property synonym for configuration
      */
-    public void addPropertyAlias(final String originalName, final String alias) {
+    public void addPropertySynonym(final String originalName, final String synonym) {
         if (props.containsKey(originalName)) {
-            props.put(alias, props.get(originalName));
+            props.put(synonym, props.get(originalName));
         }
         // TODO fixes by #6709
-        if (props.containsKey(alias)) {
-            props.put(originalName, props.get(alias));
+        if (props.containsKey(synonym)) {
+            props.put(originalName, props.get(synonym));
         }
     }
     

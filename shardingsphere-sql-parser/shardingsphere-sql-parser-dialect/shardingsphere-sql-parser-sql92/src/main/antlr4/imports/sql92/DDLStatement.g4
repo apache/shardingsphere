@@ -62,7 +62,7 @@ createDatabaseSpecification_
     ;
 
 createDefinition
-    : columnDefinition | constraintDefinition | checkConstraintDefinition_
+    : columnDefinition | constraintDefinition | checkConstraintDefinition
     ;
 
 columnDefinition
@@ -74,13 +74,13 @@ dataTypeOption
     | UNIQUE KEY? 
     | NOT? NULL 
     | collateClause_ 
-    | checkConstraintDefinition_ 
+    | checkConstraintDefinition
     | referenceDefinition 
     | DEFAULT (literals | expr) 
     | STRING_
     ;
 
-checkConstraintDefinition_
+checkConstraintDefinition
     : (CONSTRAINT ignoredIdentifier_?)? CHECK expr
     ;
 

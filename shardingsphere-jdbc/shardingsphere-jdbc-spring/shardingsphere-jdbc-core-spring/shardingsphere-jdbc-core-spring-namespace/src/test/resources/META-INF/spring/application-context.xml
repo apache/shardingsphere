@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
+       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/sharding
+                           http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave
+                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
+                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
+                           ">
+    <context:property-placeholder location="classpath:conf/conf.properties" />
+    
+    <bean id="ds_0_master" class="org.apache.shardingsphere.test.MockedDataSource" />
+    <bean id="ds_0_slave_0" class="org.apache.shardingsphere.test.MockedDataSource" />
+    <bean id="ds_0_slave_1" class="org.apache.shardingsphere.test.MockedDataSource" />
+    <bean id="ds_1_master" class="org.apache.shardingsphere.test.MockedDataSource" />
+    <bean id="ds_1_slave_0" class="org.apache.shardingsphere.test.MockedDataSource" />
+    <bean id="ds_1_slave_1" class="org.apache.shardingsphere.test.MockedDataSource" />
+    
+    <sharding:sharding-algorithm id="dataSourceShardingAlgorithm" type="INLINE">
+        <props>
+            <prop key="algorithm.expression">ds_$->{user_id % 2}</prop>
+        </props>
+    </sharding:sharding-algorithm>
+    <sharding:sharding-algorithm id="orderTableShardingAlgorithm" type="INLINE">
+        <props>
+            <prop key="algorithm.expression">t_order_$->{order_id % 4}</prop>
+        </props>
+    </sharding:sharding-algorithm>
+    
+    <sharding:standard-strategy id="dataSourceShardingStrategy" sharding-column="user_id" algorithm-ref="dataSourceShardingAlgorithm" />
+    <sharding:standard-strategy id="orderTableShardingStrategy" sharding-column="order_id" algorithm-ref="orderTableShardingAlgorithm" />
+    
+    <encrypt:encrypt-algorithm id="aesEncryptor" type="AES">
+        <props>
+            <prop key="aes.key.value">${aes.key.value}</prop>
+        </props>
+    </encrypt:encrypt-algorithm>
+    
+    <sharding:rule id="shardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_$->{0..1}.t_order_$->{0..3}" database-strategy-ref="dataSourceShardingStrategy" table-strategy-ref="orderTableShardingStrategy" />
+        </sharding:table-rules>
+    </sharding:rule>
+    
+    <encrypt:rule id="encryptRule">
+        <encrypt:table name="t_order">
+            <encrypt:column logic-column="pwd" cipher-column="pwd_cipher" encrypt-algorithm-ref="aesEncryptor" />
+        </encrypt:table>
+    </encrypt:rule>
+    
+    <master-slave:rule id="masterSlaveRule">
+        <master-slave:data-source-rule id="ds_0" master-data-source-name="ds_0_master" slave-data-source-names="ds_0_slave_0,ds_0_slave_1" />
+        <master-slave:data-source-rule id="ds_1" master-data-source-name="ds_1_master" slave-data-source-names="ds_1_slave_0,ds_1_slave_1" />
+    </master-slave:rule>
+    
+    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_master,ds_0_slave_0,ds_0_slave_1,ds_1_master,ds_1_slave_0,ds_1_slave_1" rule-refs="shardingRule, masterSlaveRule, encryptRule">
+        <props>
+            <prop key="sql.show">false</prop>
+            <prop key="executor.size">${executor.size}</prop>
+        </props>
+    </shardingsphere:data-source>
+    
+    <shardingsphere:tx-type-annotation-driven />
+</beans>

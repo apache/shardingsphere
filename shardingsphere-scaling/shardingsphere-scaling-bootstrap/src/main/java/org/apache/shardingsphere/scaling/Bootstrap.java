@@ -57,7 +57,6 @@ public final class Bootstrap {
      * @throws InterruptedException Interrupted exception
      */
     public static void main(final String[] args) throws IOException, InterruptedException {
-        log.info("Init server config");
         initServerConfig();
         log.info("ShardingScaling Startup");
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
@@ -80,6 +79,7 @@ public final class Bootstrap {
     }
     
     private static void initServerConfig() throws IOException {
+        log.info("Init server config");
         File yamlFile = new File(Resources.getResource(DEFAULT_CONFIG_PATH + DEFAULT_CONFIG_FILE_NAME).getPath());
         ServerConfiguration serverConfiguration = YamlEngine.unmarshal(yamlFile, ServerConfiguration.class);
         Preconditions.checkNotNull(serverConfiguration, "Server configuration file `%s` is invalid.", yamlFile.getName());

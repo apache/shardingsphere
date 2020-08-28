@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
+import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -72,7 +72,7 @@ public final class BroadcastBackendHandlerTest {
         schemaContexts.setAccessible(true);
         schemaContexts.set(ProxySchemaContexts.getInstance(),
                 new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
-        when(backendConnection.getSchema()).thenReturn(ProxySchemaContexts.getInstance().getSchema("schema_0"));
+        when(backendConnection.getSchema()).thenReturn("schema_0");
     }
     
     @Test

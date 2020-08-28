@@ -27,6 +27,7 @@ import org.apache.shardingsphere.orchestration.core.common.eventbus.Orchestratio
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Post orchestration repository event listener.
@@ -51,10 +52,11 @@ public abstract class PostOrchestrationRepositoryEventListener implements Orches
     private void watch(final String watchKey, final Collection<ChangedType> watchedChangedTypeList) {
         orchestrationRepository.watch(watchKey, dataChangedEvent -> {
             if (watchedChangedTypeList.contains(dataChangedEvent.getChangedType())) {
-                eventBus.post(createOrchestrationEvent(dataChangedEvent));
+                Optional<OrchestrationEvent> event = createOrchestrationEvent(dataChangedEvent);
+                event.ifPresent(eventBus::post);
             }
         });
     }
     
-    protected abstract OrchestrationEvent createOrchestrationEvent(DataChangedEvent event);
+    protected abstract Optional<OrchestrationEvent> createOrchestrationEvent(DataChangedEvent event);
 }

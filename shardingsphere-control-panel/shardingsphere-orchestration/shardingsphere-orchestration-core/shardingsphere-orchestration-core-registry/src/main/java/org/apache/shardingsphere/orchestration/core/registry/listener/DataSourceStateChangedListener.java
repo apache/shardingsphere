@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.core.registry.listener;
 
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
+import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.orchestration.core.registry.event.DisabledStateChangedEvent;
@@ -24,9 +26,9 @@ import org.apache.shardingsphere.orchestration.core.registry.schema.Orchestratio
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
-import org.apache.shardingsphere.orchestration.core.common.listener.PostOrchestrationRepositoryEventListener;
 
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Data source state changed listener.
@@ -35,14 +37,14 @@ public final class DataSourceStateChangedListener extends PostOrchestrationRepos
     
     private final RegistryCenterNode registryCenterNode;
     
-    public DataSourceStateChangedListener(final String name, final RegistryRepository registryRepository) {
-        super(registryRepository, Collections.singleton(new RegistryCenterNode(name).getDataSourcesNodeFullRootPath()));
-        registryCenterNode = new RegistryCenterNode(name);
+    public DataSourceStateChangedListener(final RegistryRepository registryRepository) {
+        super(registryRepository, Collections.singleton(new RegistryCenterNode().getDataSourcesNodeFullRootPath()));
+        registryCenterNode = new RegistryCenterNode();
     }
     
     @Override
-    protected DisabledStateChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
-        return new DisabledStateChangedEvent(getShardingSchema(event.getKey()), isDataSourceDisabled(event));
+    protected Optional<OrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
+        return Optional.of(new DisabledStateChangedEvent(getShardingSchema(event.getKey()), isDataSourceDisabled(event)));
     }
     
     private OrchestrationSchema getShardingSchema(final String dataSourceNodeFullPath) {

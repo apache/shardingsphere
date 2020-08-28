@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.metadata.listener;
 
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.metadata.MetaDataJson;
 import org.apache.shardingsphere.orchestration.core.metadata.event.MetaDataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.OrchestrationRepository;
@@ -27,10 +28,11 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class MetaDataChangedListenerTest {
     
@@ -41,14 +43,13 @@ public final class MetaDataChangedListenerTest {
     
     @Before
     public void setUp() {
-        metaDataChangedListener = new MetaDataChangedListener("test", orchestrationRepository, Collections.singleton("schema"));
+        metaDataChangedListener = new MetaDataChangedListener(orchestrationRepository, Collections.singleton("schema"));
     }
     
     @Test
     public void createOrchestrationEvent() {
-        DataChangedEvent event = new DataChangedEvent("/test/metadata/schema", MetaDataJson.META_DATA, ChangedType.UPDATED);
-        MetaDataChangedEvent metaDataChangedEvent = (MetaDataChangedEvent) metaDataChangedListener.createOrchestrationEvent(event);
-        assertNotNull(metaDataChangedEvent);
-        assertThat(metaDataChangedEvent.getSchemaNames(), is(Collections.singleton("schema")));
+        Optional<OrchestrationEvent> actual = metaDataChangedListener.createOrchestrationEvent(new DataChangedEvent("/metadata/schema", MetaDataJson.META_DATA, ChangedType.UPDATED));
+        assertTrue(actual.isPresent());
+        assertThat(((MetaDataChangedEvent) actual.get()).getSchemaNames(), is(Collections.singleton("schema")));
     }
 }

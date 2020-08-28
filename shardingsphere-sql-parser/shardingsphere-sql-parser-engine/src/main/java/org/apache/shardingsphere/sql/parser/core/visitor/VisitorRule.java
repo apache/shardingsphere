@@ -63,6 +63,32 @@ public enum VisitorRule {
     ALTER_FUNCTION("AlterFunction", SQLStatementType.DDL),
 
     DROP_FUNCTION("DropFunction", SQLStatementType.DDL),
+
+    CREATE_DATABASE("CreateDatabase", SQLStatementType.DDL),
+    
+    ALTER_DATABASE("AlterDatabase", SQLStatementType.DDL),
+
+    DROP_DATABASE("DropDatabase", SQLStatementType.DDL),
+
+    CREATE_EVENT("CreateEvent", SQLStatementType.DDL),
+
+    ALTER_EVENT("AlterEvent", SQLStatementType.DDL),
+    
+    DROP_EVENT("DropEvent", SQLStatementType.DDL),
+
+    ALTER_INSTANCE("AlterInstance", SQLStatementType.DDL),
+
+    CREATE_LOGFILE_GROUP("CreateLogfileGroup", SQLStatementType.DDL),
+
+    ALTER_LOGFILE_GROUP("AlterLogfileGroup", SQLStatementType.DDL),
+
+    DROP_LOGFILE_GROUP("DropLogfileGroup", SQLStatementType.DDL),
+
+    CREATE_SERVER("CreateServer", SQLStatementType.DDL),
+    
+    ALTER_SERVER("AlterServer", SQLStatementType.DDL),
+
+    DROP_SERVER("DropServer", SQLStatementType.DDL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
     
@@ -113,6 +139,8 @@ public enum VisitorRule {
     USE("Use", SQLStatementType.DAL),
     
     DESC("Desc", SQLStatementType.DAL),
+    
+    EXPLAIN("Explain", SQLStatementType.DAL),
     
     SHOW_DATABASES("ShowDatabases", SQLStatementType.DAL),
     

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
-import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
+import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
@@ -90,7 +90,7 @@ public final class MySQLAuthenticationHandlerTest {
     @Test
     public void assertLoginWithoutPassword() {
         setAuthentication(new ProxyUser(null, null));
-        byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
+        byte[] authResponse = {};
         assertFalse(authenticationHandler.login("root", authResponse, "db1").isPresent());
     }
     

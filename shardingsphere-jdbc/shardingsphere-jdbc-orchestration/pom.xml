@@ -44,12 +44,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-repository-api</artifactId>
-            <version>${project.version}</version>
+            <artifactId>shardingsphere-orchestration-core-schema</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-cluster-facade</artifactId>
+            <artifactId>shardingsphere-orchestration-repository-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

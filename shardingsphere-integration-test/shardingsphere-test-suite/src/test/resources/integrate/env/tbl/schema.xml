@@ -52,7 +52,7 @@
         <sql>CREATE TABLE t_order_item_8 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id))</sql>
         <sql>CREATE TABLE t_order_item_9 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id))</sql>
         <sql>CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id))</sql>
-        <sql>CREATE TABLE `select` (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id))</sql>
+        <sql>CREATE TABLE key_word (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id))</sql>
     </table-create>
     <table-drop>
         <sql>DROP TABLE t_order_0</sql>
@@ -76,6 +76,6 @@
         <sql>DROP TABLE t_order_item_8</sql>
         <sql>DROP TABLE t_order_item_9</sql>
         <sql>DROP TABLE t_broadcast_table</sql>
-        <sql>DROP TABLE `select`</sql>
+        <sql>DROP TABLE key_word</sql>
     </table-drop>
 </schema>

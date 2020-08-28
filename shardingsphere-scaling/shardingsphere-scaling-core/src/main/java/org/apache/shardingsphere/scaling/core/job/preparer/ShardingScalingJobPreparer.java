@@ -104,13 +104,13 @@ public final class ShardingScalingJobPreparer {
         for (SyncConfiguration each : shardingScalingJob.getSyncConfigurations()) {
             DataSourceConfiguration dataSourceConfiguration = each.getDumperConfiguration().getDataSourceConfiguration();
             each.getDumperConfiguration().setPositionManager(instancePositionManager(databaseType, dataSourceManager.getDataSource(dataSourceConfiguration)));
-            shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each));
+            shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each.getConcurrency(), each.getDumperConfiguration(), each.getImporterConfiguration()));
         }
     }
     
     private PositionManager<? extends IncrementalPosition> instancePositionManager(final String databaseType, final DataSource dataSource) {
-        PositionManager<? extends IncrementalPosition> positionManager = PositionManagerFactory.newInstance(databaseType, dataSource);
-        positionManager.getPosition();
-        return positionManager;
+        PositionManager<? extends IncrementalPosition> result = PositionManagerFactory.newInstance(databaseType, dataSource);
+        result.getPosition();
+        return result;
     }
 }

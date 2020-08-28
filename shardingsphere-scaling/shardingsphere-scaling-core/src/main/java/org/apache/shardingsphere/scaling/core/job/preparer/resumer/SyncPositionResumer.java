@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer.resumer;
 
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
@@ -72,37 +73,37 @@ public final class SyncPositionResumer {
         for (SyncConfiguration each : shardingScalingJob.getSyncConfigurations()) {
             MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(each.getDumperConfiguration().getDataSourceConfiguration()));
             for (Entry<String, PositionManager<InventoryPosition>> entry : getInventoryPositionMap(each.getDumperConfiguration(), resumeBreakPointManager).entrySet()) {
-                result.add(syncTaskFactory.createInventoryDataSyncTask(newSyncConfiguration(each, metaDataManager, entry)));
+                result.add(syncTaskFactory.createInventoryDataSyncTask(newInventoryDumperConfiguration(each.getDumperConfiguration(), metaDataManager, entry), each.getImporterConfiguration()));
             }
         }
         return result;
     }
     
-    private SyncConfiguration newSyncConfiguration(final SyncConfiguration syncConfiguration, final MetaDataManager metaDataManager, final Entry<String, PositionManager<InventoryPosition>> entry) {
+    private InventoryDumperConfiguration newInventoryDumperConfiguration(
+            final DumperConfiguration dumperConfiguration, final MetaDataManager metaDataManager, final Entry<String, PositionManager<InventoryPosition>> entry) {
         String[] splitTable = entry.getKey().split("#");
-        RdbmsConfiguration splitDumperConfig = RdbmsConfiguration.clone(syncConfiguration.getDumperConfiguration());
-        splitDumperConfig.setTableName(splitTable[0].split("\\.")[1]);
-        splitDumperConfig.setPositionManager(entry.getValue());
+        InventoryDumperConfiguration result = new InventoryDumperConfiguration(dumperConfiguration);
+        result.setTableName(splitTable[0].split("\\.")[1]);
+        result.setPositionManager(entry.getValue());
         if (2 == splitTable.length) {
-            splitDumperConfig.setSpiltNum(Integer.parseInt(splitTable[1]));
+            result.setSpiltNum(Integer.parseInt(splitTable[1]));
         }
-        splitDumperConfig.setPrimaryKey(metaDataManager.getTableMetaData(splitDumperConfig.getTableName()).getPrimaryKeyColumns().get(0));
-        return new SyncConfiguration(syncConfiguration.getConcurrency(), syncConfiguration.getTableNameMap(),
-                splitDumperConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration()));
+        result.setPrimaryKey(metaDataManager.getTableMetaData(result.getTableName()).getPrimaryKeyColumns().get(0));
+        return result;
     }
     
     private Map<String, PositionManager<InventoryPosition>> getInventoryPositionMap(
-            final RdbmsConfiguration dumperConfiguration, final ResumeBreakPointManager resumeBreakPointManager) {
+            final DumperConfiguration dumperConfiguration, final ResumeBreakPointManager resumeBreakPointManager) {
         Pattern pattern = Pattern.compile(String.format("%s\\.\\w+(#\\d+)?", dumperConfiguration.getDataSourceName()));
         return resumeBreakPointManager.getInventoryPositionManagerMap().entrySet().stream()
                 .filter(entry -> pattern.matcher(entry.getKey()).find())
                 .collect(Collectors.toMap(Entry::getKey, Map.Entry::getValue));
     }
-    
+
     private void resumeIncrementalPosition(final ShardingScalingJob shardingScalingJob, final ResumeBreakPointManager resumeBreakPointManager) {
         for (SyncConfiguration each : shardingScalingJob.getSyncConfigurations()) {
             each.getDumperConfiguration().setPositionManager(resumeBreakPointManager.getIncrementalPositionManagerMap().get(each.getDumperConfiguration().getDataSourceName()));
-            shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each));
+            shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each.getConcurrency(), each.getDumperConfiguration(), each.getImporterConfiguration()));
         }
     }
     

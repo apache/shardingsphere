@@ -26,7 +26,7 @@ import com.google.gson.JsonParser;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
+import org.apache.shardingsphere.scaling.core.job.position.FinishedInventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
@@ -83,7 +83,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
             inventoryPositionManagerMap.put(entry.getKey(), new InventoryPositionManager<>(entry.getValue()));
         }
         for (String each : inventoryPositions.getFinished()) {
-            inventoryPositionManagerMap.put(each, new InventoryPositionManager<>(new FinishedPosition()));
+            inventoryPositionManagerMap.put(each, new InventoryPositionManager<>(new FinishedInventoryPosition()));
         }
     }
     
@@ -103,7 +103,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         JsonObject unfinished = new JsonObject();
         Set<String> finished = Sets.newHashSet();
         for (Entry<String, PositionManager<InventoryPosition>> entry : inventoryPositionManagerMap.entrySet()) {
-            if (entry.getValue().getPosition() instanceof FinishedPosition) {
+            if (entry.getValue().getPosition() instanceof FinishedInventoryPosition) {
                 finished.add(entry.getKey());
                 continue;
             }

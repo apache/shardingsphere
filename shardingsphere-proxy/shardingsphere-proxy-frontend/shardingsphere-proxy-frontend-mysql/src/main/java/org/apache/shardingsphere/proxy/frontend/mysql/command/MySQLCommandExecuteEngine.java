@@ -74,7 +74,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     @SneakyThrows
     public void writeQueryData(final ChannelHandlerContext context,
                                final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) {
-        if (!queryCommandExecutor.isQuery() || !context.channel().isActive()) {
+        if (!queryCommandExecutor.isQueryResponse() || !context.channel().isActive()) {
             return;
         }
         int count = 0;

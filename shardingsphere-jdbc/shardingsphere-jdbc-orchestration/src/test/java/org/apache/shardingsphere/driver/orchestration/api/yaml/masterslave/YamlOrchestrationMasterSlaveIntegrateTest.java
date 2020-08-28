@@ -71,4 +71,23 @@ public final class YamlOrchestrationMasterSlaveIntegrateTest extends AbstractYam
         }
         ((OrchestrationShardingSphereDataSource) dataSource).close();
     }
+    
+    @Test
+    public void assertWithDataSourceByYamlBytes() throws Exception {
+        File yamlFile = new File(YamlOrchestrationMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
+        DataSource dataSource;
+        if (hasDataSource) {
+            dataSource = YamlOrchestrationShardingSphereDataSourceFactory.createDataSource(yamlFile);
+        } else {
+            dataSource = YamlOrchestrationShardingSphereDataSourceFactory.createDataSource(
+                    Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), AbstractYamlDataSourceTest::createDataSource), getYamlBytes(yamlFile));
+        }
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeQuery("SELECT * FROM t_order");
+            statement.executeQuery("SELECT * FROM t_order_item");
+            statement.executeQuery("SELECT * FROM t_config");
+        }
+        ((OrchestrationShardingSphereDataSource) dataSource).close();
+    }
 }

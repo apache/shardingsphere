@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.rdl.parser.statement.rdl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
  * Data source connection segment.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 public final class DataSourceConnectionSegment implements ASTNode {

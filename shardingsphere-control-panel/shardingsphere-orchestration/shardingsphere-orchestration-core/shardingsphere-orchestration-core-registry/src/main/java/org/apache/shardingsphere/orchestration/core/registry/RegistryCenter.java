@@ -35,8 +35,8 @@ public final class RegistryCenter {
     
     private final OrchestrationInstance instance;
 
-    public RegistryCenter(final String name, final RegistryRepository registryRepository) {
-        node = new RegistryCenterNode(name);
+    public RegistryCenter(final RegistryRepository registryRepository) {
+        node = new RegistryCenterNode();
         repository = registryRepository;
         instance = OrchestrationInstance.getInstance();
     }
@@ -45,7 +45,7 @@ public final class RegistryCenter {
      * Persist instance online.
      */
     public void persistInstanceOnline() {
-        repository.persistEphemeral(node.getInstancesNodeFullPath(instance.getInstanceId()), "state: " + RegistryCenterNodeStatus.ONLINE);
+        repository.persistEphemeral(node.getInstancesNodeFullPath(instance.getInstanceId()), "");
     }
     
     /**

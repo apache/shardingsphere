@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -25,7 +27,6 @@ import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
@@ -42,7 +43,7 @@ import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
-import org.apache.shardingsphere.rdl.parser.binder.context.CreateSchemaStatementContext;
+import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
@@ -77,27 +78,32 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         this.sql = sql;
         connection = backendConnection;
         executeEngine = sqlExecuteEngine;
-        schema = backendConnection.getSchema();
+        schema = ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema());
     }
     
     @Override
     public BackendResponse execute() {
         try {
-            ExecutionContext executionContext = executeEngine.execute(sql);
-            if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
-                SQLLogger.logSQL(sql, ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
-            }
-            return execute(executionContext);
-        } catch (final SQLException ex) {
+            ExecutionContext executionContext = executeEngine.generateExecutionContext(sql);
+            logSQL(executionContext);
+            return doExecute(executionContext);
+        } catch (final TableExistsException | ShardingSphereConfigurationException | SQLException ex) {
+            // TODO Particular handling needed for `createTable` without shardingRule and dataNode.
             return new ErrorResponse(ex);
         }
     }
     
-    private BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
+    private void logSQL(final ExecutionContext executionContext) {
+        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
+            SQLLogger.logSQL(sql, ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
+        }
+    }
+    
+    private BackendResponse doExecute(final ExecutionContext executionContext) throws SQLException {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponse();
         }
-        SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = executionContext.getSqlStatementContext();
         if (isExecuteDDLInXATransaction(sqlStatementContext.getSqlStatement())) {
             return new ErrorResponse(new TableModifyInTransactionException(getTableName(sqlStatementContext)));
         }
@@ -110,18 +116,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return TransactionType.XA == connection.getTransactionType() && sqlStatement instanceof DDLStatement && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
     }
     
-    private String getTableName(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext instanceof TableAvailable) {
-            if (((TableAvailable) sqlStatementContext).getAllTables().isEmpty()) {
-                return "unknown_table";
-            }
+    private String getTableName(final SQLStatementContext<?> sqlStatementContext) {
+        if (sqlStatementContext instanceof TableAvailable && !((TableAvailable) sqlStatementContext).getAllTables().isEmpty()) {
             return ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         }
         return "unknown_table";
     }
     
     @SuppressWarnings("unchecked")
-    private void refreshTableMetaData(final SQLStatementContext sqlStatementContext) throws SQLException {
+    private void refreshTableMetaData(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         if (null == sqlStatementContext) {
             return;
         }
@@ -139,7 +142,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
                 schema.getSchema().getDataSources(), tableName, ProxySchemaContexts.getInstance().getSchemaContexts().getProps());
     }
     
-    private BackendResponse merge(final SQLStatementContext sqlStatementContext) throws SQLException {
+    private BackendResponse merge(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         if (response instanceof UpdateResponse) {
             mergeUpdateCount(sqlStatementContext);
             return response;
@@ -148,21 +151,18 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return response;
     }
     
-    private void mergeUpdateCount(final SQLStatementContext sqlStatementContext) {
+    private void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext) {
         if (isNeedAccumulate(sqlStatementContext)) {
             ((UpdateResponse) response).mergeUpdateCount();
         }
     }
     
-    private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext instanceof CreateSchemaStatementContext) {
-            return false;
-        }
+    private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
         Optional<DataNodeRoutedRule> dataNodeRoutedRule = schema.getSchema().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         return dataNodeRoutedRule.isPresent() && dataNodeRoutedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
-    private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+    private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType(),
                 schema.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), ProxySchemaContexts.getInstance().getSchemaContexts().getProps(), schema.getSchema().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);

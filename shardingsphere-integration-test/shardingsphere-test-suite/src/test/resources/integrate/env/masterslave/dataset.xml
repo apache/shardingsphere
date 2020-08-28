@@ -36,7 +36,7 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="master.select,slave_${0..1}.select">
+    <metadata data-nodes="master.key_word,slave_${0..1}.key_word">
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
@@ -161,7 +161,7 @@
     <row data-node="master.t_order_item" values="290101, 2901, 29, init, 2017-08-08" />
     <row data-node="master.t_order_item" values="290102, 2901, 29, init, 2017-08-08" />
     <row data-node="master.t_broadcast_table" values="1, init" />
-    <row data-node="master.select" values="1, init" />
+    <row data-node="master.key_word" values="1, init" />
     <row data-node="master.t_global" values="1, global_master" />
     <row data-node="slave_0.t_order" values="1000, 10, init_slave" />
     <row data-node="slave_0.t_order" values="1001, 10, init_slave" />
@@ -284,7 +284,7 @@
     <row data-node="slave_0.t_order_item" values="290101, 2901, 29, init_slave, 2017-08-08" />
     <row data-node="slave_0.t_order_item" values="290102, 2901, 29, init_slave, 2017-08-08" />
     <row data-node="slave_0.t_broadcast_table" values="1, init_slave" />
-    <row data-node="slave_0.select" values="1, init_slave" />
+    <row data-node="slave_0.key_word" values="1, init_slave" />
     <row data-node="slave_0.t_global" values="1, global_slave_0" />
     <row data-node="slave_1.t_order" values="1000, 10, init_slave" />
     <row data-node="slave_1.t_order" values="1001, 10, init_slave" />
@@ -407,6 +407,6 @@
     <row data-node="slave_1.t_order_item" values="290101, 2901, 29, init_slave, 2017-08-08" />
     <row data-node="slave_1.t_order_item" values="290102, 2901, 29, init_slave, 2017-08-08" />
     <row data-node="slave_1.t_broadcast_table" values="1, init_slave" />
-    <row data-node="slave_1.select" values="1, init_slave" />
+    <row data-node="slave_1.key_word" values="1, init_slave" />
     <row data-node="slave_1.t_global" values="1, global_slave_1" />
 </dataset>

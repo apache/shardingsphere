@@ -37,7 +37,7 @@ public final class ConnectionIdGenerator {
      */
     public static ConnectionIdGenerator getInstance() {
         return INSTANCE;
-    } 
+    }
     
     /**
      * Get next connection ID.

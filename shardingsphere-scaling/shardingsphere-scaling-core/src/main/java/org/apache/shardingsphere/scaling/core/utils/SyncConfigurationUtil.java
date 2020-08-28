@@ -22,9 +22,10 @@ import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
@@ -64,10 +65,10 @@ public final class SyncConfigurationUtil {
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDatasource.keySet());
         filterByShardingDataSourceTables(dataSourceTableNameMap, scalingConfiguration.getJobConfiguration());
         for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
-            RdbmsConfiguration dumperConfiguration = createDumperConfiguration(entry.getKey(), sourceDatasource.get(entry.getKey()));
-            dumperConfiguration.setRetryTimes(scalingConfiguration.getJobConfiguration().getRetryTimes());
-            RdbmsConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration, sourceRule);
-            result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), entry.getValue(), dumperConfiguration, importerConfiguration));
+            DumperConfiguration dumperConfiguration = createDumperConfiguration(entry.getKey(), sourceDatasource.get(entry.getKey()), entry.getValue());
+            ImporterConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration, sourceRule);
+            importerConfiguration.setRetryTimes(scalingConfiguration.getJobConfiguration().getRetryTimes());
+            result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), dumperConfiguration, importerConfiguration));
         }
         return result;
     }
@@ -147,19 +148,20 @@ public final class SyncConfigurationUtil {
         }
     }
     
-    private static RdbmsConfiguration createDumperConfiguration(final String dataSourceName, final DataSourceConfiguration dataSourceConfiguration) {
-        RdbmsConfiguration result = new RdbmsConfiguration();
+    private static DumperConfiguration createDumperConfiguration(final String dataSourceName, final DataSourceConfiguration dataSourceConfiguration, final Map<String, String> tableMap) {
+        DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName(dataSourceName);
         Map<String, Object> dataSourceProperties = dataSourceConfiguration.getProps();
         JDBCDataSourceConfiguration dumperDataSourceConfiguration = new JDBCDataSourceConfiguration(
                 dataSourceProperties.containsKey("jdbcUrl") ? dataSourceProperties.get("jdbcUrl").toString() : dataSourceProperties.get("url").toString(),
                 dataSourceProperties.get("username").toString(), dataSourceProperties.get("password").toString());
         result.setDataSourceConfiguration(dumperDataSourceConfiguration);
+        result.setTableNameMap(tableMap);
         return result;
     }
     
-    private static RdbmsConfiguration createImporterConfiguration(final ScalingConfiguration scalingConfiguration, final ShardingRuleConfiguration shardingRuleConfig) {
-        RdbmsConfiguration result = new RdbmsConfiguration();
+    private static ImporterConfiguration createImporterConfiguration(final ScalingConfiguration scalingConfiguration, final ShardingRuleConfiguration shardingRuleConfig) {
+        ImporterConfiguration result = new ImporterConfiguration();
         JDBCDataSourceConfiguration importerDataSourceConfiguration = new JDBCDataSourceConfiguration(
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUrl(),
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUsername(),

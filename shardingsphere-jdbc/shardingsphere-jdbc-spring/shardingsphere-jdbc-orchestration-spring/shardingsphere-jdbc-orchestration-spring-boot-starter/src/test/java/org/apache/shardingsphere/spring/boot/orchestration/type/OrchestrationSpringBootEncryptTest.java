@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.spring.boot.orchestration.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,14 +56,14 @@ public class OrchestrationSpringBootEncryptTest {
     @Test
     public void assertWithEncryptDataSource() throws NoSuchFieldException, IllegalAccessException {
         assertTrue(dataSource instanceof OrchestrationShardingSphereDataSource);
-        Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("dataSource");
+        Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) field.get(dataSource);
-        BasicDataSource embedDataSource = (BasicDataSource) shardingSphereDataSource.getDataSourceMap().values().iterator().next();
+        SchemaContexts schemaContexts = (SchemaContexts) field.get(dataSource);
+        BasicDataSource embedDataSource = (BasicDataSource) schemaContexts.getDefaultSchemaContext().getSchema().getDataSources().values().iterator().next();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
         AlgorithmProvidedEncryptRuleConfiguration configuration =
-                (AlgorithmProvidedEncryptRuleConfiguration) shardingSphereDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations().iterator().next();
+                (AlgorithmProvidedEncryptRuleConfiguration) schemaContexts.getDefaultSchemaContext().getSchema().getConfigurations().iterator().next();
         assertThat(configuration.getEncryptors().size(), is(1));
         EncryptAlgorithm encryptAlgorithm = configuration.getEncryptors().get("order_encrypt");
         assertThat(encryptAlgorithm.getType(), is("AES"));

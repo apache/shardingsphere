@@ -36,3 +36,4 @@ ds_1: !!org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlData
     maxTotal: 16
     password: ''
     username: sa
+

@@ -10,10 +10,10 @@
 
 1. 只支持迁移在分片规则中配置的表，暂不支持迁移指定的表。
 2. 迁移过程分为两步——历史数据迁移和实时数据迁移。
-  - 在历史数据迁移过程中，ShardingSphere-Scaling使用 `select *`语句去获取数据，使用`insert`语句将数据迁移到目标库中；
-  - 在实时数据迁移过程中，ShardingSphere-Scaling使用binlog来迁移数据，并且在迁移前会标记下binlog位置。
+  - 在历史数据迁移过程中，ShardingSphere-Scaling 使用 `select *`语句去获取数据，使用 `insert` 语句将数据迁移到目标库中；
+  - 在实时数据迁移过程中，ShardingSphere-Scaling 使用 binlog 来迁移数据，并且在迁移前会标记下 binlog 位置。
 
-3. 如果源schema中的表有主键，ShardingSphere-Scaling就能够使用 `where`声明的条件，并发地迁移表中的数据。
+3. 如果源 schema 中的表有主键，ShardingSphere-Scaling 就能够使用 `where` 声明的条件，并发地迁移表中的数据。
 
 ## 环境准备
 

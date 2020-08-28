@@ -18,8 +18,13 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -31,6 +36,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -39,9 +47,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class BackendTransactionManagerTest {
-    
-    @Mock
-    private SchemaContext schema;
     
     @Mock
     private BackendConnection backendConnection;
@@ -58,14 +63,24 @@ public final class BackendTransactionManagerTest {
     private BackendTransactionManager backendTransactionManager;
     
     @Before
+    @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
+        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        schemaContexts.setAccessible(true);
+        schemaContexts.set(ProxySchemaContexts.getInstance(),
+                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        when(backendConnection.getSchema()).thenReturn("schema");
+        when(backendConnection.getStateHandler()).thenReturn(stateHandler);
+    }
+    
+    private Map<String, SchemaContext> getSchemaContextMap() {
+        SchemaContext result = mock(SchemaContext.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
         ShardingTransactionManagerEngine shardingTransactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
         when(runtimeContext.getTransactionManagerEngine()).thenReturn(shardingTransactionManagerEngine);
         when(shardingTransactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(shardingTransactionManager);
-        when(schema.getRuntimeContext()).thenReturn(runtimeContext);
-        when(backendConnection.getSchema()).thenReturn(schema);
-        when(backendConnection.getStateHandler()).thenReturn(stateHandler);
+        when(result.getRuntimeContext()).thenReturn(runtimeContext);
+        return Collections.singletonMap("schema", result);
     }
     
     @Test

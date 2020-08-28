@@ -95,17 +95,17 @@
         <assertion parameters="10:int, 11:int, 1009:int, 1108:int, none:String" expected-data-file="empty_order_item.xml" />
     </dql-test-case>
     
-    <dql-test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN `select` c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND o.status = ? ORDER BY i.item_id" db-types="MySQL">
+    <dql-test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN `key_word` c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND o.status = ? ORDER BY i.item_id" db-types="MySQL">
         <assertion parameters="10:int, 11:int, 1001:int, 1100:int, init:String" expected-data-file="select_sharding_route_with_broadcast_table.xml" />
         <assertion parameters="10:int, 11:int, 1009:int, 1108:int, none:String" expected-data-file="empty_order_item.xml" />
     </dql-test-case>
     
-    <dql-test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN &quot;select&quot; c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND c.status = ? ORDER BY i.item_id" db-types="PostgreSQL,Oracle">
+    <dql-test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN &quot;key_word&quot; c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND c.status = ? ORDER BY i.item_id" db-types="PostgreSQL,Oracle">
         <assertion parameters="10:int, 11:int, 1001:int, 1100:int, init:String" expected-data-file="select_sharding_route_with_broadcast_table.xml" />
         <assertion parameters="10:int, 11:int, 1009:int, 1108:int, none:String" expected-data-file="empty_order_item.xml" />
     </dql-test-case>
     
-    <dql-test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN [select] c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND c.status = ? ORDER BY i.item_id" db-types="SQLServer">
+    <dql-test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN [key_word] c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND c.status = ? ORDER BY i.item_id" db-types="SQLServer">
         <assertion parameters="10:int, 11:int, 1001:int, 1100:int, init:String" expected-data-file="select_sharding_route_with_broadcast_table.xml" />
         <assertion parameters="10:int, 11:int, 1009:int, 1108:int, none:String" expected-data-file="empty_order_item.xml" />
     </dql-test-case>

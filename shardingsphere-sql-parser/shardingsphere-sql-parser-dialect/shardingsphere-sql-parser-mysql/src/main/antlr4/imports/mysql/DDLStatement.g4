@@ -28,8 +28,8 @@ partitionClause
     ;
 
 partitionTypeDef
-    : LINEAR KEY partitionKeyAlgorithm? columnNames
-    | LINEAR HASH LP_ bitExpr RP_
+    : LINEAR? KEY partitionKeyAlgorithm? columnNames
+    | LINEAR? HASH LP_ bitExpr RP_
     | (RANGE | LIST) (LP_ bitExpr RP_ | COLUMNS columnNames )
     ;
 
@@ -106,13 +106,18 @@ createDatabase
     ;
 
 alterDatabase
-    : ALTER (DATABASE | SCHEMA) schemaName createDatabaseSpecification_*
+    : ALTER (DATABASE | SCHEMA) schemaName? alterDatabaseSpecification_*
     ;
 
 createDatabaseSpecification_
     : DEFAULT? (CHARACTER SET | CHARSET) EQ_? characterSetName_
     | DEFAULT? COLLATE EQ_? collationName_
-    | DEFAULT ENCRYPTION EQ_ Y_N_
+    | DEFAULT? ENCRYPTION EQ_? Y_N_
+    ;
+    
+alterDatabaseSpecification_
+    : createDatabaseSpecification_ 
+    | READ ONLY EQ_? (DEFAULT | NUMBER_)
     ;
 
 dropDatabase
@@ -121,19 +126,21 @@ dropDatabase
 
 alterInstance
     : ALTER INSTANCE instanceAction
-    
     ;
 
 instanceAction
-    : ROTATE INNODB_ MASTER KEY | ROTATE BINLOG MASTER KEY | RELOAD TLS_ (FOR CHANNEL channel)? (NO ROLLBACK ON ERROR)?
+    : (ENABLE | DISABLE) INNODB_ REDO_LOG_ 
+    | ROTATE INNODB_ MASTER KEY 
+    | ROTATE BINLOG MASTER KEY 
+    | RELOAD TLS (FOR CHANNEL channel)? (NO ROLLBACK ON ERROR)?
     ;
 
 channel
-    : MYSQL_ADMIN
+    : MYSQL_MAIN | MYSQL_ADMIN
     ;
 
 createEvent
-    : CREATE ownerStatement? EVENT notExistClause_? eventName
+    : CREATE ownerStatement? EVENT notExistClause_ eventName
       ON SCHEDULE scheduleExpression_
       (ON COMPLETION NOT? PRESERVE)? 
       (ENABLE | DISABLE | DISABLE ON SLAVE)?
@@ -273,18 +280,19 @@ createLogfileGroup
       (NODEGROUP EQ_? identifier)?
       WAIT?
       (COMMENT EQ_? STRING_)?
-      ENGINE EQ_? identifier
+      (ENGINE EQ_? identifier)?
     ;
 
 alterLogfileGroup
     : ALTER LOGFILE GROUP identifier
       ADD UNDOFILE STRING_
       (INITIAL_SIZE EQ_? fileSizeLiteral_)?
-      WAIT? ENGINE EQ_? identifier
+      WAIT? 
+      (ENGINE EQ_? identifier)?
     ;
 
 dropLogfileGroup
-    : DROP LOGFILE GROUP identifier ENGINE EQ_? identifier
+    : DROP LOGFILE GROUP identifier (ENGINE EQ_? identifier)?
     ;
 
 createTrigger
@@ -567,10 +575,10 @@ ownerStatement
     ;
 
 scheduleExpression_
-    : AT_ timestampValue (PLUS_ intervalExpression)*
-    | EVERY intervalExpression
+    : AT timestampValue (PLUS_ intervalExpression)*
+    | EVERY intervalValue
       (STARTS timestampValue (PLUS_ intervalExpression)*)?
-      ( ENDS timestampValue (PLUS_ intervalExpression)*)?     
+      (ENDS timestampValue (PLUS_ intervalExpression)*)?     
     ;
 
 timestampValue
@@ -617,7 +625,7 @@ compoundStatement
 
 validStatement
     : (createTable | alterTable | dropTable | truncateTable 
-    | insert | replace | update | delete | select
+    | insert | replace | update | delete | select | call
     | setVariable | beginStatement | declareStatement | flowControlStatement | cursorStatement | conditionHandlingStatement) SEMI_?
     ;
 

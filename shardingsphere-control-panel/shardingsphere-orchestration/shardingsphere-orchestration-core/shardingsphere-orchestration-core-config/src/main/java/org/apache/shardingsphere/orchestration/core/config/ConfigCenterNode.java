@@ -46,15 +46,9 @@ public final class ConfigCenterNode {
     
     private static final String PROPS_NODE = "props";
     
-    private static final String CLUSTER_NODE = "cluster";
-    
-    private static final String METRICS_NODE = "metrics";
-    
     private static final String COMMA_SEPARATOR = ",";
     
     private static final String PATH_SEPARATOR = "/";
-    
-    private final String name;
     
     /**
      * Get schema path.
@@ -62,7 +56,7 @@ public final class ConfigCenterNode {
      * @return schema path
      */
     public String getSchemaPath() {
-        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, SCHEMA_NODE);
+        return Joiner.on(PATH_SEPARATOR).join("", ROOT, SCHEMA_NODE);
     }
     
     /**
@@ -72,7 +66,7 @@ public final class ConfigCenterNode {
      * @return schema name path
      */
     public String getSchemaNamePath(final String schemaName) {
-        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, SCHEMA_NODE, schemaName);
+        return Joiner.on(PATH_SEPARATOR).join("", ROOT, SCHEMA_NODE, schemaName);
     }
     
     /**
@@ -114,11 +108,11 @@ public final class ConfigCenterNode {
     }
     
     private String getFullPath(final String schemaName, final String node) {
-        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, SCHEMA_NODE, schemaName, node);
+        return Joiner.on(PATH_SEPARATOR).join("", ROOT, SCHEMA_NODE, schemaName, node);
     }
     
     private String getFullPath(final String node) {
-        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, node);
+        return Joiner.on(PATH_SEPARATOR).join("", ROOT, node);
     }
     
     /**
@@ -157,23 +151,5 @@ public final class ConfigCenterNode {
             result.add(getDataSourcePath(schemaName));
         }
         return result;
-    }
-    
-    /**
-     * Get cluster node path.
-     *
-     * @return cluster node path
-     */
-    public String getClusterPath() {
-        return getFullPath(CLUSTER_NODE);
-    }
-    
-    /**
-     * Get metrics node path.
-     *
-     * @return metrics node path
-     */
-    public String getMetricsPath() {
-        return getFullPath(METRICS_NODE);
     }
 }

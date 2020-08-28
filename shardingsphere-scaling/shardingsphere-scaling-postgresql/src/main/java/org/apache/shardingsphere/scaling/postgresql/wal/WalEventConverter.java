@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.postgresql.wal;
 
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
@@ -42,13 +42,13 @@ import java.util.List;
  */
 public final class WalEventConverter {
     
-    private final RdbmsConfiguration rdbmsConfiguration;
+    private final DumperConfiguration dumperConfiguration;
     
     private final MetaDataManager metaDataManager;
     
-    public WalEventConverter(final RdbmsConfiguration rdbmsConfiguration) {
-        this.rdbmsConfiguration = rdbmsConfiguration;
-        metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(rdbmsConfiguration.getDataSourceConfiguration()));
+    public WalEventConverter(final DumperConfiguration dumperConfiguration) {
+        this.dumperConfiguration = dumperConfiguration;
+        metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(dumperConfiguration.getDataSourceConfiguration()));
     }
     
     /**
@@ -58,7 +58,7 @@ public final class WalEventConverter {
      * @return record
      */
     public Record convert(final AbstractWalEvent event) {
-        JdbcUri uri = new JdbcUri(((JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration()).getJdbcUrl());
+        JdbcUri uri = new JdbcUri(((JDBCDataSourceConfiguration) dumperConfiguration.getDataSourceConfiguration()).getJdbcUrl());
         if (filter(uri.getDatabase(), event)) {
             return createPlaceholderRecord(event);
         } else if (event instanceof WriteRowEvent) {
@@ -76,7 +76,7 @@ public final class WalEventConverter {
     private boolean filter(final String database, final AbstractWalEvent event) {
         if (isRowEvent(event)) {
             AbstractRowEvent rowEvent = (AbstractRowEvent) event;
-            return !rowEvent.getSchemaName().equals(database) || !rdbmsConfiguration.getTableNameMap().containsKey(rowEvent.getTableName());
+            return !rowEvent.getSchemaName().equals(database) || !dumperConfiguration.getTableNameMap().containsKey(rowEvent.getTableName());
         }
         return false;
     }
@@ -92,33 +92,33 @@ public final class WalEventConverter {
     }
     
     private DataRecord handleWriteRowsEvent(final WriteRowEvent writeRowEvent) {
-        DataRecord record = createDataRecord(writeRowEvent, writeRowEvent.getAfterRow().size());
-        record.setType(ScalingConstant.INSERT);
-        putColumnsIntoDataRecord(record, metaDataManager.getTableMetaData(writeRowEvent.getTableName()), writeRowEvent.getAfterRow());
-        return record;
+        DataRecord result = createDataRecord(writeRowEvent, writeRowEvent.getAfterRow().size());
+        result.setType(ScalingConstant.INSERT);
+        putColumnsIntoDataRecord(result, metaDataManager.getTableMetaData(writeRowEvent.getTableName()), writeRowEvent.getAfterRow());
+        return result;
     }
     
     private DataRecord handleUpdateRowsEvent(final UpdateRowEvent updateRowEvent) {
-        DataRecord record = createDataRecord(updateRowEvent, updateRowEvent.getAfterRow().size());
-        record.setType(ScalingConstant.UPDATE);
-        putColumnsIntoDataRecord(record, metaDataManager.getTableMetaData(updateRowEvent.getTableName()), updateRowEvent.getAfterRow());
-        return record;
+        DataRecord result = createDataRecord(updateRowEvent, updateRowEvent.getAfterRow().size());
+        result.setType(ScalingConstant.UPDATE);
+        putColumnsIntoDataRecord(result, metaDataManager.getTableMetaData(updateRowEvent.getTableName()), updateRowEvent.getAfterRow());
+        return result;
     }
     
     private DataRecord handleDeleteRowsEvent(final DeleteRowEvent event) {
         //TODO completion columns
-        DataRecord record = createDataRecord(event, event.getPrimaryKeys().size());
-        record.setType(ScalingConstant.DELETE);
+        DataRecord result = createDataRecord(event, event.getPrimaryKeys().size());
+        result.setType(ScalingConstant.DELETE);
         List<String> primaryKeyColumns = metaDataManager.getTableMetaData(event.getTableName()).getPrimaryKeyColumns();
         for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
-            record.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), true, true));
+            result.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), true, true));
         }
-        return record;
+        return result;
     }
     
     private DataRecord createDataRecord(final AbstractRowEvent rowsEvent, final int columnCount) {
         DataRecord result = new DataRecord(new WalPosition(rowsEvent.getLogSequenceNumber()), columnCount);
-        result.setTableName(rdbmsConfiguration.getTableNameMap().get(rowsEvent.getTableName()));
+        result.setTableName(dumperConfiguration.getTableNameMap().get(rowsEvent.getTableName()));
         return result;
     }
     

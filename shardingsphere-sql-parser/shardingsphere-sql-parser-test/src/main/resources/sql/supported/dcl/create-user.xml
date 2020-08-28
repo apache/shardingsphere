@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_user_with_hostname" value="CREATE USER 'user_dev_new'@'localhost' default role role1" db-types="MySQL" />
+    <sql-case id="create_user_without_hostname" value="CREATE USER user_dev_new" db-types="PostgreSQL" />
+    <sql-case id="create_user_identified_by_with_hostname" value="CREATE USER 'user_dev_new'@'localhost' identified by 'passwd_dev' default role role1" db-types="MySQL" />
+    <sql-case id="create_user_identified_by_without_hostname" value="CREATE USER user_dev_new identified by passwd_dev" db-types="Oracle" />
+    <sql-case id="create_user_identified_by_for" value="CREATE USER user_dev_new FOR LOGIN login_dev" db-types="SQLServer" />
+    <sql-case id="create_user_password" value="CREATE USER user_dev_new PASSWORD 'passwd_dev'" db-types="PostgreSQL" />
+    <sql-case id="create_user" value="CREATE USER user1 DEFAULT ROLE role1" db-types="MySQL" />
+    <sql-case id="create_users" value="CREATE USER user1, user2 DEFAULT ROLE role1" db-types="MySQL" />
+    <sql-case id="create_user_if_not_exists" value="CREATE USER IF NOT EXISTS user1 DEFAULT ROLE role1" db-types="MySQL" />
+    <sql-case id="create_local_user" value="CREATE USER 'user1'@'localhost' DEFAULT ROLE role1" db-types="MySQL" />
+    <sql-case id="create_user_with_roles" value="CREATE USER user1 DEFAULT ROLE role1, role2" db-types="MySQL" />
+    <sql-case id="create_user_with_password_default_role" value="CREATE USER user1 IDENTIFIED BY RANDOM password DEFAULT ROLE role1" db-types="MySQL" />
+    <sql-case id="create_user_with_resource_option" value="CREATE USER user1 DEFAULT ROLE role1 MAX_QUERIES_PER_HOUR 1" db-types="MySQL" />
+    <sql-case id="create_user_with_resource_options" value="CREATE USER user1 DEFAULT ROLE role1 MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1" db-types="MySQL" />
+    <sql-case id="create_user_with_password_option" value="CREATE USER user1 DEFAULT ROLE role1 PASSWORD EXPIRE DEFAULT" db-types="MySQL,Oracle" />
+    <sql-case id="create_user_with_password_options" value="CREATE USER user1 DEFAULT ROLE role1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT" db-types="MySQL" />
+    <sql-case id="create_user_with_lock_option" value="CREATE USER user1 DEFAULT ROLE role1 ACCOUNT LOCK" db-types="MySQL,Oracle" />
+    <sql-case id="create_user_with_options" value="CREATE USER user1 DEFAULT ROLE role1 MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT ACCOUNT LOCK" db-types="MySQL" />
+    <sql-case id="create_external_user" value="CREATE USER user1 IDENTIFIED EXTERNALLY" db-types="Oracle" />
+    <sql-case id="create_global_user" value="CREATE USER user1 IDENTIFIED GLOBALLY" db-types="Oracle" />
+    <sql-case id="create_user_with_password" value="CREATE USER user1 IDENTIFIED BY RANDOM password default role role1" db-types="H2,MySQL,PostgreSQL,Oracle,SQLServer" />
+    <sql-case id="create_user_with_tablespace" value="CREATE USER user1 IDENTIFIED BY password DEFAULT TABLESPACE tablespace1" db-types="Oracle" />
+    <sql-case id="create_user_with_quota_option" value="CREATE USER user1 IDENTIFIED BY password QUOTA 1M ON tablespace1" db-types="Oracle" />
+    <sql-case id="create_user_with_password_expire_lock" value="CREATE USER user1 IDENTIFIED BY RANDOM password default role role1 PASSWORD EXPIRE ACCOUNT LOCK" db-types="H2,MySQL,PostgreSQL,Oracle,SQLServer" />
+    <sql-case id="create_user_only_with_name" value="CREATE USER user1" db-types="PostgreSQL,SQLServer" />
+    <sql-case id="create_user_with_password_postgresql" value="CREATE USER user1 WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
+    <sql-case id="create_user_with_option_postgresql" value="CREATE USER user1 WITH SUPERUSER" db-types="PostgreSQL" />
+    <sql-case id="create_user_with_options_postgresql" value="CREATE USER user1 WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
+    <sql-case id="create_user_with_login" value="CREATE USER user1 FROM LOGIN login1" db-types="SQLServer" />
+    <sql-case id="create_user_with_schema" value="CREATE USER user1 WITH DEFAULT_SCHEMA = schema" db-types="SQLServer" />
+    <sql-case id="create_user_with_no_login" value="CREATE USER user1 WITHOUT LOGIN" db-types="SQLServer" />
+    <sql-case id="create_user_with_certificate" value="CREATE USER user1 FROM CERTIFICATE certificate" db-types="SQLServer" />
+    <sql-case id="create_user_with_asym_key" value="CREATE USER user1 FROM ASYMMETRIC KEY asym_key" db-types="SQLServer" />
+    <sql-case id="create_user_with_sysid" value="CREATE USER user1 WITH SYSID 10000" db-types="PostgreSQL"/>
+    <sql-case id="create_user_with_group" value="CREATE USER user1 IN GROUP group1,group2" db-types="PostgreSQL" />
+</sql-cases>

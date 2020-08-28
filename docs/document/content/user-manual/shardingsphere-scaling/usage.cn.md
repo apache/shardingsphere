@@ -8,7 +8,7 @@ weight = 2
 
 ### 环境要求
 
-纯JAVA开发，JDK建议1.8以上版本。
+纯 JAVA 开发，JDK建议 1.8 以上版本。
 
 支持迁移场景如下：
 
@@ -19,12 +19,12 @@ weight = 2
 
 **注意**：
 
-如果后端连接MySQL数据库，需要下载[MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
-解压缩后，将mysql-connector-java-5.1.47.jar拷贝到${shardingsphere-scaling}\lib目录。
+如果后端连接 MySQL 数据库，需要下载[MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
+解压缩后，将 mysql-connector-java-5.1.47.jar 拷贝到 `${shardingsphere-scaling}\lib` 目录。
 
 ### 权限要求
 
-MySQL 需要开启`binlog`，`binlog format`为Row模式，且迁移时所使用用户需要赋予Replication相关权限。
+MySQL 需要开启 `binlog`，`binlog format` 为Row模式，且迁移时所使用用户需要赋予 Replication 相关权限。
 
 ```
 +-----------------------------------------+---------------------------------------+
@@ -42,11 +42,11 @@ MySQL 需要开启`binlog`，`binlog format`为Row模式，且迁移时所使用
 +------------------------------------------------------------------------------+
 ```
 
-PostgreSQL 需要开启[test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)
+PostgreSQL 需要开启 [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)
 
 ### API接口
 
-弹性迁移组件提供了简单的HTTP API接口
+弹性迁移组件提供了简单的 HTTP API 接口
 
 #### 创建迁移任务
 
@@ -72,7 +72,7 @@ curl -X POST \
   -H 'content-type: application/json' \
   -d '{
    "ruleConfiguration": {
-      "sourceDatasource": "ds_0: !!YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '\''123456'\''\n    connectionTimeout: 30000\n    idleTimeout: 60000\n    maxLifetime: 1800000\n    maxPoolSize: 50\n    minPoolSize: 1\n    maintenanceIntervalMilliseconds: 30000\n    readOnly: false\n",
+      "sourceDatasource": "ds_0: !!org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '\''123456'\''\n    connectionTimeout: 30000\n    idleTimeout: 60000\n    maxLifetime: 1800000\n    maxPoolSize: 50\n    minPoolSize: 1\n    maintenanceIntervalMilliseconds: 30000\n    readOnly: false\n",
       "sourceRule": "defaultDatabaseStrategy:\n  inline:\n    algorithmExpression: ds_${user_id % 2}\n    shardingColumn: user_id\ntables:\n  t1:\n    actualDataNodes: ds_0.t1\n    keyGenerateStrategy:\n      column: order_id\n      type: SNOWFLAKE\n    logicTable: t1\n    tableStrategy:\n      inline:\n        algorithmExpression: t1\n        shardingColumn: order_id\n  t2:\n    actualDataNodes: ds_0.t2\n    keyGenerateStrategy:\n      column: order_item_id\n      type: SNOWFLAKE\n    logicTable: t2\n    tableStrategy:\n      inline:\n        algorithmExpression: t2\n        shardingColumn: order_id\n",
       "destinationDataSources": {
          "name": "dt_0",
@@ -218,6 +218,6 @@ curl -X POST \
 
 ## 通过UI界面来操作
 
-ShardingSphere-Scaling与ShardingSphere-UI集成了用户界面，所以上述所有任务相关的操作都可以通过UI界面点点鼠标来实现，当然本质上还是调用了上述基本接口。
+ShardingSphere-Scaling 与 ShardingSphere-UI 集成了用户界面，所以上述所有任务相关的操作都可以通过 UI 界面点点鼠标来实现，当然本质上还是调用了上述基本接口。
 
-更多信息请参考ShardingSphere-UI项目。
+更多信息请参考 ShardingSphere-UI 项目。

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.spring.boot.orchestration.common;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -36,6 +35,4 @@ public final class OrchestrationSpringBootRootConfiguration {
     private Properties props = new Properties();
     
     private YamlOrchestrationConfiguration orchestration;
-    
-    private YamlClusterConfiguration cluster;
 }

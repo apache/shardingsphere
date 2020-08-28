@@ -19,10 +19,10 @@ package org.apache.shardingsphere.spring.boot.orchestration.type;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.spring.boot.orchestration.registry.TestOrchestrationRepository;
 import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
 import org.junit.BeforeClass;
@@ -64,22 +64,22 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         String encryptRule = readYAML(ENCRYPT_RULE_FILE);
         TestOrchestrationRepository repository = new TestOrchestrationRepository();
-        repository.persist("/orchestration-spring-boot-test/config/schema/logic_db/datasource", dataSource);
-        repository.persist("/orchestration-spring-boot-test/config/schema/logic_db/rule", encryptRule);
-        repository.persist("/orchestration-spring-boot-test/config/props", "sql.show: 'true'\n");
-        repository.persist("/orchestration-spring-boot-test/registry/datasources", "");
+        repository.persist("/config/schema/logic_db/datasource", dataSource);
+        repository.persist("/config/schema/logic_db/rule", encryptRule);
+        repository.persist("/config/props", "sql.show: 'true'\n");
+        repository.persist("/registry/datasources", "");
     }
     
     @Test
     public void assertWithEncryptDataSource() throws NoSuchFieldException, IllegalAccessException {
         assertTrue(dataSource instanceof OrchestrationShardingSphereDataSource);
-        Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("dataSource");
+        Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        ShardingSphereDataSource encryptDataSource = (ShardingSphereDataSource) field.get(dataSource);
-        BasicDataSource embedDataSource = (BasicDataSource) encryptDataSource.getDataSourceMap().values().iterator().next();
+        SchemaContexts schemaContexts = (SchemaContexts) field.get(dataSource);
+        BasicDataSource embedDataSource = (BasicDataSource) schemaContexts.getDefaultSchemaContext().getSchema().getDataSources().values().iterator().next();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
-        EncryptRuleConfiguration configuration = (EncryptRuleConfiguration) encryptDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations().iterator().next();
+        EncryptRuleConfiguration configuration = (EncryptRuleConfiguration) schemaContexts.getDefaultSchemaContext().getSchema().getConfigurations().iterator().next();
         assertThat(configuration.getEncryptors().size(), is(1));
         ShardingSphereAlgorithmConfiguration encryptAlgorithmConfiguration = configuration.getEncryptors().get("order_encrypt");
         assertThat(encryptAlgorithmConfiguration, instanceOf(ShardingSphereAlgorithmConfiguration.class));

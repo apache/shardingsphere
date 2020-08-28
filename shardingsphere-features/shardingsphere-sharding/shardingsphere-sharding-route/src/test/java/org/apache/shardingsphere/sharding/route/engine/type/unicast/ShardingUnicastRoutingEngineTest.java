@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,6 +32,7 @@ import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public final class ShardingUnicastRoutingEngineTest {
@@ -43,7 +44,7 @@ public final class ShardingUnicastRoutingEngineTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}"));
         shardingRuleConfig.getBroadcastTables().add("t_config");
-        shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
+        shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1", "ds2"));
     }
     
     @Test
@@ -52,6 +53,7 @@ public final class ShardingUnicastRoutingEngineTest {
         RouteResult routeResult = unicastRoutingEngine.route(shardingRule);
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
+        assertFalse(routeResult.getRouteUnits().iterator().next().getDataSourceMapper().getLogicName().equalsIgnoreCase("ds2"));
     }
 
     @Test

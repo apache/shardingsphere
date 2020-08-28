@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
-import org.apache.shardingsphere.proxy.backend.metrics.MetricsUtils;
+import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
@@ -40,8 +41,9 @@ public final class BackendTransactionManager implements TransactionManager {
         connection = backendConnection;
         transactionType = connection.getTransactionType();
         localTransactionManager = new LocalTransactionManager(backendConnection);
-        shardingTransactionManager = null == connection.getSchema() ? null 
-                : connection.getSchema().getRuntimeContext().getTransactionManagerEngine().getTransactionManager(transactionType);
+        SchemaContext context = ProxySchemaContexts.getInstance().getSchema(connection.getSchema());
+        shardingTransactionManager = null == context ? null
+                : context.getRuntimeContext().getTransactionManagerEngine().getTransactionManager(transactionType);
     }
     
     @Override
@@ -55,7 +57,6 @@ public final class BackendTransactionManager implements TransactionManager {
         } else {
             shardingTransactionManager.begin();
         }
-        MetricsUtils.buriedTransactionMetric("begin");
     }
     
     @Override
@@ -67,7 +68,6 @@ public final class BackendTransactionManager implements TransactionManager {
                 } else {
                     shardingTransactionManager.commit();
                 }
-                MetricsUtils.buriedTransactionMetric("commit");
             } finally {
                 connection.getStateHandler().setStatus(ConnectionStatus.TERMINATED);
             }
@@ -83,7 +83,6 @@ public final class BackendTransactionManager implements TransactionManager {
                 } else {
                     shardingTransactionManager.rollback();
                 }
-                MetricsUtils.buriedTransactionMetric("rollback");
             } finally {
                 connection.getStateHandler().setStatus(ConnectionStatus.TERMINATED);
             }
