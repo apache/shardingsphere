@@ -62,7 +62,7 @@ public final class JDBCOrchestrationSchemaContexts extends OrchestrationSchemaCo
     
     @Override
     protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
-        Map<String, Map<String, DataSource>> result = new LinkedMap<>(dataSourcesMap.size());
+        Map<String, Map<String, DataSource>> result = new LinkedMap<>(dataSourcesMap.size(), 1);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesMap.entrySet()) {
             result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(entry.getValue()));
         }

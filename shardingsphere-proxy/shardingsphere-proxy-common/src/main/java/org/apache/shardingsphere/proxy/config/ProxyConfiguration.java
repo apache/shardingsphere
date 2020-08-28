@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
@@ -40,8 +39,6 @@ public final class ProxyConfiguration {
     private final Map<String, Collection<RuleConfiguration>> schemaRules;
     
     private final Authentication authentication;
-    
-    private final MetricsConfiguration metrics;
     
     private final Properties props;
 }

@@ -41,13 +41,19 @@
         </props>
     </orchestration:reg-center>
     
-    <orchestration:data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" reg-center-ref="registryRepository" />
-    <orchestration:data-source id="shardingRuleWithAttributesDataSourceOrchestration" data-source-ref="shardingRuleWithAttributesDataSource" reg-center-ref="registryRepository" />
-    <orchestration:data-source id="multiTableRulesDataSourceOrchestration" data-source-ref="multiTableRulesDataSource" reg-center-ref="registryRepository" />
-    <orchestration:data-source id="propsDataSourceOrchestration" data-source-ref="propsDataSource" reg-center-ref="registryRepository" />
-    <orchestration:data-source id="tableRuleWithAttributesDataSourceOrchestration" data-source-ref="tableRuleWithAttributesDataSource" reg-center-ref="registryRepository" />
-    <orchestration:data-source id="bindingTableRuleDatasourceOrchestration" data-source-ref="bindingTableRuleDatasource" reg-center-ref="registryRepository" />
-    <orchestration:data-source id="multiBindingTableRulesDatasourceOrchestration" data-source-ref="multiBindingTableRulesDatasource" reg-center-ref="registryRepository" />
-    <orchestration:data-source id="broadcastTableRuleDatasourceOrchestration" data-source-ref="broadcastTableRuleDatasource" reg-center-ref="registryRepository" />
-    <orchestration:data-source id="multiBroadcastTableRulesDatasourceOrchestration" data-source-ref="multiBroadcastTableRulesDatasource" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="simpleShardingOrchestration" data-source-names="dbtbl_0" rule-refs="simpleShardingDataSourceShardingRule" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="shardingRuleWithAttributesDataSourceOrchestration" data-source-names="dbtbl_0,dbtbl_1" rule-refs="shardingRuleWithAttributesDataSourceShardingRule" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="multiTableRulesDataSourceOrchestration" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiTableRulesDataSourceShardingRule" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="tableRuleWithAttributesDataSourceOrchestration" data-source-names="dbtbl_0,dbtbl_1" rule-refs="tableRuleWithAttributesDataSourceShardingRule" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="bindingTableRuleDatasourceOrchestration" data-source-names="dbtbl_0,dbtbl_1" rule-refs="bindingTableRuleDatasourceShardingRule" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="multiBindingTableRulesDatasourceOrchestration" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBindingTableRulesDatasourceShardingRule" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="broadcastTableRuleDatasourceOrchestration" data-source-names="dbtbl_0,dbtbl_1" rule-refs="broadcastTableRuleDatasourceShardingRule" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="multiBroadcastTableRulesDatasourceOrchestration" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBroadcastTableRulesDatasourceShardingRule" reg-center-ref="registryRepository" />
+    <orchestration:data-source id="propsDataSourceOrchestration" data-source-names="dbtbl_0,dbtbl_1" rule-refs="propsDataSourceShardingRule" reg-center-ref="registryRepository">
+        <props>
+            <prop key="sql.show">${sql_show}</prop>
+            <prop key="executor.size">10</prop>
+            <prop key="foo">bar</prop>
+        </props>
+    </orchestration:data-source>
 </beans>

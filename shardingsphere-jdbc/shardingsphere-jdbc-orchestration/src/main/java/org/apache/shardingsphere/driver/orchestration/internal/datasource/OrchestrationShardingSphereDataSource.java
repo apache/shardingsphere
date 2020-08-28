@@ -20,10 +20,7 @@ package org.apache.shardingsphere.driver.orchestration.internal.datasource;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
-import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.schema.JDBCOrchestrationSchemaContexts;
@@ -36,7 +33,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
@@ -49,7 +45,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -66,46 +61,26 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     
     private final SchemaContexts schemaContexts;
     
-    private final OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance();
-    
-    public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig,
-                                                 final MetricsConfiguration metricsConfiguration) throws SQLException {
-        init(orchestrationConfig);
-        schemaContexts = new JDBCOrchestrationSchemaContexts(createSchemaContexts(), orchestrationFacade);
-        initConfigurations(metricsConfiguration);
-        initControlPanel();
-    }
-    
     public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        init(orchestrationConfig);
-        schemaContexts = new JDBCOrchestrationSchemaContexts(createSchemaContexts(), orchestrationFacade);
-        initConfigurations(null);
-        initControlPanel();
+        OrchestrationFacade orchestrationFacade = createOrchestrationFacade(orchestrationConfig);
+        schemaContexts = new JDBCOrchestrationSchemaContexts(createSchemaContexts(orchestrationFacade), orchestrationFacade);
     }
     
-    public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) {
-        init(orchestrationConfig);
-        schemaContexts = new JDBCOrchestrationSchemaContexts(dataSource.getSchemaContexts(), orchestrationFacade);
-        initWithLocalConfiguration();
-        initControlPanel();
+    public OrchestrationShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations,
+                                                 final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        OrchestrationFacade orchestrationFacade = createOrchestrationFacade(orchestrationConfig);
+        schemaContexts = new JDBCOrchestrationSchemaContexts(createSchemaContexts(dataSourceMap, ruleConfigurations, props), orchestrationFacade);
+        uploadLocalConfiguration(orchestrationFacade);
     }
     
-    public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource dataSource,
-                                                 final OrchestrationConfiguration orchestrationConfig,
-                                                 final MetricsConfiguration metricsConfiguration) {
-        init(orchestrationConfig);
-        schemaContexts = new JDBCOrchestrationSchemaContexts(dataSource.getSchemaContexts(), orchestrationFacade);
-        initWithLocalConfiguration();
-        initConfigurations(metricsConfiguration);
-        initControlPanel();
+    private OrchestrationFacade createOrchestrationFacade(final OrchestrationConfiguration config) {
+        OrchestrationFacade result = OrchestrationFacade.getInstance();
+        result.init(config, Collections.singletonList(DefaultSchema.LOGIC_NAME));
+        result.onlineInstance();
+        return result;
     }
     
-    private void init(final OrchestrationConfiguration config) {
-        orchestrationFacade.init(config, Collections.singletonList(DefaultSchema.LOGIC_NAME));
-        orchestrationFacade.onlineInstance();
-    }
-    
-    private SchemaContexts createSchemaContexts() throws SQLException {
+    private SchemaContexts createSchemaContexts(final OrchestrationFacade orchestrationFacade) throws SQLException {
         ConfigCenter configCenter = orchestrationFacade.getConfigCenter();
         Map<String, DataSourceConfiguration> dataSourceConfigs = configCenter.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
         Collection<RuleConfiguration> ruleConfigurations = configCenter.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
@@ -114,6 +89,15 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap),
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), 
                 new Authentication(), configCenter.loadProperties());
+        return schemaContextsBuilder.build();
+    }
+    
+    private SchemaContexts createSchemaContexts(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations,
+                                                final Properties props) throws SQLException {
+        SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(createDatabaseType(dataSourceMap),
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap),
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations),
+                new Authentication(), props);
         return schemaContextsBuilder.build();
     }
     
@@ -133,28 +117,13 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         }
     }
     
-    private void initWithLocalConfiguration() {
+    private void uploadLocalConfiguration(final OrchestrationFacade orchestrationFacade) {
         Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceConverter.getDataSourceConfigurationMap(schemaContexts.getDefaultSchemaContext().getSchema().getDataSources());
         Collection<RuleConfiguration> ruleConfigurations = schemaContexts.getDefaultSchemaContext().getSchema().getConfigurations();
         Properties props = schemaContexts.getProps().getProps();
         orchestrationFacade.onlineInstance(
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigs), 
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), null, props);
-    }
-    
-    private void initConfigurations(final MetricsConfiguration metricsConfiguration) {
-        if (null != metricsConfiguration) {
-            orchestrationFacade.initMetricsConfiguration(metricsConfiguration);
-        }
-    }
-    
-    private void initControlPanel() {
-        MetricsConfiguration metricsConfiguration = orchestrationFacade.getConfigCenter().loadMetricsConfiguration();
-        Collection<ControlPanelConfiguration> controlPanelConfigs = new LinkedList<>();
-        if (null != metricsConfiguration) {
-            controlPanelConfigs.add(metricsConfiguration);
-        }
-        new ControlPanelFacadeEngine().init(controlPanelConfigs);
     }
     
     @Override
@@ -177,7 +146,6 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     public void close() throws Exception {
         getDataSourceMap().forEach((key, value) -> close(value));
         schemaContexts.close();
-        orchestrationFacade.close();
     }
     
     private void close(final DataSource dataSource) {

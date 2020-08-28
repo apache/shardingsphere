@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.buffer.UnpooledHeapByteBuf;
 import java.nio.charset.StandardCharsets;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
@@ -41,17 +40,17 @@ public final class PostgreSQLUnspecifiedBinaryProtocolValueTest {
     @Test
     public void assertRead() {
         String timestampStr = "2020-08-23 15:57:03+08";
-        PooledByteBufAllocator byteBufAllocator = new PooledByteBufAllocator();
-        ByteBuf byteBuf = new UnpooledHeapByteBuf(byteBufAllocator, 4 + timestampStr.length(), 64);
+        int expectedLength = 4 + timestampStr.length();
+        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
         byteBuf.writeInt(timestampStr.length());
         byteBuf.writeCharSequence(timestampStr, StandardCharsets.ISO_8859_1);
         byteBuf.readInt();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
         Object result = new PostgreSQLUnspecifiedBinaryProtocolValue().read(payload);
-        byteBuf.release();
         assertNotNull(result);
         assertTrue(result instanceof PostgreSQLTypeUnspecifiedSQLParameter);
         assertThat(result.toString(), is(timestampStr));
+        assertThat(byteBuf.readerIndex(), is(expectedLength));
     }
     
     @Test(expected = UnsupportedOperationException.class)

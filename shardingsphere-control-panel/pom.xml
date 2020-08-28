@@ -31,8 +31,6 @@
     
     <modules>
         <module>shardingsphere-orchestration</module>
-        <module>shardingsphere-opentracing</module>
-        <module>shardingsphere-metrics</module>
         <module>shardingsphere-control-panel-spi</module>
     </modules>
 </project>

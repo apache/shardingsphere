@@ -32,5 +32,10 @@
         </props>
     </orchestration:reg-center>
     
-    <orchestration:data-source id="encryptDataSourceOrchestration" data-source-ref="encryptDataSource" reg-center-ref="regCenter" />
+    <orchestration:data-source id="encryptDataSourceOrchestration" data-source-names="dbtbl_0" rule-refs="encryptRule" reg-center-ref="regCenter">
+        <props>
+            <prop key="sql.show">${sql_show}</prop>
+            <prop key="query.with.cipher.column">false</prop>
+        </props>
+    </orchestration:data-source>
 </beans>
