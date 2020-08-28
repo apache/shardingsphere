@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.hamcrest.CoreMatchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
