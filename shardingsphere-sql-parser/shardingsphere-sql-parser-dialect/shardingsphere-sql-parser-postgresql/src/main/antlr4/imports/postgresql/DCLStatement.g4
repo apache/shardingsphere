@@ -17,14 +17,14 @@
 
 grammar DCLStatement;
 
-import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
+import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule, DDLStatement;
 
 grant
-    : GRANT (privilegeClause | roleClause_)
+    : GRANT (privilegeClause | roleClause_) TO granteeList (WITH GRANT OPTION)?
     ;
 
 revoke
-    : REVOKE optionForClause_? (privilegeClause | roleClause_)
+    : REVOKE optionForClause_? (privilegeClause FROM granteeList  | roleClause_ ) (CASCADE | RESTRICT)?
     ;
 
 privilegeClause
@@ -32,7 +32,7 @@ privilegeClause
     ;
     
 roleClause_
-    : ignoredIdentifiers_
+    : privilegeList FROM roleList (GRANTED BY roleSpec)?
     ;
 
 optionForClause_
@@ -61,20 +61,29 @@ privilegeType_
     ;
 
 onObjectClause
-    : DATABASE 
-    | SCHEMA
-    | DOMAIN
-    | FOREIGN
-    | FUNCTION
-    | PROCEDURE
-    | ROUTINE
-    | ALL
-    | LANGUAGE
-    | LARGE OBJECT
-    | TABLESPACE
-    | TYPE 
-    | SEQUENCE
+    : DATABASE nameList
+    | SCHEMA nameList
+    | DOMAIN anyNameList
+    | FUNCTION functionWithArgtypesList
+    | PROCEDURE functionWithArgtypesList
+    | ROUTINE functionWithArgtypesList
+    | LANGUAGE nameList
+    | LARGE OBJECT numericOnlyList
+    | TABLESPACE nameList
+    | TYPE anyNameList
+    | SEQUENCE qualifiedNameList
     | TABLE? tableNames
+    | FOREIGN DATA WRAPPER nameList
+    | FOREIGN SERVER nameList
+    | ALL TABLES IN SCHEMA nameList
+    | ALL SEQUENCES IN SCHEMA nameList
+    | ALL FUNCTIONS IN SCHEMA nameList
+    | ALL PROCEDURES IN SCHEMA nameList
+    | ALL ROUTINES IN SCHEMA nameList
+    ;
+
+numericOnlyList
+    : numericOnly (COMMA_ numericOnly)*
     ;
 
 createUser
@@ -135,5 +144,38 @@ alterRole
 
 alterSchema
     : ALTER SCHEMA name (RENAME TO name | OWNER TO roleSpec)
+    ;
+
+createGroup
+    : CREATE GROUP roleSpec WITH? createOptRoleElem*
+    ;
+
+createSchema
+    : CREATE SCHEMA (IF NOT EXISTS)? createSchemaClauses
+    ;
+
+createSchemaClauses
+    : colId? AUTHORIZATION roleSpec schemaEltList
+    | colId schemaEltList
+    ;
+
+schemaEltList
+    : schemaStmt*
+    ;
+
+schemaStmt
+    : createTable | createIndex | createSequence | createTrigger | grant | createView
+    ;
+
+dropDroup
+    : DROP GROUP (IF EXISTS)? roleList
+    ;
+
+dropSchema
+    : DROP SCHEMA (IF EXISTS)? nameList dropBehavior?
+    ;
+
+reassignOwned
+    : REASSIGN OWNED BY roleList TO roleSpec
     ;
 
