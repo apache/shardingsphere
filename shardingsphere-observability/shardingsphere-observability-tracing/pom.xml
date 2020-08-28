@@ -22,15 +22,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-observability</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-control-panel</artifactId>
+    <artifactId>shardingsphere-observability-tracing</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>shardingsphere-orchestration</module>
-        <module>shardingsphere-control-panel-spi</module>
+        <module>shardingsphere-opentracing</module>
     </modules>
 </project>
