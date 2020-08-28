@@ -247,8 +247,8 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
         result.add(new InputGroup<>(preparedStatementExecuteUnits));
         for (PreparedStatement each : preparedStatements) {
-            preparedStatementExecuteUnits.add(
-                    new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList(1))), ConnectionMode.MEMORY_STRICTLY, each));
+            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList(1))),
+                    ConnectionMode.MEMORY_STRICTLY, each));
         }
         return result;
     }

@@ -206,13 +206,14 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private Collection<InputGroup<StatementExecuteUnit>> getInputGroups() throws SQLException {
         int maxConnectionsSizePerQuery = schemaContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, connection, statementOption, 
-                schemaContexts.getDefaultSchemaContext().getSchema().getRules()).generate(executionContext.getExecutionUnits());
+        return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, connection, statementOption,
+                schemaContexts.getDefaultSchemaContext().getSchema().getRules(), executionContext).generate(executionContext.getExecutionUnits());
     }
     
     private Collection<InputGroup<RawSQLExecuteUnit>> getRawInputGroups() throws SQLException {
         int maxConnectionsSizePerQuery = schemaContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new RawExecuteGroupEngine(maxConnectionsSizePerQuery, schemaContexts.getDefaultSchemaContext().getSchema().getRules()).generate(executionContext.getExecutionUnits());
+        return new RawExecuteGroupEngine(maxConnectionsSizePerQuery, schemaContexts.getDefaultSchemaContext().getSchema().getRules(), executionContext)
+                .generate(executionContext.getExecutionUnits());
     }
     
     @Override
@@ -257,10 +258,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private ExecutionContext createExecutionContext() {
         SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
         RouteContext routeContext = 
-                new DataNodeRouter(schemaContext.getSchema().getMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules()).route(sqlStatement, sql, getParameters());
+                new DataNodeRouter(schemaContext.getSchema().getMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules(), schemaContext.getName())
+                        .route(sqlStatement, sql, getParameters());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(schemaContext.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), 
                 schemaContexts.getProps(), schemaContext.getSchema().getRules()).rewrite(sql, new ArrayList<>(getParameters()), routeContext);
-        ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(schemaContext.getSchema().getMetaData(), sqlRewriteResult));
+        ExecutionContext result = new ExecutionContext(routeContext, ExecutionContextBuilder.build(schemaContext.getSchema().getMetaData(), sqlRewriteResult));
         findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.add(generatedKey.getGeneratedValues().getLast()));
         logSQL(result);
         return result;
@@ -347,8 +349,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private void initBatchPreparedStatementExecutor() throws SQLException {
         PreparedStatementExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
-                schemaContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), 
-                connection, statementOption, schemaContexts.getDefaultSchemaContext().getSchema().getRules());
+                schemaContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                connection, statementOption, schemaContexts.getDefaultSchemaContext().getSchema().getRules(), executionContext);
         batchPreparedStatementExecutor.init(executeGroupEngine.generate(
                 new ArrayList<>(batchPreparedStatementExecutor.getBatchExecutionUnits()).stream().map(BatchExecutionUnit::getExecutionUnit).collect(Collectors.toList())));
         setBatchParametersForStatements();

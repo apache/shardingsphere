@@ -30,7 +30,7 @@ import java.util.Collection;
 public final class MasterSlaveRuleBuilder implements ShardingSphereRuleBuilder<MasterSlaveRule, MasterSlaveRuleConfiguration> {
     
     @Override
-    public MasterSlaveRule build(final MasterSlaveRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+    public MasterSlaveRule build(final String schemaName, final MasterSlaveRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
         return new MasterSlaveRule(ruleConfiguration);
     }
     

@@ -15,23 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replica.yaml.config;
+package org.apache.shardingsphere.replica.route.engine;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.route.context.RouteResult;
+import org.apache.shardingsphere.infra.route.context.RouteStageContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Replica data source configuration for YAML.
+ * Replica route stage context.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlReplicaDataSourceConfiguration implements YamlConfiguration {
+public final class ReplicaRouteStageContext implements RouteStageContext {
     
-    private String name;
+    private final String currentSchemaName;
     
-    private Collection<String> replicaDataSourceNames = new LinkedList<>();
+    private final SQLStatementContext<?> sqlStatementContext;
+    
+    private final List<Object> parameters;
+    
+    private final RouteResult routeResult;
+    
+    private final Map<String, ReplicaGroup> replicaGroups;
+    
+    private final boolean readOnly;
 }

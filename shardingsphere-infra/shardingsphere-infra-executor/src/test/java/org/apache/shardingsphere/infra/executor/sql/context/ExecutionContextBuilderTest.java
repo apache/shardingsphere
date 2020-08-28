@@ -45,7 +45,7 @@ public final class ExecutionContextBuilderTest {
     public void assertBuildGenericSQLRewriteResult() {
         String sql = "sql";
         List<Object> parameters = Collections.singletonList("parameter");
-        GenericSQLRewriteResult genericSQLRewriteResult = new GenericSQLRewriteResult(new SQLRewriteUnit(sql, parameters));
+        GenericSQLRewriteResult genericSQLRewriteResult = new GenericSQLRewriteResult(new SQLRewriteUnit(sql, parameters), mock(RouteUnit.class));
         DataSourceMetas dataSourceMetas = mock(DataSourceMetas.class);
         String firstDataSourceName = "firstDataSourceName";
         when(dataSourceMetas.getAllInstanceDataSourceNames()).thenReturn(Arrays.asList(firstDataSourceName, "lastDataSourceName"));

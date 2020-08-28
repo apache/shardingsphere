@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
+import org.apache.shardingsphere.infra.route.context.RouteStageContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
 import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
@@ -42,25 +43,31 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
     
     @Override
     public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final MasterSlaveRule masterSlaveRule, final ConfigurationProperties props) {
-        if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
-            String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule.getSingleDataSourceRule()).route(routeContext.getSqlStatementContext().getSqlStatement());
+        RouteStageContext preRouteStageContext = routeContext.lastRouteStageContext();
+        if (preRouteStageContext.getRouteResult().getRouteUnits().isEmpty()) {
+            String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule.getSingleDataSourceRule()).route(preRouteStageContext.getSqlStatementContext().getSqlStatement());
             RouteResult routeResult = new RouteResult();
             routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
-            return new RouteContext(routeContext.getSqlStatementContext(), routeContext.getParameters(), routeResult);
+            routeContext.addRouteStageContext(getOrder(),
+                    new MasterSlaveRouteStageContext(preRouteStageContext.getCurrentSchemaName(), preRouteStageContext.getSqlStatementContext(), preRouteStageContext.getParameters(), routeResult));
+            return routeContext;
         }
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
-        for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
+        for (RouteUnit each : preRouteStageContext.getRouteResult().getRouteUnits()) {
             String dataSourceName = each.getDataSourceMapper().getLogicName();
             Optional<MasterSlaveDataSourceRule> dataSourceRule = masterSlaveRule.findDataSourceRule(dataSourceName);
             if (dataSourceRule.isPresent() && dataSourceRule.get().getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 toBeRemoved.add(each);
-                String actualDataSourceName = new MasterSlaveDataSourceRouter(dataSourceRule.get()).route(routeContext.getSqlStatementContext().getSqlStatement());
+                String actualDataSourceName = new MasterSlaveDataSourceRouter(dataSourceRule.get()).route(preRouteStageContext.getSqlStatementContext().getSqlStatement());
                 toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), actualDataSourceName), each.getTableMappers()));
             }
         }
-        routeContext.getRouteResult().getRouteUnits().removeAll(toBeRemoved);
-        routeContext.getRouteResult().getRouteUnits().addAll(toBeAdded);
+        preRouteStageContext.getRouteResult().getRouteUnits().removeAll(toBeRemoved);
+        preRouteStageContext.getRouteResult().getRouteUnits().addAll(toBeAdded);
+        routeContext.addRouteStageContext(getOrder(),
+                new MasterSlaveRouteStageContext(preRouteStageContext.getCurrentSchemaName(), preRouteStageContext.getSqlStatementContext(), preRouteStageContext.getParameters(),
+                        preRouteStageContext.getRouteResult()));
         return routeContext;
     }
     

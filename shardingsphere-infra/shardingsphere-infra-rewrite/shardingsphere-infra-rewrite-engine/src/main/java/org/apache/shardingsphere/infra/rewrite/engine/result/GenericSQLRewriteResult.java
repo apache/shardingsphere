@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rewrite.engine.result;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 /**
  * Generic SQL rewrite result.
@@ -28,4 +29,6 @@ import lombok.RequiredArgsConstructor;
 public final class GenericSQLRewriteResult implements SQLRewriteResult {
     
     private final SQLRewriteUnit sqlRewriteUnit;
+    
+    private final RouteUnit routeUnit;
 }

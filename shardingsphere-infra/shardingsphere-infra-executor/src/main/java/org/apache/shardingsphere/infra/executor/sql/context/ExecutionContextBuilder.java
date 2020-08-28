@@ -24,12 +24,15 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteRe
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Execution context builder.
@@ -50,14 +53,24 @@ public final class ExecutionContextBuilder {
     
     private static Collection<ExecutionUnit> build(final ShardingSphereMetaData metaData, final GenericSQLRewriteResult sqlRewriteResult) {
         String dataSourceName = metaData.getDataSources().getAllInstanceDataSourceNames().iterator().next();
-        return Collections.singletonList(new ExecutionUnit(dataSourceName, new SQLUnit(sqlRewriteResult.getSqlRewriteUnit().getSql(), sqlRewriteResult.getSqlRewriteUnit().getParameters())));
+        return Collections.singletonList(new ExecutionUnit(dataSourceName,
+                new SQLUnit(sqlRewriteResult.getSqlRewriteUnit().getSql(), sqlRewriteResult.getSqlRewriteUnit().getParameters(),
+                        getActualTableNames(sqlRewriteResult.getRouteUnit().getTableMappers()))));
     }
     
     private static Collection<ExecutionUnit> build(final RouteSQLRewriteResult sqlRewriteResult) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
         for (Entry<RouteUnit, SQLRewriteUnit> entry : sqlRewriteResult.getSqlRewriteUnits().entrySet()) {
-            result.add(new ExecutionUnit(entry.getKey().getDataSourceMapper().getActualName(), new SQLUnit(entry.getValue().getSql(), entry.getValue().getParameters())));
+            result.add(new ExecutionUnit(entry.getKey().getDataSourceMapper().getActualName(),
+                    new SQLUnit(entry.getValue().getSql(), entry.getValue().getParameters(), getActualTableNames(entry.getKey().getTableMappers()))));
         }
         return result;
+    }
+
+    private static Set<String> getActualTableNames(final Collection<RouteMapper> tableMappers) {
+        if (null == tableMappers) {
+            return Collections.EMPTY_SET;
+        }
+        return tableMappers.stream().map(RouteMapper::getActualName).collect(Collectors.toSet());
     }
 }

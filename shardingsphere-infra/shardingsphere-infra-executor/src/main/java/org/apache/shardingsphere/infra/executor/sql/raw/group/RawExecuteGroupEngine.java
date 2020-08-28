@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.raw.group;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -36,9 +37,9 @@ import java.util.List;
 public final class RawExecuteGroupEngine extends AbstractExecuteGroupEngine<RawSQLExecuteUnit> {
     
     private final int maxConnectionsSizePerQuery;
-    
-    public RawExecuteGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
-        super(rules);
+
+    public RawExecuteGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules, final ExecutionContext executionContext) {
+        super(rules, executionContext);
         this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
     }
     

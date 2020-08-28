@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.route;
 
+import org.apache.shardingsphere.infra.route.context.OriginRouteStageContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
@@ -53,12 +54,15 @@ public final class DataNodeRouter {
     private final Map<ShardingSphereRule, RouteDecorator> decorators;
     
     private final SPIRoutingHook routingHook;
+
+    private final String currentSchemaName;
     
-    public DataNodeRouter(final ShardingSphereMetaData metaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
+    public DataNodeRouter(final ShardingSphereMetaData metaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules, final String currentSchemaName) {
         this.metaData = metaData;
         this.props = props;
         decorators = OrderedSPIRegistry.getRegisteredServices(rules, RouteDecorator.class);
         routingHook = new SPIRoutingHook();
+        this.currentSchemaName = currentSchemaName;
     }
     
     /**
@@ -95,10 +99,10 @@ public final class DataNodeRouter {
     private RouteContext createRouteContext(final SQLStatement sqlStatement, final List<Object> parameters) {
         try {
             SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema().getSchemaMetaData(), parameters, sqlStatement);
-            return new RouteContext(sqlStatementContext, parameters, new RouteResult());
+            return new RouteContext(new OriginRouteStageContext(currentSchemaName, sqlStatementContext, parameters, new RouteResult()));
             // TODO should pass parameters for master-slave
         } catch (final IndexOutOfBoundsException ex) {
-            return new RouteContext(new CommonSQLStatementContext<>(sqlStatement), parameters, new RouteResult());
+            return new RouteContext(new OriginRouteStageContext(currentSchemaName, new CommonSQLStatementContext<>(sqlStatement), parameters, new RouteResult()));
         }
     }
 }

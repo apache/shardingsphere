@@ -20,17 +20,14 @@ package org.apache.shardingsphere.replica.yaml.swapper;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.replica.api.config.ReplicaDataSourceConfiguration;
+import org.apache.shardingsphere.replica.api.config.ReplicaTableRuleConfiguration;
 import org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration;
-import org.apache.shardingsphere.replica.yaml.config.YamlReplicaDataSourceConfiguration;
 import org.apache.shardingsphere.replica.yaml.config.YamlReplicaRuleConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -50,40 +47,81 @@ public final class ReplicaRuleConfigurationYamlSwapperTest {
     @Mock
     private ReplicaRuleConfiguration ruleConfig;
 
-    @Test
-    public void assertSwapToYamlConfiguration() {
-        YamlReplicaRuleConfiguration configuration = getSwapper().swapToYamlConfiguration(createReplicaRuleConfiguration());
-        assertThat(configuration.getDataSources().size(), is(1));
-        assertTrue(configuration.getDataSources().containsKey("name"));
-        assertTrue(configuration.getDataSources().get("name").getReplicaDataSourceNames().contains("replicaSourceNames"));
-    }
+    private final String logicTableName = "t_order";
 
-    private ReplicaRuleConfiguration createReplicaRuleConfiguration() {
-        ReplicaDataSourceConfiguration configuration = new ReplicaDataSourceConfiguration("name", Arrays.asList("replicaSourceNames"));
-        ReplicaRuleConfiguration replicaRuleConfiguration = new ReplicaRuleConfiguration(Arrays.asList(configuration));
-        return replicaRuleConfiguration;
-    }
+    private final String dataSourceName = "demo_ds_0";
+
+    private final String physicsTable = "t_order_1";
+
+    private final String replicaGroupId = "raftGroupTest1";
+
+    private final String replicaPeers = "127.0.0.1:9090";
 
     @Test
-    public void assertSwapToObject() {
-        ReplicaRuleConfiguration configuration = getSwapper().swapToObject(createYamlReplicaRuleConfiguration());
-        assertThat(configuration.getDataSources().size(), is(1));
-        Collection<ReplicaDataSourceConfiguration> dataSources = configuration.getDataSources();
-        ReplicaDataSourceConfiguration sourceConfiguration = dataSources.stream().findFirst().orElse(null);
-        assertNotNull(sourceConfiguration);
-        assertThat(sourceConfiguration.getName(), is("dataSources"));
-        assertTrue(sourceConfiguration.getReplicaSourceNames().contains("replicaDataSourceNames"));
+    public void assertSwapToYamlConfigurationWithMinProperties() {
+        ReplicaRuleConfigurationYamlSwapper swapper = getSwapper();
+        YamlReplicaRuleConfiguration yamlConfiguration = swapper.swapToYamlConfiguration(new ReplicaRuleConfiguration());
+        Map<String, ReplicaTableRuleConfiguration[]> resultTables = yamlConfiguration.getTables();
+        assertNotNull(resultTables);
+        assertTrue(resultTables.isEmpty());
     }
 
-    private YamlReplicaRuleConfiguration createYamlReplicaRuleConfiguration() {
-        YamlReplicaDataSourceConfiguration configuration = new YamlReplicaDataSourceConfiguration();
-        configuration.setName("name");
-        configuration.setReplicaDataSourceNames(Arrays.asList("replicaDataSourceNames"));
-        Map<String, YamlReplicaDataSourceConfiguration> dataSources = new LinkedHashMap<>();
-        dataSources.put("dataSources", configuration);
-        YamlReplicaRuleConfiguration yamlReplicaRuleConfiguration = new YamlReplicaRuleConfiguration();
-        yamlReplicaRuleConfiguration.setDataSources(dataSources);
-        return yamlReplicaRuleConfiguration;
+    @Test
+    public void assertSwapToYamlConfigurationWithMaxProperties() {
+        ReplicaRuleConfiguration configuration = new ReplicaRuleConfiguration();
+        Map<String, ReplicaTableRuleConfiguration[]> tables = new LinkedHashMap<>(2);
+        configuration.setTables(tables);
+        ReplicaTableRuleConfiguration table = new ReplicaTableRuleConfiguration();
+        tables.put(logicTableName, new ReplicaTableRuleConfiguration[] {table});
+        table.setDataSourceName(dataSourceName);
+        table.setPhysicsTable(physicsTable);
+        table.setReplicaGroupId(replicaGroupId);
+        table.setReplicaPeers(replicaPeers);
+
+        ReplicaRuleConfigurationYamlSwapper swapper = getSwapper();
+        YamlReplicaRuleConfiguration yamlConfiguration = swapper.swapToYamlConfiguration(configuration);
+        Map<String, ReplicaTableRuleConfiguration[]> resultTables = yamlConfiguration.getTables();
+        assertNotNull(resultTables);
+        assertThat(resultTables, is(tables));
+        assertThat(resultTables.size(), is(1));
+        assertThat(resultTables.get(logicTableName)[0], is(table));
+        assertThat(table.getDataSourceName(), is(dataSourceName));
+        assertThat(table.getPhysicsTable(), is(physicsTable));
+        assertThat(table.getReplicaGroupId(), is(replicaGroupId));
+        assertThat(table.getReplicaPeers(), is(replicaPeers));
+    }
+
+    @Test
+    public void assertSwapToObjectWithMinProperties() {
+        ReplicaRuleConfigurationYamlSwapper swapper = getSwapper();
+        ReplicaRuleConfiguration configuration = swapper.swapToObject(new YamlReplicaRuleConfiguration());
+        Map<String, ReplicaTableRuleConfiguration[]> resultTables = configuration.getTables();
+        assertNotNull(resultTables);
+        assertTrue(resultTables.isEmpty());
+    }
+
+    @Test
+    public void assertSwapToObjectWithMaxProperties() {
+        YamlReplicaRuleConfiguration yamlConfiguration = new YamlReplicaRuleConfiguration();
+        Map<String, ReplicaTableRuleConfiguration[]> tables = new LinkedHashMap<>(2);
+        yamlConfiguration.setTables(tables);
+        ReplicaTableRuleConfiguration table = new ReplicaTableRuleConfiguration();
+        tables.put(logicTableName, new ReplicaTableRuleConfiguration[] {table});
+        table.setDataSourceName(dataSourceName);
+        table.setPhysicsTable(physicsTable);
+        table.setReplicaGroupId(replicaGroupId);
+        table.setReplicaPeers(replicaPeers);
+        ReplicaRuleConfigurationYamlSwapper swapper = getSwapper();
+        ReplicaRuleConfiguration configuration = swapper.swapToObject(yamlConfiguration);
+        Map<String, ReplicaTableRuleConfiguration[]> resultTables = configuration.getTables();
+        assertNotNull(resultTables);
+        assertThat(resultTables, is(tables));
+        assertThat(resultTables.size(), is(1));
+        assertThat(resultTables.get(logicTableName)[0], is(table));
+        assertThat(table.getDataSourceName(), is(dataSourceName));
+        assertThat(table.getPhysicsTable(), is(physicsTable));
+        assertThat(table.getReplicaGroupId(), is(replicaGroupId));
+        assertThat(table.getReplicaPeers(), is(replicaPeers));
     }
 
     private ReplicaRuleConfigurationYamlSwapper getSwapper() {

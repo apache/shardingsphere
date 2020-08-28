@@ -23,8 +23,10 @@ import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
+import org.apache.shardingsphere.infra.route.context.RouteStageContext;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
+import org.apache.shardingsphere.sharding.route.ShardingRouteStageContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.InsertClauseShardingConditionEngine;
@@ -59,8 +61,9 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
     @SuppressWarnings("unchecked")
     @Override
     public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ShardingRule shardingRule, final ConfigurationProperties props) {
-        SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
-        List<Object> parameters = routeContext.getParameters();
+        RouteStageContext preRouteStageContext = routeContext.lastRouteStageContext();
+        SQLStatementContext sqlStatementContext = preRouteStageContext.getSqlStatementContext();
+        List<Object> parameters = preRouteStageContext.getParameters();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         Optional<ShardingStatementValidator> shardingStatementValidator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
         shardingStatementValidator.ifPresent(validator -> validator.preValidate(shardingRule, routeContext, metaData));
@@ -73,7 +76,8 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         ShardingRouteEngine shardingRouteEngine = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         RouteResult routeResult = shardingRouteEngine.route(shardingRule);
         shardingStatementValidator.ifPresent(validator -> validator.postValidate(sqlStatement, routeResult));
-        return new RouteContext(sqlStatementContext, parameters, routeResult);
+        routeContext.addRouteStageContext(getOrder(), new ShardingRouteStageContext(preRouteStageContext.getCurrentSchemaName(), sqlStatementContext, parameters, routeResult));
+        return routeContext;
     }
 
     private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext,

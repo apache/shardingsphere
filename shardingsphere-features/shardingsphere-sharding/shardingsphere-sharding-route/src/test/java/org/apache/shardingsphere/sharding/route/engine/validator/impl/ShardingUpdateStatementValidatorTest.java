@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.route.context.OriginRouteStageContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -61,21 +62,21 @@ public final class ShardingUpdateStatementValidatorTest {
     public void assertValidateUpdateModifyMultiTables() {
         SQLStatementContext<UpdateStatement> sqlStatementContext = new UpdateStatementContext(createUpdateStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(createMultiTablesContext().getTables());
-        RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", sqlStatementContext, Collections.emptyList(), new RouteResult()));
         new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
 
     @Test
     public void assertValidateUpdateWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        RouteContext routeContext = new RouteContext(new UpdateStatementContext(createUpdateStatement()), Collections.emptyList(), new RouteResult());
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", new UpdateStatementContext(createUpdateStatement()), Collections.emptyList(), new RouteResult()));
         new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        RouteContext routeContext = new RouteContext(new UpdateStatementContext(createUpdateStatement()), Collections.emptyList(), new RouteResult());
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", new UpdateStatementContext(createUpdateStatement()), Collections.emptyList(), new RouteResult()));
         new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
@@ -83,7 +84,7 @@ public final class ShardingUpdateStatementValidatorTest {
     public void assertValidateUpdateWithoutShardingKeyAndParameters() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
         List<Object> parameters = Arrays.asList(1, 1);
-        RouteContext routeContext = new RouteContext(new UpdateStatementContext(createUpdateStatement()), parameters, new RouteResult());
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", new UpdateStatementContext(createUpdateStatement()), parameters, new RouteResult()));
         new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
@@ -92,7 +93,7 @@ public final class ShardingUpdateStatementValidatorTest {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
         SQLStatementContext<UpdateStatement> updateStatementContext = new UpdateStatementContext(createUpdateStatementAndParameters(1));
-        RouteContext routeContext = new RouteContext(updateStatementContext, parameters, new RouteResult());
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", updateStatementContext, parameters, new RouteResult()));
         new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
@@ -101,7 +102,7 @@ public final class ShardingUpdateStatementValidatorTest {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
         SQLStatementContext<UpdateStatement> updateStatementContext = new UpdateStatementContext(createUpdateStatementAndParameters(2));
-        RouteContext routeContext = new RouteContext(updateStatementContext, parameters, new RouteResult());
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", updateStatementContext, parameters, new RouteResult()));
         new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     

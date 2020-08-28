@@ -33,7 +33,7 @@ public final class ShardingSphereRulesBuilderTest {
     @Test
     public void assertBuild() {
         RuleConfiguration ruleConfiguration = new TestRuleConfiguration();
-        Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.build(Collections.singletonList(ruleConfiguration), Collections.singletonList(""));
+        Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.build("sharding_db", Collections.singletonList(ruleConfiguration), Collections.singletonList(""));
         assertThat(shardingSphereRules, is(Collections.singletonList(TestShardingSphereRuleBuilder.getShardingSphereRule())));
     }
 }
