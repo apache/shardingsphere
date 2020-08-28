@@ -21,6 +21,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.buffer.UnpooledHeapByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationMD5PasswordPacket;
@@ -110,10 +113,10 @@ public final class PostgreSQLAuthenticationEngineTest {
         ArgumentCaptor<PostgreSQLAuthenticationMD5PasswordPacket> argumentCaptor = ArgumentCaptor.forClass(PostgreSQLAuthenticationMD5PasswordPacket.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
         PostgreSQLAuthenticationMD5PasswordPacket md5PasswordPacket = argumentCaptor.getValue();
-        byte[] md5Salt = md5PasswordPacket.getMd5Salt();
+        byte[] md5Salt = getMd5Salt(md5PasswordPacket);
         
         payload = new PostgreSQLPacketPayload(createByteBuf(16, 128));
-        String md5Digest = PostgreSQLAuthenticationHandler.md5Encode(username, inputPassword, md5Salt);
+        String md5Digest = md5Encode(username, inputPassword, md5Salt);
         payload.writeInt1('p');
         payload.writeInt4(4 + md5Digest.length() + 1);
         payload.writeStringNul(md5Digest);
@@ -126,4 +129,17 @@ public final class PostgreSQLAuthenticationEngineTest {
         assertThat(actual.isFinished(), is(password.equals(inputPassword)));
     }
     
+    @SneakyThrows(ReflectiveOperationException.class)
+    private byte[] getMd5Salt(final PostgreSQLAuthenticationMD5PasswordPacket md5PasswordPacket) {
+        Field field = PostgreSQLAuthenticationMD5PasswordPacket.class.getDeclaredField("md5Salt");
+        field.setAccessible(true);
+        return (byte[]) field.get(md5PasswordPacket);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private String md5Encode(final String username, final String password, final byte[] md5Salt) {
+        Method method = PostgreSQLAuthenticationHandler.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class);
+        method.setAccessible(true);
+        return (String) method.invoke(PostgreSQLAuthenticationHandler.class, username, password, md5Salt);
+    }
 }

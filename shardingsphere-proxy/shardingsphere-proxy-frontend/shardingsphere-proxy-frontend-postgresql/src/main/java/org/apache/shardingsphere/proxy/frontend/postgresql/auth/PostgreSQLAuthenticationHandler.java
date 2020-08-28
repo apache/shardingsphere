@@ -66,7 +66,7 @@ public class PostgreSQLAuthenticationHandler {
         return new PostgreSQLLoginResult(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION, null);
     }
     
-    static String md5Encode(final String username, final String password, final byte[] md5Salt) {
+    private static String md5Encode(final String username, final String password, final byte[] md5Salt) {
         String passwordHash = new String(Hex.encodeHex(DigestUtils.md5(password + username), true));
         MessageDigest messageDigest = DigestUtils.getMd5Digest();
         messageDigest.update(passwordHash.getBytes());
