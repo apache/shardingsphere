@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.opentracing.hook.OpenTracingParsingHook
+org.apache.shardingsphere.tracing.opentracing.hook.OpenTracingParsingHook

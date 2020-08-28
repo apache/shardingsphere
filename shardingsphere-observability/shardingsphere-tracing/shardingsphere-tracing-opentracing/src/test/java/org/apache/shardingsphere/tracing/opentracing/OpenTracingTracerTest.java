@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.opentracing;
+package org.apache.shardingsphere.tracing.opentracing;
 
 import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
@@ -24,7 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
 import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.opentracing.fixture.FooTracer;
+import org.apache.shardingsphere.tracing.opentracing.fixture.FooTracer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,13 +42,13 @@ public final class OpenTracingTracerTest {
     
     @Before
     public void setUp() {
-        System.setProperty("org.apache.shardingsphere.opentracing.tracer.class", FooTracer.class.getName());
+        System.setProperty(OpenTracingTracer.OPENTRACING_TRACER_CLASS_NAME, FooTracer.class.getName());
         clearGlobalTracer();
     }
     
     @After
     public void tearDown() {
-        System.getProperties().remove("org.apache.shardingsphere.opentracing.tracer.class");
+        System.getProperties().remove(OpenTracingTracer.OPENTRACING_TRACER_CLASS_NAME);
     }
     
     @Test
@@ -80,7 +80,7 @@ public final class OpenTracingTracerTest {
     
     @Test(expected = ShardingSphereException.class)
     public void assertTracerClassError() {
-        System.setProperty("org.apache.shardingsphere.opentracing.tracer.class", "com.foo.FooTracer");
+        System.setProperty(OpenTracingTracer.OPENTRACING_TRACER_CLASS_NAME, "com.foo.FooTracer");
         OpenTracingTracer.init();
     }
     

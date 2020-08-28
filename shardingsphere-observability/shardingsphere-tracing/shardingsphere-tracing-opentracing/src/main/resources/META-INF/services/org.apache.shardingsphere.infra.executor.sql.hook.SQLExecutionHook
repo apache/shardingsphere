@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.opentracing.hook.OpenTracingSQLExecutionHook
+org.apache.shardingsphere.tracing.opentracing.hook.OpenTracingSQLExecutionHook

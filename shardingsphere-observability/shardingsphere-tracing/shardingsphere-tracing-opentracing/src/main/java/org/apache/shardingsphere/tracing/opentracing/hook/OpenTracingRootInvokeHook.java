@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.opentracing.hook;
+package org.apache.shardingsphere.tracing.opentracing.hook;
 
 import io.opentracing.ActiveSpan;
 import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorDataMap;
 import org.apache.shardingsphere.infra.hook.RootInvokeHook;
-import org.apache.shardingsphere.opentracing.OpenTracingTracer;
-import org.apache.shardingsphere.opentracing.constant.ShardingTags;
+import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
+import org.apache.shardingsphere.tracing.opentracing.constant.ShardingTags;
 
 /**
  * Open tracing root invoke hook.

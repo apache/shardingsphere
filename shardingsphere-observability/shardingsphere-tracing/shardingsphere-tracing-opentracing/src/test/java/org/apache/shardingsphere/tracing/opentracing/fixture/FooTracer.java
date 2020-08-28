@@ -15,22 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.opentracing.constant;
+package org.apache.shardingsphere.tracing.opentracing.fixture;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.opentracing.ActiveSpan;
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
 
-/**
- * Sharding error log tags.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingErrorLogTags {
+public final class FooTracer implements Tracer {
     
-    public static final String EVENT = "event";
+    @Override
+    public SpanBuilder buildSpan(final String operationName) {
+        return null;
+    }
     
-    public static final String EVENT_ERROR_TYPE = "error";
+    @Override
+    public <C> void inject(final SpanContext spanContext, final Format<C> format, final C carrier) {
+    }
     
-    public static final String ERROR_KIND = "error.kind";
+    @Override
+    public <C> SpanContext extract(final Format<C> format, final C carrier) {
+        return null;
+    }
     
-    public static final String MESSAGE = "message";
+    @Override
+    public ActiveSpan activeSpan() {
+        return null;
+    }
+    
+    @Override
+    public ActiveSpan makeActive(final Span span) {
+        return null;
+    }
 }

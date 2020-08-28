@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.opentracing.hook;
+package org.apache.shardingsphere.tracing.opentracing.hook;
 
 import io.opentracing.ActiveSpan;
 import io.opentracing.ActiveSpan.Continuation;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import org.apache.shardingsphere.opentracing.constant.ShardingTags;
+import org.apache.shardingsphere.tracing.opentracing.constant.ShardingTags;
 import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorDataMap;
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -82,7 +83,7 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/ShardingSphere/executeSQL/"));
         Map<String, Object> actualTags = actual.tags();
-        assertThat(actualTags.get(Tags.COMPONENT.getKey()), is(ShardingTags.COMPONENT_NAME));
+        assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.is(ShardingTags.COMPONENT_NAME));
         assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), is(Tags.SPAN_KIND_CLIENT));
         assertThat(actualTags.get(Tags.PEER_HOSTNAME.getKey()), is("localhost"));
         assertThat(actualTags.get(Tags.PEER_PORT.getKey()), is(8888));

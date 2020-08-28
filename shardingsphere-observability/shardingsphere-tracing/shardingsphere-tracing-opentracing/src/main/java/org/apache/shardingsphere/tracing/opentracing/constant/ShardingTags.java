@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.opentracing.constant;
+package org.apache.shardingsphere.tracing.opentracing.constant;
 
 import io.opentracing.tag.StringTag;
 import lombok.AccessLevel;

@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.opentracing.hook;
+package org.apache.shardingsphere.tracing.opentracing.hook;
 
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.opentracing.constant.ShardingErrorLogTags;
+import org.apache.shardingsphere.tracing.opentracing.constant.ShardingErrorLogTags;
 
 import java.util.HashMap;
 import java.util.Map;

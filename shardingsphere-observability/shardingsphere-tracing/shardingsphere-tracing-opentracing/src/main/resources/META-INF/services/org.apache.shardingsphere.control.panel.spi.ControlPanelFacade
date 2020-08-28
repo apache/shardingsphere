@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.opentracing.OpenTracingTracer
+org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer

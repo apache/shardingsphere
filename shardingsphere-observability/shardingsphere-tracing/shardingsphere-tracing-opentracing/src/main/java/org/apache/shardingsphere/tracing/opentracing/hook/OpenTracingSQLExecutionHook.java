@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.opentracing.hook;
+package org.apache.shardingsphere.tracing.opentracing.hook;
 
 import com.google.common.base.Joiner;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
-import org.apache.shardingsphere.opentracing.OpenTracingTracer;
-import org.apache.shardingsphere.opentracing.constant.ShardingTags;
+import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
+import org.apache.shardingsphere.tracing.opentracing.constant.ShardingTags;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 
 import java.util.List;

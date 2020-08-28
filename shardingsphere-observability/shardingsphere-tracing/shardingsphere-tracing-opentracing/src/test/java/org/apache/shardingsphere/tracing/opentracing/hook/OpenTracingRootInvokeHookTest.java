@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.opentracing.hook;
+package org.apache.shardingsphere.tracing.opentracing.hook;
 
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorDataMap;
 import org.apache.shardingsphere.infra.hook.RootInvokeHook;

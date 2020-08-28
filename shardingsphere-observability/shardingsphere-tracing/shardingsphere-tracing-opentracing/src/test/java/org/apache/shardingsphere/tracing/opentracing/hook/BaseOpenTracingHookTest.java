@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.opentracing.hook;
+package org.apache.shardingsphere.tracing.opentracing.hook;
 
 import io.opentracing.NoopTracerFactory;
 import io.opentracing.mock.MockSpan;
@@ -24,8 +24,8 @@ import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.opentracing.OpenTracingTracer;
-import org.apache.shardingsphere.opentracing.constant.ShardingErrorLogTags;
+import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
+import org.apache.shardingsphere.tracing.opentracing.constant.ShardingErrorLogTags;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;

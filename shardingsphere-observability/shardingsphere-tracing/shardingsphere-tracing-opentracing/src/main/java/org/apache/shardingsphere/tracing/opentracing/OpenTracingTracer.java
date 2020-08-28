@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.opentracing;
+package org.apache.shardingsphere.tracing.opentracing;
 
 import com.google.common.base.Preconditions;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
+import lombok.Getter;
 import org.apache.shardingsphere.control.panel.spi.ControlPanelFacade;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
@@ -29,7 +30,7 @@ import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfig
  */
 public final class OpenTracingTracer implements ControlPanelFacade<OpenTracingConfiguration> {
     
-    private static final String OPENTRACING_TRACER_CLASS_NAME = "org.apache.shardingsphere.opentracing.tracer.class";
+    public static final String OPENTRACING_TRACER_CLASS_NAME = "org.apache.shardingsphere.tracing.opentracing.tracer.class";
     
     @Override
     public void init(final OpenTracingConfiguration configuration) {
