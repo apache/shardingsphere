@@ -19,9 +19,9 @@ package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationCenterConfiguration;
-import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.OrchestrationCenterConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.repository.zookeeper.CuratorZookeeperRepository;
+import org.apache.shardingsphere.governance.core.common.yaml.config.YamlGovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.core.common.yaml.swapper.GovernanceCenterConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.repository.zookeeper.CuratorZookeeperRepository;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 
 import java.util.concurrent.Executors;
@@ -50,9 +50,9 @@ public final class ZookeeperResumeBreakPointManager extends AbstractResumeBreakP
     
     static {
         String name = ScalingContext.getInstance().getServerConfiguration().getName();
-        YamlOrchestrationCenterConfiguration registryCenter = ScalingContext.getInstance().getServerConfiguration().getRegistryCenter();
+        YamlGovernanceCenterConfiguration registryCenter = ScalingContext.getInstance().getServerConfiguration().getRegistryCenter();
         if (!Strings.isNullOrEmpty(name) && null != registryCenter) {
-            CURATOR_ZOOKEEPER_REPOSITORY.init(name, new OrchestrationCenterConfigurationYamlSwapper().swapToObject(registryCenter));
+            CURATOR_ZOOKEEPER_REPOSITORY.init(name, new GovernanceCenterConfigurationYamlSwapper().swapToObject(registryCenter));
             log.info("zookeeper resume from break-point manager is available.");
             available = true;
         }
