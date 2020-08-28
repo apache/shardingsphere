@@ -112,6 +112,7 @@
     <sql-case id="create_table_with_inline_constraints_sqlserver" value="CREATE TABLE t_order (order_id INT PRIMARY KEY UNIQUE CHECK (order_id > 0), user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
     <sql-case id="create_table_with_index" value="CREATE TABLE t_order (order_id INT INDEX order_index, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
     <sql-case id="create_index_with_bracket" value="CREATE INDEX [order_index] ON [t_order] ([order_id])" db-types="SQLServer" />
-
     <sql-case id="create_index_with_no_default_fill_factor" value="CREATE UNIQUE INDEX order_index ON t_order (order_id) WITH (fillfactor = 70)" db-types="PostgreSQL"/>
+    <sql-case id="create_table_with_sign_column" value="CREATE TABLE t_order(id INT PRIMARY KEY, order_id BIGINT(20) SIGNED)" db-types="MySQL" />
+    <sql-case id="create_table_with_unsigned_column" value="CREATE TABLE t_order(id INT PRIMARY KEY, order_id BIGINT(20) UNSIGNED)" db-types="MySQL" />
 </sql-cases>
