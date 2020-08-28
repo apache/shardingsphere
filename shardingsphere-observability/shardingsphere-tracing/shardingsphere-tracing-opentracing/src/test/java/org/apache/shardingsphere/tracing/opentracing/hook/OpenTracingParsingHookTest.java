@@ -51,7 +51,7 @@ public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/ShardingSphere/parseSQL/"));
         Map<String, Object> actualTags = actual.tags();
-        assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.is(ShardingTags.COMPONENT_NAME));
+        assertThat(actualTags.get(Tags.COMPONENT.getKey()), is(ShardingTags.COMPONENT_NAME));
         assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), is(Tags.SPAN_KIND_CLIENT));
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), is("SELECT * FROM XXX;"));
     }
