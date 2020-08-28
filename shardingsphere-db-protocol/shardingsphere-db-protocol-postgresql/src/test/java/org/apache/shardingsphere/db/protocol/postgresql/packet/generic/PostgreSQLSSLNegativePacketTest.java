@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
+import io.netty.buffer.ByteBuf;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class PostgreSQLRandomGeneratorTest {
+public final class PostgreSQLSSLNegativePacketTest {
     
     @Test
-    public void assertGenerateRandomBytes() {
-        PostgreSQLRandomGenerator generator = PostgreSQLRandomGenerator.getInstance();
-        for (int i = 1; i < 13; i++) {
-            assertThat(generator.generateRandomBytes(i).length, is(i));
-        }
+    public void assertReadWrite() {
+        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(1);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLSSLNegativePacket packet = new PostgreSQLSSLNegativePacket();
+        assertThat(packet.getMessageType(), is('\0'));
+        packet.write(payload);
+        assertThat(byteBuf.writerIndex(), is(1));
+        assertThat(payload.readInt1(), is((int) 'N'));
     }
+    
 }
