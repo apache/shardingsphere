@@ -20,9 +20,6 @@ package org.apache.shardingsphere.proxy;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
-import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
-import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
@@ -39,12 +36,11 @@ import org.apache.shardingsphere.proxy.db.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.orchestration.OrchestrationBootstrap;
 import org.apache.shardingsphere.proxy.orchestration.schema.ProxyOrchestrationSchemaContexts;
+import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -76,7 +72,7 @@ public final class Bootstrap {
     
     private static void init(final ProxyConfiguration proxyConfig, final int port, final boolean orchestrationEnabled) throws SQLException {
         initSchemaContexts(proxyConfig, orchestrationEnabled);
-        initControlPanelFacade();
+        initOpenTracing();
         setDatabaseServerInfo();
         ShardingSphereProxy.getInstance().start(port);
     }
@@ -92,12 +88,10 @@ public final class Bootstrap {
         return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts(schemaContexts, OrchestrationFacade.getInstance()) : schemaContexts;
     }
     
-    private static void initControlPanelFacade() {
-        Collection<ControlPanelConfiguration> controlPanelConfigs = new LinkedList<>();
+    private static void initOpenTracing() {
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
-            controlPanelConfigs.add(new OpenTracingConfiguration());
+            OpenTracingTracer.init();
         }
-        new ControlPanelFacadeEngine().init(controlPanelConfigs);
     }
     
     private static void setDatabaseServerInfo() {

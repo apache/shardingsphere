@@ -31,6 +31,5 @@
     
     <modules>
         <module>shardingsphere-orchestration</module>
-        <module>shardingsphere-control-panel-spi</module>
     </modules>
 </project>
