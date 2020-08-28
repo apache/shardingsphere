@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.spring.namespace.orchestration;
 
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
+import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.namespace.orchestration.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.orchestration.util.FieldValueUtil;
@@ -58,13 +58,13 @@ public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit
     
     private Map<String, DataSource> getDataSourceMap(final String shardingSphereDataSourceName) {
         OrchestrationShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(shardingSphereDataSourceName, OrchestrationShardingSphereDataSource.class);
-        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(shardingSphereDataSource, "dataSource");
-        return dataSource.getDataSourceMap();
+        SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "schemaContexts");
+        return schemaContexts.getDefaultSchemaContext().getSchema().getDataSources();
     }
     
     private ShardingRule getShardingRule(final String shardingSphereDataSourceName) {
         OrchestrationShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(shardingSphereDataSourceName, OrchestrationShardingSphereDataSource.class);
-        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(shardingSphereDataSource, "dataSource");
-        return (ShardingRule) dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().iterator().next();
+        SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "schemaContexts");
+        return (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
     }
 }

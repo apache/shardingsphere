@@ -33,6 +33,6 @@
         </props>
     </orchestration:reg-center>
     
-    <orchestration:data-source id="masterSlaveShardingDataSourceByDefaultStrategyOrchestration" data-source-ref="masterSlaveShardingDataSourceByDefaultStrategy" reg-center-ref="regCenter" />
-    <orchestration:data-source id="masterSlaveShardingDataSourceByUserStrategyOrchestration" data-source-ref="masterSlaveShardingDataSourceByUserStrategy" reg-center-ref="regCenter" />
+    <orchestration:data-source id="masterSlaveShardingDataSourceByDefaultStrategyOrchestration" data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" rule-refs="masterSlaveShardingDataSourceByDefaultStrategyShardingRule, masterSlaveShardingDataSourceByDefaultStrategyMasterSlaveRule" reg-center-ref="regCenter" />
+    <orchestration:data-source id="masterSlaveShardingDataSourceByUserStrategyOrchestration" data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" rule-refs="masterSlaveShardingDataSourceByUserStrategyShardingRule, masterSlaveShardingDataSourceByUserStrategyMasterSlaveRule" reg-center-ref="regCenter" />
 </beans>

@@ -76,7 +76,7 @@ public final class Bootstrap {
     
     private static void init(final ProxyConfiguration proxyConfig, final int port, final boolean orchestrationEnabled) throws SQLException {
         initSchemaContexts(proxyConfig, orchestrationEnabled);
-        initControlPanelFacade(proxyConfig);
+        initControlPanelFacade();
         setDatabaseServerInfo();
         ShardingSphereProxy.getInstance().start(port);
     }
@@ -92,16 +92,10 @@ public final class Bootstrap {
         return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts(schemaContexts, OrchestrationFacade.getInstance()) : schemaContexts;
     }
     
-    private static void initControlPanelFacade(final ProxyConfiguration proxyConfig) {
+    private static void initControlPanelFacade() {
         Collection<ControlPanelConfiguration> controlPanelConfigs = new LinkedList<>();
-        if (null != proxyConfig.getMetrics() && proxyConfig.getMetrics().getEnable()) {
-            controlPanelConfigs.add(proxyConfig.getMetrics());
-        }
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
             controlPanelConfigs.add(new OpenTracingConfiguration());
-        }
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
-            controlPanelConfigs.add(proxyConfig.getCluster());
         }
         new ControlPanelFacadeEngine().init(controlPanelConfigs);
     }

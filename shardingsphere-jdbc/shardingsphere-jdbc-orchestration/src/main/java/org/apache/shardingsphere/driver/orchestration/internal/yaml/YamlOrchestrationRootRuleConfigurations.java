@@ -19,9 +19,7 @@ package org.apache.shardingsphere.driver.orchestration.internal.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrchestrationConfiguration;
 
 /**
@@ -32,8 +30,4 @@ import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlOrche
 public final class YamlOrchestrationRootRuleConfigurations extends YamlRootRuleConfigurations {
     
     private YamlOrchestrationConfiguration orchestration;
-    
-    private YamlClusterConfiguration cluster;
-    
-    private YamlMetricsConfiguration metrics;
 }

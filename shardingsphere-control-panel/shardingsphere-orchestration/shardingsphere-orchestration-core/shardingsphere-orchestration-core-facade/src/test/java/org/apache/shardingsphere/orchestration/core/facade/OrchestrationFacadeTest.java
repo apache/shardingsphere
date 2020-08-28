@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.orchestration.core.facade;
 
-import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
-import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.listener.OrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.repository.OrchestrationRepositoryFacade;
@@ -95,31 +92,11 @@ public final class OrchestrationFacadeTest {
     }
     
     @Test
-    public void assertInitMetricsConfiguration() {
-        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, 0, false, true, 8, null);
-        orchestrationFacade.initMetricsConfiguration(metricsConfiguration);
-        verify(configCenter).persistMetricsConfiguration(metricsConfiguration, false);
-    }
-    
-    @Test
     public void assertOnlineInstanceWithoutParameters() {
         orchestrationFacade.onlineInstance();
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataSourcesNode();
         verify(listenerManager).init();
-    }
-    
-    @Test
-    public void assertInitClusterConfiguration() {
-        HeartbeatConfiguration heartBeatConfiguration = new HeartbeatConfiguration();
-        heartBeatConfiguration.setSql("select 1");
-        heartBeatConfiguration.setInterval(60);
-        heartBeatConfiguration.setRetryEnable(true);
-        heartBeatConfiguration.setRetryMaximum(3);
-        ClusterConfiguration clusterConfiguration = new ClusterConfiguration();
-        clusterConfiguration.setHeartbeat(heartBeatConfiguration);
-        orchestrationFacade.initClusterConfiguration(clusterConfiguration);
-        verify(configCenter).persistClusterConfiguration(clusterConfiguration, false);
     }
     
     @Test

@@ -39,12 +39,3 @@ chapter = true
 | ------------------------- | ---------------------------------------------- |
 | OpenTracingRootInvokeHook | Use OpenTracing protocol to trace request root |
 
-## MetricsTrackerManager
-
-| *SPI Name*                      | *Description*                   |
-| ------------------------------- | ------------------------------- |
-| MetricsTrackerManager           | Metrics track manager           |
-
-| *Implementation Class*          | *Description*                   |
-| ------------------------------- | ------------------------------- |
-| PrometheusMetricsTrackerManager | Use Prometheus to track metrics |

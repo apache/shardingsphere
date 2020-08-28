@@ -19,17 +19,10 @@ package org.apache.shardingsphere.spring.boot.orchestration;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
-import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
-import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
-import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.OrchestrationCenterConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.orchestration.common.OrchestrationSpringBootRootConfiguration;
 import org.apache.shardingsphere.spring.boot.orchestration.rule.LocalRulesCondition;
@@ -124,28 +117,10 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private DataSource createDataSourceWithRules(final List<RuleConfiguration> ruleConfigurations,
                                                  final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        if (null == root.getCluster() && null == root.getMetrics()) {
-            return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration);
-        } else {
-            return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration,
-                    swap(root.getCluster()), swap(root.getMetrics()));
-        }
+        return new OrchestrationShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps(), orchestrationConfiguration);
     }
     
     private DataSource createDataSourceWithoutRules(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        if (null == root.getCluster() && null == root.getMetrics()) {
-            return new OrchestrationShardingSphereDataSource(orchestrationConfiguration);
-        } else {
-            return new OrchestrationShardingSphereDataSource(orchestrationConfiguration,
-                    swap(root.getCluster()), swap(root.getMetrics()));
-        }
-    }
-    
-    private ClusterConfiguration swap(final YamlClusterConfiguration yamlClusterConfiguration) {
-        return null == yamlClusterConfiguration ? null : new ClusterConfigurationYamlSwapper().swapToObject(yamlClusterConfiguration);
-    }
-    
-    private MetricsConfiguration swap(final YamlMetricsConfiguration yamlMetricsConfiguration) {
-        return null == yamlMetricsConfiguration ? null : new MetricsConfigurationYamlSwapper().swapToObject(yamlMetricsConfiguration);
+        return new OrchestrationShardingSphereDataSource(orchestrationConfiguration);
     }
 }

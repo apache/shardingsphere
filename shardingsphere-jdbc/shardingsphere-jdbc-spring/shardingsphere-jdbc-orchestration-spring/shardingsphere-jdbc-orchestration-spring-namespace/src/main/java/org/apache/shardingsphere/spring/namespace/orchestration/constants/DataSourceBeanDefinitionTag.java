@@ -30,15 +30,15 @@ public final class DataSourceBeanDefinitionTag {
     
     public static final String ID_ATTRIBUTE = "id";
     
-    public static final String DATA_SOURCE_REF_ATTRIBUTE = "data-source-ref";
+    public static final String DATA_SOURCE_NAMES_TAG = "data-source-names";
+    
+    public static final String RULE_REFS_TAG = "rule-refs";
+    
+    public static final String PROPS_TAG = "props";
     
     public static final String REG_CENTER_REF_ATTRIBUTE = "reg-center-ref";
     
     public static final String CONFIG_CENTER_REF_ATTRIBUTE = "config-center-ref";
-    
-    public static final String CLUSTER_REF_ATTRIBUTE = "cluster-ref";
-    
-    public static final String METRICS_REF_ATTRIBUTE = "metrics-ref";
     
     public static final String OVERWRITE_ATTRIBUTE = "overwrite";
 }

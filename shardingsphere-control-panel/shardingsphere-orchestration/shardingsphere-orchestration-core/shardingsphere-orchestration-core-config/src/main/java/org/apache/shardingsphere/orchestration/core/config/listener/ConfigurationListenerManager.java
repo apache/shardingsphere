@@ -33,16 +33,10 @@ public final class ConfigurationListenerManager {
     
     private final AuthenticationChangedListener authenticationChangedListener;
     
-    private final MetricsConfigurationChangedListener metricsConfigurationChangedListener;
-    
-    private final ClusterConfigurationChangedListener clusterConfigurationChangedListener;
-    
     public ConfigurationListenerManager(final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
         schemaChangedListener = new SchemaChangedListener(configurationRepository, schemaNames);
         propertiesChangedListener = new PropertiesChangedListener(configurationRepository);
         authenticationChangedListener = new AuthenticationChangedListener(configurationRepository);
-        metricsConfigurationChangedListener = new MetricsConfigurationChangedListener(configurationRepository);
-        clusterConfigurationChangedListener = new ClusterConfigurationChangedListener(configurationRepository);
     }
     
     /**
@@ -52,7 +46,5 @@ public final class ConfigurationListenerManager {
         schemaChangedListener.watch(ChangedType.UPDATED, ChangedType.DELETED, ChangedType.ADDED);
         propertiesChangedListener.watch(ChangedType.UPDATED);
         authenticationChangedListener.watch(ChangedType.UPDATED);
-        metricsConfigurationChangedListener.watch(ChangedType.UPDATED);
-        clusterConfigurationChangedListener.watch(ChangedType.UPDATED);
     }
 }

@@ -83,7 +83,6 @@ public class PostgreSQLPacketCodecEngineTest {
         ByteBuf payloadByteBuf = mock(ByteBuf.class);
         when(byteBufAllocator.buffer()).thenReturn(payloadByteBuf);
         when(payloadByteBuf.readableBytes()).thenReturn(50);
-        
         PostgreSQLPacket actualMessage = mock(PostgreSQLPacket.class);
         when(actualMessage.getMessageType()).thenReturn(PostgreSQLCommandPacketType.AUTHENTICATION_OK.getValue());
         new PostgreSQLPacketCodecEngine().encode(context, actualMessage, byteBuf);

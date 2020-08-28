@@ -26,7 +26,6 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class ConfigCenterNodeTest {
     
@@ -70,16 +69,6 @@ public final class ConfigCenterNodeTest {
         assertThat(actual, hasItems("/config/schema/logic_db"));
         assertThat(actual, hasItems("/config/schema/logic_db/rule"));
         assertThat(actual, hasItems("/config/schema/logic_db/datasource"));
-    }
-    
-    @Test
-    public void assertGetClusterPath() {
-        assertThat(configurationNode.getClusterPath(), is("/config/cluster"));
-    }
-    
-    @Test
-    public void assertGetMetricsPath() {
-        assertTrue(configurationNode.getMetricsPath().contains("/config/metrics"));
     }
     
     @Test

@@ -20,11 +20,9 @@ package org.apache.shardingsphere.orchestration.core.facade;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.listener.OrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.repository.OrchestrationRepositoryFacade;
@@ -97,24 +95,6 @@ public final class OrchestrationFacade implements AutoCloseable {
         registryCenter.persistInstanceOnline();
         registryCenter.persistDataSourcesNode();
         listenerManager.init();
-    }
-    
-    /**
-     * Initialize metrics configuration to config center.
-     *
-     * @param metricsConfig metrics configuration
-     */
-    public void initMetricsConfiguration(final MetricsConfiguration metricsConfig) {
-        configCenter.persistMetricsConfiguration(metricsConfig, isOverwrite);
-    }
-    
-    /**
-     * Initialize cluster configuration to config center.
-     *
-     * @param clusterConfig cluster configuration
-     */
-    public void initClusterConfiguration(final ClusterConfiguration clusterConfig) {
-        configCenter.persistClusterConfiguration(clusterConfig, isOverwrite);
     }
     
     @Override

@@ -30,5 +30,4 @@ public final class PostgreSQLTypeUnspecifiedSQLParameterTest {
         PostgreSQLTypeUnspecifiedSQLParameter parameter = new PostgreSQLTypeUnspecifiedSQLParameter(timestampStr);
         assertThat(parameter.toString(), is(timestampStr));
     }
-    
 }

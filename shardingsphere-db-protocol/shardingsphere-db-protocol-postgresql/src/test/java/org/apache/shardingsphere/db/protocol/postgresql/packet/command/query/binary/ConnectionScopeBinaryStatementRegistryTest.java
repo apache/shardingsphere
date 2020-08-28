@@ -32,7 +32,6 @@ public class ConnectionScopeBinaryStatementRegistryTest {
         String statementId = "stat-id";
         String sql = "select * from t_order";
         statementRegistry.register(statementId, sql, 1, null);
-        
         PostgreSQLBinaryStatement binaryStatement = statementRegistry.getBinaryStatement(statementId);
         assertThat(binaryStatement.getSql(), is(sql));
         assertThat(binaryStatement.getParametersCount(), is(1));

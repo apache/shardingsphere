@@ -16,5 +16,3 @@
 #
 
 http\://shardingsphere.apache.org/schema/shardingsphere/orchestration=org.apache.shardingsphere.spring.namespace.orchestration.handler.OrchestrationNamespaceHandler
-http\://shardingsphere.apache.org/schema/shardingsphere/cluster=org.apache.shardingsphere.spring.namespace.orchestration.handler.ClusterNamespaceHandler
-http\://shardingsphere.apache.org/schema/shardingsphere/metrics=org.apache.shardingsphere.spring.namespace.orchestration.handler.MetricsNamespaceHandler

@@ -16,5 +16,3 @@
 #
 
 http\://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd=META-INF/namespace/orchestration.xsd
-http\://shardingsphere.apache.org/schema/shardingsphere/orchestration/cluster.xsd=META-INF/namespace/cluster.xsd
-http\://shardingsphere.apache.org/schema/shardingsphere/orchestration/metrics.xsd=META-INF/namespace/metrics.xsd

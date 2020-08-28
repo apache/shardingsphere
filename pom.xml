@@ -43,6 +43,7 @@
         <module>shardingsphere-scaling</module>
         <module>shardingsphere-transaction</module>
         <module>shardingsphere-control-panel</module>
+        <module>shardingsphere-observability</module>
 
         <module>shardingsphere-test</module>
         <module>shardingsphere-integration-test</module>

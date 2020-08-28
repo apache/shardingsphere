@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.orchestration.core.registry.listener;
 
+import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenterNodeStatus;
+import org.apache.shardingsphere.orchestration.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.RegistryRepository;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent.ChangedType;
@@ -26,6 +28,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -45,12 +49,15 @@ public final class InstanceStateChangedListenerTest {
     
     @Test
     public void assertCreateOrchestrationEventWhenEnabled() {
-        assertFalse(instanceStateChangedListener.createOrchestrationEvent(new DataChangedEvent("/test_ds", "", ChangedType.UPDATED)).isCircuitBreak());
+        Optional<OrchestrationEvent> actual = instanceStateChangedListener.createOrchestrationEvent(new DataChangedEvent("/test_ds", "", ChangedType.UPDATED));
+        assertTrue(actual.isPresent());
+        assertFalse(((CircuitStateChangedEvent) actual.get()).isCircuitBreak());
     }
     
     @Test
     public void assertCreateOrchestrationEventWhenDisabled() {
-        assertTrue(instanceStateChangedListener.createOrchestrationEvent(new DataChangedEvent("/test_ds",
-                "state: " + RegistryCenterNodeStatus.DISABLED.name(), ChangedType.UPDATED)).isCircuitBreak());
+        Optional<OrchestrationEvent> actual = instanceStateChangedListener.createOrchestrationEvent(new DataChangedEvent("/test_ds", RegistryCenterNodeStatus.DISABLED.name(), ChangedType.UPDATED));
+        assertTrue(actual.isPresent());
+        assertTrue(((CircuitStateChangedEvent) actual.get()).isCircuitBreak());
     }
 }
