@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.orchestration;
+package org.apache.shardingsphere.proxy.governance;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
-import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.OrchestrationConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
+import org.apache.shardingsphere.governance.core.common.yaml.swapper.GovernanceConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceConverter;
@@ -40,21 +40,21 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Orchestration bootstrap.
+ * Governance bootstrap.
  */
 @RequiredArgsConstructor
-public final class OrchestrationBootstrap {
+public final class GovernanceBootstrap {
     
-    private final OrchestrationFacade orchestrationFacade;
+    private final GovernanceFacade governanceFacade;
     
     /**
-     * Initialize orchestration.
+     * Initialize governance.
      * 
      * @param yamlConfig YAML proxy configuration
      * @return proxy configuration
      */
     public ProxyConfiguration init(final YamlProxyConfiguration yamlConfig) {
-        orchestrationFacade.init(new OrchestrationConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getOrchestration()), yamlConfig.getRuleConfigurations().keySet());
+        governanceFacade.init(new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance()), yamlConfig.getRuleConfigurations().keySet());
         initConfigurations(yamlConfig);
         return loadProxyConfiguration();
     }
@@ -63,9 +63,9 @@ public final class OrchestrationBootstrap {
         YamlProxyServerConfiguration serverConfig = yamlConfig.getServerConfiguration();
         Map<String, YamlProxyRuleConfiguration> ruleConfigs = yamlConfig.getRuleConfigurations();
         if (isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
-            orchestrationFacade.onlineInstance();
+            governanceFacade.onlineInstance();
         } else {
-            orchestrationFacade.onlineInstance(getDataSourceConfigurationMap(ruleConfigs),
+            governanceFacade.onlineInstance(getDataSourceConfigurationMap(ruleConfigs),
                     getRuleConfigurations(ruleConfigs), new AuthenticationYamlSwapper().swapToObject(serverConfig.getAuthentication()), serverConfig.getProps());
         }
     }
@@ -88,18 +88,18 @@ public final class OrchestrationBootstrap {
     }
     
     private ProxyConfiguration loadProxyConfiguration() {
-        Collection<String> schemaNames = orchestrationFacade.getConfigCenter().getAllSchemaNames();
+        Collection<String> schemaNames = governanceFacade.getConfigCenter().getAllSchemaNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
-        Authentication authentication = orchestrationFacade.getConfigCenter().loadAuthentication();
-        Properties props = orchestrationFacade.getConfigCenter().loadProperties();
+        Authentication authentication = governanceFacade.getConfigCenter().loadAuthentication();
+        Properties props = governanceFacade.getConfigCenter().loadProperties();
         return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, props);
     }
     
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
         Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>(schemaNames.size(), 1);
         for (String each : schemaNames) {
-            result.put(each, DataSourceConverter.getDataSourceParameterMap(orchestrationFacade.getConfigCenter().loadDataSourceConfigurations(each)));
+            result.put(each, DataSourceConverter.getDataSourceParameterMap(governanceFacade.getConfigCenter().loadDataSourceConfigurations(each)));
         }
         return result;
     }
@@ -107,7 +107,7 @@ public final class OrchestrationBootstrap {
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
         Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>(schemaNames.size(), 1);
         for (String each : schemaNames) {
-            result.put(each, orchestrationFacade.getConfigCenter().loadRuleConfigurations(each));
+            result.put(each, governanceFacade.getConfigCenter().loadRuleConfigurations(each));
         }
         return result;
     }

@@ -59,7 +59,7 @@ public final class ProxyConfigurationLoader {
         YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(path + "/" + SERVER_CONFIG_FILE));
         File configPath = getResourceFile(path);
         Collection<YamlProxyRuleConfiguration> ruleConfigurations = loadRuleConfigurations(schemaNames, configPath);
-        Preconditions.checkState(!ruleConfigurations.isEmpty() || null != serverConfig.getOrchestration(), "Can not find any rule configurations file in path `%s`.", configPath.getPath());
+        Preconditions.checkState(!ruleConfigurations.isEmpty() || null != serverConfig.getGovernance(), "Can not find any rule configurations file in path `%s`.", configPath.getPath());
         return new YamlProxyConfiguration(serverConfig, ruleConfigurations.stream().collect(Collectors.toMap(YamlProxyRuleConfiguration::getSchemaName, each -> each)));
     }
     
@@ -74,7 +74,7 @@ public final class ProxyConfigurationLoader {
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
         Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
-        Preconditions.checkState(null != result.getAuthentication() || null != result.getOrchestration(), "Authority configuration is invalid.");
+        Preconditions.checkState(null != result.getAuthentication() || null != result.getGovernance(), "Authority configuration is invalid.");
         return result;
     }
     

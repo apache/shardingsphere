@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.orchestration;
+package org.apache.shardingsphere.proxy.governance.schema;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -28,14 +28,13 @@ import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.orchestration.core.common.event.auth.AuthenticationChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.eventbus.OrchestrationEventBus;
-import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
-import org.apache.shardingsphere.orchestration.core.registry.RegistryCenter;
-import org.apache.shardingsphere.orchestration.core.registry.event.CircuitStateChangedEvent;
+import org.apache.shardingsphere.governance.core.common.event.auth.AuthenticationChangedEvent;
+import org.apache.shardingsphere.governance.core.common.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.governance.core.common.eventbus.GovernanceEventBus;
+import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
+import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
-import org.apache.shardingsphere.proxy.orchestration.schema.ProxyOrchestrationSchemaContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,17 +55,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ProxyOrchestrationSchemaContextsTest {
+public final class ProxyGovernanceSchemaContextsTest {
     
     @Mock
-    private OrchestrationFacade orchestrationFacade;
+    private GovernanceFacade governanceFacade;
     
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
         Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        field.set(ProxySchemaContexts.getInstance(), getProxyOrchestrationSchemaContexts());
+        field.set(ProxySchemaContexts.getInstance(), getProxyGovernanceSchemaContexts());
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
@@ -80,9 +79,9 @@ public final class ProxyOrchestrationSchemaContextsTest {
         return result;
     }
     
-    private ProxyOrchestrationSchemaContexts getProxyOrchestrationSchemaContexts() {
-        when(orchestrationFacade.getRegistryCenter()).thenReturn(mock(RegistryCenter.class));
-        ProxyOrchestrationSchemaContexts result = new ProxyOrchestrationSchemaContexts(new StandardSchemaContexts(), orchestrationFacade);
+    private ProxyGovernanceSchemaContexts getProxyGovernanceSchemaContexts() {
+        when(governanceFacade.getRegistryCenter()).thenReturn(mock(RegistryCenter.class));
+        ProxyGovernanceSchemaContexts result = new ProxyGovernanceSchemaContexts(new StandardSchemaContexts(), governanceFacade);
         SchemaContexts schemaContexts =
                 new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
         result.getSchemaContexts().putAll(schemaContexts.getSchemaContexts());
@@ -94,7 +93,7 @@ public final class ProxyOrchestrationSchemaContextsTest {
         assertTrue(ProxySchemaContexts.getInstance().getSchemaContexts().getProps().getProps().isEmpty());
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        OrchestrationEventBus.getInstance().post(new PropertiesChangedEvent(props));
+        GovernanceEventBus.getInstance().post(new PropertiesChangedEvent(props));
         assertFalse(ProxySchemaContexts.getInstance().getSchemaContexts().getProps().getProps().isEmpty());
     }
     
@@ -103,7 +102,7 @@ public final class ProxyOrchestrationSchemaContextsTest {
         ProxyUser proxyUser = new ProxyUser("root", Collections.singleton("db1"));
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
-        OrchestrationEventBus.getInstance().post(new AuthenticationChangedEvent(authentication));
+        GovernanceEventBus.getInstance().post(new AuthenticationChangedEvent(authentication));
         assertThat(ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().keySet().iterator().next(), is("root"));
         assertThat(ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get("root").getPassword(), is("root"));
         assertThat(ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get("root").getAuthorizedSchemas().iterator().next(), is("db1"));
@@ -112,8 +111,8 @@ public final class ProxyOrchestrationSchemaContextsTest {
     @Test
     public void assertRenewCircuitState() {
         assertFalse(ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak());
-        OrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(true));
+        GovernanceEventBus.getInstance().post(new CircuitStateChangedEvent(true));
         assertTrue(ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak());
-        OrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(false));
+        GovernanceEventBus.getInstance().post(new CircuitStateChangedEvent(false));
     }
 }
