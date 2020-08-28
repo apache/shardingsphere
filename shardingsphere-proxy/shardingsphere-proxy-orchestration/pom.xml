@@ -41,17 +41,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-core-facade</artifactId>
+            <artifactId>shardingsphere-governance-core-facade</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-repository-zookeeper-curator</artifactId>
+            <artifactId>shardingsphere-governance-repository-zookeeper-curator</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-core-schema</artifactId>
+            <artifactId>shardingsphere-governance-core-schema</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
