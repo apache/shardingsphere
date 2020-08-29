@@ -22,9 +22,9 @@ import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import java.util.Map;
 
 /**
- * Transaction manager engine contexts.
+ * Transaction contexts.
  */
-public interface TransactionManagerEngineContexts extends AutoCloseable {
+public interface TransactionContexts extends AutoCloseable {
     
     /**
      * Get transaction manager engines.

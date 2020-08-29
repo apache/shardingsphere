@@ -26,7 +26,7 @@ import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
-import org.apache.shardingsphere.orchestration.core.transaction.OrchestrationTransactionManagerEngineContexts;
+import org.apache.shardingsphere.orchestration.core.transaction.OrchestrationTransactionContexts;
 import org.apache.shardingsphere.proxy.arg.BootstrapArguments;
 import org.apache.shardingsphere.proxy.backend.schema.ProxyDataSourceContext;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
@@ -40,8 +40,8 @@ import org.apache.shardingsphere.proxy.orchestration.OrchestrationBootstrap;
 import org.apache.shardingsphere.proxy.orchestration.schema.ProxyOrchestrationSchemaContexts;
 import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionManagerEngineContexts;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionManagerEngineContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -90,7 +90,7 @@ public final class Bootstrap {
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(
                 dataSourceContext.getDatabaseType(), dataSourceContext.getDataSourcesMap(), proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
         SchemaContexts schemaContexts = createSchemaContexts(schemaContextsBuilder.build(), orchestrationEnabled);
-        TransactionManagerEngineContexts transactionContexts = createTransactionManagerEngineContexts(schemaContexts, orchestrationEnabled);
+        TransactionContexts transactionContexts = createTransactionContexts(schemaContexts, orchestrationEnabled);
         ProxySchemaContexts.getInstance().init(schemaContexts, transactionContexts);
     }
     
@@ -98,15 +98,15 @@ public final class Bootstrap {
         return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts(schemaContexts, OrchestrationFacade.getInstance()) : schemaContexts;
     }
     
-    private static TransactionManagerEngineContexts createTransactionManagerEngineContexts(final SchemaContexts schemaContexts, final boolean orchestrationEnabled) {
+    private static TransactionContexts createTransactionContexts(final SchemaContexts schemaContexts, final boolean orchestrationEnabled) {
         Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(schemaContexts.getSchemaContexts().size(), 1);
         for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContexts().entrySet()) {
             ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
             engine.init(schemaContexts.getDatabaseType(), entry.getValue().getSchema().getDataSources());
             transactionManagerEngines.put(entry.getKey(), engine);
         }
-        TransactionManagerEngineContexts contexts = new StandardTransactionManagerEngineContexts(transactionManagerEngines);
-        return orchestrationEnabled ? new OrchestrationTransactionManagerEngineContexts(contexts) : contexts;
+        TransactionContexts contexts = new StandardTransactionContexts(transactionManagerEngines);
+        return orchestrationEnabled ? new OrchestrationTransactionContexts(contexts) : contexts;
     }
     
     private static void initOpenTracing() {

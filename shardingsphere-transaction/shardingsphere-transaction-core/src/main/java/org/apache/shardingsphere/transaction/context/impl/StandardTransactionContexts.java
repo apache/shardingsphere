@@ -21,18 +21,23 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionManagerEngineContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Standard transaction manager engine contexts.
+ * Standard transaction contexts.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StandardTransactionManagerEngineContexts implements TransactionManagerEngineContexts {
+public final class StandardTransactionContexts implements TransactionContexts {
     
     private final Map<String, ShardingTransactionManagerEngine> engines;
+    
+    public StandardTransactionContexts() {
+        this(new HashMap<>());
+    }
     
     @Override
     public ShardingTransactionManagerEngine getDefaultTransactionManagerEngine() {

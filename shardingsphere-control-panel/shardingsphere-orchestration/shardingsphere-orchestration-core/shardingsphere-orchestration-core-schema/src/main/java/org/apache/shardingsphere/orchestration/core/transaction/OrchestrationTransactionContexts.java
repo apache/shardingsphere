@@ -21,18 +21,18 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.orchestration.core.common.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.OrchestrationEventBus;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionManagerEngineContexts;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Map;
 
 /**
- * Orchestration transaction manager engine contexts.
+ * Orchestration transaction contexts.
  */
-public final class OrchestrationTransactionManagerEngineContexts implements TransactionManagerEngineContexts {
+public final class OrchestrationTransactionContexts implements TransactionContexts {
     
-    private volatile TransactionManagerEngineContexts contexts;
+    private volatile TransactionContexts contexts;
     
-    public OrchestrationTransactionManagerEngineContexts(final TransactionManagerEngineContexts contexts) {
+    public OrchestrationTransactionContexts(final TransactionContexts contexts) {
         this.contexts = contexts;
         OrchestrationEventBus.getInstance().register(this);
     }
