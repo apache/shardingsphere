@@ -38,6 +38,7 @@ import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.orchestration.core.common.event.auth.AuthenticationChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.rule.RuleConfigurationsChangedEvent;
@@ -156,6 +157,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         schemas.put(event.getSchemaName(), createAddedSchemaContext(event));
         schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
         orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(event.getSchemaName(), schemaContexts.getSchemaContexts().get(event.getSchemaName()).getSchema().getMetaData().getSchema());
+        OrchestrationEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(), schemas.get(event.getSchemaName()).getSchema().getDataSources()));
     }
     
     /**
@@ -239,6 +241,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         newSchemaContexts.remove(schemaName);
         newSchemaContexts.put(schemaName, getChangedSchemaContext(schemaContexts.getSchemaContexts().get(schemaName), event.getDataSourceConfigurations()));
         schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        OrchestrationEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(), newSchemaContexts.get(event.getSchemaName()).getSchema().getDataSources()));
     }
     
     /**

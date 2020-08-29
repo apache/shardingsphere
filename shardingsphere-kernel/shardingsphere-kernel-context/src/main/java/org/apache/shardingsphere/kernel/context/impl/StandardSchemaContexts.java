@@ -53,8 +53,7 @@ public final class StandardSchemaContexts implements SchemaContexts {
         this(new HashMap<>(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType(), false);
     }
     
-    public StandardSchemaContexts(final Map<String, SchemaContext> schemaContexts,
-                                  final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
+    public StandardSchemaContexts(final Map<String, SchemaContext> schemaContexts, final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
         this(schemaContexts, authentication, props, databaseType, false);
     }
     
