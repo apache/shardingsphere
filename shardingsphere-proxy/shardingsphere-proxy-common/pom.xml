@@ -29,12 +29,12 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-repository-api</artifactId>
+            <artifactId>shardingsphere-governance-repository-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-core-common</artifactId>
+            <artifactId>shardingsphere-governance-core-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

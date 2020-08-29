@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.callback;
 
-import org.apache.shardingsphere.infra.callback.orchestration.DataSourceCallback;
-import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
-import org.apache.shardingsphere.infra.callback.orchestration.RuleCallback;
+import org.apache.shardingsphere.infra.callback.governance.DataSourceCallback;
+import org.apache.shardingsphere.infra.callback.governance.MetaDataCallback;
+import org.apache.shardingsphere.infra.callback.governance.RuleCallback;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;

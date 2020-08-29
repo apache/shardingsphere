@@ -23,8 +23,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.orchestration.core.common.yaml.swapper.DataSourceConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.governance.core.common.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
@@ -46,7 +46,7 @@ public final class ConfigurationYamlConverter {
     @SuppressWarnings("unchecked")
     public static Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String data) {
         Map<String, YamlDataSourceConfiguration> result = (Map<String, YamlDataSourceConfiguration>) YamlEngine.unmarshal(data);
-        Preconditions.checkState(!result.isEmpty(), "No available data sources to load for orchestration.");
+        Preconditions.checkState(!result.isEmpty(), "No available data sources to load for governance.");
         return Maps.transformValues(result, new DataSourceConfigurationYamlSwapper()::swapToObject);
     }
     

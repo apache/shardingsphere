@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-orchestration:
+governance:
   name: test_name_1
   registryCenter:
     type: ZooKeeper
