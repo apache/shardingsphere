@@ -26,12 +26,14 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Ass
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClause_Context;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JoinedTableContext;
@@ -54,6 +56,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Top
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WhereClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClause_Context;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinSpecificationSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinedTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableFactorSegment;
@@ -65,6 +68,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -93,6 +97,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateS
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
@@ -118,10 +123,36 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        InsertStatement result = (InsertStatement) visit(ctx.insertValuesClause());
+        InsertStatement result;
+        if (null != ctx.insertValuesClause()) {
+            result = (InsertStatement) visit(ctx.insertValuesClause());
+        } else {
+            result = (InsertStatement) visit(ctx.insertSelectClause());
+        }
+        if (null != ctx.withClause_()) {
+            result.setWithSegment((WithSegment) visit(ctx.withClause_()));
+        }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setParameterCount(getCurrentParameterIndex());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitWithClause_(final WithClause_Context ctx) {
+        List<CteClause_Context> cteClauses = ctx.cteClause_();
+        Collection<CommonTableExpressionSegment> commonTableExpressions = new LinkedList<>();
+        for (CteClause_Context cte : cteClauses) {
+            SubquerySegment subquery = new SubquerySegment(cte.start.getStartIndex(), cte.stop.getStopIndex(), (SelectStatement) visit(cte.subquery()));
+            IdentifierValue identifier = (IdentifierValue) visit(cte.identifier());
+            CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(cte.start.getStartIndex(), cte.stop.getStopIndex(), identifier, subquery);
+            if (null != cte.columnNames()) {
+                ColumnNamesContext columnNames = cte.columnNames();
+                CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(columnNames);
+                commonTableExpression.getColumns().addAll(columns.getValue());
+            }
+            commonTableExpressions.add(commonTableExpression);
+        }
+        return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressions);
     }
     
     @SuppressWarnings("unchecked")
@@ -145,6 +176,29 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
             result.add((InsertValuesSegment) visit(each));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
+        InsertStatement result = new InsertStatement();
+        result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
+        result.setInsertSelect(createInsertSelectSegment(ctx));
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private InsertColumnsSegment createInsertColumns(final ColumnNamesContext columnNames, final int startIndex) {
+        if (null != columnNames) {
+            CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
+            return new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
+        } else {
+            return new InsertColumnsSegment(startIndex - 1, startIndex - 1, Collections.emptyList());
+        }
+    }
+    
+    private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
+        SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
+        return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement);
     }
     
     @SuppressWarnings("unchecked")
