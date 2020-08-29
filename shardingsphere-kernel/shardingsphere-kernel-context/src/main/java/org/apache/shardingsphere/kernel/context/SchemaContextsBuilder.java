@@ -122,7 +122,7 @@ public final class SchemaContextsBuilder {
     private ShardingSphereSchema createShardingSphereSchema(final String schemaName) throws SQLException {
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
         Collection<RuleConfiguration> ruleConfigs = this.ruleConfigs.get(schemaName);
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(schemaName, ruleConfigs, dataSources.keySet());
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigs, dataSources.keySet());
         return new ShardingSphereSchema(ruleConfigs, rules, dataSources, createMetaData(dataSources, rules));
     }
     

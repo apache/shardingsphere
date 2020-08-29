@@ -36,14 +36,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public final class ReplicaRule implements ShardingSphereRule {
     
-    private final String schemaName;
-    
     private final Collection<ReplicaTableRule> replicaTableRules;
     
     private final Map<String, ReplicaTableRule> physicsTableRules;
     
-    public ReplicaRule(final String schemaName, final ReplicaRuleConfiguration configuration) {
-        this.schemaName = schemaName;
+    public ReplicaRule(final ReplicaRuleConfiguration configuration) {
         Collection<ReplicaTableRule> replicaTableRules = new ArrayList<>();
         Map<String, ReplicaTableRule> physicsTableRules = new ConcurrentHashMap<>();
         for (Map.Entry<String, ReplicaTableRuleConfiguration[]> entry : configuration.getTables().entrySet()) {
@@ -57,9 +54,6 @@ public final class ReplicaRule implements ShardingSphereRule {
                 replicaTableRules.add(new ReplicaTableRule(each));
             }
         }
-        configuration.getTables().forEach((logicTable, replicaTableRuleConfigurations) -> {
-        
-        });
         this.replicaTableRules = replicaTableRules;
         this.physicsTableRules = physicsTableRules;
     }

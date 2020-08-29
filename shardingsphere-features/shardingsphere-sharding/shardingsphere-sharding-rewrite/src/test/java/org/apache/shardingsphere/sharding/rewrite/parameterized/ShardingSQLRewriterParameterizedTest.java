@@ -76,7 +76,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     protected Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException {
         String schemaName = PATH + "_db";
         YamlRootRuleConfigurations yamlRootRuleConfigs = createYamlRootRuleConfigurations();
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(schemaName,
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(
                 new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlRootRuleConfigs.getRules()), yamlRootRuleConfigs.getDataSources().keySet());
         StandardSQLParserEngine standardSqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingSphereMetaData metaData = createShardingSphereMetaData();

@@ -52,8 +52,7 @@ public final class ReplicaRuleTest {
         table.setPhysicsTable(physicsTable);
         table.setReplicaGroupId(replicaGroupId);
         table.setReplicaPeers(replicaPeers);
-        String schemaName = "replica_db_demo";
-        return new ReplicaRule(schemaName, configuration);
+        return new ReplicaRule(configuration);
     }
     
     @Test

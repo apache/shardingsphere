@@ -69,7 +69,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     protected Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException {
         String schemaName = PATH + "_db";
         YamlRootRuleConfigurations ruleConfigurations = createRuleConfigurations();
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(schemaName,
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(
                 new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(ruleConfigurations.getRules()), ruleConfigurations.getDataSources().keySet());
         StandardSQLParserEngine standardSqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingSphereMetaData metaData = createShardingSphereMetaData();

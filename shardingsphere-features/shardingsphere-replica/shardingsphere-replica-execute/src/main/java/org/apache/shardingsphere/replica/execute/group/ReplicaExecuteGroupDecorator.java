@@ -55,9 +55,6 @@ public final class ReplicaExecuteGroupDecorator implements RawExecuteGroupDecora
         RouteContext routeContext = executionContext.getRouteContext();
         RouteStageContext preRouteStageContext = routeContext.lastRouteStageContext();
         String currentSchemaName = preRouteStageContext.getCurrentSchemaName();
-        if (!rule.getSchemaName().equals(currentSchemaName)) {
-            return inputGroups;
-        }
         RouteStageContext routeStageContext = routeContext.getRouteStageContexts().get(getOrder());
         ReplicaRouteStageContext replicaRouteStageContext = (ReplicaRouteStageContext) routeStageContext;
         Map<String, ReplicaGroup> replicaGroups = replicaRouteStageContext.getReplicaGroups();

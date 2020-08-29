@@ -73,10 +73,6 @@ public final class ReplicaRouteDecorator implements RouteDecorator<ReplicaRule> 
     @Override
     public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ReplicaRule replicaRule, final ConfigurationProperties props) {
         RouteStageContext preRouteStageContext = routeContext.lastRouteStageContext();
-        String currentSchemaName = preRouteStageContext.getCurrentSchemaName();
-        if (!replicaRule.getSchemaName().equals(currentSchemaName)) {
-            return routeContext;
-        }
         Map<String, ReplicaGroup> replicaGroups = new HashMap<>();
         if (preRouteStageContext.getRouteResult().getRouteUnits().isEmpty()) {
             ReplicaTableRule replicaRoutingRule = replicaRule.getReplicaTableRules().iterator().next();

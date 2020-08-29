@@ -24,7 +24,7 @@ import java.util.Collection;
 public final class FixtureRuleBuilder implements ShardingSphereRuleBuilder<FixtureRule, FixtureRuleConfiguration> {
     
     @Override
-    public FixtureRule build(final String schemaName, final FixtureRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+    public FixtureRule build(final FixtureRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
         return new FixtureRule();
     }
     

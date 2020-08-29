@@ -45,6 +45,6 @@ public final class AlgorithmProvidedMasterSlaveRuleBuilderTest {
                 Collections.singletonList("name"), "loadBalancerName");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfiguration));
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
-        assertThat(builder.build("sharding_db", ruleConfig, Collections.emptyList()), instanceOf(MasterSlaveRule.class));
+        assertThat(builder.build(ruleConfig, Collections.emptyList()), instanceOf(MasterSlaveRule.class));
     }
 }

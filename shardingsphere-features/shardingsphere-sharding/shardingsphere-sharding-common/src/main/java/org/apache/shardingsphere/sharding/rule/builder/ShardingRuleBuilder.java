@@ -30,7 +30,7 @@ import java.util.Collection;
 public final class ShardingRuleBuilder implements ShardingSphereRuleBuilder<ShardingRule, ShardingRuleConfiguration> {
     
     @Override
-    public ShardingRule build(final String schemaName, final ShardingRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+    public ShardingRule build(final ShardingRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
         return new ShardingRule(ruleConfiguration, dataSourceNames);
     }
     
