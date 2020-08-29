@@ -17,12 +17,12 @@
 
 ######################################################################################################
 # 
-# If you want to configure orchestration, authorization and proxy properties, please refer to this file.
+# If you want to configure governance, authorization and proxy properties, please refer to this file.
 # 
 ######################################################################################################
 #
-#orchestration:
-#  name: orchestration_ds
+#governance:
+#  name: governance_ds
 #  registryCenter:
 #    type: ZooKeeper
 #    serverLists: localhost:2181

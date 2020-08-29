@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.callback.orchestration.MetaDataCallback;
+import org.apache.shardingsphere.infra.callback.governance.MetaDataCallback;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;

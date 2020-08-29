@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.callback.orchestration.DataSourceCallback;
-import org.apache.shardingsphere.infra.callback.orchestration.RuleCallback;
-import org.apache.shardingsphere.infra.callback.orchestration.SchemaNameCallback;
+import org.apache.shardingsphere.infra.callback.governance.DataSourceCallback;
+import org.apache.shardingsphere.infra.callback.governance.RuleCallback;
+import org.apache.shardingsphere.infra.callback.governance.SchemaNameCallback;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;

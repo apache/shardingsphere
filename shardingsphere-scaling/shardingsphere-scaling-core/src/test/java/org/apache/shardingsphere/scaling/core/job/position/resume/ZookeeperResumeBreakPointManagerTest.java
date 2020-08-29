@@ -27,7 +27,7 @@ import org.apache.curator.framework.api.transaction.TransactionCheckBuilder;
 import org.apache.curator.framework.api.transaction.TransactionOp;
 import org.apache.curator.framework.api.transaction.TransactionSetDataBuilder;
 import org.apache.curator.framework.imps.ExtractingCuratorOp;
-import org.apache.shardingsphere.orchestration.repository.zookeeper.CuratorZookeeperRepository;
+import org.apache.shardingsphere.governance.repository.zookeeper.CuratorZookeeperRepository;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;

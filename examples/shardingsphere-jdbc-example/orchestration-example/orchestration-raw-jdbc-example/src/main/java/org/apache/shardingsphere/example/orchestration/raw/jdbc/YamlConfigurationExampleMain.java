@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc;
 
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.driver.orchestration.api.yaml.YamlOrchestrationShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.driver.orchestration.api.yaml.YamlOrchestrationShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
