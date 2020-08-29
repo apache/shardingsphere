@@ -45,7 +45,6 @@ import org.apache.shardingsphere.orchestration.core.registry.event.CircuitStateC
 import org.apache.shardingsphere.orchestration.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registry.schema.OrchestrationSchema;
 import org.apache.shardingsphere.orchestration.core.schema.fixture.TestOrchestrationSchemaContexts;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,12 +61,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -91,9 +89,9 @@ public final class OrchestrationSchemaContextsTest {
     @Mock
     private MasterSlaveRule masterSlaveRule;
     
-    private Authentication authentication = new Authentication();
+    private final Authentication authentication = new Authentication();
     
-    private ConfigurationProperties configurationProperties = new ConfigurationProperties(new Properties());
+    private final ConfigurationProperties configurationProperties = new ConfigurationProperties(new Properties());
     
     private TestOrchestrationSchemaContexts orchestrationSchemaContexts;
     
@@ -111,14 +109,11 @@ public final class OrchestrationSchemaContextsTest {
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        ShardingTransactionManagerEngine shardingTransactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
         when(schemaContext.getName()).thenReturn("schema");
         when(schemaContext.getSchema()).thenReturn(shardingSphereSchema);
         when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
         when(shardingSphereSchema.getMetaData()).thenReturn(shardingSphereMetaData);
-        when(shardingSphereSchema.getRules()).thenReturn(Arrays.asList(masterSlaveRule));
-        when(runtimeContext.getTransactionManagerEngine()).thenReturn(shardingTransactionManagerEngine);
-        doNothing().when(shardingTransactionManagerEngine).close();
+        when(shardingSphereSchema.getRules()).thenReturn(Collections.singletonList(masterSlaveRule));
         return Collections.singletonMap("schema", schemaContext);
     }
     
@@ -199,15 +194,15 @@ public final class OrchestrationSchemaContextsTest {
     
     @Test
     public void assertMetaDataChanged() {
-        MetaDataChangedEvent event = new MetaDataChangedEvent(Arrays.asList("schema_changed"), mock(RuleSchemaMetaData.class));
+        MetaDataChangedEvent event = new MetaDataChangedEvent(Collections.singletonList("schema_changed"), mock(RuleSchemaMetaData.class));
         orchestrationSchemaContexts.renew(event);
-        assertTrue(orchestrationSchemaContexts.getSchemaContexts().keySet().contains("schema"));
-        assertFalse(orchestrationSchemaContexts.getSchemaContexts().keySet().contains("schema_changed"));
+        assertTrue(orchestrationSchemaContexts.getSchemaContexts().containsKey("schema"));
+        assertFalse(orchestrationSchemaContexts.getSchemaContexts().containsKey("schema_changed"));
     }
     
     @Test
     public void assertMetaDataChangedWithExistSchema() {
-        MetaDataChangedEvent event = new MetaDataChangedEvent(Arrays.asList("schema"), mock(RuleSchemaMetaData.class));
+        MetaDataChangedEvent event = new MetaDataChangedEvent(Collections.singletonList("schema"), mock(RuleSchemaMetaData.class));
         orchestrationSchemaContexts.renew(event);
         assertThat(orchestrationSchemaContexts.getSchemaContexts().get("schema"), not(schemaContext));
     }
@@ -233,7 +228,7 @@ public final class OrchestrationSchemaContextsTest {
     public void assertDataSourceChanged() {
         DataSourceChangedEvent event = new DataSourceChangedEvent("schema", getChangedDataSourceConfigurations());
         orchestrationSchemaContexts.renew(event);
-        assertTrue(orchestrationSchemaContexts.getSchemaContexts().get("schema").getSchema().getDataSources().keySet().contains("ds_2"));
+        assertTrue(orchestrationSchemaContexts.getSchemaContexts().get("schema").getSchema().getDataSources().containsKey("ds_2"));
     }
     
     private Map<String, DataSourceConfiguration> getChangedDataSourceConfigurations() {

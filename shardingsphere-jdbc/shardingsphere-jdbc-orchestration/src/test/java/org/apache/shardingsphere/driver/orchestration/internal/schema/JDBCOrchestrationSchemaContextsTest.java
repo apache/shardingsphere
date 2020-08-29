@@ -32,7 +32,6 @@ import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.orchestration.core.common.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registry.RegistryCenter;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,7 +69,6 @@ public final class JDBCOrchestrationSchemaContextsTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getDataSources()).thenReturn(getDataSources());
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        when(runtimeContext.getTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         SchemaContext result = new SchemaContext(DefaultSchema.LOGIC_NAME, schema, runtimeContext);
         return Collections.singletonMap(DefaultSchema.LOGIC_NAME, result);
     }

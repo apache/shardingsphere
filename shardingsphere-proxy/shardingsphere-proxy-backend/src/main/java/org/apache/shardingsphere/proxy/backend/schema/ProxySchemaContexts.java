@@ -192,8 +192,7 @@ public final class ProxySchemaContexts {
         }
         
         private Connection createConnection(final String schemaName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
-            ShardingTransactionManager shardingTransactionManager = 
-                    schemaContexts.getSchemaContexts().get(schemaName).getRuntimeContext().getTransactionManagerEngine().getTransactionManager(transactionType);
+            ShardingTransactionManager shardingTransactionManager = transactionContexts.getEngines().get(schemaName).getTransactionManager(transactionType);
             return isInShardingTransaction(shardingTransactionManager) ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
         }
         

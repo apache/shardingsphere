@@ -37,7 +37,6 @@ import org.apache.shardingsphere.kernel.context.runtime.CachedDatabaseMetaData;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngineFactory;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -99,8 +98,8 @@ public final class SchemaContextsBuilder {
     
     private SchemaContext createSchemaContext(final String schemaName) throws SQLException {
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
-        RuntimeContext runtimeContext = new RuntimeContext(createCachedDatabaseMetaData(dataSources).orElse(null),
-                executorKernel, ShardingSphereSQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)), createShardingTransactionManagerEngine(dataSources));
+        RuntimeContext runtimeContext = new RuntimeContext(createCachedDatabaseMetaData(dataSources).orElse(null), 
+                executorKernel, ShardingSphereSQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)));
         return new SchemaContext(schemaName, createShardingSphereSchema(schemaName), runtimeContext);
     }
     
@@ -111,12 +110,6 @@ public final class SchemaContextsBuilder {
         try (Connection connection = dataSources.values().iterator().next().getConnection()) {
             return Optional.of(new CachedDatabaseMetaData(connection.getMetaData()));
         }
-    }
-    
-    private ShardingTransactionManagerEngine createShardingTransactionManagerEngine(final Map<String, DataSource> dataSources) {
-        ShardingTransactionManagerEngine result = new ShardingTransactionManagerEngine();
-        result.init(databaseType, dataSources);
-        return result;
     }
     
     private ShardingSphereSchema createShardingSphereSchema(final String schemaName) throws SQLException {

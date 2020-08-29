@@ -61,7 +61,7 @@ public final class ShardingCTLExplainBackendHandlerTest {
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
-        RuntimeContext runtimeContext = new RuntimeContext(null, null, new ShardingSphereSQLParserEngine(new StandardSQLParserEngine("MySQL")), null);
+        RuntimeContext runtimeContext = new RuntimeContext(null, null, new ShardingSphereSQLParserEngine(new StandardSQLParserEngine("MySQL")));
         ShardingSphereSchema schema = new ShardingSphereSchema(Collections.emptyList(),
                 Collections.emptyList(), Collections.singletonMap("ds0", mock(DataSource.class)), null);
         return Collections.singletonMap("schema", new SchemaContext("schema", schema, runtimeContext));
