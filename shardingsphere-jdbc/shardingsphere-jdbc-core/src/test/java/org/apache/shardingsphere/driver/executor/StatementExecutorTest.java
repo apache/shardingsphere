@@ -311,7 +311,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         result.add(new InputGroup<>(statementExecuteUnits));
         for (Statement each : statements) {
             statementExecuteUnits.add(
-                    new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList(1))), ConnectionMode.MEMORY_STRICTLY, each));
+                    new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList(1))),
+                            ConnectionMode.MEMORY_STRICTLY, each));
         }
         return result;
     }

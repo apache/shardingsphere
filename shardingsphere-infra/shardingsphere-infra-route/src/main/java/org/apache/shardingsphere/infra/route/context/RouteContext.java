@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.route.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Route context.
@@ -29,10 +29,51 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 public final class RouteContext {
-    
-    private final SQLStatementContext<?> sqlStatementContext;
-    
-    private final List<Object> parameters;
-    
-    private final RouteResult routeResult;
+
+    private final Map<Integer, RouteStageContext> routeStageContexts = new TreeMap<>();
+
+    private final RouteStageContext originRouteStageContext;
+
+    /**
+     * Get original RouteStageContext.
+     *
+     * @return RouteStageContext
+     */
+    public RouteStageContext getOriginRouteStageContext() {
+        return originRouteStageContext;
+    }
+
+    /**
+     * Add route stage context.
+     *
+     * @param order stage order
+     * @param routeStageContext route stage context
+     */
+    public void addRouteStageContext(final int order, final RouteStageContext routeStageContext) {
+        getRouteStageContexts().put(order, routeStageContext);
+    }
+
+    /**
+     * Get first route stage context.
+     *
+     * @return RouteStageContext first route stage context
+     */
+    public RouteStageContext firstRouteStageContext() {
+        if (routeStageContexts.isEmpty()) {
+            return originRouteStageContext;
+        }
+        return ((TreeMap<Integer, RouteStageContext>) getRouteStageContexts()).firstEntry().getValue();
+    }
+
+    /**
+     * Get last route stage context.
+     *
+     * @return RouteStageContext last route stage context
+     */
+    public RouteStageContext lastRouteStageContext() {
+        if (routeStageContexts.isEmpty()) {
+            return originRouteStageContext;
+        }
+        return ((TreeMap<Integer, RouteStageContext>) getRouteStageContexts()).lastEntry().getValue();
+    }
 }

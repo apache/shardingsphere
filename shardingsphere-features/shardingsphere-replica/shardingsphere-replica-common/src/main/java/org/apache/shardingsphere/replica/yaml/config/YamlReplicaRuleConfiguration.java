@@ -18,21 +18,33 @@
 package org.apache.shardingsphere.replica.yaml.config;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration;
+import org.apache.shardingsphere.replica.api.config.ReplicaTableRuleConfiguration;
 
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.Map;
 
 /**
  * Replica rule configuration for YAML.
  */
 @Getter
-@Setter
 public final class YamlReplicaRuleConfiguration implements YamlRuleConfiguration {
     
-    private Map<String, YamlReplicaDataSourceConfiguration> dataSources = new LinkedHashMap<>();
+    private Map<String, ReplicaTableRuleConfiguration[]> tables = Collections.emptyMap();
+
+    /**
+     * Set logic tables rules.
+     *
+     * @param tables tables
+     */
+    public void setTables(final Map<String, ReplicaTableRuleConfiguration[]> tables) {
+        if (null == tables) {
+            this.tables = Collections.emptyMap();
+        } else {
+            this.tables = tables;
+        }
+    }
     
     @Override
     public Class<ReplicaRuleConfiguration> getRuleConfigurationType() {

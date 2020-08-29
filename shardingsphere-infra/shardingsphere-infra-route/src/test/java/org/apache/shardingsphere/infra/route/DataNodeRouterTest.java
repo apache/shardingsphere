@@ -63,11 +63,11 @@ public final class DataNodeRouterTest {
     
     @Test
     public void assertRouteSuccess() {
-        DataNodeRouter router = new DataNodeRouter(metaData, props, Collections.singletonList(new RouteRuleFixture()));
+        DataNodeRouter router = new DataNodeRouter(metaData, props, Collections.singletonList(new RouteRuleFixture()), "sharding_db");
         setSPIRoutingHook(router);
         RouteContext actual = router.route(mock(SQLStatement.class), "SELECT 1", Collections.emptyList());
-        assertThat(actual.getRouteResult().getRouteUnits().size(), is(1));
-        RouteUnit routeUnit = actual.getRouteResult().getRouteUnits().iterator().next();
+        assertThat(actual.lastRouteStageContext().getRouteResult().getRouteUnits().size(), is(1));
+        RouteUnit routeUnit = actual.lastRouteStageContext().getRouteResult().getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("ds"));
         assertThat(routeUnit.getDataSourceMapper().getActualName(), is("ds_0"));
         assertTrue(routeUnit.getTableMappers().isEmpty());
@@ -77,7 +77,7 @@ public final class DataNodeRouterTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertRouteFailure() {
-        DataNodeRouter router = new DataNodeRouter(metaData, props, Collections.singletonList(new RouteFailureRuleFixture()));
+        DataNodeRouter router = new DataNodeRouter(metaData, props, Collections.singletonList(new RouteFailureRuleFixture()), "sharding_db");
         setSPIRoutingHook(router);
         try {
             router.route(mock(SQLStatement.class), "SELECT 1", Collections.emptyList());

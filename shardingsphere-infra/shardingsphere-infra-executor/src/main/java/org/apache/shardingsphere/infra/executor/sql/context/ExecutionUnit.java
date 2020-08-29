@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.context;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -34,4 +35,7 @@ public final class ExecutionUnit {
     private final String dataSourceName;
     
     private final SQLUnit sqlUnit;
+
+    @Setter
+    private String schemaName;
 }

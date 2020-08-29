@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.rewrite;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
+import org.apache.shardingsphere.infra.route.context.OriginRouteStageContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -49,7 +50,7 @@ public final class SQLRewriteEntryTest {
     @Test
     public void assertRewriteForGenericSQLRewriteResult() {
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData, props, Collections.emptyList());
-        RouteContext routeContext = new RouteContext(mock(SQLStatementContext.class), Collections.singletonList(1), mock(RouteResult.class));
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", mock(SQLStatementContext.class), Collections.singletonList(1), mock(RouteResult.class)));
         GenericSQLRewriteResult sqlRewriteResult = (GenericSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), routeContext);
         assertThat(sqlRewriteResult.getSqlRewriteUnit().getSql(), is("SELECT ?"));
         assertThat(sqlRewriteResult.getSqlRewriteUnit().getParameters(), is(Collections.singletonList(1)));
@@ -60,7 +61,7 @@ public final class SQLRewriteEntryTest {
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData, props, Collections.emptyList());
         RouteResult routeResult = new RouteResult();
         routeResult.getRouteUnits().addAll(Arrays.asList(mock(RouteUnit.class), mock(RouteUnit.class)));
-        RouteContext routeContext = new RouteContext(mock(SQLStatementContext.class), Collections.singletonList(1), routeResult);
+        RouteContext routeContext = new RouteContext(new OriginRouteStageContext("sharding_db", mock(SQLStatementContext.class), Collections.singletonList(1), routeResult));
         RouteSQLRewriteResult sqlRewriteResult = (RouteSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), routeContext);
         assertThat(sqlRewriteResult.getSqlRewriteUnits().size(), is(2));
     }

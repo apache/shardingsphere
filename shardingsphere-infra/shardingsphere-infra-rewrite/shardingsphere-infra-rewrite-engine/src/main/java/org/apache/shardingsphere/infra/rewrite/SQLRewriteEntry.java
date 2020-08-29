@@ -24,10 +24,12 @@ import org.apache.shardingsphere.infra.rewrite.engine.GenericSQLRewriteEngine;
 import org.apache.shardingsphere.infra.rewrite.engine.RouteSQLRewriteEngine;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.util.Collection;
 import java.util.List;
@@ -65,12 +67,13 @@ public final class SQLRewriteEntry {
      */
     public SQLRewriteResult rewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, parameters, routeContext);
-        return routeContext.getRouteResult().getRouteUnits().isEmpty()
-                ? new GenericSQLRewriteEngine().rewrite(sqlRewriteContext) : new RouteSQLRewriteEngine().rewrite(sqlRewriteContext, routeContext.getRouteResult());
+        RouteResult routeResult = routeContext.lastRouteStageContext().getRouteResult();
+        return routeResult.getRouteUnits().isEmpty() ? new GenericSQLRewriteEngine().rewrite(sqlRewriteContext) : new RouteSQLRewriteEngine().rewrite(sqlRewriteContext, routeResult);
     }
     
     private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final RouteContext routeContext) {
-        SQLRewriteContext result = new SQLRewriteContext(metaData, routeContext.getSqlStatementContext(), sql, parameters);
+        SQLStatementContext sqlStatementContext = routeContext.firstRouteStageContext().getSqlStatementContext();
+        SQLRewriteContext result = new SQLRewriteContext(metaData, sqlStatementContext, sql, parameters);
         decorate(decorators, result, routeContext);
         result.generateSQLTokens();
         return result;

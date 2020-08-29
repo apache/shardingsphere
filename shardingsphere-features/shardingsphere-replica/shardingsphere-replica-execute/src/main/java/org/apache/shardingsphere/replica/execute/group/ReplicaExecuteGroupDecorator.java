@@ -17,38 +17,88 @@
 
 package org.apache.shardingsphere.replica.execute.group;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
-import org.apache.shardingsphere.infra.executor.sql.resourced.ResourceManagedExecuteUnit;
-import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupDecorator;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.raw.group.RawExecuteGroupDecorator;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteStageContext;
 import org.apache.shardingsphere.replica.constant.ReplicaOrder;
+import org.apache.shardingsphere.replica.route.engine.ReplicaGroup;
+import org.apache.shardingsphere.replica.route.engine.ReplicaRouteStageContext;
 import org.apache.shardingsphere.replica.rule.ReplicaRule;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 
 /**
  * Execute group decorator for replica.
- * 
- * @param <T> type of input value 
  */
-public final class ReplicaExecuteGroupDecorator<T extends ResourceManagedExecuteUnit> implements ExecuteGroupDecorator<T, ReplicaRule> {
-    
+@Slf4j
+public final class ReplicaExecuteGroupDecorator implements RawExecuteGroupDecorator<RawSQLExecuteUnit, ReplicaRule> {
+
+    private final boolean supportWithoutTableCommand = true;
+
     @Override
-    public Collection<InputGroup<T>> decorate(final ReplicaRule rule, final Collection<InputGroup<T>> inputGroups) {
-        Map<String, InputGroup<T>> result = new LinkedHashMap<>(inputGroups.size(), 1);
-        for (InputGroup<T> each : inputGroups) {
-            T sample = each.getInputs().get(0);
-            String dataSourceName = sample.getExecutionUnit().getDataSourceName();
-            Optional<String> logicDataSource = rule.findLogicDataSource(dataSourceName);
-            if (logicDataSource.isPresent() && result.containsKey(dataSourceName)) {
-                result.get(dataSourceName).getInputs().addAll(each.getInputs());
-            } else {
-                result.put(dataSourceName, each);
+    public Collection<InputGroup<RawSQLExecuteUnit>> decorate(final ExecutionContext executionContext, final ReplicaRule rule, final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups) {
+        if (null != inputGroups && !inputGroups.isEmpty()) {
+            if (!(inputGroups.iterator().next().getInputs().get(0) instanceof RawSQLExecuteUnit)) {
+                log.info("inputGroups ExecuteUnit is not RawSQLExecuteUnit, ignore decorate");
+                return inputGroups;
             }
         }
-        return result.values();
+        RouteContext routeContext = executionContext.getRouteContext();
+        RouteStageContext preRouteStageContext = routeContext.lastRouteStageContext();
+        String currentSchemaName = preRouteStageContext.getCurrentSchemaName();
+        RouteStageContext routeStageContext = routeContext.getRouteStageContexts().get(getOrder());
+        ReplicaRouteStageContext replicaRouteStageContext = (ReplicaRouteStageContext) routeStageContext;
+        Map<String, ReplicaGroup> replicaGroups = replicaRouteStageContext.getReplicaGroups();
+        boolean readOnly = replicaRouteStageContext.isReadOnly();
+        for (InputGroup<RawSQLExecuteUnit> each : inputGroups) {
+            routeReplicaGroup(each, currentSchemaName, replicaGroups, readOnly);
+        }
+        return inputGroups;
+    }
+
+    private void routeReplicaGroup(final InputGroup<RawSQLExecuteUnit> inputGroup, final String currentSchemaName, final Map<String, ReplicaGroup> replicaGroups, final boolean readOnly) {
+        for (RawSQLExecuteUnit each: inputGroup.getInputs()) {
+            ExecutionUnit executionUnit = each.getExecutionUnit();
+            String schemaName = currentSchemaName;
+            SQLUnit sqlUnit = executionUnit.getSqlUnit();
+            Set<String> actualTables = sqlUnit.getActualTables();
+            if ((null == actualTables || actualTables.isEmpty()) && !supportWithoutTableCommand) {
+                throw new ShardingSphereException("route fail: actual tables is empty");
+            }
+            ReplicaGroup replicaGroup = getReplicaGroup(actualTables, replicaGroups);
+            each.setRawGroup(replicaGroup);
+            executionUnit.setSchemaName(schemaName);
+            sqlUnit.setReadOnly(readOnly);
+        }
+    }
+
+    private ReplicaGroup getReplicaGroup(final Set<String> actualTables, final Map<String, ReplicaGroup> replicaGroups) {
+        ReplicaGroup replicaGroup = null;
+        if (null != actualTables && !actualTables.isEmpty()) {
+            for (String each : actualTables) {
+                replicaGroup = replicaGroups.get(each);
+                if (null != replicaGroup) {
+                    break;
+                }
+            }
+        } else {
+            if (!replicaGroups.isEmpty()) {
+                replicaGroup = replicaGroups.entrySet().iterator().next().getValue();
+            }
+        }
+        if (null == replicaGroup) {
+            throw new ShardingSphereException("route fail: route result is empty");
+        }
+        return replicaGroup;
     }
     
     @Override

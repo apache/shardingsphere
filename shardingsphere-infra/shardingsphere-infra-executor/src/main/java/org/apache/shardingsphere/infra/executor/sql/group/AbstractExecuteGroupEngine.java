@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.group;
 
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -45,9 +46,12 @@ public abstract class AbstractExecuteGroupEngine<T> implements ExecuteGroupEngin
     
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, ExecuteGroupDecorator> decorators;
-    
-    protected AbstractExecuteGroupEngine(final Collection<ShardingSphereRule> rules) {
+
+    private final ExecutionContext executionContext;
+
+    protected AbstractExecuteGroupEngine(final Collection<ShardingSphereRule> rules, final ExecutionContext executionContext) {
         decorators = OrderedSPIRegistry.getRegisteredServices(rules, ExecuteGroupDecorator.class);
+        this.executionContext = executionContext;
     }
     
     @Override
@@ -76,7 +80,7 @@ public abstract class AbstractExecuteGroupEngine<T> implements ExecuteGroupEngin
     private Collection<InputGroup<T>> decorate(final Collection<InputGroup<T>> inputGroups) {
         Collection<InputGroup<T>> result = inputGroups;
         for (Entry<ShardingSphereRule, ExecuteGroupDecorator> each : decorators.entrySet()) {
-            result = each.getValue().decorate(each.getKey(), result);
+            result = each.getValue().decorate(executionContext, each.getKey(), result);
         }
         return result;
     }
