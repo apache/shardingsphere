@@ -22,9 +22,11 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.transaction.OrchestrationTransactionManagerEngineContexts;
 import org.apache.shardingsphere.proxy.arg.BootstrapArguments;
 import org.apache.shardingsphere.proxy.backend.schema.ProxyDataSourceContext;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
@@ -37,10 +39,16 @@ import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.orchestration.OrchestrationBootstrap;
 import org.apache.shardingsphere.proxy.orchestration.schema.ProxyOrchestrationSchemaContexts;
 import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.context.TransactionManagerEngineContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionManagerEngineContexts;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -81,11 +89,24 @@ public final class Bootstrap {
         ProxyDataSourceContext dataSourceContext = new ProxyDataSourceContext(proxyConfig.getSchemaDataSources());
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(
                 dataSourceContext.getDatabaseType(), dataSourceContext.getDataSourcesMap(), proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
-        ProxySchemaContexts.getInstance().init(createSchemaContexts(schemaContextsBuilder.build(), orchestrationEnabled));
+        SchemaContexts schemaContexts = createSchemaContexts(schemaContextsBuilder.build(), orchestrationEnabled);
+        TransactionManagerEngineContexts transactionContexts = createTransactionManagerEngineContexts(schemaContexts, orchestrationEnabled);
+        ProxySchemaContexts.getInstance().init(schemaContexts, transactionContexts);
     }
     
     private static SchemaContexts createSchemaContexts(final SchemaContexts schemaContexts, final boolean orchestrationEnabled) {
         return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts(schemaContexts, OrchestrationFacade.getInstance()) : schemaContexts;
+    }
+    
+    private static TransactionManagerEngineContexts createTransactionManagerEngineContexts(final SchemaContexts schemaContexts, final boolean orchestrationEnabled) {
+        Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(schemaContexts.getSchemaContexts().size(), 1);
+        for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContexts().entrySet()) {
+            ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
+            engine.init(schemaContexts.getDatabaseType(), entry.getValue().getSchema().getDataSources());
+            transactionManagerEngines.put(entry.getKey(), engine);
+        }
+        TransactionManagerEngineContexts contexts = new StandardTransactionManagerEngineContexts(transactionManagerEngines);
+        return orchestrationEnabled ? new OrchestrationTransactionManagerEngineContexts(contexts) : contexts;
     }
     
     private static void initOpenTracing() {

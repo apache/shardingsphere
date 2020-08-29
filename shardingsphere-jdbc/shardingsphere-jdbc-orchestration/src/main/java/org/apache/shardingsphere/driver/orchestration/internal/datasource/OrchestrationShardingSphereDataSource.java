@@ -36,6 +36,9 @@ import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.orchestration.core.config.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
 import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.context.TransactionManagerEngineContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionManagerEngineContexts;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
@@ -61,15 +64,19 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
     
     private final SchemaContexts schemaContexts;
     
+    private final TransactionManagerEngineContexts transactionManagerEngineContexts;
+    
     public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         OrchestrationFacade orchestrationFacade = createOrchestrationFacade(orchestrationConfig);
         schemaContexts = new JDBCOrchestrationSchemaContexts(createSchemaContexts(orchestrationFacade), orchestrationFacade);
+        transactionManagerEngineContexts = createTransactionManagerEngineContexts(schemaContexts.getDatabaseType(), schemaContexts.getDefaultSchemaContext().getSchema().getDataSources());
     }
     
     public OrchestrationShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations,
                                                  final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         OrchestrationFacade orchestrationFacade = createOrchestrationFacade(orchestrationConfig);
         schemaContexts = new JDBCOrchestrationSchemaContexts(createSchemaContexts(dataSourceMap, ruleConfigurations, props), orchestrationFacade);
+        transactionManagerEngineContexts = createTransactionManagerEngineContexts(schemaContexts.getDatabaseType(), schemaContexts.getDefaultSchemaContext().getSchema().getDataSources());
         uploadLocalConfiguration(orchestrationFacade);
     }
     
@@ -115,6 +122,12 @@ public final class OrchestrationShardingSphereDataSource extends AbstractUnsuppo
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
         }
+    }
+    
+    private TransactionManagerEngineContexts createTransactionManagerEngineContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
+        engine.init(databaseType, dataSourceMap);
+        return new StandardTransactionManagerEngineContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, engine));
     }
     
     private void uploadLocalConfiguration(final OrchestrationFacade orchestrationFacade) {

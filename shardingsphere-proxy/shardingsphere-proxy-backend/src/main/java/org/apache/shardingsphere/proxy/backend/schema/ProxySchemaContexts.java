@@ -25,6 +25,8 @@ import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.BackendDataSource;
+import org.apache.shardingsphere.transaction.context.TransactionManagerEngineContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionManagerEngineContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
@@ -49,6 +51,8 @@ public final class ProxySchemaContexts {
     
     private SchemaContexts schemaContexts = new StandardSchemaContexts();
     
+    private TransactionManagerEngineContexts transactionManagerEngineContexts = new StandardTransactionManagerEngineContexts();
+    
     private final JDBCBackendDataSource backendDataSource = new JDBCBackendDataSource();
     
     private ProxySchemaContexts() { }
@@ -66,9 +70,11 @@ public final class ProxySchemaContexts {
      * Initialize proxy schema contexts.
      *
      * @param schemaContexts schema contexts
+     * @param schemaContexts transaction manager engine contexts
      */
-    public void init(final SchemaContexts schemaContexts) {
+    public void init(final SchemaContexts schemaContexts, final TransactionManagerEngineContexts transactionManagerEngineContexts) {
         this.schemaContexts = schemaContexts;
+        this.transactionManagerEngineContexts = transactionManagerEngineContexts;
     }
     
     /**
