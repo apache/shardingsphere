@@ -157,7 +157,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         schemas.put(event.getSchemaName(), createAddedSchemaContext(event));
         schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
         orchestrationFacade.getMetaDataCenter().persistMetaDataCenterNode(event.getSchemaName(), schemaContexts.getSchemaContexts().get(event.getSchemaName()).getSchema().getMetaData().getSchema());
-        OrchestrationEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(), schemas.get(event.getSchemaName()).getSchema().getDataSources()));
+        OrchestrationEventBus.getInstance().post(
+                new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), schemas.get(event.getSchemaName()).getSchema().getDataSources()));
     }
     
     /**
@@ -241,7 +242,8 @@ public abstract class OrchestrationSchemaContexts implements SchemaContexts {
         newSchemaContexts.remove(schemaName);
         newSchemaContexts.put(schemaName, getChangedSchemaContext(schemaContexts.getSchemaContexts().get(schemaName), event.getDataSourceConfigurations()));
         schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
-        OrchestrationEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(), newSchemaContexts.get(event.getSchemaName()).getSchema().getDataSources()));
+        OrchestrationEventBus.getInstance().post(
+                new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), newSchemaContexts.get(event.getSchemaName()).getSchema().getDataSources()));
     }
     
     /**

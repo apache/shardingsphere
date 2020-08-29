@@ -15,26 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.common.event.datasource;
+package org.apache.shardingsphere.transaction.context;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.orchestration.core.common.event.OrchestrationEvent;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
-import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Data source change completed event.
+ * Transaction manager engine contexts.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DataSourceChangeCompletedEvent implements OrchestrationEvent {
+public interface TransactionManagerEngineContexts extends AutoCloseable {
     
-    private final String schemaName;
+    /**
+     * Get transaction manager engines.
+     * 
+     * @return transaction manager engines
+     */
+    Map<String, ShardingTransactionManagerEngine> getEngines();
     
-    private final DatabaseType databaseType;
-    
-    private final Map<String, DataSource> dataSources;
+    /**
+     * Get default transaction manager engine.
+     *
+     * @return default transaction manager engine
+     */
+    ShardingTransactionManagerEngine getDefaultTransactionManagerEngine();
 }
