@@ -1408,4 +1408,29 @@
             </projections>
         </select>
     </insert>
+    
+    <insert sql-case-id="insert_no_into_keyword" parameters="1, 1, 'init'">
+        <table name="t_order" start-index="7" stop-index="13" />
+        <columns start-index="15" stop-index="41">
+            <column name="order_id" start-index="16" stop-index="23" />
+            <column name="user_id" start-index="26" stop-index="32" />
+            <column name="status" start-index="35" stop-index="40" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="51" stop-index="51" />
+                    <literal-expression value="1" start-index="51" stop-index="51" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" start-index="54" stop-index="54" />
+                    <literal-expression value="1" start-index="54" stop-index="54" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="2" start-index="57" stop-index="57" />
+                    <literal-expression value="init" start-index="57" stop-index="62" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>
