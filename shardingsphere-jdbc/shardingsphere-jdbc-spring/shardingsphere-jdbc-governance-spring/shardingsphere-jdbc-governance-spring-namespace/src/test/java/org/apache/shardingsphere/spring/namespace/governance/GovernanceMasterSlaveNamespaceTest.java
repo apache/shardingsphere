@@ -20,7 +20,7 @@ package org.apache.shardingsphere.spring.namespace.governance;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.masterslave.algorithm.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.masterslave.algorithm.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveDataSourceRule;

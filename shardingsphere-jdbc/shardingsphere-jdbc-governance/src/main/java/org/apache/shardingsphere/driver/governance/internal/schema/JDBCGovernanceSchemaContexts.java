@@ -20,12 +20,12 @@ package org.apache.shardingsphere.driver.governance.internal.schema;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.driver.governance.internal.util.DataSourceConverter;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.schema.GovernanceSchemaContexts;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.context.SchemaContext;
+import org.apache.shardingsphere.infra.context.SchemaContexts;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;

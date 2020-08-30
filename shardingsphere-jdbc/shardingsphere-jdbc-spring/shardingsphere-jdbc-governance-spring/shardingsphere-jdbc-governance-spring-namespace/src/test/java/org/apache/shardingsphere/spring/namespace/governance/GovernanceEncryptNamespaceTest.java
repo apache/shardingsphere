@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.spring.namespace.governance.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.governance.util.FieldValueUtil;
 import org.junit.BeforeClass;
@@ -65,9 +65,9 @@ public class GovernanceEncryptNamespaceTest extends AbstractJUnit4SpringContextT
         assertThat(configuration.getEncryptors().size(), is(2));
         assertThat(configuration.getTables().size(), is(1));
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = configuration.getTables().iterator().next();
-        Iterator<EncryptColumnRuleConfiguration> encryptColumnRuleConfigurations = encryptTableRuleConfiguration.getColumns().iterator();
-        EncryptColumnRuleConfiguration userIdColumnRuleConfiguration = encryptColumnRuleConfigurations.next();
-        EncryptColumnRuleConfiguration orderIdColumnRuleConfiguration = encryptColumnRuleConfigurations.next();
+        Iterator<EncryptColumnRuleConfiguration> encryptColumnRuleConfigs = encryptTableRuleConfiguration.getColumns().iterator();
+        EncryptColumnRuleConfiguration userIdColumnRuleConfiguration = encryptColumnRuleConfigs.next();
+        EncryptColumnRuleConfiguration orderIdColumnRuleConfiguration = encryptColumnRuleConfigs.next();
         assertThat(userIdColumnRuleConfiguration.getCipherColumn(), is("user_encrypt"));
         assertThat(orderIdColumnRuleConfiguration.getPlainColumn(), is("order_decrypt"));
         Map<String, EncryptAlgorithm> encryptAlgorithms = configuration.getEncryptors();

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.DataNodeRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;

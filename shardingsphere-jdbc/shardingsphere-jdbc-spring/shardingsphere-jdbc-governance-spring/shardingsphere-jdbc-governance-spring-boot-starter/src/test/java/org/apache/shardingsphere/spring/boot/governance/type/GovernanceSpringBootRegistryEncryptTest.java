@@ -22,7 +22,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.spring.boot.governance.registry.TestGovernanceRepository;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
 import org.junit.BeforeClass;

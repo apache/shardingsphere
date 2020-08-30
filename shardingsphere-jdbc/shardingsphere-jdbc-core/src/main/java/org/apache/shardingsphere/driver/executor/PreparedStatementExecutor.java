@@ -19,6 +19,8 @@ package org.apache.shardingsphere.driver.executor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.callback.governance.MetaDataCallback;
+import org.apache.shardingsphere.infra.context.SchemaContext;
+import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
@@ -35,8 +37,6 @@ import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyF
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import javax.sql.DataSource;
