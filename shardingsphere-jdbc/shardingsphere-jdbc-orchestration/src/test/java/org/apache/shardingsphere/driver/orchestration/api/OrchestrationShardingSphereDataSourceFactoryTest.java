@@ -53,9 +53,25 @@ public class OrchestrationShardingSphereDataSourceFactoryTest {
     
     @SneakyThrows
     @Test
+    public void assertCreateDataSourceWhenRuleConfigurationsNotEmptyWithClusterConfigurationAndMetricsConfigurationBothDefault() {
+        DataSource dataSource = OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singletonList(mock(RuleConfiguration.class)),
+                new Properties(), createOrchestrationConfig());
+        assertTrue(dataSource instanceof OrchestrationShardingSphereDataSource);
+    }
+    
+    @SneakyThrows
+    @Test
     public void assertCreateDataSourceWithGivenDataSource() {
         DataSource dataSource = OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSource(), Collections.singletonList(mock(RuleConfiguration.class)),
                 new Properties(), createOrchestrationConfig(), mock(ClusterConfiguration.class), mock(MetricsConfiguration.class));
+        assertTrue(dataSource instanceof OrchestrationShardingSphereDataSource);
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertCreateDataSourceWithGivenDataSourceWithClusterConfigurationAndMetricsConfigurationBothDefault() {
+        DataSource dataSource = OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSource(), Collections.singletonList(mock(RuleConfiguration.class)),
+                new Properties(), createOrchestrationConfig());
         assertTrue(dataSource instanceof OrchestrationShardingSphereDataSource);
     }
     
