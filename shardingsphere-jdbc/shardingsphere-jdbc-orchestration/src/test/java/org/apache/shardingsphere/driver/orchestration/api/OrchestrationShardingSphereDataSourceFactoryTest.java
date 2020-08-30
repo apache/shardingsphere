@@ -40,7 +40,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class OrchestrationShardingSphereDataSourceFactoryTest {
+public final class OrchestrationShardingSphereDataSourceFactoryTest {
     private static final String TABLE_TYPE = "TABLE";
     
     @SneakyThrows
@@ -76,30 +76,29 @@ public class OrchestrationShardingSphereDataSourceFactoryTest {
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("dataSourceMapKey", createDataSource());
-        return dataSourceMap;
+        Map<String, DataSource> result = new HashMap<>();
+        result.put("dataSourceMapKey", createDataSource());
+        return result;
     }
     
     @SneakyThrows
     private DataSource createDataSource() {
-        DataSource baseDataSource = mock(DataSource.class);
+        DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/mysql?serverTimezone=GMT%2B8");
         ResultSet resultSet = mock(ResultSet.class);
         when(databaseMetaData.getTables(null, null, null, new String[]{TABLE_TYPE})).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(false);
-        when(baseDataSource.getConnection()).thenReturn(connection);
-        return baseDataSource;
+        when(result.getConnection()).thenReturn(connection);
+        return result;
     }
     
     private OrchestrationConfiguration createOrchestrationConfig() {
-        OrchestrationConfiguration orchestrationConfig = mock(OrchestrationConfiguration.class);
+        OrchestrationConfiguration result = mock(OrchestrationConfiguration.class);
         OrchestrationCenterConfiguration orchestrationCenterConfiguration = mock(OrchestrationCenterConfiguration.class);
-        when(orchestrationConfig.getRegistryCenterConfiguration()).thenReturn(orchestrationCenterConfiguration);
+        when(result.getRegistryCenterConfiguration()).thenReturn(orchestrationCenterConfiguration);
         when(orchestrationCenterConfiguration.getType()).thenReturn("REG_TEST");
-        return orchestrationConfig;
+        return result;
     }
 }
