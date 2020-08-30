@@ -154,7 +154,7 @@ variable
     ;
 
 scope
-    : GLOBAL | PERSIST | PERSIST_ONLY | SESSION | LOCAL
+    : GLOBAL | PERSIST | PERSIST_ONLY | SESSION | LOCAL | NEW
     ;
 
 schemaName
