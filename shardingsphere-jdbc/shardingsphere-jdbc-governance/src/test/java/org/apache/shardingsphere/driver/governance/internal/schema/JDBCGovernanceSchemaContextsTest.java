@@ -20,6 +20,9 @@ package org.apache.shardingsphere.driver.governance.internal.schema;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.util.DataSourceConverter;
+import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -29,10 +32,6 @@ import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,7 +69,6 @@ public final class JDBCGovernanceSchemaContextsTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getDataSources()).thenReturn(getDataSources());
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        when(runtimeContext.getTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         SchemaContext result = new SchemaContext(DefaultSchema.LOGIC_NAME, schema, runtimeContext);
         return Collections.singletonMap(DefaultSchema.LOGIC_NAME, result);
     }

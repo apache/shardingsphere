@@ -29,6 +29,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
@@ -51,14 +54,17 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private final SchemaContexts schemaContexts;
     
+    private final TransactionContexts transactionContexts;
+    
     @SuppressWarnings("UseOfSystemOutOrSystemErr")
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         DatabaseType databaseType = createDatabaseType(dataSourceMap);
-        schemaContexts = new SchemaContextsBuilder(databaseType, Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, configurations), props).build();
+        schemaContexts = new SchemaContextsBuilder(
+                databaseType, Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, configurations), props).build();
+        transactionContexts = createTransactionContexts(databaseType, dataSourceMap);
     }
     
     private DatabaseType createDatabaseType(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -80,6 +86,12 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         }
     }
     
+    private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
+        engine.init(databaseType, dataSourceMap);
+        return new StandardTransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, engine));
+    }
+    
     @Override
     public Logger getParentLogger() {
         return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -87,7 +99,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     @Override
     public ShardingSphereConnection getConnection() {
-        return new ShardingSphereConnection(getDataSourceMap(), schemaContexts, TransactionTypeHolder.get());
+        return new ShardingSphereConnection(getDataSourceMap(), schemaContexts, transactionContexts, TransactionTypeHolder.get());
     }
     
     @Override

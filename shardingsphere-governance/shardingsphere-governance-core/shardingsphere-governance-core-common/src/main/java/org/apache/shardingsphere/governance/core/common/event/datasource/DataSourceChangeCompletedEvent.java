@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.kernel.context.runtime;
+package org.apache.shardingsphere.governance.core.common.event.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.governance.core.common.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
- * Runtime context.
+ * Data source change completed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RuntimeContext {
+public final class DataSourceChangeCompletedEvent implements GovernanceEvent {
     
-    private final CachedDatabaseMetaData cachedDatabaseMetaData;
+    private final String schemaName;
     
-    private final ExecutorKernel executorKernel;
+    private final DatabaseType databaseType;
     
-    private final ShardingSphereSQLParserEngine sqlParserEngine;
+    private final Map<String, DataSource> dataSources;
 }

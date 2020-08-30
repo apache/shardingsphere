@@ -30,6 +30,7 @@ import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts.JDBCBackendDataSource;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
 import org.junit.Before;
@@ -58,6 +59,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -73,28 +75,44 @@ public final class BackendConnectionTest {
     private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Before
-    @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
         setSchemaContexts();
+        setTransactionContexts();
         setBackendDataSource();
         backendConnection.setCurrentSchema("schema_0");
     }
     
-    private void setSchemaContexts() throws NoSuchFieldException, IllegalAccessException {
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setSchemaContexts() {
         Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
         field.set(ProxySchemaContexts.getInstance(),
-                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardSchemaContexts(createSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
-    private Map<String, SchemaContext> getSchemaContextMap() {
+    private Map<String, SchemaContext> createSchemaContextMap() {
         Map<String, SchemaContext> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
             String name = "schema_" + i;
             RuntimeContext runtimeContext = mock(RuntimeContext.class);
-            when(runtimeContext.getTransactionManagerEngine()).thenReturn(mock(ShardingTransactionManagerEngine.class));
             SchemaContext schemaContext = new SchemaContext(name, mock(ShardingSphereSchema.class), runtimeContext);
             result.put(name, schemaContext);
+        }
+        return result;
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setTransactionContexts() {
+        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("transactionContexts");
+        field.setAccessible(true);
+        field.set(ProxySchemaContexts.getInstance(), createTransactionContexts());
+    }
+    
+    private TransactionContexts createTransactionContexts() {
+        TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
+        for (int i = 0; i < 10; i++) {
+            String name = "schema_" + i;
+            when(result.getEngines().get(name)).thenReturn(new ShardingTransactionManagerEngine());
         }
         return result;
     }

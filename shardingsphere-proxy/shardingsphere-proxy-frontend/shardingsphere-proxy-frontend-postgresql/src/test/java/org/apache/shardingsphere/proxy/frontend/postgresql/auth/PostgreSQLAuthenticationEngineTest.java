@@ -21,8 +21,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.buffer.UnpooledHeapByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
@@ -32,8 +30,12 @@ import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationResult;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -124,7 +126,7 @@ public final class PostgreSQLAuthenticationEngineTest {
         ProxySchemaContexts proxySchemaContexts = ProxySchemaContexts.getInstance();
         StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts();
         standardSchemaContexts.getAuthentication().getUsers().put(username, new ProxyUser(password, null));
-        proxySchemaContexts.init(standardSchemaContexts);
+        proxySchemaContexts.init(standardSchemaContexts, mock(TransactionContexts.class));
         actual = engine.auth(channelHandlerContext, payload);
         assertThat(actual.isFinished(), is(password.equals(inputPassword)));
     }

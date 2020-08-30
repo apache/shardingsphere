@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.kernel.context.runtime;
+package org.apache.shardingsphere.transaction.context;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+
+import java.util.Map;
 
 /**
- * Runtime context.
+ * Transaction contexts.
  */
-@RequiredArgsConstructor
-@Getter
-public final class RuntimeContext {
+public interface TransactionContexts extends AutoCloseable {
     
-    private final CachedDatabaseMetaData cachedDatabaseMetaData;
+    /**
+     * Get transaction manager engines.
+     * 
+     * @return transaction manager engines
+     */
+    Map<String, ShardingTransactionManagerEngine> getEngines();
     
-    private final ExecutorKernel executorKernel;
-    
-    private final ShardingSphereSQLParserEngine sqlParserEngine;
+    /**
+     * Get default transaction manager engine.
+     *
+     * @return default transaction manager engine
+     */
+    ShardingTransactionManagerEngine getDefaultTransactionManagerEngine();
 }

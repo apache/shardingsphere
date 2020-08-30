@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.driver.governance.api.OrchestrationShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;

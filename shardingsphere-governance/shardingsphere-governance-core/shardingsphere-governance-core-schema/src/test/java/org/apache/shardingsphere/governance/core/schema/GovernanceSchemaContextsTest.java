@@ -19,18 +19,6 @@ package org.apache.shardingsphere.governance.core.schema;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
-import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
-import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
-import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.governance.core.common.event.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.common.event.props.PropertiesChangedEvent;
@@ -45,7 +33,18 @@ import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChan
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 import org.apache.shardingsphere.governance.core.schema.fixture.TestGovernanceSchemaContexts;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
+import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,12 +61,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -100,7 +98,7 @@ public final class GovernanceSchemaContextsTest {
     @Before
     public void setUp() {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
-        when(registryCenter.loadDisabledDataSources()).thenReturn(Arrays.asList("schema.ds_1"));
+        when(registryCenter.loadDisabledDataSources()).thenReturn(Collections.singletonList("schema.ds_1"));
         when(governanceFacade.getMetaDataCenter()).thenReturn(metaDataCenter);
         governanceSchemaContexts = new TestGovernanceSchemaContexts(new StandardSchemaContexts(getSchemaContextMap(),
                 authentication, configurationProperties, new H2DatabaseType()), governanceFacade);
@@ -111,14 +109,11 @@ public final class GovernanceSchemaContextsTest {
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        ShardingTransactionManagerEngine shardingTransactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
         when(schemaContext.getName()).thenReturn("schema");
         when(schemaContext.getSchema()).thenReturn(shardingSphereSchema);
         when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
         when(shardingSphereSchema.getMetaData()).thenReturn(shardingSphereMetaData);
-        when(shardingSphereSchema.getRules()).thenReturn(Arrays.asList(masterSlaveRule));
-        when(runtimeContext.getTransactionManagerEngine()).thenReturn(shardingTransactionManagerEngine);
-        doNothing().when(shardingTransactionManagerEngine).close();
+        when(shardingSphereSchema.getRules()).thenReturn(Collections.singletonList(masterSlaveRule));
         return Collections.singletonMap("schema", schemaContext);
     }
     
