@@ -52,7 +52,21 @@ public class OrchestrationShardingSphereDataSourceFactoryTest {
     }
     
     @SneakyThrows
+    @Test
+    public void assertCreateDataSourceWithGivenDataSource() {
+        DataSource dataSource = OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSource(), Collections.singletonList(mock(RuleConfiguration.class)),
+                new Properties(), createOrchestrationConfig(), mock(ClusterConfiguration.class), mock(MetricsConfiguration.class));
+        assertTrue(dataSource instanceof OrchestrationShardingSphereDataSource);
+    }
+    
     private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        dataSourceMap.put("dataSourceMapKey", createDataSource());
+        return dataSourceMap;
+    }
+    
+    @SneakyThrows
+    private DataSource createDataSource() {
         DataSource baseDataSource = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
@@ -62,9 +76,7 @@ public class OrchestrationShardingSphereDataSourceFactoryTest {
         when(databaseMetaData.getTables(null, null, null, new String[]{TABLE_TYPE})).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         when(baseDataSource.getConnection()).thenReturn(connection);
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("dataSourceMapKey", baseDataSource);
-        return dataSourceMap;
+        return baseDataSource;
     }
     
     private OrchestrationConfiguration createOrchestrationConfig() {
