@@ -36,7 +36,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(of = { "executionUnit" })
+@EqualsAndHashCode(of = "executionUnit")
 @ToString
 public final class BatchExecutionUnit {
     

@@ -38,6 +38,6 @@ public final class MySQLTimestamp2BinlogProtocolValue implements MySQLBinlogProt
             return MySQLTimeValueUtil.DATETIME_OF_ZERO;
         }
         String result = MySQLTimeValueUtil.getSimpleDateFormat().format(new Timestamp(seconds * 1000L));
-        return columnDef.getColumnMeta() > 0 ? result + new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload).toString() : result;
+        return columnDef.getColumnMeta() > 0 ? result + new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload) : result;
     }
 }

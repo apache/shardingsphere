@@ -30,7 +30,7 @@ When merging order inquiries, ShardingSphere will compare current data values in
 
 Here is an instance to explain ShardingSphere's order-by merger. The following picture is an illustration of ordering by the score. Data result sets returned by 3 tables are shown in the example and each one of them has already been ordered according to the score, but there is no order between 3 data result sets. Order the  data value that the result set cursor currently points to in these 3 result sets. Then put them into the priority queue. the data value of t_score_0 is the biggest, followed by that of t_score_2 and t_score_1 in sequence. Thus, the priority queue is ordered by the sequence of t_score_0, t_score_2 and t_score_1.
 
-![Order by merger examole 1](https://shardingsphere.apache.org/document/current/img/sharding/order_by_merge_1.png)
+![Order by merger example 1](https://shardingsphere.apache.org/document/current/img/sharding/order_by_merge_1.png)
 
 This diagram illustrates how the order-by merger works when using next invocation. We can see from the diagram that when using next invocation, t_score_0 at the first of the queue will be popped out. After returning the data value currently pointed by the cursor (i.e., 100) to the client end, the cursor will be moved down and t_score_0 will be put back to the queue.
 
@@ -38,7 +38,7 @@ While the priority queue will also be ordered according to the t_score_0 data va
 
 In the second next operation, t_score_2 in the first position is popped out of the queue. Its value pointed by the cursor of the data result set is returned to the client end, with its cursor moved down to rejoin the queue, and the following will be in the same way. If there is no data in the result set, it will not rejoin the queue.
 
-![Order by merger examole 2](https://shardingsphere.apache.org/document/current/img/sharding/order_by_merge_2.png)
+![Order by merger example 2](https://shardingsphere.apache.org/document/current/img/sharding/order_by_merge_2.png)
 
 It can be seen that, under the circumstance that data in each result set is ordered while result sets are disordered, ShardingSphere does not need to upload all the data to the memory to order. In the order-by merger method, each next operation only acquires the right piece of data each time, which saves the memory consumption to a large extent.
 
@@ -56,11 +56,11 @@ SELECT name, SUM(score) FROM t_score GROUP BY name ORDER BY name;
 
 When order-by item and group-by item are totally consistent, the data obtained is continuous. The data to group are all stored in the data value that data result set cursor currently points to, stream group-by merger can be used, as illustrated by the diagram:
 
-![Group by merger examole 1](https://shardingsphere.apache.org/document/current/img/sharding/group_by_merge_1_v3.png)
+![Group by merger example 1](https://shardingsphere.apache.org/document/current/img/sharding/group_by_merge_1_v3.png)
 
 The merging logic is similar to that of order-by merger. The following picture shows how stream group-by merger works in next invocation.
 
-![Group by merger examole 2](https://shardingsphere.apache.org/document/current/img/sharding/group_by_merge_2_v2.png)
+![Group by merger example 2](https://shardingsphere.apache.org/document/current/img/sharding/group_by_merge_2_v2.png)
 
 We can see from the picture, in the first next invocation, t_score_java in the first position, along with other result set data also having the grouping value of “Jetty”, will be popped out of the queue. After acquiring all the students’ scores with the name of “Jetty”, the accumulation operation will be proceeded. Hence, after the first next invocation is finished, the result set acquired is the sum of Jetty’s scores. In the same time, all the cursors in data result sets will be moved down to a different data value next to “Jetty” and rearranged according to current result set value. Thus, the data that contains the second name “John” will be put at the beginning of the queue.
 

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.generator.Condi
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGenerator;
 import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
-import org.apache.shardingsphere.sql.parser.sql.util.SafeRangeOperationUtils;
+import org.apache.shardingsphere.sql.parser.sql.util.SafeNumberOperationUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -39,10 +39,10 @@ public final class ConditionValueBetweenOperatorGenerator implements ConditionVa
     
     @Override
     public Optional<RouteValue> generate(final PredicateBetweenRightValue predicateRightValue, final Column column, final List<Object> parameters) {
-        Optional<Comparable> betweenRouteValue = new ConditionValue(predicateRightValue.getBetweenExpression(), parameters).getValue();
-        Optional<Comparable> andRouteValue = new ConditionValue(predicateRightValue.getAndExpression(), parameters).getValue();
+        Optional<Comparable<?>> betweenRouteValue = new ConditionValue(predicateRightValue.getBetweenExpression(), parameters).getValue();
+        Optional<Comparable<?>> andRouteValue = new ConditionValue(predicateRightValue.getAndExpression(), parameters).getValue();
         if (betweenRouteValue.isPresent() && andRouteValue.isPresent()) {
-            return Optional.of(new RangeRouteValue<>(column.getName(), column.getTableName(), SafeRangeOperationUtils.safeClosed(betweenRouteValue.get(), andRouteValue.get())));
+            return Optional.of(new RangeRouteValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtils.safeClosed(betweenRouteValue.get(), andRouteValue.get())));
         }
         Date date = new SPITimeService().getTime();
         if (!betweenRouteValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicateRightValue.getBetweenExpression())) {

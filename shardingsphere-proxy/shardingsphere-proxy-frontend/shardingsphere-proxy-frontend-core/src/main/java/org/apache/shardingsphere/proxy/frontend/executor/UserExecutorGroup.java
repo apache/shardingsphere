@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.executor.kernel.impl.ShardingSphereExecut
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 
 /**
- * Command execute engine.
+ * User executor group.
  */
-public final class UserExecutorGroup implements AutoCloseable {
+public final class UserExecutorGroup {
     
     private static final ProxySchemaContexts PROXY_SCHEMA_CONTEXTS = ProxySchemaContexts.getInstance();
     
@@ -51,10 +51,5 @@ public final class UserExecutorGroup implements AutoCloseable {
      */
     public static UserExecutorGroup getInstance() {
         return INSTANCE;
-    }
-    
-    @Override
-    public void close() {
-        shardingSphereExecutorService.close();
     }
 }

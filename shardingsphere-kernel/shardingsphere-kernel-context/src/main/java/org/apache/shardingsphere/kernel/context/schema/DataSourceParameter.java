@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Data source parameters for YAML.
+ * Data source parameters.
  */
 @Getter
 @Setter
@@ -35,9 +35,9 @@ public final class DataSourceParameter {
     
     private String password;
     
-    private long connectionTimeoutMilliseconds = 30 * 1000;
+    private long connectionTimeoutMilliseconds = 30 * 1000L;
     
-    private long idleTimeoutMilliseconds = 60 * 1000;
+    private long idleTimeoutMilliseconds = 60 * 1000L;
     
     private long maxLifetimeMilliseconds;
     
@@ -45,7 +45,7 @@ public final class DataSourceParameter {
     
     private int minPoolSize = 1;
     
-    private long maintenanceIntervalMilliseconds = 30 * 1000;
-
+    private long maintenanceIntervalMilliseconds = 30 * 1000L;
+    
     private boolean readOnly;
 }

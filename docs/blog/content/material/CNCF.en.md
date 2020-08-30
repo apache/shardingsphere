@@ -1,6 +1,6 @@
 +++
-title = "4.Apache ShardingSphere is included in CNCF Landscape"
-weight = 5
+title = "Apache ShardingSphere is included in CNCF Landscape"
+weight = 6
 chapter = true
 +++
 
@@ -8,13 +8,13 @@ chapter = true
 
 ### CNCF
 
-(Cloud Native Computing Foundation)，is a cloud native computing open source software foundation founded by Google. It is committed to the popularization and sustainable development of Cloud Native technology. Cloud native technology helps enterprises and organizations to build and run agile and scalable applications in modern dynamic environments (such as public clouds, private clouds, and hybrid clouds) through a series of software, specifications, and standards. The representative cloud-native technologies are containers, microservices, microservice governance, and declarative APIs, etc.
+(Cloud Native Computing Foundation)，is a cloud native computing open source software foundation founded by Google. It is committed to the popularization and sustainable development of Cloud Native technology. Cloud native technology helps enterprises and organizations to build and run agile and scalable applications in modern dynamic environments (such as public clouds, private clouds, and hybrid clouds) through a series of software, specifications, and standards. The representative cloud-native technologies including containers, micro-services, micro-service governance, and declarative APIs, etc.
 
 ### CNCF Landscape
 
-(https://github.com/cncf/landscape) is an important project in CNCF. It aims to provide a resource map for cloud native users to help enterprises and developers quickly understand the overall picture of the cloud native system.
+(https://github.com/cncf/landscape) is an important project from CNCF. It aims to provide a resource map for cloud native users, enterprises and developers quickly understand the overall picture of the cloud native system.
 
-The CNCF divides the cloud-native ecosystem into five layers horizontally, and plans two parts vertically for them as a common layer of five horizontal layers. The five horizontal divisions are: application definition and development, orchestration and governance, runtime, supply assurance, and cloud facilities. The two parts divided vertically are: observation and analysis and platform. Integrating these functions is a perfect cloud platform service product, the panorama is as follows：
+The CNCF divides the cloud-native ecosystem horizontally into five layers, and vertically maps out two parts for them which are common to the five horizontal layers. The five horizontally divisions layer are: Application Definition and Development, Orchestration and Governance, Runtime, Supply Assurance, and Cloud Facilities. The two vertically divided parts are: observation and analysis and platform. The integrating of these functions result in a complete cloud platform service product offering with the following panorama the：
 
 -- The above content is taken from the book "Future Architecture: From Service to Cloud Native"
 
@@ -22,11 +22,11 @@ The CNCF divides the cloud-native ecosystem into five layers horizontally, and p
 
 ### ShardingSphere
 
-On June 28, 2019, Beijing time, Apache ShardingSphere entered CNCF Landscape. It has a place in the panorama App Definition Development-Database field, as shown below.
+On June 28, 2019, UTC+8, Apache ShardingSphere entered CNCF Landscape. It has a place in the following panorama App Definition Development-Database field.
 
-Apache ShardingSphere will continue to expand and improve in the open source and cloud native areas, and build an organic open source ecosystem!
+Apache ShardingSphere will keep going to expand and improve in the open source and cloud native fields, and builds an organic open source ecosystem!
 
-We also hope that more enthusiasts of the open source and cloud native communities can join us and move forward together to promote the common growth of the Apache ShardingSphere community and contributors!
+We are hoping that more supporters of open source and cloud-native communities can join us to move forward together and promote the common growth of the Apache ShardingSphere community and its contributors!
 
 ![](https://shardingsphere.apache.org/blog/img/CNCF2.jpg)
 

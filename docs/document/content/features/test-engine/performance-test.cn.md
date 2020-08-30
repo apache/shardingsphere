@@ -377,4 +377,7 @@ sh shardingsphere-benchmark/report/script/gen_report.sh
 
 ### 历史压测数据展示
 
+正在进行中，请等待。
+<!--
 [Benchmark性能平台](https://shardingsphere.apache.org/benchmark/#/overview)是数据以天粒度展示
+-->

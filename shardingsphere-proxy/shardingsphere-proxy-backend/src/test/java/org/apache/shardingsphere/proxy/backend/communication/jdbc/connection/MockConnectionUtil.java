@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
@@ -29,21 +31,22 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 
 /**
- * Mock backend connection Util.
+ * Mock backend connection utility.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MockConnectionUtil {
     
     /**
      * Mock set cached connections.
      *
      * @param backendConnection backend connection
-     * @param dsName datasource name
+     * @param dataSourceName datasource name
      * @param connectionSize connection size
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    static void setCachedConnections(final BackendConnection backendConnection, final String dsName, final int connectionSize) {
+    static void setCachedConnections(final BackendConnection backendConnection, final String dataSourceName, final int connectionSize) {
         Multimap<String, Connection> cachedConnections = HashMultimap.create();
-        cachedConnections.putAll(dsName, mockNewConnections(connectionSize));
+        cachedConnections.putAll(dataSourceName, mockNewConnections(connectionSize));
         Field field = backendConnection.getClass().getDeclaredField("cachedConnections");
         field.setAccessible(true);
         field.set(backendConnection, cachedConnections);
@@ -56,7 +59,7 @@ final class MockConnectionUtil {
      * @return list of connection
      */
     static List<Connection> mockNewConnections(final int connectionSize) {
-        List<Connection> result = new ArrayList<>();
+        List<Connection> result = new ArrayList<>(connectionSize);
         for (int i = 0; i < connectionSize; i++) {
             result.add(mock(Connection.class));
         }

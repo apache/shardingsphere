@@ -34,7 +34,7 @@ public final class MySQLComStmtCloseExecutor implements CommandExecutor {
     private final MySQLComStmtClosePacket packet;
     
     @Override
-    public Collection<DatabasePacket> execute() {
+    public Collection<DatabasePacket<?>> execute() {
         //TODO we need to design the cache in future.
 //        packet.removeCachedStatement();
         return Collections.emptyList();

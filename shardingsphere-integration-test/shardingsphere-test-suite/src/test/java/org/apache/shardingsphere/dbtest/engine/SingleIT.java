@@ -44,12 +44,12 @@ public abstract class SingleIT extends BaseIT {
     
     private final String originalSQL;
     
-    public SingleIT(final String path, final IntegrateTestCaseAssertion assertion, final String ruleType,
-                    final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+    protected SingleIT(final String path, final IntegrateTestCaseAssertion assertion, final String ruleType, 
+                       final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(ruleType, databaseType);
         this.assertion = assertion;
         this.caseType = caseType;
-        this.originalSQL = sql;
+        originalSQL = sql;
         this.sql = convert(sql);
         expectedDataFile = getExpectedDataFile(path, ruleType, databaseType, null != assertion ? assertion.getExpectedDataFile() : null);
     }
@@ -66,5 +66,8 @@ public abstract class SingleIT extends BaseIT {
         return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
             .replace("%%", "%").replace("'%'", "'%%'");
     }
+    
+    protected void printExceptionContext(final Exception ex) {
+        System.err.println(String.format("ruleType=%s, databaseType=%s, expectedDataFile=%s, sql=%s, ex.msg=%s", getRuleType(), getDatabaseType().getName(), expectedDataFile, sql, ex.getMessage()));
+    }
 }
-

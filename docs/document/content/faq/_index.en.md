@@ -246,8 +246,8 @@ Answer:
  
 Answer:
  
-1. Because the spring-boot-starter of certain datasource pool (such as druid) will configured before shardingsphere-jdbc-spring-boot-starter and create a default datasource, then conflict occur when ShardingSphere-JDBC create datasources.
-2. A simple way to solve this issue is removing the the spring-boot-starter of certain datasource pool, shardingsphere-jdbc create datasources with suitable pools. 
+1. Because the spring-boot-starter of certain datasource pool (such as druid) will be configured before shardingsphere-jdbc-spring-boot-starter and create a default datasource, then conflict occur when ShardingSphere-JDBC create datasources.
+2. A simple way to solve this issue is removing the spring-boot-starter of certain datasource pool, shardingsphere-jdbc create datasources with suitable pools. 
  
 ## 21. How to add a new logic schema dynamically when use ShardingSphere-Proxy?
  

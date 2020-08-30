@@ -38,7 +38,7 @@ public interface Channel {
      * fetch {@code Record} from channel, if the timeout also returns the record.
      *
      * @param batchSize record batch size
-     * @param timeout value
+     * @param timeout timeout(seconds)
      * @return record
      */
     List<Record> fetchRecords(int batchSize, int timeout);

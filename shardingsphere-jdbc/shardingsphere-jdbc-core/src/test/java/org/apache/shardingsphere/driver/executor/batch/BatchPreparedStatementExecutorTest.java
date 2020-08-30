@@ -64,7 +64,6 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     public void assertNoPreparedStatement() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();

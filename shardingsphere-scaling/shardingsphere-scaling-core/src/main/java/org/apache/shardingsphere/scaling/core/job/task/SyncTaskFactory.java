@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.scaling.core.job.task;
 
-import java.util.Collection;
-
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
+import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDataScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTaskGroup;
+
+import java.util.Collection;
 
 /**
  * Sync task factory.
@@ -33,25 +35,27 @@ public interface SyncTaskFactory {
     /**
      * Create inventory data sync task group.
      *
-     * @param inventoryDataScalingTasks  inventory data sync tasks
+     * @param inventoryDataScalingTasks inventory data sync tasks
      * @return inventory data sync task group
      */
-    InventoryDataScalingTaskGroup createInventoryDataSyncTaskGroup(Collection<ScalingTask> inventoryDataScalingTasks);
+    InventoryDataScalingTaskGroup createInventoryDataSyncTaskGroup(Collection<ScalingTask<InventoryPosition>> inventoryDataScalingTasks);
     
     /**
      * Create inventory data sync task.
      *
-     * @param syncConfiguration sync configuration
+     * @param inventoryDumperConfiguration inventory dumper configuration
+     * @param importerConfiguration importer configuration
      * @return inventory data sync task
      */
-    InventoryDataScalingTask createInventoryDataSyncTask(SyncConfiguration syncConfiguration);
+    InventoryDataScalingTask createInventoryDataSyncTask(InventoryDumperConfiguration inventoryDumperConfiguration, ImporterConfiguration importerConfiguration);
     
     /**
      * Create incremental data sync task.
      *
-     * @param syncConfiguration sync configuration
-     * @param logPosition  log position of incremental data start
+     * @param concurrency concurrency
+     * @param dumperConfiguration   dumper configuration
+     * @param importerConfiguration importer configuration
      * @return incremental data sync task
      */
-    IncrementalDataScalingTask createIncrementalDataSyncTask(SyncConfiguration syncConfiguration, LogPosition logPosition);
+    IncrementalDataScalingTask createIncrementalDataSyncTask(int concurrency, DumperConfiguration dumperConfiguration, ImporterConfiguration importerConfiguration);
 }

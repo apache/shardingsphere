@@ -23,7 +23,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan(basePackages = {"org.apache.shardingsphere.spring.transaction"})
+@ComponentScan(basePackages = "org.apache.shardingsphere.spring.transaction")
 public class FixtureSpringConfiguration {
     
     /**

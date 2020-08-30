@@ -43,6 +43,7 @@ chapter = true
 | Ling Yue        | yue530tom               |
 | Xiao Yu         | yu199195                |
 | Haoran Meng     | menghaoranss            |
+| Jingshang Lu    | jingshanglu             |
 
 ## Contributors
 

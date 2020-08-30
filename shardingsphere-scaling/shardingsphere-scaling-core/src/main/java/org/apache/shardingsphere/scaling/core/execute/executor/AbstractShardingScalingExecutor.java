@@ -20,27 +20,29 @@ package org.apache.shardingsphere.scaling.core.execute.executor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 /**
  * Abstract sharding scaling executor.
  */
-public abstract class AbstractShardingScalingExecutor implements ShardingScalingExecutor {
-
+@Setter
+@Getter
+public abstract class AbstractShardingScalingExecutor<T extends Position> implements ShardingScalingExecutor {
+    
     @Setter(AccessLevel.PROTECTED)
     @Getter(AccessLevel.PROTECTED)
     private boolean running;
-
-    /**
-     * Generic start implement.
-     */
+    
+    private String taskId;
+    
+    private PositionManager<T> positionManager;
+    
     @Override
     public void start() {
         running = true;
     }
-
-    /**
-     * Generic stop implement.
-     */
+    
     @Override
     public void stop() {
         running = false;

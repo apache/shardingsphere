@@ -46,6 +46,7 @@
         <hikari-cp.version>2.4.11</hikari-cp.version>
         <mysql-connector-java.version>5.1.42</mysql-connector-java.version>
         <postgresql.version>42.2.5.jre7</postgresql.version>
+        <h2.version>1.4.196</h2.version>
         <slf4j.version>1.7.7</slf4j.version>
         <logback.version>1.2.0</logback.version>
         
@@ -53,8 +54,11 @@
         <mybatis-spring.version>1.3.0</mybatis-spring.version>
         <jpa.version>1.0.0.Final</jpa.version>
         <hibernate.version>4.3.11.Final</hibernate.version>
-    
+        <narayana.version>5.9.1.Final</narayana.version>
+        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
+        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
         <btm.version>2.1.3</btm.version>
+        
         <seata.version>1.0.0</seata.version>
         
         <junit.version>4.12</junit.version>
@@ -109,6 +113,11 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+                <version>${shardingsphere.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
@@ -134,17 +143,17 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-orchestration-center-zookeeper-curator</artifactId>
+                <artifactId>shardingsphere-orchestration-repository-zookeeper-curator</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-orchestration-center-nacos</artifactId>
+                <artifactId>shardingsphere-orchestration-repository-nacos</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-orchestration-center-etcd</artifactId>
+                <artifactId>shardingsphere-orchestration-repository-etcd</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
@@ -229,6 +238,26 @@
                 <version>${btm.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.jboss.narayana.jta</groupId>
+                <artifactId>jta</artifactId>
+                <version>${narayana.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.narayana.jts</groupId>
+                <artifactId>narayana-jts-integration</artifactId>
+                <version>${narayana.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss</groupId>
+                <artifactId>jboss-transaction-spi</artifactId>
+                <version>${jboss-transaction-spi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging</artifactId>
+                <version>${jboss-logging.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>io.seata</groupId>
                 <artifactId>seata-rm-datasource</artifactId>
                 <version>${seata.version}</version>
@@ -273,6 +302,12 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

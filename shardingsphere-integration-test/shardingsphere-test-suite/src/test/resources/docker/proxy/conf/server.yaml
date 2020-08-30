@@ -17,23 +17,22 @@
 
 ######################################################################################################
 # 
-# If you want to configure orchestration, authorization and proxy properties, please refer to this file.
+# If you want to configure governance, authorization and proxy properties, please refer to this file.
 # 
 ######################################################################################################
 #
-#orchestration:
-#  orchestration_ds:
-#    orchestrationType: registry_center,config_center,metadata_center
-#    instanceType: zookeeper
+#governance:
+#  name: governance_ds
+#  registryCenter:
+#    type: ZooKeeper
 #    serverLists: localhost:2181
-#    namespace: orchestration
 #    props:
-#      overwrite: false
 #      retryIntervalMilliseconds: 500
 #      timeToLiveSeconds: 60
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
-#
+#  overwrite: false
+
 authentication:
   users:
     root:

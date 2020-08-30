@@ -42,7 +42,7 @@ public enum MySQLNewParametersBoundFlag {
      * @return new parameters bound flag
      */
     public static MySQLNewParametersBoundFlag valueOf(final int value) {
-        for (MySQLNewParametersBoundFlag each : MySQLNewParametersBoundFlag.values()) {
+        for (MySQLNewParametersBoundFlag each : values()) {
             if (value == each.value) {
                 return each;
             }

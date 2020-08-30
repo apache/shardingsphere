@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.util;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.constant.Paren;
 
 import java.math.BigDecimal;
@@ -29,7 +29,7 @@ import java.math.BigInteger;
 /**
  * SQL utility class.
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLUtil {
     
     /**
@@ -95,6 +95,9 @@ public final class SQLUtil {
     
     private static int getParenthesesOffset(final String value) {
         int result = 0;
+        if (Strings.isNullOrEmpty(value)) {
+            return result;
+        }
         while (Paren.PARENTHESES.getLeftParen() == value.charAt(result)) {
             result++;
         }

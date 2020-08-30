@@ -50,9 +50,9 @@ public final class ReplicaRuleConfigurationYamlSwapper implements YamlRuleConfig
     }
     
     @Override
-    public ReplicaRuleConfiguration swapToObject(final YamlReplicaRuleConfiguration yamlConfiguration) {
+    public ReplicaRuleConfiguration swapToObject(final YamlReplicaRuleConfiguration yamlConfig) {
         Collection<ReplicaDataSourceConfiguration> groups = new LinkedList<>();
-        for (Entry<String, YamlReplicaDataSourceConfiguration> entry : yamlConfiguration.getDataSources().entrySet()) {
+        for (Entry<String, YamlReplicaDataSourceConfiguration> entry : yamlConfig.getDataSources().entrySet()) {
             groups.add(swapToObject(entry.getKey(), entry.getValue()));
         }
         return new ReplicaRuleConfiguration(groups);

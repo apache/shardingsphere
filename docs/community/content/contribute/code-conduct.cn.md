@@ -23,17 +23,18 @@ chapter = true
  - 确保使用Checkstyle检查代码，违反验证规则的需要有特殊理由。模板位置在`https://github.com/apache/shardingsphere/blob/master/src/resources/checkstyle.xml`，请使用checkstyle 8.8运行规则。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
  - 确保遵守编码规范。
+ - 如果您使用IDEA，可导入推荐的[Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar)。
  
 ## 编码规范
 
  - 使用linux换行符。
  - 缩进（包含空行）和上一行保持一致。
  - 类声明后与下面的变量或方法之间需要空一行。
- - 不应有无意义的空行。
+ - 不应有无意义的空行。请提炼私有方法，代替方法体过长或代码段逻辑闭环而采用的空行间隔。
  - 类、方法和变量的命名要做到顾名思义，避免使用缩写。
  - 返回值变量使用`result`命名；循环中使用`each`命名循环变量；map中使用`entry`代替`each`。
  - 捕获的异常名称命名为`ex`；捕获异常且不做任何事情，异常名称命名为`ignored`。
- - 配置文件使用驼峰命名，文件名首字母小写。
+ - 配置文件使用`Spinal Case`命名（一种使用`-`分割单词的特殊`Snake Case`）。
  - 需要注释解释的代码尽量提成小方法，用方法名称解释。
  - `equals`和`==`条件表达式中，常量在左，变量在右；大于小于等条件表达式中，变量在左，常量在右。
  - 除了构造器入参与全局变量名称相同的赋值语句外，避免使用`this`修饰符。

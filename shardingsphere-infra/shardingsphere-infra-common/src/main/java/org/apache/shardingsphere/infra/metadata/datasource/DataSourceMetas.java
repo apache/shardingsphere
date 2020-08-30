@@ -42,7 +42,7 @@ public final class DataSourceMetas {
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap) {
         return databaseAccessConfigurationMap.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> databaseType.getDataSourceMetaData(entry.getValue().getUrl(), entry.getValue().getUsername())));
+                .collect(Collectors.toMap(Entry::getKey, entry -> databaseType.getDataSourceMetaData(entry.getValue().getUrl(), entry.getValue().getUsername())));
     }
     
     /**

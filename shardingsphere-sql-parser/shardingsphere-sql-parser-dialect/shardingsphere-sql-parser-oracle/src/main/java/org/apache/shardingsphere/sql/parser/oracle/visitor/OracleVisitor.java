@@ -21,6 +21,7 @@ import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
@@ -78,11 +79,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrde
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateLeftBracketValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeSegment;
@@ -281,8 +279,9 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
         if (rightValue instanceof ColumnSegment) {
             return rightValue;
         }
-        return rightValue instanceof SubquerySegment ? new PredicateCompareRightValue(ctx.comparisonOperator().getText(), new SubqueryExpressionSegment((SubquerySegment) rightValue))
-                : new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue);
+        return rightValue instanceof SubquerySegment ? new PredicateCompareRightValue(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), ctx.comparisonOperator().getText(),
+                new SubqueryExpressionSegment((SubquerySegment) rightValue))
+                : new PredicateCompareRightValue(ctx.predicate().start.getStartIndex(), ctx.predicate().stop.getStopIndex(), ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue);
     }
     
     @Override
@@ -301,8 +300,10 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
     
     private PredicateSegment createInSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
-        PredicateBracketValue predicateBracketValue = createBracketValue(ctx);
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(predicateBracketValue, getExpressionSegments(ctx)));
+        PredicateInRightValue predicateInRightValue = null != ctx.subquery() ? new PredicateInRightValue(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(),
+                getExpressionSegments(ctx))
+                : new PredicateInRightValue(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), getExpressionSegments(ctx));
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, predicateInRightValue);
     }
     
     private Collection<ExpressionSegment> getExpressionSegments(final PredicateContext ctx) {
@@ -318,21 +319,11 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
         return result;
     }
     
-    private PredicateBracketValue createBracketValue(final PredicateContext ctx) {
-        PredicateLeftBracketValue predicateLeftBracketValue = null != ctx.subquery()
-                ? new PredicateLeftBracketValue(ctx.subquery().LP_().getSymbol().getStartIndex(), ctx.subquery().LP_().getSymbol().getStopIndex())
-                : new PredicateLeftBracketValue(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex());
-        PredicateRightBracketValue predicateRightBracketValue = null != ctx.subquery()
-                ? new PredicateRightBracketValue(ctx.subquery().RP_().getSymbol().getStartIndex(), ctx.subquery().RP_().getSymbol().getStopIndex())
-                : new PredicateRightBracketValue(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
-        return new PredicateBracketValue(predicateLeftBracketValue, predicateRightBracketValue);
-    }
-    
     private PredicateSegment createBetweenSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between, and));
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between.getStartIndex(), and.getStopIndex(), between, and));
     }
     
     private ASTNode visitRemainPredicate(final PredicateContext ctx) {
@@ -357,7 +348,8 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
             return createExpressionSegment(visit(ctx.simpleExpr()), ctx);
         }
         visitRemainBitExpr(ctx);
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
@@ -429,11 +421,11 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
-        int innerExpressionStartIndex = ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex();
+        String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
         if (null == ctx.distinct()) {
-            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpressionStartIndex);
+            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
         }
-        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpressionStartIndex, getDistinctExpression(ctx));
+        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
     }
     
     private String getDistinctExpression(final AggregationFunctionContext ctx) {
@@ -511,31 +503,30 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
     
     @Override
     public final ASTNode visitDataType(final OracleStatementParser.DataTypeContext ctx) {
-        DataTypeSegment dataTypeSegment = new DataTypeSegment();
-        dataTypeSegment.setDataTypeName(((KeywordValue) visit(ctx.dataTypeName())).getValue());
-        dataTypeSegment.setStartIndex(ctx.start.getStartIndex());
-        dataTypeSegment.setStopIndex(ctx.stop.getStopIndex());
+        DataTypeSegment result = new DataTypeSegment();
+        result.setDataTypeName(((KeywordValue) visit(ctx.dataTypeName())).getValue());
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
         if (null != ctx.dataTypeLength()) {
             DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.dataTypeLength());
-            dataTypeSegment.setDataLength(dataTypeLengthSegment);
+            result.setDataLength(dataTypeLengthSegment);
         }
-        return dataTypeSegment;
+        return result;
     }
     
     @Override
     public final ASTNode visitDataTypeLength(final OracleStatementParser.DataTypeLengthContext ctx) {
-        DataTypeLengthSegment dataTypeLengthSegment = new DataTypeLengthSegment();
-        dataTypeLengthSegment.setStartIndex(ctx.start.getStartIndex());
-        dataTypeLengthSegment.setStopIndex(ctx.stop.getStartIndex());
+        DataTypeLengthSegment result = new DataTypeLengthSegment();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStartIndex());
         List<TerminalNode> numbers = ctx.NUMBER_();
         if (numbers.size() == 1) {
-            dataTypeLengthSegment.setPrecision(Integer.parseInt(numbers.get(0).getText()));
+            result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
         }
         if (numbers.size() == 2) {
-            dataTypeLengthSegment.setPrecision(Integer.parseInt(numbers.get(0).getText()));
-            dataTypeLengthSegment.setScale(Integer.parseInt(numbers.get(1).getText()));
-    
+            result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
+            result.setScale(Integer.parseInt(numbers.get(1).getText()));
         }
-        return dataTypeLengthSegment;
+        return result;
     }
 }

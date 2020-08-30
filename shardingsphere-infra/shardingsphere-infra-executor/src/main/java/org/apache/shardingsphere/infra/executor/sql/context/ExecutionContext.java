@@ -29,13 +29,13 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 @Getter
-public class ExecutionContext {
+public final class ExecutionContext {
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     private final Collection<ExecutionUnit> executionUnits;
     
-    public ExecutionContext(final SQLStatementContext sqlStatementContext, final ExecutionUnit executionUnit) {
+    public ExecutionContext(final SQLStatementContext<?> sqlStatementContext, final ExecutionUnit executionUnit) {
         this(sqlStatementContext, Collections.singletonList(executionUnit));
     }
 }

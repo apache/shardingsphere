@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -55,7 +56,7 @@ public final class DistributionChannel implements Channel {
     
     private final Queue<Record> toBeAcknowledgeRecords = new ConcurrentLinkedQueue<>();
     
-    private final Map<LogPosition, Record> pendingAcknowledgeRecords = new ConcurrentHashMap<>();
+    private final Map<Position, Record> pendingAcknowledgeRecords = new ConcurrentHashMap<>();
     
     private ScheduledExecutorService scheduleAckRecordsExecutor;
     
@@ -69,26 +70,24 @@ public final class DistributionChannel implements Channel {
     }
     
     private void scheduleAckRecords() {
-        this.scheduleAckRecordsExecutor = Executors.newSingleThreadScheduledExecutor();
+        scheduleAckRecordsExecutor = Executors.newSingleThreadScheduledExecutor();
         scheduleAckRecordsExecutor.scheduleAtFixedRate(this::ackRecords0, 5, 1, TimeUnit.SECONDS);
     }
     
-    private void ackRecords0() {
-        synchronized (DistributionChannel.this) {
-            List<Record> result = new LinkedList<>();
-            while (!toBeAcknowledgeRecords.isEmpty()) {
-                Record record = toBeAcknowledgeRecords.peek();
-                if (pendingAcknowledgeRecords.containsKey(record.getLogPosition())) {
-                    result.add(record);
-                    toBeAcknowledgeRecords.poll();
-                    pendingAcknowledgeRecords.remove(record.getLogPosition());
-                } else {
-                    break;
-                }
+    private synchronized void ackRecords0() {
+        List<Record> result = new LinkedList<>();
+        while (!toBeAcknowledgeRecords.isEmpty()) {
+            Record record = toBeAcknowledgeRecords.peek();
+            if (pendingAcknowledgeRecords.containsKey(record.getPosition())) {
+                result.add(record);
+                toBeAcknowledgeRecords.poll();
+                pendingAcknowledgeRecords.remove(record.getPosition());
+            } else {
+                break;
             }
-            if (result.size() > 0) {
-                ackCallback.onAck(result);
-            }
+        }
+        if (!result.isEmpty()) {
+            ackCallback.onAck(result);
         }
     }
     
@@ -96,7 +95,7 @@ public final class DistributionChannel implements Channel {
     public void pushRecord(final Record record) throws InterruptedException {
         if (FinishedRecord.class.equals(record.getClass())) {
             // broadcast
-            for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {
+            for (Entry<String, MemoryChannel> entry : channels.entrySet()) {
                 entry.getValue().pushRecord(record);
             }
         } else if (DataRecord.class.equals(record.getClass())) {
@@ -107,7 +106,7 @@ public final class DistributionChannel implements Channel {
             channels.get(index).pushRecord(dataRecord);
         } else if (PlaceholderRecord.class.equals(record.getClass())) {
             toBeAcknowledgeRecords.add(record);
-            pendingAcknowledgeRecords.put(record.getLogPosition(), record);
+            pendingAcknowledgeRecords.put(record.getPosition(), record);
         } else {
             throw new RuntimeException("Not Support Record Type");
         }
@@ -149,19 +148,19 @@ public final class DistributionChannel implements Channel {
     }
     
     private void assignmentChannel(final String threadId) {
-        for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {
+        for (Entry<String, MemoryChannel> entry : channels.entrySet()) {
             if (!channelAssignment.containsValue(entry.getKey())) {
                 channelAssignment.put(threadId, entry.getKey());
             }
         }
     }
     
-    private class SingleChannelAckCallback implements AckCallback {
-
+    private final class SingleChannelAckCallback implements AckCallback {
+        
         @Override
         public void onAck(final List<Record> records) {
             for (Record record : records) {
-                pendingAcknowledgeRecords.put(record.getLogPosition(), record);
+                pendingAcknowledgeRecords.put(record.getPosition(), record);
             }
         }
     }

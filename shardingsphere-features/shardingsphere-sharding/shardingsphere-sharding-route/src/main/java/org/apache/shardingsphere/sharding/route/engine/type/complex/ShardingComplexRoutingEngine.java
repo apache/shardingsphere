@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.sharding.route.engine.type.complex;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
-import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
+import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
+import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,8 +41,6 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     
     private final Collection<String> logicTables;
     
-    private final SQLStatementContext sqlStatementContext;
-    
     private final ShardingConditions shardingConditions;
 
     private final ConfigurationProperties props;
@@ -56,7 +53,7 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
-                    result.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), sqlStatementContext, shardingConditions, props).route(shardingRule));
+                    result.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, props).route(shardingRule));
                 }
                 shardingRule.findBindingTableRule(each).ifPresent(bindingTableRule -> bindingTableNames.addAll(
                     bindingTableRule.getTableRules().stream().map(TableRule::getLogicTable).collect(Collectors.toList())));

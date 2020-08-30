@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.sql.parser.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
@@ -74,21 +74,21 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     
     @Override
     protected Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException {
-        YamlRootRuleConfigurations ruleConfigurations = createRuleConfigurations();
+        YamlRootRuleConfigurations yamlRootRuleConfigs = createYamlRootRuleConfigurations();
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(
-                new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(ruleConfigurations.getRules()), ruleConfigurations.getDataSources().keySet());
-        SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
+                new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlRootRuleConfigs.getRules()), yamlRootRuleConfigs.getDataSources().keySet());
+        StandardSQLParserEngine standardSqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingSphereMetaData metaData = createShardingSphereMetaData();
-        ConfigurationProperties props = new ConfigurationProperties(ruleConfigurations.getProps());
+        ConfigurationProperties props = new ConfigurationProperties(yamlRootRuleConfigs.getProps());
         RouteContext routeContext = new DataNodeRouter(metaData, props, rules).route(
-                sqlParserEngine.parse(getTestParameters().getInputSQL(), false), getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
+                standardSqlParserEngine.parse(getTestParameters().getInputSQL(), false), getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(),
                 props, rules).rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), routeContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit()) : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
     }
     
-    private YamlRootRuleConfigurations createRuleConfigurations() throws IOException {
+    private YamlRootRuleConfigurations createYamlRootRuleConfigurations() throws IOException {
         URL url = ShardingSQLRewriterParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
@@ -113,7 +113,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     }
     
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {
-        Map<String, ColumnMetaData> result = new LinkedHashMap<>();
+        Map<String, ColumnMetaData> result = new LinkedHashMap<>(3, 1);
         result.put("account_id", new ColumnMetaData("account_id", Types.INTEGER, "INT", true, true, false));
         result.put("amount", mock(ColumnMetaData.class));
         result.put("status", mock(ColumnMetaData.class));

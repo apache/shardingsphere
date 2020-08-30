@@ -37,16 +37,16 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     
     private final AggregationType type;
     
-    private final int innerExpressionStartIndex;
+    private final String innerExpression;
     
     @Setter
     private AliasSegment alias;
     
-    public AggregationProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final int innerExpressionStartIndex) {
+    public AggregationProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String innerExpression) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.type = type;
-        this.innerExpressionStartIndex = innerExpressionStartIndex;
+        this.innerExpression = innerExpression;
     }
     
     @Override

@@ -41,10 +41,10 @@ public final class ProxyUserYamlSwapper implements YamlSwapper<YamlProxyUserConf
     }
     
     @Override
-    public ProxyUser swapToObject(final YamlProxyUserConfiguration yamlConfiguration) {
-        if (Strings.isNullOrEmpty(yamlConfiguration.getAuthorizedSchemas())) {
-            return new ProxyUser(yamlConfiguration.getPassword(), Collections.emptyList());
+    public ProxyUser swapToObject(final YamlProxyUserConfiguration yamlConfig) {
+        if (Strings.isNullOrEmpty(yamlConfig.getAuthorizedSchemas())) {
+            return new ProxyUser(yamlConfig.getPassword(), Collections.emptyList());
         }
-        return new ProxyUser(yamlConfiguration.getPassword(), Splitter.on(',').trimResults().splitToList(yamlConfiguration.getAuthorizedSchemas()));
+        return new ProxyUser(yamlConfig.getPassword(), Splitter.on(',').trimResults().splitToList(yamlConfig.getAuthorizedSchemas()));
     }
 }

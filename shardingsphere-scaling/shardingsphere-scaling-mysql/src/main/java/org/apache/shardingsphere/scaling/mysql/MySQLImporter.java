@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractJDBCImporter;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSqlBuilder;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 
 /**
  * MySQL importer.
  */
 public final class MySQLImporter extends AbstractJDBCImporter {
     
-    public MySQLImporter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
-        super(rdbmsConfiguration, dataSourceManager);
+    public MySQLImporter(final ImporterConfiguration importerConfiguration, final DataSourceManager dataSourceManager) {
+        super(importerConfiguration, dataSourceManager);
     }
     
     @Override

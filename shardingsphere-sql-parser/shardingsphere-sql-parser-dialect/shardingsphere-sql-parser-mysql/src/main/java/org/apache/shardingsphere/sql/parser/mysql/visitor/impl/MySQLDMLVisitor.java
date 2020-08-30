@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprCon
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinedTableContext;
@@ -50,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Project
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QualifiedShorthandContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectContext;
@@ -142,6 +144,8 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         InsertStatement result;
         if (null != ctx.insertValuesClause()) {
             result = (InsertStatement) visit(ctx.insertValuesClause());
+        } else if (null != ctx.insertSelectClause()) {
+            result = (InsertStatement) visit(ctx.insertSelectClause());
         } else {
             result = new InsertStatement();
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
@@ -152,6 +156,19 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setParameterCount(getCurrentParameterIndex());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
+        InsertStatement result = new InsertStatement();
+        result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
+        result.setInsertSelect(createInsertSelectSegment(ctx));
+        return result;
+    }
+    
+    private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
+        SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
+        return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement);
     }
     
     @Override
@@ -175,18 +192,18 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         Collection<AssignmentSegment> columns = new LinkedList<>();
         for (AssignmentContext each : ctx.assignment()) {
             columns.add((AssignmentSegment) visit(each));
-            visit(each.assignmentValue());
         }
         return new OnDuplicateKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columns);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitReplace(final ReplaceContext ctx) {
         // TODO :FIXME, since there is no segment for replaceValuesClause, ReplaceStatement is created by sub rule.
         InsertStatement result;
         if (null != ctx.replaceValuesClause()) {
             result = (InsertStatement) visit(ctx.replaceValuesClause());
+        } else if (null != ctx.replaceSelectClause()) {
+            result = (InsertStatement) visit(ctx.replaceSelectClause());
         } else {
             result = new InsertStatement();
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
@@ -194,6 +211,19 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setParameterCount(getCurrentParameterIndex());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitReplaceSelectClause(final ReplaceSelectClauseContext ctx) {
+        InsertStatement result = new InsertStatement();
+        result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
+        result.setInsertSelect(createReplaceSelectSegment(ctx));
+        return result;
+    }
+    
+    private SubquerySegment createReplaceSelectSegment(final ReplaceSelectClauseContext ctx) {
+        SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
+        return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement);
     }
     
     @Override
@@ -233,6 +263,12 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
         return result;
@@ -293,6 +329,12 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
         return result;
@@ -425,13 +467,18 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
             return result;
         }
         AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
-        if (null != ctx.columnName()) {
-            ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-            ColumnProjectionSegment result = new ColumnProjectionSegment(column);
+        ASTNode exprProjection = visit(ctx.expr());
+        if (exprProjection instanceof ColumnSegment) {
+            ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) exprProjection);
             result.setAlias(alias);
             return result;
         }
-        return createProjection(ctx, alias);
+        if (exprProjection instanceof SubquerySegment) {
+            SubqueryProjectionSegment result = new SubqueryProjectionSegment((SubquerySegment) exprProjection);
+            result.setAlias(alias);
+            return result;
+        }
+        return createProjection(ctx, alias, exprProjection);
     }
     
     @Override
@@ -442,8 +489,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.STRING_().getText()));
     }
     
-    private ASTNode createProjection(final ProjectionContext ctx, final AliasSegment alias) {
-        ASTNode projection = visit(ctx.expr());
+    private ASTNode createProjection(final ProjectionContext ctx, final AliasSegment alias, final ASTNode projection) {
         if (projection instanceof AggregationProjectionSegment) {
             ((AggregationProjectionSegment) projection).setAlias(alias);
             return projection;
@@ -481,7 +527,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         return visit(ctx.tableReferences());
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
         CollectionValue<TableReferenceSegment> result = new CollectionValue<>();
@@ -538,7 +583,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
         JoinedTableSegment result = new JoinedTableSegment();

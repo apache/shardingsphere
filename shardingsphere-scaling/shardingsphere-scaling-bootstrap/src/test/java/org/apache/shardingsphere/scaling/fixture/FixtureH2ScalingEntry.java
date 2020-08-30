@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.scaling.fixture;
 
+import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
-import org.apache.shardingsphere.scaling.core.job.position.LogPositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
@@ -37,8 +38,8 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends LogPositionManager> getLogPositionManager() {
-        return FixtureNopLogManager.class;
+    public Class<? extends PositionManager<IncrementalPosition>> getPositionManager() {
+        return FixtureNopManager.class;
     }
     
     @Override

@@ -1,6 +1,6 @@
 +++
-title = "2.Exploration and expansion of the community"
-weight = 3
+title = "Exploration and expansion of the community"
+weight = 5
 chapter = true
 +++
 
@@ -59,7 +59,7 @@ There were only 11 initial committers during an extended period. This situation 
 
 3. Automated Testing. More contributors, more Pull requests. In this situation, it is hard to guarantee the effectiveness and efficiency of the project by manual. Therefore, we decide to rely on automated testing to evaluate each Pull request, which helps contributors and reviewers merely focus on their work.
 
-4. Self-service first. More questions get increased with more and more users. How to handle these questions efficiently? Our solution is to build user self-service channels firstly and provide other communication ways. In general, users can solve some of the common issues with documents and FAQ pages by themselves. If that does not work, users can raize their special issues on GitHub or discuss them by email. 
+4. Self-service first. More questions get increased with more and more users. How to handle these questions efficiently? Our solution is to build user self-service channels firstly and provide other communication ways. In general, users can solve some of the common issues with documents and FAQ pages by themselves. If that does not work, users can raise their special issues on GitHub or discuss them by email. 
 
 5. Public and online working mode. Public work means the issue only discussed in public is valid—otherwise, invalid and no chance to be solved. Online work means most of the discussions are online and asynchronous, requiring participants to provide information as detailed as possible.
 

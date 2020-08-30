@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.database.type.dialect;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Database type of MySQL.
@@ -34,8 +34,8 @@ public final class MySQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.singletonList("jdbc:mysqlx:");
+    public Collection<String> getJdbcUrlPrefixes() {
+        return Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:");
     }
     
     @Override

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
-import org.apache.shardingsphere.sql.parser.sql.util.SafeRangeOperationUtils;
+import org.apache.shardingsphere.sql.parser.sql.util.SafeNumberOperationUtils;
 import org.junit.Test;
 
 import java.util.Calendar;
@@ -49,7 +49,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         int and = 2;
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
         ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, and);
-        PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment, andSegment);
+        PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment.getStartIndex(), andSegment.getStopIndex(), betweenSegment, andSegment);
         Optional<RouteValue> routeValue = generator.generate(value, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         RangeRouteValue<Integer> rangeRouteValue = (RangeRouteValue<Integer>) routeValue.get();
@@ -66,14 +66,14 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         long and = 3147483647L;
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
         ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, and);
-        PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment, andSegment);
+        PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment.getStartIndex(), andSegment.getStopIndex(), betweenSegment, andSegment);
         Optional<RouteValue> routeValue = generator.generate(value, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         RangeRouteValue<Comparable<?>> rangeRouteValue = (RangeRouteValue<Comparable<?>>) routeValue.get();
         assertThat(rangeRouteValue.getColumnName(), is(column.getName()));
         assertThat(rangeRouteValue.getTableName(), is(column.getTableName()));
-        assertTrue(SafeRangeOperationUtils.safeContains(rangeRouteValue.getValueRange(), between));
-        assertTrue(SafeRangeOperationUtils.safeContains(rangeRouteValue.getValueRange(), and));
+        assertTrue(SafeNumberOperationUtils.safeContains(rangeRouteValue.getValueRange(), between));
+        assertTrue(SafeNumberOperationUtils.safeContains(rangeRouteValue.getValueRange(), and));
     }
     
     @Test(expected = ClassCastException.class)
@@ -81,7 +81,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         int between = 1;
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
-        PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment, andSegment);
+        PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment.getStartIndex(), andSegment.getStopIndex(), betweenSegment, andSegment);
         generator.generate(value, column, new LinkedList<>());
     }
     
@@ -91,7 +91,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         Date date = new Date();
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, date);
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
-        PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment, andSegment);
+        PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment.getStartIndex(), andSegment.getStopIndex(), betweenSegment, andSegment);
         Optional<RouteValue> routeValue = generator.generate(value, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         RangeRouteValue<Date> rangeRouteValue = (RangeRouteValue<Date>) routeValue.get();
@@ -108,7 +108,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         final Date after = calendar.getTime();
         ExpressionSegment betweenSegment = new CommonExpressionSegment(0, 0, "now()");
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
-        PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment, andSegment);
+        PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment.getStartIndex(), andSegment.getStopIndex(), betweenSegment, andSegment);
         Optional<RouteValue> routeValue = generator.generate(value, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         RangeRouteValue<Date> rangeRouteValue = (RangeRouteValue<Date>) routeValue.get();

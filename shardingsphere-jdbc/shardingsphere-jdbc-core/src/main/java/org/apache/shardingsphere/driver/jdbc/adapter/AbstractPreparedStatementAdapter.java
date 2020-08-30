@@ -186,7 +186,6 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         setParameter(parameterIndex, x);
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public final void setUnicodeStream(final int parameterIndex, final InputStream x, final int length) {
         setParameter(parameterIndex, x);
@@ -284,7 +283,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setParameters(final Class[] argumentTypes, final Object... arguments) {
+    private void setParameters(final Class<?>[] argumentTypes, final Object... arguments) {
         setParameterMethodInvocations.add(new SetParameterMethodInvocation(PreparedStatement.class.getMethod("setObject", argumentTypes), arguments, arguments[1]));
     }
     

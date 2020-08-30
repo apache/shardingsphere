@@ -20,11 +20,10 @@ package org.apache.shardingsphere.sql.parser.sqlserver.visitor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BitValueLiteralsContext;
@@ -35,6 +34,9 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Cha
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameWithSortContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesWithSortContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FunctionCallContext;
@@ -44,7 +46,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Ind
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NullValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NumberLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ParameterMarkerContext;
@@ -72,18 +73,13 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.Subque
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateLeftBracketValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeSegment;
@@ -228,6 +224,15 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     @Override
     public final ASTNode visitColumnNames(final ColumnNamesContext ctx) {
         CollectionValue<ColumnSegment> result = new CollectionValue<>();
+        for (ColumnNameContext each : ctx.columnName()) {
+            result.getValue().add((ColumnSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitColumnNamesWithSort(final ColumnNamesWithSortContext ctx) {
+        CollectionValue<ColumnSegment> result = new CollectionValue<>();
         for (ColumnNameWithSortContext each : ctx.columnNameWithSort()) {
             result.getValue().add((ColumnSegment) visit(each));
         }
@@ -282,8 +287,9 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         if (rightValue instanceof ColumnSegment) {
             return rightValue;
         }
-        return rightValue instanceof SubquerySegment ? new PredicateCompareRightValue(ctx.comparisonOperator().getText(), new SubqueryExpressionSegment((SubquerySegment) rightValue))
-                : new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue);
+        return rightValue instanceof SubquerySegment ? new PredicateCompareRightValue(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), ctx.comparisonOperator().getText(),
+                new SubqueryExpressionSegment((SubquerySegment) rightValue))
+                : new PredicateCompareRightValue(ctx.predicate().start.getStartIndex(), ctx.predicate().stop.getStopIndex(), ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue);
     }
     
     @Override
@@ -302,8 +308,10 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     
     private PredicateSegment createInSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
-        PredicateBracketValue predicateBracketValue = createBracketValue(ctx);
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(predicateBracketValue, getExpressionSegments(ctx)));
+        PredicateInRightValue predicateInRightValue = null != ctx.subquery() ? new PredicateInRightValue(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(),
+                getExpressionSegments(ctx))
+                : new PredicateInRightValue(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), getExpressionSegments(ctx));
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, predicateInRightValue);
     }
     
     private Collection<ExpressionSegment> getExpressionSegments(final PredicateContext ctx) {
@@ -319,21 +327,11 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         return result;
     }
     
-    private PredicateBracketValue createBracketValue(final PredicateContext ctx) {
-        PredicateLeftBracketValue predicateLeftBracketValue = null != ctx.subquery()
-                ? new PredicateLeftBracketValue(ctx.subquery().LP_().getSymbol().getStartIndex(), ctx.subquery().LP_().getSymbol().getStopIndex())
-                : new PredicateLeftBracketValue(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex());
-        PredicateRightBracketValue predicateRightBracketValue = null != ctx.subquery()
-                ? new PredicateRightBracketValue(ctx.subquery().RP_().getSymbol().getStartIndex(), ctx.subquery().RP_().getSymbol().getStopIndex())
-                : new PredicateRightBracketValue(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
-        return new PredicateBracketValue(predicateLeftBracketValue, predicateRightBracketValue);
-    }
-    
     private PredicateSegment createBetweenSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between, and));
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between.getStartIndex(), and.getStopIndex(), between, and));
     }
     
     private ASTNode visitRemainPredicate(final PredicateContext ctx) {
@@ -349,7 +347,8 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         if (null != ctx.predicate()) {
             visit(ctx.predicate());
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override
@@ -358,7 +357,8 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
             return createExpressionSegment(visit(ctx.simpleExpr()), ctx);
         }
         visitRemainBitExpr(ctx);
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
@@ -430,11 +430,11 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
-        int innerExpressionStartIndex = ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex();
+        String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
         if (null == ctx.distinct()) {
-            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpressionStartIndex);
+            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
         }
-        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpressionStartIndex, getDistinctExpression(ctx));
+        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
     }
     
     private String getDistinctExpression(final AggregationFunctionContext ctx) {
@@ -484,15 +484,6 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     }
     
     @Override
-    public final ASTNode visitOrderByClause(final OrderByClauseContext ctx) {
-        Collection<OrderByItemSegment> items = new LinkedList<>();
-        for (OrderByItemContext each : ctx.orderByItem()) {
-            items.add((OrderByItemSegment) visit(each));
-        }
-        return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
-    }
-    
-    @Override
     public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
         OrderDirection orderDirection = null != ctx.DESC() ? OrderDirection.DESC : OrderDirection.ASC;
         if (null != ctx.columnName()) {
@@ -508,30 +499,30 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     
     @Override
     public final ASTNode visitDataType(final DataTypeContext ctx) {
-        DataTypeSegment dataTypeSegment = new DataTypeSegment();
-        dataTypeSegment.setDataTypeName(((KeywordValue) visit(ctx.dataTypeName())).getValue());
-        dataTypeSegment.setStartIndex(ctx.start.getStartIndex());
-        dataTypeSegment.setStopIndex(ctx.stop.getStopIndex());
+        DataTypeSegment result = new DataTypeSegment();
+        result.setDataTypeName(((KeywordValue) visit(ctx.dataTypeName())).getValue());
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
         if (null != ctx.dataTypeLength()) {
             DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.dataTypeLength());
-            dataTypeSegment.setDataLength(dataTypeLengthSegment);
+            result.setDataLength(dataTypeLengthSegment);
         }
-        return dataTypeSegment;
+        return result;
     }
     
     @Override
     public final ASTNode visitDataTypeLength(final DataTypeLengthContext ctx) {
-        DataTypeLengthSegment dataTypeLengthSegment = new DataTypeLengthSegment();
-        dataTypeLengthSegment.setStartIndex(ctx.start.getStartIndex());
-        dataTypeLengthSegment.setStopIndex(ctx.stop.getStartIndex());
+        DataTypeLengthSegment result = new DataTypeLengthSegment();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStartIndex());
         List<TerminalNode> numbers = ctx.NUMBER_();
         if (numbers.size() == 1) {
-            dataTypeLengthSegment.setPrecision(Integer.parseInt(numbers.get(0).getText()));
+            result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
         }
         if (numbers.size() == 2) {
-            dataTypeLengthSegment.setPrecision(Integer.parseInt(numbers.get(0).getText()));
-            dataTypeLengthSegment.setScale(Integer.parseInt(numbers.get(1).getText()));
+            result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
+            result.setScale(Integer.parseInt(numbers.get(1).getText()));
         }
-        return dataTypeLengthSegment;
+        return result;
     }
 }

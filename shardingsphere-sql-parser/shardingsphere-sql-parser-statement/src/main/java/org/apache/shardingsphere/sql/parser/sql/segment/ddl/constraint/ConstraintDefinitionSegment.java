@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
@@ -42,6 +43,10 @@ public final class ConstraintDefinitionSegment implements CreateDefinitionSegmen
     private final int stopIndex;
     
     private final Collection<ColumnSegment> primaryKeyColumns = new LinkedList<>();
+    
+    private final Collection<ColumnSegment> indexColumns = new LinkedList<>();
+    
+    private IndexSegment indexName;
     
     private SimpleTableSegment referencedTable;
     

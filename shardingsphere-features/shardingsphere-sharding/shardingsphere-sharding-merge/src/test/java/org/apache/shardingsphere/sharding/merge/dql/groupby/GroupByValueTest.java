@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,8 +31,9 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,7 +54,7 @@ public final class GroupByValueTest {
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC)))).getGroupValues();
         List<?> expected = Arrays.asList("1", "3");
-        assertTrue(actual.equals(expected));
+        assertThat(actual, is(expected));
     }
     
     @Test
@@ -64,9 +65,9 @@ public final class GroupByValueTest {
         GroupByValue groupByValue2 = new GroupByValue(queryResult, Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)), 
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))));
-        assertTrue(groupByValue1.equals(groupByValue2));
-        assertTrue(groupByValue2.equals(groupByValue1));
-        assertTrue(groupByValue1.hashCode() == groupByValue2.hashCode());
+        assertThat(groupByValue1, is(groupByValue2));
+        assertThat(groupByValue2, is(groupByValue1));
+        assertThat(groupByValue1.hashCode(), is(groupByValue2.hashCode()));
     }
     
     @Test
@@ -77,8 +78,8 @@ public final class GroupByValueTest {
         GroupByValue groupByValue2 = new GroupByValue(queryResult, Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC)), 
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))));
-        assertFalse(groupByValue1.equals(groupByValue2));
-        assertFalse(groupByValue1.hashCode() == groupByValue2.hashCode());
+        assertThat(groupByValue1, not(groupByValue2));
+        assertThat(groupByValue1.hashCode(), not(groupByValue2.hashCode()));
     }
     
     private OrderByItem createOrderByItem(final IndexOrderByItemSegment indexOrderByItemSegment) {

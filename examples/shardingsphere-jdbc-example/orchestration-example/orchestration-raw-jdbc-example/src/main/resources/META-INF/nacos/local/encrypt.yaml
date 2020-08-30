@@ -41,20 +41,14 @@ props:
   sql.show: false
 
 orchestration:
-  demo_nacos_yaml_ds_encrypt:
-    orchestrationType: config_center
-    instanceType: nacos
+  name: demo_zookeeper_yaml_ds_encrypt
+  registryCenter:
+    type: ZooKeeper
+    serverLists: localhost:2181
+  additionalConfigCenter:
+    type: Nacos
     serverLists: localhost:8848
-    namespace:
     props:
-      overwrite: true
       group: SHARDING_SPHERE_DEFAULT_GROUP
       timeout: 3000
-
-  demo_zookeeper_yaml_ds_encrypt:
-    orchestrationType: registry_center,metadata_center
-    instanceType: zookeeper
-    serverLists: localhost:2181
-    namespace: orchestration-yaml-demo
-    props:
-      overwrite: true
+  overwrite: true

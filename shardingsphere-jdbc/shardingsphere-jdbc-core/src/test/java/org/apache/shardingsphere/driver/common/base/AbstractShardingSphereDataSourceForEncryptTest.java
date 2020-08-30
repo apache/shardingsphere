@@ -39,6 +39,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 public abstract class AbstractShardingSphereDataSourceForEncryptTest extends AbstractSQLTest {
@@ -68,7 +69,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     }
     
     private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), ENCRYPT_DB_NAMES::contains);
+        return Maps.filterKeys(getDATABASE_TYPE_MAP().values().iterator().next(), ENCRYPT_DB_NAMES::contains);
     }
     
     private static DataSource createDataSourceWithEmptyProps(final DataSource dataSource, final File yamlFile) throws IOException, SQLException {
@@ -79,9 +80,9 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     @Before
     public void initTable() {
         try (ShardingSphereConnection connection = encryptDataSource.getConnection()) {
-            RunScript.execute(connection, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("encrypt_data.sql")));
+            RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("encrypt_data.sql"))));
         } catch (final SQLException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
     

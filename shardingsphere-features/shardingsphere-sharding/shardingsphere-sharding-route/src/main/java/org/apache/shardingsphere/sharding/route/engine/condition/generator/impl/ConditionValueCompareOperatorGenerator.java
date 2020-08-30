@@ -19,14 +19,14 @@ package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGenerator;
 import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
+import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
+import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 
 import java.util.Arrays;
@@ -56,7 +56,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         if (!isSupportedOperator(operator)) {
             return Optional.empty();
         }
-        Optional<Comparable> routeValue = new ConditionValue(predicateRightValue.getExpression(), parameters).getValue();
+        Optional<Comparable<?>> routeValue = new ConditionValue(predicateRightValue.getExpression(), parameters).getValue();
         if (routeValue.isPresent()) {
             return generate(routeValue.get(), column, operator);
         }
@@ -66,7 +66,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         return Optional.empty();
     }
     
-    private Optional<RouteValue> generate(final Comparable comparable, final Column column, final String operator) {
+    private Optional<RouteValue> generate(final Comparable<?> comparable, final Column column, final String operator) {
         String columnName = column.getName();
         String tableName = column.getTableName();
         switch (operator) {

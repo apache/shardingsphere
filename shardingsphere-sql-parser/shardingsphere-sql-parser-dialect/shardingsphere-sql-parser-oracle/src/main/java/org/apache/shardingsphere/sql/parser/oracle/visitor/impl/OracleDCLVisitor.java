@@ -69,7 +69,6 @@ public final class OracleDCLVisitor extends OracleVisitor implements DCLVisitor 
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     private Collection<SimpleTableSegment> getTableFromPrivilegeClause(final ObjectPrivilegeClauseContext ctx) {
         return null == ctx.onObjectClause().tableName() ? Collections.emptyList() : Collections.singletonList((SimpleTableSegment) visit(ctx.onObjectClause().tableName()));
     }

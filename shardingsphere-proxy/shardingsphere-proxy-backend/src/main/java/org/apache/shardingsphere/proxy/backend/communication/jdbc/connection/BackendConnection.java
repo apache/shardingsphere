@@ -20,17 +20,19 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import java.sql.Types;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
-import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -59,17 +61,17 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private static final int POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME = 1;
     
-    private volatile SchemaContext schema;
+    private volatile String schema;
     
     private TransactionType transactionType;
     
-    private boolean supportHint;
+    private final boolean supportHint;
     
     @Setter
     private int connectionId;
     
     @Setter
-    private String userName;
+    private String username;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
@@ -77,7 +79,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
     
-    private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
+    private final Collection<MethodInvocation> methodInvocations = new LinkedList<>();
     
     @Getter
     private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
@@ -86,7 +88,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     public BackendConnection(final TransactionType transactionType) {
         this.transactionType = transactionType;
-        this.supportHint = false;
+        supportHint = false;
     }
     
     public BackendConnection(final TransactionType transactionType, final boolean supportHint) {
@@ -118,7 +120,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (isSwitchFailed()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
-        this.schema = ProxySchemaContexts.getInstance().getSchema(schemaName);
+        schema = schemaName;
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -186,7 +188,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> getConnectionFromUnderlying(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return ProxySchemaContexts.getInstance().getBackendDataSource().getConnections(schema.getName(), dataSourceName, connectionSize, connectionMode);
+        return ProxySchemaContexts.getInstance().getBackendDataSource().getConnections(schema, dataSourceName, connectionSize, connectionMode);
     }
     
     @Override
@@ -204,7 +206,12 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         PreparedStatement result = option.isReturnGeneratedKeys()
                 ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
         for (int i = 0; i < parameters.size(); i++) {
-            result.setObject(i + 1, parameters.get(i));
+            Object parameter = parameters.get(i);
+            if (parameter instanceof TypeUnspecifiedSQLParameter) {
+                result.setObject(i + 1, parameter, Types.OTHER);
+            } else {
+                result.setObject(i + 1, parameter);
+            }
         }
         if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
             setFetchSize(result);
@@ -213,9 +220,10 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        if (schema.getSchema().getDatabaseType() instanceof MySQLDatabaseType) {
+        DatabaseType databaseType = ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType();
+        if (databaseType instanceof MySQLDatabaseType) {
             statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
-        } else if (schema.getSchema().getDatabaseType() instanceof PostgreSQLDatabaseType) {
+        } else if (databaseType instanceof PostgreSQLDatabaseType) {
             statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
         }
     }
@@ -326,7 +334,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (exceptions.isEmpty()) {
             return;
         }
-        SQLException ex = new SQLException();
+        SQLException ex = new SQLException("");
         for (SQLException each : exceptions) {
             ex.setNextException(each);
         }

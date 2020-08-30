@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -31,5 +30,5 @@ import java.util.Map;
 @Setter
 public final class YamlAuthenticationConfiguration implements YamlConfiguration {
     
-    private Map<String, YamlProxyUserConfiguration> users = new LinkedHashMap<>();
+    private Map<String, YamlProxyUserConfiguration> users;
 }

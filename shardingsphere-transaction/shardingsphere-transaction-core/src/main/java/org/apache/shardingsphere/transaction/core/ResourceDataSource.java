@@ -29,13 +29,13 @@ public final class ResourceDataSource {
     
     private final String originalName;
     
-    private String uniqueResourceName;
+    private final String uniqueResourceName;
     
     private final DataSource dataSource;
     
     public ResourceDataSource(final String originalName, final DataSource dataSource) {
         this.originalName = originalName;
         this.dataSource = dataSource;
-        this.uniqueResourceName = ResourceIDGenerator.getInstance().nextId() + originalName;
+        uniqueResourceName = ResourceIDGenerator.getInstance().nextId() + originalName;
     }
 }

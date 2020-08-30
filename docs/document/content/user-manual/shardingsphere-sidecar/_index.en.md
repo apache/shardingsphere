@@ -18,11 +18,11 @@ It provides a mesh layer interacting with the database, we call this as `Databas
 
 |                         | *ShardingSphere-JDBC* | *ShardingSphere-Proxy*     | *ShardingSphere-Sidecar* |
 | :---------------------- | :-------------------- | :------------------------- | :----------------------- |
-| Database                | Any                   | MySQL                      | `MySQL`            |
-| Connections Count Cost  | High                  | Low                        | `High`             |
-| Supported Languages     | Java Only             | Any                        | `Any`              |
-| Performance             | Low loss              | Relatively High loss       | `Low loss`         |
-| Decentralization        | Yes                   | No                         | `Yes`              |
-| Static Entry            | No                    | Yes                        | `No`               |
+| Database                | Any                   | MySQL/PostgreSQL           | `MySQL`                  |
+| Connections Count Cost  | High                  | Low                        | `High`                   |
+| Supported Languages     | Java Only             | Any                        | `Any`                    |
+| Performance             | Low loss              | Relatively High loss       | `Low loss`               |
+| Decentralization        | Yes                   | No                         | `Yes`                    |
+| Static Entry            | No                    | Yes                        | `No`                     |
 
 The advantage of ShardingSphere-Sidecar lies in its cloud native support for Kubernetes and Mesos.

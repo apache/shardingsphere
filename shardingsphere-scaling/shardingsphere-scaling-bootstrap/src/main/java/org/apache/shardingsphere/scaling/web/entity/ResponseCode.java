@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.scaling.web.entity;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Http response code.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResponseCode {
     
     public static final int BAD_REQUEST = 400;

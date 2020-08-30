@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.unsupported;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
+import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
@@ -107,6 +108,16 @@ public abstract class AbstractUnsupportedGeneratedKeysResultSet extends Abstract
     }
     
     @Override
+    public final Array getArray(final int columnIndex) throws SQLException {
+        throw new SQLFeatureNotSupportedException("getArray");
+    }
+    
+    @Override
+    public final Array getArray(final String columnLabel) throws SQLException {
+        throw new SQLFeatureNotSupportedException("getArray");
+    }
+    
+    @Override
     public final InputStream getAsciiStream(final int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException("getAsciiStream");
     }
@@ -116,13 +127,11 @@ public abstract class AbstractUnsupportedGeneratedKeysResultSet extends Abstract
         throw new SQLFeatureNotSupportedException("getAsciiStream");
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public final InputStream getUnicodeStream(final int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException("getUnicodeStream");
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public final InputStream getUnicodeStream(final String columnLabel) throws SQLException {
         throw new SQLFeatureNotSupportedException("getUnicodeStream");

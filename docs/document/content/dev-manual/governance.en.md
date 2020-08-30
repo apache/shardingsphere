@@ -5,29 +5,29 @@ weight = 8
 chapter = true
 +++
 
-## ConfigCenterRepository
+## ConfigurationRepository
 
 | *SPI Name*                       | *Description*           |
 | -------------------------------- | ----------------------- |
-| ConfigCenterRepository           | Config center           |
+| ConfigurationRepository          | Config repository           |
 
 | *Implementation Class*           | *Description*           |
 | -------------------------------- | ----------------------- |
-| CuratorZookeeperCenterRepository | ZooKeeper config center |
-| EtcdCenterRepository             | Etcd config center      |
-| NacosCenterRepository            | Nacos config center     |
-| ApolloCenterRepository           | Apollo config center    |
+| CuratorZookeeperRepository       | ZooKeeper config repository |
+| EtcdRepository                   | etcd config repository      |
+| NacosRepository                  | Nacos config repository     |
+| ApolloRepository                 | Apollo config repository    |
 
-## RegistryCenterRepository
+## RegistryRepository
 
 | *SPI Name*                       | *Description*             |
 | -------------------------------- | ------------------------- |
-| RegistryCenterRepository         | Registry center           |
+| RegistryRepository               | Registry repository           |
 
 | *Implementation Class*           | *Description*             |
 | -------------------------------- | ------------------------- |
-| CuratorZookeeperCenterRepository | ZooKeeper registry center |
-| EtcdCenterRepository             | Etcd registry center      |
+| CuratorZookeeperRepository | ZooKeeper registry repository |
+| EtcdRepository             | etcd registry repository      |
 
 ## RootInvokeHook
 
@@ -39,12 +39,3 @@ chapter = true
 | ------------------------- | ---------------------------------------------- |
 | OpenTracingRootInvokeHook | Use OpenTracing protocol to trace request root |
 
-## MetricsTrackerManager
-
-| *SPI Name*                      | *Description*                   |
-| ------------------------------- | ------------------------------- |
-| MetricsTrackerManager           | Metrics track manager           |
-
-| *Implementation Class*          | *Description*                   |
-| ------------------------------- | ------------------------------- |
-| PrometheusMetricsTrackerManager | Use Prometheus to track metrics |

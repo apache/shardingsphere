@@ -20,7 +20,8 @@ grammar TCLStatement;
 import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
 
 setTransaction
-    : SET (SESSION CHARACTERISTICS AS)? TRANSACTION
+    : SET (SESSION CHARACTERISTICS AS)? TRANSACTION transactionModeList
+    | SET TRANSACTION SNAPSHOT STRING_
     ;
 
 beginTransaction
@@ -37,4 +38,8 @@ rollback
 
 savepoint
     : SAVEPOINT
+    ;
+
+abort
+    : ABORT (WORK | TRANSACTION)? (AND (NO)? CHAIN)?
     ;

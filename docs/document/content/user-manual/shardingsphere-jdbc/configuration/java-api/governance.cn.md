@@ -9,33 +9,31 @@ weight = 6
 
 *配置入口*
 
-类名称：org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration
+类名称：org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration
 
 可配置属性：
 
-| *名称*                    | *数据类型*                           | *说明*                                                            |
-| ------------------------ | ----------------------------------- | ----------------------------------------------------------------- |
-| instanceConfigurationMap | Map\<String, CenterConfiguration\>  | 治理实例的配置 map，key 为名称，value 为治理实例 |
+| *名称*                              | *数据类型*                           | *说明*                                                            |
+| ----------------------------------- | ----------------------------------- | ----------------------------------------------------------------- |
+| name         | String  | 注册中心实例名称 |
+| registryCenterConfiguration         | OrchestrationCenterConfiguration  | 注册中心实例的配置 |
+| additionalConfigCenterConfiguration | OrchestrationCenterConfiguration  | 可选的配置中心实例配置 |
+| overwrite | boolean   | 本地配置是否覆盖配置中心配置，如果可覆盖，每次启动都以本地配置为准 |
+
+注册中心的类型可以为Zookeeper或etcd。
+配置中心的类型可以为Zookeeper或etcd、Apollo、Nacos。
 
 *治理实例配置*
 
-类名称：org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
+类名称：org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration
 
 可配置属性：
 
-| *名称*             | *数据类型* | *说明*                                                                                         |
-| ----------------- | ---------- | --------------------------------------------------------------------------------------------- |
-| orchestrationType | String     | 治理类型，多个类型用逗号分隔，如 config_center,registry_center,metadata_center                |
-| instanceType      | String     | 治理实例类型，如：zookeeper, etcd, apollo, nacos                                 |
-| serverLists       | String     | 治理服务列表，包括 IP 地址和端口号，多个地址用逗号分隔，如: host1:2181,host2:2181 |
-| namespace (?)     | String     | 治理命名空间                                                                    |
-| props        | Properties | 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等                                               |
-
-通用属性配置
-
-| *名称*           | *数据类型* | *说明*                                                     | *默认值* |
-| --------------- | --------- | ---------------------------------------------------------- | ------- |
-| overwrite       | boolean   | 本地配置是否覆盖配置中心配置，如果可覆盖，每次启动都以本地配置为准 | false   |
+| *名称*         | *数据类型* | *说明*                                                                      |
+| ------------- | ---------- | -------------------------------------------------------------------------- |
+| type          | String     | 治理实例类型，如：Zookeeper, etcd, Apollo, Nacos                             |
+| serverLists   | String     | 治理服务列表，包括 IP 地址和端口号，多个地址用逗号分隔，如: host1:2181,host2:2181 |                                                             |
+| props         | Properties | 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等                            |
 
 ZooKeeper 属性配置
 
@@ -72,30 +70,3 @@ Nacos 属性配置
 | ----------- | --------- | ---------------------- | ---------------------------- |
 | group (?)   | String    | nacos group 配置       | SHARDING_SPHERE_DEFAULT_GROUP |
 | timeout (?) | long      | nacos 获取数据超时毫秒数 | 3000 毫秒                     |
-
-### 集群管理
-
-*配置入口*
-
-类名称：org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration
-
-可配置属性：
-
-| *名称*                    | *数据类型*                           | *说明*                                                            |
-| ------------------------ | ----------------------------------- | ----------------------------------------------------------------- |
-| heartbeat | HeartbeatConfiguration  | 心跳检测配置 |
-
-*心跳检测配置*
-
-类名称：org.apache.shardingsphere.orchestration.center.config.HeartbeatConfiguration
-
-可配置属性：
-
-| *名称*       | *数据类型* | *说明*                 |
-| ----------- | --------- | ---------------------- |
-| sql   | String    | 心跳检测 SQL       |
-| interval | int      | 心跳检测间隔时间 (s) |
-| threadCount   | int    | 心跳检测线程池大小       |
-| retryEnable | Boolean      | 是否支持失败重试，可设置 true 或 false |
-| retryMaximum(?)   | int    | 最大重试次数      |
-| retryInterval(?) | int      | 重试间隔时间 (s) |

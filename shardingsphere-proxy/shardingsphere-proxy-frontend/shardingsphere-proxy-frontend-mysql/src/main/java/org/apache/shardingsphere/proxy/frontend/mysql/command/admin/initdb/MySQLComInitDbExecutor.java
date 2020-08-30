@@ -42,7 +42,7 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     private final BackendConnection backendConnection;
     
     @Override
-    public Collection<DatabasePacket> execute() {
+    public Collection<DatabasePacket<?>> execute() {
         String schema = SQLUtil.getExactlyValue(packet.getSchema());
         if (ProxySchemaContexts.getInstance().schemaExists(schema) && isAuthorizedSchema(schema)) {
             backendConnection.setCurrentSchema(packet.getSchema());
@@ -52,7 +52,7 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     }
     
     private boolean isAuthorizedSchema(final String schema) {
-        Collection<String> authorizedSchemas = ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas();
+        Collection<String> authorizedSchemas = ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get(backendConnection.getUsername()).getAuthorizedSchemas();
         return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
     }
 }

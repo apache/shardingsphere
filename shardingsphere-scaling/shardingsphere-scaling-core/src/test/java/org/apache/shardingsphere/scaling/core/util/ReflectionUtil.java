@@ -21,6 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectionUtil {
@@ -35,16 +37,14 @@ public final class ReflectionUtil {
      * @throws NoSuchFieldException no such field exception
      */
     public static Field getFieldFromClass(final Class<?> targetClass, final String fieldName, final boolean isDeclared) throws NoSuchFieldException {
-        Field targetField;
+        Field result;
         if (isDeclared) {
-            targetField = targetClass.getDeclaredField(fieldName);
+            result = targetClass.getDeclaredField(fieldName);
         } else {
-            targetField = targetClass.getField(fieldName);
+            result = targetClass.getField(fieldName);
         }
-        if (null != targetField) {
-            targetField.setAccessible(true);
-        }
-        return targetField;
+        result.setAccessible(true);
+        return result;
     }
     
     /**
@@ -72,16 +72,85 @@ public final class ReflectionUtil {
     }
     
     /**
-     * Set value to target object field.
+     * Get field value from instance target object.
      *
-     * @param target target object
+     * @param targetClass target class
      * @param fieldName field name
-     * @param value new value
+     * @param <T> expected value class
+     * @return target filed value
      * @throws NoSuchFieldException no such field exception
      * @throws IllegalAccessException illegal access exception
      */
-    public static void setFieldValueToClass(final Object target, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
-        Field field = getFieldFromClass(target.getClass(), fieldName, true);
-        field.set(target, value);
+    @SuppressWarnings("unchecked")
+    public static <T> T getStaticFieldValueFromClass(final Class<?> targetClass, final String fieldName) throws NoSuchFieldException, IllegalAccessException {
+        Field field = getFieldFromClass(targetClass, fieldName, true);
+        Object value = field.get(null);
+        if (null == value) {
+            return null;
+        }
+        if (value.getClass().isAssignableFrom(value.getClass())) {
+            return (T) value;
+        }
+        return null;
+    }
+    
+    /**
+     * Set field value into target object.
+     *
+     * @param target target object
+     * @param fieldName field name
+     * @param value target filed value
+     * @throws NoSuchFieldException no such field exception
+     * @throws IllegalAccessException illegal access exception
+     */
+    public static void setFieldValue(final Object target, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
+        setFieldValue(target.getClass(), target, fieldName, value);
+    }
+    
+    /**
+     * Set field value into target object.
+     *
+     * @param targetClass target class
+     * @param targetObject target object
+     * @param fieldName field name
+     * @param value target filed value
+     * @throws NoSuchFieldException no such field exception
+     * @throws IllegalAccessException illegal access exception
+     */
+    public static void setFieldValue(final Class<?> targetClass, final Object targetObject, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
+        Field field = getFieldFromClass(targetClass, fieldName, true);
+        field.setAccessible(true);
+        field.set(targetObject, value);
+    }
+    
+    /**
+     * Invoke method.
+     *
+     * @param target target object
+     * @param methodName method name
+     * @throws NoSuchMethodException no such field exception
+     * @throws InvocationTargetException invocation target exception
+     * @throws IllegalAccessException illegal access exception
+     */
+    public static void invokeMethod(final Object target, final String methodName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        invokeMethod(target, methodName, new Class[0], new Object[0]);
+    }
+    
+    /**
+     * Invoke method.
+     *
+     * @param target target object
+     * @param methodName method name
+     * @param parameterTypes parameter types
+     * @param parameterValues parameter values
+     * @throws NoSuchMethodException no such field exception
+     * @throws InvocationTargetException invocation target exception
+     * @throws IllegalAccessException illegal access exception
+     */
+    public static void invokeMethod(final Object target, final String methodName, final Class<?>[] parameterTypes, final Object[] parameterValues)
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method method = target.getClass().getDeclaredMethod(methodName, parameterTypes);
+        method.setAccessible(true);
+        method.invoke(target, parameterValues);
     }
 }

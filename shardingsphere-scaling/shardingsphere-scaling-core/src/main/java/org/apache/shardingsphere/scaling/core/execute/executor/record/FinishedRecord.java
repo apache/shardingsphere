@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.record;
 
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 /**
  * Finished record.
  */
 public final class FinishedRecord extends Record {
     
-    public FinishedRecord(final LogPosition logPosition) {
-        super(logPosition);
+    public FinishedRecord(final Position position) {
+        super(position);
     }
 }

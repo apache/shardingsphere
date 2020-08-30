@@ -19,7 +19,8 @@ package org.apache.shardingsphere.sharding.route.engine.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDataSourceGroupBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDatabaseBroadcastRoutingEngine;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.sharding.route.engine.type.ignore.ShardingIgnor
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.unconfigured.ShardingUnconfiguredTablesRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.unicast.ShardingUnicastRoutingEngine;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
@@ -44,8 +46,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collection;
 import java.util.Map;
@@ -91,7 +91,7 @@ public final class ShardingRouteEngineFactory {
         if (!shardingRule.tableRuleExists(tableNames)) {
             return new ShardingUnconfiguredTablesRoutingEngine(tableNames, metaData.getSchema().getUnconfiguredSchemaMetaDataMap());
         }
-        return getShardingRoutingEngine(shardingRule, sqlStatementContext, shardingConditions, tableNames, props);
+        return getShardingRoutingEngine(shardingRule, shardingConditions, tableNames, props);
     }
     
     private static ShardingRouteEngine getDALRoutingEngine(final ShardingRule shardingRule, 
@@ -125,13 +125,13 @@ public final class ShardingRouteEngineFactory {
         return false;
     }
     
-    private static ShardingRouteEngine getShardingRoutingEngine(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
-                                                                final ShardingConditions shardingConditions, final Collection<String> tableNames, final ConfigurationProperties props) {
+    private static ShardingRouteEngine getShardingRoutingEngine(final ShardingRule shardingRule, final ShardingConditions shardingConditions, 
+                                                                final Collection<String> tableNames, final ConfigurationProperties props) {
         Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
         if (1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) {
-            return new ShardingStandardRoutingEngine(shardingTableNames.iterator().next(), sqlStatementContext, shardingConditions, props);
+            return new ShardingStandardRoutingEngine(shardingTableNames.iterator().next(), shardingConditions, props);
         }
         // TODO config for cartesian set
-        return new ShardingComplexRoutingEngine(tableNames, sqlStatementContext, shardingConditions, props);
+        return new ShardingComplexRoutingEngine(tableNames, shardingConditions, props);
     }
 }

@@ -20,8 +20,10 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
+import org.apache.shardingsphere.kernel.context.SchemaContexts;
 
 import java.util.Collections;
 import java.util.Map;
@@ -30,16 +32,21 @@ import java.util.Properties;
 import static org.mockito.Mockito.mock;
 
 @Getter
-public final class OrchestrationSchemaContextsFixture implements SchemaContextsAware {
+public final class OrchestrationSchemaContextsFixture implements SchemaContexts {
     
     @Override
-    public Map<String, SchemaContext> getSchemaContexts() {
-        return Collections.emptyMap();
+    public DatabaseType getDatabaseType() {
+        return new MySQLDatabaseType();
     }
     
     @Override
-    public ConfigurationProperties getProps() {
-        return new ConfigurationProperties(new Properties());
+    public Map<String, SchemaContext> getSchemaContexts() {
+        return Collections.singletonMap("schema", mock(SchemaContext.class));
+    }
+    
+    @Override
+    public SchemaContext getDefaultSchemaContext() {
+        return mock(SchemaContext.class);
     }
     
     @Override
@@ -48,8 +55,8 @@ public final class OrchestrationSchemaContextsFixture implements SchemaContextsA
     }
     
     @Override
-    public SchemaContext getDefaultSchemaContext() {
-        return mock(SchemaContext.class);
+    public ConfigurationProperties getProps() {
+        return new ConfigurationProperties(new Properties());
     }
     
     @Override

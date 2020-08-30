@@ -18,12 +18,19 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLArrayColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
+
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  * Column description for PostgreSQL.
  */
 @Getter
+@Slf4j
 public final class PostgreSQLColumnDescription {
     
     private final String columnName;
@@ -40,10 +47,20 @@ public final class PostgreSQLColumnDescription {
     
     private final int dataFormat = 0;
     
-    public PostgreSQLColumnDescription(final String columnName, final int columnIndex, final int columnType, final int columnLength) {
+    public PostgreSQLColumnDescription(final String columnName, final int columnIndex, final int columnType, final int columnLength, final ResultSetMetaData resultSetMetaData) {
         this.columnName = columnName;
         this.columnIndex = columnIndex;
-        this.typeOID = PostgreSQLColumnType.valueOfJDBCType(columnType).getValue();
+        if (Types.ARRAY == columnType && null != resultSetMetaData) {
+            String columnTypeName = null;
+            try {
+                columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
+            } catch (final SQLException ex) {
+                log.error("getColumnTypeName failed, columnName={}, columnIndex={}", columnName, columnIndex, ex);
+            }
+            typeOID = PostgreSQLArrayColumnType.getTypeOidByColumnTypeName(columnTypeName);
+        } else {
+            typeOID = PostgreSQLColumnType.valueOfJDBCType(columnType).getValue();
+        }
         this.columnLength = columnLength;
     }
 }

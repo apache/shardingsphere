@@ -44,13 +44,13 @@ public final class MySQLAuthenticationHandler {
     /**
      * Login.
      *
-     * @param userName user name.
+     * @param username username.
      * @param authResponse auth response
      * @param database database
      * @return login success or failure
      */
-    public Optional<MySQLServerErrorCode> login(final String userName, final byte[] authResponse, final String database) {
-        Optional<ProxyUser> user = getUser(userName);
+    public Optional<MySQLServerErrorCode> login(final String username, final byte[] authResponse, final String database) {
+        Optional<ProxyUser> user = getUser(username);
         if (!user.isPresent() || !isPasswordRight(user.get().getPassword(), authResponse)) {
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
@@ -88,7 +88,7 @@ public final class MySQLAuthenticationHandler {
     }
     
     private byte[] xor(final byte[] input, final byte[] secret) {
-        final byte[] result = new byte[input.length];
+        byte[] result = new byte[input.length];
         for (int i = 0; i < input.length; ++i) {
             result[i] = (byte) (input[i] ^ secret[i]);
         }

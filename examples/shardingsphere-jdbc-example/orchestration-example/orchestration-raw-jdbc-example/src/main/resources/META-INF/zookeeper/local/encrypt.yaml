@@ -16,13 +16,11 @@
 #
 
 orchestration:
-  demo_yaml_ds_encrypt:
-    orchestrationType: config_center,registry_center,metadata_center
-    instanceType: zookeeper
+  name: demo_yaml_ds_encrypt
+  registryCenter:
+    type: ZooKeeper
     serverLists: localhost:2181
-    namespace: orchestration-yaml-demo
-    props:
-      overwrite: true
+  overwrite: true
 
 dataSources:
   uinque_ds: !!com.zaxxer.hikari.HikariDataSource

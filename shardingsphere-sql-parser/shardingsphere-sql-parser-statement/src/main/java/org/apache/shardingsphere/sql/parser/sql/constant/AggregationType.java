@@ -30,7 +30,7 @@ public enum AggregationType {
      * @return is aggregation type or not
      */
     public static boolean isAggregationType(final String aggregationType) {
-        for (AggregationType each : AggregationType.values()) {
+        for (AggregationType each : values()) {
             if (aggregationType.equalsIgnoreCase(each.name())) {
                 return true;
             }

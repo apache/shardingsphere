@@ -38,10 +38,10 @@ public final class ConditionValueInOperatorGenerator implements ConditionValueGe
     
     @Override
     public Optional<RouteValue> generate(final PredicateInRightValue predicateRightValue, final Column column, final List<Object> parameters) {
-        List<Comparable> routeValues = new LinkedList<>();
+        List<Comparable<?>> routeValues = new LinkedList<>();
         SPITimeService timeService = new SPITimeService();
         for (ExpressionSegment each : predicateRightValue.getSqlExpressions()) {
-            Optional<Comparable> routeValue = new ConditionValue(each, parameters).getValue();
+            Optional<Comparable<?>> routeValue = new ConditionValue(each, parameters).getValue();
             if (routeValue.isPresent()) {
                 routeValues.add(routeValue.get());
                 continue;

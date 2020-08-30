@@ -14,7 +14,7 @@
 
 ## 如果要使用`dev`分支，请在开始该example之前
 
-请确保已安装了来自[shardingsphere](https://github.com/apache/shardingsphere) 和 [shardingsphere-spi-impl](https://github.com/OpenSharding/shardingsphere-spi-impl)的某些依赖项，因为某些示例依赖于此。如果您是shardingsphere的新手，您可以准备如下依赖：
+请确保已安装了来自[shardingsphere](https://github.com/apache/shardingsphere) 的某些依赖项，因为某些示例依赖于此。如果您是shardingsphere的新手，您可以准备如下依赖：
 
 1.下载并安装[shardingsphere](https://github.com/apache/shardingsphere)：
 
@@ -22,24 +22,9 @@
 ## 下载shardingsphere代码
 git clone https://github.com/apache/shardingsphere.git
 
-## 检出一个指定版本，比如是 4.0.0-RC1
-cd shardingsphere && git checkout 4.0.0-RC1
-
 ## 安装依赖
+cd shardingsphere/examples
 mvn clean install -Prelease
-```
-
-2.下载并安装[shardingsphere-spi-impl](https://github.com/OpenSharding/shardingsphere-spi-impl)：
-
-```bash
-## 下载shardingsphere-SPI-implement的代码
-git clone https://github.com/OpenSharding/shardingsphere-spi-impl.git
-
-## 检出一个指定版本，比如是 4.0.0-RC1
-cd shardingsphere-spi-impl && git checkout 4.0.0-RC1
-
-## 安装依赖
-mvn clean install
 ```
 
 ## shardingsphere-example模块设计
@@ -67,7 +52,7 @@ shardingsphere-example
   │   │   └── orchestration-spring-namespace-example
   │   ├── transaction-example
   │   │   ├── transaction-2pc-xa-example
-  │   │   └──transaction-base-seata-example
+  │   │   └── transaction-base-seata-example
   │   ├── other-feature-example
   │   │   ├── hint-example
   │   │   └── encrypt-example

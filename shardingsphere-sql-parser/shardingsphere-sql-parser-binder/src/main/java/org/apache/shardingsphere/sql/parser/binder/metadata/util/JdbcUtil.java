@@ -17,13 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
- * JDBC util.
+ * JDBC utility.
  */
-public class JdbcUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class JdbcUtil {
     
     /**
      * Get schema.
@@ -36,7 +42,12 @@ public class JdbcUtil {
         String result = null;
         try {
             if ("Oracle".equals(databaseType)) {
-                return null;
+                DatabaseMetaData metaData = connection.getMetaData();
+                if (null != metaData) {
+                    return Optional.ofNullable(metaData.getUserName()).map(String::toUpperCase).orElse(null);
+                } else {
+                    return null;
+                }
             }
             result = connection.getSchema();
         } catch (final SQLException ignore) {

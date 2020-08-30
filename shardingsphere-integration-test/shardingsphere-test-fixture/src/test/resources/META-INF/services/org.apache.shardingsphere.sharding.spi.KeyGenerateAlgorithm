@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.dbtest.fixture.ConstantKeyGenerateAlgorithm
-

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLParseCompletePacket;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
@@ -43,12 +44,12 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
     public PostgreSQLComParseExecutor(final PostgreSQLComParsePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
-        schema = backendConnection.getSchema();
+        schema = ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema());
         binaryStatementRegistry = BinaryStatementRegistry.getInstance().get(backendConnection.getConnectionId());
     }
     
     @Override
-    public Collection<DatabasePacket> execute() {
+    public Collection<DatabasePacket<?>> execute() {
         if (!packet.getSql().isEmpty()) {
             SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
             binaryStatementRegistry.register(packet.getStatementId(), packet.getSql(), sqlStatement.getParameterCount(), packet.getBinaryStatementParameterTypes());

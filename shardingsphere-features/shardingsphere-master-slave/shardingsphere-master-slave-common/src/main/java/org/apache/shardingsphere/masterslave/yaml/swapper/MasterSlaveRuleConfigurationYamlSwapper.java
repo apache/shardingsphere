@@ -61,14 +61,14 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
     }
     
     @Override
-    public MasterSlaveRuleConfiguration swapToObject(final YamlMasterSlaveRuleConfiguration yamlConfiguration) {
+    public MasterSlaveRuleConfiguration swapToObject(final YamlMasterSlaveRuleConfiguration yamlConfig) {
         Collection<MasterSlaveDataSourceRuleConfiguration> dataSources = new LinkedList<>();
-        for (Entry<String, YamlMasterSlaveDataSourceRuleConfiguration> entry : yamlConfiguration.getDataSources().entrySet()) {
+        for (Entry<String, YamlMasterSlaveDataSourceRuleConfiguration> entry : yamlConfig.getDataSources().entrySet()) {
             dataSources.add(swapToObject(entry.getKey(), entry.getValue()));
         }
-        Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>(yamlConfiguration.getLoadBalancers().entrySet().size(), 1);
-        if (null != yamlConfiguration.getLoadBalancers()) {
-            yamlConfiguration.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, algorithmSwapper.swapToObject(value)));
+        Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>(yamlConfig.getLoadBalancers().entrySet().size(), 1);
+        if (null != yamlConfig.getLoadBalancers()) {
+            yamlConfig.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, algorithmSwapper.swapToObject(value)));
         }
         return new MasterSlaveRuleConfiguration(dataSources, loadBalancers);
     }

@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class ParsingHookRegistryTest {
     
-    private ParsingHookRegistry registry = ParsingHookRegistry.getInstance();
+    private final ParsingHookRegistry registry = ParsingHookRegistry.getInstance();
     
     @Before
     public void setUp() {

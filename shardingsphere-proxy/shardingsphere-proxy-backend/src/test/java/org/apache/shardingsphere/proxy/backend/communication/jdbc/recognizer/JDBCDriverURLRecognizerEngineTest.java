@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer;
 
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.H2Recognizer;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.MySQLRecognizer;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.OracleRecognizer;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.PostgreSQLRecognizer;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.SQLServerRecognizer;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class JDBCDriverURLRecognizerEngineTest {
@@ -53,6 +56,13 @@ public final class JDBCDriverURLRecognizerEngineTest {
     @Test
     public void assertGetJDBCDriverURLRecognizerForH2() {
         assertThat(JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer("jdbc:h2:xxx"), instanceOf(H2Recognizer.class));
+    }
+    
+    @Test
+    public void assertGetJDBCDriverURLRecognizerForP6spy() {
+        JDBCDriverURLRecognizer driverURLRecognizer = JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer("jdbc:p6spy:mysql:xxx");
+        assertThat(driverURLRecognizer.getDatabaseType(), is(new MySQLDatabaseType().getName()));
+        assertThat(driverURLRecognizer.getDriverClassName(), is("com.p6spy.engine.spy.P6SpyDriver"));
     }
     
     @Test(expected = ShardingSphereException.class)

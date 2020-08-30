@@ -17,24 +17,12 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
-import org.apache.shardingsphere.infra.hint.HintManager;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
-import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
-import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
+import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
 import org.junit.After;
 import org.junit.Test;
 
@@ -46,24 +34,12 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngineTest {
     
     @After
     public void tearDown() {
         HintManager.clear();
-    }
-    
-    @Test(expected = ShardingSphereException.class)
-    public void assertRouteByUnsupported() {
-        SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new InsertStatement());
-        TablesContext tablesContext = mock(TablesContext.class);
-        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        ShardingStandardRoutingEngine standardRoutingEngine = new ShardingStandardRoutingEngine(null, sqlStatementContext, null, new ConfigurationProperties(new Properties()));
-        standardRoutingEngine.route(mock(ShardingRule.class));
     }
     
     @Test
@@ -189,9 +165,6 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     private ShardingStandardRoutingEngine createShardingStandardRoutingEngine(final String logicTableName, final ShardingConditions shardingConditions) {
-        return new ShardingStandardRoutingEngine(logicTableName, new SelectStatementContext(new SelectStatement(),
-                new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
-                new ProjectionsContext(0, 0, false, Collections.emptyList()),
-                new PaginationContext(null, null, Collections.emptyList())), shardingConditions, new ConfigurationProperties(new Properties()));
+        return new ShardingStandardRoutingEngine(logicTableName, shardingConditions, new ConfigurationProperties(new Properties()));
     }
 }

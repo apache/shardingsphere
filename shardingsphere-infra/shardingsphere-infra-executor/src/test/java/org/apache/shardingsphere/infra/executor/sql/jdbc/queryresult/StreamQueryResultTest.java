@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.S
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
@@ -87,15 +88,15 @@ public final class StreamQueryResultTest {
     @Test
     public void assertGetValueByFloat() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getFloat(1)).thenReturn(1F);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, float.class), is(1F));
+        when(resultSet.getFloat(1)).thenReturn(1.0F);
+        assertThat(new StreamQueryResult(resultSet).getValue(1, float.class), is(1.0F));
     }
     
     @Test
     public void assertGetValueByDouble() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getDouble(1)).thenReturn(1D);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, double.class), is(1D));
+        when(resultSet.getDouble(1)).thenReturn(1.0D);
+        assertThat(new StreamQueryResult(resultSet).getValue(1, double.class), is(1.0D));
     }
     
     @Test
@@ -148,6 +149,14 @@ public final class StreamQueryResultTest {
         Clob value = mock(Clob.class);
         when(resultSet.getClob(1)).thenReturn(value);
         assertThat(new StreamQueryResult(resultSet).getValue(1, Clob.class), is(value));
+    }
+    
+    @Test
+    public void assertGetValueByArray() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        Array value = mock(Array.class);
+        when(resultSet.getArray(1)).thenReturn(value);
+        assertThat(new StreamQueryResult(resultSet).getValue(1, Array.class), is(value));
     }
     
     @Test

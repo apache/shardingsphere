@@ -44,13 +44,13 @@ public final class EncryptTableRuleConfigurationYamlSwapper implements YamlSwapp
     }
     
     @Override
-    public EncryptTableRuleConfiguration swapToObject(final YamlEncryptTableRuleConfiguration yamlConfiguration) {
+    public EncryptTableRuleConfiguration swapToObject(final YamlEncryptTableRuleConfiguration yamlConfig) {
         Collection<EncryptColumnRuleConfiguration> columns = new LinkedList<>();
-        for (Entry<String, YamlEncryptColumnRuleConfiguration> entry : yamlConfiguration.getColumns().entrySet()) {
-            YamlEncryptColumnRuleConfiguration yamlEncryptColumnRuleConfiguration = entry.getValue();
-            yamlEncryptColumnRuleConfiguration.setLogicColumn(entry.getKey());
-            columns.add(columnYamlSwapper.swapToObject(yamlEncryptColumnRuleConfiguration));
+        for (Entry<String, YamlEncryptColumnRuleConfiguration> entry : yamlConfig.getColumns().entrySet()) {
+            YamlEncryptColumnRuleConfiguration yamlEncryptColumnRuleConfig = entry.getValue();
+            yamlEncryptColumnRuleConfig.setLogicColumn(entry.getKey());
+            columns.add(columnYamlSwapper.swapToObject(yamlEncryptColumnRuleConfig));
         }
-        return new EncryptTableRuleConfiguration(yamlConfiguration.getName(), columns);
+        return new EncryptTableRuleConfiguration(yamlConfig.getName(), columns);
     }
 }

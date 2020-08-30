@@ -49,7 +49,7 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
         hostName = matcher.group(3);
-        port = Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(4));
+        port = Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(4));
         catalog = matcher.group(5);
         schema = username;
     }

@@ -22,12 +22,10 @@
             <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="org.apache.shardingsphere" level="info" additivity="false">
+    <logger name="org.apache.shardingsphere" level="warn" additivity="false">
         <appender-ref ref="console"/>
     </logger>
     <logger name="org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerLoader" level="off" />
-    <logger name="org.apache.shardingsphere.infra.log.ConfigurationLogger" level="off" />
-    <logger name="ShardingSphere-metadata" level="off" />
     
     <root>
         <level value="error" />

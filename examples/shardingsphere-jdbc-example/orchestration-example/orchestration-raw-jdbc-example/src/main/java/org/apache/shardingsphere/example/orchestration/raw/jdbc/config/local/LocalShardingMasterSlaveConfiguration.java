@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local;
 
-import org.apache.shardingsphere.driver.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.governance.api.OrchestrationShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -43,19 +42,18 @@ import java.util.Properties;
 
 public final class LocalShardingMasterSlaveConfiguration implements ExampleConfiguration {
     
-    private final Map<String, CenterConfiguration> centerConfigurationMap;
+    private final OrchestrationConfiguration orchestrationConfiguration;
     
-    public LocalShardingMasterSlaveConfiguration(final Map<String, CenterConfiguration> centerConfigurationMap) {
-        this.centerConfigurationMap = centerConfigurationMap;
+    public LocalShardingMasterSlaveConfiguration(final OrchestrationConfiguration orchestrationConfiguration) {
+        this.orchestrationConfiguration = orchestrationConfiguration;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(centerConfigurationMap);
         Collection<RuleConfiguration> configurations = new LinkedList<>();
         configurations.add(getShardingRuleConfiguration());
         configurations.add(getMasterSlaveRuleConfiguration());
-        return OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties(), orchestrationConfig);
+        return OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties(), orchestrationConfiguration);
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
@@ -101,7 +99,7 @@ public final class LocalShardingMasterSlaveConfiguration implements ExampleConfi
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        final Map<String, DataSource> result = new HashMap<>();
+        Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds_master_0", DataSourceUtil.createDataSource("demo_ds_master_0"));
         result.put("demo_ds_master_0_slave_0", DataSourceUtil.createDataSource("demo_ds_master_0_slave_0"));
         result.put("demo_ds_master_0_slave_1", DataSourceUtil.createDataSource("demo_ds_master_0_slave_1"));

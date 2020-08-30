@@ -21,20 +21,22 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
-import org.apache.shardingsphere.scaling.core.job.position.NopLogPosition;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
+import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -43,7 +45,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.sql.DataSource;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -83,8 +84,8 @@ public final class AbstractJDBCImporterTest {
     private AbstractJDBCImporter jdbcImporter;
     
     @Before
-    public void setUp() throws Exception {
-        jdbcImporter = new AbstractJDBCImporter(getRdbmsConfiguration(), dataSourceManager) {
+    public void setUp() throws SQLException {
+        jdbcImporter = new AbstractJDBCImporter(getImporterConfiguration(), dataSourceManager) {
             
             @Override
             protected AbstractSqlBuilder createSqlBuilder() {
@@ -143,12 +144,12 @@ public final class AbstractJDBCImporterTest {
     private List<Record> mockRecords(final DataRecord dataRecord) {
         List<Record> result = new LinkedList<>();
         result.add(dataRecord);
-        result.add(new FinishedRecord(new NopLogPosition()));
+        result.add(new FinishedRecord(new NopPosition()));
         return result;
     }
     
     private DataRecord getDataRecord(final String recordType) {
-        DataRecord result = new DataRecord(new NopLogPosition(), 3);
+        DataRecord result = new DataRecord(new NopPosition(), 3);
         result.setTableName(TABLE_NAME);
         result.setType(recordType);
         result.addColumn(new Column("id", 1, false, true));
@@ -157,9 +158,8 @@ public final class AbstractJDBCImporterTest {
         return result;
     }
     
-    private RdbmsConfiguration getRdbmsConfiguration() {
-        RdbmsConfiguration result = new RdbmsConfiguration();
-        result.setTableName(TABLE_NAME);
+    private ImporterConfiguration getImporterConfiguration() {
+        ImporterConfiguration result = new ImporterConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);
         Map<String, Set<String>> shardingColumnsMap = Maps.newHashMap();
         shardingColumnsMap.put("test_table", Sets.newHashSet("user"));

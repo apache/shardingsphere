@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
@@ -38,12 +39,14 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
  * Integrate test parameters.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class IntegrateTestParameters {
     
     private static final IntegrateTestCasesLoader INTEGRATE_TEST_CASES_LOADER = IntegrateTestCasesLoader.getInstance();
@@ -143,19 +146,19 @@ public final class IntegrateTestParameters {
     
     private static void printTestPlan(final Map<DatabaseType, Collection<Object[]>> availableCases, final Map<DatabaseType, Collection<Object[]>> disabledCases, final long factor) {
         Collection<String> activePlan = new LinkedList<>();
-        for (Map.Entry<DatabaseType, Collection<Object[]>> entry : availableCases.entrySet()) {
+        for (Entry<DatabaseType, Collection<Object[]>> entry : availableCases.entrySet()) {
             activePlan.add(String.format("%s(%s)", entry.getKey().getName(), entry.getValue().size() * factor));
         }
         Collection<String> disabledPlan = new LinkedList<>();
-        for (Map.Entry<DatabaseType, Collection<Object[]>> entry : disabledCases.entrySet()) {
+        for (Entry<DatabaseType, Collection<Object[]>> entry : disabledCases.entrySet()) {
             disabledPlan.add(String.format("%s(%s)", entry.getKey().getName(), entry.getValue().size() * factor));
         }
-        System.out.println("[INFO] ======= Test Plan =======");
+        log.info("[INFO] ======= Test Plan =======");
         String summary = String.format("[%s] Total: %s, Active: %s, Disabled: %s %s",
             disabledPlan.isEmpty() ? "INFO" : "WARN",
             (availableCases.values().stream().mapToLong(Collection::size).sum() + disabledCases.values().stream().mapToLong(Collection::size).sum()) * factor,
             activePlan.isEmpty() ? 0 : Joiner.on(", ").join(activePlan), disabledPlan.isEmpty() ? 0 : Joiner.on(", ").join(disabledPlan), System.lineSeparator());
-        System.out.println(summary);
+        log.info(summary);
     }
     
     @SneakyThrows

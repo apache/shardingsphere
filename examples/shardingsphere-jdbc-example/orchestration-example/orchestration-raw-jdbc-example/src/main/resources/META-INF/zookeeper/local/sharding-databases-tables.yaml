@@ -15,6 +15,13 @@
 # limitations under the License.
 #
 
+orchestration:
+  name: demo_yaml_ds_sharding
+  registryCenter:
+    type: ZooKeeper
+    serverLists: localhost:2181
+  overwrite: true
+
 dataSources:
   ds_0: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
@@ -79,12 +86,3 @@ rules:
 
 props:
   sql.show: true
-
-orchestration:
-  demo_yaml_ds_sharding:
-    orchestrationType: config_center,registry_center,metadata_center
-    instanceType: zookeeper
-    serverLists: localhost:2181
-    namespace: orchestration-yaml-demo
-    props:
-      overwrite: true

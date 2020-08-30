@@ -379,4 +379,7 @@ sh shardingsphere-benchmark/report/script/gen_report.sh
 
 ### Display of Historical Performance Test Data
 
+In progress, please wait.
+<!--
 The data of [benchmark platform](https://shardingsphere.apache.org/benchmark/#/overview) is show daily
+-->

@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc;
 
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.RegistryCenterConfigurationUtil;
+import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.OrchestrationRepositoryConfigurationUtil;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud.CloudEncryptConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud.CloudMasterSlaveConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud.CloudShadowConfiguration;
@@ -32,19 +33,17 @@ import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.Loc
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.LocalShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Map;
 
 /*
  * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  * 2. Please make sure sharding-orchestration-center-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
  * 3. Please make sure sharding-orchestration-center-nacos in your pom if registryCenterType = RegistryCenterType.NACOS.
  */
-public class JavaConfigurationExampleMain {
+public final class JavaConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
@@ -67,21 +66,21 @@ public class JavaConfigurationExampleMain {
     }
     
     private static DataSource getDataSource(final ShardingType shardingType, final boolean loadConfigFromRegCenter) throws SQLException {
-        Map<String, CenterConfiguration> centerConfigurationMap = getRegistryCenterConfiguration(registryCenterType, shardingType);
+        OrchestrationConfiguration orchestrationConfiguration = getOrchestrationConfiguration(registryCenterType, shardingType);
         ExampleConfiguration configuration;
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
-                configuration = loadConfigFromRegCenter
-                    ? new CloudShardingDatabasesAndTablesConfiguration(centerConfigurationMap) : new LocalShardingDatabasesAndTablesConfiguration(centerConfigurationMap);
+                configuration = loadConfigFromRegCenter 
+                        ? new CloudShardingDatabasesAndTablesConfiguration(orchestrationConfiguration) : new LocalShardingDatabasesAndTablesConfiguration(orchestrationConfiguration);
                 break;
             case MASTER_SLAVE:
-                configuration = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(centerConfigurationMap) : new LocalMasterSlaveConfiguration(centerConfigurationMap);
+                configuration = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(orchestrationConfiguration) : new LocalMasterSlaveConfiguration(orchestrationConfiguration);
                 break;
             case ENCRYPT:
-                configuration = loadConfigFromRegCenter ? new CloudEncryptConfiguration(centerConfigurationMap) : new LocalEncryptConfiguration(centerConfigurationMap);
+                configuration = loadConfigFromRegCenter ? new CloudEncryptConfiguration(orchestrationConfiguration) : new LocalEncryptConfiguration(orchestrationConfiguration);
                 break;
             case SHADOW:
-                configuration = loadConfigFromRegCenter ? new CloudShadowConfiguration(centerConfigurationMap) : new LocalShadowConfiguration(centerConfigurationMap);
+                configuration = loadConfigFromRegCenter ? new CloudShadowConfiguration(orchestrationConfiguration) : new LocalShadowConfiguration(orchestrationConfiguration);
                 break;
             default:
                 throw new UnsupportedOperationException(shardingType.name());
@@ -89,9 +88,10 @@ public class JavaConfigurationExampleMain {
         return configuration.getDataSource();
     }
     
-    private static Map<String, CenterConfiguration> getRegistryCenterConfiguration(final RegistryCenterType registryCenterType, final ShardingType shardingType) {
-        return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType)
-                : RegistryCenterConfigurationUtil.getNacosConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType);
+    private static OrchestrationConfiguration getOrchestrationConfiguration(final RegistryCenterType registryCenterType, final ShardingType shardingType) {
+        return RegistryCenterType.ZOOKEEPER == registryCenterType
+                ? OrchestrationRepositoryConfigurationUtil.getZooKeeperConfiguration(!loadConfigFromRegCenter, shardingType)
+                : OrchestrationRepositoryConfigurationUtil.getNacosConfiguration(!loadConfigFromRegCenter, shardingType);
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {

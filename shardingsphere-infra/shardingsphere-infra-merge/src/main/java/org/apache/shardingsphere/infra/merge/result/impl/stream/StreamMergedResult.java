@@ -56,7 +56,6 @@ public abstract class StreamMergedResult implements MergedResult {
         return result;
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         InputStream result = getCurrentQueryResult().getInputStream(columnIndex, type);

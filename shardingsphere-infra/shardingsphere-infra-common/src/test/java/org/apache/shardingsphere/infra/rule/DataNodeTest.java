@@ -22,9 +22,10 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class DataNodeTest {
     
@@ -53,10 +54,11 @@ public final class DataNodeTest {
     @Test
     public void assertEquals() {
         DataNode dataNode = new DataNode("ds_0.tbl_0");
-        assertTrue(dataNode.equals(new DataNode("ds_0.tbl_0")));
-        assertTrue(dataNode.equals(dataNode));
-        assertFalse(dataNode.equals(new DataNode("ds_0.tbl_1")));
+        assertThat(dataNode, is(new DataNode("ds_0.tbl_0")));
+        assertThat(dataNode, is(dataNode));
+        assertThat(dataNode, not(new DataNode("ds_0.tbl_1")));
         assertFalse(dataNode.equals(null));
+        assertNotNull(dataNode);
     }
     
     @Test
@@ -67,5 +69,10 @@ public final class DataNodeTest {
     @Test
     public void assertToString() {
         assertThat(new DataNode("ds_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0, tableName=tbl_0)"));
+    }
+    
+    @Test
+    public void assertRequiredArgsConstructor() {
+        assertNotNull(new DataNode("ds_0", "tbl_0"));
     }
 }

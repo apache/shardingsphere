@@ -19,28 +19,29 @@ package org.apache.shardingsphere.sharding.route.engine.condition;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 
 public final class ColumnTest {
     
     @Test
     public void assertEqualsForDifferentObjectType() {
-        assertFalse(new Column("col", "tbl").equals(new Object()));
+        assertThat(new Column("col", "tbl"), not(new Object()));
     }
     
     @Test
     public void assertEquals() {
-        assertTrue(new Column("col", "tbl").equals(new Column("COL", "TBL")));
+        assertThat(new Column("col", "tbl"), is(new Column("COL", "TBL")));
     }
     
     @Test
     public void assertNotEqualsWhenColumnNameIsDifferent() {
-        assertFalse(new Column("col", "tbl").equals(new Column("col1", "tbl")));
+        assertThat(new Column("col", "tbl"), not(new Column("col1", "tbl")));
     }
     
     @Test
     public void assertNotEqualsWhenTableNameIsDifferent() {
-        assertFalse(new Column("col", "tbl").equals(new Column("col", "tbl1")));
+        assertThat(new Column("col", "tbl"), not(new Column("col", "tbl1")));
     }
 }

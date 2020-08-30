@@ -35,9 +35,9 @@ import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.util.SafeRangeOperationUtils;
+import org.apache.shardingsphere.sql.parser.sql.util.SafeNumberOperationUtils;
+import org.apache.shardingsphere.sql.parser.sql.util.WhereSegmentExtractUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,9 +75,8 @@ public final class WhereClauseShardingConditionEngine {
         if (whereSegment.isPresent()) {
             result.addAll(createShardingConditions(sqlStatementContext, whereSegment.get().getAndPredicates(), parameters));
         }
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        Collection<WhereSegment> subqueryWhereSegments = sqlStatement instanceof SelectStatement
-                ? ((SelectStatement) sqlStatement).getSubqueryWhereSegments() : Collections.emptyList();
+        Collection<WhereSegment> subqueryWhereSegments = sqlStatementContext.getSqlStatement() instanceof SelectStatement
+                ? WhereSegmentExtractUtils.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
         for (WhereSegment each : subqueryWhereSegments) {
             Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(sqlStatementContext, each.getAndPredicates(), parameters);
             if (!result.containsAll(subqueryShardingConditions)) {
@@ -172,13 +171,13 @@ public final class WhereClauseShardingConditionEngine {
     }
     
     private Range<Comparable<?>> mergeRangeRouteValues(final Range<Comparable<?>> value1, final Range<Comparable<?>> value2) {
-        return null == value2 ? value1 : SafeRangeOperationUtils.safeIntersection(value1, value2);
+        return null == value2 ? value1 : SafeNumberOperationUtils.safeIntersection(value1, value2);
     }
     
     private Collection<Comparable<?>> mergeListAndRangeRouteValues(final Collection<Comparable<?>> listValue, final Range<Comparable<?>> rangeValue) {
         Collection<Comparable<?>> result = new LinkedList<>();
         for (Comparable<?> each : listValue) {
-            if (SafeRangeOperationUtils.safeContains(rangeValue, each)) {
+            if (SafeNumberOperationUtils.safeContains(rangeValue, each)) {
                 result.add(each);
             }
         }

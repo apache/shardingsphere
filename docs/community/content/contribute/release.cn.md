@@ -1,5 +1,5 @@
 +++
-title = "发布指南"
+title = "ShardingSphere发布指南"
 weight = 6
 chapter = true
 +++
@@ -178,7 +178,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 将本地文件检查无误后，提交至github。
 
 ```shell
-git push
+git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
 
@@ -256,6 +256,7 @@ shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling
 svn add *
 svn --username=${APACHE LDAP 用户名} commit -m "release ${RELEASE.VERSION}"
 ```
+
 ## 检查发布结果
 
 ### 检查sha512哈希
@@ -416,29 +417,6 @@ Checklist for reference:
 
 2. 宣布投票结果模板：
 
-正文：
-
-```
-The vote to release Apache ShardingSphere ${RELEASE.VERSION} has passed.
-
-7 PMC member +1 binding votes:
-
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-
-1 community +1 non-binding vote:
-xxx
-
-Thank you everyone for taking the time to review the release and help us. 
-```
-
-3. 宣布投票结果模板：
-
 标题：
 
 ```
@@ -477,17 +455,15 @@ svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.a
 ```shell
 git checkout master
 git merge origin/${RELEASE.VERSION}-release
-git push
+git pull
+git push origin master
 git push --delete origin ${RELEASE.VERSION}-release
+git branch -d ${RELEASE.VERSION}-release
 ```
 
 ### 修改README文件
 
 将`README.md`和`README_ZH.md`里的`${PREVIOUS.RELEASE.VERSION}`修改为`${RELEASE.VERSION}`
-
-将`Dockerfile`文件中的`CURRENT_VERSION`从`${RELEASE.VERSION}`修改为`${NEXT.RELEASE.VERSION}`
-
-将Maven的`Docker`插件的`imageName`从`${RELEASE.VERSION}`修改为`${NEXT.RELEASE.VERSION}`
 
 将`MySQLServerInfo.java`中的`SERVER_VERSION`从`${RELEASE.VERSION}`修改为`${NEXT.RELEASE.VERSION}`
 
@@ -510,6 +486,7 @@ GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `
 #### 编译Docker镜像
 
 ```shell
+git checkout ${RELEASE.VERSION}
 cd ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/
 mvn clean package -Prelease,docker
 ```

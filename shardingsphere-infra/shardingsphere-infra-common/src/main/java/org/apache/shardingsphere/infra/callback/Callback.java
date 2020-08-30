@@ -22,30 +22,31 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 
 /**
- * Call back.
+ * Callback.
  */
+// TODO rename schema based Callback
 public abstract class Callback<T> {
-
+    
     private final List<BiConsumer<String, T>> consumers = new CopyOnWriteArrayList<>();
-
+    
     /**
-     * Register big consumer.
+     * Register consumer.
      *
      * @param consumer consumer
      */
     public void register(final BiConsumer<String, T> consumer) {
         consumers.add(consumer);
     }
-
+    
     /**
-     * Run of biConsumer.
+     * Run consumer.
      *
-     * @param schemaName schemaName
-     * @param args args
+     * @param schemaName schema name
+     * @param arg another argument
      */
-    public void run(final String schemaName, final T args) {
+    public void run(final String schemaName, final T arg) {
         for (BiConsumer<String, T> each : consumers) {
-            each.accept(schemaName, args);
+            each.accept(schemaName, arg);
         }
     }
 }

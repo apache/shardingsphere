@@ -36,7 +36,7 @@ public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
     
     public PostgreSQLComStartupPacket(final PostgreSQLPacketPayload payload) {
         payload.skipReserved(8);
-        while (0 != payload.bytesBeforeZero()) {
+        while (payload.bytesBeforeZero() > 0) {
             parametersMap.put(payload.readStringNul(), payload.readStringNul());
         }
     }

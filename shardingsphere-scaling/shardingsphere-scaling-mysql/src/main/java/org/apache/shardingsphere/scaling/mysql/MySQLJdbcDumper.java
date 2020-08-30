@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
+import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.AbstractJDBCDumper;
 import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,29 +29,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * MySQL JDBC Dumper.
  */
 public final class MySQLJdbcDumper extends AbstractJDBCDumper {
     
-    public MySQLJdbcDumper(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
-        super(rdbmsConfiguration, dataSourceManager);
-        JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) getRdbmsConfiguration().getDataSourceConfiguration();
+    public MySQLJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfiguration, final DataSourceManager dataSourceManager) {
+        super(inventoryDumperConfiguration, dataSourceManager);
+        JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) getInventoryDumperConfiguration().getDataSourceConfiguration();
         jdbcDataSourceConfiguration.setJdbcUrl(fixMySQLUrl(jdbcDataSourceConfiguration.getJdbcUrl()));
-    }
-    
-    private String formatMySQLParams(final Map<String, String> params) {
-        StringBuilder result = new StringBuilder();
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-            result.append(entry.getKey());
-            if (null != entry.getValue()) {
-                result.append("=").append(entry.getValue());
-            }
-            result.append("&");
-        }
-        result.deleteCharAt(result.length() - 1);
-        return result.toString();
     }
     
     private String fixMySQLUrl(final String url) {
@@ -64,6 +52,19 @@ public final class MySQLJdbcDumper extends AbstractJDBCDumper {
             parameters.put("yearIsDateType", "false");
         }
         return formatMySQLParams(parameters);
+    }
+    
+    private String formatMySQLParams(final Map<String, String> params) {
+        StringBuilder result = new StringBuilder();
+        for (Entry<String, String> entry : params.entrySet()) {
+            result.append(entry.getKey());
+            if (null != entry.getValue()) {
+                result.append("=").append(entry.getValue());
+            }
+            result.append("&");
+        }
+        result.deleteCharAt(result.length() - 1);
+        return result.toString();
     }
     
     @Override
@@ -82,7 +83,7 @@ public final class MySQLJdbcDumper extends AbstractJDBCDumper {
     @Override
     protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
         PreparedStatement result = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        result.setFetchSize(Integer.MIN_VALUE);
+        result.setFetchSize(100);
         return result;
     }
 }

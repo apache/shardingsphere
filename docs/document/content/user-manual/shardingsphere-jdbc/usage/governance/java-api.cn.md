@@ -15,14 +15,14 @@ weight = 1
 <!-- 使用 ZooKeeper 时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-orchestration-center-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-orchestration-repository-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- 使用 Etcd 时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-orchestration-center-etcd</artifactId>
+    <artifactId>shardingsphere-orchestration-repository-etcd</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -36,20 +36,16 @@ weight = 1
 // ...
 
 // 配置配置/注册/元数据中心
-Properties props = new Properties();
-props.setProperty("overwrite", overwrite);
-CenterConfiguration centerConfiguration = new CenterConfiguration("zookeeper", props);
-centerConfiguration.setServerLists("localhost:2181");
-centerConfiguration.setNamespace("shardingsphere-orchestration");
-centerConfiguration.setOrchestrationType("registry_center,config_center,metadata_center");
+OrchestrationCenterConfiguration configuration = new OrchestrationCenterConfiguration("Zookeeper", "localhost:2181", new Properties());
 
 // 配置治理
-Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<String, CenterConfiguration>();
-instanceConfigurationMap.put("orchestration-shardingsphere-data-source", centerConfiguration);
+Map<String, CenterConfiguration> configurationMap = new HashMap<String, CenterConfiguration>();
+configurationMap.put("orchestration-shardingsphere-data-source", configuration);
 
 // 创建 OrchestrationShardingSphereDataSource
 DataSource dataSource = OrchestrationShardingSphereDataSourceFactory.createDataSource(
-        createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), new OrchestrationConfiguration(instanceConfigurationMap));
+        createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(),
+        new OrchestrationConfiguration("shardingsphere-orchestration", configurationMap, true));
 ```
 
 ## 使用 OrchestrationShardingSphereDataSource
@@ -61,7 +57,8 @@ DataSource dataSource = OrchestrationShardingSphereDataSourceFactory.createDataS
 
 ```java
 DataSource dataSource = OrchestrationShardingSphereDataSourceFactory.createDataSource(
-        createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), new OrchestrationConfiguration(instanceConfigurationMap));
+        createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+        new OrchestrationConfiguration("shardingsphere-orchestration", configurationMap, true));
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();

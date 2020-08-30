@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.impl;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.sql.SQLBuilder;
@@ -30,7 +29,6 @@ import java.util.Collections;
  * Abstract SQL builder.
  */
 @RequiredArgsConstructor
-@Getter
 public abstract class AbstractSQLBuilder implements SQLBuilder {
     
     private final SQLRewriteContext context;
@@ -42,7 +40,7 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
         }
         Collections.sort(context.getSqlTokens());
         StringBuilder result = new StringBuilder();
-        result.append(context.getSql().substring(0, context.getSqlTokens().get(0).getStartIndex()));
+        result.append(context.getSql(), 0, context.getSqlTokens().get(0).getStartIndex());
         for (SQLToken each : context.getSqlTokens()) {
             result.append(getSQLTokenText(each));
             result.append(getConjunctionText(each));

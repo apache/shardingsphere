@@ -312,6 +312,22 @@ public final class ShardingRule implements DataNodeRoutedRule {
     }
     
     /**
+     * Judge is generate key column or not.
+     *
+     * @param columnName column name
+     * @param tableName table name
+     * @return is generate key column or not
+     */
+    public boolean isGenerateKeyColumn(final String columnName, final String tableName) {
+        return tableRules.stream().anyMatch(each -> each.getLogicTable().equalsIgnoreCase(tableName) && isGenerateKeyColumn(each, columnName));
+    }
+    
+    private boolean isGenerateKeyColumn(final TableRule tableRule, final String columnName) {
+        Optional<String> generateKeyColumn = tableRule.getGenerateKeyColumn();
+        return generateKeyColumn.isPresent() && generateKeyColumn.get().equalsIgnoreCase(columnName);
+    }
+    
+    /**
      * Find column name of generated key.
      *
      * @param logicTableName logic table name

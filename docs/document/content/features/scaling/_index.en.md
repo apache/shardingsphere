@@ -25,7 +25,7 @@ Apache ShardingSphere provides users with great freedom in sharding strategies a
 So it's the first challenge that how to find a way can support kinds of sharding strategies and algorithms and scale data nodes efficiently.
 
 What's more, During the scaling process, it should not affect the running applications. 
-So It is a other big challenge for scaling to reduce the time window of data unavailability during the scaling as much as possible, or even completely unaware.
+So It is another big challenge for scaling to reduce the time window of data unavailability during the scaling as much as possible, or even completely unaware.
 
 Finally, scaling should not affect the existing data. How to ensure the availability and correctness of data is the third challenge of scaling.
 

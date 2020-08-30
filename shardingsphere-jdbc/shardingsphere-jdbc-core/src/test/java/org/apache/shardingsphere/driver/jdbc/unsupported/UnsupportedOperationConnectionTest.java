@@ -209,13 +209,6 @@ public final class UnsupportedOperationConnectionTest extends AbstractShardingSp
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertIsValid() throws SQLException {
-        for (ShardingSphereConnection each : shardingSphereConnections) {
-            each.isValid(0);
-        }
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetClientInfo() throws SQLException {
         for (ShardingSphereConnection each : shardingSphereConnections) {
             each.getClientInfo();

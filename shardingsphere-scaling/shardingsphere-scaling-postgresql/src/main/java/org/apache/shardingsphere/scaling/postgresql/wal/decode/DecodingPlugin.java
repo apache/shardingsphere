@@ -30,7 +30,7 @@ public interface DecodingPlugin {
     /**
      * Decode wal event from logical replication data.
      *
-     * @param data              of logical replication
+     * @param data of logical replication
      * @param logSequenceNumber wal lsn
      * @return wal event
      */

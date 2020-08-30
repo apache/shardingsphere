@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.type;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.util.HashMap;
@@ -27,6 +29,7 @@ import java.util.ServiceLoader;
 /**
  * Database types.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseTypes {
     
     private static final Map<String, DatabaseType> DATABASE_TYPES = new HashMap<>();
@@ -74,14 +77,10 @@ public final class DatabaseTypes {
      * @return database type
      */
     public static DatabaseType getDatabaseTypeByURL(final String url) {
-        return DATABASE_TYPES.values().stream().filter(each -> matchStandardURL(url, each) || matchURLAlias(url, each)).findAny().orElse(DATABASE_TYPES.get("SQL92"));
+        return DATABASE_TYPES.values().stream().filter(each -> matchURLs(url, each)).findAny().orElse(DATABASE_TYPES.get("SQL92"));
     }
     
-    private static boolean matchStandardURL(final String url, final DatabaseType databaseType) {
-        return url.startsWith(String.format("jdbc:%s:", databaseType.getName().toLowerCase()));
-    }
-    
-    private static boolean matchURLAlias(final String url, final DatabaseType databaseType) {
-        return databaseType.getJdbcUrlPrefixAlias().stream().anyMatch(url::startsWith);
+    private static boolean matchURLs(final String url, final DatabaseType databaseType) {
+        return databaseType.getJdbcUrlPrefixes().stream().anyMatch(url::startsWith);
     }
 }

@@ -104,12 +104,12 @@ public enum MySQLBinlogEventType {
     
     PREVIOUS_GTIDS_EVENT(0x23);
     
-    private static final Map<Integer, MySQLBinlogEventType> VALUE_AND_EVENT_TYPE_MAP = new HashMap<>(MySQLBinlogEventType.values().length, 1);
+    private static final Map<Integer, MySQLBinlogEventType> VALUE_AND_EVENT_TYPE_MAP = new HashMap<>(values().length, 1);
     
     private final int value;
     
     static {
-        for (MySQLBinlogEventType each : MySQLBinlogEventType.values()) {
+        for (MySQLBinlogEventType each : values()) {
             VALUE_AND_EVENT_TYPE_MAP.put(each.value, each);
         }
     }

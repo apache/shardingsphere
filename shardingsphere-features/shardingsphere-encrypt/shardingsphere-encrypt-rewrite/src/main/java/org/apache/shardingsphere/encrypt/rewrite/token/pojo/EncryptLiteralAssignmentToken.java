@@ -50,7 +50,7 @@ public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken 
     }
     
     @RequiredArgsConstructor
-    private final class LiteralAssignment {
+    private static final class LiteralAssignment {
         
         private final String columnName;
         

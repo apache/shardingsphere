@@ -272,21 +272,7 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingSph
             each.getRef("label");
         }
     }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetArrayForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets) {
-            each.getArray(1);
-        }
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetArrayForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets) {
-            each.getArray("label");
-        }
-    }
-    
+
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetRowIdForColumnIndex() throws SQLException {
         for (ResultSet each : resultSets) {

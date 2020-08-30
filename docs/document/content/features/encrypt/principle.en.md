@@ -69,7 +69,7 @@ As shown below:
 ![3](https://shardingsphere.apache.org/document/current/img/encrypt/3_en.png)
 
 This is also the core meaning of Apache ShardingSphere, which is to separate user SQL from the underlying data table structure according to the encryption rules provided by the user, 
-so that the SQL writter by user no longer depends on the actual database table structure. 
+so that the SQL writer by user no longer depends on the actual database table structure. 
 The connection, mapping, and conversion between the user and the underlying database are handled by Apache ShardingSphere. 
 Why should we do this? 
 It is still the same : in order to enable the online business to seamlessly, transparently and safely perform data encryption migration.

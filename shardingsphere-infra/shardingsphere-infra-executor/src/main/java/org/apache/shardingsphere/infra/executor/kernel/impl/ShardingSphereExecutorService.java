@@ -36,7 +36,7 @@ public final class ShardingSphereExecutorService {
     
     private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ShardingSphereThreadFactoryBuilder.build("Executor-Engine-Closer"));
     
-    private ListeningExecutorService executorService;
+    private final ListeningExecutorService executorService;
     
     public ShardingSphereExecutorService(final int executorSize) {
         this(executorSize, DEFAULT_NAME_FORMAT);

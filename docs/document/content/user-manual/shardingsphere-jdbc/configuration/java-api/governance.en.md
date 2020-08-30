@@ -9,33 +9,31 @@ weight = 6
 
 *Configuration Entrance*
 
-Class name: org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration
+Class name: org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration
 
 Attributes:
 
-| *Name*                   | *Data Type*                         | *Description*                                                                                                         |
-| ------------------------ | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| instanceConfigurationMap | Map\<String, CenterConfiguration\>  | Config map of config-center&registry-center, the key is orchestration name, the value is the orchestration instance |
+| *Name*                              | *Data Type*                         | *Description*                                                                                                       |
+| ----------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| name         | String  | Orchestration instance name |
+| registryCenterConfiguration         | OrchestrationCenterConfiguration  | Config of registry-center |
+| additionalConfigCenterConfiguration | OrchestrationCenterConfiguration  | Config additional of config-center |
+
+The type of registryCenter could be Zookeeper or etcd.
+The type of additional ConfigCenter could be Zookeeper or etcd, Apollo, Nacos.
 
 *Orchestration Instance Configuration*
 
-Class name: org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
+Class name: org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration
 
 Attributes:
 
-| *Name*            | *Data Type* | *Description*                                                                                                                               |
-| ----------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| orchestrationType | String      | Orchestration type, use commas to separate, such as: config_center,registry_center,metadata_center               |
-| instanceType      | String      | Orchestration instance type, such as: zookeeper, etcd, apollo, nacos                                                                                    |
-| serverLists       | String      | The list of servers that connect to orchestration instance, including IP and port number, use commas to separate, such as: host1:2181,host2:2181 |
-| namespace (?)     | String      | Orchestration namespace                                                                                                               |
-| props        | Properties      | Properties for center instance config, such as options of zookeeper                                                                         |
-
-Common Properties Configuration
-
-| *Name*          | *Data Type* | *Description*                                                                                                                             | *Default Value* |
-| --------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
-| overwrite       | boolean     | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations | false           |
+| *Name*        | *Data Type* | *Description*                                                                                                                                    |
+| ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| type          | String      | Orchestration instance type, such as: Zookeeper, etcd, Apollo, Nacos                                                                             |
+| serverLists   | String      | The list of servers that connect to orchestration instance, including IP and port number, use commas to separate, such as: host1:2181,host2:2181 |                                                                                                                    |
+| props         | Properties  | Properties for center instance config, such as options of zookeeper                                                                              |
+| overwrite       | boolean     | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations | 
 
 ZooKeeper Properties Configuration
 
@@ -73,30 +71,3 @@ Nacos Properties Configuration
 | ----------- | ----------- | ------------- | ----------------------------- |
 | group (?)   | String      | group         | SHARDING_SPHERE_DEFAULT_GROUP |
 | timeout (?) | long        | timeout       | 3000 milliseconds             |
-
-### Cluster
-
-*Configuration Entrance*
-
-Class name：org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration
-
-Attributes：
-
-| *Name*                    | *Data Type*                           | *Description*                                                            |
-| ------------------------ | ----------------------------------- | ----------------------------------------------------------------- |
-| heartbeat | HeartbeatConfiguration  | heartbeat detection configuration |
-
-*Heartbeat Detection Configuration*
-
-Class name：org.apache.shardingsphere.orchestration.center.config.HeartbeatConfiguration
-
-Attributes：
-
-| *Name*       | *Data Type* | *Description*                 |
-| ----------- | --------- | ---------------------- |
-| sql   | String    | Heartbeat detection SQL       |
-| interval | int      | Heartbeat detection task interval (s) |
-| threadCount   | int    | Thread pool size       |
-| retryEnable | Boolean      | Whether to enable retry, set true or false |
-| retryMaximum(?)   | int    | Maximum number of retry, effective when retryEnable is true      |
-| retryInterval(?) | int      | Retry interval (s), effective when retryEnable is true |

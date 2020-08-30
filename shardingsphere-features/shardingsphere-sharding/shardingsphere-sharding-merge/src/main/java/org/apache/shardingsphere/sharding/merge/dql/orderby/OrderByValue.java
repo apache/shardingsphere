@@ -55,7 +55,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
                         final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
         this.queryResult = queryResult;
         this.orderByItems = orderByItems;
-        this.orderValuesCaseSensitive = getOrderValuesCaseSensitive(selectStatementContext, schemaMetaData);
+        orderValuesCaseSensitive = getOrderValuesCaseSensitive(selectStatementContext, schemaMetaData);
     }
     
     private List<Boolean> getOrderValuesCaseSensitive(final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {

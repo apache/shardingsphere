@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
+import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,5 +37,12 @@ public final class BinlogPositionTest {
         assertThat(binlogPosition.compareTo(new BinlogPosition(fileName, 10)), is(0));
         assertThat(binlogPosition.compareTo(new BinlogPosition(fileName, 9)), is(1));
         assertThat(binlogPosition.compareTo(new BinlogPosition(fileName, 11)), is(-1));
+        assertThat(binlogPosition.compareTo(null), is(1));
+    }
+    
+    @Test
+    public void assertToJson() {
+        BinlogPosition binlogPosition = new BinlogPosition("mysql-bin.000001", 4);
+        assertThat(binlogPosition.toJson().toString(), is("{\"filename\":\"mysql-bin.000001\",\"position\":4}"));
     }
 }

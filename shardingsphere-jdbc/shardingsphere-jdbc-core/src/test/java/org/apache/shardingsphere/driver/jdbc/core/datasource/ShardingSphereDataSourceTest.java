@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.core.datasource;
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingTransactionManagerFixture;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
@@ -48,6 +47,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
@@ -99,7 +99,7 @@ public final class ShardingSphereDataSourceTest {
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
         try {
-            assertThat(createShardingSphereDataSource(dataSourceMap).getSchemaContexts().getSchemaContexts().get(DefaultSchema.LOGIC_NAME).getSchema().getDatabaseType(), 
+            assertThat(createShardingSphereDataSource(dataSourceMap).getSchemaContexts().getDatabaseType(),
                     instanceOf(H2DatabaseType.class));
         } finally {
             for (Connection each : connections) {
@@ -174,7 +174,7 @@ public final class ShardingSphereDataSourceTest {
         assertThat(connection.getConnection("ds"), is(dataSource.getConnection()));
         assertThat(connection.getDataSourceMap(), is(dataSourceMap));
         assertThat(connection.getTransactionType(), is(TransactionType.LOCAL));
-        assertThat(connection.getShardingTransactionManager() == null, is(true));
+        assertNull(connection.getShardingTransactionManager());
     }
     
     private ShardingSphereDataSource createShardingSphereDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {

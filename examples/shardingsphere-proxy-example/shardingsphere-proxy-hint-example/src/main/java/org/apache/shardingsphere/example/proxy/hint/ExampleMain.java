@@ -28,7 +28,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class ExampleMain {
+public final class ExampleMain {
     
     private static final HintType TYPE = HintType.DATABASE_TABLES;
 //    private static final HintType TYPE = HintType.DATABASE_ONLY;
@@ -42,7 +42,7 @@ public class ExampleMain {
         exampleService.cleanEnvironment();
     }
     
-    private static DataSource getDataSource() throws IOException, SQLException {
+    private static DataSource getDataSource() throws IOException {
         switch (TYPE) {
             case DATABASE_TABLES:
                 return YamlDataSourceFactory.createDataSource(getFile("/META-INF/hint-databases-tables.yaml"));

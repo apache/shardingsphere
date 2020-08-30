@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.core.parser;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
@@ -59,7 +58,7 @@ public final class SQLParserExecutor {
             return (ParseASTNode) sqlParser.parse();
         } catch (final ParseCancellationException ex) {
             ((Parser) sqlParser).reset();
-            ((Parser) sqlParser).setErrorHandler(new DefaultErrorStrategy());
+            ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
             return (ParseASTNode) sqlParser.parse();
         }

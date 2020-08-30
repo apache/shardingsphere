@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.record;
 
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 /**
  * Placeholder record.
  */
 public final class PlaceholderRecord extends Record {
     
-    public PlaceholderRecord(final LogPosition logPosition) {
-        super(logPosition);
+    public PlaceholderRecord(final Position position) {
+        super(position);
     }
 }

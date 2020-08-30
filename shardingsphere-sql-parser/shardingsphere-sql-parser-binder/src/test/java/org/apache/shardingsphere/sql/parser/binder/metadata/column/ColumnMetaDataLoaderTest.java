@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata.column;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -31,14 +32,14 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Iterator;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ColumnMetaDataLoaderTest {
+public final class ColumnMetaDataLoaderTest {
     
     private static final String TEST_CATALOG = "catalog";
     
@@ -49,9 +50,6 @@ public class ColumnMetaDataLoaderTest {
     
     @Mock
     private DatabaseMetaData databaseMetaData;
-    
-    @Mock
-    private ResultSet tableExistResultSet;
     
     @Mock
     private ResultSet primaryResultSet;

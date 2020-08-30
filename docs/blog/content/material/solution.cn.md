@@ -1,6 +1,6 @@
 +++
-title = "8.刚柔并济的开源分布式事务解决方案"
-weight = 9
+title = "刚柔并济的开源分布式事务解决方案"
+weight = 8
 chapter = true
 +++
 
@@ -21,7 +21,7 @@ chapter = true
 
 ---
 
-冯征，红帽软件工程师。2009年加入红帽软件公司，主要从事事务管理器方面的工作，做为核心开发人员参与了Narayan和Blacktie项目，在与多个应用服务器（Wildfly, Karaf, Tomcat）和框架（Common DBCP, Spring Boot）的事务处理集成方面有过贡献。从2017年开始参与了Apache ServiceComb项目，目前是PMC成员之一。对于分布式事务处理以及微服务环境中的事务处理，有过深入的研究。
+冯征，红帽软件工程师。2009年加入红帽软件公司，主要从事事务管理器方面的工作，做为核心开发人员参与了 Narayana 和 BlackTie 项目，在与多个应用服务器（Wildfly, Karaf, Tomcat）和框架（Common DBCP, Spring Boot）的事务处理集成方面有过贡献。从2017年开始参与了Apache ServiceComb项目，目前是PMC成员之一。对于分布式事务处理以及微服务环境中的事务处理，有过深入的研究。
 
 ### 导读
 
@@ -137,7 +137,7 @@ sharding-transaction模块由sharding-transaction-core，sharding-transaction-2p
 
 Sharding-transaction-xa模块进一步定义了面向XA事务管理器开发者的SPI，开发者仅需实现SPI定义的接口，即可自动加入至Apache ShardingSphere（Incubating）生态，作为其XA事务管理器。
 
-Apache ShardingSphere（Incubating）官方目前实现了基于Atomikos和Bitronix的SPI，并且邀请了Radhat JBoss的XA事务引擎Narayana [https://github.com/jbosstm/narayana] 开发团队实现了JBoss的SPI。用户可以自行的在Atomikos，Bitronix和Narayana间选择自己喜欢的XA事务管理器。
+Apache ShardingSphere（Incubating）官方目前实现了基于Atomikos和Bitronix的SPI，并且邀请了 Redhat JBoss 的XA事务引擎Narayana [https://github.com/jbosstm/narayana] 开发团队实现了JBoss的SPI。用户可以自行的在Atomikos，Bitronix和Narayana间选择自己喜欢的XA事务管理器。
 
 
 

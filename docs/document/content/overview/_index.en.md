@@ -31,7 +31,7 @@ Welcome communicate with community via [mail list](mailto:dev@shardingsphere.apa
 [![GitHub release](https://img.shields.io/github/release/apache/shardingsphere.svg)](https://github.com/apache/shardingsphere/releases)
 
 [![Build Status](https://api.travis-ci.org/apache/shardingsphere.svg?branch=master&status=created)](https://travis-ci.org/apache/shardingsphere)
-[![Coverage Status](https://coveralls.io/repos/github/apache/shardingsphere/badge.svg?branch=dev)](https://coveralls.io/github/apache/shardingsphere?branch=dev)
+[![codecov](https://codecov.io/gh/apache/shardingsphere/branch/master/graph/badge.svg)](https://codecov.io/gh/apache/shardingsphere)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/278600ed40ad48e988ab485b439abbcd)](https://www.codacy.com/app/terrymanu/sharding-sphere?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sharding-sphere/sharding-sphere&amp;utm_campaign=Badge_Grade)
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
@@ -81,7 +81,7 @@ They are all governed by the mesh layer.
 
 |                         | *ShardingSphere-JDBC* | *ShardingSphere-Proxy* | *ShardingSphere-Sidecar* |
 | ----------------------- | --------------------- | ---------------------- | ------------------------ |
-| Database                | Any                   | MySQL                  | MySQL                    |
+| Database                | Any                   | MySQL/PostgreSQL       | MySQL/PostgreSQL         |
 | Connections Count Cost  | High                  | Low                    | High                     |
 | Supported Languages     | Java Only             | Any                    | Any                      |
 | Performance             | Low loss              | Relatively High loss   | Low loss                 |

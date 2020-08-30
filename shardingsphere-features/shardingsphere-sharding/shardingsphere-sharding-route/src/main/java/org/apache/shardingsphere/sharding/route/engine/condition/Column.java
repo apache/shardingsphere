@@ -38,7 +38,7 @@ public final class Column {
     public boolean equals(final Object obj) {
         if (obj instanceof Column) {
             Column column = (Column) obj;
-            return Objects.equal(name.toUpperCase(), column.getName().toUpperCase()) && Objects.equal(tableName.toUpperCase(), column.getTableName().toUpperCase());
+            return Objects.equal(name.toUpperCase(), column.name.toUpperCase()) && Objects.equal(tableName.toUpperCase(), column.tableName.toUpperCase());
         }
         return false;
     }

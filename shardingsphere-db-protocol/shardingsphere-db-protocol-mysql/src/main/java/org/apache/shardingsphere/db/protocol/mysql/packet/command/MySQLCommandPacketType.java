@@ -255,15 +255,15 @@ public enum MySQLCommandPacketType implements CommandPacketType {
      */
     COM_RESET_CONNECTION(0x1f);
 
-    private static final Map<Integer, MySQLCommandPacketType> MYSQL_COMMAND_PACKET_TYPE_CACHE = new HashMap<Integer, MySQLCommandPacketType>() {
-        {
-            for (MySQLCommandPacketType each : MySQLCommandPacketType.values()) {
-                this.put(each.value, each);
-            }
-        }
-    };
+    private static final Map<Integer, MySQLCommandPacketType> MYSQL_COMMAND_PACKET_TYPE_CACHE = new HashMap<>();
     
     private final int value;
+    
+    static {
+        for (MySQLCommandPacketType each : values()) {
+            MYSQL_COMMAND_PACKET_TYPE_CACHE.put(each.value, each);
+        }
+    }
     
     /**
      * Value of integer.

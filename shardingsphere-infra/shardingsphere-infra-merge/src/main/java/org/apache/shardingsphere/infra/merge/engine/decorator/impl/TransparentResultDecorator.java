@@ -30,12 +30,12 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 public final class TransparentResultDecorator implements ResultDecorator {
     
     @Override
-    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) {
+    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final SchemaMetaData schemaMetaData) {
         return new TransparentMergedResult(queryResult);
     }
     
     @Override
-    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) {
+    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext<?> sqlStatementContext, final SchemaMetaData schemaMetaData) {
         return mergedResult;
     }
 }

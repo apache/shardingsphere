@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -58,21 +59,6 @@ public final class DataSourceConverter {
                 .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
     }
     
-    private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
-        bindAlias(dataSourceConfiguration);
-        DataSourceParameter result = new DataSourceParameter();
-        for (Field each : result.getClass().getDeclaredFields()) {
-            try {
-                each.setAccessible(true);
-                if (dataSourceConfiguration.getProps().containsKey(each.getName())) {
-                    each.set(result, dataSourceConfiguration.getProps().get(each.getName()));
-                }
-            } catch (final ReflectiveOperationException ignored) {
-            }
-        }
-        return result;
-    }
-    
     private static DataSourceParameter createDataSourceParameter(final YamlDataSourceParameter yamlDataSourceParameter) {
         DataSourceParameter result = new DataSourceParameter();
         result.setConnectionTimeoutMilliseconds(yamlDataSourceParameter.getConnectionTimeoutMilliseconds());
@@ -87,13 +73,28 @@ public final class DataSourceConverter {
         result.setUrl(yamlDataSourceParameter.getUrl());
         return result;
     }
+    
+    private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfig) {
+        bindSynonym(dataSourceConfig);
+        DataSourceParameter result = new DataSourceParameter();
+        for (Field each : result.getClass().getDeclaredFields()) {
+            try {
+                each.setAccessible(true);
+                if (dataSourceConfig.getProps().containsKey(each.getName())) {
+                    each.set(result, dataSourceConfig.getProps().get(each.getName()));
+                }
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
+        return result;
+    }
 
-    private static void bindAlias(final DataSourceConfiguration dataSourceConfiguration) {
-        dataSourceConfiguration.addAlias("url", "jdbcUrl");
-        dataSourceConfiguration.addAlias("user", "username");
-        dataSourceConfiguration.addAlias("connectionTimeout", "connectionTimeoutMilliseconds");
-        dataSourceConfiguration.addAlias("maxLifetime", "maxLifetimeMilliseconds");
-        dataSourceConfiguration.addAlias("idleTimeout", "idleTimeoutMilliseconds");
+    private static void bindSynonym(final DataSourceConfiguration dataSourceConfiguration) {
+        dataSourceConfiguration.addPropertySynonym("url", "jdbcUrl");
+        dataSourceConfiguration.addPropertySynonym("user", "username");
+        dataSourceConfiguration.addPropertySynonym("connectionTimeout", "connectionTimeoutMilliseconds");
+        dataSourceConfiguration.addPropertySynonym("maxLifetime", "maxLifetimeMilliseconds");
+        dataSourceConfiguration.addPropertySynonym("idleTimeout", "idleTimeoutMilliseconds");
     }
     
     /**
@@ -119,6 +120,28 @@ public final class DataSourceConverter {
         result.getProps().put("minPoolSize", dataSourceParameter.getMinPoolSize());
         result.getProps().put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
         result.getProps().put("readOnly", dataSourceParameter.isReadOnly());
+        return result;
+    }
+    
+    /**
+     * Get data source parameter.
+     *
+     * @param dataSource data source
+     * @return data source parameter
+     */
+    public static DataSourceParameter getDataSourceParameter(final DataSource dataSource) {
+        DataSourceParameter result = new DataSourceParameter();
+        HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
+        result.setUrl(hikariDataSource.getJdbcUrl());
+        result.setUsername(hikariDataSource.getUsername());
+        result.setPassword(hikariDataSource.getPassword());
+        result.setConnectionTimeoutMilliseconds(hikariDataSource.getConnectionTimeout());
+        result.setIdleTimeoutMilliseconds(hikariDataSource.getIdleTimeout());
+        result.setMaxLifetimeMilliseconds(hikariDataSource.getMaxLifetime());
+        result.setMaxPoolSize(hikariDataSource.getMaximumPoolSize());
+        result.setMinPoolSize(hikariDataSource.getMinimumIdle());
+        // TODO setMaintenanceIntervalMilliseconds
+        result.setReadOnly(hikariDataSource.isReadOnly());
         return result;
     }
 }

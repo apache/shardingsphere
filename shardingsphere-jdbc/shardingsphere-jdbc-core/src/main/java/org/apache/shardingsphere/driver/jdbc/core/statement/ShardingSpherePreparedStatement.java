@@ -268,7 +268,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
         SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
-        MergeEngine mergeEngine = new MergeEngine(schemaContext.getSchema().getDatabaseType(), 
+        MergeEngine mergeEngine = new MergeEngine(schemaContexts.getDatabaseType(),
                 schemaContext.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
@@ -400,9 +400,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private void clearStatements() throws SQLException {
-        statements.clear();
         for (Statement each : statements) {
             each.close();
         }
+        statements.clear();
     }
 }

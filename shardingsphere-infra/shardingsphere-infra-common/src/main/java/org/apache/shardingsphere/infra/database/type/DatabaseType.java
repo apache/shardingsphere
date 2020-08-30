@@ -38,7 +38,7 @@ public interface DatabaseType {
      * 
      * @return Alias of JDBC URL prefixes
      */
-    Collection<String> getJdbcUrlPrefixAlias();
+    Collection<String> getJdbcUrlPrefixes();
     
     /**
      * Get data source meta data.

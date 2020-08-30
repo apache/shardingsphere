@@ -49,7 +49,7 @@ public final class MockSeataServer {
     private final int port;
     
     @Getter
-    private MockMessageHandler messageHandler = new MockMessageHandler();
+    private final MockMessageHandler messageHandler = new MockMessageHandler();
     
     @Getter
     private final AtomicBoolean initialized = new AtomicBoolean(false);
@@ -93,8 +93,8 @@ public final class MockSeataServer {
     @SneakyThrows
     public void shutdown() {
         if (initialized.get()) {
-            this.bossGroup.shutdownGracefully();
-            this.workerGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
         }
     }
 }

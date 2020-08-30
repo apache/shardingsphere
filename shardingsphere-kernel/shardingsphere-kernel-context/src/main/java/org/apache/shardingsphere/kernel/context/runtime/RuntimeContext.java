@@ -18,10 +18,15 @@
 package org.apache.shardingsphere.kernel.context.runtime;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.sql.parser.SQLParserEngine;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
+/**
+ * Runtime context.
+ */
+@RequiredArgsConstructor
 @Getter
 public final class RuntimeContext {
     
@@ -29,15 +34,7 @@ public final class RuntimeContext {
     
     private final ExecutorKernel executorKernel;
     
-    private final SQLParserEngine sqlParserEngine;
+    private final ShardingSphereSQLParserEngine sqlParserEngine;
     
     private final ShardingTransactionManagerEngine transactionManagerEngine;
-    
-    public RuntimeContext(final CachedDatabaseMetaData cachedDatabaseMetaData, 
-                          final ExecutorKernel executorKernel, final SQLParserEngine sqlParserEngine, final ShardingTransactionManagerEngine transactionManagerEngine) {
-        this.cachedDatabaseMetaData = cachedDatabaseMetaData;
-        this.executorKernel = executorKernel;
-        this.sqlParserEngine = sqlParserEngine;
-        this.transactionManagerEngine = transactionManagerEngine;
-    }
 }

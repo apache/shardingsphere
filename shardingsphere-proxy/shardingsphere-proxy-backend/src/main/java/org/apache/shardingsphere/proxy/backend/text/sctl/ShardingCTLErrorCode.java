@@ -49,10 +49,10 @@ public enum ShardingCTLErrorCode implements SQLErrorCode {
      */
     public static ShardingCTLErrorCode valueOf(final ShardingCTLException exception) {
         if (exception instanceof InvalidShardingCTLFormatException) {
-            return ShardingCTLErrorCode.INVALID_FORMAT;
+            return INVALID_FORMAT;
         }
         if (exception instanceof UnsupportedShardingCTLTypeException) {
-            return ShardingCTLErrorCode.UNSUPPORTED_TYPE;
+            return UNSUPPORTED_TYPE;
         }
         throw new UnsupportedOperationException("Cannot find sharding CTL error code from exception: %s", exception);
     }

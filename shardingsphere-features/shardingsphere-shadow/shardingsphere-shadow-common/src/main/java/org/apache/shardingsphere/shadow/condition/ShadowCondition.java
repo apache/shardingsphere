@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Shadow condition.
@@ -70,7 +71,7 @@ public final class ShadowCondition {
      */
     public List<Object> getValues(final List<Object> parameters) {
         List<Object> result = new ArrayList<>(positionValueMap.values());
-        for (Map.Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
+        for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
             Object parameter = parameters.get(entry.getValue());
             if (entry.getKey() < result.size()) {
                 result.add(entry.getKey(), parameter);

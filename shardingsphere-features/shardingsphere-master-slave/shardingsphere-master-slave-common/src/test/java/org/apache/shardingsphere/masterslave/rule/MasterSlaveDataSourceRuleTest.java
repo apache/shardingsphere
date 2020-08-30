@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.masterslave.rule;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.algorithm.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.masterslave.algorithm.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -31,7 +34,7 @@ import static org.junit.Assert.assertThat;
 public final class MasterSlaveDataSourceRuleTest {
     
     private final MasterSlaveDataSourceRule masterSlaveDataSourceRule = new MasterSlaveDataSourceRule(
-            new MasterSlaveDataSourceRuleConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), "ramdon"), new RandomMasterSlaveLoadBalanceAlgorithm());
+            new MasterSlaveDataSourceRuleConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), "random"), new RandomMasterSlaveLoadBalanceAlgorithm());
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewMasterSlaveDataSourceRuleWithoutName() {
@@ -75,5 +78,12 @@ public final class MasterSlaveDataSourceRuleTest {
         masterSlaveDataSourceRule.updateDisabledDataSourceNames("slave_db_0", true);
         masterSlaveDataSourceRule.updateDisabledDataSourceNames("slave_db_0", false);
         assertThat(masterSlaveDataSourceRule.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
+    }
+    
+    @Test
+    public void assertGetDataSourceMapper() {
+        Map<String, Collection<String>> actual = masterSlaveDataSourceRule.getDataSourceMapper();
+        Map<String, Collection<String>> expected = ImmutableMap.of("test_ms", Arrays.asList("master_db", "slave_db_0", "slave_db_1"));
+        assertThat(actual, is(expected));
     }
 }

@@ -54,9 +54,9 @@ public final class TimeServiceConfiguration {
             Properties props = new Properties();
             props.load(inputStream);
             String dataSourceType = (String) props.remove("dataSourceType");
-            driverClassName = (String) props.get("driverClassName");
-            Class dataSourceClass = Class.forName(dataSourceType);
-            dataSource = (DataSource) dataSourceClass.newInstance();
+            driverClassName = props.getProperty("driverClassName");
+            Class<?> dataSourceClass = Class.forName(dataSourceType);
+            dataSource = (DataSource) dataSourceClass.getConstructor().newInstance();
             for (String each : props.stringPropertyNames()) {
                 PropertyDescriptor propertyDescriptor = new PropertyDescriptor(each, dataSourceClass);
                 Method writeMethod = propertyDescriptor.getWriteMethod();
@@ -64,9 +64,11 @@ public final class TimeServiceConfiguration {
             }
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | IntrospectionException | InvocationTargetException | IOException ex) {
             throw new TimeServiceInitException("please check your time-service.properties", ex);
+        } catch (final NoSuchMethodException ex) {
+            throw new TimeServiceInitException(ex.getMessage(), ex);
         }
     }
-
+    
     /**
      * Get configuration instance.
      * 

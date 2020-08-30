@@ -48,7 +48,7 @@ SELECT * FROM t_order WHERE id > 100000 LIMIT 10
 
 ## Pagination Sub-query
 
-Both Oracle and SQLServer paginations need to be processed by sub-query, ShardingSphere supports pagination related sub-query.
+Both Oracle and SQLServer pagination need to be processed by sub-query, ShardingSphere supports pagination related sub-query.
 
 - Oracle
 

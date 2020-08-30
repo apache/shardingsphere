@@ -34,7 +34,7 @@ public final class SQL92DatabaseType implements DatabaseType {
     }
     
     @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
+    public Collection<String> getJdbcUrlPrefixes() {
         return Collections.emptyList();
     }
     

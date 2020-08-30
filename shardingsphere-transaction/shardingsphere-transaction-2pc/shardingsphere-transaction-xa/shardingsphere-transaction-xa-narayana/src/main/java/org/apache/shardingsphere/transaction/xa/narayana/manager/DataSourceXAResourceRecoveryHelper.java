@@ -81,11 +81,11 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     }
     
     private boolean connect() {
-        if (this.delegate == null) {
+        if (null == delegate) {
             try {
-                this.xaConnection = getXaConnection();
-                this.delegate = this.xaConnection.getXAResource();
-            } catch (SQLException ex) {
+                xaConnection = getXaConnection();
+                delegate = xaConnection.getXAResource();
+            } catch (final SQLException ex) {
                 log.warn("Failed to create connection", ex);
                 return false;
             }
@@ -94,16 +94,16 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     }
     
     private XAConnection getXaConnection() throws SQLException {
-        if (this.user == null && this.password == null) {
-            return this.xaDataSource.getXAConnection();
+        if (null == user && null == password) {
+            return xaDataSource.getXAConnection();
         }
-        return this.xaDataSource.getXAConnection(this.user, this.password);
+        return xaDataSource.getXAConnection(user, password);
     }
     
     @Override
     public Xid[] recover(final int flag) throws XAException {
         try {
-            return getDelegate(true).recover(flag);
+            return getDelegate().recover(flag);
         } finally {
             if (flag == XAResource.TMENDRSCAN) {
                 disconnect();
@@ -113,64 +113,64 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     
     private void disconnect() {
         try {
-            this.xaConnection.close();
-        } catch (SQLException e) {
-            log.warn("Failed to close connection", e);
+            xaConnection.close();
+        } catch (final SQLException ex) {
+            log.warn("Failed to close connection", ex);
         } finally {
-            this.xaConnection = null;
-            this.delegate = null;
+            xaConnection = null;
+            delegate = null;
         }
     }
     
     @Override
     public void start(final Xid xid, final int flags) throws XAException {
-        getDelegate(true).start(xid, flags);
+        getDelegate().start(xid, flags);
     }
     
     @Override
     public void end(final Xid xid, final int flags) throws XAException {
-        getDelegate(true).end(xid, flags);
+        getDelegate().end(xid, flags);
     }
     
     @Override
     public int prepare(final Xid xid) throws XAException {
-        return getDelegate(true).prepare(xid);
+        return getDelegate().prepare(xid);
     }
     
     @Override
     public void commit(final Xid xid, final boolean onePhase) throws XAException {
-        getDelegate(true).commit(xid, onePhase);
+        getDelegate().commit(xid, onePhase);
     }
     
     @Override
     public void rollback(final Xid xid) throws XAException {
-        getDelegate(true).rollback(xid);
+        getDelegate().rollback(xid);
     }
     
     @Override
     public boolean isSameRM(final XAResource xaResource) throws XAException {
-        return getDelegate(true).isSameRM(xaResource);
+        return getDelegate().isSameRM(xaResource);
     }
     
     @Override
     public void forget(final Xid xid) throws XAException {
-        getDelegate(true).forget(xid);
+        getDelegate().forget(xid);
     }
     
     @Override
     public int getTransactionTimeout() throws XAException {
-        return getDelegate(true).getTransactionTimeout();
+        return getDelegate().getTransactionTimeout();
     }
     
     @Override
     public boolean setTransactionTimeout(final int seconds) throws XAException {
-        return getDelegate(true).setTransactionTimeout(seconds);
+        return getDelegate().setTransactionTimeout(seconds);
     }
     
-    private XAResource getDelegate(final boolean required) {
-        if (this.delegate == null && required) {
+    private XAResource getDelegate() {
+        if (null == delegate) {
             throw new IllegalStateException("Connection has not been opened");
         }
-        return this.delegate;
+        return delegate;
     }
 }

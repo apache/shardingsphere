@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.scaling.core.job.task;
 
-import java.util.Collection;
-
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
+import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDataScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTaskGroup;
+
+import java.util.Collection;
 
 /**
  * Default sync task factory.
@@ -31,17 +33,17 @@ import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataSc
 public final class DefaultSyncTaskFactory implements SyncTaskFactory {
     
     @Override
-    public InventoryDataScalingTaskGroup createInventoryDataSyncTaskGroup(final Collection<ScalingTask> inventoryDataScalingTasks) {
+    public InventoryDataScalingTaskGroup createInventoryDataSyncTaskGroup(final Collection<ScalingTask<InventoryPosition>> inventoryDataScalingTasks) {
         return new InventoryDataScalingTaskGroup(inventoryDataScalingTasks);
     }
     
     @Override
-    public InventoryDataScalingTask createInventoryDataSyncTask(final SyncConfiguration syncConfiguration) {
-        return new InventoryDataScalingTask(syncConfiguration);
+    public InventoryDataScalingTask createInventoryDataSyncTask(final InventoryDumperConfiguration inventoryDumperConfiguration, final ImporterConfiguration importerConfiguration) {
+        return new InventoryDataScalingTask(inventoryDumperConfiguration, importerConfiguration);
     }
     
     @Override
-    public IncrementalDataScalingTask createIncrementalDataSyncTask(final SyncConfiguration syncConfiguration, final LogPosition logPosition) {
-        return new IncrementalDataScalingTask(syncConfiguration, logPosition);
+    public IncrementalDataScalingTask createIncrementalDataSyncTask(final int concurrency, final DumperConfiguration dumperConfiguration, final ImporterConfiguration importerConfiguration) {
+        return new IncrementalDataScalingTask(concurrency, dumperConfiguration, importerConfiguration);
     }
 }

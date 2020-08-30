@@ -1,6 +1,6 @@
 +++
-title = "9.分布式事务在Sharding-Sphere中的实现"
-weight = 10
+title = "分布式事务在Sharding-Sphere中的实现"
+weight = 12
 chapter = true
 +++
 
@@ -275,7 +275,7 @@ Atomikos事务管理器原理分析
 
 Atomikos的事务管理器可以内嵌到业务进程中，当应用调用TransactionManager.begin时，将会创建本次XA事务，并且与当前线程关联。同时Atomikos也对DataSource中的connection做了二次封装，代理connection中含有本次事务相关信息的状态，并且拦截了connection的JDBC操作。
 
-在createStatement时，调用XAResource.start进行资源注册；在close时，调用XAResource.end让XA事务处于idel可提交状态；在commit或rollback时，依次调用prepare和commit进行二阶段提交。
+在createStatement时，调用XAResource.start进行资源注册；在close时，调用XAResource.end让XA事务处于idle可提交状态；在commit或rollback时，依次调用prepare和commit进行二阶段提交。
 
 **Sharding-Sphere的Saga事务实现**
 

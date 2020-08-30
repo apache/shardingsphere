@@ -1,6 +1,6 @@
 +++
 pre = "<b>5. </b>"
-title = "开发者指南"
+title = "开发者手册"
 weight = 5
 chapter = true
 +++

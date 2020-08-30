@@ -52,7 +52,7 @@
         <property name="password" value=""/>
     </bean>
     
-    <sharding:sharding-algorithm id="databaseIineStrategyShardingAlgorithm" type="INLINE">
+    <sharding:sharding-algorithm id="databaseInlineStrategyShardingAlgorithm" type="INLINE">
         <props>
             <prop key="algorithm.expression">demo_ds_${user_id % 2}</prop>
         </props>
@@ -70,7 +70,7 @@
         </props>
     </sharding:sharding-algorithm>
     
-    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseIineStrategyShardingAlgorithm"/>
+    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseInlineStrategyShardingAlgorithm"/>
     
     <sharding:standard-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-ref="orderInlineStrategyShardingAlgorithm"/>
     
@@ -99,7 +99,7 @@
     </sharding:rule>
     
     <shardingsphere:data-source id="realShardingDatabasesTablesDataSource" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule" />
-    <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" instance-ref="regCenter" />
+    <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" reg-center-ref="regCenter" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shardingDatabasesTablesDataSource" />

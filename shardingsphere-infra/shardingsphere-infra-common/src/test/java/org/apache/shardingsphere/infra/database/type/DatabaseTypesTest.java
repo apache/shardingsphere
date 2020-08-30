@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.type;
 
+import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.junit.Test;
 
@@ -24,6 +26,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class DatabaseTypesTest {
+    
+    @Test
+    public void assertGetTrunkDatabaseTypeNameWithMasterDatabaseType() {
+        assertThat(DatabaseTypes.getTrunkDatabaseTypeName(new MySQLDatabaseType()), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetTrunkDatabaseTypeNameWithBranchDatabaseType() {
+        assertThat(DatabaseTypes.getTrunkDatabaseTypeName(new MariaDBDatabaseType()), is("MySQL"));
+    }
     
     @Test
     public void assertGetActualDatabaseType() {

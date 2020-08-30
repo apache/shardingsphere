@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql92.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CheckConstraintDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AlterTableContext;
@@ -81,6 +82,9 @@ public final class SQL92DDLVisitor extends SQL92Visitor implements DDLVisitor {
             if (null != each.constraintDefinition()) {
                 result.getValue().add((ConstraintDefinitionSegment) visit(each.constraintDefinition()));
             }
+            if (null != each.checkConstraintDefinition()) {
+                result.getValue().add((ConstraintDefinitionSegment) visit(each.checkConstraintDefinition()));
+            }
         }
         return result;
     }
@@ -98,6 +102,11 @@ public final class SQL92DDLVisitor extends SQL92Visitor implements DDLVisitor {
             }
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitCheckConstraintDefinition(final CheckConstraintDefinitionContext ctx) {
+        return new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
     }
     
     private boolean isPrimaryKey(final ColumnDefinitionContext ctx) {

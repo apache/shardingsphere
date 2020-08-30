@@ -32,6 +32,38 @@
             display: none;
         }
       {{ end }}
+      
+      {{ if .Params.extracss }}
+        #TableOfContents {
+          display: none;
+        }
+        h2, #latest-releases {
+          color:#272822; 
+          padding:0.3rem; 
+          padding-left: 0px; 
+          border-radius:2px; 
+          letter-spacing:-1px; 
+          font-size:1.3rem; 
+          margin: 2rem 0 1rem 0; 
+          font-weight:bold;
+        }
+        #latest-releases {
+          margin: 0rem 0 1rem 0;
+        }
+        h5 {
+          border: 0px solid #405871; 
+          background-color: rgba(110, 141, 173, 0.87); 
+          color:rgba(255, 255, 255, 0.99); 
+          padding:0.3rem; 
+          padding-left: 12px; 
+          border-radius:5px; 
+          font-size: 14.5px;
+          letter-spacing:0.1px;
+        }
+        pre {
+          margin: 1rem 0 1rem 0;
+        }
+      {{ end }}
     </style>
     {{ partial "custom-header.html" . }}
   </head>

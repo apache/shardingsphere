@@ -16,10 +16,8 @@
 #
 
 orchestration:
-  demo_yaml_ds_sharding:
-    orchestrationType: config_center,registry_center,metadata_center
-    instanceType: zookeeper
+  name: demo_yaml_ds_sharding
+  registryCenter:
+    type: ZooKeeper
     serverLists: localhost:2181
-    namespace: orchestration-yaml-demo
-    props:
-      overwrite: false
+  overwrite: false

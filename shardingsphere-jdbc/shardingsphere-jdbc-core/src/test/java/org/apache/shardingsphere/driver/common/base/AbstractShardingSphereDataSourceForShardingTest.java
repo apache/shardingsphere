@@ -35,6 +35,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class AbstractShardingSphereDataSourceForShardingTest extends AbstractSQLTest {
     
@@ -53,7 +54,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     }
     
     private static Map<String, DataSource> getDataSourceMap() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), SHARDING_DB_NAMES::contains);
+        return Maps.filterKeys(getDATABASE_TYPE_MAP().values().iterator().next(), SHARDING_DB_NAMES::contains);
     }
     
     private static File getFile(final String fileName) {
@@ -65,10 +66,10 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     public void initTable() {
         try {
             ShardingSphereConnection conn = shardingSphereDataSource.getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_data.sql")));
+            RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_data.sql"))));
             conn.close();
         } catch (final SQLException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
     

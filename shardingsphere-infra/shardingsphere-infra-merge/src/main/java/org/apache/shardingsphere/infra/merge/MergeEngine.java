@@ -55,6 +55,7 @@ public final class MergeEngine {
     
     private final ConfigurationProperties props;
     
+    @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, ResultProcessEngine> engines;
     
     public MergeEngine(final DatabaseType databaseType, final SchemaMetaData schemaMetaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
@@ -72,14 +73,14 @@ public final class MergeEngine {
      * @return merged result
      * @throws SQLException SQL exception
      */
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         Optional<MergedResult> mergedResult = executeMerge(queryResults, sqlStatementContext);
         Optional<MergedResult> result = mergedResult.isPresent() ? Optional.of(decorate(mergedResult.get(), sqlStatementContext)) : decorate(queryResults.get(0), sqlStatementContext);
         return result.orElseGet(() -> new TransparentMergedResult(queryResults.get(0)));
     }
     
-    @SuppressWarnings("unchecked")
-    private Optional<MergedResult> executeMerge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Optional<MergedResult> executeMerge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultMergerEngine) {
                 ResultMerger resultMerger = ((ResultMergerEngine) entry.getValue()).newInstance(databaseType, entry.getKey(), props, sqlStatementContext);
@@ -89,8 +90,8 @@ public final class MergeEngine {
         return Optional.empty();
     }
     
-    @SuppressWarnings("unchecked")
-    private MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext) throws SQLException {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         MergedResult result = null;
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
@@ -101,8 +102,8 @@ public final class MergeEngine {
         return null == result ? mergedResult : result;
     }
     
-    @SuppressWarnings("unchecked")
-    private Optional<MergedResult> decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext) throws SQLException {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Optional<MergedResult> decorate(final QueryResult queryResult, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         MergedResult result = null;
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {

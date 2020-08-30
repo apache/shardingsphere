@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.task.incremental;
 
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -34,5 +34,5 @@ public final class IncrementalDataSyncTaskProgress implements SyncProgress {
     
     private final long delayMillisecond;
     
-    private final LogPosition logPosition;
+    private final Position position;
 }

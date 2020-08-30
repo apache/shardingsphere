@@ -20,17 +20,17 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
-import java.time.LocalDateTime;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class ResultSetUtilTest {
@@ -45,7 +45,7 @@ public final class ResultSetUtilTest {
     public void assertConvertLocalDateTime() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         LocalDateTime dateTime = (LocalDateTime) ResultSetUtil.convertValue(timestamp, LocalDateTime.class);
-        Assert.assertNotNull(dateTime);
+        assertNotNull(dateTime);
         assertThat(dateTime.toString(), is(timestamp.toLocalDateTime().toString()));
     }
     
@@ -57,8 +57,8 @@ public final class ResultSetUtilTest {
         assertThat(ResultSetUtil.convertValue((short) 1, short.class), is((short) 1));
         assertThat(ResultSetUtil.convertValue(new BigDecimal("1"), int.class), is(1));
         assertThat(ResultSetUtil.convertValue(new BigDecimal("1"), long.class), is(1L));
-        assertThat(ResultSetUtil.convertValue(new BigDecimal("1"), double.class), is(1d));
-        assertThat(ResultSetUtil.convertValue(new BigDecimal("1"), float.class), is(1f));
+        assertThat(ResultSetUtil.convertValue(new BigDecimal("1"), double.class), is(1.0d));
+        assertThat(ResultSetUtil.convertValue(new BigDecimal("1"), float.class), is(1.0f));
         assertThat(ResultSetUtil.convertValue(new BigDecimal("1"), BigDecimal.class), is(new BigDecimal("1")));
         assertThat(ResultSetUtil.convertValue((short) 1, BigDecimal.class), is(new BigDecimal("1")));
         assertThat(ResultSetUtil.convertValue(new Date(0L), Date.class), is(new Date(0L)));
@@ -78,8 +78,8 @@ public final class ResultSetUtilTest {
         assertThat(ResultSetUtil.convertValue(null, short.class), is((short) 0));
         assertThat(ResultSetUtil.convertValue(null, int.class), is(0));
         assertThat(ResultSetUtil.convertValue(null, long.class), is(0L));
-        assertThat(ResultSetUtil.convertValue(null, double.class), is(0D));
-        assertThat(ResultSetUtil.convertValue(null, float.class), is(0F));
+        assertThat(ResultSetUtil.convertValue(null, double.class), is(0.0D));
+        assertThat(ResultSetUtil.convertValue(null, float.class), is(0.0F));
         assertThat(ResultSetUtil.convertValue(null, String.class), is((Object) null));
         assertThat(ResultSetUtil.convertValue(null, Object.class), is((Object) null));
         assertThat(ResultSetUtil.convertValue(null, BigDecimal.class), is((Object) null));
@@ -98,14 +98,14 @@ public final class ResultSetUtilTest {
     
     @Test
     public void assertConvertByteArrayValueSuccess() {
-        byte[] bytesValue = new byte[] {};
+        byte[] bytesValue = {};
         assertThat(ResultSetUtil.convertValue(bytesValue, byte.class), is(bytesValue));
         assertThat(ResultSetUtil.convertValue(new byte[] {1}, byte.class), is((byte) 1));
         assertThat(ResultSetUtil.convertValue(Shorts.toByteArray((short) 1), short.class), is((short) 1));
         assertThat(ResultSetUtil.convertValue(Ints.toByteArray(1), int.class), is(1));
         assertThat(ResultSetUtil.convertValue(Longs.toByteArray(1L), long.class), is(1L));
-        assertThat(ResultSetUtil.convertValue(Longs.toByteArray(1L), double.class), is(1d));
-        assertThat(ResultSetUtil.convertValue(Longs.toByteArray(1L), float.class), is(1f));
+        assertThat(ResultSetUtil.convertValue(Longs.toByteArray(1L), double.class), is(1.0d));
+        assertThat(ResultSetUtil.convertValue(Longs.toByteArray(1L), float.class), is(1.0f));
         assertThat(ResultSetUtil.convertValue(Longs.toByteArray(1L), BigDecimal.class), is(new BigDecimal("1")));
     }
     

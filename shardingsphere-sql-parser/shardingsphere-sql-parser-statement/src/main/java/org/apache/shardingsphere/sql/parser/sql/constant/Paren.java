@@ -40,7 +40,7 @@ public enum Paren {
      * @return is left paren or not
      */
     public static boolean isLeftParen(final char token) {
-        for (Paren each : Paren.values()) {
+        for (Paren each : values()) {
             if (each.leftParen == token) {
                 return true;
             }
@@ -56,7 +56,7 @@ public enum Paren {
      * @return match or not
      */
     public static boolean match(final char leftToken, final char rightToken) {
-        for (Paren each : Paren.values()) {
+        for (Paren each : values()) {
             if (each.leftParen == leftToken && each.rightParen == rightToken) {
                 return true;
             }

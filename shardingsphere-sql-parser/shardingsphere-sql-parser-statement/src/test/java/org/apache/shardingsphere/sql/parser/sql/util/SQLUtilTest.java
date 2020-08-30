@@ -88,5 +88,6 @@ public final class SQLUtilTest {
     @Test
     public void assertGetExpressionWithoutOutsideParentheses() {
         assertThat(SQLUtil.getExpressionWithoutOutsideParentheses("((a + b*c))"), is("a + b*c"));
+        assertThat(SQLUtil.getExpressionWithoutOutsideParentheses(""), is(""));
     }
 }

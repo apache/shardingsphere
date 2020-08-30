@@ -56,26 +56,25 @@ public final class ProjectionsContextEngine {
     /**
      * Create projections context.
      *
-     * @param sql SQL
      * @param tables tables
      * @param projectionsSegment projection Segments
      * @param groupByContext group by context
      * @param orderByContext order by context
      * @return projections context
      */
-    public ProjectionsContext createProjectionsContext(final String sql, final Collection<SimpleTableSegment> tables, final ProjectionsSegment projectionsSegment,
+    public ProjectionsContext createProjectionsContext(final Collection<SimpleTableSegment> tables, final ProjectionsSegment projectionsSegment,
                                                        final GroupByContext groupByContext, final OrderByContext orderByContext) {
-        Collection<Projection> projections = getProjections(sql, tables, projectionsSegment);
+        Collection<Projection> projections = getProjections(tables, projectionsSegment);
         ProjectionsContext result = new ProjectionsContext(projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections);
         result.getProjections().addAll(getDerivedGroupByColumns(projections, groupByContext, tables));
         result.getProjections().addAll(getDerivedOrderByColumns(projections, orderByContext, tables));
         return result;
     }
     
-    private Collection<Projection> getProjections(final String sql, final Collection<SimpleTableSegment> tableSegments, final ProjectionsSegment projectionsSegment) {
+    private Collection<Projection> getProjections(final Collection<SimpleTableSegment> tableSegments, final ProjectionsSegment projectionsSegment) {
         Collection<Projection> result = new LinkedList<>();
         for (ProjectionSegment each : projectionsSegment.getProjections()) {
-            projectionEngine.createProjection(sql, tableSegments, each).ifPresent(result::add);
+            projectionEngine.createProjection(tableSegments, each).ifPresent(result::add);
         }
         return result;
     }

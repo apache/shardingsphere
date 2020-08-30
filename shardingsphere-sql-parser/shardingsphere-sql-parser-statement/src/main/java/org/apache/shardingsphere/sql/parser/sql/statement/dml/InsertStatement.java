@@ -26,6 +26,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.ArrayList;
@@ -48,7 +50,11 @@ public final class InsertStatement extends DMLStatement {
     
     private SetAssignmentSegment setAssignment;
     
+    private SubquerySegment insertSelect;
+    
     private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
+    
+    private WithSegment withSegment;
     
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
     
@@ -80,12 +86,30 @@ public final class InsertStatement extends DMLStatement {
     }
     
     /**
+     * Get insert select segment.
+     *
+     * @return insert select segment
+     */
+    public Optional<SubquerySegment> getInsertSelect() {
+        return Optional.ofNullable(insertSelect);
+    }
+    
+    /**
      * Get on duplicate key columns segment.
      *
      * @return on duplicate key columns segment
      */
     public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
         return Optional.ofNullable(onDuplicateKeyColumns);
+    }
+    
+    /**
+     * Get with segment.
+     * 
+     * @return with segment.
+     */
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.ofNullable(withSegment);
     }
     
     /**
@@ -142,6 +166,9 @@ public final class InsertStatement extends DMLStatement {
         }
         if (null != setAssignment) {
             return setAssignment.getAssignments().size();
+        }
+        if (null != insertSelect) {
+            return insertSelect.getSelect().getProjections().getProjections().size();
         }
         return 0;
     }

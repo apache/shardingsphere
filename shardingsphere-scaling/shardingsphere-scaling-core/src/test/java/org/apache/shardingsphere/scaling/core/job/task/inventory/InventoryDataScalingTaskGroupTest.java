@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
-import org.apache.shardingsphere.scaling.core.job.SyncProgress;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.job.SyncProgress;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.junit.After;
 import org.junit.Before;

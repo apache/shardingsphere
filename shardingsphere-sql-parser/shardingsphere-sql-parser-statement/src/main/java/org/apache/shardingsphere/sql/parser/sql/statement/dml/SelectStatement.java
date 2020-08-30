@@ -26,10 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableSegment;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -68,7 +65,7 @@ public final class SelectStatement extends DMLStatement {
     
     /**
      * Get group by segment.
-     * 
+     *
      * @return group by segment
      */
     public Optional<GroupBySegment> getGroupBy() {
@@ -100,23 +97,5 @@ public final class SelectStatement extends DMLStatement {
      */
     public Optional<LockSegment> getLock() {
         return Optional.ofNullable(lock);
-    }
-    
-    /**
-     * Get subquery where segment.
-     *
-     * @return subquery where segment collection.
-     */
-    public Collection<WhereSegment> getSubqueryWhereSegments() {
-        Collection<WhereSegment> subqueryWhereSegments = new ArrayList<>();
-        for (TableReferenceSegment each : tableReferences) {
-            TableSegment tableSegment = each.getTableFactor().getTable();
-            if (!(tableSegment instanceof SubqueryTableSegment)) {
-                continue;
-            }
-            Optional<WhereSegment> whereSegment = ((SubqueryTableSegment) tableSegment).getSubquery().getSelect().getWhere();
-            whereSegment.ifPresent(subqueryWhereSegments::add);
-        }
-        return subqueryWhereSegments;
     }
 }

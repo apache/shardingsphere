@@ -1,6 +1,6 @@
 +++
-title = "7.揭秘Sharding-Proxy——面向DBA的数据库中间层"
-weight = 8
+title = "揭秘Sharding-Proxy——面向DBA的数据库中间层"
+weight = 13
 chapter = true
 +++
 
@@ -103,7 +103,7 @@ useServerPrepStmts=true&cachePrepStmts=true
 
 从第5条消息开始，每次查询只传参数值就可以了，终于达到了一次编译多次运行的效果，MySQL的效率得到了提高。而且由于ExecuteStatement只传了参数的值，消息长度上比完整的SQL短了很多，网络IO的效率也得到了提升。
 
-原来cachePrepStmts=true这个参数的意思是告诉JDBC缓存需要prepare的SQL，比如“SELECT*FROMt_orderWHEREuser_id=?”，运行过一次后，下次再运行就跳过PreparedStatement，直接用ExecuteStatement设置参数值。
+原来cachePrepStmts=true这个参数的意思是告诉JDBC缓存需要prepare的SQL，比如“SELECT * FROM t_order WHERE user_id=?”，运行过一次后，下次再运行就跳过PreparedStatement，直接用ExecuteStatement设置参数值。
 
 明白原理后，就知道该怎么优化Proxy了。Proxy采用的是Hikari数据库连接池，在初始化的时候为其设置上面的两个参数：
 

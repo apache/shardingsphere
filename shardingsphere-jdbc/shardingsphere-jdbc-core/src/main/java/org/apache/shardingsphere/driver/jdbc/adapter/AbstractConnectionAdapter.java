@@ -93,7 +93,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        DataSource dataSource = getDataSourceMap().get(dataSourceName);
+        DataSource dataSource = dataSourceMap.get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
         synchronized (cachedConnections) {
@@ -153,13 +153,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     protected abstract Connection createConnection(String dataSourceName, DataSource dataSource) throws SQLException;
     
-    @SuppressWarnings("MagicConstant")
     @Override
     public final Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
         return connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
     }
     
-    @SuppressWarnings("MagicConstant")
     @Override
     public final PreparedStatement createStorageResource(final String sql, final List<Object> parameters, 
                                                          final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
@@ -237,14 +235,26 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         recordMethodInvocation(Connection.class, "setTransactionIsolation", new Class[]{int.class}, new Object[]{level});
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setTransactionIsolation(level));
     }
+
+    @Override
+    public final boolean isValid(final int timeout) throws SQLException {
+        for (Connection connection : cachedConnections.values()) {
+            if (!connection.isValid(timeout)) {
+                return false;
+            }
+        }
+        return true;
+    }
     
     // ------- Consist with MySQL driver implementation -------
     
+    @SuppressWarnings("ReturnOfNull")
     @Override
     public final SQLWarning getWarnings() {
         return null;
     }
     
+    @SuppressWarnings("NoopMethodInAbstractClass")
     @Override
     public void clearWarnings() {
     }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.generic;
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -41,7 +40,7 @@ public final class MySQLEofPacketTest {
         MySQLEofPacket actual = new MySQLEofPacket(1);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getWarnings(), is(0));
-        assertThat(actual.getStatusFlags(), CoreMatchers.is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+        assertThat(actual.getStatusFlags(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
     }
     
     @Test

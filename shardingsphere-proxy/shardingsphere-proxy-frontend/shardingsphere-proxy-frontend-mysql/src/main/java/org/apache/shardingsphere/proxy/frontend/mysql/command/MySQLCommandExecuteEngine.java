@@ -61,20 +61,20 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     }
     
     @Override
-    public DatabasePacket getErrorPacket(final Exception cause) {
+    public DatabasePacket<?> getErrorPacket(final Exception cause) {
         return MySQLErrPacketFactory.newInstance(1, cause);
     }
     
     @Override
-    public Optional<DatabasePacket> getOtherPacket() {
+    public Optional<DatabasePacket<?>> getOtherPacket() {
         return Optional.empty();
     }
     
     @Override
     @SneakyThrows
     public void writeQueryData(final ChannelHandlerContext context,
-                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
-        if (!queryCommandExecutor.isQuery() || !context.channel().isActive()) {
+                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) {
+        if (!queryCommandExecutor.isQueryResponse() || !context.channel().isActive()) {
             return;
         }
         int count = 0;
@@ -86,7 +86,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
                 context.flush();
                 backendConnection.getResourceSynchronizer().doAwaitUntil();
             }
-            DatabasePacket dataValue = queryCommandExecutor.getQueryData();
+            DatabasePacket<?> dataValue = queryCommandExecutor.getQueryData();
             context.write(dataValue);
             if (flushThreshold == count) {
                 context.flush();

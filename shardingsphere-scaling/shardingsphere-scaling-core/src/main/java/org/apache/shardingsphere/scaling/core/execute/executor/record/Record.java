@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.record;
 
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -30,7 +30,7 @@ import lombok.Setter;
 @Setter
 public abstract class Record {
     
-    private final LogPosition logPosition;
+    private final Position position;
         
     private long commitTime;
 }

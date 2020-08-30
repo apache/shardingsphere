@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
-import org.apache.shardingsphere.scaling.core.job.SyncProgress;
-import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
-import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
+import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
+import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.Collection;
 
@@ -29,25 +30,26 @@ import java.util.Collection;
  * Inventory data sync task group.
  */
 @Slf4j
-public final class InventoryDataScalingTaskGroup extends AbstractShardingScalingExecutor implements ScalingTask {
+@Getter
+public final class InventoryDataScalingTaskGroup extends AbstractShardingScalingExecutor<InventoryPosition> implements ScalingTask<InventoryPosition> {
     
-    private final Collection<ScalingTask> scalingTasks;
+    private final Collection<ScalingTask<InventoryPosition>> scalingTasks;
     
-    public InventoryDataScalingTaskGroup(final Collection<ScalingTask> inventoryDataScalingTasks) {
+    public InventoryDataScalingTaskGroup(final Collection<ScalingTask<InventoryPosition>> inventoryDataScalingTasks) {
         scalingTasks = inventoryDataScalingTasks;
     }
     
     @Override
     public void start() {
         super.start();
-        for (ScalingTask each : scalingTasks) {
+        for (ScalingTask<InventoryPosition> each : scalingTasks) {
             each.start();
         }
     }
     
     @Override
     public void stop() {
-        for (ScalingTask each : scalingTasks) {
+        for (ScalingTask<InventoryPosition> each : scalingTasks) {
             each.stop();
         }
     }
@@ -55,7 +57,7 @@ public final class InventoryDataScalingTaskGroup extends AbstractShardingScaling
     @Override
     public SyncProgress getProgress() {
         InventoryDataSyncTaskProgressGroup result = new InventoryDataSyncTaskProgressGroup();
-        for (ScalingTask each : scalingTasks) {
+        for (ScalingTask<InventoryPosition> each : scalingTasks) {
             result.addSyncProgress(each.getProgress());
         }
         return result;

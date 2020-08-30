@@ -56,10 +56,10 @@
 #        user_id:
 #          plainColumn: user_plain
 #          cipherColumn: user_cipher
-#          encryptor_name: aes_encryptor
+#          encryptorName: aes_encryptor
 #        order_id:
 #          cipherColumn: order_encrypt
-#          encryptor_name: md5_encryptor
+#          encryptorName: md5_encryptor
 
 ######################################################################################################
 #
@@ -97,7 +97,7 @@
 #        user_id:
 #          plainColumn: user_plain
 #          cipherColumn: user_cipher
-#          encryptor_name: aes_encryptor
+#          encryptorName: aes_encryptor
 #        order_id:
 #          cipherColumn: order_cipher
-#          encryptor_name: md5_encryptor
+#          encryptorName: md5_encryptor

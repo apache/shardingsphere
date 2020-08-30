@@ -67,7 +67,7 @@ public final class ScalingJobController {
             return;
         }
         scalingTaskSchedulerMap.get(shardingScalingJobId).stop();
-        scalingJobMap.get(shardingScalingJobId).setStatus("STOPPED");
+        scalingJobMap.get(shardingScalingJobId).setStatus(SyncTaskControlStatus.STOPPED.name());
     }
     
     /**
@@ -82,8 +82,10 @@ public final class ScalingJobController {
         }
         ShardingScalingJob shardingScalingJob = scalingJobMap.get(shardingScalingJobId);
         ScalingJobProgress result = new ScalingJobProgress(shardingScalingJobId, shardingScalingJob.getJobName(), shardingScalingJob.getStatus());
-        result.getInventoryDataTasks().addAll(scalingTaskSchedulerMap.get(shardingScalingJobId).getInventoryDataTaskProgress());
-        result.getIncrementalDataTasks().addAll(scalingTaskSchedulerMap.get(shardingScalingJobId).getIncrementalDataTaskProgress());
+        if (scalingTaskSchedulerMap.containsKey(shardingScalingJobId)) {
+            result.getInventoryDataTasks().addAll(scalingTaskSchedulerMap.get(shardingScalingJobId).getInventoryDataTaskProgress());
+            result.getIncrementalDataTasks().addAll(scalingTaskSchedulerMap.get(shardingScalingJobId).getIncrementalDataTaskProgress());
+        }
         return result;
     }
     

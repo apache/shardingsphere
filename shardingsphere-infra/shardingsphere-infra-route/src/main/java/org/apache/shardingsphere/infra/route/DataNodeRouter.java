@@ -49,9 +49,10 @@ public final class DataNodeRouter {
     
     private final ConfigurationProperties props;
     
+    @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, RouteDecorator> decorators;
     
-    private SPIRoutingHook routingHook;
+    private final SPIRoutingHook routingHook;
     
     public DataNodeRouter(final ShardingSphereMetaData metaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.metaData = metaData;
@@ -71,7 +72,7 @@ public final class DataNodeRouter {
     public RouteContext route(final SQLStatement sqlStatement, final String sql, final List<Object> parameters) {
         routingHook.start(sql);
         try {
-            RouteContext result = executeRoute(sqlStatement, sql, parameters);
+            RouteContext result = executeRoute(sqlStatement, parameters);
             routingHook.finishSuccess(result, metaData.getSchema().getConfiguredSchemaMetaData());
             return result;
             // CHECKSTYLE:OFF
@@ -82,22 +83,22 @@ public final class DataNodeRouter {
         }
     }
     
-    @SuppressWarnings("unchecked")
-    private RouteContext executeRoute(final SQLStatement sqlStatement, final String sql, final List<Object> parameters) {
-        RouteContext result = createRouteContext(sqlStatement, sql, parameters);
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private RouteContext executeRoute(final SQLStatement sqlStatement, final List<Object> parameters) {
+        RouteContext result = createRouteContext(sqlStatement, parameters);
         for (Entry<ShardingSphereRule, RouteDecorator> entry : decorators.entrySet()) {
             result = entry.getValue().decorate(result, metaData, entry.getKey(), props);
         }
         return result;
     }
     
-    private RouteContext createRouteContext(final SQLStatement sqlStatement, final String sql, final List<Object> parameters) {
+    private RouteContext createRouteContext(final SQLStatement sqlStatement, final List<Object> parameters) {
         try {
-            SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema().getSchemaMetaData(), sql, parameters, sqlStatement);
+            SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema().getSchemaMetaData(), parameters, sqlStatement);
             return new RouteContext(sqlStatementContext, parameters, new RouteResult());
             // TODO should pass parameters for master-slave
         } catch (final IndexOutOfBoundsException ex) {
-            return new RouteContext(new CommonSQLStatementContext(sqlStatement), parameters, new RouteResult());
+            return new RouteContext(new CommonSQLStatementContext<>(sqlStatement), parameters, new RouteResult());
         }
     }
 }

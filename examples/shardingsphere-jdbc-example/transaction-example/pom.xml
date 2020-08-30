@@ -33,6 +33,7 @@
     <modules>
         <module>transaction-2pc-xa-raw-jdbc-example</module>
         <module>transaction-2pc-xa-bitronix-raw-jdbc-example</module>
+        <module>transaction-2pc-xa-narayana-raw-jdbc-example</module>
         <module>transaction-2pc-xa-spring-boot-example</module>
         <module>transaction-2pc-xa-spring-namespace-example</module>
         <module>transaction-base-seata-raw-jdbc-example</module>

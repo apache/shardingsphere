@@ -28,6 +28,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -48,7 +49,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     public MySQLComStmtPrepareExecutor(final MySQLComStmtPreparePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
-        schema = backendConnection.getSchema();
+        schema = ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema());
     }
     
     private int getColumnsCount(final SQLStatement sqlStatement) {
@@ -56,8 +57,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     }
     
     @Override
-    public Collection<DatabasePacket> execute() {
-        Collection<DatabasePacket> result = new LinkedList<>();
+    public Collection<DatabasePacket<?>> execute() {
+        Collection<DatabasePacket<?>> result = new LinkedList<>();
         int currentSequenceId = 0;
         SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {

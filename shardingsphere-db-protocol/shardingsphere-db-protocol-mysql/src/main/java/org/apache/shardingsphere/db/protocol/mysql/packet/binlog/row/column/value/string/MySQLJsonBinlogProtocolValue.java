@@ -34,7 +34,6 @@ import java.io.Serializable;
  * </p>
  *
  * @see <a href="https://github.com/mysql/mysql-server/blob/5.7/sql/json_binary.h">json_binary</a>
- * @see <a href="https://github.com/apache/shardingsphere/issues/4795"></a>
  */
 public final class MySQLJsonBinlogProtocolValue implements MySQLBinlogProtocolValue {
     

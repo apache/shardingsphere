@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 
 /**
  * Compare util.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CompareUtil {
     
     /**
@@ -37,7 +37,7 @@ public final class CompareUtil {
      * @param caseSensitive case sensitive
      * @return compare result
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderDirection orderDirection, final OrderDirection nullOrderDirection, final boolean caseSensitive) {
         if (null == thisValue && null == otherValue) {
             return 0;

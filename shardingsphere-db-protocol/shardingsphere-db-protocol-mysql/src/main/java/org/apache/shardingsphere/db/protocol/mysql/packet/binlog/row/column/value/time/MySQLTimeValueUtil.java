@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.time;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.text.SimpleDateFormat;
 
 /**
- * Time value util of MySQL.
+ * Time value utility of MySQL.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLTimeValueUtil {
     
     public static final String ZERO_OF_TIME = "00:00:00";

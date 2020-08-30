@@ -60,25 +60,25 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
     
     @Override
     public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                               final ShardingRule shardingRule, final ConfigurationProperties props, final Collection<String> excludedTableNames) throws SQLException {
-        SchemaMetaData result = new SchemaMetaData(new HashMap<>(shardingRule.getTableRules().size(), 1));
-        for (TableRule each : shardingRule.getTableRules()) {
+                               final ShardingRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) throws SQLException {
+        SchemaMetaData result = new SchemaMetaData(new HashMap<>(rule.getTableRules().size(), 1));
+        for (TableRule each : rule.getTableRules()) {
             if (!excludedTableNames.contains(each.getLogicTable())) {
-                load(databaseType, dataSourceMap, dataNodes, each.getLogicTable(), shardingRule, props).ifPresent(tableMetaData -> result.put(each.getLogicTable(), tableMetaData));
+                load(databaseType, dataSourceMap, dataNodes, each.getLogicTable(), rule, props).ifPresent(tableMetaData -> result.put(each.getLogicTable(), tableMetaData));
             }
         }
         return result;
     }
     
     @Override
-    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, 
-                                        final String tableName, final ShardingRule shardingRule, final ConfigurationProperties props) throws SQLException {
-        if (!shardingRule.findTableRule(tableName).isPresent()) {
+    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
+                                        final String tableName, final ShardingRule rule, final ConfigurationProperties props) throws SQLException {
+        if (!rule.findTableRule(tableName).isPresent()) {
             return Optional.empty();
         }
         boolean isCheckingMetaData = props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
         int maxConnectionsSizePerQuery = props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        TableRule tableRule = shardingRule.getTableRule(tableName);
+        TableRule tableRule = rule.getTableRule(tableName);
         if (!isCheckingMetaData) {
             DataNode dataNode = dataNodes.getDataNodes(tableName).iterator().next();
             return TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
@@ -87,7 +87,7 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
         if (actualTableMetaDataMap.isEmpty()) {
             return Optional.empty();
         }
-        checkUniformed(tableRule.getLogicTable(), actualTableMetaDataMap, shardingRule);
+        checkUniformed(tableRule.getLogicTable(), actualTableMetaDataMap, rule);
         return Optional.of(actualTableMetaDataMap.values().iterator().next());
     }
     
@@ -122,8 +122,8 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
         try {
             return TableMetaDataLoader.load(
                     dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
-        } catch (SQLException e) {
-            throw new IllegalStateException(String.format("SQLException for DataNode=%s and databaseType=%s", dataNode, databaseType.getName()), e);
+        } catch (final SQLException ex) {
+            throw new IllegalStateException(String.format("SQLException for DataNode=%s and databaseType=%s", dataNode, databaseType.getName()), ex);
         }
     }
     
@@ -159,7 +159,7 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
     
     @RequiredArgsConstructor
     @Getter
-    private final class TableMetaDataViolation {
+    private static final class TableMetaDataViolation {
         
         private final String actualTableName;
         

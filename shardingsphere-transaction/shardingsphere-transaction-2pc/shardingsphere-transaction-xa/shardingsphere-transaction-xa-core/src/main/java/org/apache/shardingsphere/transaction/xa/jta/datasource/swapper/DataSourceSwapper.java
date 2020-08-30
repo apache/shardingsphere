@@ -21,8 +21,8 @@ import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -78,7 +79,7 @@ public final class DataSourceSwapper {
     }
     
     private XADataSource loadXADataSource(final String xaDataSourceClassName) {
-        Class xaDataSourceClass;
+        Class<?> xaDataSourceClass;
         try {
             xaDataSourceClass = Thread.currentThread().getContextClassLoader().loadClass(xaDataSourceClassName);
         } catch (final ClassNotFoundException ignored) {
@@ -96,7 +97,7 @@ public final class DataSourceSwapper {
     }
     
     private Map<String, Object> getDatabaseAccessConfiguration(final DataSource dataSource) {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(3, 1);
         DataSourcePropertyProvider provider = DataSourcePropertyProviderLoader.getProvider(dataSource);
         try {
             result.put("url", findGetterMethod(dataSource, provider.getURLPropertyName()).invoke(dataSource));
@@ -111,7 +112,7 @@ public final class DataSourceSwapper {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setProperties(final XADataSource xaDataSource, final Map<String, Object> databaseAccessConfiguration) {
-        for (Map.Entry<String, Object> entry : databaseAccessConfiguration.entrySet()) {
+        for (Entry<String, Object> entry : databaseAccessConfiguration.entrySet()) {
             Optional<Method> method = findSetterMethod(xaDataSource.getClass().getMethods(), entry.getKey());
             if (method.isPresent()) {
                 method.get().invoke(xaDataSource, entry.getValue());

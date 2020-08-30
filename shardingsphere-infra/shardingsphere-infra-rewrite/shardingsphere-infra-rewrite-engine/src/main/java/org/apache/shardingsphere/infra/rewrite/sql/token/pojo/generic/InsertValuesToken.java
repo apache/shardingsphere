@@ -34,7 +34,7 @@ public abstract class InsertValuesToken extends SQLToken implements Substitutabl
     
     private final List<InsertValue> insertValues;
     
-    public InsertValuesToken(final int startIndex, final int stopIndex) {
+    protected InsertValuesToken(final int startIndex, final int stopIndex) {
         super(startIndex);
         this.stopIndex = stopIndex;
         insertValues = new LinkedList<>();

@@ -35,9 +35,9 @@ import java.util.concurrent.ExecutionException;
 /**
  * Executor kernel.
  */
+@Getter
 public final class ExecutorKernel implements AutoCloseable {
     
-    @Getter
     private final ShardingSphereExecutorService executorService;
     
     public ExecutorKernel(final int executorSize) {
@@ -108,7 +108,7 @@ public final class ExecutorKernel implements AutoCloseable {
     }
     
     private <I, O> ListenableFuture<Collection<O>> asyncExecute(final InputGroup<I> inputGroup, final ExecutorCallback<I, O> callback) {
-        final Map<String, Object> dataMap = ExecutorDataMap.getValue();
+        Map<String, Object> dataMap = ExecutorDataMap.getValue();
         return executorService.getExecutorService().submit(() -> callback.execute(inputGroup.getInputs(), false, dataMap));
     }
     

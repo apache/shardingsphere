@@ -18,47 +18,30 @@
 package org.apache.shardingsphere.kernel.context.schema;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
+/**
+ * ShardingSphere schema.
+ */
+@RequiredArgsConstructor
 @Getter
 public final class ShardingSphereSchema {
     
-    private final DatabaseType databaseType;
+    private final Collection<RuleConfiguration> configurations;
     
-    private final Collection<RuleConfiguration> configurations = new LinkedList<>();
+    private final Collection<ShardingSphereRule> rules;
     
-    private final Collection<ShardingSphereRule> rules = new LinkedList<>();
-    
-    private final Map<String, DataSource> dataSources = new LinkedHashMap<>();
-    
-    private final Map<String, DataSourceParameter> dataSourceParameters = new LinkedHashMap<>();
+    private final Map<String, DataSource> dataSources;
     
     private final ShardingSphereMetaData metaData;
-    
-    public ShardingSphereSchema(final DatabaseType databaseType, final Collection<RuleConfiguration> configurations, final Collection<ShardingSphereRule> rules, 
-                                final Map<String, DataSource> dataSourceMap, final ShardingSphereMetaData shardingSphereMetaData) {
-        this.databaseType = databaseType;
-        this.configurations.addAll(configurations);
-        this.rules.addAll(rules);
-        this.dataSources.putAll(dataSourceMap);
-        metaData = shardingSphereMetaData;
-    }
-    
-    public ShardingSphereSchema(final DatabaseType databaseType, final Collection<RuleConfiguration> configurations, final Collection<ShardingSphereRule> rules,
-                                final Map<String, DataSource> dataSourceMap, final Map<String, DataSourceParameter> dataSourceParameters, final ShardingSphereMetaData shardingSphereMetaData) {
-        this(databaseType, configurations, rules, dataSourceMap, shardingSphereMetaData);
-        this.dataSourceParameters.putAll(dataSourceParameters);
-    }
     
     /**
      * Close data sources.
@@ -67,7 +50,6 @@ public final class ShardingSphereSchema {
     public void closeDataSources(final Collection<String> dataSources) {
         for (String each :dataSources) {
             close(this.dataSources.get(each));
-            dataSourceParameters.remove(each);
         }
     }
     

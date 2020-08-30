@@ -51,13 +51,14 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private final SchemaContexts schemaContexts;
     
+    @SuppressWarnings("UseOfSystemOutOrSystemErr")
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         DatabaseType databaseType = createDatabaseType(dataSourceMap);
-        schemaContexts = new SchemaContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
-                databaseType, Collections.singletonMap(DefaultSchema.LOGIC_NAME, configurations), props).build();
+        schemaContexts = new SchemaContextsBuilder(databaseType, Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, configurations), props).build();
     }
     
     private DatabaseType createDatabaseType(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -72,7 +73,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private DatabaseType createDatabaseType(final DataSource dataSource) throws SQLException {
         if (dataSource instanceof ShardingSphereDataSource) {
-            return ((ShardingSphereDataSource) dataSource).schemaContexts.getSchemaContexts().get(DefaultSchema.LOGIC_NAME).getSchema().getDatabaseType();
+            return ((ShardingSphereDataSource) dataSource).schemaContexts.getDatabaseType();
         }
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
@@ -112,8 +113,9 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
      * Close dataSources.
      * 
      * @param dataSourceNames data source names
+     * @throws Exception exception
      */
-    public void close(final Collection<String> dataSourceNames) {
+    public void close(final Collection<String> dataSourceNames) throws Exception {
         dataSourceNames.forEach(each -> close(getDataSourceMap().get(each)));
         schemaContexts.close();
     }

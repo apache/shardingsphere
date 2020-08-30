@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.spring.boot.datasource.prop.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spring.boot.datasource.prop.DataSourcePropertiesSetter;
 
@@ -27,6 +29,7 @@ import java.util.Optional;
 /**
  * Datasource properties setter holder.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePropertiesSetterHolder {
     
     private static final Map<String, DataSourcePropertiesSetter> DATA_SOURCE_PROPERTIES_SETTER_MAP = new HashMap<>();

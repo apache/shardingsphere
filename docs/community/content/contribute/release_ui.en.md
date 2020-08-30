@@ -1,5 +1,5 @@
 +++
-title = "Release Guide For UI"
+title = "ShardingSphere-UI Release Guide"
 weight = 7
 chapter = true
 +++
@@ -40,16 +40,16 @@ https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
 
 ### Create Release Branch
 
-Suppose ShardingSphere source codes downloaded from github is under `~/shardingsphere-ui/` directory and the version to be released is `4.0.0-RC`. 
-Create `${RELEASE.VERSION}-release-ui` branch, where all the following operations are performed.
+Suppose ShardingSphere source codes downloaded from github is under `~/shardingsphere-ui/` directory and the version to be released is `${RELEASE.VERSION}`. 
+Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
 
 ```shell
 ## ${name} is the properly branch, e.g. master, dev-4.x
 git clone --branch ${name} https://github.com/apache/shardingsphere-ui.git ~/shardingsphere-ui
 cd ~/shardingsphere-ui/
 git pull
-git checkout -b ${RELEASE.VERSION}-release-ui
-git push origin ${RELEASE.VERSION}-release-ui
+git checkout -b ${RELEASE.VERSION}-release
+git push origin ${RELEASE.VERSION}-release
 ```
 
 ### Pre-Release Check
@@ -88,7 +88,7 @@ It is basically the same as the previous rehearsal command, but deleting -DdryRu
 After making sure there is no mistake in local files, submit them to GitHub.
 
 ```shell
-git push
+git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
 
@@ -314,31 +314,6 @@ Checklist for reference:
 
 2. Announce the vote result:
 
-Body:
-
-```
-The vote to release Apache ShardingSphere UI ${RELEASE.VERSION} has passed.
-
-7 PMC member +1 binding votes:
-
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-
-1 community +1 non-binding vote:
-xxx
-
-Thank you everyone for taking the time to review the release and help us. 
-```
-
-3. Announce the vote result:
-
-**Notice: Please include the votes from ShardingSphere community above.**
-
 Title：
 
 ```
@@ -375,9 +350,11 @@ svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.a
 
 ```shell
 git checkout master
-git merge origin/${RELEASE.VERSION}-release-ui
-git push
-git push --delete origin ${RELEASE.VERSION}-release-ui
+git merge origin/${RELEASE.VERSION}-release
+git pull
+git push origin master
+git push --delete origin ${RELEASE.VERSION}-release
+git branch -d ${RELEASE.VERSION}-release
 ```
 
 ### Update the download page

@@ -97,7 +97,7 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
     
     private Optional<ShardingCTLHintStatement> parseUpdateShardingCTLHintStatement() {
         if (setMasterOnlyMatcher.find()) {
-            boolean masterOnly = Boolean.valueOf(setMasterOnlyMatcher.group(1).toUpperCase());
+            boolean masterOnly = Boolean.parseBoolean(setMasterOnlyMatcher.group(1).toUpperCase());
             return Optional.of(new ShardingCTLHintStatement(new HintSetMasterOnlyCommand(masterOnly)));
         }
         if (setDatabaseShardingValueMatcher.find()) {

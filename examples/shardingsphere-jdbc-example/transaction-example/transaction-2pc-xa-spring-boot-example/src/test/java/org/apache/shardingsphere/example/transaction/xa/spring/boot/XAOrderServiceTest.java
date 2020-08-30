@@ -35,7 +35,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = XAOrderServiceTest.class)
 @Import(TransactionConfiguration.class)
-@ComponentScan(basePackages = {"org.apache.shardingsphere"})
+@ComponentScan(basePackages = "org.apache.shardingsphere")
 @ActiveProfiles("sharding-databases-tables")
 public class XAOrderServiceTest {
     

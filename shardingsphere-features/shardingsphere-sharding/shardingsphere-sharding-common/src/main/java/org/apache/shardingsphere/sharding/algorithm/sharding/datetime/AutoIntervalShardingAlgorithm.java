@@ -78,13 +78,13 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     private long getShardingSeconds() {
         Preconditions.checkArgument(props.containsKey(SHARDING_SECONDS_KEY), "%s cannot be null.", SHARDING_SECONDS_KEY);
-        return Long.parseLong(props.get(SHARDING_SECONDS_KEY).toString());
+        return Long.parseLong(props.getProperty(SHARDING_SECONDS_KEY));
     }
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(doSharding(parseDate(shardingValue.getValue())) + "")) {
+            if (each.endsWith(String.valueOf(doSharding(parseDate(shardingValue.getValue()))))) {
                 return each;
             }
         }
@@ -98,7 +98,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
         int lastPartition = getLastPartition(shardingValue.getValueRange());
         for (int i = firstPartition; i <= lastPartition; i++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(i + "")) {
+                if (each.endsWith(String.valueOf(i))) {
                     result.add(each);
                 }
                 if (result.size() == availableTargetNames.size()) {

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.spi.type;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 
@@ -26,6 +28,7 @@ import java.util.Properties;
 /**
  * Typed SPI registry.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TypedSPIRegistry {
     
     /**

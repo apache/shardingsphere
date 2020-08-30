@@ -53,14 +53,14 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     private String authPluginName;
     
     public MySQLHandshakePacket(final int connectionId, final MySQLAuthPluginData authPluginData) {
-        this.serverVersion = MySQLServerInfo.getServerVersion();
+        serverVersion = MySQLServerInfo.getServerVersion();
         this.connectionId = connectionId;
-        this.capabilityFlagsLower = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower();
-        this.characterSet = MySQLServerInfo.CHARSET;
-        this.statusFlag = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT;
-        this.capabilityFlagsUpper = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
+        capabilityFlagsLower = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower();
+        characterSet = MySQLServerInfo.CHARSET;
+        statusFlag = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT;
+        capabilityFlagsUpper = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
         this.authPluginData = authPluginData;
-        this.authPluginName = MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName();
+        authPluginName = MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName();
     }
     
     public MySQLHandshakePacket(final MySQLPacketPayload payload) {
@@ -102,7 +102,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
      * @param mysqlAuthenticationMethod MySQL authentication method
      */
     public void setAuthPluginName(final MySQLAuthenticationMethod mysqlAuthenticationMethod) {
-        this.authPluginName = mysqlAuthenticationMethod.getMethodName();
+        authPluginName = mysqlAuthenticationMethod.getMethodName();
         capabilityFlagsUpper |= MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16;
     }
     

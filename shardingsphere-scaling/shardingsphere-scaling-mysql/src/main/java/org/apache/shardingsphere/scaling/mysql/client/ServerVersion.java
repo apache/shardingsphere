@@ -39,17 +39,17 @@ public final class ServerVersion {
     public ServerVersion(final String version) {
         Matcher matcher = VERSION_PATTERN.matcher(version);
         if (matcher.matches()) {
-            major = Short.valueOf(matcher.group(1));
-            minor = Short.valueOf(matcher.group(2));
-            series = Short.valueOf(matcher.group(3));
+            major = Short.parseShort(matcher.group(1));
+            minor = Short.parseShort(matcher.group(2));
+            series = Short.parseShort(matcher.group(3));
         }
     }
     
     /**
      * Greater than or equal to current version.
      *
-     * @param major  the major
-     * @param minor  the minor
+     * @param major the major
+     * @param minor the minor
      * @param series the series
      * @return the boolean
      */

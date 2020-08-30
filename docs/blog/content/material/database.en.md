@@ -1,6 +1,6 @@
 +++
-title = "5.How to construct the distributed database"
-weight = 6
+title = "How to construct the distributed database"
+weight = 4
 chapter = true
 +++
 
@@ -8,9 +8,10 @@ chapter = true
 
 Author | Liang Zhang
 
-  In the past few decades, relational database continuously occupy an absolute dominant position in the field of databases. The advantages of relational database, like stability, safety, ease of use that are the cornerstone of a modern system. With the rapid development of the Internet, databases built on stand-alone systems are no longer able to meet higher and higher concurrent requests and larger and larger data storage requirements. Therefore, distributed databases are more and more widely adopted.
+ Relational databases have dominated the database field for the past few decades, and the stability, security, and ease of use they bring have become the cornerstone for building modern systems. With the rapid development of the Internet, the database structured in a stand-alone system has been unable to meet the increasingly high concurrent requests and increasingly large data storage needs, therefore, distributed database are more widely adopted.
+ 
+Historically, the database space has been dominated by Western technology companies and communities. Apache ShardingSphere is one of these distributed database solutions and is currently the only database middleware in the Apache Software Foundation.
 
-  Apache ShardingSphere is one of the distributed database solutions and the only database middleware in the Apache Software Foundation so far.
 
 ### 1 Background
 
@@ -24,7 +25,7 @@ Author | Liang Zhang
     
 - Elastic scaling: You can dynamically expand and shrink data storage nodes anytime, anywhere without affecting existing applications;
     
-- Multiple replica: Automatically copy the data to multiple copies across datacenters in a strong and consistent manner to ensure the absolute security of the data;
+- Multiple replica: Automatically copy the data to multiple copies across data centers in a strong and consistent manner to ensure the absolute security of the data;
     
 - HTAP: The same set of products is used to mix transactional operations of OLTP and analytical operations of OLAP.
     
@@ -33,7 +34,7 @@ The implementation solutions of distributed database can be divided into aggress
 
 ### 2 Architecture
 
-Apache ShardingSphere is an ecosystem of open source distributed database middleware solutions, It consists of three independent products, Sharding-JDBC, Sharding-Proxy, and Sharding-Sidecar (planned). They all provide functions such as standardized data sharding, distributed transactions, and distributed governance, and can be applied to various diverse application scenarios such as Java isomorphism, heterogeneous languages, and cloud native. With the continuous exploration of Apache ShardingSphere in query optimizer and distributed transaction engine, it has gradually broken the product boundary of the implementation solution and evolved into an aggressive and stable platform-level solution.
+Apache ShardingSphere is an open source ecosystem distributed database middleware solutions, consisting of three separate products, Sharding-JDBC, Sharding-Proxy, and Sharding-Sidecar (planned). They all provide standardized data sharding, distributed transactions, and distributed governance for a variety of diverse application scenarios such as Java Isomorphic, heterogeneous languages, and cloud-native. As Apache ShardingSphere continues to explore query optimizers and distributed transaction engines, it has gradually broken the product boundaries of implementations and evolved into a platform-level solution that is both aggressive and stable all in one. 
 
 **Sharding-JDBC**
 
@@ -296,4 +297,4 @@ Zhang Liang, head of data research and development at JD.com, initiator of Apach
   
 Love open source, leading open source projects ShardingSphere (formerly known as Sharding-JDBC) and Elastic-Job. Good at using java as the main distributed architecture, admiring elegant code, and having more research on how to write expressive code. 
   
-At present, the main energy is invested in making ShardingSphere and JDTX into the industry's first-class financial data solutions. ShardingSphere has entered the Apache incubator. It is the first open source project of the Jingdong Group to enter the Apache Foundation and the first distributed database middleware of the Apache Foundation.
+At present, the main energy is invested in making ShardingSphere and JDTX into the industry's first-class financial data solutions. ShardingSphere has entered the Apache incubator. It is the first open source project of the JingDong Group to enter the Apache Foundation and the first distributed database middleware of the Apache Foundation.

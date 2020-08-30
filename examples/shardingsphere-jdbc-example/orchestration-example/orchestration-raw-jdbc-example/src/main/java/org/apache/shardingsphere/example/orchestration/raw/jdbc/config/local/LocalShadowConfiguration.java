@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local;
 
+import org.apache.shardingsphere.driver.governance.api.OrchestrationShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.driver.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -31,18 +30,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class LocalShadowConfiguration implements ExampleConfiguration {
+public final class LocalShadowConfiguration implements ExampleConfiguration {
     
-    private final Map<String, CenterConfiguration> centerConfigurationMap;
+    private final OrchestrationConfiguration orchestrationConfiguration;
     
-    public LocalShadowConfiguration(final Map<String, CenterConfiguration> centerConfigurationMap) {
-        this.centerConfigurationMap = centerConfigurationMap;
+    public LocalShadowConfiguration(final OrchestrationConfiguration orchestrationConfiguration) {
+        this.orchestrationConfiguration = orchestrationConfiguration;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
         return OrchestrationShardingSphereDataSourceFactory.createDataSource(
-                createDataSourceMap(), Collections.singleton(getShadowRuleConfiguration()), new Properties(), getOrchestrationConfiguration());
+                createDataSourceMap(), Collections.singleton(getShadowRuleConfiguration()), new Properties(), orchestrationConfiguration);
     }
     
     private Map<String, DataSource> createDataSourceMap() {
@@ -50,10 +49,6 @@ public class LocalShadowConfiguration implements ExampleConfiguration {
         result.put("ds", DataSourceUtil.createDataSource("ds"));
         result.put("shadow_ds", DataSourceUtil.createDataSource("shadow_ds"));
         return result;
-    }
-    
-    private OrchestrationConfiguration getOrchestrationConfiguration() {
-        return new OrchestrationConfiguration(centerConfigurationMap);
     }
     
     private ShadowRuleConfiguration getShadowRuleConfiguration() {

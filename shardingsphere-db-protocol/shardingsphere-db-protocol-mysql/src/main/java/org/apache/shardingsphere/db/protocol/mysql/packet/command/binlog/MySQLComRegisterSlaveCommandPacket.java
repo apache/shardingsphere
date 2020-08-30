@@ -52,7 +52,7 @@ public final class MySQLComRegisterSlaveCommandPacket extends MySQLCommandPacket
         this.slaveUser = slaveUser;
         this.slavePassword = slavePassword;
         this.slavePort = slavePort;
-        this.masterId = 0;
+        masterId = 0;
     }
     
     public MySQLComRegisterSlaveCommandPacket(final MySQLPacketPayload payload) {
@@ -63,7 +63,7 @@ public final class MySQLComRegisterSlaveCommandPacket extends MySQLCommandPacket
         slavePassword = payload.readStringFix(payload.readInt1());
         slavePort = payload.readInt2();
         payload.skipReserved(4);
-        this.masterId = payload.readInt4();
+        masterId = payload.readInt4();
     }
     
     @Override

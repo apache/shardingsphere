@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.scaling.postgresql;
 
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
-import org.apache.shardingsphere.scaling.core.job.position.LogPositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
+import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 
 /**
  * PostgreSQL scaling entry.
@@ -40,8 +41,8 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends LogPositionManager> getLogPositionManager() {
-        return PostgreSQLLogPositionManager.class;
+    public Class<? extends PositionManager<WalPosition>> getPositionManager() {
+        return PostgreSQLPositionManager.class;
     }
     
     @Override

@@ -18,38 +18,32 @@
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.driver.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.governance.api.OrchestrationShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 public final class LocalEncryptConfiguration implements ExampleConfiguration {
     
-    private final Map<String, CenterConfiguration> centerConfigurationMap;
+    private final OrchestrationConfiguration orchestrationConfiguration;
     
-    public LocalEncryptConfiguration(final Map<String, CenterConfiguration> centerConfigurationMap) {
-        this.centerConfigurationMap = centerConfigurationMap;
+    public LocalEncryptConfiguration(final OrchestrationConfiguration orchestrationConfiguration) {
+        this.orchestrationConfiguration = orchestrationConfiguration;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
         return OrchestrationShardingSphereDataSourceFactory.createDataSource(
-                DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(getEncryptRuleConfiguration()), new Properties(), getOrchestrationConfiguration());
-    }
-    
-    private OrchestrationConfiguration getOrchestrationConfiguration() {
-        return new OrchestrationConfiguration(centerConfigurationMap);
+                DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(getEncryptRuleConfiguration()), new Properties(), orchestrationConfiguration);
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {

@@ -32,7 +32,7 @@ db1
   └── t_order1
 ```
 
-So the data node configurations will be as follow:
+So the data node configurations will be as follows:
 
 ```
 db0.t_order0, db0.t_order1, db1.t_order0, db1.t_order1
@@ -52,7 +52,7 @@ db1
   └── t_order4
 ```
 
-So the data node configurations will be as follow:
+So the data node configurations will be as follows:
 
 ```
 db0.t_order0, db0.t_order1, db1.t_order2, db1.t_order3, db1.t_order4

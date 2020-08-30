@@ -73,8 +73,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class MySQLComStmtPrepareCheckerTest {
@@ -83,7 +82,7 @@ public final class MySQLComStmtPrepareCheckerTest {
     public void assertIsStatementAllowed() {
         List<SQLStatement> statementList = Arrays.asList(new AlterTableStatement(mock(SimpleTableSegment.class)), new AlterUserStatement(), new AnalyzeTableStatement(), new CacheIndexStatement(),
             new CallStatement(), new ChangeMasterStatement(), new ChecksumTableStatement(), new CommitStatement(), new CreateIndexStatement(), new DropIndexStatement(),
-            new CreateDatabaseStatement(), new DropDatabaseStatement(), new CreateTableStatement(mock(SimpleTableSegment.class)), new DropTableStatement(), new CreateUserStatement(),
+            new CreateDatabaseStatement(""), new DropDatabaseStatement(), new CreateTableStatement(mock(SimpleTableSegment.class)), new DropTableStatement(), new CreateUserStatement(),
             new RenameUserStatement(), new DropUserStatement(), new CreateViewStatement(), new DropViewStatement(), new DeleteStatement(), new DoStatement(), new FlushStatement(),
             new GrantStatement(), new InsertStatement(), new InstallPluginStatement(), new KillStatement(), new LoadIndexInfoStatement(), new OptimizeTableStatement(), new RenameTableStatement(),
             new RepairTableStatement(), new ResetStatement(), new RevokeStatement(), new SelectStatement(), new SetStatement(), new ShowWarningsStatement(),
@@ -91,7 +90,7 @@ public final class MySQLComStmtPrepareCheckerTest {
             new ShowCreateTableStatement(), new ShowCreateViewStatement(), new ShowBinaryLogsStatement(), new ShowStatusStatement(), new StartSlaveStatement(), new StopSlaveStatement(),
             new TruncateStatement(), new UninstallPluginStatement(), new UpdateStatement());
         for (SQLStatement each : statementList) {
-            assertThat(MySQLComStmtPrepareChecker.isStatementAllowed(each), is(true));
+            assertTrue(MySQLComStmtPrepareChecker.isStatementAllowed(each));
         }
     }
 }

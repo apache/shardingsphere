@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult;
 
+import java.sql.Array;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 
 import java.io.InputStream;
@@ -44,7 +45,12 @@ public final class StreamQueryResult implements QueryResult {
         resultSetMetaData = resultSet.getMetaData();
         this.resultSet = resultSet;
     }
-    
+
+    @Override
+    public ResultSetMetaData getResultSetMetaData() {
+        return resultSetMetaData;
+    }
+
     @Override
     public boolean next() throws SQLException {
         return resultSet.next();
@@ -82,6 +88,8 @@ public final class StreamQueryResult implements QueryResult {
             return resultSet.getBlob(columnIndex);
         } else if (Clob.class == type) {
             return resultSet.getClob(columnIndex);
+        } else if (Array.class == type) {
+            return resultSet.getArray(columnIndex);
         } else {
             return resultSet.getObject(columnIndex);
         }

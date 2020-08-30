@@ -23,7 +23,7 @@ import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.driver.orchestration.api.yaml.YamlOrchestrationShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.governance.api.yaml.YamlOrchestrationShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -35,7 +35,7 @@ import java.sql.SQLException;
  * 2. Please make sure sharding-orchestration-center-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
  * 3. Please make sure sharding-orchestration-center-nacos in your pom if registryCenterType = RegistryCenterType.NACOS.
  */
-public class YamlConfigurationExampleMain {
+public final class YamlConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
@@ -90,5 +90,4 @@ public class YamlConfigurationExampleMain {
             ((ShardingSphereDataSource) dataSource).close();
         }
     }
-    
 }

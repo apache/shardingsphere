@@ -24,7 +24,7 @@ createTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification_ INDEX indexName ON tableName columnNames
+    : CREATE createIndexSpecification_ INDEX indexName ON tableName columnNamesWithSort
     ;
 
 alterTable
@@ -314,14 +314,6 @@ constraintForColumn
     : (CONSTRAINT ignoredIdentifier_)? DEFAULT simpleExpr FOR columnName
     ;
 
-columnNameWithSortsWithParen
-    : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
-    ;
-
-columnNameWithSort
-    : columnName (ASC | DESC)?
-    ;
-
 generatedColumnNamesClause
     : generatedColumnNameClause COMMA_ periodClause | periodClause COMMA_ generatedColumnNameClause
     ;
@@ -415,7 +407,7 @@ indexWithName
     ;
 
 indexNonClusterClause
-    : NONCLUSTERED (hashWithBucket | columnNameWithSortsWithParen alterTableIndexOnClause?) 
+    : NONCLUSTERED (hashWithBucket | columnNamesWithSort alterTableIndexOnClause?)
     ;
 
 alterTableIndexOnClause

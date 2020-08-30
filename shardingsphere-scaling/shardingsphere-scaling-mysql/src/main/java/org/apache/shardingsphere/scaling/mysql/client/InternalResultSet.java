@@ -36,7 +36,7 @@ public final class InternalResultSet {
     
     private final MySQLFieldCountPacket header;
     
-    private List<MySQLColumnDefinition41Packet> fieldDescriptors = new ArrayList<>();
+    private final List<MySQLColumnDefinition41Packet> fieldDescriptors = new ArrayList<>();
     
-    private List<MySQLTextResultSetRowPacket> fieldValues = new ArrayList<>();
+    private final List<MySQLTextResultSetRowPacket> fieldValues = new ArrayList<>();
 }

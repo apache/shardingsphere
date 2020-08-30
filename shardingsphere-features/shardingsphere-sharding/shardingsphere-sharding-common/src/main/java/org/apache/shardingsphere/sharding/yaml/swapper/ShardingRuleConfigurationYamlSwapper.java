@@ -80,22 +80,22 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     }
     
     @Override
-    public ShardingRuleConfiguration swapToObject(final YamlShardingRuleConfiguration yamlConfiguration) {
+    public ShardingRuleConfiguration swapToObject(final YamlShardingRuleConfiguration yamlConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        for (Entry<String, YamlTableRuleConfiguration> entry : yamlConfiguration.getTables().entrySet()) {
+        for (Entry<String, YamlTableRuleConfiguration> entry : yamlConfig.getTables().entrySet()) {
             YamlTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
             result.getTables().add(tableYamlSwapper.swapToObject(tableRuleConfig));
         }
-        for (Entry<String, YamlShardingAutoTableRuleConfiguration> entry : yamlConfiguration.getAutoTables().entrySet()) {
+        for (Entry<String, YamlShardingAutoTableRuleConfiguration> entry : yamlConfig.getAutoTables().entrySet()) {
             YamlShardingAutoTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
             result.getAutoTables().add(autoTableYamlSwapper.swapToObject(tableRuleConfig));
         }
-        result.getBindingTableGroups().addAll(yamlConfiguration.getBindingTables());
-        result.getBroadcastTables().addAll(yamlConfiguration.getBroadcastTables());
-        setDefaultStrategies(yamlConfiguration, result);
-        setAlgorithms(yamlConfiguration, result);
+        result.getBindingTableGroups().addAll(yamlConfig.getBindingTables());
+        result.getBroadcastTables().addAll(yamlConfig.getBroadcastTables());
+        setDefaultStrategies(yamlConfig, result);
+        setAlgorithms(yamlConfig, result);
         return result;
     }
     

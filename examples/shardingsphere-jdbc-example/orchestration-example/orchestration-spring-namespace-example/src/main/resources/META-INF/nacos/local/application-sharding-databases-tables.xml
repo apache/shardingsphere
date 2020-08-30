@@ -41,16 +41,16 @@
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     <bean id="demo_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_0?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_0?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
     
     <bean id="demo_ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_1?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_1?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
     
     <sharding:sharding-algorithm id="databaseInlineStrategyShardingAlgorithm" type="INLINE">
@@ -81,22 +81,22 @@
     
     <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generate-strategy id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
-
+    
     <sharding:rule id="shardingRule">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
             <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generate-strategy-ref="itemKeyGenerator" />
         </sharding:table-rules>
         <sharding:binding-table-rules>
-            <sharding:binding-table-rule logic-tables="t_order, t_order_item"/>
+            <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
         </sharding:binding-table-rules>
         <sharding:broadcast-table-rules>
-            <sharding:broadcast-table-rule table="t_address"/>
+            <sharding:broadcast-table-rule table="t_address" />
         </sharding:broadcast-table-rules>
     </sharding:rule>
     
     <shardingsphere:data-source id="realShardingDatabasesTablesDataSource" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule" />
-    <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" instance-ref="regCenter,confCenter" />
+    <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" reg-center-ref="regCenter" config-center-ref="confCenter" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shardingDatabasesTablesDataSource" />
@@ -104,12 +104,12 @@
     <tx:annotation-driven />
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="shardingDatabasesTablesDataSource"/>
-        <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
+        <property name="dataSource" ref="shardingDatabasesTablesDataSource" />
+        <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml" />
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository"/>
-        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
     </bean>
 </beans>

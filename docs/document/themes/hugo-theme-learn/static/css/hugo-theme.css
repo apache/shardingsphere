@@ -21,11 +21,12 @@
 }
 
 #TableOfContents > ul > li > a   {
-  font-weight: bold; padding: 0 18px; margin: 0 2px;
+  /* font-weight: bold;  */
+  padding: 0 18px; margin: 0 2px;
 }
 
 #TableOfContents > ul > li > ul > li > a {
-  font-weight: bold;
+  /* font-weight: bold; */
 }
 
 #TableOfContents > ul > li > ul > li > ul > li > ul > li > ul > li  {
@@ -166,9 +167,11 @@ h1 {
 }
 
 h2 {
-  font-size: 1.75rem;
+  /* font-size: 1.75rem; */
+  font-size: 1.5rem;
   line-height: 110% !important;
-  margin: 1.5rem 0 1.0rem 0;
+  /* margin: 1.5rem 0 1.0rem 0; */
+  margin: 4.5rem 0 2rem 0;
 }
 
 h3 {

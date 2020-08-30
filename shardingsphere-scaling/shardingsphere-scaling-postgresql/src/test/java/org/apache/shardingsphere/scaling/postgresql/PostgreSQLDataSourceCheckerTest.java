@@ -31,23 +31,29 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PostgreSQLDataSourceCheckerTest {
+public final class PostgreSQLDataSourceCheckerTest {
 
     private static final String CATALOG = "test";
-
+    
     @Mock
     private Connection connection;
-
+    
     @Mock
     private PreparedStatement preparedStatement;
+    
+    @Mock
+    private ResultSet resultSet;
+    
+    @Mock
+    private DatabaseMetaData metaData;
 
     private Collection<DataSource> dataSources;
 
@@ -56,40 +62,47 @@ public class PostgreSQLDataSourceCheckerTest {
         DataSource dataSource = mock(DataSource.class);
         Connection connection = mockConnection();
         when(dataSource.getConnection()).thenReturn(connection);
-        dataSources = new ArrayList<>();
+        when(metaData.getTables(CATALOG, null, "%", new String[]{"TABLE"})).thenReturn(resultSet);
+        dataSources = new LinkedList<>();
         dataSources.add(dataSource);
     }
 
     @SneakyThrows
     private Connection mockConnection() {
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
         when(connection.getMetaData()).thenReturn(metaData);
-        ResultSet resultSet = mockResultSet();
-        when(metaData.getTables(CATALOG, null, "%", new String[]{"TABLE"})).thenReturn(resultSet);
         when(connection.getCatalog()).thenReturn(CATALOG);
         when(connection.prepareStatement("SELECT * FROM test LIMIT 1")).thenReturn(preparedStatement);
         return connection;
     }
 
-    @SneakyThrows
-    private ResultSet mockResultSet() {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.next()).thenReturn(true);
-        when(resultSet.getString(3)).thenReturn("test");
-        return resultSet;
-    }
-
     @Test
     public void assertCheckPrivilege() throws SQLException {
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getString(3)).thenReturn("test");
         PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
         dataSourceChecker.checkPrivilege(dataSources);
         verify(preparedStatement).executeQuery();
     }
-
+    
     @Test(expected = PrepareFailedException.class)
-    public void assertCheckPrivilegeFailed() throws SQLException {
-        when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+    public void assertCheckPrivilegeWithoutTable() throws SQLException {
+        when(resultSet.next()).thenReturn(false);
         PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
         dataSourceChecker.checkPrivilege(dataSources);
+    }
+    
+    @Test(expected = PrepareFailedException.class)
+    public void assertCheckPrivilegeFailure() throws SQLException {
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getString(3)).thenReturn("test");
+        when(connection.prepareStatement("SELECT * FROM test LIMIT 1")).thenThrow(new SQLException());
+        PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
+        dataSourceChecker.checkPrivilege(dataSources);
+    }
+    
+    @Test
+    public void assertCheckVariable() {
+        PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
+        dataSourceChecker.checkVariable(dataSources);
     }
 }

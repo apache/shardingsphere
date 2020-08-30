@@ -15,14 +15,14 @@ weight = 3
 <!-- 使用 ZooKeeper 时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-orchestration-center-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-orchestration-repository-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- 使用 Etcd 时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-orchestration-center-etcd</artifactId>
+    <artifactId>shardingsphere-orchestration-repository-etcd</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -30,11 +30,12 @@ weight = 3
 ## 规则配置
 
 ```properties
-spring.shardingsphere.orchestration.spring_boot_ds.orchestration-type=registry_center,config_center,metadata_center
-spring.shardingsphere.orchestration.spring_boot_ds.instance-type=zookeeper
-spring.shardingsphere.orchestration.spring_boot_ds.server-lists=localhost:2181
-spring.shardingsphere.orchestration.spring_boot_ds.namespace=orchestration-spring-boot-shardingsphere-test
-spring.shardingsphere.orchestration.spring_boot_ds.properties.overwrite=true
+spring.shardingsphere.orchestration.name=orchestration-spring-boot-shardingsphere-test
+spring.shardingsphere.orchestration.registry-center.type=Zookeeper
+spring.shardingsphere.orchestration.registry-center.server-lists=localhost:2181
+spring.shardingsphere.orchestration.additional-config-center.type=Zookeeper
+spring.shardingsphere.orchestration.additional-config-center.server-lists=localhost:2182
+spring.shardingsphere.orchestration.overwrite=true
 ```
 
 ## 在 Spring 中使用 OrchestrationShardingSphereDataSource

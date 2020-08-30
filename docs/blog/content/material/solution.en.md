@@ -1,6 +1,6 @@
 +++
-title = "8.The mixed open-source distributed transaction solution"
-weight = 9
+title = "The mixed open-source distributed transaction solution"
+weight = 8
 chapter = true
 +++
 
@@ -15,13 +15,13 @@ Love open source, currently leading open source project ShardingSphere (formerly
 At present, focus on improving ShardingSphere to be the industry's first-class financial data solution. ShardingSphere has entered the Apache Incubator, is the first open source project of the Jingdong Group to enter the Apache Software Foundation, and is also the first distributed database middleware of the Apache Software Foundation.
 
 ---
-Ning Jiang，Technical expert of Huawei Open Source Competency Center, project leader of Apache ServiceComb. Former chief software engineer of Red Hat Software. He has more than ten years of experience in enterprise-level open source middleware development, rich experience in Java development, and also is the enthusiast of functional programming. Since 2006, he has been engaged in the development of the Apache open source middleware projects, and has participated in the development of Apache CXF, Apache Camel, and Apache ServiceMix. He has in-depth research in the microservice architecture, such as WebServices, Enterprise Integration Pattern, SOA and OSGi.
+Ning Jiang，Technical expert of Huawei Open Source Competency Center, project leader of Apache ServiceComb. Former chief software engineer of Red Hat Software. He has more than ten years of experience in enterprise-level open source middleware development, rich experience in Java development, and also is the enthusiast of functional programming. Since 2006, he has been engaged in the development of the Apache open source middleware projects, and has participated in the development of Apache CXF, Apache Camel, and Apache ServiceMix. He has in-depth research in the micro-service architecture, such as WebServices, Enterprise Integration Pattern, SOA and OSGi.
 
 Blog site：https://willemjiang.github.io/
 
 ---
 
-Zheng Feng is a software engineer at Red Hat, joined Red Hat Software in 2009, mainly engaged in the work of the transaction manager. As a core developer, he participated in the Narayan and Blacktie projects. He had contributed to the integration of transaction processing of multiple application servers (Wildfly, Karaf, Tomcat) and frameworks (Common DBCP, Spring Boot ). Since 2017, he has participated in the Apache ServiceComb project and is currently a member of PMC. He has in-depth research on distributed transaction processing and transaction processing in a microservice environment.
+Zheng Feng is a software engineer at Red Hat, joined Red Hat Software in 2009, mainly engaged in the work of the transaction manager. As a core developer, he participated in the Narayana and BlackTie projects. He had contributed to the integration of transaction processing of multiple application servers (Wildfly, Karaf, Tomcat) and frameworks (Common DBCP, Spring Boot ). Since 2017, he has participated in the Apache ServiceComb project and is currently a member of PMC. He has in-depth research on distributed transaction processing and transaction processing in a micro-service environment.
 
 ### Guide
 
@@ -41,7 +41,7 @@ Database transactions need to meet the four characteristics of ACID (Atomicity, 
 
 - Durability	Refers to the committed transaction modification data will be persisted.
 
-In a single data node, the transaction is limited to the access control of a single database resource, called local transaction. Almost all mature relational databases provide native support for local transactions. However, in a distributed application environment based on microservices, more and more application scenarios require that access to multiple services and corresponding multiple database resources can be incorporated into the same transaction, then the distributed transactions emerge as the times require.
+In a single data node, the transaction is limited to the access control of a single database resource, called local transaction. Almost all mature relational databases provide native support for local transactions. However, in a distributed application environment based on micro-services, more and more application scenarios require that access to multiple services and corresponding multiple database resources can be incorporated into the same transaction, then the distributed transactions emerge as the times require.
 
 Although the relational database provides perfect ACID native support for local transactions. But in a distributed scenario, it has become a shackle in system performance. How to make the database meet the characteristics of ACID or find corresponding alternatives in a distributed scenario is the focus of distributed transactions.
 
@@ -133,7 +133,7 @@ There are many mature XA transaction managers. Apache ShardingSphere (Incubating
 
 The Sharding-transaction-xa module further defines the SPI for XA transaction manager developers. Developers only need to implement the SPI-defined interface to automatically join the Apache ShardingSphere (Incubating) ecosystem as their XA transaction manager.
 
-Apache ShardingSphere (Incubating) officially implements SPI based on Atomikos and Bitronix, and invited the Radhat JBoss XA transaction engine Narayana [https://github.com/jbosstm/narayana] development team to implement JBoss SPI. Users can choose their favorite XA transaction manager among Atomikos, Bitronix and Narayana.
+Apache ShardingSphere (Incubating) officially implements SPI based on Atomikos and Bitronix, and invited the Redhat JBoss XA transaction engine Narayana [https://github.com/jbosstm/narayana] development team to implement JBoss SPI. Users can choose their favorite XA transaction manager among Atomikos, Bitronix and Narayana.
 
 
 
@@ -210,7 +210,7 @@ Since the native transaction interface does not support transaction types, Shard
 
 ### Future plan
 
-The distributed transaction module in the development branch of github [https://github.com/apache/incubator-shardingsphere] is basically available and will be released with the version of 4.0.0.M1, which will also be the first release version when ShardingSphere into the Apache Foundation incubator. Distributed transactions are an important part of data sharding and microservice architecture. They are also the focus of Apache ShardingSphere (Incubating). After the release, they will continue to be improved. The future planning is as follows.
+The distributed transaction module in the development branch of github [https://github.com/apache/incubator-shardingsphere] is basically available and will be released with the version of 4.0.0.M1, which will also be the first release version when ShardingSphere into the Apache Foundation incubator. Distributed transactions are an important part of data sharding and micro-service architecture. They are also the focus of Apache ShardingSphere (Incubating). After the release, they will continue to be improved. The future planning is as follows.
 
 #### Transaction isolation engine
 

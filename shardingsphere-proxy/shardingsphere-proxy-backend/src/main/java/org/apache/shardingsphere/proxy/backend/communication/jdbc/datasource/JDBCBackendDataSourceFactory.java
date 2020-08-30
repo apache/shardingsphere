@@ -32,7 +32,6 @@ public interface JDBCBackendDataSourceFactory {
      * @param dataSourceName data source name
      * @param dataSourceParameter data source connection parameter
      * @return data source for connect backend databases
-     * @throws Exception when the data source can not be build
      */
-    DataSource build(String dataSourceName, DataSourceParameter dataSourceParameter) throws Exception;
+    DataSource build(String dataSourceName, DataSourceParameter dataSourceParameter);
 }

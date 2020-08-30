@@ -17,7 +17,14 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -30,7 +37,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -39,8 +45,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -48,38 +56,53 @@ public final class ShardingUpdateStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
-    
+
+    @Test(expected = ShardingSphereException.class)
+    public void assertValidateUpdateModifyMultiTables() {
+        SQLStatementContext<UpdateStatement> sqlStatementContext = new UpdateStatementContext(createUpdateStatement());
+        sqlStatementContext.getTablesContext().getTables().addAll(createMultiTablesContext().getTables());
+        RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
+    }
+
     @Test
     public void assertValidateUpdateWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), Collections.emptyList());
+        RouteContext routeContext = new RouteContext(new UpdateStatementContext(createUpdateStatement()), Collections.emptyList(), new RouteResult());
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), Collections.emptyList());
+        RouteContext routeContext = new RouteContext(new UpdateStatementContext(createUpdateStatement()), Collections.emptyList(), new RouteResult());
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
     @Test
     public void assertValidateUpdateWithoutShardingKeyAndParameters() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), parameters);
+        RouteContext routeContext = new RouteContext(new UpdateStatementContext(createUpdateStatement()), parameters, new RouteResult());
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
     @Test
     public void assertValidateUpdateWithShardingKeyAndShardingParameterEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(1), parameters);
+        SQLStatementContext<UpdateStatement> updateStatementContext = new UpdateStatementContext(createUpdateStatementAndParameters(1));
+        RouteContext routeContext = new RouteContext(updateStatementContext, parameters, new RouteResult());
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKeyAndShardingParameterNotEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(2), parameters);
+        SQLStatementContext<UpdateStatement> updateStatementContext = new UpdateStatementContext(createUpdateStatementAndParameters(2));
+        RouteContext routeContext = new RouteContext(updateStatementContext, parameters, new RouteResult());
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
     private UpdateStatement createUpdateStatement() {
@@ -99,9 +122,17 @@ public final class ShardingUpdateStatementValidatorTest {
         result.setSetAssignment(setAssignmentSegment);
         WhereSegment where = new WhereSegment(0, 0);
         AndPredicate andPre = new AndPredicate();
-        andPre.getPredicates().add(new PredicateSegment(0, 1, new ColumnSegment(0, 0, new IdentifierValue("id")), new PredicateCompareRightValue("=", new ParameterMarkerExpressionSegment(0, 0, 0))));
+        andPre.getPredicates().add(new PredicateSegment(0, 1,
+                new ColumnSegment(0, 0, new IdentifierValue("id")), new PredicateCompareRightValue(0, 0, "=", new ParameterMarkerExpressionSegment(0, 0, 0))));
         where.getAndPredicates().add(andPre);
         result.setWhere(where);
         return result;
+    }
+
+    private TablesContext createMultiTablesContext() {
+        List<SimpleTableSegment> result = new LinkedList<>();
+        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
+        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
+        return new TablesContext(result);
     }
 }

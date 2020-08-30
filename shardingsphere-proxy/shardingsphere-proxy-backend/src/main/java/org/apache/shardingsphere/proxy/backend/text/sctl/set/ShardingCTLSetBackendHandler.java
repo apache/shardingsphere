@@ -49,16 +49,14 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
         if (!shardingTCLStatement.isPresent()) {
             return new ErrorResponse(new InvalidShardingCTLFormatException(sql));
         }
-        switch (shardingTCLStatement.get().getKey()) {
-            case "TRANSACTION_TYPE":
-                try {
-                    backendConnection.setTransactionType(TransactionType.valueOf(shardingTCLStatement.get().getValue()));
-                } catch (final IllegalArgumentException ex) {
-                    return new ErrorResponse(new UnsupportedShardingCTLTypeException(sql));
-                }
-                break;
-            default:
+        if ("TRANSACTION_TYPE".equals(shardingTCLStatement.get().getKey())) {
+            try {
+                backendConnection.setTransactionType(TransactionType.valueOf(shardingTCLStatement.get().getValue()));
+            } catch (final IllegalArgumentException ex) {
                 return new ErrorResponse(new UnsupportedShardingCTLTypeException(sql));
+            }
+        } else {
+            return new ErrorResponse(new UnsupportedShardingCTLTypeException(sql));
         }
         return new UpdateResponse();
     }

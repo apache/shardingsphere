@@ -39,11 +39,11 @@ dataSourceCommon:
 
 dataSources:
   master_ds:
-    jdbcUrl: jdbc:mysql://127.0.0.1:3306/master_ds?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/master_ds?serverTimezone=UTC&useSSL=false
   slave_ds_0:
-    jdbcUrl: jdbc:mysql://127.0.0.1:3306/slave_ds_0?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/slave_ds_0?serverTimezone=UTC&useSSL=false
   slave_ds_1:
-    jdbcUrl: jdbc:mysql://127.0.0.1:3306/slave_ds_1?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/slave_ds_1?serverTimezone=UTC&useSSL=false
 
 rules:
 - !MASTER_SLAVE

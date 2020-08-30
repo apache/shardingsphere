@@ -20,8 +20,8 @@ package org.apache.shardingsphere.example.proxy.hint;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Properties;
 
 public final class ModuloHintShardingAlgorithm implements HintShardingAlgorithm<String> {
@@ -34,10 +34,10 @@ public final class ModuloHintShardingAlgorithm implements HintShardingAlgorithm<
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<String> shardingValue) {
-        Collection<String> result = new ArrayList<>();
+        Collection<String> result = new LinkedList<>();
         for (String each : availableTargetNames) {
             for (String value : shardingValue.getValues()) {
-                if (each.endsWith(String.valueOf(Long.valueOf(value) % 2))) {
+                if (each.endsWith(String.valueOf(Long.parseLong(value) % 2))) {
                     result.add(each);
                 }
             }

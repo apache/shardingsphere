@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStat
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.TruncateStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.CallStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
@@ -58,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -76,15 +78,14 @@ public final class SQLStatementContextFactory {
      * Create SQL statement context.
      *
      * @param schemaMetaData table meta data
-     * @param sql SQL
      * @param parameters SQL parameters
      * @param sqlStatement SQL statement
      * @return SQL statement context
      */
     @SuppressWarnings("unchecked")
-    public static SQLStatementContext newInstance(final SchemaMetaData schemaMetaData, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static SQLStatementContext newInstance(final SchemaMetaData schemaMetaData, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(schemaMetaData, sql, parameters, (DMLStatement) sqlStatement);
+            return getDMLStatementContext(schemaMetaData, parameters, (DMLStatement) sqlStatement);
         }
         if (sqlStatement instanceof DDLStatement) {
             return getDDLStatementContext((DDLStatement) sqlStatement);
@@ -98,9 +99,9 @@ public final class SQLStatementContextFactory {
         return new CommonSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDMLStatementContext(final SchemaMetaData schemaMetaData, final String sql, final List<Object> parameters, final DMLStatement sqlStatement) {
+    private static SQLStatementContext getDMLStatementContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final DMLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(schemaMetaData, sql, parameters, (SelectStatement) sqlStatement);
+            return new SelectStatementContext(schemaMetaData, parameters, (SelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);
@@ -110,6 +111,9 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof InsertStatement) {
             return new InsertStatementContext(schemaMetaData, parameters, (InsertStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof CallStatement) {
+            return new CallStatementContext((CallStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }

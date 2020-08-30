@@ -26,7 +26,6 @@ import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -78,12 +77,12 @@ public final class XATransactionDataSourceTest {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypes.getActualDatabaseType("H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", dataSource, xaTransactionManager);
         try (Connection ignored = transactionDataSource.getConnection()) {
-            verify(transaction).enlistResource(ArgumentMatchers.any(SingleXAResource.class));
-            verify(transaction).registerSynchronization(ArgumentMatchers.any(Synchronization.class));
+            verify(transaction).enlistResource(any(SingleXAResource.class));
+            verify(transaction).registerSynchronization(any(Synchronization.class));
         }
         try (Connection ignored = transactionDataSource.getConnection()) {
-            verify(transaction).enlistResource(ArgumentMatchers.any(SingleXAResource.class));
-            verify(transaction).registerSynchronization(ArgumentMatchers.any(Synchronization.class));
+            verify(transaction).enlistResource(any(SingleXAResource.class));
+            verify(transaction).registerSynchronization(any(Synchronization.class));
         }
     }
     

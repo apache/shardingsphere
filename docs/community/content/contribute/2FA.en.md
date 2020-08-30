@@ -1,12 +1,12 @@
 +++
 title = "2FA"
-weight = 8
+weight = 10
 chapter = true
 +++
 
 ## Two-factor authentication(2FA)
 
-Two factor authentication (2FA) refers to the authentication method that combines both passport and an object (credit card, SMS phone, token or biomarkers as fingerprint) to identify a user. 
+Two factor authentication (2FA) refers to the authentication method that combines both passport, and an object (credit card, SMS phone, token or biomarkers as fingerprint) to identify a user. 
 To ensure the security of the committer’s account, we need you to enable 2FA to sign in and contribute codes on GitHub.
 
 More details, please refer to [2FA](https://help.github.com/articles/requiring-two-factor-authentication-in-your-organization/).

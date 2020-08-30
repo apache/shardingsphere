@@ -24,20 +24,17 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
                            ">
-    <orchestration:instance id="confCenter" orchestration-type="config_center" instance-type="nacos" server-lists="localhost:8848" namespace="">
+    <orchestration:reg-center id="confCenter" type="Nacos" server-lists="localhost:8848">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">3000</prop>
-            <prop key="overwrite">false</prop>
         </props>
-    </orchestration:instance>
+    </orchestration:reg-center>
     
-    <orchestration:instance id="regCenter" orchestration-type="registry_center,metadata_center" instance-type="zookeeper" server-lists="localhost:2181" namespace="">
+    <orchestration:reg-center id="regCenter" type="ZooKeeper" server-lists="localhost:2181">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">3000</prop>
-            <prop key="overwrite">false</prop>
         </props>
-    </orchestration:instance>
+    </orchestration:reg-center>
 </beans>
-

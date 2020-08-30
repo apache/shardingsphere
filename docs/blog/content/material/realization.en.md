@@ -1,6 +1,6 @@
 +++
-title = "9.The quick explanation of ShardingSphere transaction module"
-weight = 10
+title = "The quick explanation of ShardingSphere transaction module"
+weight = 12
 chapter = true
 +++
 

@@ -41,6 +41,7 @@ import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.MySQLErrPacketFactory;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -56,7 +57,8 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
-    private volatile boolean isQuery;
+    @Getter
+    private volatile boolean isQueryResponse;
     
     @Getter
     private volatile boolean isUpdateResponse;
@@ -67,38 +69,44 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     private int currentSequenceId;
     
     public MySQLComStmtExecuteExecutor(final MySQLComStmtExecutePacket comStmtExecutePacket, final BackendConnection backendConnection) {
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
-                backendConnection.getSchema(), comStmtExecutePacket.getSql(), comStmtExecutePacket.getParameters(), backendConnection);
+        SQLStatement sqlStatement =
+                ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema()).getRuntimeContext().getSqlParserEngine().parse(comStmtExecutePacket.getSql(), true);
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatement,
+                comStmtExecutePacket.getSql(), comStmtExecutePacket.getParameters(), backendConnection);
     }
     
     @Override
-    public Collection<DatabasePacket> execute() {
+    public Collection<DatabasePacket<?>> execute() {
         if (ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
         }
-        BackendResponse backendResponse = databaseCommunicationEngine.execute();
-        if (backendResponse instanceof ErrorResponse) {
-            isErrorResponse = true;
-            return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
+        BackendResponse backendResponse = getBackendResponse();
+        if (backendResponse instanceof QueryResponse) {
+            isQueryResponse = true;
+            return createQueryPacket((QueryResponse) backendResponse);
         }
         if (backendResponse instanceof UpdateResponse) {
             isUpdateResponse = true;
             return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
-        isQuery = true;
-        return createQueryPacket((QueryResponse) backendResponse);
+        isErrorResponse = true;
+        return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
     }
     
-    private MySQLErrPacket createErrorPacket(final Exception cause) {
-        return MySQLErrPacketFactory.newInstance(1, cause);
+    private BackendResponse getBackendResponse() {
+        BackendResponse result;
+        try {
+            result = databaseCommunicationEngine.execute();
+        // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+        // CHECKSTYLE:OFF
+            result = new ErrorResponse(ex);
+        }
+        return result;
     }
     
-    private MySQLOKPacket createUpdatePacket(final UpdateResponse updateResponse) {
-        return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
-    }
-    
-    private Collection<DatabasePacket> createQueryPacket(final QueryResponse backendResponse) {
-        Collection<DatabasePacket> result = new LinkedList<>();
+    private Collection<DatabasePacket<?>> createQueryPacket(final QueryResponse backendResponse) {
+        Collection<DatabasePacket<?>> result = new LinkedList<>();
         List<QueryHeader> queryHeader = backendResponse.getQueryHeaders();
         result.add(new MySQLFieldCountPacket(++currentSequenceId, queryHeader.size()));
         for (QueryHeader each : queryHeader) {
@@ -109,9 +117,12 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         return result;
     }
     
-    @Override
-    public boolean isQuery() {
-        return isQuery;
+    private MySQLOKPacket createUpdatePacket(final UpdateResponse updateResponse) {
+        return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
+    }
+    
+    private MySQLErrPacket createErrorPacket(final Exception cause) {
+        return MySQLErrPacketFactory.newInstance(1, cause);
     }
     
     @Override

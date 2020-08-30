@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.spi;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+
 import java.util.Map;
 import java.util.TreeMap;
 

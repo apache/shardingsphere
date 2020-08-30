@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.RemoveAvailable;
 
 /**
@@ -27,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.RemoveAvailable;
  */
 @RequiredArgsConstructor
 @Getter
-public final class FromSchemaSegment implements SQLSegment, RemoveAvailable {
+public final class FromSchemaSegment implements RemoveAvailable {
     
     private final int startIndex;
     

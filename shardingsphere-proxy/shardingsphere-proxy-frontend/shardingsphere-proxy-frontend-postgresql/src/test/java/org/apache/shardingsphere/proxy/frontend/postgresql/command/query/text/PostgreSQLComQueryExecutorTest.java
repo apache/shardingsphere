@@ -22,8 +22,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.tex
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -32,11 +30,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.ServerErrorMessage;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PostgreSQLComQueryExecutorTest {
+public final class PostgreSQLComQueryExecutorTest {
     
     @Mock
     private TextProtocolBackendHandler textProtocolBackendHandler;
@@ -48,7 +49,7 @@ public class PostgreSQLComQueryExecutorTest {
         FieldSetter.setField(postgreSQLComQueryExecutor, PostgreSQLComQueryExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
         ErrorResponse errorResponse = new ErrorResponse(new PSQLException(mock(ServerErrorMessage.class)));
         when(textProtocolBackendHandler.execute()).thenReturn(errorResponse);
-        Assert.assertThat(postgreSQLComQueryExecutor.execute().iterator().next(), Matchers.instanceOf(PostgreSQLErrorResponsePacket.class));
-        Assert.assertThat(postgreSQLComQueryExecutor.isErrorResponse(), Matchers.is(true));
+        assertThat(postgreSQLComQueryExecutor.execute().iterator().next(), instanceOf(PostgreSQLErrorResponsePacket.class));
+        assertThat(postgreSQLComQueryExecutor.isErrorResponse(), is(true));
     }
 }

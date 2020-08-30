@@ -233,7 +233,6 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();

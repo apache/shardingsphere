@@ -26,7 +26,7 @@ public final class MySQLRandomGeneratorTest {
     
     @Test
     public void assertGenerateRandomBytes() {
-        assertThat(MySQLRandomGenerator.getInstance().generateRandomBytes(8).length, is(8));
-        assertThat(MySQLRandomGenerator.getInstance().generateRandomBytes(12).length, is(12));
+        assertThat(MySQLRandomGenerator.getINSTANCE().generateRandomBytes(8).length, is(8));
+        assertThat(MySQLRandomGenerator.getINSTANCE().generateRandomBytes(12).length, is(12));
     }
 }

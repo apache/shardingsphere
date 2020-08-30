@@ -385,7 +385,7 @@ public final class MySQLJsonValueDecoderTest {
     
     @RequiredArgsConstructor
     @Getter
-    private final class JsonEntry {
+    private static final class JsonEntry {
         
         private final byte type;
         

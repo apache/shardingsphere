@@ -27,8 +27,9 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
-import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -67,7 +68,7 @@ public abstract class AbstractBaseExecutorTest {
     }
     
     private void setConnection() throws SQLException {
-        SchemaContexts schemaContexts = mock(SchemaContexts.class);
+        SchemaContexts schemaContexts = mock(StandardSchemaContexts.class);
         SchemaContext schemaContext = mock(SchemaContext.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
@@ -76,13 +77,13 @@ public abstract class AbstractBaseExecutorTest {
         when(runtimeContext.getExecutorKernel()).thenReturn(executorKernel);
         when(schemaContexts.getProps()).thenReturn(getProperties());
         when(schemaContext.getSchema()).thenReturn(schema);
-        when(schema.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
+        when(schemaContexts.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         ShardingRule shardingRule = getShardingRule();
         when(schema.getRules()).thenReturn(Collections.singletonList(shardingRule));
         when(runtimeContext.getTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(mock(Connection.class));
-        Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>();
+        Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>(2, 1);
         dataSourceSourceMap.put("ds_0", dataSource);
         dataSourceSourceMap.put("ds_1", dataSource);
         connection = new ShardingSphereConnection(dataSourceSourceMap, schemaContexts, TransactionType.LOCAL);
@@ -95,12 +96,12 @@ public abstract class AbstractBaseExecutorTest {
         return result;
     }
 
-    protected final SQLStatementContext getSQLStatementContext() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+    protected final SQLStatementContext<?> getSQLStatementContext() {
+        SQLStatementContext<?> result = mock(SQLStatementContext.class);
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getTableNames()).thenReturn(Collections.singleton("table_x"));
-        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        return sqlStatementContext;
+        when(result.getTablesContext()).thenReturn(tablesContext);
+        return result;
     }
     
     private ConfigurationProperties getProperties() {

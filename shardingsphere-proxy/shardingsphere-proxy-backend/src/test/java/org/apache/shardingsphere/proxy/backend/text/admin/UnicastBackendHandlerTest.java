@@ -20,14 +20,16 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +64,8 @@ public final class UnicastBackendHandlerTest {
     public void setUp() {
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(), new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication()));
+        schemaContexts.set(ProxySchemaContexts.getInstance(),
+                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         setUnderlyingHandler(new UpdateResponse());
     }
     
@@ -76,7 +79,7 @@ public final class UnicastBackendHandlerTest {
     
     @Test
     public void assertExecuteWhileSchemaIsNull() {
-        UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", backendConnection);
+        UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", mock(SQLStatement.class), backendConnection);
         backendConnection.setCurrentSchema("schema_8");
         setDatabaseCommunicationEngine(backendHandler);
         BackendResponse actual = backendHandler.execute();
@@ -87,7 +90,7 @@ public final class UnicastBackendHandlerTest {
     @Test
     public void assertExecuteWhileSchemaNotNull() {
         backendConnection.setCurrentSchema("schema_0");
-        UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", backendConnection);
+        UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", mock(SQLStatement.class), backendConnection);
         setDatabaseCommunicationEngine(backendHandler);
         BackendResponse actual = backendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));

@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
@@ -36,7 +35,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @ToString
-public final class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvailable {
+public final class ColumnSegment implements PredicateRightValue, OwnerAvailable {
     
     private final int startIndex;
     
@@ -45,7 +44,7 @@ public final class ColumnSegment implements SQLSegment, PredicateRightValue, Own
     private final IdentifierValue identifier;
     
     private OwnerSegment owner;
-
+    
     /**
      * Get qualified name with quote characters.
      * i.e. `field1`, `table1`, field1, table1, `table1`.`field1`, `table1`.field1, table1.`field1` or table1.field1
@@ -55,9 +54,9 @@ public final class ColumnSegment implements SQLSegment, PredicateRightValue, Own
     public String getQualifiedName() {
         return null == owner
             ? identifier.getValueWithQuoteCharacters()
-            : owner.getIdentifier().getValueWithQuoteCharacters() + "." + identifier.getValueWithQuoteCharacters();
+            : String.join(".", owner.getIdentifier().getValueWithQuoteCharacters(), identifier.getValueWithQuoteCharacters());
     }
-
+    
     @Override
     public Optional<OwnerSegment> getOwner() {
         return Optional.ofNullable(owner);

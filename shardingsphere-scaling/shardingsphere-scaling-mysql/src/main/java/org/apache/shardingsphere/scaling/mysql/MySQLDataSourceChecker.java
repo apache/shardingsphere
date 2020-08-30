@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Data source checker for MySQL.
@@ -41,7 +42,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     
     private static final String SHOW_VARIABLES_SQL = "SHOW VARIABLES LIKE '%s'";
     
-    private static final Map<String, String> REQUIRED_VARIABLES = new HashMap(2);
+    private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(2);
     
     static {
         REQUIRED_VARIABLES.put("LOG_BIN", "ON");
@@ -65,15 +66,14 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
                     return;
                 }
             }
-        } catch (SQLException e) {
-            throw new PrepareFailedException("Source datasource check privileges failed.");
+        } catch (final SQLException ex) {
+            throw new PrepareFailedException("Source datasource check privileges failed.", ex);
         }
         throw new PrepareFailedException("Source datasource is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges.");
     }
     
     private boolean matchPrivileges(final String privilege) {
-        return Arrays.stream(REQUIRED_PRIVILEGES)
-                .anyMatch(requiredPrivileges -> Arrays.stream(requiredPrivileges).allMatch(required -> privilege.contains(required)));
+        return Arrays.stream(REQUIRED_PRIVILEGES).anyMatch(each -> Arrays.stream(each).allMatch(privilege::contains));
     }
     
     @Override
@@ -85,15 +85,15 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     
     private void checkVariable(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
-            for (Map.Entry<String, String> entry : REQUIRED_VARIABLES.entrySet()) {
+            for (Entry<String, String> entry : REQUIRED_VARIABLES.entrySet()) {
                 checkVariable(connection, entry);
             }
-        } catch (SQLException e) {
-            throw new PrepareFailedException("Source datasource check variables failed.");
+        } catch (final SQLException ex) {
+            throw new PrepareFailedException("Source datasource check variables failed.", ex);
         }
     }
     
-    private void checkVariable(final Connection connection, final Map.Entry<String, String> entry) throws SQLException {
+    private void checkVariable(final Connection connection, final Entry<String, String> entry) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format(SHOW_VARIABLES_SQL, entry.getKey()));
              ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
@@ -103,5 +103,4 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
             }
         }
     }
-    
 }

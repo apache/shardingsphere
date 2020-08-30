@@ -16,7 +16,7 @@ When receiving `set autoCommit=0` from client, `XAShardingTransactionManager` wi
 
 
 After `XAShardingTransactionManager` register the corresponding XAResource to the current XA transaction, transaction manager will send `XAResource.start` command to databases.
-After databases received `XAResource.end` command, all SQL operator will marked as XA transaction. 
+After databases received `XAResource.end` command, all SQL operator will mark as XA transaction. 
 
 For example:
 
