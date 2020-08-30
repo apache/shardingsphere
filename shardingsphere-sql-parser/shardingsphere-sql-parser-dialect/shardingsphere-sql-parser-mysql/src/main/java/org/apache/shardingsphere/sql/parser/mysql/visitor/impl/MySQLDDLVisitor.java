@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterPr
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CheckConstraintDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnDefinitionContext;
@@ -96,6 +97,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterLogfileGroupS
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterServerStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateEventStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateFunctionStatement;
@@ -132,6 +134,11 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         return new CreateViewStatement();
+    }
+
+    @Override
+    public ASTNode visitAlterView(final AlterViewContext ctx) {
+        return new AlterViewStatement();
     }
     
     @Override

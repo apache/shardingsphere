@@ -51,7 +51,9 @@ import java.util.concurrent.Future;
 public final class SchemaMetaDataLoader {
     
     private static final String TABLE_TYPE = "TABLE";
-    
+
+    private static final String VIEW_TYPE = "VIEW";
+
     private static final String TABLE_NAME = "TABLE_NAME";
     
     /**
@@ -105,7 +107,7 @@ public final class SchemaMetaDataLoader {
     
     private static List<String> loadAllTableNames(final Connection connection, final String databaseType) throws SQLException {
         List<String> result = new LinkedList<>();
-        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), null, new String[]{TABLE_TYPE})) {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), null, new String[]{TABLE_TYPE, VIEW_TYPE})) {
             while (resultSet.next()) {
                 String table = resultSet.getString(TABLE_NAME);
                 if (!isSystemTable(table)) {

@@ -52,6 +52,9 @@ execute
     | createServer
     | alterServer
     | dropServer
+    | createView
+    | alterView
+    | dropView
     | setTransaction
     | beginTransaction
     | setAutoCommit
