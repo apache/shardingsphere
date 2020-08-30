@@ -34,9 +34,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-public final class TestGovernanceSchemaContexts extends GovernanceSchemaContexts {
+public final class GovernanceSchemaContextsFixture extends GovernanceSchemaContexts {
     
-    public TestGovernanceSchemaContexts(final SchemaContexts schemaContexts, final GovernanceFacade governanceFacade) {
+    public GovernanceSchemaContextsFixture(final SchemaContexts schemaContexts, final GovernanceFacade governanceFacade) {
         super(schemaContexts, governanceFacade);
     }
     
