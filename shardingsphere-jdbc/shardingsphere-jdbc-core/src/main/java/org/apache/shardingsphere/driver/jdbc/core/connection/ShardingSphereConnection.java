@@ -22,7 +22,7 @@ import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
-import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -45,7 +45,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private final ShardingTransactionManager shardingTransactionManager;
     
-    public ShardingSphereConnection(final Map<String, DataSource> dataSourceMap, 
+    public ShardingSphereConnection(final Map<String, DataSource> dataSourceMap,
                                     final SchemaContexts schemaContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
         super(dataSourceMap, schemaContexts);
         this.transactionType = transactionType;

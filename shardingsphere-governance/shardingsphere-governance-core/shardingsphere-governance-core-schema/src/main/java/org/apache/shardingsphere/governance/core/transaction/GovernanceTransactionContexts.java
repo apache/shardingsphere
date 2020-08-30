@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public final class GovernanceTransactionContexts implements TransactionContexts {
     
-    private volatile TransactionContexts contexts;
+    private final TransactionContexts contexts;
     
     public GovernanceTransactionContexts(final TransactionContexts contexts) {
         this.contexts = contexts;
