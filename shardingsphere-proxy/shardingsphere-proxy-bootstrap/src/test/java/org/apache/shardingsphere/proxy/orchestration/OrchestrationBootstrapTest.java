@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -71,5 +72,15 @@ public final class OrchestrationBootstrapTest {
         assertTrue(actual.getSchemaDataSources().get("db").containsKey("db"));
         assertThat(actual.getSchemaRules().size(), is(1));
         assertTrue(actual.getSchemaRules().containsKey("db"));
+        assertNull(actual.getSchemaDataSources().get("db").get("db").getUrl());
+        assertNull(actual.getSchemaDataSources().get("db").get("db").getUsername());
+        assertNull(actual.getSchemaDataSources().get("db").get("db").getPassword());
+        assertThat(actual.getSchemaDataSources().get("db").get("db").getConnectionTimeoutMilliseconds(), is(30 * 1000L));
+        assertThat(actual.getSchemaDataSources().get("db").get("db").getIdleTimeoutMilliseconds(), is(60 * 1000L));
+        assertThat(actual.getSchemaDataSources().get("db").get("db").getMaxLifetimeMilliseconds(), is(0L));
+        assertThat(actual.getSchemaDataSources().get("db").get("db").getMaxPoolSize(), is(50));
+        assertThat(actual.getSchemaDataSources().get("db").get("db").getMinPoolSize(), is(1));
+        assertThat(actual.getSchemaDataSources().get("db").get("db").getMaintenanceIntervalMilliseconds(), is(30 * 1000L));
+        assertThat(actual.getSchemaDataSources().get("db").get("db").isReadOnly(), is(false));
     }
 }
