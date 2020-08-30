@@ -49,8 +49,8 @@ public final class JDBCGovernanceSchemaContexts extends GovernanceSchemaContexts
     
     @Override
     protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
-        Map<String, DataSourceConfiguration> modifiedDataSourceConfigs =
-                newDataSourceConfigs.entrySet().stream().filter(this::isModifiedDataSource).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (key, repeatKey) -> key, LinkedHashMap::new));
+        Map<String, DataSourceConfiguration> modifiedDataSourceConfigs = newDataSourceConfigs.entrySet().stream()
+                .filter(this::isModifiedDataSource).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (key, repeatKey) -> key, LinkedHashMap::new));
         return DataSourceConverter.getDataSourceMap(modifiedDataSourceConfigs);
     }
     
