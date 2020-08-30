@@ -21,15 +21,13 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 
-@RunWith(MockitoJUnitRunner.class)
+import static org.junit.Assert.assertNotNull;
+
 public final class DatabaseProtocolFrontendEngineFactoryTest {
     
     @Before
@@ -45,8 +43,8 @@ public final class DatabaseProtocolFrontendEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceMysql() {
+    public void assertNewInstanceMySQL() {
         DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseProtocolFrontendEngineFactory.newInstance(new MySQLDatabaseType());
-        Assert.assertNotNull(databaseProtocolFrontendEngine);
+        assertNotNull(databaseProtocolFrontendEngine);
     }
 }
