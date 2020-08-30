@@ -41,12 +41,12 @@ public final class GovernanceSchemaContextsFixture extends GovernanceSchemaConte
     }
     
     @Override
-    protected Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
+    protected Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
         return Collections.singletonMap("ds_2", buildDataSource(getDataSourceParameter()));
     }
     
     @Override
-    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
+    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
         return Collections.singletonMap("ds_1", buildDataSource(getDataSourceParameter()));
     }
     
