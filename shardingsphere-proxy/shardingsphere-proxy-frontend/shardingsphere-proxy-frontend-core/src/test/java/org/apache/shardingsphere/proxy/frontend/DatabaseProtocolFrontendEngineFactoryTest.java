@@ -18,6 +18,10 @@
 package org.apache.shardingsphere.proxy.frontend;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
+import org.junit.Assert;
 import org.junit.Test;
 
 public final class DatabaseProtocolFrontendEngineFactoryTest {
@@ -25,5 +29,17 @@ public final class DatabaseProtocolFrontendEngineFactoryTest {
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWhenUnsupported() {
         DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("Oracle"));
+    }
+    
+    @Test
+    public void assertNewInstanceMysql() {
+        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseProtocolFrontendEngineFactory.newInstance(new MySQLDatabaseType());
+        Assert.assertNotNull(databaseProtocolFrontendEngine);
+    }
+
+    @Test
+    public void assertNewInstancePostgreSQL() {
+        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseProtocolFrontendEngineFactory.newInstance(new PostgreSQLDatabaseType());
+        Assert.assertNotNull(databaseProtocolFrontendEngine);
     }
 }
