@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.OrchestrationSchemaContextsFixture;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.GovernanceSchemaContextsFixture;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
@@ -65,7 +65,7 @@ public final class RDLBackendHandlerTest {
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new CreateDatabaseStatement("new_db"));
         BackendResponse response = executeEngine.execute();
         assertThat(response, instanceOf(ErrorResponse.class));
-        setOrchestrationSchemaContexts(true);
+        setGovernanceSchemaContexts(true);
         response = executeEngine.execute();
         assertThat(response, instanceOf(UpdateResponse.class));
     }
@@ -77,7 +77,7 @@ public final class RDLBackendHandlerTest {
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new CreateDatabaseStatement("schema"));
         BackendResponse response = executeEngine.execute();
         assertThat(response, instanceOf(ErrorResponse.class));
-        setOrchestrationSchemaContexts(true);
+        setGovernanceSchemaContexts(true);
         response = executeEngine.execute();
         assertThat(response, instanceOf(ErrorResponse.class));
         assertThat(((ErrorResponse) response).getCause(), instanceOf(DBCreateExistsException.class));
@@ -95,7 +95,7 @@ public final class RDLBackendHandlerTest {
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, mock(CreateDataSourcesStatement.class));
         BackendResponse response = executeEngine.execute();
         assertThat(response, instanceOf(ErrorResponse.class));
-        setOrchestrationSchemaContexts(true);
+        setGovernanceSchemaContexts(true);
         response = executeEngine.execute();
         assertThat(response, instanceOf(UpdateResponse.class));
     }
@@ -107,17 +107,17 @@ public final class RDLBackendHandlerTest {
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, mock(CreateShardingRuleStatement.class));
         BackendResponse response = executeEngine.execute();
         assertThat(response, instanceOf(ErrorResponse.class));
-        setOrchestrationSchemaContexts(true);
+        setGovernanceSchemaContexts(true);
         response = executeEngine.execute();
         assertThat(response, instanceOf(UpdateResponse.class));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setOrchestrationSchemaContexts(final boolean isOrchestration) {
+    private void setGovernanceSchemaContexts(final boolean isGovernance) {
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        if (isOrchestration) {
-            schemaContexts.set(ProxySchemaContexts.getInstance(), new OrchestrationSchemaContextsFixture());
+        if (isGovernance) {
+            schemaContexts.set(ProxySchemaContexts.getInstance(), new GovernanceSchemaContextsFixture());
         } else {
             schemaContexts.set(ProxySchemaContexts.getInstance(), new StandardSchemaContexts());
         }
@@ -125,6 +125,6 @@ public final class RDLBackendHandlerTest {
     
     @After
     public void setDown() {
-        setOrchestrationSchemaContexts(false);
+        setGovernanceSchemaContexts(false);
     }
 }
