@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.governance.internal.schema;
 
 import com.google.common.collect.Maps;
-import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.driver.governance.internal.util.DataSourceConverter;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.schema.GovernanceSchemaContexts;
@@ -49,9 +48,9 @@ public final class JDBCGovernanceSchemaContexts extends GovernanceSchemaContexts
     }
     
     @Override
-    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
-        Map<String, DataSourceConfiguration> modifiedDataSourceConfigs =
-                newDataSources.entrySet().stream().filter(this::isModifiedDataSource).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (key, repeatKey) -> key, LinkedHashMap::new));
+    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
+        Map<String, DataSourceConfiguration> modifiedDataSourceConfigs = newDataSourceConfigs.entrySet().stream()
+                .filter(this::isModifiedDataSource).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (key, repeatKey) -> key, LinkedHashMap::new));
         return DataSourceConverter.getDataSourceMap(modifiedDataSourceConfigs);
     }
     
@@ -61,9 +60,9 @@ public final class JDBCGovernanceSchemaContexts extends GovernanceSchemaContexts
     }
     
     @Override
-    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
-        Map<String, Map<String, DataSource>> result = new LinkedMap<>(dataSourcesMap.size(), 1);
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesMap.entrySet()) {
+    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs) {
+        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesConfigs.size(), 1);
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesConfigs.entrySet()) {
             result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(entry.getValue()));
         }
         return result;

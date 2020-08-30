@@ -52,8 +52,8 @@ public final class ProxyGovernanceSchemaContexts extends GovernanceSchemaContext
     }
     
     @Override
-    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
-        Map<String, DataSourceParameter> newDataSourceParameters = DataSourceConverter.getDataSourceParameterMap(newDataSources);
+    protected Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
+        Map<String, DataSourceParameter> newDataSourceParameters = DataSourceConverter.getDataSourceParameterMap(newDataSourceConfigs);
         Map<String, DataSourceParameter> parameters = new LinkedHashMap<>(newDataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry : newDataSourceParameters.entrySet()) {
             if (isModifiedDataSource(oldSchemaContext.getSchema().getDataSources(), entry.getKey(), entry.getValue())) {
@@ -68,11 +68,18 @@ public final class ProxyGovernanceSchemaContexts extends GovernanceSchemaContext
     }
     
     @Override
-    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesMap) {
-        Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap = createDataSourceParametersMap(dataSourcesMap);
-        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourceParametersMap.size(), 1);
-        for (Entry<String, Map<String, DataSourceParameter>> entry : dataSourceParametersMap.entrySet()) {
+    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs) {
+        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesConfigs.size(), 1);
+        for (Entry<String, Map<String, DataSourceParameter>> entry : createDataSourceParametersMap(dataSourcesConfigs).entrySet()) {
             result.put(entry.getKey(), createDataSources(entry.getValue()));
+        }
+        return result;
+    }
+    
+    private Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs) {
+        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>(dataSourcesConfigs.size(), 1);
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesConfigs.entrySet()) {
+            result.put(entry.getKey(), DataSourceConverter.getDataSourceParameterMap(entry.getValue()));
         }
         return result;
     }
@@ -81,14 +88,6 @@ public final class ProxyGovernanceSchemaContexts extends GovernanceSchemaContext
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry: dataSourceParameters.entrySet()) {
             result.put(entry.getKey(), backendDataSourceFactory.build(entry.getKey(), entry.getValue()));
-        }
-        return result;
-    }
-    
-    private Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSources) {
-        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>(dataSources.size(), 1);
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSources.entrySet()) {
-            result.put(entry.getKey(), DataSourceConverter.getDataSourceParameterMap(entry.getValue()));
         }
         return result;
     }
