@@ -45,10 +45,9 @@ public interface JDBCExecutorWrapper {
      * @param backendConnection backend connection
      * @param maxConnectionsSizePerQuery max connections size per query
      * @param option statement option
-     * @param executionContext execution context
      * @return execute group engine
      */
-    ExecuteGroupEngine<?> getExecuteGroupEngine(BackendConnection backendConnection, int maxConnectionsSizePerQuery, StatementOption option, ExecutionContext executionContext);
+    ExecuteGroupEngine<?> getExecuteGroupEngine(BackendConnection backendConnection, int maxConnectionsSizePerQuery, StatementOption option);
     
     /**
      * Execute SQL.

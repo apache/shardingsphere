@@ -20,7 +20,6 @@ package org.apache.shardingsphere.replica.execute.group;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
@@ -45,14 +44,13 @@ public final class ReplicaExecuteGroupDecorator implements RawExecuteGroupDecora
     private final boolean supportWithoutTableCommand = true;
 
     @Override
-    public Collection<InputGroup<RawSQLExecuteUnit>> decorate(final ExecutionContext executionContext, final ReplicaRule rule, final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups) {
+    public Collection<InputGroup<RawSQLExecuteUnit>> decorate(final RouteContext routeContext, final ReplicaRule rule, final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups) {
         if (null != inputGroups && !inputGroups.isEmpty()) {
             if (!(inputGroups.iterator().next().getInputs().get(0) instanceof RawSQLExecuteUnit)) {
                 log.info("inputGroups ExecuteUnit is not RawSQLExecuteUnit, ignore decorate");
                 return inputGroups;
             }
         }
-        RouteContext routeContext = executionContext.getRouteContext();
         RouteStageContext preRouteStageContext = routeContext.lastRouteStageContext();
         String currentSchemaName = preRouteStageContext.getCurrentSchemaName();
         RouteStageContext routeStageContext = routeContext.getRouteStageContexts().get(getOrder());

@@ -19,13 +19,13 @@ package org.apache.shardingsphere.infra.executor.sql.execute.jdbc.group;
 
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,8 +53,8 @@ public final class StatementExecuteGroupEngineTest {
     @Test
     public void assertGetExecuteUnitGroupForOneShardMemoryStrictly() throws SQLException {
         executeGroupEngine = new StatementExecuteGroupEngine(
-                2, mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)), mock(ExecutionContext.class));
-        Collection<InputGroup<StatementExecuteUnit>> actual = executeGroupEngine.generate(mockShardRouteUnit(1, 1));
+                2, mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
+        Collection<InputGroup<StatementExecuteUnit>> actual = executeGroupEngine.generate(mock(RouteContext.class), mockShardRouteUnit(1, 1));
         assertThat(actual.size(), is(1));
         for (InputGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(1));
@@ -64,8 +64,8 @@ public final class StatementExecuteGroupEngineTest {
     @Test
     public void assertGetExecuteUnitGroupForMultiShardConnectionStrictly() throws SQLException {
         executeGroupEngine = new StatementExecuteGroupEngine(
-                1, mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)), mock(ExecutionContext.class));
-        Collection<InputGroup<StatementExecuteUnit>> actual = executeGroupEngine.generate(mockShardRouteUnit(10, 2));
+                1, mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
+        Collection<InputGroup<StatementExecuteUnit>> actual = executeGroupEngine.generate(mock(RouteContext.class), mockShardRouteUnit(10, 2));
         assertThat(actual.size(), is(10));
         for (InputGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(2));

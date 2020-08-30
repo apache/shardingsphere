@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.executor.sql.resourced.group;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.ExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.resourced.ResourceManagedExecuteUnit;
@@ -51,9 +50,8 @@ public abstract class ResourceManagedExecuteGroupEngine
     
     private final O option;
 
-    protected ResourceManagedExecuteGroupEngine(final int maxConnectionsSizePerQuery, final E executionConnection, final O option, final Collection<ShardingSphereRule> rules,
-                                                final ExecutionContext executionContext) {
-        super(rules, executionContext);
+    protected ResourceManagedExecuteGroupEngine(final int maxConnectionsSizePerQuery, final E executionConnection, final O option, final Collection<ShardingSphereRule> rules) {
+        super(rules);
         this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
         this.executionConnection = executionConnection;
         this.option = option;

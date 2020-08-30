@@ -207,13 +207,13 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private Collection<InputGroup<StatementExecuteUnit>> getInputGroups() throws SQLException {
         int maxConnectionsSizePerQuery = schemaContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, connection, statementOption,
-                schemaContexts.getDefaultSchemaContext().getSchema().getRules(), executionContext).generate(executionContext.getExecutionUnits());
+                schemaContexts.getDefaultSchemaContext().getSchema().getRules()).generate(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
     private Collection<InputGroup<RawSQLExecuteUnit>> getRawInputGroups() throws SQLException {
         int maxConnectionsSizePerQuery = schemaContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new RawExecuteGroupEngine(maxConnectionsSizePerQuery, schemaContexts.getDefaultSchemaContext().getSchema().getRules(), executionContext)
-                .generate(executionContext.getExecutionUnits());
+        return new RawExecuteGroupEngine(maxConnectionsSizePerQuery, schemaContexts.getDefaultSchemaContext().getSchema().getRules())
+                .generate(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
     @Override
@@ -350,8 +350,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private void initBatchPreparedStatementExecutor() throws SQLException {
         PreparedStatementExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
                 schemaContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                connection, statementOption, schemaContexts.getDefaultSchemaContext().getSchema().getRules(), executionContext);
-        batchPreparedStatementExecutor.init(executeGroupEngine.generate(
+                connection, statementOption, schemaContexts.getDefaultSchemaContext().getSchema().getRules());
+        batchPreparedStatementExecutor.init(executeGroupEngine.generate(executionContext.getRouteContext(),
                 new ArrayList<>(batchPreparedStatementExecutor.getBatchExecutionUnits()).stream().map(BatchExecutionUnit::getExecutionUnit).collect(Collectors.toList())));
         setBatchParametersForStatements();
     }

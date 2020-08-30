@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.executor.sql.group;
 
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
@@ -47,20 +47,17 @@ public abstract class AbstractExecuteGroupEngine<T> implements ExecuteGroupEngin
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, ExecuteGroupDecorator> decorators;
 
-    private final ExecutionContext executionContext;
-
-    protected AbstractExecuteGroupEngine(final Collection<ShardingSphereRule> rules, final ExecutionContext executionContext) {
+    protected AbstractExecuteGroupEngine(final Collection<ShardingSphereRule> rules) {
         decorators = OrderedSPIRegistry.getRegisteredServices(rules, ExecuteGroupDecorator.class);
-        this.executionContext = executionContext;
     }
     
     @Override
-    public final Collection<InputGroup<T>> generate(final Collection<ExecutionUnit> executionUnits) throws SQLException {
+    public final Collection<InputGroup<T>> generate(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
         Collection<InputGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
             result.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue()));
         }
-        return decorate(result);
+        return decorate(routeContext, result);
     }
     
     private Map<String, List<SQLUnit>> aggregateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
@@ -77,10 +74,10 @@ public abstract class AbstractExecuteGroupEngine<T> implements ExecuteGroupEngin
     protected abstract List<InputGroup<T>> generateSQLExecuteGroups(String dataSourceName, List<SQLUnit> sqlUnits) throws SQLException;
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<InputGroup<T>> decorate(final Collection<InputGroup<T>> inputGroups) {
+    private Collection<InputGroup<T>> decorate(final RouteContext routeContext, final Collection<InputGroup<T>> inputGroups) {
         Collection<InputGroup<T>> result = inputGroups;
         for (Entry<ShardingSphereRule, ExecuteGroupDecorator> each : decorators.entrySet()) {
-            result = each.getValue().decorate(executionContext, each.getKey(), result);
+            result = each.getValue().decorate(routeContext, each.getKey(), result);
         }
         return result;
     }
