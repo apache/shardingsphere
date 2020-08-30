@@ -32,7 +32,7 @@ import java.util.Properties;
 import static org.mockito.Mockito.mock;
 
 @Getter
-public final class OrchestrationSchemaContextsFixture implements SchemaContexts {
+public final class GovernanceSchemaContextsFixture implements SchemaContexts {
     
     @Override
     public DatabaseType getDatabaseType() {

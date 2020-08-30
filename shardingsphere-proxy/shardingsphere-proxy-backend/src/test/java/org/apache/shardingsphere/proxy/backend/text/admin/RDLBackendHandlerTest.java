@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.OrchestrationSchemaContextsFixture;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.GovernanceSchemaContextsFixture;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
@@ -117,7 +117,7 @@ public final class RDLBackendHandlerTest {
         Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
         if (isOrchestration) {
-            schemaContexts.set(ProxySchemaContexts.getInstance(), new OrchestrationSchemaContextsFixture());
+            schemaContexts.set(ProxySchemaContexts.getInstance(), new GovernanceSchemaContextsFixture());
         } else {
             schemaContexts.set(ProxySchemaContexts.getInstance(), new StandardSchemaContexts());
         }
