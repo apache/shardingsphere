@@ -55,6 +55,8 @@ execute
     | createView
     | alterView
     | dropView
+    | createTrigger
+    | dropTrigger
     | setTransaction
     | beginTransaction
     | setAutoCommit

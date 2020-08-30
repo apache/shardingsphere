@@ -95,6 +95,10 @@ public enum VisitorRule {
     ALTER_VIEW("AlterView", SQLStatementType.DDL),
 
     DROP_VIEW("DropView", SQLStatementType.DDL),
+
+    CREATE_TRIGGER("CreateTrigger", SQLStatementType.DDL),
+
+    DROP_TRIGGER("DropTrigger", SQLStatementType.DDL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
     
