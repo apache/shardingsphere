@@ -19,12 +19,25 @@ package org.apache.shardingsphere.proxy.frontend;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Method;
+
+@RunWith(MockitoJUnitRunner.class)
 public final class DatabaseProtocolFrontendEngineFactoryTest {
+    
+    @Before
+    public void init() throws Exception {
+        Method method = ShardingSphereServiceLoader.class.getDeclaredMethod("registerServiceClass", Class.class, Object.class);
+        method.setAccessible(true);
+        method.invoke(null, DatabaseProtocolFrontendEngine.class, new MockDatabaseProtocolFrontendEngine());
+    }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWhenUnsupported() {
@@ -34,12 +47,6 @@ public final class DatabaseProtocolFrontendEngineFactoryTest {
     @Test
     public void assertNewInstanceMysql() {
         DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseProtocolFrontendEngineFactory.newInstance(new MySQLDatabaseType());
-        Assert.assertNotNull(databaseProtocolFrontendEngine);
-    }
-
-    @Test
-    public void assertNewInstancePostgreSQL() {
-        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseProtocolFrontendEngineFactory.newInstance(new PostgreSQLDatabaseType());
         Assert.assertNotNull(databaseProtocolFrontendEngine);
     }
 }
