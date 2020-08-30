@@ -98,7 +98,7 @@ public final class Bootstrap {
         return governanceEnabled ? new ProxyGovernanceSchemaContexts(schemaContexts, GovernanceFacade.getInstance()) : schemaContexts;
     }
     
-    private static TransactionContexts createTransactionContexts(final SchemaContexts schemaContexts, final boolean orchestrationEnabled) {
+    private static TransactionContexts createTransactionContexts(final SchemaContexts schemaContexts, final boolean governanceEnabled) {
         Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(schemaContexts.getSchemaContexts().size(), 1);
         for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContexts().entrySet()) {
             ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
@@ -106,7 +106,7 @@ public final class Bootstrap {
             transactionManagerEngines.put(entry.getKey(), engine);
         }
         TransactionContexts contexts = new StandardTransactionContexts(transactionManagerEngines);
-        return orchestrationEnabled ? new GovernanceTransactionContexts(contexts) : contexts;
+        return governanceEnabled ? new GovernanceTransactionContexts(contexts) : contexts;
     }
     
     private static void initOpenTracing() {
