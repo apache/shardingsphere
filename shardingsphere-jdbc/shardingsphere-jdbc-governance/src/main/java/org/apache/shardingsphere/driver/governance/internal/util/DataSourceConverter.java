@@ -36,11 +36,11 @@ public final class DataSourceConverter {
     /**
      * Get data source map.
      *
-     * @param dataSourceConfigurationMap data source configuration map
+     * @param dataSourceConfigMap data source configuration map
      * @return data source map
      */
-    public static Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
-        return dataSourceConfigurationMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().createDataSource(), (key, repeatKey) -> key, LinkedHashMap::new));
+    public static Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
+        return dataSourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().createDataSource(), (key, repeatKey) -> key, LinkedHashMap::new));
     }
     
     /**

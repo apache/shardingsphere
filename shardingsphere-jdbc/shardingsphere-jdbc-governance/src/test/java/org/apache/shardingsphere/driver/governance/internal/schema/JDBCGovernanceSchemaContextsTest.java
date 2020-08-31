@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.governance.internal.schema;
 
-import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.util.DataSourceConverter;
 import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
@@ -40,6 +39,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -61,7 +61,7 @@ public final class JDBCGovernanceSchemaContextsTest {
     public void setUp() {
         when(registryCenter.loadDisabledDataSources()).thenReturn(Collections.emptyList());
         when(facade.getRegistryCenter()).thenReturn(registryCenter);
-        schemaContexts = new JDBCGovernanceSchemaContexts(new StandardSchemaContexts(new LinkedMap<>(), new Authentication(),
+        schemaContexts = new JDBCGovernanceSchemaContexts(new StandardSchemaContexts(new LinkedHashMap<>(), new Authentication(),
                 new ConfigurationProperties(new Properties()), new H2DatabaseType()), facade);
     }
     
