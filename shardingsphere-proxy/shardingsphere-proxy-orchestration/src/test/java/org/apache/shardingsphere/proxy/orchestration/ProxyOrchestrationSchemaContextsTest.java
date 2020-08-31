@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.orchestration;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
@@ -45,6 +47,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -115,5 +118,37 @@ public final class ProxyOrchestrationSchemaContextsTest {
         OrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(true));
         assertTrue(ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak());
         OrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(false));
+    }
+    
+    @Test
+    public void assertCreateDataSourceParametersMap() {
+        DataSourceConfiguration dataSourceConfiguration = new DataSourceConfiguration("datasource-1");
+        dataSourceConfiguration.getProps().put("username", "root");
+        dataSourceConfiguration.getProps().put("password", "root");
+        dataSourceConfiguration.getProps().put("url", "jdbc:mysql://localhost:3306/demo_ds");
+        dataSourceConfiguration.getProps().put("connectionTimeoutMilliseconds", 10000L);
+        dataSourceConfiguration.getProps().put("idleTimeoutMilliseconds", 30000L);
+        dataSourceConfiguration.getProps().put("maxLifetimeMilliseconds", 40000L);
+        dataSourceConfiguration.getProps().put("maxPoolSize", 20);
+        dataSourceConfiguration.getProps().put("minPoolSize", 5);
+        dataSourceConfiguration.getProps().put("readOnly", false);
+        Map<String, Map<String, DataSourceConfiguration>> dataSources = new LinkedHashMap<>();
+        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = new LinkedHashMap<>();
+        dataSourceConfigurationMap.put("datasource-1", dataSourceConfiguration);
+        dataSources.put("datasource", dataSourceConfigurationMap);
+        ProxyOrchestrationSchemaContexts proxyOrchestrationSchemaContexts = getProxyOrchestrationSchemaContexts();
+        Map<String, Map<String, DataSourceParameter>> datasourceParameterMap = proxyOrchestrationSchemaContexts.createDataSourceParametersMap(dataSources);
+        assertThat(datasourceParameterMap.size(), is(1));
+        DataSourceParameter dataSourceParameter = datasourceParameterMap.get("datasource").get("datasource-1");
+        assertThat(dataSourceParameter.getUsername(), is("root"));
+        assertThat(dataSourceParameter.getPassword(), is("root"));
+        assertThat(dataSourceParameter.getUrl(), is("jdbc:mysql://localhost:3306/demo_ds"));
+        assertThat(dataSourceParameter.getConnectionTimeoutMilliseconds(), is(10000L));
+        assertThat(dataSourceParameter.getIdleTimeoutMilliseconds(), is(30000L));
+        assertThat(dataSourceParameter.getMaxLifetimeMilliseconds(), is(40000L));
+        assertThat(dataSourceParameter.getMaxPoolSize(), is(20));
+        assertThat(dataSourceParameter.getMinPoolSize(), is(5));
+        assertThat(dataSourceParameter.getMaintenanceIntervalMilliseconds(), is(30000L));
+        assertThat(dataSourceParameter.isReadOnly(), is(false));
     }
 }
