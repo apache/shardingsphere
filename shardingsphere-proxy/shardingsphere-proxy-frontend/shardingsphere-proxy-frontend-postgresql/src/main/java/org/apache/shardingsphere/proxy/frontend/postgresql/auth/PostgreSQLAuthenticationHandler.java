@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.auth;
 
 import com.google.common.base.Strings;
-import java.security.MessageDigest;
-import java.util.Collection;
-import java.util.Map;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,6 +25,10 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLError
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+
+import java.security.MessageDigest;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Authentication handler for PostgreSQL.
@@ -37,39 +38,36 @@ public class PostgreSQLAuthenticationHandler {
     /**
      * Login.
      *
-     * @param userName              user name
-     * @param databaseName          database name
-     * @param md5Salt               md5 salt
+     * @param username username
+     * @param databaseName database name
+     * @param md5Salt MD5 salt
      * @param passwordMessagePacket password message packet
-     * @return PostgreSQLLoginResult
+     * @return PostgreSQL login result
      */
-    public static PostgreSQLLoginResult loginWithMd5Password(final String userName, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
+    public static PostgreSQLLoginResult loginWithMd5Password(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
         ProxyUser proxyUser = null;
         for (Map.Entry<String, ProxyUser> entry : ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().entrySet()) {
-            if (entry.getKey().equals(userName)) {
+            if (entry.getKey().equals(username)) {
                 proxyUser = entry.getValue();
                 break;
             }
         }
         if (null == proxyUser) {
-            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, "unknown userName: " + userName);
+            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, "unknown username: " + username);
         }
-        
         String md5Digest = passwordMessagePacket.getMd5Digest();
-        String expectedMd5Digest = md5Encode(userName, proxyUser.getPassword(), md5Salt);
+        String expectedMd5Digest = md5Encode(username, proxyUser.getPassword(), md5Salt);
         if (!expectedMd5Digest.equals(md5Digest)) {
-            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, "password authentication failed for user \"" + userName + "\"");
+            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, "password authentication failed for user \"" + username + "\"");
         }
-        
         if (!isAuthorizedSchema(proxyUser.getAuthorizedSchemas(), databaseName)) {
-            return new PostgreSQLLoginResult(PostgreSQLErrorCode.PRIVILEGE_NOT_GRANTED, String.format("Access denied for user '%s' to database '%s'", userName, databaseName));
+            return new PostgreSQLLoginResult(PostgreSQLErrorCode.PRIVILEGE_NOT_GRANTED, String.format("Access denied for user '%s' to database '%s'", username, databaseName));
         }
-        
         return new PostgreSQLLoginResult(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION, null);
     }
     
-    private static String md5Encode(final String userName, final String password, final byte[] md5Salt) {
-        String passwordHash = new String(Hex.encodeHex(DigestUtils.md5(password + userName), true));
+    private static String md5Encode(final String username, final String password, final byte[] md5Salt) {
+        String passwordHash = new String(Hex.encodeHex(DigestUtils.md5(password + username), true));
         MessageDigest messageDigest = DigestUtils.getMd5Digest();
         messageDigest.update(passwordHash.getBytes());
         messageDigest.update(md5Salt);

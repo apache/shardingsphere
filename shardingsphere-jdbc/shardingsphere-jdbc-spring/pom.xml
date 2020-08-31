@@ -30,7 +30,7 @@
     <modules>
         <module>shardingsphere-jdbc-spring-infra</module>
         <module>shardingsphere-jdbc-core-spring</module>
-        <module>shardingsphere-jdbc-orchestration-spring</module>
+        <module>shardingsphere-jdbc-governance-spring</module>
         <module>shardingsphere-jdbc-transaction-spring</module>
     </modules>
     

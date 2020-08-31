@@ -27,6 +27,13 @@ import java.sql.SQLException;
 public interface QueryCommandExecutor extends CommandExecutor {
     
     /**
+     * Judge is query SQL or not.
+     *
+     * @return is query SQL or not
+     */
+    boolean isQueryResponse();
+    
+    /**
      * Judge is update response.
      *
      * @return is update response or not
@@ -39,13 +46,6 @@ public interface QueryCommandExecutor extends CommandExecutor {
      * @return is error response or not
      */
     boolean isErrorResponse();
-    
-    /**
-     * Judge is query SQL or not.
-     *
-     * @return is query SQL or not
-     */
-    boolean isQuery();
     
     /**
      * Goto next result value.
@@ -61,5 +61,5 @@ public interface QueryCommandExecutor extends CommandExecutor {
      * @return database packet of query data
      * @throws SQLException SQL exception
      */
-    DatabasePacket getQueryData() throws SQLException;
+    DatabasePacket<?> getQueryData() throws SQLException;
 }

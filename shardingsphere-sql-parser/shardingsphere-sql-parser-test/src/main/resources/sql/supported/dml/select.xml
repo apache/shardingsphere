@@ -57,4 +57,5 @@
     <sql-case id="select_current_user" value="SELECT CURRENT_USER" db-types="PostgreSQL"/>
     <sql-case id="select_with_match_against" value="SELECT * FROM t_order_item WHERE MATCH(t_order_item.description) AGAINST (? IN NATURAL LANGUAGE MODE) AND user_id = ?" db-types="MySQL" />
     <sql-case id="select_with_json_separator" value="select content_json->>'$.nation' as nation,content_json->>'$.title' as title from tb_content_json b where b.content_id=1" db-types="MySQL" />
+    <sql-case id="select_with_convert_function" value="SELECT CONVERT(SUBSTRING(content, 5) , SIGNED) AS signed_content FROM t_order WHERE order_id = 1" db-types="MySQL" />
 </sql-cases>

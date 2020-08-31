@@ -17,12 +17,12 @@
 
 ######################################################################################################
 # 
-# If you want to configure orchestration, authorization and proxy properties, please refer to this file.
+# If you want to configure governance, authorization and proxy properties, please refer to this file.
 # 
 ######################################################################################################
 #
-#orchestration:
-#  name: orchestration_ds
+#governance:
+#  name: governance_ds
 #  registryCenter:
 #    type: ZooKeeper
 #    serverLists: localhost:2181
@@ -41,20 +41,6 @@
 #      password: sharding
 #      authorizedSchemas: sharding_db
 #
-#metrics:
-#   name: prometheus
-#   host:  127.0.0.1
-#   port:  9190
-#
-#cluster:
-#  heartbeat:
-#    sql: select 1
-#    threadCount: 1
-#    interval: 60
-#    retryEnable: false
-#    retryMaximum: 3
-#    retryInterval: 3
-#
 #props:
 #  max.connections.size.per.query: 1
 #  acceptor.size: 16  # The default value is available processors count * 2.
@@ -65,7 +51,6 @@
 #    # BASE: Proxy will run with B.A.S.E transaction.
 #  proxy.transaction.type: LOCAL
 #  proxy.opentracing.enabled: false
-#  proxy.cluster.enabled: false
 #  proxy.hint.enabled: false
 #  query.with.cipher.column: true
 #  sql.show: false

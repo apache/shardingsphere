@@ -27,12 +27,11 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRe
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -48,7 +47,7 @@ public final class DistributionChannelTest {
     }
     
     @Test
-    @SneakyThrows(InterruptedException.class)
+    @SneakyThrows({InterruptedException.class, ReflectiveOperationException.class})
     public void assertAckCallbackResultSortable() {
         distributionChannel = new DistributionChannel(2, records -> {
             assertThat(records.size(), is(2));
@@ -58,7 +57,7 @@ public final class DistributionChannelTest {
         distributionChannel.pushRecord(new PlaceholderRecord(new IntPosition(2)));
         fetchRecordsAndSleep(0);
         fetchRecordsAndSleep(1);
-        invokeAckRecords0();
+        ReflectionUtil.invokeMethod(distributionChannel, "ackRecords0");
     }
     
     private void fetchRecordsAndSleep(final int millis) {
@@ -76,13 +75,6 @@ public final class DistributionChannelTest {
     public void assertBroadcastFinishedRecord() {
         distributionChannel = new DistributionChannel(2, records -> assertThat(records.size(), is(2)));
         distributionChannel.pushRecord(new FinishedRecord(new NopPosition()));
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void invokeAckRecords0() {
-        Method ackRecords0 = DistributionChannel.class.getDeclaredMethod("ackRecords0");
-        ackRecords0.setAccessible(true);
-        ackRecords0.invoke(distributionChannel);
     }
     
     @After

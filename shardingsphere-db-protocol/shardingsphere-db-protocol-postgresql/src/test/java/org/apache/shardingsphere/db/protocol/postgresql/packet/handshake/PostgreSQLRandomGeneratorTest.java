@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThat;
 public class PostgreSQLRandomGeneratorTest {
     
     @Test
-    public void t() {
+    public void assertGenerateRandomBytes() {
         PostgreSQLRandomGenerator generator = PostgreSQLRandomGenerator.getInstance();
         for (int i = 1; i < 13; i++) {
             assertThat(generator.generateRandomBytes(i).length, is(i));

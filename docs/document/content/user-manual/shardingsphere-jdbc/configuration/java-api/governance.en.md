@@ -71,30 +71,3 @@ Nacos Properties Configuration
 | ----------- | ----------- | ------------- | ----------------------------- |
 | group (?)   | String      | group         | SHARDING_SPHERE_DEFAULT_GROUP |
 | timeout (?) | long        | timeout       | 3000 milliseconds             |
-
-### Cluster
-
-*Configuration Entrance*
-
-Class name：org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration
-
-Attributes：
-
-| *Name*    | *Data Type*             | *Description*                     |
-| --------- | ----------------------- | --------------------------------- |
-| heartbeat | HeartbeatConfiguration  | heartbeat detection configuration |
-
-*Heartbeat Detection Configuration*
-
-Class name：org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration
-
-Attributes：
-
-| *Name*           | *Data Type* | *Description*                                               |
-| ---------------- | ----------- | ----------------------------------------------------------- |
-| sql              | String      | Heartbeat detection SQL                                     |
-| interval         | int         | Heartbeat detection task interval seconds                   |
-| threadCount      | int         | Thread pool size                                            |
-| retryEnable      | Boolean     | Whether to enable retry, set true or false                  |
-| retryMaximum(?)  | int         | Maximum number of retry, effective when retryEnable is true |
-| retryInterval(?) | int         | Retry interval (s), effective when retryEnable is true      |

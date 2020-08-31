@@ -19,10 +19,12 @@ package org.apache.shardingsphere.sharding.route.engine.validator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingCreateTableStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingDeleteStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingInsertStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingUpdateStatementValidator;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
@@ -50,6 +52,9 @@ public final class ShardingStatementValidatorFactory {
         }
         if (sqlStatement instanceof DeleteStatement) {
             return Optional.of(new ShardingDeleteStatementValidator());
+        }
+        if (sqlStatement instanceof CreateTableStatement) {
+            return Optional.of(new ShardingCreateTableStatementValidator());
         }
         return Optional.empty();
     }

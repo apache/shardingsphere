@@ -21,13 +21,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.control.panel.spi.engine.SingletonFacadeEngine;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
+import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.executor.CommandExecutorSelector;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
@@ -59,8 +58,6 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     public void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
         backendConnection.setConnectionId(databaseProtocolFrontendEngine.getAuthEngine().handshake(context));
-        // TODO ref #7013
-        SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.gaugeIncrement(MetricsLabelEnum.CHANNEL_COUNT.getName()));
     }
     
     @Override
@@ -69,7 +66,6 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             authorized = auth(context, (ByteBuf) message);
             return;
         }
-        SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.counterIncrement(MetricsLabelEnum.REQUEST_TOTAL.getName()));
         ExecutorService executorService = CommandExecutorSelector.getExecutor(databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection(), 
                 backendConnection.isSupportHint(), backendConnection.getTransactionType(), context.channel().id());
         executorService.execute(new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message));
@@ -77,11 +73,15 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private boolean auth(final ChannelHandlerContext context, final ByteBuf message) {
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload(message)) {
-            return databaseProtocolFrontendEngine.getAuthEngine().auth(context, payload, backendConnection);
+            AuthenticationResult authResult = databaseProtocolFrontendEngine.getAuthEngine().auth(context, payload);
+            if (authResult.isFinished()) {
+                backendConnection.setUsername(authResult.getUsername());
+                backendConnection.setCurrentSchema(authResult.getDatabase());
+            }
+            return authResult.isFinished();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            // TODO ref #7014
             log.error("Exception occur: ", ex);
             context.write(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
         }
@@ -94,8 +94,6 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         databaseProtocolFrontendEngine.release(backendConnection);
         backendConnection.close(true);
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
-        SingletonFacadeEngine.buildMetrics().ifPresent(metricsHandlerFacade -> metricsHandlerFacade.gaugeDecrement(MetricsLabelEnum.CHANNEL_COUNT.getName()));
-        // TODO #7011
     }
     
     @Override

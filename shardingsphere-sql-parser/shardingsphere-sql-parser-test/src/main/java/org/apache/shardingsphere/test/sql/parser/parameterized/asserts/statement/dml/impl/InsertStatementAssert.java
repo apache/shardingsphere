@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.i
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.insert.OnDuplicateKeyColumnsAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.set.SetClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.with.WithClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
@@ -51,6 +52,7 @@ public final class InsertStatementAssert {
         assertSetClause(assertContext, actual, expected);
         assertInsertSelectClause(assertContext, actual, expected);
         assertOnDuplicateKeyColumns(assertContext, actual, expected);
+        assertWithClause(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
@@ -99,6 +101,15 @@ public final class InsertStatementAssert {
             OnDuplicateKeyColumnsAssert.assertIs(assertContext, actual.getOnDuplicateKeyColumns().get(), expected.getOnDuplicateKeyColumns());
         } else {
             assertFalse(assertContext.getText("Actual on duplicate key columns segment should not exist."), actual.getOnDuplicateKeyColumns().isPresent());
+        }
+    }
+    
+    private static void assertWithClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        if (null != expected.getWithClause()) {
+            assertTrue(assertContext.getText("Actual with segment should exist."), actual.getWithSegment().isPresent());
+            WithClauseAssert.assertIs(assertContext, actual.getWithSegment().get(), expected.getWithClause()); 
+        } else {
+            assertFalse(assertContext.getText("Actual with segment should not exist."), actual.getWithSegment().isPresent());
         }
     }
 }

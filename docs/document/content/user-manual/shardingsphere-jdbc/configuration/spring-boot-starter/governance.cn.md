@@ -17,14 +17,3 @@ spring.shardingsphere.orchestration.additional-config-center.server-lists= # 可
 spring.shardingsphere.orchestration.additional-config-center.props= # 可选的配置中心其它配置
 spring.shardingsphere.orchestration.overwrite= # 本地配置是否覆盖配置中心配置。如果可覆盖，每次启动都以本地配置为准.
 ```
-
-### 集群管理
-
-```properties
-spring.shardingsphere.cluster.heartbeat.sql= # 心跳检测 SQL
-spring.shardingsphere.cluster.heartbeat.interval= # 心跳检测间隔秒数
-spring.shardingsphere.cluster.heartbeat.threadCount= # 心跳检测线程池大小
-spring.shardingsphere.cluster.heartbeat.retryEnable= # 是否支持失败重试
-spring.shardingsphere.cluster.heartbeat.retryInterval= # 重试间隔秒数
-spring.shardingsphere.cluster.heartbeat.retryMaximum= # 最大重试次数
-```

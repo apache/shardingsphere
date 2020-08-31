@@ -38,13 +38,3 @@ chapter = true
 | *已知实现类*               | *详细说明*                            |
 | ------------------------- | ------------------------------------ |
 | OpenTracingRootInvokeHook | 基于 OpenTracing 协议的请求调用入口追踪 |
-
-## MetricsTrackerManager
-
-| *SPI 名称*                      | *详细说明*                    |
-| ------------------------------- | --------------------------- |
-| MetricsTrackerManager           | 度量指标追踪                  |
-
-| *已知实现类*                     | *详细说明*                    |
-| ------------------------------- | ---------------------------- |
-| PrometheusMetricsTrackerManager | 基于 Prometheus 的度量指标追踪 |

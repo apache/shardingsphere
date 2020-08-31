@@ -64,4 +64,7 @@
     <sql-case id="insert_select_on_duplicate_key_update" value="INSERT INTO t_order(order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = ? ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
     <sql-case id="insert_with_emoji_value" value="INSERT INTO t_emoji_test(col1) VALUES('test😀')" db-types="MySQL" />
     <sql-case id="insert_with_digit_literals_value" value="INSERT INTO digit_literals_value_test(col1) VALUES(x'1234')" db-types="MySQL" />
+    <sql-case id="insert_with_with_clause" value="WITH cte (order_id, user_id) AS (SELECT order_id, user_id FROM t_order) INSERT INTO t_order (order_id, user_id) SELECT order_id, user_id FROM cte" db-types="SQLServer" />
+    <sql-case id="insert_with_with_clause_no_columns" value="WITH cte AS (SELECT order_id, user_id FROM t_order) INSERT INTO t_order (order_id, user_id) SELECT order_id, user_id FROM cte" db-types="SQLServer" />
+    <sql-case id="insert_no_into_keyword" value="INSERT t_order (order_id, user_id, status) VALUES (?, ?, ?)" db-types="MySQL,SQLServer" />
 </sql-cases>

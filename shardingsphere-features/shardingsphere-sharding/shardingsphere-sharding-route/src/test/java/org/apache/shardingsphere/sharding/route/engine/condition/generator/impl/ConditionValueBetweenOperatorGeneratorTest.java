@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
-import org.apache.shardingsphere.sql.parser.sql.util.SafeRangeOperationUtils;
+import org.apache.shardingsphere.sql.parser.sql.util.SafeNumberOperationUtils;
 import org.junit.Test;
 
 import java.util.Calendar;
@@ -72,8 +72,8 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         RangeRouteValue<Comparable<?>> rangeRouteValue = (RangeRouteValue<Comparable<?>>) routeValue.get();
         assertThat(rangeRouteValue.getColumnName(), is(column.getName()));
         assertThat(rangeRouteValue.getTableName(), is(column.getTableName()));
-        assertTrue(SafeRangeOperationUtils.safeContains(rangeRouteValue.getValueRange(), between));
-        assertTrue(SafeRangeOperationUtils.safeContains(rangeRouteValue.getValueRange(), and));
+        assertTrue(SafeNumberOperationUtils.safeContains(rangeRouteValue.getValueRange(), between));
+        assertTrue(SafeNumberOperationUtils.safeContains(rangeRouteValue.getValueRange(), and));
     }
     
     @Test(expected = ClassCastException.class)

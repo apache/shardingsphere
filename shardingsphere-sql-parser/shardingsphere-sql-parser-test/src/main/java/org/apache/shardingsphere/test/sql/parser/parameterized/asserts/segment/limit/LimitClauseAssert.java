@@ -49,7 +49,7 @@ public final class LimitClauseAssert {
             assertNull(assertContext.getText("Offset should not exist."), expected);
             return;
         }
-        if (SQLCaseType.Placeholder == assertContext.getSqlCaseType()) {
+        if (actual instanceof ParameterMarkerPaginationValueSegment) {
             assertThat(assertContext.getText("Offset index assertion error: "),
                     ((ParameterMarkerPaginationValueSegment) actual).getParameterIndex(), is(expected.getParameterIndex()));
         } else {

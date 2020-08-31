@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
-import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
 import javax.sql.DataSource;
@@ -45,7 +45,7 @@ public final class DataSourceConverter {
      */
     public static Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
         return dataSourceConfigurationMap.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
+                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
@@ -75,7 +75,7 @@ public final class DataSourceConverter {
     }
     
     private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfig) {
-        bindAlias(dataSourceConfig);
+        bindSynonym(dataSourceConfig);
         DataSourceParameter result = new DataSourceParameter();
         for (Field each : result.getClass().getDeclaredFields()) {
             try {
@@ -89,12 +89,12 @@ public final class DataSourceConverter {
         return result;
     }
 
-    private static void bindAlias(final DataSourceConfiguration dataSourceConfiguration) {
-        dataSourceConfiguration.addPropertyAlias("url", "jdbcUrl");
-        dataSourceConfiguration.addPropertyAlias("user", "username");
-        dataSourceConfiguration.addPropertyAlias("connectionTimeout", "connectionTimeoutMilliseconds");
-        dataSourceConfiguration.addPropertyAlias("maxLifetime", "maxLifetimeMilliseconds");
-        dataSourceConfiguration.addPropertyAlias("idleTimeout", "idleTimeoutMilliseconds");
+    private static void bindSynonym(final DataSourceConfiguration dataSourceConfiguration) {
+        dataSourceConfiguration.addPropertySynonym("url", "jdbcUrl");
+        dataSourceConfiguration.addPropertySynonym("user", "username");
+        dataSourceConfiguration.addPropertySynonym("connectionTimeout", "connectionTimeoutMilliseconds");
+        dataSourceConfiguration.addPropertySynonym("maxLifetime", "maxLifetimeMilliseconds");
+        dataSourceConfiguration.addPropertySynonym("idleTimeout", "idleTimeoutMilliseconds");
     }
     
     /**

@@ -105,7 +105,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-orchestration</artifactId>
+            <artifactId>shardingsphere-jdbc-governance</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -175,47 +175,47 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-core-common</artifactId>
+            <artifactId>shardingsphere-governance-core-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-core-config</artifactId>
+            <artifactId>shardingsphere-governance-core-config</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-core-registry</artifactId>
+            <artifactId>shardingsphere-governance-core-registry</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-core-facade</artifactId>
+            <artifactId>shardingsphere-governance-core-facade</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-repository-api</artifactId>
+            <artifactId>shardingsphere-governance-repository-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-repository-zookeeper-curator</artifactId>
+            <artifactId>shardingsphere-governance-repository-zookeeper-curator</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-repository-apollo</artifactId>
+            <artifactId>shardingsphere-governance-repository-apollo</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-repository-nacos</artifactId>
+            <artifactId>shardingsphere-governance-repository-nacos</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-opentracing</artifactId>
+            <artifactId>shardingsphere-tracing-opentracing</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -230,12 +230,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-orchestration-spring-boot-starter</artifactId>
+            <artifactId>shardingsphere-jdbc-governance-spring-boot-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-orchestration-spring-namespace</artifactId>
+            <artifactId>shardingsphere-jdbc-governance-spring-namespace</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

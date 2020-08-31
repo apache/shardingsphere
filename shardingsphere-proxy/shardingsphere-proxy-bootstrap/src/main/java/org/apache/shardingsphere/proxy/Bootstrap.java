@@ -20,14 +20,13 @@ package org.apache.shardingsphere.proxy;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.control.panel.spi.ControlPanelConfiguration;
-import org.apache.shardingsphere.control.panel.spi.engine.ControlPanelFacadeEngine;
-import org.apache.shardingsphere.control.panel.spi.opentracing.OpenTracingConfiguration;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.kernel.context.SchemaContexts;
-import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
-import org.apache.shardingsphere.orchestration.core.facade.OrchestrationFacade;
+import org.apache.shardingsphere.infra.context.SchemaContext;
+import org.apache.shardingsphere.infra.context.SchemaContexts;
+import org.apache.shardingsphere.infra.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.proxy.arg.BootstrapArguments;
 import org.apache.shardingsphere.proxy.backend.schema.ProxyDataSourceContext;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
@@ -37,14 +36,19 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.db.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
-import org.apache.shardingsphere.proxy.orchestration.OrchestrationBootstrap;
-import org.apache.shardingsphere.proxy.orchestration.schema.ProxyOrchestrationSchemaContexts;
+import org.apache.shardingsphere.proxy.governance.GovernanceBootstrap;
+import org.apache.shardingsphere.proxy.governance.schema.ProxyGovernanceSchemaContexts;
+import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -65,45 +69,50 @@ public final class Bootstrap {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         int port = bootstrapArgs.getPort();
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        if (null == yamlConfig.getServerConfiguration().getOrchestration()) {
+        if (null == yamlConfig.getServerConfiguration().getGovernance()) {
             init(new YamlProxyConfigurationSwapper().swap(yamlConfig), port, false);
         } else {
-            try (OrchestrationFacade orchestrationFacade = OrchestrationFacade.getInstance()) {
-                init(new OrchestrationBootstrap(orchestrationFacade).init(yamlConfig), port, true);
+            try (GovernanceFacade governanceFacade = GovernanceFacade.getInstance()) {
+                init(new GovernanceBootstrap(governanceFacade).init(yamlConfig), port, true);
             }
         }
     }
     
-    private static void init(final ProxyConfiguration proxyConfig, final int port, final boolean orchestrationEnabled) throws SQLException {
-        initSchemaContexts(proxyConfig, orchestrationEnabled);
-        initControlPanelFacade(proxyConfig);
+    private static void init(final ProxyConfiguration proxyConfig, final int port, final boolean governanceEnabled) throws SQLException {
+        initSchemaContexts(proxyConfig, governanceEnabled);
+        initOpenTracing();
         setDatabaseServerInfo();
         ShardingSphereProxy.getInstance().start(port);
     }
     
-    private static void initSchemaContexts(final ProxyConfiguration proxyConfig, final boolean orchestrationEnabled) throws SQLException {
+    private static void initSchemaContexts(final ProxyConfiguration proxyConfig, final boolean governanceEnabled) throws SQLException {
         ProxyDataSourceContext dataSourceContext = new ProxyDataSourceContext(proxyConfig.getSchemaDataSources());
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(
                 dataSourceContext.getDatabaseType(), dataSourceContext.getDataSourcesMap(), proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
-        ProxySchemaContexts.getInstance().init(createSchemaContexts(schemaContextsBuilder.build(), orchestrationEnabled));
+        SchemaContexts schemaContexts = createSchemaContexts(schemaContextsBuilder.build(), governanceEnabled);
+        TransactionContexts transactionContexts = createTransactionContexts(schemaContexts, governanceEnabled);
+        ProxySchemaContexts.getInstance().init(schemaContexts, transactionContexts);
     }
     
-    private static SchemaContexts createSchemaContexts(final SchemaContexts schemaContexts, final boolean orchestrationEnabled) {
-        return orchestrationEnabled ? new ProxyOrchestrationSchemaContexts(schemaContexts, OrchestrationFacade.getInstance()) : schemaContexts;
+    private static SchemaContexts createSchemaContexts(final SchemaContexts schemaContexts, final boolean governanceEnabled) {
+        return governanceEnabled ? new ProxyGovernanceSchemaContexts(schemaContexts, GovernanceFacade.getInstance()) : schemaContexts;
     }
     
-    private static void initControlPanelFacade(final ProxyConfiguration proxyConfig) {
-        Collection<ControlPanelConfiguration> controlPanelConfigs = new LinkedList<>();
-        if (null != proxyConfig.getMetrics() && proxyConfig.getMetrics().getEnable()) {
-            controlPanelConfigs.add(proxyConfig.getMetrics());
+    private static TransactionContexts createTransactionContexts(final SchemaContexts schemaContexts, final boolean governanceEnabled) {
+        Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(schemaContexts.getSchemaContexts().size(), 1);
+        for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContexts().entrySet()) {
+            ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
+            engine.init(schemaContexts.getDatabaseType(), entry.getValue().getSchema().getDataSources());
+            transactionManagerEngines.put(entry.getKey(), engine);
         }
+        TransactionContexts contexts = new StandardTransactionContexts(transactionManagerEngines);
+        return governanceEnabled ? new GovernanceTransactionContexts(contexts) : contexts;
+    }
+    
+    private static void initOpenTracing() {
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
-            controlPanelConfigs.add(new OpenTracingConfiguration());
+            OpenTracingTracer.init();
         }
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
-            controlPanelConfigs.add(proxyConfig.getCluster());
-        }
-        new ControlPanelFacadeEngine().init(controlPanelConfigs);
     }
     
     private static void setDatabaseServerInfo() {

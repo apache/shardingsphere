@@ -1980,4 +1980,26 @@
             </and-predicate>
         </where>
     </select>
+
+    <select sql-case-id="select_with_convert_function">
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="70" stop-index="76" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="63">
+            <expression-projection alias="signed_content" start-index="7" stop-index="63" />
+        </projections>
+        <where start-index="78" stop-index="95">
+            <and-predicate>
+                <predicate start-index="84" stop-index="95">
+                    <column-left-value name="order_id" start-index="84" stop-index="91" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="1" start-index="95" stop-index="95" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
 </sql-parser-test-cases>

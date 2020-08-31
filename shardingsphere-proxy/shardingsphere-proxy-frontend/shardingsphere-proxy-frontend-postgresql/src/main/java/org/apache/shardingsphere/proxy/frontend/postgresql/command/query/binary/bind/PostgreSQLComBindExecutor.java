@@ -29,9 +29,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
+import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
-import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -63,7 +63,8 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
             
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
-    private volatile boolean isQuery;
+    @Getter
+    private volatile boolean isQueryResponse;
     
     @Getter
     private volatile boolean isUpdateResponse;
@@ -93,32 +94,36 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         if (null == databaseCommunicationEngine) {
             return result;
         }
-        BackendResponse backendResponse = databaseCommunicationEngine.execute();
-        if (backendResponse instanceof ErrorResponse) {
-            isErrorResponse = true;
-            result.add(createErrorPacket((ErrorResponse) backendResponse));
+        BackendResponse backendResponse = getBackendResponse();
+        if (backendResponse instanceof QueryResponse) {
+            createQueryPacket((QueryResponse) backendResponse).ifPresent(result::add);
         }
         if (backendResponse instanceof UpdateResponse) {
             isUpdateResponse = true;
             result.add(createUpdatePacket((UpdateResponse) backendResponse));
         }
-        if (backendResponse instanceof QueryResponse) {
-            createQueryPacket((QueryResponse) backendResponse).ifPresent(result::add);
+        if (backendResponse instanceof ErrorResponse) {
+            isErrorResponse = true;
+            result.add(createErrorPacket((ErrorResponse) backendResponse));
         }
         return result;
     }
     
-    private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
-        return PostgreSQLErrPacketFactory.newInstance(errorResponse.getCause());
-    }
-    
-    private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponse updateResponse) {
-        return new PostgreSQLCommandCompletePacket(updateResponse.getType(), updateResponse.getUpdateCount());
+    private BackendResponse getBackendResponse() {
+        BackendResponse result;
+        try {
+            result = databaseCommunicationEngine.execute();
+        // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+        // CHECKSTYLE:OFF
+            result = new ErrorResponse(ex);
+        }
+        return result;
     }
     
     private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
         List<PostgreSQLColumnDescription> columnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
-        isQuery = !columnDescriptions.isEmpty();
+        isQueryResponse = !columnDescriptions.isEmpty();
         if (columnDescriptions.isEmpty() || packet.isBinaryRowData()) {
             return Optional.empty();
         }
@@ -128,7 +133,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     private List<PostgreSQLColumnDescription> getPostgreSQLColumnDescriptions(final QueryResponse queryResponse) {
         List<PostgreSQLColumnDescription> result = new LinkedList<>();
         List<QueryResult> queryResults = queryResponse.getQueryResults();
-        ResultSetMetaData resultSetMetaData = !queryResults.isEmpty() ? queryResults.get(0).getResultSetMetaData() : null;
+        ResultSetMetaData resultSetMetaData = queryResults.isEmpty() ? null : queryResults.get(0).getResultSetMetaData();
         int columnIndex = 0;
         for (QueryHeader each : queryResponse.getQueryHeaders()) {
             result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength(), resultSetMetaData));
@@ -136,9 +141,12 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         return result;
     }
     
-    @Override
-    public boolean isQuery() {
-        return isQuery;
+    private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponse updateResponse) {
+        return new PostgreSQLCommandCompletePacket(updateResponse.getType(), updateResponse.getUpdateCount());
+    }
+    
+    private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
+        return PostgreSQLErrPacketFactory.newInstance(errorResponse.getCause());
     }
     
     @Override

@@ -565,11 +565,11 @@ orderByItem
     ;
 
 dataType
-    : dataTypeName dataTypeLength? characterSet_? collateClause_? ZEROFILL? | dataTypeName collectionOptions characterSet_? collateClause_?
+    : dataTypeName dataTypeLength? characterSet_? collateClause_? (UNSIGNED | SIGNED)? ZEROFILL? | dataTypeName collectionOptions characterSet_? collateClause_?
     ;
 
 dataTypeName
-    : (UNSIGNED | SIGNED)? INTEGER | INT | SMALLINT | TINYINT | MEDIUMINT | BIGINT | DECIMAL| NUMERIC | FLOAT | DOUBLE | BIT | BOOL | BOOLEAN
+    : INTEGER | INT | SMALLINT | TINYINT | MEDIUMINT | BIGINT | DECIMAL| NUMERIC | FLOAT | DOUBLE | BIT | BOOL | BOOLEAN
     | DEC | DATE | DATETIME | TIMESTAMP | TIME | YEAR | CHAR | VARCHAR | BINARY | VARBINARY | TINYBLOB | TINYTEXT | BLOB
     | TEXT | MEDIUMBLOB | MEDIUMTEXT | LONGBLOB | LONGTEXT | ENUM | SET | GEOMETRY | POINT | LINESTRING | POLYGON
     | MULTIPOINT | MULTILINESTRING | MULTIPOLYGON | GEOMETRYCOLLECTION | JSON | UNSIGNED | SIGNED
@@ -584,7 +584,7 @@ collectionOptions
     ;
 
 characterSet_
-    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_
+    : (CHARSET | CHAR SET) EQ_? ignoredIdentifier_
     ;
 
 collateClause_

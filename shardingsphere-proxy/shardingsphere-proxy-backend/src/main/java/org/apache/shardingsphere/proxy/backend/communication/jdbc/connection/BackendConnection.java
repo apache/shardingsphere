@@ -20,10 +20,12 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import java.sql.Types;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
@@ -69,7 +71,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     private int connectionId;
     
     @Setter
-    private String userName;
+    private String username;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
@@ -204,7 +206,12 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         PreparedStatement result = option.isReturnGeneratedKeys()
                 ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
         for (int i = 0; i < parameters.size(); i++) {
-            result.setObject(i + 1, parameters.get(i));
+            Object parameter = parameters.get(i);
+            if (parameter instanceof TypeUnspecifiedSQLParameter) {
+                result.setObject(i + 1, parameter, Types.OTHER);
+            } else {
+                result.setObject(i + 1, parameter);
+            }
         }
         if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
             setFetchSize(result);

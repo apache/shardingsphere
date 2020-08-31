@@ -21,6 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectionUtil {
@@ -41,9 +43,7 @@ public final class ReflectionUtil {
         } else {
             targetField = targetClass.getField(fieldName);
         }
-        if (null != targetField) {
-            targetField.setAccessible(true);
-        }
+        targetField.setAccessible(true);
         return targetField;
     }
     
@@ -83,5 +83,36 @@ public final class ReflectionUtil {
     public static void setFieldValueToClass(final Object target, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
         Field field = getFieldFromClass(target.getClass(), fieldName, true);
         field.set(target, value);
+    }
+    
+    /**
+     * Invoke method.
+     *
+     * @param target target object
+     * @param methodName method name
+     * @throws NoSuchMethodException no such field exception
+     * @throws InvocationTargetException invocation target exception
+     * @throws IllegalAccessException illegal access exception
+     */
+    public static void invokeMethod(final Object target, final String methodName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        invokeMethod(target, methodName, new Class[0], new Object[0]);
+    }
+    
+    /**
+     * Invoke method.
+     *
+     * @param target target object
+     * @param methodName method name
+     * @param parameterTypes parameter types
+     * @param parameterValues parameter values
+     * @throws NoSuchMethodException no such field exception
+     * @throws InvocationTargetException invocation target exception
+     * @throws IllegalAccessException illegal access exception
+     */
+    public static void invokeMethod(final Object target, final String methodName, final Class<?>[] parameterTypes, final Object[] parameterValues)
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method method = target.getClass().getDeclaredMethod(methodName, parameterTypes);
+        method.setAccessible(true);
+        method.invoke(target, parameterValues);
     }
 }

@@ -19,14 +19,18 @@ package org.apache.shardingsphere.proxy.config.util;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
-import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import javax.sql.DataSource;
 
 public final class DataSourceConverterTest {
     
@@ -75,5 +79,40 @@ public final class DataSourceConverterTest {
         assertThat(props.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
         assertThat(props.get("username"), is("root"));
         assertThat(props.get("password"), is("root"));
+    }
+    
+    @Test
+    public void assertGetDataSourceParameter() {
+        DataSource dataSource = createDataSource();
+        DataSourceParameter actual = DataSourceConverter.getDataSourceParameter(dataSource);
+        assertDataSourceParameter(actual);
+    }
+    
+    private DataSource createDataSource() {
+        HikariDataSource hikariDataSource = new HikariDataSource();
+        hikariDataSource.setJdbcUrl("jdbc:mysql://localhost:3306/demo_ds");
+        hikariDataSource.setUsername("root");
+        hikariDataSource.setPassword("root");
+        hikariDataSource.setConnectionTimeout(30 * 1000L);
+        hikariDataSource.setIdleTimeout(60 * 1000L);
+        hikariDataSource.setMaxLifetime(0L);
+        hikariDataSource.setMaximumPoolSize(50);
+        hikariDataSource.setMinimumIdle(1);
+        hikariDataSource.setReadOnly(true);
+        return hikariDataSource;
+    }
+    
+    private void assertDataSourceParameter(final DataSourceParameter actual) {
+        assertNotNull(actual);
+        assertThat(actual.getUrl(), is("jdbc:mysql://localhost:3306/demo_ds"));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("root"));
+        assertThat(actual.getConnectionTimeoutMilliseconds(), is(30 * 1000L));
+        assertThat(actual.getIdleTimeoutMilliseconds(), is(60 * 1000L));
+        assertThat(actual.getMaxLifetimeMilliseconds(), is(0L));
+        assertThat(actual.getMaintenanceIntervalMilliseconds(), is(30 * 1000L));
+        assertThat(actual.getMaxPoolSize(), is(50));
+        assertThat(actual.getMinPoolSize(), is(1));
+        assertTrue(actual.isReadOnly());
     }
 }

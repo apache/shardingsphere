@@ -32,6 +32,10 @@ public final class FixtureNopManager extends BasePositionManager<IncrementalPosi
     
     private DataSource dataSource;
     
+    public FixtureNopManager(final DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
     public FixtureNopManager(final String position) {
     }
     

@@ -21,9 +21,9 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.SchemaContext;
+import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
@@ -54,7 +54,7 @@ public class ShowTablesBackendHandlerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
         BackendConnection backendConnection = mock(BackendConnection.class);
-        when(backendConnection.getUserName()).thenReturn("root");
+        when(backendConnection.getUsername()).thenReturn("root");
         tablesBackendHandler = new ShowTablesBackendHandler("show tables", mock(SQLStatement.class), backendConnection);
         Map<String, SchemaContext> schemaContextMap = getSchemaContextMap();
         when(backendConnection.getSchema()).thenReturn("schema_0");

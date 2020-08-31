@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 142 家公司。
+共计 143 家公司。
 
 ### 金融行业
 <ul>
@@ -58,6 +58,7 @@ chapter = true
     <li><a href="https://www.miaomaifang.com/" rel="nofollow">秒卖房</a></li>
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://zowiesunglasses.com/" rel="nofollow">卓唯眼镜</a></li>
+    <li><a href="https://m.51tiangou.com/">大商天狗电子商务有限责任公司</a></li>
 </ul>
 
 ### 数字化与云服务
