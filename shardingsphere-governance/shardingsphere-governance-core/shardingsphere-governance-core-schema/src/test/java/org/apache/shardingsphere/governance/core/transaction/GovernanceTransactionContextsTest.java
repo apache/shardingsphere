@@ -79,5 +79,4 @@ public final class GovernanceTransactionContextsTest {
         verify(engine).close();
         verify(engineMap).put(eq("name"), any(ShardingTransactionManagerEngine.class));
     }
-    
 }
