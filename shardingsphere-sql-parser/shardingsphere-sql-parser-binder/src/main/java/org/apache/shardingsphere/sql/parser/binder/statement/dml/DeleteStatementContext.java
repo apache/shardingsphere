@@ -22,7 +22,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.predicate.PredicateExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.util.predicate.PredicateExtractUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
@@ -63,7 +63,7 @@ public final class DeleteStatementContext extends CommonSQLStatementContext<Dele
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (AndPredicate each : where.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
-                result.addAll(new PredicateExtractor(getSqlStatement().getTables().stream().map(t -> (TableSegment) t).collect(Collectors.toList()), predicate).extractTables());
+                result.addAll(new PredicateExtractUtils(getSqlStatement().getTables().stream().map(t -> (TableSegment) t).collect(Collectors.toList()), predicate).extractTables());
             }
         }
         return result;

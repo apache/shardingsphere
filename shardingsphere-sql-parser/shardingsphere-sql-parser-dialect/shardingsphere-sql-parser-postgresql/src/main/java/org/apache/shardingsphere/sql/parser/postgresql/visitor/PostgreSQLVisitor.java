@@ -52,7 +52,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ta
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.predicate.PredicateBuilder;
+import org.apache.shardingsphere.sql.parser.sql.common.util.predicate.PredicateBuildUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -192,7 +192,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
             return new LiteralExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
         }
         if (null != ctx.logicalOperator()) {
-            return new PredicateBuilder(visit(ctx.aExpr(0)), visit(ctx.aExpr(1)), ctx.logicalOperator().getText()).mergePredicate();
+            return new PredicateBuildUtils(visit(ctx.aExpr(0)), visit(ctx.aExpr(1)), ctx.logicalOperator().getText()).mergePredicate();
         }
         super.visitAExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
