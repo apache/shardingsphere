@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.mysql;
+package org.apache.shardingsphere.proxy.frontend.spi;
 
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.engine.CommandExecuteEngine;
-import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
-public final class MockMySQLProtocolFrontendEngine implements DatabaseProtocolFrontendEngine {
+public final class MockProtocolFrontendEngine implements DatabaseProtocolFrontendEngine {
     
     @Override
     public FrontendContext getFrontendContext() {

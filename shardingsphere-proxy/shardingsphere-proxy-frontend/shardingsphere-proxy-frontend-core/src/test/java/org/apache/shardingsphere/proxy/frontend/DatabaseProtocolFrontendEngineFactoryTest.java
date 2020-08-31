@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
-import org.apache.shardingsphere.proxy.frontend.mysql.MockMySQLProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
+import org.apache.shardingsphere.proxy.frontend.spi.MockProtocolFrontendEngine;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -38,7 +38,7 @@ public final class DatabaseProtocolFrontendEngineFactoryTest {
     public void assertNewInstanceWhenSupported() {
         DatabaseProtocolFrontendEngine actual = DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"));
         assertNotNull(actual);
-        assertThat(actual, instanceOf(MockMySQLProtocolFrontendEngine.class));
+        assertThat(actual, instanceOf(MockProtocolFrontendEngine.class));
         assertThat(actual.getDatabaseType(), is("MySQL"));
     }
 }
