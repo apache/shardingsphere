@@ -19,33 +19,57 @@ package org.apache.shardingsphere.transaction.context.impl;
 
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
-public class StandardTransactionContextsTest {
+public final class StandardTransactionContextsTest {
     
     @Test
-    public void assertGetEnginesNull() {
+    public void assertNewInstanceWithEmptyEngines() {
         StandardTransactionContexts standardTransactionContexts = new StandardTransactionContexts();
         Map<String, ShardingTransactionManagerEngine> engines = standardTransactionContexts.getEngines();
-        Assert.assertTrue(engines.isEmpty());
+        assertTrue(engines.isEmpty());
     }
     
     @Test
-    public void assertGetEngines() {
+    public void assertGetDefaultTransactionManagerEngine() {
         Map<String, ShardingTransactionManagerEngine> actualEngine = new HashMap<>();
         actualEngine.put(DefaultSchema.LOGIC_NAME, new ShardingTransactionManagerEngine());
         StandardTransactionContexts standardTransactionContexts = new StandardTransactionContexts(actualEngine);
-        
         Map<String, ShardingTransactionManagerEngine> engines = standardTransactionContexts.getEngines();
-        Assert.assertThat(engines.size(), is(1));
-        Assert.assertThat(engines, is(actualEngine));
+        assertThat(engines.size(), is(1));
+        assertThat(engines, is(actualEngine));
         ShardingTransactionManagerEngine defaultEngine = standardTransactionContexts.getDefaultTransactionManagerEngine();
-        Assert.assertNotNull(defaultEngine);
+        assertNotNull(defaultEngine);
+    }
+    
+    @Test
+    public void assertClose() throws Exception {
+        ShardingTransactionManagerEngine shardingTransactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
+        Map<String, ShardingTransactionManagerEngine> actualEngine = new HashMap<>();
+        actualEngine.put(DefaultSchema.LOGIC_NAME, shardingTransactionManagerEngine);
+        StandardTransactionContexts standardTransactionContexts = new StandardTransactionContexts(actualEngine);
+        standardTransactionContexts.close();
+        verify(shardingTransactionManagerEngine).close();
+    }
+    
+    @Test(expected = Exception.class)
+    public void assertCloseThrowsException() throws Exception {
+        ShardingTransactionManagerEngine shardingTransactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
+        doThrow(new RuntimeException()).when(shardingTransactionManagerEngine).close();
+        Map<String, ShardingTransactionManagerEngine> actualEngine = new HashMap<>();
+        actualEngine.put(DefaultSchema.LOGIC_NAME, shardingTransactionManagerEngine);
+        StandardTransactionContexts standardTransactionContexts = new StandardTransactionContexts(actualEngine);
+        standardTransactionContexts.close();
     }
 }
