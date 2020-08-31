@@ -36,7 +36,7 @@ sh bin/start.sh
 5. Ensure startup successfully by `curl`.
 
 ```
-curl -X GET http://localhost:8888/shardingscaling/job/list
+curl -X GET http://localhost:8888/scaling/job/list
 ```
 
 response:

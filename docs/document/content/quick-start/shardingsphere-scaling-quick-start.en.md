@@ -29,7 +29,7 @@ Create migration job:
 
 ```bash
 curl -X POST \
-  http://localhost:8888/shardingscaling/job/start \
+  http://localhost:8888/scaling/job/start \
   -H 'content-type: application/json' \
   -d '{
    "ruleConfiguration": {

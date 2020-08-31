@@ -50,7 +50,7 @@ ShardingSphere-Scaling provides a simple HTTP API
 
 #### Start scaling job
 
-Interface description：POST /shardingscaling/job/start
+Interface description：POST /scaling/job/start
 
 Body：
 
@@ -68,7 +68,7 @@ Example：
 
 ```
 curl -X POST \
-  http://localhost:8888/shardingscaling/job/start \
+  http://localhost:8888/scaling/job/start \
   -H 'content-type: application/json' \
   -d '{
    "ruleConfiguration": {
@@ -100,12 +100,12 @@ Response：
 
 #### Get scaling progress
 
-Interface description：GET /shardingscaling/job/progress/{jobId}
+Interface description：GET /scaling/job/progress/{jobId}
 
 Example：
 ```
 curl -X GET \
-  http://localhost:8888/shardingscaling/job/progress/1
+  http://localhost:8888/scaling/job/progress/1
 ```
 
 Response：
@@ -162,12 +162,12 @@ Response：
 
 #### List scaling jobs
 
-Interface description：GET /shardingscaling/job/list
+Interface description：GET /scaling/job/list
 
 Example：
 ```
 curl -X GET \
-  http://localhost:8888/shardingscaling/job/list
+  http://localhost:8888/scaling/job/list
 ```
 
 Response：
@@ -188,7 +188,7 @@ Response：
 
 #### Stop scaling job
 
-Interface description：POST /shardingscaling/job/stop
+Interface description：POST /scaling/job/stop
 
 Body：
 
@@ -199,7 +199,7 @@ Body：
 Example：
 ```
 curl -X POST \
-  http://localhost:8888/shardingscaling/job/stop \
+  http://localhost:8888/scaling/job/stop \
   -H 'content-type: application/json' \
   -d '{
    "jobId":1
