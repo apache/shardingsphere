@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend;
+package org.apache.shardingsphere.proxy.frontend.fixture;
 
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.engine.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
-public class MockDatabaseProtocolFrontendEngine implements DatabaseProtocolFrontendEngine {
+public class DatabaseProtocolFrontendEngineFixture implements DatabaseProtocolFrontendEngine {
     
-    public MockDatabaseProtocolFrontendEngine() {
+    public DatabaseProtocolFrontendEngineFixture() {
     }
     
     @Override
     public String getDatabaseType() {
-        return new MySQLDatabaseType().getName();
+        return new FixtureDatabaseType().getName();
     }
     
     @Override

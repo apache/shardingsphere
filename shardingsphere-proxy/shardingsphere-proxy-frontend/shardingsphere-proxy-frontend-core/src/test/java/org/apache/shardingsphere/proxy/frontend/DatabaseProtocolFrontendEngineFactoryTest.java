@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.proxy.frontend.fixture.FixtureDatabaseType;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.junit.Test;
 
@@ -32,8 +32,8 @@ public final class DatabaseProtocolFrontendEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceMySQL() {
-        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseProtocolFrontendEngineFactory.newInstance(new MySQLDatabaseType());
+    public void assertNewInstanceWithFixture() {
+        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseProtocolFrontendEngineFactory.newInstance(new FixtureDatabaseType());
         assertNotNull(databaseProtocolFrontendEngine);
     }
 }
