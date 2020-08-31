@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.UseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,7 +82,7 @@ public final class UseDatabaseBackendHandlerTest {
     
     @Test
     public void assertExecuteUseStatementBackendHandler() {
-        UseStatement useStatement = mock(UseStatement.class);
+        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
         when(useStatement.getSchema()).thenReturn("schema_0");
         UseDatabaseBackendHandler useSchemaBackendHandler = new UseDatabaseBackendHandler(useStatement, backendConnection);
         BackendResponse actual = useSchemaBackendHandler.execute();
@@ -92,7 +92,7 @@ public final class UseDatabaseBackendHandlerTest {
     
     @Test
     public void assertExecuteUseStatementNotExist() {
-        UseStatement useStatement = mock(UseStatement.class);
+        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
         when(useStatement.getSchema()).thenReturn("not_exist");
         UseDatabaseBackendHandler useSchemaBackendHandler = new UseDatabaseBackendHandler(useStatement, backendConnection);
         BackendResponse actual = useSchemaBackendHandler.execute();

@@ -34,9 +34,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.ShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.ShowCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
@@ -127,7 +127,7 @@ public final class ShardingRouteEngineFactoryTest {
     
     @Test
     public void assertNewInstanceForDALShow() {
-        DALStatement dalStatement = mock(ShowDatabasesStatement.class);
+        DALStatement dalStatement = mock(MySQLShowDatabasesStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingDatabaseBroadcastRoutingEngine.class));
@@ -237,7 +237,7 @@ public final class ShardingRouteEngineFactoryTest {
     
     @Test
     public void assertNewInstanceForShowCreateTableWithTableRule() {
-        DALStatement dalStatement = mock(ShowCreateTableStatement.class);
+        DALStatement dalStatement = mock(MySQLShowCreateTableStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
         tableNames.add("table_1");
@@ -247,7 +247,7 @@ public final class ShardingRouteEngineFactoryTest {
     
     @Test
     public void assertNewInstanceForShowCreateTableWithUnconfiguredTables() {
-        DALStatement dalStatement = mock(ShowCreateTableStatement.class);
+        DALStatement dalStatement = mock(MySQLShowCreateTableStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         when(shardingRule.tableRuleExists(tableNames)).thenReturn(false);
         tableNames.add("table_1");
@@ -257,7 +257,7 @@ public final class ShardingRouteEngineFactoryTest {
     
     @Test
     public void assertNewInstanceForShowColumnsWithTableRule() {
-        DALStatement dalStatement = mock(ShowColumnsStatement.class);
+        DALStatement dalStatement = mock(MySQLShowColumnsStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
         tableNames.add("table_1");
@@ -267,7 +267,7 @@ public final class ShardingRouteEngineFactoryTest {
     
     @Test
     public void assertNewInstanceForShowColumnsWithUnconfiguredTables() {
-        DALStatement dalStatement = mock(ShowColumnsStatement.class);
+        DALStatement dalStatement = mock(MySQLShowColumnsStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         when(shardingRule.tableRuleExists(tableNames)).thenReturn(false);
         tableNames.add("table_1");

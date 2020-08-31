@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import org.apache.shardingsphere.sql.parser.binder.statement.dal.DescribeStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.DescribeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDescribeStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -80,8 +80,8 @@ public final class EncryptResultDecoratorEngineTest {
     
     @Test
     public void assertNewInstanceWithDALStatement() {
-        SQLStatementContext<DescribeStatement> sqlStatementContext = mock(DescribeStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DescribeStatement.class));
+        SQLStatementContext<MySQLDescribeStatement> sqlStatementContext = mock(DescribeStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLDescribeStatement.class));
         EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), ResultProcessEngine.class).get(rule);
         ResultDecorator actual = engine.newInstance(databaseType, schemaMetaData, rule, props, sqlStatementContext);
         assertThat(actual, instanceOf(EncryptDALResultDecorator.class));

@@ -28,8 +28,8 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dal.DescribeStateme
 import org.apache.shardingsphere.sql.parser.binder.statement.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.DescribeStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.ShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDescribeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,7 +89,7 @@ public final class EncryptDALResultDecoratorTest {
         DescribeStatementContext sqlStatementContext = mock(DescribeStatementContext.class);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
         when(sqlStatementContext.getAllTables()).thenReturn(Collections.singletonList(simpleTableSegment));
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DescribeStatement.class));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLDescribeStatement.class));
         return sqlStatementContext;
     }
 
@@ -97,7 +97,7 @@ public final class EncryptDALResultDecoratorTest {
         ShowColumnsStatementContext sqlStatementContext = mock(ShowColumnsStatementContext.class);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
         when(sqlStatementContext.getAllTables()).thenReturn(Collections.singletonList(simpleTableSegment));
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(ShowColumnsStatement.class));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLShowColumnsStatement.class));
         return sqlStatementContext;
     }
 

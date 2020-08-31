@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.ShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 
 import java.util.Collection;
@@ -31,11 +31,11 @@ import java.util.Collections;
  * Show columns statement context.
  */
 @Getter
-public final class ShowColumnsStatementContext extends CommonSQLStatementContext<ShowColumnsStatement> implements TableAvailable {
+public final class ShowColumnsStatementContext extends CommonSQLStatementContext<MySQLShowColumnsStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
-    public ShowColumnsStatementContext(final ShowColumnsStatement sqlStatement) {
+    public ShowColumnsStatementContext(final MySQLShowColumnsStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
     }

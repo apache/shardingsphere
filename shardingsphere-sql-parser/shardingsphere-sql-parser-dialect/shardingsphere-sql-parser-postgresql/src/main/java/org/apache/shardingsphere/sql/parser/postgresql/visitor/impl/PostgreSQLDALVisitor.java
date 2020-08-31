@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.postgresql.visitor.PostgreSQLVisitor
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.AnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLAnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLShowStatement;
 
@@ -89,6 +89,6 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
     
     @Override
     public ASTNode visitAnalyze(final AnalyzeContext ctx) {
-        return new AnalyzeTableStatement();
+        return new MySQLAnalyzeTableStatement();
     }
 }
