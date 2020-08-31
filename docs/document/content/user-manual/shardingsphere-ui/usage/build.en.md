@@ -5,7 +5,7 @@ weight = 1
 
 ## Binary Run
 
-1. `git clone https://github.com/apache/shardingsphere.git`;
+1. `git clone https://github.com/apache/shardingsphere-ui.git`;
 1. Run `mvn clean install -Prelease`;
 1. Get the package in `/shardingsphere-ui/shardingsphere-ui-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-ui-bin.tar.gz`;
 1. After the decompression, run `bin/start.sh`;
