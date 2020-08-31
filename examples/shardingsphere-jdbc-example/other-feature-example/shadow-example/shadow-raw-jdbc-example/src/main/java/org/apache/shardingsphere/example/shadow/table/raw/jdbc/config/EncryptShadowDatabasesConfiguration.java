@@ -28,14 +28,7 @@ import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public final class EncryptShadowDatabasesConfiguration implements ExampleConfiguration {
     
@@ -64,7 +57,7 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
     private Map<String, ShardingSphereAlgorithmConfiguration> getEncryptAlgorithmConfigurations() {
         Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(2, 1);
         Properties props = new Properties();
-        props.setProperty("aes-key-value", "123456");
+        props.setProperty("aes.key.value", "123456");
         result.put("name_encryptor", new ShardingSphereAlgorithmConfiguration("AES", props));
         result.put("pwd_encryptor", new ShardingSphereAlgorithmConfiguration("assistedTest", null));
         return result;

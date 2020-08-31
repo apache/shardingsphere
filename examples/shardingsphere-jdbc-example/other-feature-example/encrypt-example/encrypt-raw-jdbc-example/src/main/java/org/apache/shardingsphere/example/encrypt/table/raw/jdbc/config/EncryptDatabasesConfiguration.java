@@ -27,18 +27,14 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public final class EncryptDatabasesConfiguration implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() {
         Properties props = new Properties();
-        props.setProperty("aes-key-value", "123456");
+        props.setProperty("aes.key.value", "123456");
         props.setProperty("query.with.cipher.column", "true");
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name", "user_name", "", "user_name_plain", "name_encryptor");
         EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor");

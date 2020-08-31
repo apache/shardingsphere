@@ -57,7 +57,7 @@ public final class LocalEncryptConfiguration implements ExampleConfiguration {
     
     private ShardingSphereAlgorithmConfiguration createEncryptAlgorithmConfiguration() {
         Properties props = new Properties();
-        props.setProperty("aes-key-value", "123456");
+        props.setProperty("aes.key.value", "123456");
         return new ShardingSphereAlgorithmConfiguration("AES", props);
     }
 }

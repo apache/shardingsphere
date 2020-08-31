@@ -120,7 +120,7 @@ public final class ProxyConfigurationLoaderTest {
         assertTrue(actual.getEncryptors().containsKey("md5_encryptor"));
         YamlShardingSphereAlgorithmConfiguration aesEncryptAlgorithmConfiguration = actual.getEncryptors().get("aes_encryptor");
         assertThat(aesEncryptAlgorithmConfiguration.getType(), is("AES"));
-        assertThat(aesEncryptAlgorithmConfiguration.getProps().getProperty("aes-key-value"), is("123456abc"));
+        assertThat(aesEncryptAlgorithmConfiguration.getProps().getProperty("aes.key.value"), is("123456abc"));
         YamlShardingSphereAlgorithmConfiguration md5EncryptAlgorithmConfiguration = actual.getEncryptors().get("md5_encryptor");
         assertThat(md5EncryptAlgorithmConfiguration.getType(), is("MD5"));
     }

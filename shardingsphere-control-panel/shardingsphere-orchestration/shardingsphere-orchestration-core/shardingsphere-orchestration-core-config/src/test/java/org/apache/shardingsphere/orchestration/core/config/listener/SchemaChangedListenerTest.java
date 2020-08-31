@@ -125,7 +125,7 @@ public final class SchemaChangedListenerTest {
         assertThat(encryptRuleConfig.getEncryptors().size(), is(1));
         ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = encryptRuleConfig.getEncryptors().get("order_encryptor");
         assertThat(encryptAlgorithmConfig.getType(), is("AES"));
-        assertThat(encryptAlgorithmConfig.getProps().get("aes-key-value"), is(123456));
+        assertThat(encryptAlgorithmConfig.getProps().get("aes.key.value"), is(123456));
     }
     
     @Test

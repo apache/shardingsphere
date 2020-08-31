@@ -90,7 +90,7 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
     private void assertEncryptRule(final EncryptRule rule) {
         assertThat(rule.getCipherColumn("t_order", "pwd"), is("pwd_cipher"));
         assertTrue(rule.findEncryptor("t_order", "pwd").isPresent());
-        assertThat(rule.findEncryptor("t_order", "pwd").get().getProps().getProperty("aes-key-value"), is("123456"));
+        assertThat(rule.findEncryptor("t_order", "pwd").get().getProps().getProperty("aes.key.value"), is("123456"));
     }
     
     @Test
