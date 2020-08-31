@@ -20,5 +20,5 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 /**
  * DDL statement.
  */
-public abstract class DDLStatement  {
+public abstract class DDLStatement {
 }
