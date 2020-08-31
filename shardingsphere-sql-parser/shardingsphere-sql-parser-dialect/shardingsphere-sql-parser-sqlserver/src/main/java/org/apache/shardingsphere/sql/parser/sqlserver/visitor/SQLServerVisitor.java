@@ -61,7 +61,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Tab
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.predicate.PredicateBuilder;
+import org.apache.shardingsphere.sql.parser.sql.common.util.predicate.PredicateBuildUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -245,7 +245,7 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
             return visit(ctx.booleanPrimary());
         }
         if (null != ctx.logicalOperator()) {
-            return new PredicateBuilder(visit(ctx.expr(0)), visit(ctx.expr(1)), ctx.logicalOperator().getText()).mergePredicate();
+            return new PredicateBuildUtils(visit(ctx.expr(0)), visit(ctx.expr(1)), ctx.logicalOperator().getText()).mergePredicate();
         }
         // TODO deal with XOR
         return visit(ctx.expr().get(0));

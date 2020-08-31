@@ -60,7 +60,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableNa
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.predicate.PredicateBuilder;
+import org.apache.shardingsphere.sql.parser.sql.common.util.predicate.PredicateBuildUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
@@ -230,7 +230,7 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
             return visit(ctx.booleanPrimary());
         }
         if (null != ctx.logicalOperator()) {
-            return new PredicateBuilder(visit(ctx.expr(0)), visit(ctx.expr(1)), ctx.logicalOperator().getText()).mergePredicate();
+            return new PredicateBuildUtils(visit(ctx.expr(0)), visit(ctx.expr(1)), ctx.logicalOperator().getText()).mergePredicate();
         }
         // TODO deal with XOR
         return visit(ctx.expr().get(0));
