@@ -17,12 +17,12 @@
 
 ######################################################################################################
 #
-# If you want to configure orchestration, authorization and proxy properties, please refer to this file.
+# If you want to configure governance, authorization and proxy properties, please refer to this file.
 #
 ######################################################################################################
 #
-#orchestration:
-#  name: orchestration_ds
+#governance:
+#  name: governance_ds
 #  registryCenter:
 #    type: ZooKeeper
 #    serverLists: localhost:2181
@@ -37,11 +37,6 @@ authentication:
   users:
     root:
       password: root
-
-metrics:
-   name: prometheus
-   host:  127.0.0.1
-   port:  9190
 
 props:
   max.connections.size.per.query: 1

@@ -30,9 +30,9 @@ Properties props = // ...
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props);
 ```
 
-### Create Orchestration DataSource
+### Create Governance DataSource
 
-The OrchestrationShardingSphereDataSource created by OrchestrationShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
+The GovernanceShardingSphereDataSource created by GovernanceShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
 
 
 ```java
@@ -45,10 +45,10 @@ Collection<RuleConfiguration> configurations = // ...
 // Build properties
 Properties props = // ...
 
-// Build orchestration configuration
-OrchestrationConfiguration orchestrationConfig = // ...
+// Build governance configuration
+GovernanceConfiguration governanceConfig = // ...
 
-DataSource dataSource = OrchestrationShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props, orchestrationConfig);
+DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props, governanceConfig);
 ```
 
 ### Use DataSource

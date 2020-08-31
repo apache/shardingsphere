@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.AlterLoginStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterLoginStatement;
 
 /**
  * Alter login statement assert.

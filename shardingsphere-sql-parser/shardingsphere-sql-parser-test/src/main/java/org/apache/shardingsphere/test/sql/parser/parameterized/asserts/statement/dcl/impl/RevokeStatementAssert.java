@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.RevokeStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
 
 /**
  * Revoke statement assert.

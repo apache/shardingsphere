@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sql.parser.binder.statement.dal;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDescribeStatement;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 
 import java.util.Collection;
@@ -31,11 +31,11 @@ import java.util.Collections;
  * Describe statement context.
  */
 @Getter
-public final class DescribeStatementContext extends CommonSQLStatementContext<DescribeStatement> implements TableAvailable {
+public final class DescribeStatementContext extends CommonSQLStatementContext<MySQLDescribeStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
-    public DescribeStatementContext(final DescribeStatement sqlStatement) {
+    public DescribeStatementContext(final MySQLDescribeStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
     }

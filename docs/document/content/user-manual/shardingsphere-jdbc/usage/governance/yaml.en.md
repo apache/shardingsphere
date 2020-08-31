@@ -8,21 +8,21 @@ weight = 2
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-orchestration</artifactId>
+    <artifactId>shardingsphere-jdbc-governance</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- import if using ZooKeeper -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-orchestration-repository-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-governance-repository-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- import if using Etcd -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-orchestration-repository-etcd</artifactId>
+    <artifactId>shardingsphere-governance-repository-etcd</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -32,8 +32,8 @@ weight = 2
 Using ZooKeeper as config center and registry center for example.
 
 ```yaml
-orchestration:
-  name: orchestration_ds
+governance:
+  name: governance_ds
   registryCenter:
       type: Zookeeper
       serverLists: localhost:2181
@@ -41,19 +41,19 @@ orchestration:
 ```
 
 ```java
-// Create OrchestrationShardingSphereDataSource
-DataSource dataSource = YamlOrchestrationShardingSphereDataSourceFactory.createDataSource(yamlFile);
+// Create GovernanceShardingSphereDataSource
+DataSource dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
 ```
 
-## Use OrchestrationShardingSphereDataSource
+## Use GovernanceShardingSphereDataSource
 
-The OrchestrationShardingSphereDataSource created by YamlOrchestrationShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
+The GovernanceShardingSphereDataSource created by YamlGovernanceShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
 Developer can choose to use native JDBC or ORM frameworks such as JPA or MyBatis through the DataSource.
 
 Take native JDBC usage as an example:
 
 ```java
-DataSource dataSource = YamlOrchestrationShardingSphereDataSourceFactory.createDataSource(yamlFile);
+DataSource dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();

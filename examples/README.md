@@ -47,10 +47,10 @@ shardingsphere-example
   │   │   ├── sharding-spring-boot-mybatis-example
   │   │   ├── sharding-spring-namespace-jpa-example
   │   │   └── sharding-spring-namespace-mybatis-example
-  │   ├── orchestration-example
-  │   │   ├── orchestration-raw-jdbc-example
-  │   │   ├── orchestration-spring-boot-example
-  │   │   └── orchestration-spring-namespace-example
+  │   ├── governance-example
+  │   │   ├── governance-raw-jdbc-example
+  │   │   ├── governance-spring-boot-example
+  │   │   └── governance-spring-namespace-example
   │   ├── transaction-example
   │   │   ├── transaction-2pc-xa-example
   │   │   └── transaction-base-seata-example
@@ -71,7 +71,7 @@ shardingsphere-example
 | [sharding](shardingsphere-jdbc-example/sharding-example) | show how to use sharding-table\sharding-database\master-slave with ShardingSphere-JDBC |
 | [springboot jpa](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | show how to use SpringBoot JPA with ShardingSphere |
 | [springboot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | show how to use SpringBoot Mybatis with ShardingSphere |
-| [orchestration](shardingsphere-jdbc-example/orchestration-example) | show how to use ShardingSphere orchestration |
+| [governance](shardingsphere-jdbc-example/governance-example) | show how to use ShardingSphere governance |
 | [transaction](shardingsphere-jdbc-example/transaction-example) | show how to use ShardingSphere transaction |
 | [hint](shardingsphere-jdbc-example/other-feature-example/hint-example) | show how to use ShardingSphere hint |
 | [encryption](shardingsphere-jdbc-example/other-feature-example/encrypt-example) | show how to use ShardingSphere encryption |

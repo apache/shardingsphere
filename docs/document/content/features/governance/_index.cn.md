@@ -21,7 +21,7 @@ chapter = true
 
 同时，由于治理功能本身可以采用合适的第三方组件作为基础服务，需要我们抽象统一的接口，统一各种不同的组件的标准调用API，对接到治理功能模块。
 
-最后对于可管理性和可观测性的要求，我们需要完善通过UI查询、操作和控制系统的功能，进一步完善对于 tracing 和 APM 的支持，实现 Metric 指标监控以及与 Prometheus、Grafana 的支持，实现实时监控。
+最后对于可管理性和可观测性的要求，我们需要完善通过UI查询、操作和控制系统的功能，进一步完善对于 tracing 和 APM 的支持。
 
 ## 目标
 
@@ -31,12 +31,6 @@ chapter = true
 - 实现注册中心：支持 Zookeeper/etcd，管理各个 Proxy 示例的状态。
 - 实现元数据中心：支持 Zookeeper/etcd，管理 LogicSchema 的元数据。
 
-对于集群管理功能，目标如下：
-
-- 实现节点心跳检测：支持 Sharding-JDBC、Sharding-Proxy，使用可配置策略探活。
-- 实现集群状态拓扑管理：更新和管理集群状态拓扑图。
-
 对于可观测性，目标如下：
 
 - 支持 OpenTracing/Skywalking 集成，实现调用链的跟踪；
-- 实现 Metric 支持，对接 Prometheus、Grafana，实现监控指标的可视化展示。

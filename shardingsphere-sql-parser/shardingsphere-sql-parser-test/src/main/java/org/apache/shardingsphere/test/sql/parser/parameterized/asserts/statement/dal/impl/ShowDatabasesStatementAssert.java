@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowDatabasesStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 
 /**
  * Show databases statement assert.
@@ -36,6 +36,6 @@ public final class ShowDatabasesStatementAssert {
      * @param actual actual show databases statement
      * @param expected expected show databases statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowDatabasesStatement actual, final ShowDatabasesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowDatabasesStatement actual, final ShowDatabasesStatementTestCase expected) {
     }
 }

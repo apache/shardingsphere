@@ -5,7 +5,7 @@ weight = 1
 
 ## 二进制运行
 
-1. `git clone https://github.com/apache/shardingsphere.git`；
+1. `git clone https://github.com/apache/shardingsphere-ui.git`；
 1. 运行 `mvn clean install -Prelease`；
 1. 获取安装包 `/shardingsphere-ui/shardingsphere-ui-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-ui-bin.tar.gz`；
 1. 解压缩后运行`bin/start.sh`；

@@ -21,10 +21,10 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.RemoveAvailable;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAvailable;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,33 +36,33 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext.getSqlStatement() instanceof ShowTablesStatement) {
-            return ((ShowTablesStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
+        if (sqlStatementContext.getSqlStatement() instanceof MySQLShowTablesStatement) {
+            return ((MySQLShowTablesStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
         }
-        if (sqlStatementContext.getSqlStatement() instanceof ShowTableStatusStatement) {
-            return ((ShowTableStatusStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
+        if (sqlStatementContext.getSqlStatement() instanceof MySQLShowTableStatusStatement) {
+            return ((MySQLShowTableStatusStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
         }
-        if (sqlStatementContext.getSqlStatement() instanceof ShowColumnsStatement) {
-            return ((ShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
+        if (sqlStatementContext.getSqlStatement() instanceof MySQLShowColumnsStatement) {
+            return ((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
         }
         return false;
     }
     
     @Override
     public Collection<RemoveToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext.getSqlStatement() instanceof ShowTablesStatement) {
-            Preconditions.checkState(((ShowTablesStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent());
-            RemoveAvailable removeAvailable = ((ShowTablesStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
+        if (sqlStatementContext.getSqlStatement() instanceof MySQLShowTablesStatement) {
+            Preconditions.checkState(((MySQLShowTablesStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent());
+            RemoveAvailable removeAvailable = ((MySQLShowTablesStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
             return Collections.singletonList(new RemoveToken(removeAvailable.getStartIndex(), removeAvailable.getStopIndex()));
         }
-        if (sqlStatementContext.getSqlStatement() instanceof ShowTableStatusStatement) {
-            Preconditions.checkState(((ShowTableStatusStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent());
-            RemoveAvailable removeAvailable = ((ShowTableStatusStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
+        if (sqlStatementContext.getSqlStatement() instanceof MySQLShowTableStatusStatement) {
+            Preconditions.checkState(((MySQLShowTableStatusStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent());
+            RemoveAvailable removeAvailable = ((MySQLShowTableStatusStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
             return Collections.singletonList(new RemoveToken(removeAvailable.getStartIndex(), removeAvailable.getStopIndex()));
         }
-        if (sqlStatementContext.getSqlStatement() instanceof ShowColumnsStatement) {
-            Preconditions.checkState(((ShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent());
-            RemoveAvailable removeAvailable = ((ShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
+        if (sqlStatementContext.getSqlStatement() instanceof MySQLShowColumnsStatement) {
+            Preconditions.checkState(((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent());
+            RemoveAvailable removeAvailable = ((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
             return Collections.singletonList(new RemoveToken(removeAvailable.getStartIndex(), removeAvailable.getStopIndex()));
         }
         return Collections.emptyList();

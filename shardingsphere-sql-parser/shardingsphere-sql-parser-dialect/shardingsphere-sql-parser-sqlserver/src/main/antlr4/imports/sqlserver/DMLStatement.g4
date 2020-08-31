@@ -20,7 +20,11 @@ grammar DMLStatement;
 import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 
 insert
-    : INSERT INTO tableName (AS? alias)? (insertValuesClause | insertSelectClause)
+    : withClause_? INSERT INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause)
+    ;
+    
+insertDefaultValue
+    : columnNames? DEFAULT VALUES
     ;
 
 insertValuesClause
@@ -152,3 +156,12 @@ havingClause
 subquery
     : LP_ unionClause RP_
     ;
+    
+withClause_
+    : WITH cteClause_ (COMMA_ cteClause_)*
+    ;
+
+cteClause_
+    : identifier columnNames? AS subquery
+    ;
+    

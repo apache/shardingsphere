@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.condition;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.Test;
 
 import java.util.Collections;

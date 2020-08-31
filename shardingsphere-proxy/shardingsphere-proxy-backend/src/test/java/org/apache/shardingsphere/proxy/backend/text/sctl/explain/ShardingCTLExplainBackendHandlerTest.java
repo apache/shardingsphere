@@ -3,11 +3,11 @@ package org.apache.shardingsphere.proxy.backend.text.sctl.explain;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.SchemaContext;
+import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.StandardSchemaContexts;
-import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
-import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
@@ -61,7 +61,7 @@ public final class ShardingCTLExplainBackendHandlerTest {
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
-        RuntimeContext runtimeContext = new RuntimeContext(null, null, new ShardingSphereSQLParserEngine(new StandardSQLParserEngine("MySQL")), null);
+        RuntimeContext runtimeContext = new RuntimeContext(null, null, new ShardingSphereSQLParserEngine(new StandardSQLParserEngine("MySQL")));
         ShardingSphereSchema schema = new ShardingSphereSchema(Collections.emptyList(),
                 Collections.emptyList(), Collections.singletonMap("ds0", mock(DataSource.class)), null);
         return Collections.singletonMap("schema", new SchemaContext("schema", schema, runtimeContext));

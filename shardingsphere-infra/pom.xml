@@ -35,5 +35,6 @@
         <module>shardingsphere-infra-rewrite</module>
         <module>shardingsphere-infra-executor</module>
         <module>shardingsphere-infra-merge</module>
+        <module>shardingsphere-infra-context</module>
     </modules>
 </project>

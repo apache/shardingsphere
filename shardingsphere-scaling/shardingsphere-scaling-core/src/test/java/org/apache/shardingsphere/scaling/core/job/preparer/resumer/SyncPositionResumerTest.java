@@ -68,7 +68,7 @@ public final class SyncPositionResumerTest {
     
     @Test
     public void assertResumePosition() {
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0", new InventoryPositionManager(new PrimaryKeyPosition(0, 100)));
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0", new InventoryPositionManager<>(new PrimaryKeyPosition(0, 100)));
         resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0.t_order", new BasePositionManager<>());
         syncPositionResumer.resumePosition(shardingScalingJob, new DataSourceManager(), resumeBreakPointManager);
         assertThat(shardingScalingJob.getIncrementalDataTasks().size(), is(1));

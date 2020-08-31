@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
-import org.apache.shardingsphere.orchestration.repository.zookeeper.CuratorZookeeperRepository;
-import org.apache.shardingsphere.scaling.core.config.ResumeConfiguration;
+import org.apache.shardingsphere.governance.core.common.yaml.config.YamlGovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.core.common.yaml.swapper.GovernanceCenterConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.repository.zookeeper.CuratorZookeeperRepository;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 
-import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -49,9 +49,10 @@ public final class ZookeeperResumeBreakPointManager extends AbstractResumeBreakP
     private final String incrementalPath;
     
     static {
-        ResumeConfiguration resumeConfiguration = ScalingContext.getInstance().getServerConfiguration().getResumeConfiguration();
-        if (null != resumeConfiguration) {
-            CURATOR_ZOOKEEPER_REPOSITORY.init(resumeConfiguration.getNamespace(), new OrchestrationCenterConfiguration("ZooKeeper", resumeConfiguration.getServerLists(), new Properties()));
+        String name = ScalingContext.getInstance().getServerConfiguration().getName();
+        YamlGovernanceCenterConfiguration registryCenter = ScalingContext.getInstance().getServerConfiguration().getRegistryCenter();
+        if (!Strings.isNullOrEmpty(name) && null != registryCenter) {
+            CURATOR_ZOOKEEPER_REPOSITORY.init(name, new GovernanceCenterConfigurationYamlSwapper().swapToObject(registryCenter));
             log.info("zookeeper resume from break-point manager is available.");
             available = true;
         }

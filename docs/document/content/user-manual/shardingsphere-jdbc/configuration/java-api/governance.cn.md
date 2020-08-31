@@ -9,15 +9,15 @@ weight = 6
 
 *配置入口*
 
-类名称：org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration
+类名称：org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration
 
 可配置属性：
 
 | *名称*                              | *数据类型*                           | *说明*                                                            |
 | ----------------------------------- | ----------------------------------- | ----------------------------------------------------------------- |
 | name         | String  | 注册中心实例名称 |
-| registryCenterConfiguration         | OrchestrationCenterConfiguration  | 注册中心实例的配置 |
-| additionalConfigCenterConfiguration | OrchestrationCenterConfiguration  | 可选的配置中心实例配置 |
+| registryCenterConfiguration         | GovernanceCenterConfiguration  | 注册中心实例的配置 |
+| additionalConfigCenterConfiguration | GovernanceCenterConfiguration  | 可选的配置中心实例配置 |
 | overwrite | boolean   | 本地配置是否覆盖配置中心配置，如果可覆盖，每次启动都以本地配置为准 |
 
 注册中心的类型可以为Zookeeper或etcd。
@@ -25,7 +25,7 @@ weight = 6
 
 *治理实例配置*
 
-类名称：org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration
+类名称：org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration
 
 可配置属性：
 
@@ -70,30 +70,3 @@ Nacos 属性配置
 | ----------- | --------- | ---------------------- | ---------------------------- |
 | group (?)   | String    | nacos group 配置       | SHARDING_SPHERE_DEFAULT_GROUP |
 | timeout (?) | long      | nacos 获取数据超时毫秒数 | 3000 毫秒                     |
-
-### 集群管理
-
-*配置入口*
-
-类名称：org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration
-
-可配置属性：
-
-| *名称*                    | *数据类型*                           | *说明*                                                            |
-| ------------------------ | ----------------------------------- | ----------------------------------------------------------------- |
-| heartbeat | HeartbeatConfiguration  | 心跳检测配置 |
-
-*心跳检测配置*
-
-类名称：org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration
-
-可配置属性：
-
-| *名称*       | *数据类型* | *说明*                 |
-| ----------- | --------- | ---------------------- |
-| sql   | String    | 心跳检测 SQL       |
-| interval | int      | 心跳检测间隔时间 (s) |
-| threadCount   | int    | 心跳检测线程池大小       |
-| retryEnable | Boolean      | 是否支持失败重试，可设置 true 或 false |
-| retryMaximum(?)   | int    | 最大重试次数      |
-| retryInterval(?) | int      | 重试间隔时间 (s) |

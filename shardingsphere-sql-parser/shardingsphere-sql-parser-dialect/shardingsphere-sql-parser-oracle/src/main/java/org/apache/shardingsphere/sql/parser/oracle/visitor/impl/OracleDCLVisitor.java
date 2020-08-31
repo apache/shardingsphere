@@ -29,15 +29,15 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GrantC
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ObjectPrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.OracleVisitor;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
 
 import java.util.Collection;
 import java.util.Collections;

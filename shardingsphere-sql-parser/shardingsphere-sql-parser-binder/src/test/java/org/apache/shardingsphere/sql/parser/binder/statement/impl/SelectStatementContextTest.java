@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sql.parser.binder.statement.impl;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.sql.parser.sql.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
@@ -28,27 +26,37 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Pro
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class SelectStatementContextTest {
     
@@ -129,13 +137,64 @@ public final class SelectStatementContextTest {
         AggregationProjection aggregationProjection = new AggregationProjection(AggregationType.MAX, "", "id");
         aggregationProjection.getDerivedAggregationProjections().addAll(Collections.singletonList(aggregationProjection));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singletonList(aggregationProjection));
-        
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), projectionsContext, null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("id", 3);
         selectStatementContext.setIndexes(columnLabelIndexMap);
         assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(3));
+    }
+    
+    @Test
+    public void assertSetWhere() {
+        WhereSegment whereSegment = mock(WhereSegment.class);
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setWhere(whereSegment);
+        SelectStatementContext actual = new SelectStatementContext(
+                selectStatement, null, null, null, null);
+        assertTrue(actual.toString().startsWith(String.format("%s(super", SelectStatementContext.class.getSimpleName())));
+        assertThat(actual.getTablesContext().getTables(), is(Lists.newLinkedList()));
+        assertThat(actual.getAllTables(), is(Lists.newLinkedList()));
+        assertNull(actual.getPaginationContext());
+        assertNull(actual.getPaginationContext());
+        assertNull(actual.getGroupByContext());
+        assertNull(actual.getPaginationContext());
+        assertThat(actual.getWhere(), is(Optional.of(whereSegment)));
+    }
+    
+    @Test
+    public void assertContainsSubquery() {
+        SubqueryProjectionSegment projectionSegment = mock(SubqueryProjectionSegment.class);
+        SelectStatement subSelectStatement = new SelectStatement();
+        WhereSegment whereSegment = new WhereSegment(0, 0);
+        whereSegment.getAndPredicates().add(mock(AndPredicate.class));
+        subSelectStatement.setWhere(whereSegment);
+        SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement);
+        when(projectionSegment.getSubquery()).thenReturn(subquerySegment);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(projectionSegment);
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setProjections(projectionsSegment);
+        SelectStatementContext actual = new SelectStatementContext(
+                selectStatement, null, null, null, null);
+        assertTrue(actual.isContainsSubquery());
+    }
+    
+    @Test
+    public void assertContainsSubqueryWhereEmpty() {
+        SubqueryProjectionSegment projectionSegment = mock(SubqueryProjectionSegment.class);
+        SelectStatement subSelectStatement = new SelectStatement();
+        WhereSegment whereSegment = new WhereSegment(0, 0);
+        subSelectStatement.setWhere(whereSegment);
+        SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement);
+        when(projectionSegment.getSubquery()).thenReturn(subquerySegment);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(projectionSegment);
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setProjections(projectionsSegment);
+        SelectStatementContext actual = new SelectStatementContext(
+                selectStatement, null, null, null, null);
+        assertFalse(actual.isContainsSubquery());
     }
     
     private OrderByContext createOrderBy(final String type) {

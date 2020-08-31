@@ -11,17 +11,16 @@ weight = 3
 
 ## Data Structure in Metadata Center
 
-The metadata center stores metadata in YAML under the metadata node of the defined namespace and orchestration node, and each logical data source is stored independently.
+The metadata center stores metadata in YAML under the metadata node of the defined governance node, and each logical data source is stored independently.
 
 ```
-├─orchestration-namespace
-│   ├─orchestration-name
-│   │   ├──metadata
-│   │   │    ├──schema1
-│   │   │    │    ├── [YAML text contents]     
-│   │   │    ├──schema2
-│   │   │    │    ├── [YAML text contents]    
-│   │   │    ├──....
+├─governance-name
+│   ├──metadata
+│   │    ├──schema1
+│   │    │    ├── [YAML text contents]     
+│   │    ├──schema2
+│   │    │    ├── [YAML text contents]    
+│   │    ├──....
 ```
 
 ## YAML text contents

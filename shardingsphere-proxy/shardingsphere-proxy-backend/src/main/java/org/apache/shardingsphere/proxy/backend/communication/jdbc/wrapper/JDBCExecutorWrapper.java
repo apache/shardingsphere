@@ -33,11 +33,21 @@ public interface JDBCExecutorWrapper {
     /**
      * Generate execution context.
      * 
-     * @param sql SQL to be routed
+     * @param sql SQL
      * @return execution context
      * @throws SQLException SQL exception
      */
     ExecutionContext generateExecutionContext(String sql) throws SQLException;
+    
+    /**
+     * Get execute group engine.
+     *
+     * @param backendConnection backend connection
+     * @param maxConnectionsSizePerQuery max connections size per query
+     * @param option statement option
+     * @return execute group engine
+     */
+    ExecuteGroupEngine<?> getExecuteGroupEngine(BackendConnection backendConnection, int maxConnectionsSizePerQuery, StatementOption option);
     
     /**
      * Execute SQL.
@@ -49,13 +59,4 @@ public interface JDBCExecutorWrapper {
      * @throws SQLException SQL exception
      */
     boolean execute(Statement statement, String sql, boolean isReturnGeneratedKeys) throws SQLException;
-    
-    /**
-     * Get execute group engine.
-     *
-     * @param backendConnection backend connection
-     * @param option statement option
-     * @return execute group engine
-     */
-    ExecuteGroupEngine<?> getExecuteGroupEngine(BackendConnection backendConnection, StatementOption option);
 }

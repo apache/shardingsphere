@@ -46,10 +46,10 @@ shardingsphere-example
   │   │   ├── sharding-spring-boot-mybatis-example
   │   │   ├── sharding-spring-namespace-jpa-example
   │   │   └── sharding-spring-namespace-mybatis-example
-  │   ├── orchestration-example
-  │   │   ├── orchestration-raw-jdbc-example
-  │   │   ├── orchestration-spring-boot-example
-  │   │   └── orchestration-spring-namespace-example
+  │   ├── governance-example
+  │   │   ├── governance-raw-jdbc-example
+  │   │   ├── governance-spring-boot-example
+  │   │   └── governance-spring-namespace-example
   │   ├── transaction-example
   │   │   ├── transaction-2pc-xa-example
   │   │   └── transaction-base-seata-example
@@ -70,7 +70,7 @@ shardingsphere-example
 | [分片](shardingsphere-jdbc-example/sharding-example) | 演示了如何通过 ShardingSphere-JDBC 进行分库、分表、主从等 |
 | [springboot jpa](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | 演示了如何通过 SpringBoot JPA 对接 ShardingSphere |
 | [springboot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | 演示了如何通过 SpringBoot Mybatis 对接 ShardingSphere |
-| [orchestration](shardingsphere-jdbc-example/orchestration-example) | 演示了如何在 ShardingSphere 中使用 orchestration |
+| [governance](shardingsphere-jdbc-example/governance-example) | 演示了如何在 ShardingSphere 中使用 governance |
 | [事务](shardingsphere-jdbc-example/transaction-example) | 演示了如何在 ShardingSphere 中使用事务 |
 | [hint](shardingsphere-jdbc-example/other-feature-example/hint-example) | 演示了如何在 ShardingSphere 中使用 hint |
 | [加密](shardingsphere-jdbc-example/other-feature-example/encrypt-example) | 演示了如何在 ShardingSphere 中使用加密 |

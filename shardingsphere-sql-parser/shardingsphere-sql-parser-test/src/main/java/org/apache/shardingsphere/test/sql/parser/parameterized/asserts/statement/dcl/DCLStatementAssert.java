@@ -53,23 +53,23 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetDefaultRoleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetPasswordStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetRoleStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterLoginStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateLoginStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DenyUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropLoginStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RenameUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetDefaultRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetPasswordStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DenyUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RenameUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetDefaultRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetPasswordStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetRoleStatement;
 
 /**
  * DCL statement assert.
