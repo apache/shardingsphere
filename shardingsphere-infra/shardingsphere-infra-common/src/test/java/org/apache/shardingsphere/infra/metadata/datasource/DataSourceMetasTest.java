@@ -27,12 +27,12 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 
 public final class DataSourceMetasTest {
-
+    
     @Test
     public void assertGetAllInstanceDataSourceNamesForShardingRuleByDifferentDataSource() {
         Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
@@ -44,7 +44,7 @@ public final class DataSourceMetasTest {
         assertThat(allInstanceDataSourceNames.size(), is(2));
         assertTrue(allInstanceDataSourceNames.contains("ds_0") && allInstanceDataSourceNames.contains("ds_1"));
     }
-
+    
     @Test
     public void assertGetAllInstanceDataSourceNamesForShardingRuleBySameDataSource() {
         Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
@@ -56,7 +56,7 @@ public final class DataSourceMetasTest {
         assertThat(allInstanceDataSourceNames.size(), is(1));
         assertTrue(allInstanceDataSourceNames.contains("ds_0") || allInstanceDataSourceNames.contains("ds_1"));
     }
-
+    
     @Test
     public void assertGetActualCatalogForShardingRule() {
         Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
@@ -65,7 +65,7 @@ public final class DataSourceMetasTest {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
         assertThat(dataSourceMetas.getDataSourceMetaData("ds_0").getCatalog(), is("db_0"));
     }
-
+    
     @Test
     public void assertGetActualSchemaNameForShardingRuleForMysql() {
         Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
