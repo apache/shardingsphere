@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,8 +30,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
-import javax.sql.DataSource;
 
 public final class DataSourceConverterTest {
     

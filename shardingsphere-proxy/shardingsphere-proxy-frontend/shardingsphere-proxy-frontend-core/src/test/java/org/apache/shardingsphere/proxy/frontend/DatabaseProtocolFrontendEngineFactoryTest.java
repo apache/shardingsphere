@@ -18,12 +18,27 @@
 package org.apache.shardingsphere.proxy.frontend;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.proxy.frontend.mysql.MockMySQLProtocolFrontendEngine;
+import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 public final class DatabaseProtocolFrontendEngineFactoryTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWhenUnsupported() {
         DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("Oracle"));
+    }
+    
+    @Test
+    public void assertNewInstanceWhenSupported() {
+        DatabaseProtocolFrontendEngine actual = DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"));
+        assertNotNull(actual);
+        assertThat(actual, instanceOf(MockMySQLProtocolFrontendEngine.class));
+        assertThat(actual.getDatabaseType(), is("MySQL"));
     }
 }
