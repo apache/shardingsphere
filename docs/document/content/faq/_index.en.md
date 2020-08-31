@@ -17,8 +17,6 @@ Answer:
 
 ShardingSphere uses lombok to enable minimal coding. For more details about using and installment, please refer to the official website of [lombok](https://projectlombok.org/download.html).
 
-shardingsphere-orchestration-reg module needs to execute `mvn install` command first, and generate gRPC java files according to protobuf files.
-
 ## 3. Why is xsd unable to be found when Spring Namespace is used?
 
 Answer:

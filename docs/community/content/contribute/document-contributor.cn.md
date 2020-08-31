@@ -40,7 +40,7 @@ shardingsphere
   │  │  ├─downloads
   │  │  ├─faq
   │  │  ├─features
-  │  │  │  ├─orchestration
+  │  │  │  ├─governance
   │  │  │  ├─read-write-split
   │  │  │  ├─sharding
   │  │  │  │  ├─concept

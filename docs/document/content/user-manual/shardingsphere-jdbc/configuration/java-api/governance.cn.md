@@ -9,15 +9,15 @@ weight = 6
 
 *配置入口*
 
-类名称：org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration
+类名称：org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration
 
 可配置属性：
 
 | *名称*                              | *数据类型*                           | *说明*                                                            |
 | ----------------------------------- | ----------------------------------- | ----------------------------------------------------------------- |
 | name         | String  | 注册中心实例名称 |
-| registryCenterConfiguration         | OrchestrationCenterConfiguration  | 注册中心实例的配置 |
-| additionalConfigCenterConfiguration | OrchestrationCenterConfiguration  | 可选的配置中心实例配置 |
+| registryCenterConfiguration         | GovernanceCenterConfiguration  | 注册中心实例的配置 |
+| additionalConfigCenterConfiguration | GovernanceCenterConfiguration  | 可选的配置中心实例配置 |
 | overwrite | boolean   | 本地配置是否覆盖配置中心配置，如果可覆盖，每次启动都以本地配置为准 |
 
 注册中心的类型可以为Zookeeper或etcd。
@@ -25,7 +25,7 @@ weight = 6
 
 *治理实例配置*
 
-类名称：org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration
+类名称：org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration
 
 可配置属性：
 

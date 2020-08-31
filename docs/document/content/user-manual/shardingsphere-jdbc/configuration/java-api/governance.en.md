@@ -9,29 +9,29 @@ weight = 6
 
 *Configuration Entrance*
 
-Class name: org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationConfiguration
+Class name: org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration
 
 Attributes:
 
 | *Name*                              | *Data Type*                         | *Description*                                                                                                       |
 | ----------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| name         | String  | Orchestration instance name |
-| registryCenterConfiguration         | OrchestrationCenterConfiguration  | Config of registry-center |
-| additionalConfigCenterConfiguration | OrchestrationCenterConfiguration  | Config additional of config-center |
+| name         | String  | Governance instance name |
+| registryCenterConfiguration         | GovernanceCenterConfiguration  | Config of registry-center |
+| additionalConfigCenterConfiguration | GovernanceCenterConfiguration  | Config additional of config-center |
 
 The type of registryCenter could be Zookeeper or etcd.
 The type of additional ConfigCenter could be Zookeeper or etcd, Apollo, Nacos.
 
-*Orchestration Instance Configuration*
+*Governance Instance Configuration*
 
-Class name: org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration
+Class name: org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration
 
 Attributes:
 
 | *Name*        | *Data Type* | *Description*                                                                                                                                    |
 | ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| type          | String      | Orchestration instance type, such as: Zookeeper, etcd, Apollo, Nacos                                                                             |
-| serverLists   | String      | The list of servers that connect to orchestration instance, including IP and port number, use commas to separate, such as: host1:2181,host2:2181 |                                                                                                                    |
+| type          | String      | Governance instance type, such as: Zookeeper, etcd, Apollo, Nacos                                                                             |
+| serverLists   | String      | The list of servers that connect to governance instance, including IP and port number, use commas to separate, such as: host1:2181,host2:2181 |                                                                                                                    |
 | props         | Properties  | Properties for center instance config, such as options of zookeeper                                                                              |
 | overwrite       | boolean     | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations | 
 
