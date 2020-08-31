@@ -39,6 +39,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class GovernanceShardingSphereDataSourceFactoryTest {
+    
     private static final String TABLE_TYPE = "TABLE";
     
     @SneakyThrows
