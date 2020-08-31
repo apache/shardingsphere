@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
  * Use statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class UseStatementAssert {
+public final class MySQLUseStatementAssert {
     
     /**
      * Assert use statement is correct with expected parser result.

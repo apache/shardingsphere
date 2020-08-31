@@ -80,15 +80,16 @@ public final class MySQLComStmtPrepareCheckerTest {
     
     @Test
     public void assertIsStatementAllowed() {
-        List<SQLStatement> statementList = Arrays.asList(new AlterTableStatement(mock(SimpleTableSegment.class)), new AlterUserStatement(), new MySQLAnalyzeTableStatement(), new MySQLCacheIndexStatement(),
+        List<SQLStatement> statementList = Arrays.asList(
+                new AlterTableStatement(mock(SimpleTableSegment.class)), new AlterUserStatement(), new MySQLAnalyzeTableStatement(), new MySQLCacheIndexStatement(),
             new CallStatement(), new ChangeMasterStatement(), new MySQLChecksumTableStatement(), new CommitStatement(), new CreateIndexStatement(), new DropIndexStatement(),
             new CreateDatabaseStatement(""), new DropDatabaseStatement(), new CreateTableStatement(mock(SimpleTableSegment.class)), new DropTableStatement(), new CreateUserStatement(),
             new RenameUserStatement(), new DropUserStatement(), new CreateViewStatement(), new DropViewStatement(), new DeleteStatement(), new DoStatement(), new MySQLFlushStatement(),
-            new GrantStatement(), new InsertStatement(), new MySQLInstallPluginStatement(), new MySQLKillStatement(), new MySQLLoadIndexInfoStatement(), new MySQLOptimizeTableStatement(), new RenameTableStatement(),
-            new MySQLRepairTableStatement(), new MySQLResetStatement(), new RevokeStatement(), new SelectStatement(), new SetStatement(), new MySQLShowWarningsStatement(),
+            new GrantStatement(), new InsertStatement(), new MySQLInstallPluginStatement(), new MySQLKillStatement(), new MySQLLoadIndexInfoStatement(), new MySQLOptimizeTableStatement(),
+            new RenameTableStatement(), new MySQLRepairTableStatement(), new MySQLResetStatement(), new RevokeStatement(), new SelectStatement(), new SetStatement(), new MySQLShowWarningsStatement(),
             new MySQLShowErrorsStatement(), new MySQLShowBinlogStatement(), new MySQLShowCreateProcedureStatement(), new MySQLShowCreateFunctionStatement(), new MySQLShowCreateEventStatement(),
-            new MySQLShowCreateTableStatement(), new MySQLShowCreateViewStatement(), new MySQLShowBinaryLogsStatement(), new MySQLShowStatusStatement(), new StartSlaveStatement(), new StopSlaveStatement(),
-            new TruncateStatement(), new MySQLUninstallPluginStatement(), new UpdateStatement());
+            new MySQLShowCreateTableStatement(), new MySQLShowCreateViewStatement(), new MySQLShowBinaryLogsStatement(), new MySQLShowStatusStatement(), new StartSlaveStatement(),
+            new StopSlaveStatement(), new TruncateStatement(), new MySQLUninstallPluginStatement(), new UpdateStatement());
         for (SQLStatement each : statementList) {
             assertTrue(MySQLComStmtPrepareChecker.isStatementAllowed(each));
         }
