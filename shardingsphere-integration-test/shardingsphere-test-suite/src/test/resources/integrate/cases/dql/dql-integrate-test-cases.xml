@@ -117,16 +117,6 @@
     <dql-test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id WHERE o.order_id = ?" db-types="MySQL">
         <assertion parameters="1000:int" expected-data-file="select_with_force_index_join.xml" />
     </dql-test-case>
-
-    <dql-test-case sql="SELECT * FROM t_order WHERE rule = ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="PostgreSQL">
-        <assertion parameters="'{&quot;rule2&quot;:&quot;null&quot;}', 100:int, 200:int, 10:int, 1000:int" expected-data-file="select_equal_with_single_table.xml" />
-        <assertion parameters="'{&quot;rule2&quot;:&quot;null&quot;}', 100:int, 200:int, 12:int, 1000:int" expected-data-file="empty_order.xml" />
-    </dql-test-case>
-
-    <dql-test-case sql="SELECT * FROM t_order WHERE rule IN (?::jsonb, ?::jsonb) AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="PostgreSQL">
-        <assertion parameters="'{&quot;rule2&quot;:&quot;null&quot;}', '{&quot;rule2&quot;:&quot;null&quot;}', 100:int, 200:int, 10:int, 1000:int" expected-data-file="select_equal_with_single_table.xml" />
-        <assertion parameters="'{&quot;rule2&quot;:&quot;null&quot;}', '{&quot;rule2&quot;:&quot;null&quot;}', 100:int, 200:int, 12:int, 1000:int" expected-data-file="empty_order.xml" />
-    </dql-test-case>
     
     <dql-test-case sql="SELECT SUM(user_id) AS user_id_sum FROM t_order">
         <assertion expected-data-file="select_sum.xml" />
