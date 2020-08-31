@@ -16,23 +16,19 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-example</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
-    </parent>
-    <artifactId>shardingsphere-jdbc-example</artifactId>
-    <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
+<configuration>
+    <property name="log.context.name" value="shardingsphere-governance-zookeeper-raw-jdbc-quickstart" />
+    <property name="log.charset" value="UTF-8" />
+    <property name="log.pattern" value="[%-5level] %date --%thread-- [%logger] %msg %n" />
+    <contextName>${log.context.name}</contextName>
     
-    <modules>
-        <module>sharding-example</module>
-        <module>governance-example</module>
-        <module>transaction-example</module>
-        <module>other-feature-example</module>
-    </modules>
-</project>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="${log.charset}">
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+    </appender>
+    <root>
+        <level value="INFO" />
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
