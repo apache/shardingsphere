@@ -80,15 +80,13 @@ public abstract class GovernanceSchemaContexts implements SchemaContexts {
     }
     
     private void disableDataSources() {
-        Collection<String> disabledDataSources = governanceFacade.getRegistryCenter().loadDisabledDataSources();
-        if (!disabledDataSources.isEmpty()) {
-            schemaContexts.getSchemaContexts().forEach((key, value)
-                -> value.getSchema().getRules().stream().filter(each -> each instanceof StatusContainedRule).forEach(each -> disableDataSources(key, disabledDataSources, (StatusContainedRule) each)));
-        }
+        schemaContexts.getSchemaContexts().forEach((key, value)
+            -> value.getSchema().getRules().stream().filter(each -> each instanceof StatusContainedRule).forEach(each -> disableDataSources(key, (StatusContainedRule) each)));
     }
     
-    private void disableDataSources(final String schemaName, final Collection<String> disabledDataSources, final StatusContainedRule rule) {
-        disabledDataSources.stream().filter(each -> each.startsWith(schemaName)).map(this::getDataSourceName).forEach(each -> rule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true)));
+    private void disableDataSources(final String schemaName, final StatusContainedRule rule) {
+        Collection<String> disabledDataSources = governanceFacade.getRegistryCenter().loadDisabledDataSources(schemaName);
+        disabledDataSources.stream().map(this::getDataSourceName).forEach(each -> rule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true)));
     }
     
     private String getDataSourceName(final String disabledDataSource) {

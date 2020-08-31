@@ -72,31 +72,21 @@ public final class RegistryCenter {
     }
     
     /**
-     * Load all data sources nodes.
-     *
-     * @return Collection of all data sources nodes
-     */
-    public Collection<String> loadAllDataSourcesNodes() {
-        return repository.getChildrenKeys(node.getDataSourcesNodeFullRootPath());
-    }
-    
-    /**
-     * Get data sources node data.
-     *
-     * @param schemaDataSourceName schema name and data source name
-     * @return data sources node data
-     */
-    public String getDataSourcesNodeData(final String schemaDataSourceName) {
-        return repository.get(node.getDataSourcesNodeFullPath(schemaDataSourceName));
-    }
-    
-    /**
      * Load disabled data sources.
-     *
+     * 
+     * @param schemaName schema name
      * @return Collection of disabled data sources
      */
-    public Collection<String> loadDisabledDataSources() {
-        return loadAllDataSourcesNodes().stream().filter(each -> !Strings.isNullOrEmpty(getDataSourcesNodeData(each))
-                && RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(getDataSourcesNodeData(each))).collect(Collectors.toList());
+    public Collection<String> loadDisabledDataSources(final String schemaName) {
+        return loadDataSourcesBySchemaName(schemaName).stream().filter(each -> !Strings.isNullOrEmpty(getDataSourceNodeData(schemaName, each))
+                && RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(getDataSourceNodeData(schemaName, each))).collect(Collectors.toList());
+    }
+    
+    private Collection<String> loadDataSourcesBySchemaName(final String schemaName) {
+        return repository.getChildrenKeys(node.getDataSourcesNodeSchemaPath(schemaName));
+    }
+    
+    private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
+        return repository.get(node.getDataSourcesNodeDataSourcePath(schemaName, dataSourceName));
     }
 }

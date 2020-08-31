@@ -21,7 +21,6 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.util.DataSourceConverter;
 import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -50,17 +49,12 @@ import static org.mockito.Mockito.when;
 public final class JDBCGovernanceSchemaContextsTest {
     
     @Mock
-    private RegistryCenter registryCenter;
-    
-    @Mock
     private GovernanceFacade facade;
     
     private JDBCGovernanceSchemaContexts schemaContexts;
     
     @Before
     public void setUp() {
-        when(registryCenter.loadDisabledDataSources()).thenReturn(Collections.emptyList());
-        when(facade.getRegistryCenter()).thenReturn(registryCenter);
         schemaContexts = new JDBCGovernanceSchemaContexts(new StandardSchemaContexts(new LinkedHashMap<>(), new Authentication(),
                 new ConfigurationProperties(new Properties()), new H2DatabaseType()), facade);
     }

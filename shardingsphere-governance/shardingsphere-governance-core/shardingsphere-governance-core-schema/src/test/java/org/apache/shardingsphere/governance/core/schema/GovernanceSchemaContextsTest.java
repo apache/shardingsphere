@@ -98,7 +98,7 @@ public final class GovernanceSchemaContextsTest {
     @Before
     public void setUp() {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
-        when(registryCenter.loadDisabledDataSources()).thenReturn(Collections.singletonList("schema.ds_1"));
+        when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         when(governanceFacade.getMetaDataCenter()).thenReturn(metaDataCenter);
         governanceSchemaContexts = new GovernanceSchemaContextsFixture(new StandardSchemaContexts(getSchemaContextMap(),
                 authentication, configurationProperties, new H2DatabaseType()), governanceFacade);
