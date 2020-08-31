@@ -83,7 +83,7 @@ public final class RegistryCenterNode {
      * @return governance sharding schema
      */
     public GovernanceSchema getGovernanceShardingSchema(final String dataSourceNodeFullPath) {
-        return new GovernanceSchema(dataSourceNodeFullPath.replace(getDataSourcesNodeFullRootPath() + '/', "").replace("/", "."));
+        return new GovernanceSchema(dataSourceNodeFullPath.replace(getDataSourcesNodeFullRootPath() + '/', ""));
     }
     
     /**
