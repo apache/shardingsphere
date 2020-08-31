@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.tracing.opentracing.hook;
 
-import io.opentracing.NoopTracerFactory;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
+import io.opentracing.noop.NoopTracerFactory;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
-import io.opentracing.util.ThreadLocalActiveSpanSource;
+import io.opentracing.util.ThreadLocalScopeManager;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
 import org.apache.shardingsphere.tracing.opentracing.constant.ShardingErrorLogTags;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseOpenTracingHookTest {
     
-    private static final MockTracer TRACER = new MockTracer(new ThreadLocalActiveSpanSource(), MockTracer.Propagator.TEXT_MAP);
+    private static final MockTracer TRACER = new MockTracer(new ThreadLocalScopeManager(), MockTracer.Propagator.TEXT_MAP);
     
     @BeforeClass
     public static void initTracer() {
@@ -51,11 +51,12 @@ public abstract class BaseOpenTracingHookTest {
     public static void releaseTracer() {
         Field field = GlobalTracer.class.getDeclaredField("tracer");
         field.setAccessible(true);
-        field.set(GlobalTracer.class, NoopTracerFactory.create());
+        field.set(GlobalTracer.class, TRACER);
     }
     
     @Before
     public final void resetTracer() {
+        releaseTracer();
         TRACER.reset();
     }
     

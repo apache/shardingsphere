@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.tracing.opentracing.hook;
 
-import io.opentracing.ActiveSpan;
+import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.tag.Tags;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorDataMap;
+import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
 import org.apache.shardingsphere.tracing.opentracing.constant.ShardingTags;
@@ -33,16 +34,20 @@ public final class OpenTracingRootInvokeHook implements RootInvokeHook {
     
     private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/rootInvoke/";
     
-    private ActiveSpan activeSpan;
-    
+    private Scope scope;
+    private Span activeSpan;
+
     @Override
     public void start() {
-        activeSpan = OpenTracingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
-        ExecutorDataMap.getValue().put(ACTIVE_SPAN_CONTINUATION, activeSpan.capture());
+        activeSpan = OpenTracingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).start();
+        scope= GlobalTracer.get().activateSpan(activeSpan);
     }
     
     @Override
     public void finish(final int connectionCount) {
-        activeSpan.setTag(ShardingTags.CONNECTION_COUNT.getKey(), connectionCount).deactivate();
+        if (null != scope) {
+            scope.close();
+        }
+        activeSpan.setTag(ShardingTags.CONNECTION_COUNT.getKey(), connectionCount).finish();
     }
 }

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.tracing.opentracing.hook;
 
-import io.opentracing.ActiveSpan;
-import io.opentracing.ActiveSpan.Continuation;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.tracing.opentracing.constant.ShardingTags;
@@ -47,24 +45,10 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
     
     private final SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
     
-    private ActiveSpan activeSpan;
-    
+
     @BeforeClass
     public static void registerSPI() {
         ShardingSphereServiceLoader.register(SQLExecutionHook.class);
-    }
-    
-    @Before
-    public void setUp() {
-        activeSpan = mockActiveSpan();
-    }
-    
-    private ActiveSpan mockActiveSpan() {
-        Continuation continuation = mock(Continuation.class);
-        ActiveSpan result = mock(ActiveSpan.class);
-        when(continuation.activate()).thenReturn(result);
-        ExecutorDataMap.getValue().put(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION, continuation);
-        return result;
     }
     
     @After
@@ -90,7 +74,7 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), is("success_ds"));
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), is("SELECT * FROM success_tbl;"));
         assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), is("[1, 2]"));
-        verify(activeSpan, times(0)).deactivate();
+        //verify(activeSpan, times(0)).deactivate();
         sqlExecutionHook.start("success_ds", "SELECT * FROM success_tbl;", null, dataSourceMetaData, true, null);
         sqlExecutionHook.finishSuccess();
     }
@@ -113,7 +97,7 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), is("success_ds"));
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), is("SELECT * FROM success_tbl;"));
         assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), is(""));
-        verify(activeSpan, times(0)).deactivate();
+        //verify(activeSpan, times(0)).deactivate();
     }
     
     @Test
@@ -134,7 +118,7 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), is("success_ds"));
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), is("SELECT * FROM success_tbl;"));
         assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), is("[1, 2]"));
-        verify(activeSpan).deactivate();
+        //verify(activeSpan).deactivate();
     }
     
     @Test
@@ -156,6 +140,6 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), is("SELECT * FROM failure_tbl;"));
         assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), is(""));
         assertSpanError(RuntimeException.class, "SQL execution error");
-        verify(activeSpan, times(0)).deactivate();
+        //verify(activeSpan, times(0)).deactivate();
     }
 }

@@ -19,12 +19,14 @@ package org.apache.shardingsphere.tracing.opentracing.hook;
 
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
+import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
 import org.apache.shardingsphere.tracing.opentracing.constant.ShardingTags;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -54,7 +56,7 @@ public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
         assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), is(Tags.SPAN_KIND_CLIENT));
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), is("SELECT * FROM XXX;"));
     }
-    
+
     @Test
     public void assertExecuteFailure() {
         registry.start("SELECT * FROM XXX;");

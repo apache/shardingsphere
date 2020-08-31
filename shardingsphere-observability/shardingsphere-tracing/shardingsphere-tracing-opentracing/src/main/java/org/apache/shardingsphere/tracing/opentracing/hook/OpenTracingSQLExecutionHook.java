@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.tracing.opentracing.hook;
 
 import com.google.common.base.Joiner;
-import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
@@ -35,17 +34,13 @@ import java.util.Map;
 public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     
     private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/executeSQL/";
-    
-    private ActiveSpan activeSpan;
-    
+
     private Span span;
     
     @Override
     public void start(final String dataSourceName, final String sql, final List<Object> parameters, 
                       final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
-        if (!isTrunkThread) {
-            activeSpan = ((ActiveSpan.Continuation) shardingExecuteDataMap.get(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION)).activate();
-        }
+
         span = OpenTracingTracer.get().buildSpan(OPERATION_NAME)
                 .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
@@ -68,17 +63,12 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     @Override
     public void finishSuccess() {
         span.finish();
-        if (null != activeSpan) {
-            activeSpan.deactivate();
-        }
+
     }
     
     @Override
     public void finishFailure(final Exception cause) {
         ShardingErrorSpan.setError(span, cause);
         span.finish();
-        if (null != activeSpan) {
-            activeSpan.deactivate();
-        }
     }
 }

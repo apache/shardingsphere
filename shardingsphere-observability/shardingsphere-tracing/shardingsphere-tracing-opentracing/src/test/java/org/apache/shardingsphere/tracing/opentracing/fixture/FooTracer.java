@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.tracing.opentracing.fixture;
 
-import io.opentracing.ActiveSpan;
+import io.opentracing.Scope;
+import io.opentracing.ScopeManager;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
@@ -40,12 +41,22 @@ public final class FooTracer implements Tracer {
     }
     
     @Override
-    public ActiveSpan activeSpan() {
+    public Span activeSpan() {
         return null;
     }
-    
+
     @Override
-    public ActiveSpan makeActive(final Span span) {
+    public ScopeManager scopeManager() {
         return null;
+    }
+
+    @Override
+    public Scope activateSpan(Span span) {
+        return null;
+    }
+
+    @Override
+    public void close() {
+
     }
 }
