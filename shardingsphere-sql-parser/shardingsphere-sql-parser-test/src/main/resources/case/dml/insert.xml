@@ -1373,7 +1373,7 @@
         </select>
     </insert>
     
-    <insert sql-case-id="insert_with_with_clause_no_columns">
+    <insert sql-case-id="insert_without_columns_with_with_clause">
         <with start-index="0" stop-index="50">
             <common-table-expression name="cte" start-index="5" stop-index="50">
                 <subquery-expression>
@@ -1409,7 +1409,7 @@
         </select>
     </insert>
     
-    <insert sql-case-id="insert_no_into_keyword" parameters="1, 1, 'init'">
+    <insert sql-case-id="insert_without_into_keyword" parameters="1, 1, 'init'">
         <table name="t_order" start-index="7" stop-index="13" />
         <columns start-index="15" stop-index="41">
             <column name="order_id" start-index="16" stop-index="23" />
@@ -1432,5 +1432,19 @@
                 </assignment-value>
             </value>
         </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_default_values">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
+    </insert>
+
+    <insert sql-case-id="insert_without_columns_with_default_values">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="19" />
     </insert>
 </sql-parser-test-cases>
