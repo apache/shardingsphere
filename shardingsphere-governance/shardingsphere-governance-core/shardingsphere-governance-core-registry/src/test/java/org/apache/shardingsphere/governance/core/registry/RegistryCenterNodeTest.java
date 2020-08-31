@@ -19,6 +19,10 @@ package org.apache.shardingsphere.governance.core.registry;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -37,12 +41,25 @@ public final class RegistryCenterNodeTest {
     }
     
     @Test
-    public void assertGetDataSourcesNodeFullPath() {
-        assertThat(registryCenterNode.getDataSourcesNodeFullPath("sharding_db"), is("/registry/datasources/sharding_db"));
+    public void assertGetGovernanceShardingSchema() {
+        assertThat(registryCenterNode.getGovernanceShardingSchema("/registry/datasources/master_slave_db.slave_ds_0").getSchemaName(), is("master_slave_db"));
     }
     
     @Test
-    public void assertGetGovernanceShardingSchema() {
-        assertThat(registryCenterNode.getGovernanceShardingSchema("/registry/datasources/master_slave_db.slave_ds_0").getSchemaName(), is("master_slave_db"));
+    public void assertGetDataSourcesNodeSchemaPath() {
+        assertThat(registryCenterNode.getDataSourcesNodeSchemaPath("master_slave_db"), is("/registry/datasources/master_slave_db"));
+    }
+    
+    @Test
+    public void assertGetDataSourcesNodeDataSourcePath() {
+        assertThat(registryCenterNode.getDataSourcesNodeDataSourcePath("master_slave_db", "slave_ds_0"), is("/registry/datasources/master_slave_db/slave_ds_0"));
+    }
+    
+    @Test
+    public void assertGetAllDataSourcesSchemaPaths() {
+        Collection<String> schemaPaths = registryCenterNode.getAllDataSourcesSchemaPaths(Arrays.asList("master_slave_db", "sharding_db"));
+        assertThat(schemaPaths.size(), is(2));
+        assertThat(schemaPaths, hasItem("/registry/datasources/master_slave_db"));
+        assertThat(schemaPaths, hasItem("/registry/datasources/sharding_db"));
     }
 }
