@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.s
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.with.WithClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

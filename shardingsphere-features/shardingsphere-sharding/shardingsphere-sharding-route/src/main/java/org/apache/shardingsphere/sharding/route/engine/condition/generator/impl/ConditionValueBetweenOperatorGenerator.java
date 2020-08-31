@@ -25,8 +25,8 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionCondi
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGenerator;
 import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
-import org.apache.shardingsphere.sql.parser.sql.util.SafeNumberOperationUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateBetweenRightValue;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 
 import java.util.Date;
 import java.util.List;

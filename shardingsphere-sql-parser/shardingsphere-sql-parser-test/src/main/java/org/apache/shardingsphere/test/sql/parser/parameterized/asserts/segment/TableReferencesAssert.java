@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinedTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.JoinedTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.JoinTableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableFactorAssert;

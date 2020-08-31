@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.binder.statement.dml;
 
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
 import org.junit.Test;
 
 import java.util.Collections;

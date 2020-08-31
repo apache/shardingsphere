@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.RenameUserStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RenameUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RenameUserStatement;
 
 /**
  * Rename user statement assert.

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl;
 
-import org.apache.shardingsphere.sql.parser.sql.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

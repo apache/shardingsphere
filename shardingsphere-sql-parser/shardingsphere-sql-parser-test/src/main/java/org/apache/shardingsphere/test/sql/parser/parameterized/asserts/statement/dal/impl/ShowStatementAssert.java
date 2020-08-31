@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ShowStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLShowStatement;
 
 /**
  * Show statement assert.
@@ -36,6 +36,6 @@ public final class ShowStatementAssert {
      * @param actual actual show statement
      * @param expected expected show statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowStatement actual, final ShowStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLShowStatement actual, final ShowStatementTestCase expected) {
     }
 }

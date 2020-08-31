@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.binder.type;
 
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 

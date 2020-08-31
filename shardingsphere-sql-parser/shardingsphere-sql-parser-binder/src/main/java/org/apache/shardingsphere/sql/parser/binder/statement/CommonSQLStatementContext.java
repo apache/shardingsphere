@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.binder.statement;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collections;
 

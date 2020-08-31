@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.visitor.VisitorRule;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Optional;
 

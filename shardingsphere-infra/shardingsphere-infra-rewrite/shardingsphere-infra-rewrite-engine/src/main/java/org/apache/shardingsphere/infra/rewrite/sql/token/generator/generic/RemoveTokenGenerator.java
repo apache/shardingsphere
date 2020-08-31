@@ -21,10 +21,10 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.RemoveAvailable;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.ShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.ShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.ShowTablesStatement;
 
 import java.util.Collection;
 import java.util.Collections;

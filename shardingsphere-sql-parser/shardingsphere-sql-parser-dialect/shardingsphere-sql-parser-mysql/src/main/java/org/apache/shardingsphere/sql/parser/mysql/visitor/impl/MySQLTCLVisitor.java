@@ -29,13 +29,13 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Savepoi
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.MySQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql.segment.tcl.AutoCommitSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.tcl.AutoCommitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 
 /**
  * TCL visitor for MySQL.
