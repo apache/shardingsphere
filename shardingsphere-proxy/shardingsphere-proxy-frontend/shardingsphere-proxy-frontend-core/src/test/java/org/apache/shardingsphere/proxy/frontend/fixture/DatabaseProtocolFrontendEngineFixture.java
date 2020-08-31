@@ -24,10 +24,7 @@ import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.engine.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
-public class DatabaseProtocolFrontendEngineFixture implements DatabaseProtocolFrontendEngine {
-    
-    public DatabaseProtocolFrontendEngineFixture() {
-    }
+public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProtocolFrontendEngine {
     
     @Override
     public String getDatabaseType() {

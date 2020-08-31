@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.proxy.frontend;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.proxy.frontend.fixture.DatabaseProtocolFrontendEngineFixture;
 import org.apache.shardingsphere.proxy.frontend.fixture.FixtureDatabaseType;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 public final class DatabaseProtocolFrontendEngineFactoryTest {
     
@@ -34,6 +36,6 @@ public final class DatabaseProtocolFrontendEngineFactoryTest {
     @Test
     public void assertNewInstanceWithFixture() {
         DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseProtocolFrontendEngineFactory.newInstance(new FixtureDatabaseType());
-        assertNotNull(databaseProtocolFrontendEngine);
+        assertThat(databaseProtocolFrontendEngine, instanceOf(DatabaseProtocolFrontendEngineFixture.class));
     }
 }
