@@ -23,6 +23,9 @@ import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchem
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Registry center node.
@@ -82,8 +85,10 @@ public final class RegistryCenterNode {
      * @param dataSourceNodeFullPath data source node full path
      * @return governance sharding schema
      */
-    public GovernanceSchema getGovernanceShardingSchema(final String dataSourceNodeFullPath) {
-        return new GovernanceSchema(dataSourceNodeFullPath.replace(getDataSourcesNodeFullRootPath() + '/', ""));
+    public Optional<GovernanceSchema> getGovernanceShardingSchema(final String dataSourceNodeFullPath) {
+        Pattern pattern = Pattern.compile(getDataSourcesNodeFullRootPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
+        return matcher.find() ? Optional.of(new GovernanceSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
     }
     
     /**

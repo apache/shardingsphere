@@ -27,7 +27,7 @@ import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
 
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -37,18 +37,18 @@ public final class DataSourceStateChangedListener extends PostGovernanceReposito
     
     private final RegistryCenterNode registryCenterNode;
     
-    public DataSourceStateChangedListener(final RegistryRepository registryRepository) {
-        super(registryRepository, Collections.singleton(new RegistryCenterNode().getDataSourcesNodeFullRootPath()));
+    public DataSourceStateChangedListener(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
+        super(registryRepository, new RegistryCenterNode().getAllDataSourcesSchemaPaths(schemaNames));
         registryCenterNode = new RegistryCenterNode();
     }
     
     @Override
     protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return Optional.of(new DisabledStateChangedEvent(getShardingSchema(event.getKey()), isDataSourceDisabled(event)));
-    }
-    
-    private GovernanceSchema getShardingSchema(final String dataSourceNodeFullPath) {
-        return registryCenterNode.getGovernanceShardingSchema(dataSourceNodeFullPath);
+        Optional<GovernanceSchema> governanceSchema = registryCenterNode.getGovernanceShardingSchema(event.getKey());
+        if (governanceSchema.isPresent()) {
+            return Optional.of(new DisabledStateChangedEvent(governanceSchema.get(), isDataSourceDisabled(event)));
+        }
+        return Optional.empty();
     }
     
     private boolean isDataSourceDisabled(final DataChangedEvent event) {

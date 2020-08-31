@@ -42,7 +42,7 @@ public final class RegistryCenterNodeTest {
     
     @Test
     public void assertGetGovernanceShardingSchema() {
-        assertThat(registryCenterNode.getGovernanceShardingSchema("/registry/datasources/master_slave_db.slave_ds_0").getSchemaName(), is("master_slave_db"));
+        assertThat(registryCenterNode.getGovernanceShardingSchema("/registry/datasources/master_slave_db/slave_ds_0").get().getSchemaName(), is("master_slave_db"));
     }
     
     @Test
