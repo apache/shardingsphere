@@ -19,23 +19,12 @@ package org.apache.shardingsphere.proxy.frontend;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.junit.Before;
 import org.junit.Test;
-
-import java.lang.reflect.Method;
 
 import static org.junit.Assert.assertNotNull;
 
 public final class DatabaseProtocolFrontendEngineFactoryTest {
-    
-    @Before
-    public void init() throws Exception {
-        Method method = ShardingSphereServiceLoader.class.getDeclaredMethod("registerServiceClass", Class.class, Object.class);
-        method.setAccessible(true);
-        method.invoke(null, DatabaseProtocolFrontendEngine.class, new MockDatabaseProtocolFrontendEngine());
-    }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWhenUnsupported() {
