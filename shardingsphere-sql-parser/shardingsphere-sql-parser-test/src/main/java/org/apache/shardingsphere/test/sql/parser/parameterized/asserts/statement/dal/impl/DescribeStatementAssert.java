@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.DescribeStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.DescribeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDescribeStatement;
 
 /**
  * Describe statement assert.
@@ -36,6 +36,6 @@ public final class DescribeStatementAssert {
      * @param actual actual describe statement
      * @param expected expected describe statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DescribeStatement actual, final DescribeStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLDescribeStatement actual, final DescribeStatementTestCase expected) {
     }
 }

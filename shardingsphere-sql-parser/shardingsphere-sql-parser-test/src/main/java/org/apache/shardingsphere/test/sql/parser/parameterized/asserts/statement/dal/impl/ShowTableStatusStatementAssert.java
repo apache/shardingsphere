@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTableStatusStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.ShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 
 /**
  * Show table status statement assert.
@@ -36,6 +36,6 @@ public final class ShowTableStatusStatementAssert {
      * @param actual actual show table status statement
      * @param expected expected show table status statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableStatusStatement actual, final ShowTableStatusStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowTableStatusStatement actual, final ShowTableStatusStatementTestCase expected) {
     }
 }

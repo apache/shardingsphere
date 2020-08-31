@@ -15,33 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 import java.util.Optional;
 
 /**
- * Show columns statement.
+ * Show tables statement.
  */
-@Getter
 @Setter
-public final class ShowIndexStatement extends DALStatement {
+public final class MySQLShowTablesStatement extends DALStatement implements MySQLStatement {
     
-    private SimpleTableSegment table;
-    
-    private SchemaSegment schema;
+    private RemoveAvailable fromSchema;
     
     /**
-     * Get schema.
+     * Get from schema.
      * 
-     * @return schema
+     * @return from schema
      */
-    public Optional<SchemaSegment> getSchema() {
-        return Optional.ofNullable(schema);
+    public Optional<RemoveAvailable> getFromSchema() {
+        return Optional.ofNullable(fromSchema);
     }
 }

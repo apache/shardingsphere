@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Show create view statement.
+ * Show create procedure statement.
  */
-public final class ShowCreateViewStatement extends DALStatement {
+public final class MySQLShowCreateProcedureStatement extends DALStatement implements MySQLStatement {
 }

@@ -15,12 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+
+import java.util.Optional;
 
 /**
- * Flush statement.
+ * Show table status statement.
  */
-public final class FlushStatement extends DALStatement {
+@Setter
+public final class MySQLShowTableStatusStatement extends DALStatement implements MySQLStatement {
+    
+    private RemoveAvailable fromSchema;
+    
+    /**
+     * Get from schema.
+     *
+     * @return from schema
+     */
+    public Optional<RemoveAvailable> getFromSchema() {
+        return Optional.ofNullable(fromSchema);
+    }
 }

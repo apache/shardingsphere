@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Analyze table statement.
+ * Uninstall plugin statement.
  */
-public final class AnalyzeTableStatement extends DALStatement {
+public final class MySQLUninstallPluginStatement extends DALStatement implements MySQLStatement {
 }

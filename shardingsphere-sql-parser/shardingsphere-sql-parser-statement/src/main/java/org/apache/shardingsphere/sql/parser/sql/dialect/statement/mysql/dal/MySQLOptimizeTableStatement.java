@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Show binary logs statement.
+ * Optimize table statement.
  */
-public final class ShowBinaryLogsStatement extends DALStatement {
+public final class MySQLOptimizeTableStatement extends DALStatement implements MySQLStatement {
 }
