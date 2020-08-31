@@ -8,7 +8,7 @@ weight = 6
 ### 治理
 
 ```yaml
-orchestration:  
+governance:  
   name: # 治理名称
   registryCenter: # 配置中心
     type: # 治理持久化类型。如：Zookeeper, etcd

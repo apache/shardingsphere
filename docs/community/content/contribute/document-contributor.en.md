@@ -36,27 +36,32 @@ shardingsphere
   ├─document
   │  ├─archetypes
   │  ├─content
+  │  │  ├─dev-manual
   │  │  ├─downloads
   │  │  ├─faq
   │  │  ├─features
-  │  │  │  ├─orchestration
+  │  │  │  ├─encrypt
+  │  │  │  ├─governance
+  │  │  │  ├─pluggable-architecture
   │  │  │  ├─read-write-split
+  │  │  │  ├─replica
+  │  │  │  ├─scaling
+  │  │  │  ├─shadow
   │  │  │  ├─sharding
   │  │  │  │  ├─concept
-  │  │  │  │  ├─other-features
   │  │  │  │  ├─principle
   │  │  │  │  └─use-norms
-  │  │  │  ├─spi
   │  │  │  ├─test-engine
   │  │  │  └─transaction
   │  │  │      ├─concept
-  │  │  │      ├─function
-  │  │  │      └─principle
-  │  │  ├─manual
+  │  │  │      ├─principle
+  │  │  │      └─use-norms
+  │  │  ├─user-manual
   │  │  │  ├─shardingsphere-jdbc
   │  │  │  │  ├─configuration
   │  │  │  │  └─usage
   │  │  │  ├─shardingsphere-proxy
+  │  │  │  ├─shardingsphere-scaling
   │  │  │  ├─shardingsphere-sidecar
   │  │  │  └─shardingsphere-ui
   │  │  ├─overview

@@ -5,7 +5,7 @@ weight = 4
 
 Apache ShardingSphere uses SPI to load data to the config center/registry/metadata center and disable instances and databases. 
 Currently, Apache ShardingSphere supports frequently used registry centers, Zookeeper, Etcd, Apollo and Nacos. 
-In addition, by injecting them to ShardingSphere with SPI, users can use other third-party config/registry/metadata centers to enable databases orchestration.
+In addition, by injecting them to ShardingSphere with SPI, users can use other third-party config/registry/metadata centers to enable databases governance.
 
 |                                               | *Driver*                                             | *Version* | *Config Center* | *Registry Center* | *Metadata Center* |
 | --------------------------------------------- | ---------------------------------------------------- | --------- | --------------- | ----------------- | ----------------- |
