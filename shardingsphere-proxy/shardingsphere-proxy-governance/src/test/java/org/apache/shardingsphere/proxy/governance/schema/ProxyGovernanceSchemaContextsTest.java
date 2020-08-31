@@ -22,7 +22,6 @@ import org.apache.shardingsphere.governance.core.common.event.auth.Authenticatio
 import org.apache.shardingsphere.governance.core.common.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.common.eventbus.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
@@ -52,7 +51,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ProxyGovernanceSchemaContextsTest {
@@ -80,7 +78,6 @@ public final class ProxyGovernanceSchemaContextsTest {
     }
     
     private ProxyGovernanceSchemaContexts getProxyGovernanceSchemaContexts() {
-        when(governanceFacade.getRegistryCenter()).thenReturn(mock(RegistryCenter.class));
         ProxyGovernanceSchemaContexts result = new ProxyGovernanceSchemaContexts(new StandardSchemaContexts(), governanceFacade);
         SchemaContexts schemaContexts =
                 new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
