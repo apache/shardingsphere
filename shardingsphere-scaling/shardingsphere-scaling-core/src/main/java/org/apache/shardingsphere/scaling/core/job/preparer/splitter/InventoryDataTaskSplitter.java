@@ -121,7 +121,8 @@ public final class InventoryDataTaskSplitter {
     private Collection<InventoryDumperConfiguration> splitByPrimaryKeyRange(final int concurrency, final InventoryDumperConfiguration inventoryDumperConfiguration,
                                                                    final MetaDataManager metaDataManager, final DataSource dataSource) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
-        String primaryKey = metaDataManager.getTableMetaData(inventoryDumperConfiguration.getTableName()).getPrimaryKeyColumns().get(0);
+        String tableName = inventoryDumperConfiguration.getTableName();
+        String primaryKey = metaDataManager.getTableMetaData(tableName).getPrimaryKeyColumns().get(0);
         inventoryDumperConfiguration.setPrimaryKey(primaryKey);
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement ps = connection.prepareStatement(String.format("SELECT MIN(%s),MAX(%s) FROM %s LIMIT 1", primaryKey, primaryKey, inventoryDumperConfiguration.getTableName()));
@@ -139,6 +140,8 @@ public final class InventoryDataTaskSplitter {
                     splitDumperConfig.setPositionManager(new InventoryPositionManager<>(new PrimaryKeyPosition(min, max)));
                 }
                 splitDumperConfig.setSpiltNum(i);
+                splitDumperConfig.setPrimaryKey(primaryKey);
+                splitDumperConfig.setTableName(tableName);
                 result.add(splitDumperConfig);
             }
         } catch (final SQLException ex) {
