@@ -20,7 +20,11 @@ grammar DMLStatement;
 import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 
 insert
-    : withClause_? INSERT INTO? tableName (AS? alias)? (insertValuesClause | insertSelectClause)
+    : withClause_? INSERT INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause)
+    ;
+    
+insertDefaultValue
+    : columnNames? DEFAULT VALUES
     ;
 
 insertValuesClause
