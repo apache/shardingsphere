@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.predicate;
+package org.apache.shardingsphere.sql.parser.sql.common.util.predicate;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ import java.util.Optional;
  * Predicate builder.
  */
 @RequiredArgsConstructor
-public final class PredicateBuilder {
+public final class PredicateBuildUtils {
     
     private final ASTNode left;
     
