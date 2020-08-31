@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.util;
 
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.junit.Test;
 
 import java.math.BigDecimal;

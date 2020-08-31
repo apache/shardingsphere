@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.JoinSpecificationAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedJoinTable;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinedTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.JoinedTableSegment;
 
 import java.util.List;
 

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.util;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 import org.junit.Test;
 
 import java.math.BigDecimal;

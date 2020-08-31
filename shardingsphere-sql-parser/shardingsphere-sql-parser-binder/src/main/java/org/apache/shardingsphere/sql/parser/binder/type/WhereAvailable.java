@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.binder.type;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
 import java.util.Optional;
 

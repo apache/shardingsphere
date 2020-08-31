@@ -25,12 +25,12 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Re
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ShowContext;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.PostgreSQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableAssignSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.AnalyzeTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ShowStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.dialect.mysql.AnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLResetParameterStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLShowStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -42,7 +42,7 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
     
     @Override
     public ASTNode visitShow(final ShowContext ctx) {
-        return new ShowStatement();
+        return new PostgreSQLShowStatement();
     }
     
     @Override
@@ -84,7 +84,7 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
     
     @Override
     public ASTNode visitResetParameter(final ResetParameterContext ctx) {
-        return new ResetParameterStatement();
+        return new PostgreSQLResetParameterStatement();
     }
     
     @Override

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.binder.statement.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 
 /**
  * Create database statement context.
