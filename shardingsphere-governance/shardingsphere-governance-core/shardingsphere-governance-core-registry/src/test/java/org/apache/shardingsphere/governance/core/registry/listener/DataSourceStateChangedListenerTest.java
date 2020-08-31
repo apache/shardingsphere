@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -45,13 +46,13 @@ public final class DataSourceStateChangedListenerTest {
     
     @Before
     public void setUp() {
-        dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository);
+        dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository, Arrays.asList("sharding_db", "masterslave_db", "encrypt_db"));
     }
     
     @Test
     public void assertCreateGovernanceEvent() {
         Optional<GovernanceEvent> actual = dataSourceStateChangedListener.createGovernanceEvent(
-                new DataChangedEvent("/registry/datasources/master_slave_db.slave_ds_0", "disabled", ChangedType.UPDATED));
+                new DataChangedEvent("/registry/datasources/master_slave_db/slave_ds_0", "disabled", ChangedType.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((DisabledStateChangedEvent) actual.get()).getGovernanceSchema().getSchemaName(), is(new GovernanceSchema("master_slave_db", "slave_ds_0").getSchemaName()));
     }

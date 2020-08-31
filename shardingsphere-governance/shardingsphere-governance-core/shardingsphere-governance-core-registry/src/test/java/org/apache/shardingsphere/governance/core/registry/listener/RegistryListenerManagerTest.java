@@ -25,6 +25,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
+
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -41,7 +43,7 @@ public final class RegistryListenerManagerTest {
     
     @Test
     public void assertInitListeners() {
-        RegistryListenerManager actual = new RegistryListenerManager(registryRepository);
+        RegistryListenerManager actual = new RegistryListenerManager(registryRepository, Arrays.asList("sharding_db", "masterslave_db", "encrypt_db"));
         FieldUtil.setField(actual, "instanceStateChangedListener", instanceStateChangedListener);
         FieldUtil.setField(actual, "dataSourceStateChangedListener", dataSourceStateChangedListener);
         actual.initListeners();

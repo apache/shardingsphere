@@ -20,6 +20,8 @@ package org.apache.shardingsphere.governance.core.registry.listener;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
 
+import java.util.Collection;
+
 /**
  * Registry listener manager.
  */
@@ -29,9 +31,9 @@ public final class RegistryListenerManager {
     
     private final DataSourceStateChangedListener dataSourceStateChangedListener;
     
-    public RegistryListenerManager(final RegistryRepository registryRepository) {
+    public RegistryListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
         instanceStateChangedListener = new InstanceStateChangedListener(registryRepository);
-        dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository);
+        dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository, schemaNames);
     }
     
     /**
