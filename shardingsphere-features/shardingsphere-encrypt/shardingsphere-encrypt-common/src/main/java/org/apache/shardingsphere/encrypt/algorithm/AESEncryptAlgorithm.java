@@ -44,6 +44,8 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     private static final String AES_KEY = "aes.key.value";
     
+    private static final String AES_KEY_COMPATIBLE = "aes-key-value";
+    
     private Properties props = new Properties();
     
     private byte[] secretKey;
@@ -54,8 +56,13 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     }
     
     private byte[] createSecretKey() {
-        Preconditions.checkArgument(props.containsKey(AES_KEY), String.format("%s can not be null.", AES_KEY));
-        return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY)), 16);
+        if (props.containsKey(AES_KEY)) {
+            Preconditions.checkArgument(true, String.format("%s can not be null.", AES_KEY));
+            return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY)), 16);
+        } else {
+            Preconditions.checkArgument(props.containsKey(AES_KEY_COMPATIBLE), String.format("%s can not be null.", AES_KEY));
+            return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY_COMPATIBLE)), 16);
+        }
     }
     
     @SneakyThrows
