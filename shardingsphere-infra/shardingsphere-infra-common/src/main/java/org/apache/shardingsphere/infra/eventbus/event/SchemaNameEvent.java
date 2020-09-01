@@ -15,38 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.callback;
+package org.apache.shardingsphere.infra.eventbus.event;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BiConsumer;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Callback.
+ * Schema name event.
  */
-// TODO rename schema based Callback
-public abstract class Callback<T> {
+@RequiredArgsConstructor
+@Getter
+public class SchemaNameEvent {
     
-    private final List<BiConsumer<String, T>> consumers = new CopyOnWriteArrayList<>();
+    private final String schemaName;
     
-    /**
-     * Register consumer.
-     *
-     * @param consumer consumer
-     */
-    public void register(final BiConsumer<String, T> consumer) {
-        consumers.add(consumer);
-    }
-    
-    /**
-     * Run consumer.
-     *
-     * @param schemaName schema name
-     * @param arg another argument
-     */
-    public void run(final String schemaName, final T arg) {
-        for (BiConsumer<String, T> each : consumers) {
-            each.accept(schemaName, arg);
-        }
-    }
+    private final boolean overwrite; 
 }
