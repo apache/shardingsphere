@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.governance.core.metadata;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.callback.governance.MetaDataCallback;
+import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.core.metadata.yaml.RuleSchemaMetaDataYamlSwapper;
 import org.apache.shardingsphere.governance.core.metadata.yaml.YamlRuleSchemaMetaData;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.eventbus.event.MetaDataEvent;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
@@ -39,7 +41,7 @@ public final class MetaDataCenter {
     public MetaDataCenter(final GovernanceRepository governanceRepository) {
         node = new MetaDataCenterNode();
         repository = governanceRepository;
-        MetaDataCallback.getInstance().register(this::persistMetaDataCenterNode);
+        ShardingSphereEventBus.getInstance().register(this);
     }
     
     /**
@@ -64,5 +66,15 @@ public final class MetaDataCenter {
             return Optional.empty();
         }
         return Optional.of(new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(path, YamlRuleSchemaMetaData.class)));
+    }
+    
+    /**
+     * Persist meta data.
+     * 
+     * @param event Meta data event.
+     */
+    @Subscribe
+    public synchronized void renew(final MetaDataEvent event) {
+        persistMetaDataCenterNode(event.getSchemaName(), event.getMetaData());
     }
 }
