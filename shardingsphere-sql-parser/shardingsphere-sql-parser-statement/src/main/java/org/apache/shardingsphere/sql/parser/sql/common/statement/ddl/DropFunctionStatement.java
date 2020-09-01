@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Drop function statement.
  */
-public final class DropFunctionStatement extends DDLStatement {
+public final class DropFunctionStatement extends AbstractSQLStatement implements DDLStatement {
 }

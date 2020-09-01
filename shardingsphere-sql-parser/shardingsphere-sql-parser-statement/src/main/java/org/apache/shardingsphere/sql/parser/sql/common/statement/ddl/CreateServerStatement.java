@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Create server statement.
  */
-public final class CreateServerStatement extends DDLStatement {
+public final class CreateServerStatement extends AbstractSQLStatement implements DDLStatement {
 }
