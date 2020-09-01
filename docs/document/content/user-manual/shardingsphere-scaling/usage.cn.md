@@ -8,7 +8,7 @@ weight = 2
 
 ### 环境要求
 
-纯 JAVA 开发，JDK建议 1.8 以上版本。
+纯 JAVA 开发，JDK 建议 1.8 以上版本。
 
 支持迁移场景如下：
 
@@ -50,7 +50,7 @@ PostgreSQL 需要开启 [test_decoding](https://www.postgresql.org/docs/9.4/test
 
 #### 创建迁移任务
 
-接口描述：POST /shardingscaling/job/start
+接口描述：POST /scaling/job/start
 
 请求体：
 
@@ -68,7 +68,7 @@ PostgreSQL 需要开启 [test_decoding](https://www.postgresql.org/docs/9.4/test
 
 ```
 curl -X POST \
-  http://localhost:8888/shardingscaling/job/start \
+  http://localhost:8888/scaling/job/start \
   -H 'content-type: application/json' \
   -d '{
    "ruleConfiguration": {
@@ -100,12 +100,12 @@ curl -X POST \
 
 #### 查询迁移任务进度
 
-接口描述：GET /shardingscaling/job/progress/{jobId}
+接口描述：GET /scaling/job/progress/{jobId}
 
 示例：
 ```
 curl -X GET \
-  http://localhost:8888/shardingscaling/job/progress/1
+  http://localhost:8888/scaling/job/progress/1
 ```
 
 返回信息：
@@ -162,13 +162,13 @@ curl -X GET \
 
 #### 查询所有迁移任务
 
-接口描述：GET /shardingscaling/job/list
+接口描述：GET /scaling/job/list
 
 示例：
 
 ```
 curl -X GET \
-  http://localhost:8888/shardingscaling/job/list
+  http://localhost:8888/scaling/job/list
 ```
 
 返回信息：
@@ -189,7 +189,7 @@ curl -X GET \
 
 #### 停止迁移任务
 
-接口描述：POST /shardingscaling/job/stop
+接口描述：POST /scaling/job/stop
 
 请求体：
 
@@ -200,7 +200,7 @@ curl -X GET \
 示例：
 ```
 curl -X POST \
-  http://localhost:8888/shardingscaling/job/stop \
+  http://localhost:8888/scaling/job/stop \
   -H 'content-type: application/json' \
   -d '{
    "jobId":1
