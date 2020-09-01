@@ -49,7 +49,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
