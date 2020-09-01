@@ -23,7 +23,7 @@ import org.apache.shardingsphere.tracing.opentracing.constant.ShardingTags;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.junit.BeforeClass;
 import org.junit.Test;

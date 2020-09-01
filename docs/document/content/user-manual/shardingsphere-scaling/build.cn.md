@@ -26,7 +26,7 @@ pushTimeout: 1000
 workerThread: 30
 ```
 
-3. 编译生成 ShardingSphere-Scaling：
+3. 启动 ShardingSphere-Scaling：
 
 ```
 sh bin/start.sh
@@ -37,7 +37,7 @@ sh bin/start.sh
 5. 使用 curl 命令再次确认正常运行。
 
 ```
-curl -X GET http://localhost:8888/shardingscaling/job/list
+curl -X GET http://localhost:8888/scaling/job/list
 ```
 
 响应应为：

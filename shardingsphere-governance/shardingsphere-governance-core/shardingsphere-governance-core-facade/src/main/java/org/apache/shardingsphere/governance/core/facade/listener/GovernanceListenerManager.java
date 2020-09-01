@@ -38,7 +38,7 @@ public final class GovernanceListenerManager {
     
     public GovernanceListenerManager(final RegistryRepository registryRepository, final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
         configurationListenerManager = new ConfigurationListenerManager(configurationRepository, schemaNames);
-        registryListenerManager = new RegistryListenerManager(registryRepository);
+        registryListenerManager = new RegistryListenerManager(registryRepository, schemaNames);
         metaDataListenerManager = new MetaDataListenerManager(configurationRepository, schemaNames);
     }
     

@@ -35,18 +35,18 @@ import org.apache.shardingsphere.proxy.backend.text.transaction.SkipBackendHandl
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngineFactory;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.RDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
@@ -105,13 +105,13 @@ public final class TextProtocolBackendHandlerFactory {
     }
     
     private static TextProtocolBackendHandler createDALBackendHandler(final String sql, final DALStatement dalStatement, final BackendConnection backendConnection) {
-        if (dalStatement instanceof UseStatement) {
-            return new UseDatabaseBackendHandler((UseStatement) dalStatement, backendConnection);
+        if (dalStatement instanceof MySQLUseStatement) {
+            return new UseDatabaseBackendHandler((MySQLUseStatement) dalStatement, backendConnection);
         }
-        if (dalStatement instanceof ShowDatabasesStatement) {
+        if (dalStatement instanceof MySQLShowDatabasesStatement) {
             return new ShowDatabasesBackendHandler(backendConnection);
         }
-        if (dalStatement instanceof ShowTablesStatement) {
+        if (dalStatement instanceof MySQLShowTablesStatement) {
             return new ShowTablesBackendHandler(sql, dalStatement, backendConnection);
         }
         // FIXME: There are three SetStatement classes.

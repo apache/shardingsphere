@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.DropUserStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
 
 /**
  * Drop user statement assert.

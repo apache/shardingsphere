@@ -88,6 +88,15 @@ public final class SchemaEnvironmentManager {
         SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             DataSource dataSource = DataSourceUtil.createDataSource(each, null);
+            if ("PostgreSQL".equals(each.getName())) {
+                try (
+                        Connection connection = dataSource.getConnection();
+                        StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateTerminateConnectionSQLs(databaseInitialization.getDatabases())))) {
+                    RunScript.execute(connection, stringReader);
+                } catch (final SQLException ex) {
+                    // TODO database maybe not exist
+                }
+            }
             try (
                     Connection connection = dataSource.getConnection();
                     StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateDropDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
@@ -109,6 +118,15 @@ public final class SchemaEnvironmentManager {
             return Collections.emptyList();
         }
         String sql = "Oracle".equals(databaseType.getName()) ? "CREATE SCHEMA %s" : "CREATE DATABASE %s";
+        Collection<String> result = new LinkedList<>();
+        for (String each : databases) {
+            result.add(String.format(sql, each));
+        }
+        return result;
+    }
+    
+    private static Collection<String> generateTerminateConnectionSQLs(final List<String> databases) {
+        String sql = "SELECT pg_terminate_backend (pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '%s'";
         Collection<String> result = new LinkedList<>();
         for (String each : databases) {
             result.add(String.format(sql, each));

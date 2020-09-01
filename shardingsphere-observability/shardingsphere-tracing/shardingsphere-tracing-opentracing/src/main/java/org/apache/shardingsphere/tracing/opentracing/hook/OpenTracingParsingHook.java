@@ -20,7 +20,7 @@ package org.apache.shardingsphere.tracing.opentracing.hook;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
 import org.apache.shardingsphere.tracing.opentracing.constant.ShardingTags;
 

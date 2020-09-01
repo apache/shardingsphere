@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.merge.engine.decorator.impl.TransparentRe
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 
 /**
  * Result decorator engine for encrypt.

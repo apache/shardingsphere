@@ -18,8 +18,6 @@ chapter = true
 
 ShardingSphere使用lombok实现极简代码。关于更多使用和安装细节，请参考[lombok官网](https://projectlombok.org/download.html)。
 
-shardingsphere-orchestration-reg模块需要先执行`mvn install`命令，根据protobuf文件生成gRPC相关的java文件。
-
 ## 3. 使用Spring命名空间时找不到xsd?
 
 回答：

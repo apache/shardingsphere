@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 
 /**
  * Aggregation distinct projection.

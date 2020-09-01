@@ -26,8 +26,8 @@ import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
-import org.apache.shardingsphere.sql.parser.sql.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.util.Collection;
 
@@ -37,7 +37,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class UseDatabaseBackendHandler implements TextProtocolBackendHandler {
     
-    private final UseStatement useStatement;
+    private final MySQLUseStatement useStatement;
     
     private final BackendConnection backendConnection;
     
