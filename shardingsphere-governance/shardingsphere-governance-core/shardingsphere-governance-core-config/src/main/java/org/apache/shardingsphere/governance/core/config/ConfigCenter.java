@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapp
 import org.apache.shardingsphere.infra.callback.governance.DataSourceCallback;
 import org.apache.shardingsphere.infra.callback.governance.RuleCallback;
 import org.apache.shardingsphere.infra.callback.governance.SchemaNameCallback;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;

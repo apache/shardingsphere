@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.governance.schema;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.JDBCParameterDecorator;
+import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecorator;
 
 /**
  * JDBC parameter decorator for HikariCP.

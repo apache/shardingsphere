@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.governance;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;

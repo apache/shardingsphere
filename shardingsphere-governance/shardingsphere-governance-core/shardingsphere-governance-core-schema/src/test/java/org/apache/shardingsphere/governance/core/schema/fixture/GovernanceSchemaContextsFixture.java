@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.schema.GovernanceSchemaContexts;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;

@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.config;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.junit.Test;
 
 import javax.sql.DataSource;

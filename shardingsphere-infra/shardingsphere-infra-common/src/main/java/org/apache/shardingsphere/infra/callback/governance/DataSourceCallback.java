@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.callback.governance;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.callback.Callback;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
 import java.util.Map;
 
