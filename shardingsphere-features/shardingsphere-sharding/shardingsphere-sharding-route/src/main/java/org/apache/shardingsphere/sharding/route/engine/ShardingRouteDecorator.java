@@ -78,7 +78,7 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         shardingStatementValidator.ifPresent(validator -> validator.postValidate(sqlStatement, routeResult));
         return new RouteContext(sqlStatementContext, parameters, routeResult);
     }
-
+    
     private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext,
                                                      final SchemaMetaData schemaMetaData, final ShardingRule shardingRule) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
@@ -142,7 +142,7 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
     }
     
     private boolean isSameRouteValue(final ShardingRule shardingRule, final ListRouteValue routeValue1, final ListRouteValue routeValue2) {
-        return isSameLogicTable(shardingRule, routeValue1, routeValue2) && routeValue1.getColumnName().equals(routeValue2.getColumnName()) 
+        return isSameLogicTable(shardingRule, routeValue1, routeValue2) && routeValue1.getColumnName().equals(routeValue2.getColumnName())
                 && SafeNumberOperationUtils.safeEquals(routeValue1.getValues(), routeValue2.getValues());
     }
     
