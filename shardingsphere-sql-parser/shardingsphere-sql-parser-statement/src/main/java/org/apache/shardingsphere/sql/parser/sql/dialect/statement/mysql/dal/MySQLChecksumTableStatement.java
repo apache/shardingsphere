@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * Checksum table statement.
  */
-public final class MySQLChecksumTableStatement extends DALStatement implements MySQLStatement {
+public final class MySQLChecksumTableStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }
