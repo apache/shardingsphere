@@ -75,7 +75,7 @@ ds_1: !!org.apache.shardingsphere.governance.core.common.yaml.configYamlDataSour
     maxLifetimeMilliseconds: 1800000
 ```
 
-### config/schema/sharding_db/rule
+### config/schema/schemeName/rule
 
 规则配置，可包括数据分片、读写分离、数据加密、影子库压测、多副本等配置。
 
@@ -93,4 +93,4 @@ rules:
 
 ## 动态生效
 
-在注册中心上修改、删除、新增相关配置，会动态推送到生产环境并立即生效。
+在配置中心上修改、删除、新增相关配置，会动态推送到生产环境并立即生效。
