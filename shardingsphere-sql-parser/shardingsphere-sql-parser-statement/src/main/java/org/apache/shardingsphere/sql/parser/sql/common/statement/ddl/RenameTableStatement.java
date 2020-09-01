@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Rename table statement.
  */
-public final class RenameTableStatement extends DDLStatement {
+public final class RenameTableStatement extends AbstractSQLStatement implements DDLStatement {
 }
