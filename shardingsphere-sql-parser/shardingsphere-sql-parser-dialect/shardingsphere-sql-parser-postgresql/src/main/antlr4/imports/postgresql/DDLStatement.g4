@@ -1841,3 +1841,23 @@ createOperatorFamily
     : CREATE OPERATOR FAMILY anyName USING name
     ;
 
+securityLabelStmt
+    : SECURITY LABEL (FOR nonReservedWordOrSconst) ON securityLabelClausces IS securityLabel
+    ;
+
+securityLabel
+    : STRING_ | NULL
+    ;
+
+securityLabelClausces
+    : objectTypeAnyName anyName
+    | COLUMN anyName
+    | (TYPE | DOMAIN) typeName
+    | (AGGREGATE | FUNCTION) aggregateWithArgtypes
+    | LARGE OBJECT numericOnly
+    | (PROCEDURE | ROUTINE) functionWithArgtypes
+    ;
+
+unlisten
+    : UNLISTEN (colId | ASTERISK_)
+    ;

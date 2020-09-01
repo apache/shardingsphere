@@ -130,3 +130,12 @@ load
     : LOAD fileName
     ;
 
+valuesClause
+    : VALUES LP_ exprList RP_
+    | valuesClause COMMA_ LP_ exprList RP_
+    ;
+
+vacuum
+    : VACUUM ((FULL? FREEZE? VERBOSE? ANALYZE?) | (LP_ vacAnalyzeOptionList RP_)) vacuumRelationList?
+    ;
+
