@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.rl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Change master statement.
  */
-public final class ChangeMasterStatement extends RLStatement {
+public final class ChangeMasterStatement extends AbstractSQLStatement implements RLStatement {
 }

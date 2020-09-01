@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Savepoint statement.
  */
-public final class SavepointStatement extends TCLStatement {
+public final class SavepointStatement extends AbstractSQLStatement implements TCLStatement {
 }
