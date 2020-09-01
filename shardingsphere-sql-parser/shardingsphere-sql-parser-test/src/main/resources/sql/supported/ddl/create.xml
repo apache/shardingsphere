@@ -114,7 +114,7 @@
     <sql-case id="create_index_with_bracket" value="CREATE INDEX [order_index] ON [t_order] ([order_id])" db-types="SQLServer" />
 
     <sql-case id="create_index_with_no_default_fill_factor" value="CREATE UNIQUE INDEX order_index ON t_order (order_id) WITH (fillfactor = 70)" db-types="PostgreSQL"/>
-    <sql-case id="create_index_with_tablespace" value="CREATE INDEX code_idx ON t_order (code) TABLESPACE indexspace" />
+    <sql-case id="create_index_with_tablespace" value="CREATE INDEX code_idx ON t_order (code) TABLESPACE indexspace" db-types="PostgreSQL"/>
     <sql-case id="create_index_using_gist" value="CREATE INDEX pointloc ON t_order USING gist (func1(location,location))" db-types="PostgreSQL" />
     <sql-case id="create_index_with_concurrently" value="CREATE INDEX CONCURRENTLY sales_quantity_index ON t_order(quantity)" db-types="PostgreSQL" />
     <sql-case id="create_gin_index" value="CREATE INDEX gin_idx ON t_order USING GIN (locations) WITH (fastupdate = off)" db-types="PostgreSQL" />
