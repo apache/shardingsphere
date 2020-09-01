@@ -33,6 +33,7 @@ import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,6 +64,18 @@ public final class RDLBackendHandlerTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchema()).thenReturn("schema");
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new CreateDatabaseStatement("new_db"));
+        BackendResponse response = executeEngine.execute();
+        assertThat(response, instanceOf(ErrorResponse.class));
+        setGovernanceSchemaContexts(true);
+        response = executeEngine.execute();
+        assertThat(response, instanceOf(UpdateResponse.class));
+    }
+    
+    @Test
+    public void assertExecuteDropDatabaseContext() {
+        BackendConnection connection = mock(BackendConnection.class);
+        when(connection.getSchema()).thenReturn("schema");
+        RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new DropDatabaseStatement("schema"));
         BackendResponse response = executeEngine.execute();
         assertThat(response, instanceOf(ErrorResponse.class));
         setGovernanceSchemaContexts(true);

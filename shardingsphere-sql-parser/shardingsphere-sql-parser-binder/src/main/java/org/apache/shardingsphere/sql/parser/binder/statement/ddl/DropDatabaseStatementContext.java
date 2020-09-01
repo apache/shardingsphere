@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.sql.parser.binder.statement.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 
 /**
- * Drop database statement.
+ * Drop database statement context.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DropDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
+public final class DropDatabaseStatementContext extends CommonSQLStatementContext<DropDatabaseStatement> {
     
-    private final String databaseName;
+    public DropDatabaseStatementContext(final DropDatabaseStatement sqlStatement) {
+        super(sqlStatement);
+    }
 }

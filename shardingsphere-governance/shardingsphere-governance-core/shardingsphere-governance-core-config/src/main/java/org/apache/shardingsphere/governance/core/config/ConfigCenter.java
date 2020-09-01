@@ -67,7 +67,7 @@ public final class ConfigCenter {
         this.repository = repository;
         DataSourceCallback.getInstance().register(this::persistDataSourceConfiguration);
         RuleCallback.getInstance().register(this::persistRuleConfigurations);
-        SchemaNameCallback.getInstance().register(this::persistSchemaName);
+        SchemaNameCallback.getInstance().register(this::persistSchema);
     }
     
     /**
@@ -197,6 +197,17 @@ public final class ConfigCenter {
         List<String> newArrayList = new ArrayList<>(schemaNameList);
         newArrayList.add(schemaName);
         repository.persist(node.getSchemaPath(), Joiner.on(",").join(newArrayList));
+    }
+    
+    private void persistSchema(final String schemaName, final boolean isDeleted) {
+        String schemaNames = repository.get(node.getSchemaPath());
+        Collection<String> schemas = Splitter.on(",").splitToList(schemaNames);
+        if (isDeleted) {
+            schemas.remove(schemaName);
+        } else if (!schemas.contains(schemaName)) {
+            schemas.add(schemaName);
+        }
+        repository.persist(node.getSchemaPath(), Joiner.on(",").join(schemas));
     }
     
     /**
