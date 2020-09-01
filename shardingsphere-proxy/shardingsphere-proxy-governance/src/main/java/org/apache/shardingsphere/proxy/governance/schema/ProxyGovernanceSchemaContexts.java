@@ -32,7 +32,6 @@ import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Proxy governance schema contexts.
@@ -72,13 +71,9 @@ public final class ProxyGovernanceSchemaContexts extends GovernanceSchemaContext
     protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs) {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesConfigs.size(), 1);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesConfigs.entrySet()) {
-            result.put(entry.getKey(), createDataSourceMap(entry.getValue()));
+            result.put(entry.getKey(), org.apache.shardingsphere.infra.config.DataSourceConverter.getDataSourceMap(entry.getValue()));
         }
         return result;
-    }
-    
-    private Map<String, DataSource> createDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
-        return dataSourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().createDataSource(), (key, repeatKey) -> key, LinkedHashMap::new));
     }
     
     private Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) {

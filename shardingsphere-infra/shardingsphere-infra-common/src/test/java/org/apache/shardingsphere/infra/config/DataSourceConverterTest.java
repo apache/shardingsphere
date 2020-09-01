@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.util;
+package org.apache.shardingsphere.infra.config;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.junit.Test;
 
 import javax.sql.DataSource;
