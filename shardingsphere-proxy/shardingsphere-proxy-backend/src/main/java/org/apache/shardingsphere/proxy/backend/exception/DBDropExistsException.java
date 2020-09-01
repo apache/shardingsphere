@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Drop database statement.
+ * DB drop exists exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
+public final class DBDropExistsException extends BackendException {
+    
+    private static final long serialVersionUID = 6088272565526510361L;
     
     private final String databaseName;
 }
