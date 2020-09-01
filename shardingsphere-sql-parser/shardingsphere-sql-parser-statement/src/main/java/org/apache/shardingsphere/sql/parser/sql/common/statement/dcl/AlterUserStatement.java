@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Alter user statement.
  */
-public final class AlterUserStatement extends DCLStatement {
+public final class AlterUserStatement extends AbstractSQLStatement implements DCLStatement {
 }
