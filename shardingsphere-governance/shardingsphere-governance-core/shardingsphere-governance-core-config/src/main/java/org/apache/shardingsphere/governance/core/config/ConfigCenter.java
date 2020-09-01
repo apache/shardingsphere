@@ -46,6 +46,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -201,7 +202,7 @@ public final class ConfigCenter {
     
     private void persistSchema(final String schemaName, final boolean isDeleted) {
         String schemaNames = repository.get(node.getSchemaPath());
-        Collection<String> schemas = Splitter.on(",").splitToList(schemaNames);
+        Collection<String> schemas = new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
         if (isDeleted) {
             schemas.remove(schemaName);
         } else if (!schemas.contains(schemaName)) {
