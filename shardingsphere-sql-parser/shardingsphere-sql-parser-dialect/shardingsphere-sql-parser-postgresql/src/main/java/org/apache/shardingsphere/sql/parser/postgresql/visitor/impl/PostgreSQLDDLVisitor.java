@@ -84,7 +84,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateSta
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
