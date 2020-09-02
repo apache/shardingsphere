@@ -18,13 +18,22 @@
 <authority>
     <sqlset db-types="Oracle,SQLServer,PostgreSQL">
         <user-create>
-            <sql>CREATE ROLE role_dev</sql>
+            <sql>CREATE USER default_user</sql>
+            <sql>CREATE ROLE default_role</sql>
+            <sql>CREATE ROLE role2</sql>
+            <sql>CREATE ROLE role3</sql>
+            <sql>CREATE ROLE role4</sql>
         </user-create>
         <user-drop>
+            <sql>DROP ROLE IF EXISTS default_role</sql>
             <sql>DROP ROLE IF EXISTS role_dev</sql>
             <sql>DROP ROLE IF EXISTS role_dev_new</sql>
+            <sql>DROP ROLE IF EXISTS role2</sql>
+            <sql>DROP ROLE IF EXISTS role3</sql>
+            <sql>DROP ROLE IF EXISTS role4</sql>
             <sql>DROP USER IF EXISTS user_dev</sql>
             <sql>DROP USER IF EXISTS user_dev_new</sql>
+            <sql>DROP USER IF EXISTS default_user</sql>
         </user-drop>
     </sqlset>
     <sqlset db-types="SQLServer">
@@ -54,23 +63,18 @@
             <sql>GRANT select,update,insert,delete on t_order_9 to user_dev@localhost</sql>
         </user-create>
         <user-drop>
-            <sql>DROP ROLE IF EXISTS default_role</sql>
-            <sql>DROP ROLE IF EXISTS role_dev</sql>
-            <sql>DROP ROLE IF EXISTS role_dev_new</sql>
             <sql>DROP USER IF EXISTS user_dev@localhost</sql>
             <sql>DROP USER IF EXISTS user_dev_new@localhost</sql>
             <sql>DROP USER IF EXISTS user_dev@127.0.0.1</sql>
+            <sql>DROP ROLE IF EXISTS default_role</sql>
+            <sql>DROP ROLE IF EXISTS role_dev</sql>
+            <sql>DROP ROLE IF EXISTS role_dev_new</sql>
             <sql>FLUSH PRIVILEGES</sql>
         </user-drop>
     </sqlset>
     <sqlset db-types="Oracle">
         <user-create>
             <sql>CREATE USER user_dev identified by passwd_dev</sql>
-        </user-create>
-    </sqlset>
-    <sqlset db-types="PostgreSQL">
-        <user-create>
-            <sql>CREATE USER user_dev PASSWORD 'passwd_dev'</sql>
         </user-create>
     </sqlset>
 </authority>
