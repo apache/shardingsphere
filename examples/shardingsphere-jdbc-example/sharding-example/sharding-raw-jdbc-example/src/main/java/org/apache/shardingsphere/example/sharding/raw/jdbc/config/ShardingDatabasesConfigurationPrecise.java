@@ -47,7 +47,7 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
         result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
         Properties props = new Properties();
-        props.setProperty("algorithm.expression", "demo_ds_${user_id % 2}");
+        props.setProperty("algorithm-expression", "demo_ds_${user_id % 2}");
         result.getShardingAlgorithms() .put("inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
         result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
         return result;
@@ -74,7 +74,7 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
     
     private static Properties getProperties() {
         Properties result = new Properties();
-        result.setProperty("worker.id", "123");
+        result.setProperty("worker-id", "123");
         return result;
     }
 }

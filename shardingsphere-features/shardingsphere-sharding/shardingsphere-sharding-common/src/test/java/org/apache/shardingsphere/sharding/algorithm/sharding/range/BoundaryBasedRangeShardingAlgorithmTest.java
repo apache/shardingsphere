@@ -42,7 +42,7 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     @Before
     public void setUp() {
         BoundaryBasedRangeShardingAlgorithm shardingAlgorithm = new BoundaryBasedRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("sharding.ranges", "1,5,10");
+        shardingAlgorithm.getProps().setProperty("sharding-ranges", "1,5,10");
         shardingAlgorithm.init();
         shardingStrategy = new StandardShardingStrategy("order_id", shardingAlgorithm);
     }
@@ -72,7 +72,7 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     @Test
     public void assertGetAutoTablesAmount() {
         BoundaryBasedRangeShardingAlgorithm shardingAlgorithm = new BoundaryBasedRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("sharding.ranges", "1,5,10");
+        shardingAlgorithm.getProps().setProperty("sharding-ranges", "1,5,10");
         shardingAlgorithm.init();
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(4));
     }

@@ -60,11 +60,11 @@ rules:
     t_order_inline:
       type: INLINE
       props:
-        algorithm.expression: t_order_${order_id % 2}
+        algorithm-expression: t_order_${order_id % 2}
     t_order_item_inline:
       type: INLINE
       props:
-        algorithm.expression: t_order_item_${order_id % 2}
+        algorithm-expression: t_order_item_${order_id % 2}
     
   keyGenerators:
     increment:

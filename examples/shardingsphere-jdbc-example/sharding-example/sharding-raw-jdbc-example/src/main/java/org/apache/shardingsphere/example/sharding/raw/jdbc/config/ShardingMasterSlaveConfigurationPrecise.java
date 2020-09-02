@@ -90,7 +90,7 @@ public final class ShardingMasterSlaveConfigurationPrecise implements ExampleCon
     
     private static Properties getProperties() {
         Properties result = new Properties();
-        result.setProperty("worker.id", "123");
+        result.setProperty("worker-id", "123");
         return result;
     }
 }

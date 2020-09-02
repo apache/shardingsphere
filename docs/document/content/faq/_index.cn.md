@@ -240,7 +240,7 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 回答：
 
 1. 需要使用4.1.0以上版本。
-2. 将配置项`allow.range.query.with.inline.sharding`设置为true即可（默认为false）。
+2. 将配置项`allow-range-query-with-inline-sharding`设置为true即可（默认为false）。
 3. 需要注意的是，此时所有的范围查询将会使用广播的方式查询每一个分表。
 
 ## 20. 为什么配置了某个数据连接池的spring-boot-starter（比如druid）和shardingsphere-jdbc-spring-boot-starter时，系统启动会报错？

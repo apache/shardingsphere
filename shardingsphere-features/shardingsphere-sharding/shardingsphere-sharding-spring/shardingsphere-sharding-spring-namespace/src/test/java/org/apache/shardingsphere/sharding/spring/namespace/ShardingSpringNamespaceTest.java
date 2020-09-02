@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.sharding.spring.namespace;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import javax.annotation.Resource;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
@@ -38,10 +34,13 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
+import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/sharding-application-context.xml")
 public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -106,19 +105,19 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     @Test
     public void assertDataSourceShardingAlgorithm() {
         assertThat(dataSourceShardingAlgorithm.getType(), is("INLINE"));
-        assertThat(dataSourceShardingAlgorithm.getProps().getProperty("algorithm.expression"), is("ds_$->{order_id % 2}"));
+        assertThat(dataSourceShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("ds_$->{order_id % 2}"));
     }
     
     @Test
     public void assertOrderTableShardingAlgorithm() {
         assertThat(orderTableShardingAlgorithm.getType(), is("INLINE"));
-        assertThat(orderTableShardingAlgorithm.getProps().getProperty("algorithm.expression"), is("t_order_$->{order_id % 4}"));
+        assertThat(orderTableShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("t_order_$->{order_id % 4}"));
     }
     
     @Test
     public void assertModShardingAlgorithm() {
         assertThat(modShardingAlgorithm.getType(), is("MOD"));
-        assertThat(modShardingAlgorithm.getProps().getProperty("sharding.count"), is("2"));
+        assertThat(modShardingAlgorithm.getProps().getProperty("sharding-count"), is("2"));
     }
     
     @Test

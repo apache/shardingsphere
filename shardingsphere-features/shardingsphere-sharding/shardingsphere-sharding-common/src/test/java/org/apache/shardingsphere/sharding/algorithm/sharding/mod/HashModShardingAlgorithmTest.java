@@ -42,7 +42,7 @@ public final class HashModShardingAlgorithmTest {
     @Before
     public void setup() {
         HashModShardingAlgorithm shardingAlgorithm = new HashModShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("sharding.count", "4");
+        shardingAlgorithm.getProps().setProperty("sharding-count", "4");
         shardingAlgorithm.init();
         shardingStrategy = new StandardShardingStrategy("order_type", shardingAlgorithm);
     }

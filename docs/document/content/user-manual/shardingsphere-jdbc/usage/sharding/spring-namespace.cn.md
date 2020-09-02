@@ -44,7 +44,7 @@ weight = 4
     <!-- 配置分库策略 -->
     <sharding:sharding-algorithm id="dbShardingAlgorithm" type="INLINE">
         <properties>
-            <prop key="algorithm.expression">ds$->{user_id % 2}</prop>
+            <prop key="algorithm-expression">ds$->{user_id % 2}</prop>
         </properties>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="dbStrategy" sharding-column="user_id" algorithm-ref="dbShardingAlgorithm" />
@@ -52,7 +52,7 @@ weight = 4
     <!-- 配置分表策略 -->
     <sharding:sharding-algorithm id="tableShardingAlgorithm" type="INLINE">
         <properties>
-            <prop key="algorithm.expression">t_order$->{order_id % 2}</prop>
+            <prop key="algorithm-expression">t_order$->{order_id % 2}</prop>
         </properties>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="tableStrategy" sharding-column="user_id" algorithm-ref="tableShardingAlgorithm" />

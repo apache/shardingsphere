@@ -49,9 +49,9 @@ spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.shar
 
 # 配置 分片算法
 spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.type=INLINE
-spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.props.algorithm.expression=ds_${user_id % 2}
+spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.props.algorithm-expression=ds_${user_id % 2}
 spring.shardingsphere.rules.sharding.sharding-algorithms.table_inline.type=INLINE
-spring.shardingsphere.rules.sharding.sharding-algorithms.table_inline.props.algorithm.expression=t_order_${order_id % 2}
+spring.shardingsphere.rules.sharding.sharding-algorithms.table_inline.props.algorithm-expression=t_order_${order_id % 2}
 
 ```
 

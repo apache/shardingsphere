@@ -26,17 +26,17 @@
                            ">
     <sharding:sharding-algorithm id="dataSourceShardingAlgorithm" type="INLINE">
         <props>
-            <prop key="algorithm.expression">ds_$->{order_id % 2}</prop>
+            <prop key="algorithm-expression">ds_$->{order_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
     <sharding:sharding-algorithm id="orderTableShardingAlgorithm" type="INLINE">
         <props>
-            <prop key="algorithm.expression">t_order_$->{order_id % 4}</prop>
+            <prop key="algorithm-expression">t_order_$->{order_id % 4}</prop>
         </props>
     </sharding:sharding-algorithm>
     <sharding:sharding-algorithm id="modShardingAlgorithm" type="MOD">
         <props>
-            <prop key="sharding.count">2</prop>
+            <prop key="sharding-count">2</prop>
         </props>
     </sharding:sharding-algorithm>
     <sharding:sharding-algorithm id="complexShardingAlgorithm" type="COMPLEX_TEST" />

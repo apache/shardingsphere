@@ -36,7 +36,7 @@ import java.util.Properties;
 @Setter
 public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
-    private static final String SHARDING_COUNT_KEY = "sharding.count";
+    private static final String SHARDING_COUNT_KEY = "sharding-count";
     
     private Properties props = new Properties();
     

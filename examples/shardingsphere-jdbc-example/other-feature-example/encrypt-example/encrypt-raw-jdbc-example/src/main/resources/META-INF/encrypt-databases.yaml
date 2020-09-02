@@ -39,7 +39,7 @@ rules:
     name_encryptor:
       type: AES
       props:
-        aes.key.value: 123456
+        aes-key-value: 123456
     pwd_encryptor:
       type: assistedTest
 

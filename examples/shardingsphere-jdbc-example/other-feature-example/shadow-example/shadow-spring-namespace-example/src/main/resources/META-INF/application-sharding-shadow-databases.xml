@@ -76,7 +76,7 @@
 
     <sharding:sharding-algorithm id="inlineStrategyShardingAlgorithm" type="INLINE">
         <props>
-            <prop key="algorithm.expression">ds_${user_id % 2}</prop>
+            <prop key="algorithm-expression">ds_${user_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
 
