@@ -49,7 +49,7 @@ sql.show: true
 A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by users themselves.
 
 ```yaml
-ds_0: !!org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration
+ds_0: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   props:
     url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
@@ -61,7 +61,7 @@ ds_0: !!org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlData
     minPoolSize: 1
     username: root
     maxLifetimeMilliseconds: 1800000
-ds_1: !!org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration
+ds_1: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   props:
     url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
@@ -75,7 +75,7 @@ ds_1: !!org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlData
     maxLifetimeMilliseconds: 1800000
 ```
 
-### config/schema/sharding_db/rule
+### config/schema/schemeName/rule
 
 Rule configurations, including sharding, read-write split, data encryption, shadow DB, multi replica configurations.
 
@@ -93,4 +93,4 @@ rules:
 
 ## Dynamic Effectiveness
 
-Modification, deletion and insertion of relevant configurations in the registry center will immediately take effect in the producing environment.
+Modification, deletion and insertion of relevant configurations in the config center will immediately take effect in the producing environment.

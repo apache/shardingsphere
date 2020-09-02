@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
 import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
 import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateCompareRightValue;
 
 import java.util.Arrays;
 import java.util.List;

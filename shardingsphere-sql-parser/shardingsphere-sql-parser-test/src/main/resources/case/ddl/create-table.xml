@@ -1382,4 +1382,23 @@
             <column name="location" />
         </column-definition>
     </create-table>
+    <create-table sql-case-id="create_table_with_sign_column">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" primary-key="true" start-index="21" stop-index="38">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="BIGINT" start-index="41" stop-index="66">
+            <column name="order_id" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_unsigned_column">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" primary-key="true" start-index="21" stop-index="38">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="BIGINT" start-index="41" stop-index="68">
+            <column name="order_id" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

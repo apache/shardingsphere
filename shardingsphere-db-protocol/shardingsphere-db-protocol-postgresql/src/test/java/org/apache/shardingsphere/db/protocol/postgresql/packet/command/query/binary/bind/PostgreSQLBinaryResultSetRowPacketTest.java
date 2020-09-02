@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PostgreSQLBinaryResultSetRowPacketTest {
+public final class PostgreSQLBinaryResultSetRowPacketTest {
     
     @Mock
     private PostgreSQLPacketPayload payload;

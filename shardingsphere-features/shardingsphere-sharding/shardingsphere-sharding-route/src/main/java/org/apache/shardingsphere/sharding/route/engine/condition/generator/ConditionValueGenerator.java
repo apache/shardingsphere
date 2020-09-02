@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.generator;
 
 import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateRightValue;
 
 import java.util.List;
 import java.util.Optional;

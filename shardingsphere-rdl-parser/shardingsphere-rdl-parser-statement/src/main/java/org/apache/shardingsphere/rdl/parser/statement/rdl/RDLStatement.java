@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.rdl.parser.statement.rdl;
 
-import org.apache.shardingsphere.sql.parser.sql.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * RDL statement.

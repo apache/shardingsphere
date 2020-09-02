@@ -31,7 +31,7 @@
     
     <modules>
         <module>sharding-example</module>
-        <module>orchestration-example</module>
+        <module>governance-example</module>
         <module>transaction-example</module>
         <module>other-feature-example</module>
     </modules>

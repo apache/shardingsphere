@@ -24,10 +24,10 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Rollba
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.OracleVisitor;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 
 /**
  * TCL visitor for Oracle.

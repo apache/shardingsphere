@@ -14,14 +14,13 @@ weight = 3
 元数据中心在定义的命名空间和治理节点的 `metadata` 节点下，以 YAML 格式存储，每个逻辑数据源独立存储。
 
 ```
-├─orchestration-namespace
-│   ├─orchestration-name
-│   │   ├──metadata
-│   │   │    ├──schema_1
-│   │   │    │    ├── [YAML text contents]
-│   │   │    ├──schema_2
-│   │   │    │    ├── [YAML text contents]
-│   │   │    ├──....
+├─governance-name
+│   ├──metadata
+│   │    ├──schema_1
+│   │    │    ├── [YAML text contents]
+│   │    ├──schema_2
+│   │    │    ├── [YAML text contents]
+│   │    ├──....
 ```
 
 ## YAML Text Contents

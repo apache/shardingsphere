@@ -93,7 +93,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-jdbc-orchestration</artifactId>
+                <artifactId>shardingsphere-jdbc-governance</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
@@ -128,7 +128,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-jdbc-orchestration-spring-boot-starter</artifactId>
+                <artifactId>shardingsphere-jdbc-governance-spring-boot-starter</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
@@ -138,22 +138,22 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-jdbc-orchestration-spring-namespace</artifactId>
+                <artifactId>shardingsphere-jdbc-governance-spring-namespace</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-orchestration-repository-zookeeper-curator</artifactId>
+                <artifactId>shardingsphere-governance-repository-zookeeper-curator</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-orchestration-repository-nacos</artifactId>
+                <artifactId>shardingsphere-governance-repository-nacos</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-orchestration-repository-etcd</artifactId>
+                <artifactId>shardingsphere-governance-repository-etcd</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>

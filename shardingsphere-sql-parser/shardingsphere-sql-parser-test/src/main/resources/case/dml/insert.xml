@@ -1332,4 +1332,157 @@
             </value>
         </values>
     </insert>
+    
+    <insert sql-case-id="insert_with_with_clause">
+        <with start-index="0" stop-index="70">
+            <common-table-expression name = "cte" start-index="5" stop-index="70">
+                <columns start-index="9" stop-index="27">
+                    <column name="order_id" start-index="10" stop-index="17"/>
+                    <column name="user_id" start-index="20" stop-index="26"/>
+                </columns>
+                <subquery-expression>
+                    <select>
+                        <table-reference>
+                            <table-factor>
+                                <table name="t_order" start-index="63" stop-index="69" />
+                            </table-factor>
+                        </table-reference>
+                        <projections start-index="40" stop-index="56">
+                            <column-projection name="order_id" start-index="40" stop-index="47" />
+                            <column-projection name="user_id" start-index="50" stop-index="56" />
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <table name="t_order" start-index="84" stop-index="90" />
+        <columns start-index="92" stop-index="110">
+            <column name="order_id" start-index="93" stop-index="100"/>
+            <column name="user_id" start-index="103" stop-index="109"/>
+        </columns>
+        <select>
+            <table-reference>
+                <table-factor>
+                    <table name="cte" start-index="142" stop-index="144" />
+                </table-factor>
+            </table-reference>
+            <projections start-index="119" stop-index="135">
+                <column-projection name="order_id" start-index="119" stop-index="126" />
+                <column-projection name="user_id" start-index="129" stop-index="135" />
+            </projections>
+        </select>
+    </insert>
+    
+    <insert sql-case-id="insert_without_columns_with_with_clause">
+        <with start-index="0" stop-index="50">
+            <common-table-expression name="cte" start-index="5" stop-index="50">
+                <subquery-expression>
+                    <select>
+                        <table-reference>
+                            <table-factor>
+                                <table name="t_order" start-index="43" stop-index="49" />
+                            </table-factor>
+                        </table-reference>
+                        <projections start-index="20" stop-index="36">
+                            <column-projection name="order_id" start-index="20" stop-index="27" />
+                            <column-projection name="user_id" start-index="30" stop-index="36" />
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <table name="t_order" start-index="64" stop-index="70" />
+        <columns start-index="72" stop-index="90">
+            <column name="order_id" start-index="73" stop-index="80"/>
+            <column name="user_id" start-index="83" stop-index="89"/>
+        </columns>
+        <select>
+            <table-reference>
+                <table-factor>
+                    <table name="cte" start-index="122" stop-index="124" />
+                </table-factor>
+            </table-reference>
+            <projections start-index="99" stop-index="115">
+                <column-projection name="order_id" start-index="99" stop-index="106" />
+                <column-projection name="user_id" start-index="109" stop-index="115" />
+            </projections>
+        </select>
+    </insert>
+    
+    <insert sql-case-id="insert_without_into_keyword" parameters="1, 1, 'init'">
+        <table name="t_order" start-index="7" stop-index="13" />
+        <columns start-index="15" stop-index="41">
+            <column name="order_id" start-index="16" stop-index="23" />
+            <column name="user_id" start-index="26" stop-index="32" />
+            <column name="status" start-index="35" stop-index="40" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="51" stop-index="51" />
+                    <literal-expression value="1" start-index="51" stop-index="51" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" start-index="54" stop-index="54" />
+                    <literal-expression value="1" start-index="54" stop-index="54" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="2" start-index="57" stop-index="57" />
+                    <literal-expression value="init" start-index="57" stop-index="62" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_default_values">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
+    </insert>
+
+    <insert sql-case-id="insert_without_columns_with_default_values">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="19" />
+    </insert>
+
+    <insert sql-case-id="insert_with_top">
+        <table name="t_order" start-index="15" stop-index="21" />
+        <columns start-index="23" stop-index="41">
+            <column name="order_id" start-index="24" stop-index="31" />
+            <column name="user_id" start-index="34" stop-index="40" />
+        </columns>
+        <select>
+            <table-reference>
+                <table-factor>
+                    <table name="t_order" start-index="73" stop-index="79" />
+                </table-factor>
+            </table-reference>
+            <projections start-index="50" stop-index="66">
+                <column-projection name="order_id" start-index="50" stop-index="57" />
+                <column-projection name="user_id" start-index="60" stop-index="66" />
+            </projections>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_with_top_percent">
+        <table name="t_order" start-index="23" stop-index="29" />
+        <columns start-index="31" stop-index="49">
+            <column name="order_id" start-index="32" stop-index="39" />
+            <column name="user_id" start-index="42" stop-index="48" />
+        </columns>
+        <select>
+            <table-reference>
+                <table-factor>
+                    <table name="t_order" start-index="81" stop-index="87" />
+                </table-factor>
+            </table-reference>
+            <projections start-index="58" stop-index="74">
+                <column-projection name="order_id" start-index="58" stop-index="65" />
+                <column-projection name="user_id" start-index="68" stop-index="74" />
+            </projections>
+        </select>
+    </insert>
 </sql-parser-test-cases>

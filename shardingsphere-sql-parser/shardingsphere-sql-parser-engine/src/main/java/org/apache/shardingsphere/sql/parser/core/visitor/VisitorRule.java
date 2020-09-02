@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.core.visitor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatementType;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
 
 /**
  * Visitor rule.

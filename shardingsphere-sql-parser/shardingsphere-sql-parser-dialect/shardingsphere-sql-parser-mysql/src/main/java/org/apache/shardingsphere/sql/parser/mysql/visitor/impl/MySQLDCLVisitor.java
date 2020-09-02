@@ -33,18 +33,18 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetPass
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.MySQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RenameUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetDefaultRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetPasswordStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RenameUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetDefaultRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetPasswordStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetRoleStatement;
 
 import java.util.Optional;
 

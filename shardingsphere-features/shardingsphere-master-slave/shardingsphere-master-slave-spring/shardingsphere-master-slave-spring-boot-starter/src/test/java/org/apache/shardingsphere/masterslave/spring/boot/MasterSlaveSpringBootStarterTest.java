@@ -19,6 +19,7 @@ package org.apache.shardingsphere.masterslave.spring.boot;
 
 import org.apache.shardingsphere.masterslave.algorithm.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.masterslave.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -28,6 +29,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -49,6 +52,14 @@ public class MasterSlaveSpringBootStarterTest {
     
     @Test
     public void assertMasterSlaveRuleConfiguration() {
-        // TODO assert MasterSlave Rule Configuration
+        assertThat(masterSlaveRuleConfiguration.getDataSources().size(), is(1));
+        MasterSlaveDataSourceRuleConfiguration masterSlaveDataSourceRuleConfiguration = masterSlaveRuleConfiguration.getDataSources().stream().findFirst().get();
+        assertThat(masterSlaveDataSourceRuleConfiguration.getName(), is("ds_ms"));
+        assertThat(masterSlaveDataSourceRuleConfiguration.getMasterDataSourceName(), is("ds_master"));
+        assertThat(masterSlaveDataSourceRuleConfiguration.getLoadBalancerName(), is("random"));
+        assertThat(masterSlaveDataSourceRuleConfiguration.getSlaveDataSourceNames().size(), is(2));
+        assertTrue(masterSlaveRuleConfiguration.getDataSources().contains(masterSlaveDataSourceRuleConfiguration));
+        assertThat(masterSlaveRuleConfiguration.getLoadBalanceAlgorithms().size(), is(1));
+        assertTrue(masterSlaveRuleConfiguration.getLoadBalanceAlgorithms().containsKey("random"));
     }
 }

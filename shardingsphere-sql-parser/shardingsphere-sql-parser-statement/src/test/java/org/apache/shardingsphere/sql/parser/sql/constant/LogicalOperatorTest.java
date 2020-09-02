@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.constant;
 
+import org.apache.shardingsphere.sql.parser.sql.common.constant.LogicalOperator;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
-import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
 
 import javax.sql.DataSource;
 

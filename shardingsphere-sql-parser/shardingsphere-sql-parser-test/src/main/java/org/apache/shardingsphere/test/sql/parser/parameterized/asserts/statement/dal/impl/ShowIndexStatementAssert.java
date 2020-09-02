@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAs
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowIndexStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -42,12 +42,12 @@ public final class ShowIndexStatementAssert {
      * @param actual actual show index statement
      * @param expected expected show index statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertSchema(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
         if (null != expected.getTable()) {
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         } else {
@@ -55,7 +55,7 @@ public final class ShowIndexStatementAssert {
         }
     }
     
-    private static void assertSchema(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
+    private static void assertSchema(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
         if (null != expected.getSchema()) {
             assertTrue(assertContext.getText("Actual schema segment should exist."), actual.getSchema().isPresent());
             SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());

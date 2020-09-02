@@ -31,7 +31,7 @@ DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSou
 
 ### 创建携带治理功能的数据源
 
-通过 OrchestrationShardingSphereDataSourceFactory 工厂创建的 OrchestrationShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
+通过 GovernanceShardingSphereDataSourceFactory 工厂创建的 GovernanceShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
 
 ```java
 // 构建数据源
@@ -44,9 +44,9 @@ Collection<RuleConfiguration> configurations = // ...
 Properties props = // ...
 
 // 构建注册中心配置对象
-OrchestrationConfiguration orchestrationConfig = // ...
+GovernanceConfiguration governanceConfig = // ...
 
-DataSource dataSource = OrchestrationShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props, orchestrationConfig);
+DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props, governanceConfig);
 ```
 
 ### 使用数据源

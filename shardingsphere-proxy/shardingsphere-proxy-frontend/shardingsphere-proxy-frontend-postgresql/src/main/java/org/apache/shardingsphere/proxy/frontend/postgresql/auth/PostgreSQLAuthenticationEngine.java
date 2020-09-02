@@ -73,51 +73,60 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         }
         payload.getByteBuf().resetReaderIndex();
         if (!startupMessageReceived.get()) {
-            PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket((PostgreSQLPacketPayload) payload);
-            startupMessageReceived.set(true);
-            String databaseName = comStartupPacket.getParametersMap().get(DATABASE_NAME_KEYWORD);
-            if (!Strings.isNullOrEmpty(databaseName) && !ProxySchemaContexts.getInstance().schemaExists(databaseName)) {
-                PostgreSQLErrorResponsePacket responsePacket = createErrorPacket(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", databaseName));
-                context.writeAndFlush(responsePacket);
-                context.close();
-                return AuthenticationResult.continued();
-            }
-            String username = comStartupPacket.getParametersMap().get(USER_NAME_KEYWORD);
-            if (null == username || username.isEmpty()) {
-                PostgreSQLErrorResponsePacket responsePacket = createErrorPacket(PostgreSQLErrorCode.SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION, "user not set in StartupMessage");
-                context.writeAndFlush(responsePacket);
-                context.close();
-                return AuthenticationResult.continued();
-            }
-            md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);
-            context.writeAndFlush(new PostgreSQLAuthenticationMD5PasswordPacket(md5Salt));
-            return AuthenticationResult.continued(username, databaseName);
+            return beforeStartupMessage(context, (PostgreSQLPacketPayload) payload);
         } else {
-            char messageType = (char) ((PostgreSQLPacketPayload) payload).readInt1();
-            if ('p' != messageType) {
-                PostgreSQLErrorResponsePacket responsePacket = createErrorPacket(
-                        PostgreSQLErrorCode.SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION, String.format("PasswordMessage is expected, message type 'p', but not '%s'", messageType));
-                context.writeAndFlush(responsePacket);
-                context.close();
-                currentAuthResult = AuthenticationResult.continued();
-                return currentAuthResult;
-            }
-            PostgreSQLPasswordMessagePacket passwordMessagePacket = new PostgreSQLPasswordMessagePacket((PostgreSQLPacketPayload) payload);
-            PostgreSQLLoginResult loginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(currentAuthResult.getUsername(), currentAuthResult.getDatabase(), md5Salt, passwordMessagePacket);
-            if (PostgreSQLErrorCode.SUCCESSFUL_COMPLETION != loginResult.getErrorCode()) {
-                PostgreSQLErrorResponsePacket responsePacket = createErrorPacket(loginResult.getErrorCode(), loginResult.getErrorMessage());
-                context.writeAndFlush(responsePacket);
-                context.close();
-                return AuthenticationResult.continued();
-            } else {
-                // TODO implement PostgreSQLServerInfo like MySQLServerInfo
-                context.write(new PostgreSQLAuthenticationOKPacket(true));
-                context.write(new PostgreSQLParameterStatusPacket("server_version", "12.3"));
-                context.write(new PostgreSQLParameterStatusPacket("client_encoding", "UTF8"));
-                context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
-                context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
-                return AuthenticationResult.finished(currentAuthResult.getUsername(), currentAuthResult.getDatabase());
-            }
+            return afterStartupMessage(context, (PostgreSQLPacketPayload) payload);
+        }
+    }
+    
+    private AuthenticationResult beforeStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
+        PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket(payload);
+        startupMessageReceived.set(true);
+        String databaseName = comStartupPacket.getParametersMap().get(DATABASE_NAME_KEYWORD);
+        if (!Strings.isNullOrEmpty(databaseName) && !ProxySchemaContexts.getInstance().schemaExists(databaseName)) {
+            PostgreSQLErrorResponsePacket responsePacket = createErrorPacket(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", databaseName));
+            context.writeAndFlush(responsePacket);
+            context.close();
+            return AuthenticationResult.continued();
+        }
+        String username = comStartupPacket.getParametersMap().get(USER_NAME_KEYWORD);
+        if (null == username || username.isEmpty()) {
+            PostgreSQLErrorResponsePacket responsePacket = createErrorPacket(PostgreSQLErrorCode.SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION, "user not set in StartupMessage");
+            context.writeAndFlush(responsePacket);
+            context.close();
+            return AuthenticationResult.continued();
+        }
+        md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);
+        context.writeAndFlush(new PostgreSQLAuthenticationMD5PasswordPacket(md5Salt));
+        currentAuthResult = AuthenticationResult.continued(username, databaseName);
+        return currentAuthResult;
+    }
+    
+    private AuthenticationResult afterStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
+        char messageType = (char) payload.readInt1();
+        if ('p' != messageType) {
+            PostgreSQLErrorResponsePacket responsePacket = createErrorPacket(
+                    PostgreSQLErrorCode.SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION, String.format("PasswordMessage is expected, message type 'p', but not '%s'", messageType));
+            context.writeAndFlush(responsePacket);
+            context.close();
+            currentAuthResult = AuthenticationResult.continued();
+            return currentAuthResult;
+        }
+        PostgreSQLPasswordMessagePacket passwordMessagePacket = new PostgreSQLPasswordMessagePacket(payload);
+        PostgreSQLLoginResult loginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(currentAuthResult.getUsername(), currentAuthResult.getDatabase(), md5Salt, passwordMessagePacket);
+        if (PostgreSQLErrorCode.SUCCESSFUL_COMPLETION != loginResult.getErrorCode()) {
+            PostgreSQLErrorResponsePacket responsePacket = createErrorPacket(loginResult.getErrorCode(), loginResult.getErrorMessage());
+            context.writeAndFlush(responsePacket);
+            context.close();
+            return AuthenticationResult.continued();
+        } else {
+            // TODO implement PostgreSQLServerInfo like MySQLServerInfo
+            context.write(new PostgreSQLAuthenticationOKPacket(true));
+            context.write(new PostgreSQLParameterStatusPacket("server_version", "12.3"));
+            context.write(new PostgreSQLParameterStatusPacket("client_encoding", "UTF8"));
+            context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
+            context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
+            return AuthenticationResult.finished(currentAuthResult.getUsername(), currentAuthResult.getDatabase());
         }
     }
     

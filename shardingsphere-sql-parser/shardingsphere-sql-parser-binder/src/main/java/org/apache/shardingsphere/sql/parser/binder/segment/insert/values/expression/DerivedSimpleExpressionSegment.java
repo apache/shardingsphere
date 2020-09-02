@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.SimpleExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 
 /**
  * Derived simple expression segment.

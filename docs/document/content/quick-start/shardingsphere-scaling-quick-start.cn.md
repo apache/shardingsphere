@@ -29,11 +29,11 @@ sh %SHARDINGSPHERE_SCALING_HOME%/bin/start.sh
 
 ```bash
 curl -X POST \
-  http://localhost:8888/shardingscaling/job/start \
+  http://localhost:8888/scaling/job/start \
   -H 'content-type: application/json' \
   -d '{
    "ruleConfiguration": {
-      "sourceDatasource": "ds_0: !!org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '\''123456'\'keyGenerateStrategy
+      "sourceDatasource": "ds_0: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '\''123456'\'keyGenerateStrategy
 ```
 
 更多管理接口详情请参见[使用手册](/cn/user-manual/shardingsphere-scaling/usage/)。

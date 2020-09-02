@@ -19,7 +19,6 @@ package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedInventoryPosition;
-import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderIncrementalPosition;
@@ -50,10 +49,12 @@ public final class AbstractResumeBreakPointManagerTest {
         };
         resumeBreakPointManager.setDatabaseType("H2");
         resumeBreakPointManager.setTaskPath("/");
-        ReflectionUtil.getFieldFromClass(AbstractResumeBreakPointManager.class, "inventoryPositionManagerMap", true)
-                .set(resumeBreakPointManager, new TreeMap<String, PositionManager<InventoryPosition>>());
-        ReflectionUtil.getFieldFromClass(AbstractResumeBreakPointManager.class, "incrementalPositionManagerMap", true)
-                .set(resumeBreakPointManager, new TreeMap<String, PositionManager<IncrementalPosition>>());
+        setPositionManagerMap("inventoryPositionManagerMap");
+        setPositionManagerMap("incrementalPositionManagerMap");
+    }
+    
+    private void setPositionManagerMap(final String inventoryPositionManagerMap) throws NoSuchFieldException, IllegalAccessException {
+        ReflectionUtil.setFieldValue(AbstractResumeBreakPointManager.class, resumeBreakPointManager, inventoryPositionManagerMap, new TreeMap<String, PositionManager<InventoryPosition>>());
     }
     
     @Test

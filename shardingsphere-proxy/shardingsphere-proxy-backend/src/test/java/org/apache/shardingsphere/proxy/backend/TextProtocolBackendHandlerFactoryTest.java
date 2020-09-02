@@ -18,14 +18,8 @@
 package org.apache.shardingsphere.proxy.backend;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStateHandler;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
@@ -41,6 +35,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.show.ShardingCTLShowBac
 import org.apache.shardingsphere.proxy.backend.text.transaction.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -50,12 +45,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -68,22 +61,23 @@ public final class TextProtocolBackendHandlerFactoryTest {
     private BackendConnection backendConnection;
     
     @Before
-    @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
         when(backendConnection.getTransactionType()).thenReturn(TransactionType.LOCAL);
-        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
-        schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(),
-                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        setTransactionContexts();
         when(backendConnection.getSchema()).thenReturn("schema");
     }
     
-    private Map<String, SchemaContext> getSchemaContextMap() {
-        SchemaContext result = mock(SchemaContext.class);
-        RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        when(runtimeContext.getTransactionManagerEngine()).thenReturn(mock(ShardingTransactionManagerEngine.class));
-        when(result.getRuntimeContext()).thenReturn(runtimeContext);
-        return Collections.singletonMap("schema", result);
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setTransactionContexts() {
+        Field transactionContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("transactionContexts");
+        transactionContexts.setAccessible(true);
+        transactionContexts.set(ProxySchemaContexts.getInstance(), createSchemaContext());
+    }
+    
+    private TransactionContexts createSchemaContext() {
+        TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
+        when(result.getEngines().get("schema")).thenReturn(new ShardingTransactionManagerEngine());
+        return result;
     }
     
     @Test
@@ -92,7 +86,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(ShardingCTLSetBackendHandler.class));
     }
-
+    
     @Test
     public void assertNewInstanceSCTLWithComment() {
         String sql = "/*ApplicationName=DataGrip 2018.1.4*/ sctl:show cached_connections;";

@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-orchestration:
-  name: orchestration_ds
+governance:
+  name: governance_ds
   registryCenter:
     type: ZooKeeper
     serverLists: localhost:2181

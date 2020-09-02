@@ -55,7 +55,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     private BatchPreparedStatementExecutor actual;
     
     @Mock
-    private SQLStatementContext sqlStatementContext;
+    private SQLStatementContext<?> sqlStatementContext;
     
     @Override
     public void setUp() throws SQLException {
@@ -106,7 +106,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @Test
     public void assertExecuteBatchForSinglePreparedStatementFailure() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
-        SQLException exp = new SQLException();
+        SQLException exp = new SQLException("");
         when(preparedStatement.executeBatch()).thenThrow(exp);
         setExecuteGroups(Collections.singletonList(preparedStatement));
         assertThat(actual.executeBatch(sqlStatementContext), is(new int[] {0, 0}));
@@ -117,7 +117,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     public void assertExecuteBatchForMultiplePreparedStatementsFailure() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
-        SQLException exp = new SQLException();
+        SQLException exp = new SQLException("");
         when(preparedStatement1.executeBatch()).thenThrow(exp);
         when(preparedStatement2.executeBatch()).thenThrow(exp);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2));

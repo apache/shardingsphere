@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.binder.statement;
 
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * SQL statement context.

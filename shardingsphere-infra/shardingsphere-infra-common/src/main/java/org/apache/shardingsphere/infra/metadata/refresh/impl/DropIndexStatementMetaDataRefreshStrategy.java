@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallb
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropIndexStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 
 import javax.sql.DataSource;
 import java.util.Collection;

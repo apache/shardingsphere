@@ -20,11 +20,13 @@ package org.apache.shardingsphere.proxy.backend.schema;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.context.SchemaContext;
+import org.apache.shardingsphere.infra.context.SchemaContexts;
+import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.kernel.context.SchemaContext;
-import org.apache.shardingsphere.kernel.context.SchemaContexts;
-import org.apache.shardingsphere.kernel.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.BackendDataSource;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
@@ -49,6 +51,8 @@ public final class ProxySchemaContexts {
     
     private SchemaContexts schemaContexts = new StandardSchemaContexts();
     
+    private TransactionContexts transactionContexts = new StandardTransactionContexts();
+    
     private final JDBCBackendDataSource backendDataSource = new JDBCBackendDataSource();
     
     private ProxySchemaContexts() { }
@@ -66,9 +70,11 @@ public final class ProxySchemaContexts {
      * Initialize proxy schema contexts.
      *
      * @param schemaContexts schema contexts
+     * @param transactionContexts transaction manager engine contexts
      */
-    public void init(final SchemaContexts schemaContexts) {
+    public void init(final SchemaContexts schemaContexts, final TransactionContexts transactionContexts) {
         this.schemaContexts = schemaContexts;
+        this.transactionContexts = transactionContexts;
     }
     
     /**
@@ -186,8 +192,7 @@ public final class ProxySchemaContexts {
         }
         
         private Connection createConnection(final String schemaName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
-            ShardingTransactionManager shardingTransactionManager = 
-                    schemaContexts.getSchemaContexts().get(schemaName).getRuntimeContext().getTransactionManagerEngine().getTransactionManager(transactionType);
+            ShardingTransactionManager shardingTransactionManager = transactionContexts.getEngines().get(schemaName).getTransactionManager(transactionType);
             return isInShardingTransaction(shardingTransactionManager) ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
         }
         

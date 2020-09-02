@@ -29,7 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PostgreSQLBindCompletePacketTest {
+public final class PostgreSQLBindCompletePacketTest {
     
     @Mock
     private PostgreSQLPacketPayload payload;
@@ -49,5 +49,4 @@ public class PostgreSQLBindCompletePacketTest {
         PostgreSQLBindCompletePacket rowPacket = new PostgreSQLBindCompletePacket();
         assertThat(rowPacket.getMessageType(), is(PostgreSQLCommandPacketType.BIND_COMPLETE.getValue()));
     }
-    
 }

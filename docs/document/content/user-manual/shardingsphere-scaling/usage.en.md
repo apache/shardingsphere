@@ -50,7 +50,7 @@ ShardingSphere-Scaling provides a simple HTTP API
 
 #### Start scaling job
 
-Interface description：POST /shardingscaling/job/start
+Interface description：POST /scaling/job/start
 
 Body：
 
@@ -68,11 +68,11 @@ Example：
 
 ```
 curl -X POST \
-  http://localhost:8888/shardingscaling/job/start \
+  http://localhost:8888/scaling/job/start \
   -H 'content-type: application/json' \
   -d '{
    "ruleConfiguration": {
-      "sourceDatasource": "ds_0: !!org.apache.shardingsphere.orchestration.core.common.yaml.config.YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '\''123456'\''\n    connectionTimeout: 30000\n    idleTimeout: 60000\n    maxLifetime: 1800000\n    maxPoolSize: 50\n    minPoolSize: 1\n    maintenanceIntervalMilliseconds: 30000\n    readOnly: false\n",
+      "sourceDatasource": "ds_0: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '\''123456'\''\n    connectionTimeout: 30000\n    idleTimeout: 60000\n    maxLifetime: 1800000\n    maxPoolSize: 50\n    minPoolSize: 1\n    maintenanceIntervalMilliseconds: 30000\n    readOnly: false\n",
       "sourceRule": "defaultDatabaseStrategy:\n  inline:\n    algorithmExpression: ds_${user_id % 2}\n    shardingColumn: user_id\ntables:\n  t1:\n    actualDataNodes: ds_0.t1\n    keyGenerateStrategy:\n      column: order_id\n      type: SNOWFLAKE\n    logicTable: t1\n    tableStrategy:\n      inline:\n        algorithmExpression: t1\n        shardingColumn: order_id\n  t2:\n    actualDataNodes: ds_0.t2\n    keyGenerateStrategy:\n      column: order_item_id\n      type: SNOWFLAKE\n    logicTable: t2\n    tableStrategy:\n      inline:\n        algorithmExpression: t2\n        shardingColumn: order_id\n",
       "destinationDataSources": {
          "name": "dt_0",
@@ -100,12 +100,12 @@ Response：
 
 #### Get scaling progress
 
-Interface description：GET /shardingscaling/job/progress/{jobId}
+Interface description：GET /scaling/job/progress/{jobId}
 
 Example：
 ```
 curl -X GET \
-  http://localhost:8888/shardingscaling/job/progress/1
+  http://localhost:8888/scaling/job/progress/1
 ```
 
 Response：
@@ -162,12 +162,12 @@ Response：
 
 #### List scaling jobs
 
-Interface description：GET /shardingscaling/job/list
+Interface description：GET /scaling/job/list
 
 Example：
 ```
 curl -X GET \
-  http://localhost:8888/shardingscaling/job/list
+  http://localhost:8888/scaling/job/list
 ```
 
 Response：
@@ -188,7 +188,7 @@ Response：
 
 #### Stop scaling job
 
-Interface description：POST /shardingscaling/job/stop
+Interface description：POST /scaling/job/stop
 
 Body：
 
@@ -199,7 +199,7 @@ Body：
 Example：
 ```
 curl -X POST \
-  http://localhost:8888/shardingscaling/job/stop \
+  http://localhost:8888/scaling/job/stop \
   -H 'content-type: application/json' \
   -d '{
    "jobId":1

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.binder.type;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 
 import java.util.Collection;
 
