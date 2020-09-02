@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Create trigger statement.
  */
-public final class CreateTriggerStatement extends DDLStatement {
+public final class CreateTriggerStatement extends AbstractSQLStatement implements DDLStatement {
 }
