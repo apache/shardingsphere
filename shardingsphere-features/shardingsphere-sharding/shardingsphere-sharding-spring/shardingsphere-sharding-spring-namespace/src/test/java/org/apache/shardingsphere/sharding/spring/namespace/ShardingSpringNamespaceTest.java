@@ -40,7 +40,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/sharding-application-context.xml")
 public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
