@@ -70,6 +70,6 @@ public abstract class SingleIT extends BaseIT {
     }
     
     protected void printExceptionContext(final Exception ex) {
-        log.error(String.format("ruleType=%s, databaseType=%s, expectedDataFile=%s, sql=%s, ex.msg=%s", getRuleType(), getDatabaseType().getName(), expectedDataFile, sql, ex.getMessage()));
+        log.error("ruleType={}, databaseType={}, expectedDataFile={}, sql={}", getRuleType(), getDatabaseType().getName(), expectedDataFile, sql, ex);
     }
 }
