@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.transaction;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangeCompletedEvent;
-import org.apache.shardingsphere.governance.core.common.eventbus.GovernanceEventBus;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
@@ -34,7 +34,7 @@ public final class GovernanceTransactionContexts implements TransactionContexts 
     
     public GovernanceTransactionContexts(final TransactionContexts contexts) {
         this.contexts = contexts;
-        GovernanceEventBus.getInstance().register(this);
+        ShardingSphereEventBus.getInstance().register(this);
     }
     
     @Override
