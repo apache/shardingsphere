@@ -9,7 +9,7 @@
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the LicenseCoreMatchers.is distributed on an "ASCoreMatchers.is" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
@@ -30,6 +30,8 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -38,9 +40,6 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/sharding-application-context.xml")
 public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -104,141 +103,141 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertDataSourceShardingAlgorithm() {
-        assertThat(dataSourceShardingAlgorithm.getType(), is("INLINE"));
-        assertThat(dataSourceShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("ds_$->{order_id % 2}"));
+        Assert.assertThat(dataSourceShardingAlgorithm.getType(), CoreMatchers.is("INLINE"));
+        Assert.assertThat(dataSourceShardingAlgorithm.getProps().getProperty("algorithm-expression"),CoreMatchers.is("ds_$->{order_id % 2}"));
     }
     
     @Test
     public void assertOrderTableShardingAlgorithm() {
-        assertThat(orderTableShardingAlgorithm.getType(), is("INLINE"));
-        assertThat(orderTableShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("t_order_$->{order_id % 4}"));
+        Assert.assertThat(orderTableShardingAlgorithm.getType(),CoreMatchers.is("INLINE"));
+        Assert.assertThat(orderTableShardingAlgorithm.getProps().getProperty("algorithm-expression"),CoreMatchers.is("t_order_$->{order_id % 4}"));
     }
     
     @Test
     public void assertModShardingAlgorithm() {
-        assertThat(modShardingAlgorithm.getType(), is("MOD"));
-        assertThat(modShardingAlgorithm.getProps().getProperty("sharding-count"), is("2"));
+        Assert.assertThat(modShardingAlgorithm.getType(),CoreMatchers.is("MOD"));
+        Assert.assertThat(modShardingAlgorithm.getProps().getProperty("sharding-count"),CoreMatchers.is("2"));
     }
     
     @Test
     public void assertComplexShardingAlgorithm() {
-        assertThat(complexShardingAlgorithm.getType(), is("COMPLEX_TEST"));
+        Assert.assertThat(complexShardingAlgorithm.getType(),CoreMatchers.is("COMPLEX_TEST"));
     }
     
     @Test
     public void assertHintShardingAlgorithm() {
-        assertThat(hintShardingAlgorithm.getType(), is("HINT_TEST"));
+        Assert.assertThat(hintShardingAlgorithm.getType(),CoreMatchers.is("HINT_TEST"));
     }
     
     @Test
     public void assertDataSourceShardingStrategy() {
-        assertThat(dataSourceShardingStrategy.getShardingColumn(), is("order_id"));
-        assertThat(dataSourceShardingStrategy.getShardingAlgorithmName(), is("dataSourceShardingAlgorithm"));
+        Assert.assertThat(dataSourceShardingStrategy.getShardingColumn(),CoreMatchers.is("order_id"));
+        Assert.assertThat(dataSourceShardingStrategy.getShardingAlgorithmName(),CoreMatchers.is("dataSourceShardingAlgorithm"));
     }
     
     @Test
     public void assertOrderTableShardingStrategy() {
-        assertThat(orderTableShardingStrategy.getShardingColumn(), is("order_id"));
-        assertThat(orderTableShardingStrategy.getShardingAlgorithmName(), is("orderTableShardingAlgorithm"));
+        Assert.assertThat(orderTableShardingStrategy.getShardingColumn(),CoreMatchers.is("order_id"));
+        Assert.assertThat(orderTableShardingStrategy.getShardingAlgorithmName(),CoreMatchers.is("orderTableShardingAlgorithm"));
     }
     
     @Test
     public void assertModStrategy() {
-        assertThat(modStrategy.getShardingColumn(), is("order_id"));
-        assertThat(modStrategy.getShardingAlgorithmName(), is("modShardingAlgorithm"));
+        Assert.assertThat(modStrategy.getShardingColumn(),CoreMatchers.is("order_id"));
+        Assert.assertThat(modStrategy.getShardingAlgorithmName(),CoreMatchers.is("modShardingAlgorithm"));
     }
     
     @Test
     public void assertComplexStrategy() {
-        assertThat(complexStrategy.getShardingColumns(), is("order_id,user_id"));
-        assertThat(complexStrategy.getShardingAlgorithmName(), is("complexShardingAlgorithm"));
+        Assert.assertThat(complexStrategy.getShardingColumns(),CoreMatchers.is("order_id,user_id"));
+        Assert.assertThat(complexStrategy.getShardingAlgorithmName(),CoreMatchers.is("complexShardingAlgorithm"));
     }
     
     @Test
     public void assertHintStrategy() {
-        assertThat(hintShardingStrategy.getShardingAlgorithmName(), is("hintShardingAlgorithm"));
+        Assert.assertThat(hintShardingStrategy.getShardingAlgorithmName(),CoreMatchers.is("hintShardingAlgorithm"));
     }
     
     @Test
     public void assertNoneStrategy() {
-        assertNotNull(noneStrategy);
+        Assert.assertNotNull(noneStrategy);
     }
     
     @Test
     public void assertIncrementAlgorithm() {
-        assertThat(incrementAlgorithm.getType(), is("INCREMENT"));
+        Assert.assertThat(incrementAlgorithm.getType(),CoreMatchers.is("INCREMENT"));
     }
     
     @Test
     public void assertDefaultKeyGenerator() {
-        assertThat(defaultKeyGenerator.getColumn(), is("id"));
-        assertThat(defaultKeyGenerator.getKeyGeneratorName(), is("incrementAlgorithm"));
+        Assert.assertThat(defaultKeyGenerator.getColumn(),CoreMatchers.is("id"));
+        Assert.assertThat(defaultKeyGenerator.getKeyGeneratorName(),CoreMatchers.is("incrementAlgorithm"));
     }
     
     @Test
     public void assertOrderKeyGenerator() {
-        assertThat(orderKeyGenerator.getColumn(), is("order_id"));
-        assertThat(orderKeyGenerator.getKeyGeneratorName(), is("incrementAlgorithm"));
+        Assert.assertThat(orderKeyGenerator.getColumn(),CoreMatchers.is("order_id"));
+        Assert.assertThat(orderKeyGenerator.getKeyGeneratorName(),CoreMatchers.is("incrementAlgorithm"));
     }
     
     @Test
     public void assertSimpleRule() {
         Collection<ShardingTableRuleConfiguration> actualSimpleRuleConfigurations = simpleRule.getTables();
-        assertThat(actualSimpleRuleConfigurations.size(), is(1));
+        Assert.assertThat(actualSimpleRuleConfigurations.size(),CoreMatchers.is(1));
         ShardingTableRuleConfiguration actualSimpleRuleConfiguration = actualSimpleRuleConfigurations.iterator().next();
-        assertThat(actualSimpleRuleConfiguration.getLogicTable(), is("t_order"));
+        Assert.assertThat(actualSimpleRuleConfiguration.getLogicTable(),CoreMatchers.is("t_order"));
     }
     
     @Test
     public void assertComplexRule() {
         Collection<ShardingTableRuleConfiguration> actualComplexRuleConfigurations = complexRule.getTables();
-        assertThat(actualComplexRuleConfigurations.size(), is(1));
+        Assert.assertThat(actualComplexRuleConfigurations.size(),CoreMatchers.is(1));
         ShardingTableRuleConfiguration actualComplexRuleConfiguration = actualComplexRuleConfigurations.iterator().next();
-        assertThat(actualComplexRuleConfiguration.getLogicTable(), is("t_order"));
-        assertThat(actualComplexRuleConfiguration.getActualDataNodes(), is("ds_$->{0..1}.t_order_$->{0..3}"));
-        assertThat(actualComplexRuleConfiguration.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("dataSourceShardingAlgorithm"));
-        assertThat(actualComplexRuleConfiguration.getTableShardingStrategy().getShardingAlgorithmName(), is("orderTableShardingAlgorithm"));
-        assertThat(actualComplexRuleConfiguration.getKeyGenerateStrategy().getKeyGeneratorName(), is("incrementAlgorithm"));
-        assertThat(complexRule.getDefaultKeyGenerateStrategy().getKeyGeneratorName(), is("incrementAlgorithm"));
+        Assert.assertThat(actualComplexRuleConfiguration.getLogicTable(),CoreMatchers.is("t_order"));
+        Assert.assertThat(actualComplexRuleConfiguration.getActualDataNodes(),CoreMatchers.is("ds_$->{0..1}.t_order_$->{0..3}"));
+        Assert.assertThat(actualComplexRuleConfiguration.getDatabaseShardingStrategy().getShardingAlgorithmName(),CoreMatchers.is("dataSourceShardingAlgorithm"));
+        Assert.assertThat(actualComplexRuleConfiguration.getTableShardingStrategy().getShardingAlgorithmName(),CoreMatchers.is("orderTableShardingAlgorithm"));
+        Assert.assertThat(actualComplexRuleConfiguration.getKeyGenerateStrategy().getKeyGeneratorName(),CoreMatchers.is("incrementAlgorithm"));
+        Assert.assertThat(complexRule.getDefaultKeyGenerateStrategy().getKeyGeneratorName(),CoreMatchers.is("incrementAlgorithm"));
         
     }
     
     @Test
     public void assertBindingRule() {
         Collection<ShardingTableRuleConfiguration> actualBindingTableRuleConfigurations = bindingRule.getTables();
-        assertThat(actualBindingTableRuleConfigurations.size(), is(4));
+        Assert.assertThat(actualBindingTableRuleConfigurations.size(),CoreMatchers.is(4));
         Iterator<ShardingTableRuleConfiguration> actualIterator = actualBindingTableRuleConfigurations.iterator();
-        assertThat(actualIterator.next().getLogicTable(), is("t_order"));
-        assertThat(actualIterator.next().getLogicTable(), is("t_order_item"));
-        assertThat(actualIterator.next().getLogicTable(), is("t_user"));
-        assertThat(actualIterator.next().getLogicTable(), is("t_user_detail"));
+        Assert.assertThat(actualIterator.next().getLogicTable(),CoreMatchers.is("t_order"));
+        Assert.assertThat(actualIterator.next().getLogicTable(),CoreMatchers.is("t_order_item"));
+        Assert.assertThat(actualIterator.next().getLogicTable(),CoreMatchers.is("t_user"));
+        Assert.assertThat(actualIterator.next().getLogicTable(),CoreMatchers.is("t_user_detail"));
         Collection<String> actualBindingTableGroups = bindingRule.getBindingTableGroups();
-        assertThat(actualBindingTableGroups.size(), is(2));
-        assertTrue(actualBindingTableGroups.containsAll(Arrays.asList("t_order, t_order_item", "t_order, t_order_item")));
+        Assert.assertThat(actualBindingTableGroups.size(),CoreMatchers.is(2));
+        Assert.assertTrue(actualBindingTableGroups.containsAll(Arrays.asList("t_order, t_order_item", "t_order, t_order_item")));
     }
     
     @Test
     public void assertBroadcastRule() {
         Collection<ShardingTableRuleConfiguration> actualBroadcastTableConfigurations = broadcastRule.getTables();
-        assertThat(actualBroadcastTableConfigurations.size(), is(2));
+        Assert.assertThat(actualBroadcastTableConfigurations.size(),CoreMatchers.is(2));
         Iterator<ShardingTableRuleConfiguration> actualIterator = actualBroadcastTableConfigurations.iterator();
-        assertThat(actualIterator.next().getLogicTable(), is("t_order"));
-        assertThat(actualIterator.next().getLogicTable(), is("t_order_item"));
+        Assert.assertThat(actualIterator.next().getLogicTable(),CoreMatchers.is("t_order"));
+        Assert.assertThat(actualIterator.next().getLogicTable(),CoreMatchers.is("t_order_item"));
         Collection<String> broadcastTables = broadcastRule.getBroadcastTables();
-        assertThat(broadcastTables.size(), is(2));
-        assertTrue(broadcastTables.containsAll(Arrays.asList("t_dict", "t_address")));
+        Assert.assertThat(broadcastTables.size(),CoreMatchers.is(2));
+        Assert.assertTrue(broadcastTables.containsAll(Arrays.asList("t_dict", "t_address")));
         Collection<String> actualBindingTableGroups = broadcastRule.getBindingTableGroups();
-        assertThat(actualBindingTableGroups.size(), is(1));
-        assertTrue(actualBindingTableGroups.containsAll(Arrays.asList("t_order, t_order_item")));
+        Assert.assertThat(actualBindingTableGroups.size(),CoreMatchers.is(1));
+        Assert.assertTrue(actualBindingTableGroups.containsAll(Arrays.asList("t_order, t_order_item")));
     }
     
     @Test
     public void assertAutoRule() {
         Collection<ShardingAutoTableRuleConfiguration> actualAutoTableConfigurations = autoRule.getAutoTables();
-        assertThat(actualAutoTableConfigurations.size(), is(1));
+        Assert.assertThat(actualAutoTableConfigurations.size(),CoreMatchers.is(1));
         ShardingAutoTableRuleConfiguration actualShardingAutoTableRuleConfiguration = actualAutoTableConfigurations.iterator().next();
-        assertThat(actualShardingAutoTableRuleConfiguration.getLogicTable(), is("t_order"));
-        assertThat(actualShardingAutoTableRuleConfiguration.getActualDataSources(), is("ds_0, ds_1"));
-        assertThat(actualShardingAutoTableRuleConfiguration.getShardingStrategy().getShardingAlgorithmName(), is("modShardingAlgorithm"));
+        Assert.assertThat(actualShardingAutoTableRuleConfiguration.getLogicTable(),CoreMatchers.is("t_order"));
+        Assert.assertThat(actualShardingAutoTableRuleConfiguration.getActualDataSources(),CoreMatchers.is("ds_0, ds_1"));
+        Assert.assertThat(actualShardingAutoTableRuleConfiguration.getShardingStrategy().getShardingAlgorithmName(),CoreMatchers.is("modShardingAlgorithm"));
     }
 }
