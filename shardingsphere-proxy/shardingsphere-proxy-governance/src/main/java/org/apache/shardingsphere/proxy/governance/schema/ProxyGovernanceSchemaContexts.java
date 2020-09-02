@@ -67,15 +67,6 @@ public final class ProxyGovernanceSchemaContexts extends GovernanceSchemaContext
         return oldDataSources.containsKey(newDataSourceName) && !DataSourceConverter.getDataSourceParameter(oldDataSources.get(newDataSourceName)).equals(newDataSourceParameter);
     }
     
-    @Override
-    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs) {
-        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesConfigs.size(), 1);
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesConfigs.entrySet()) {
-            result.put(entry.getKey(), org.apache.shardingsphere.infra.config.datasource.DataSourceConverter.getDataSourceMap(entry.getValue()));
-        }
-        return result;
-    }
-    
     private Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry: dataSourceParameters.entrySet()) {
