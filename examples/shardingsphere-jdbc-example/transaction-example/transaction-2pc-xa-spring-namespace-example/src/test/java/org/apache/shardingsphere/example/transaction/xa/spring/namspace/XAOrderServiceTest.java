@@ -20,6 +20,7 @@ package org.apache.shardingsphere.example.transaction.xa.spring.namspace;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+@Ignore
 @RunWith(SpringRunner.class)
 @ContextConfiguration("/META-INF/application-sharding-databases-tables.xml")
 public class XAOrderServiceTest {
