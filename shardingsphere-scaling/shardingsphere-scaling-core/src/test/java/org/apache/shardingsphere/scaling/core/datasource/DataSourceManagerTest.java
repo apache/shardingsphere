@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.scaling.core.datasource;
 
 import com.google.gson.Gson;
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
@@ -60,7 +59,7 @@ public final class DataSourceManagerTest {
     public void assertGetDataSource() {
         DataSourceManager dataSourceManager = new DataSourceManager();
         DataSource actual = dataSourceManager.getDataSource(syncConfigurations.get(0).getDumperConfiguration().getDataSourceConfiguration());
-        assertThat(actual, instanceOf(HikariDataSource.class));
+        assertThat(actual, instanceOf(HikariDataSourceWrapper.class));
     }
     
     @Test
