@@ -918,3 +918,15 @@ GEOMETRY
 GEOGRAPHY
     : G E O G R A P H Y
     ;
+
+OUTPUT
+    : O U T P U T
+    ;
+
+INSERTED
+    : I N S E R T E D
+    ;
+
+DELETED
+    : D E L E T E D
+    ;
