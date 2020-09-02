@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.callback.governance;
+package org.apache.shardingsphere.sql.parser.binder.statement.ddl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.callback.Callback;
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 
 /**
- * Schema name callback.
+ * Drop database statement context.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaNameCallback extends Callback<Boolean> {
+@Getter
+public final class DropDatabaseStatementContext extends CommonSQLStatementContext<DropDatabaseStatement> {
     
-    private static final SchemaNameCallback INSTANCE = new SchemaNameCallback();
-    
-    /**
-     * Get instance.
-     *
-     * @return data source callback
-     */
-    public static SchemaNameCallback getInstance() {
-        return INSTANCE;
+    public DropDatabaseStatementContext(final DropDatabaseStatement sqlStatement) {
+        super(sqlStatement);
     }
 }

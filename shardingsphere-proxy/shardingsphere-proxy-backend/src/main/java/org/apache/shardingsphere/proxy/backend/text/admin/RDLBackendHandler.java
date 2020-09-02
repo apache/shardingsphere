@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.callback.governance.DataSourceCallback;
-import org.apache.shardingsphere.infra.callback.governance.RuleCallback;
-import org.apache.shardingsphere.infra.callback.governance.SchemaNameCallback;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.eventbus.event.DataSourceEvent;
+import org.apache.shardingsphere.infra.eventbus.event.RuleEvent;
+import org.apache.shardingsphere.infra.eventbus.event.SchemaNameEvent;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
@@ -45,8 +46,10 @@ import org.apache.shardingsphere.sharding.convert.CreateShardingRuleStatementCon
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateDatabaseStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropDatabaseStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -76,10 +79,21 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         if (ProxySchemaContexts.getInstance().getSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
             return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
         }
-        SchemaNameCallback.getInstance().run(context.getSqlStatement().getDatabaseName(), true);
         // TODO Need to get the executed feedback from registry center for returning.
+        ShardingSphereEventBus.getInstance().post(new SchemaNameEvent(context.getSqlStatement().getDatabaseName(), true));
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
+        return result;
+    }
+    
+    private BackendResponse execute(final DropDatabaseStatementContext context) {
+        if (!ProxySchemaContexts.getInstance().getSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
+            return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
+        }
+        // TODO Need to get the executed feedback from registry center for returning.
+        ShardingSphereEventBus.getInstance().post(new SchemaNameEvent(context.getSqlStatement().getDatabaseName(), true));
+        UpdateResponse result = new UpdateResponse();
+        result.setType("DROP");
         return result;
     }
     
@@ -87,7 +101,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         Map<String, YamlDataSourceParameter> parameters = new CreateDataSourcesStatementContextConverter().convert(context);
         Map<String, DataSourceConfiguration> dataSources = DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(parameters));
         // TODO Need to get the executed feedback from registry center for returning.
-        DataSourceCallback.getInstance().run(backendConnection.getSchema(), dataSources);
+        ShardingSphereEventBus.getInstance().post(new DataSourceEvent(backendConnection.getSchema(), dataSources));
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
@@ -97,7 +111,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         YamlShardingRuleConfiguration configurations = new CreateShardingRuleStatementContextConverter().convert(context);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(configurations));
         // TODO Need to get the executed feedback from registry center for returning.
-        RuleCallback.getInstance().run(backendConnection.getSchema(), rules);
+        ShardingSphereEventBus.getInstance().post(new RuleEvent(backendConnection.getSchema(), rules));
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
@@ -107,10 +121,14 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         DatabaseType databaseType = ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType();
         if (sqlStatement instanceof CreateDataSourcesStatement) {
             return new CreateDataSourcesStatementContext((CreateDataSourcesStatement) sqlStatement, databaseType);
-        } else if (sqlStatement instanceof CreateShardingRuleStatement) {
+        }
+        if (sqlStatement instanceof CreateShardingRuleStatement) {
             return new CreateShardingRuleStatementContext((CreateShardingRuleStatement) sqlStatement);
         }
-        return new CreateDatabaseStatementContext((CreateDatabaseStatement) sqlStatement);
+        if (sqlStatement instanceof CreateDatabaseStatement) {
+            return new CreateDatabaseStatementContext((CreateDatabaseStatement) sqlStatement);
+        }
+        return new DropDatabaseStatementContext((DropDatabaseStatement) sqlStatement);
     }
     
     private BackendResponse getBackendResponse(final SQLStatementContext<?> context) {
@@ -119,6 +137,9 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         }
         if (context instanceof CreateDataSourcesStatementContext) {
             return execute((CreateDataSourcesStatementContext) context);
+        }
+        if (context instanceof DropDatabaseStatementContext) {
+            return execute((DropDatabaseStatementContext) context);
         }
         return execute((CreateShardingRuleStatementContext) context);
     }

@@ -19,11 +19,12 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Alter event statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterEventStatement extends DDLStatement {
+public final class AlterEventStatement extends AbstractSQLStatement implements DDLStatement {
 }

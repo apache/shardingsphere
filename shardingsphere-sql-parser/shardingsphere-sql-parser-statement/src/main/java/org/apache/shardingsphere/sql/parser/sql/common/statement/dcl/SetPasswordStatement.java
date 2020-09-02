@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Set password statement.
  */
-public final class SetPasswordStatement extends DCLStatement {
+public final class SetPasswordStatement extends AbstractSQLStatement implements DCLStatement {
 }

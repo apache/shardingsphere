@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.callback.governance;
+package org.apache.shardingsphere.infra.eventbus.event;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.callback.Callback;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+
+import java.util.Map;
 
 /**
- * Meta data call back.
+ * Data source event.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MetaDataCallback extends Callback<RuleSchemaMetaData> {
+@RequiredArgsConstructor
+@Getter
+public class DataSourceEvent {
     
-    private static final MetaDataCallback INSTANCE = new MetaDataCallback();
+    private final String schemaName;
     
-    /**
-     * Get instance.
-     *
-     * @return meta data call back
-     */
-    public static MetaDataCallback getInstance() {
-        return INSTANCE;
-    }
+    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
 }

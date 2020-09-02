@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Transaction Control Language statement.
  */
-public abstract class TCLStatement extends AbstractSQLStatement {
+public interface TCLStatement extends SQLStatement {
 }

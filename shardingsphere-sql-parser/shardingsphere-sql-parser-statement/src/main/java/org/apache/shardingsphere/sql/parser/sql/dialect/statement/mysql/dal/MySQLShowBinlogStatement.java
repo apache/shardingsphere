@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * Show binlog statement.
  */
-public final class MySQLShowBinlogStatement extends DALStatement implements MySQLStatement {
+public final class MySQLShowBinlogStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

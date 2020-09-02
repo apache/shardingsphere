@@ -15,29 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.callback.governance;
+package org.apache.shardingsphere.proxy.frontend.fixture;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.callback.Callback;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.util.Collection;
+import java.util.Collections;
 
-/**
- * Rule callback.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RuleCallback extends Callback<Collection<RuleConfiguration>> {
+import static org.mockito.Mockito.mock;
+
+public final class FixtureDatabaseType implements DatabaseType {
     
-    private static final RuleCallback INSTANCE = new RuleCallback();
+    @Override
+    public String getName() {
+        return "FixtureDB";
+    }
     
-    /**
-     * Get instance.
-     *
-     * @return rule callback
-     */
-    public static RuleCallback getInstance() {
-        return INSTANCE;
+    @Override
+    public Collection<String> getJdbcUrlPrefixes() {
+        return Collections.singleton("jdbc:fixture");
+    }
+    
+    @Override
+    public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
+        return mock(DataSourceMetaData.class);
     }
 }

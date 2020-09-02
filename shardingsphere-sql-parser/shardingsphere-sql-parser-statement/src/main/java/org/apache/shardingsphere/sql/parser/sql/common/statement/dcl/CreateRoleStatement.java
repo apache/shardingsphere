@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Create role statement.
  */
-public final class CreateRoleStatement extends DCLStatement {
+public final class CreateRoleStatement extends AbstractSQLStatement implements DCLStatement {
 }
