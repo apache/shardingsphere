@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.eventbus.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
 import java.util.Map;
 
@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public class DataSourceEvent {
+public final class DataSourceEvent {
     
     private final String schemaName;
     

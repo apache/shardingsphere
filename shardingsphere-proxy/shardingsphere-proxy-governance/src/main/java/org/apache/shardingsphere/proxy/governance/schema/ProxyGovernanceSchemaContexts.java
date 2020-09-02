@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.governance.schema;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.schema.GovernanceSchemaContexts;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
@@ -65,23 +65,6 @@ public final class ProxyGovernanceSchemaContexts extends GovernanceSchemaContext
     
     private synchronized boolean isModifiedDataSource(final Map<String, DataSource> oldDataSources, final String newDataSourceName, final DataSourceParameter newDataSourceParameter) {
         return oldDataSources.containsKey(newDataSourceName) && !DataSourceConverter.getDataSourceParameter(oldDataSources.get(newDataSourceName)).equals(newDataSourceParameter);
-    }
-    
-    @Override
-    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs) {
-        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesConfigs.size(), 1);
-        for (Entry<String, Map<String, DataSourceParameter>> entry : createDataSourceParametersMap(dataSourcesConfigs).entrySet()) {
-            result.put(entry.getKey(), createDataSources(entry.getValue()));
-        }
-        return result;
-    }
-    
-    private Map<String, Map<String, DataSourceParameter>> createDataSourceParametersMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs) {
-        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>(dataSourcesConfigs.size(), 1);
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesConfigs.entrySet()) {
-            result.put(entry.getKey(), DataSourceConverter.getDataSourceParameterMap(entry.getValue()));
-        }
-        return result;
     }
     
     private Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) {

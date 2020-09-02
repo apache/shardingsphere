@@ -15,22 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.eventbus.event;
+package org.apache.shardingsphere.infra.config.datasource;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
+import javax.sql.DataSource;
 
 /**
- * Rule event.
+ * JDBC parameter decorator.
+ * 
+ * @param <T> type of data source
  */
-@RequiredArgsConstructor
-@Getter
-public final class RuleEvent {
+public interface JDBCParameterDecorator<T extends DataSource> {
     
-    private final String schemaName;
+    /**
+     * Decorate data source.
+     * 
+     * @param dataSource data source to be decorated
+     */
+    void decorate(T dataSource);
     
-    private final Collection<RuleConfiguration> ruleConfigurations;
+    /**
+     * Get data source type.
+     *
+     * @return data source type
+     */
+    Class<T> getType();
 }

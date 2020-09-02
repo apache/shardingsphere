@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class SchemaNameEvent {
+public final class SchemaNameEvent {
     
     private final String schemaName;
     

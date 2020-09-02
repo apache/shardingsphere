@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.common.event.schema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.governance.core.common.event.GovernanceEvent;
 

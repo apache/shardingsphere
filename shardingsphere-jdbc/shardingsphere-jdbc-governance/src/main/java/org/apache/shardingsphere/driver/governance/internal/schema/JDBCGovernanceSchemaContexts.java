@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.driver.governance.internal.schema;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.driver.governance.internal.util.DataSourceConverter;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.schema.GovernanceSchemaContexts;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -57,14 +57,5 @@ public final class JDBCGovernanceSchemaContexts extends GovernanceSchemaContexts
     private synchronized boolean isModifiedDataSource(final Entry<String, DataSourceConfiguration> dataSourceConfigs) {
         Map<String, DataSourceConfiguration> oldDataSourceConfigs = DataSourceConverter.getDataSourceConfigurationMap(getSchemaContexts().get(DefaultSchema.LOGIC_NAME).getSchema().getDataSources());
         return oldDataSourceConfigs.containsKey(dataSourceConfigs.getKey()) && !oldDataSourceConfigs.get(dataSourceConfigs.getKey()).equals(dataSourceConfigs.getValue());
-    }
-    
-    @Override
-    protected Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs) {
-        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesConfigs.size(), 1);
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesConfigs.entrySet()) {
-            result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(entry.getValue()));
-        }
-        return result;
     }
 }
