@@ -30,7 +30,7 @@ git remote add upstream https://github.com/apache/shardingsphere.git
 
  - 请在选择您要修改的issue。如果是您新发现的问题或想提供issue中没有的功能增强，请先新建一个issue并设置正确的标签。
  - 在选中相关的issue之后，请回复以表明您当前正在这个issue上工作。并在回复的时候为自己设置一个deadline，添加至回复内容中。
- - 在[开发者列表](http://incubator.apache.org/projects/shardingsphere.html)中找到一个导师，导师会在设计与功能实现上给予即时的反馈。
+ - 在[开发者列表](/cn/contribute/contributor/)中找到一个导师，导师会在设计与功能实现上给予即时的反馈。
 
 ### 创建分支
 
