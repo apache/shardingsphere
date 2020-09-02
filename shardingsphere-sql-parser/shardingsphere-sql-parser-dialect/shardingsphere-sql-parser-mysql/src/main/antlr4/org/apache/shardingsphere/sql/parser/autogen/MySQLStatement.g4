@@ -52,6 +52,8 @@ execute
     | createServer
     | alterServer
     | dropServer
+    | createTrigger
+    | dropTrigger
     | setTransaction
     | beginTransaction
     | setAutoCommit
