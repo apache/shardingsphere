@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.rl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Stop slave statement.
  */
-public final class StopSlaveStatement extends RLStatement {
+public final class StopSlaveStatement extends AbstractSQLStatement implements RLStatement {
 }

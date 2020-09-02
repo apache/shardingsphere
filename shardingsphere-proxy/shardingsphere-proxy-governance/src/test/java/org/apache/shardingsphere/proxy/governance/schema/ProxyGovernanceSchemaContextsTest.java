@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.governance.schema;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.common.event.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.common.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.core.common.eventbus.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,7 +90,7 @@ public final class ProxyGovernanceSchemaContextsTest {
         assertTrue(ProxySchemaContexts.getInstance().getSchemaContexts().getProps().getProps().isEmpty());
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        GovernanceEventBus.getInstance().post(new PropertiesChangedEvent(props));
+        ShardingSphereEventBus.getInstance().post(new PropertiesChangedEvent(props));
         assertFalse(ProxySchemaContexts.getInstance().getSchemaContexts().getProps().getProps().isEmpty());
     }
     
@@ -99,7 +99,7 @@ public final class ProxyGovernanceSchemaContextsTest {
         ProxyUser proxyUser = new ProxyUser("root", Collections.singleton("db1"));
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
-        GovernanceEventBus.getInstance().post(new AuthenticationChangedEvent(authentication));
+        ShardingSphereEventBus.getInstance().post(new AuthenticationChangedEvent(authentication));
         assertThat(ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().keySet().iterator().next(), is("root"));
         assertThat(ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get("root").getPassword(), is("root"));
         assertThat(ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get("root").getAuthorizedSchemas().iterator().next(), is("db1"));
@@ -108,8 +108,8 @@ public final class ProxyGovernanceSchemaContextsTest {
     @Test
     public void assertRenewCircuitState() {
         assertFalse(ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak());
-        GovernanceEventBus.getInstance().post(new CircuitStateChangedEvent(true));
+        ShardingSphereEventBus.getInstance().post(new CircuitStateChangedEvent(true));
         assertTrue(ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak());
-        GovernanceEventBus.getInstance().post(new CircuitStateChangedEvent(false));
+        ShardingSphereEventBus.getInstance().post(new CircuitStateChangedEvent(false));
     }
 }

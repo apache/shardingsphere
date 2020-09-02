@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config;
+package org.apache.shardingsphere.infra.config.datasource;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
@@ -24,6 +24,7 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -51,6 +52,7 @@ public final class DataSourceConfiguration {
     private static final Collection<String> SKIPPED_PROPERTY_NAMES;
     
     static {
+        ShardingSphereServiceLoader.register(JDBCParameterDecorator.class);
         GENERAL_CLASS_TYPE = Sets.newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class);
         SKIPPED_PROPERTY_NAMES = Sets.newHashSet("loginTimeout");
     }
@@ -100,6 +102,7 @@ public final class DataSourceConfiguration {
      * 
      * @return data source
      */
+    @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     public DataSource createDataSource() {
         DataSource result = (DataSource) Class.forName(dataSourceClassName).getConstructor().newInstance();
@@ -113,7 +116,14 @@ public final class DataSourceConfiguration {
                 setterMethod.get().invoke(result, entry.getValue());
             }
         }
+        findJDBCParameterDecorator(result).ifPresent(decorator -> decorator.decorate(result));
         return result;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private Optional<JDBCParameterDecorator> findJDBCParameterDecorator(final DataSource dataSource) {
+        return ShardingSphereServiceLoader.newServiceInstances(JDBCParameterDecorator.class).stream().filter(each -> each.getType() == dataSource.getClass()).findFirst();
+        
     }
     
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {

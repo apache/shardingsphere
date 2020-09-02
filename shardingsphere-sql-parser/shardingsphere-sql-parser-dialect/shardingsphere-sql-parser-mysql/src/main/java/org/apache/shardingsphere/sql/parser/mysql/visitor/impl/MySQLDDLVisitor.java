@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateL
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropDatabaseContext;
@@ -58,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropPri
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FirstOrAfterColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ForeignKeyOptionContext;
@@ -104,6 +106,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateLogfi
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateServerStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropEventStatement;
@@ -113,6 +116,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropLogfile
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropServerStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
@@ -151,7 +155,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        return new DropDatabaseStatement();
+        return new DropDatabaseStatement(ctx.schemaName().getText());
     }
     
     @Override
@@ -529,5 +533,15 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitDropServer(final DropServerContext ctx) {
         return new DropServerStatement();
+    }
+
+    @Override
+    public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
+        return new CreateTriggerStatement();
+    }
+
+    @Override
+    public ASTNode visitDropTrigger(final DropTriggerContext ctx) {
+        return new DropTriggerStatement();
     }
 }

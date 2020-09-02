@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.driver.governance.internal.schema;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.driver.governance.internal.util.DataSourceConverter;
 import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;

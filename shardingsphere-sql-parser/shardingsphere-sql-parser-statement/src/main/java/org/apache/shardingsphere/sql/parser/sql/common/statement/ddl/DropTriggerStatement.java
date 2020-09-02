@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.callback.governance;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.callback.Callback;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Meta data call back.
+ * Drop trigger statement.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MetaDataCallback extends Callback<RuleSchemaMetaData> {
-    
-    private static final MetaDataCallback INSTANCE = new MetaDataCallback();
-    
-    /**
-     * Get instance.
-     *
-     * @return meta data call back
-     */
-    public static MetaDataCallback getInstance() {
-        return INSTANCE;
-    }
+public final class DropTriggerStatement extends AbstractSQLStatement implements DDLStatement {
 }

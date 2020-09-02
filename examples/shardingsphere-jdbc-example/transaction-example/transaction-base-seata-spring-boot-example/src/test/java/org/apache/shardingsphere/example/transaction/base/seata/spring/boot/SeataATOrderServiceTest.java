@@ -20,6 +20,7 @@ package org.apache.shardingsphere.example.transaction.base.seata.spring.boot;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ import static org.junit.Assert.assertThat;
      - config.ype = "file"
      - service.vgroup_mapping.my_test_tx_group = "default"
  */
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SeataATOrderServiceTest.class)
 @Import(TransactionConfiguration.class)

@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.common.eventbus;
+package org.apache.shardingsphere.infra.eventbus.event;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class GovernanceEventBusTest {
+/**
+ * Schema name event.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class SchemaNameEvent {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(GovernanceEventBus.getInstance(), is(GovernanceEventBus.getInstance()));
-    }
+    private final String schemaName;
+    
+    private final boolean overwrite; 
 }

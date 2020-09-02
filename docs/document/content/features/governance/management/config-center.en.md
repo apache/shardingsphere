@@ -75,7 +75,7 @@ ds_1: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSou
     maxLifetimeMilliseconds: 1800000
 ```
 
-### config/schema/sharding_db/rule
+### config/schema/schemeName/rule
 
 Rule configurations, including sharding, read-write split, data encryption, shadow DB, multi replica configurations.
 
@@ -93,4 +93,4 @@ rules:
 
 ## Dynamic Effectiveness
 
-Modification, deletion and insertion of relevant configurations in the registry center will immediately take effect in the producing environment.
+Modification, deletion and insertion of relevant configurations in the config center will immediately take effect in the producing environment.

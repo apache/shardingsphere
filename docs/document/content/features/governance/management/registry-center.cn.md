@@ -11,7 +11,7 @@ weight = 2
 
 ## 注册中心数据结构
 
-注册中心在定义的命名空间的 `state` 节点下，创建数据库访问对象运行节点，用于区分不同数据库访问实例。包括 `instances` 和 `datasources` 节点。
+注册中心在定义的命名空间的 `registry` 节点下，创建数据库访问对象运行节点，用于区分不同数据库访问实例。包括 `instances` 和 `datasources` 节点。
 
 ```
 instances
@@ -19,31 +19,22 @@ instances
     ├──your_instance_ip_b@-@your_instance_pid_y
     ├──....
 datasources
-    ├──ds0
-    ├──ds1
+    ├──schema_1
+    ├      ├──ds_0
+    ├      ├──ds_1
+    ├──schema_2
+    ├      ├──ds_0
+    ├      ├──ds_1
     ├──....
 ```
 
-ShardingSphere-Proxy 支持多逻辑数据源，因此 `datasources` 子节点的名称采用 `schema_name.data_source_name` 的形式。
-
-```
-instances
-    ├──your_instance_ip_a@-@your_instance_pid_x
-    ├──your_instance_ip_b@-@your_instance_pid_y
-    ├──....
-datasources
-    ├──sharding_db.ds0
-    ├──sharding_db.ds1
-    ├──....
-```
-
-### state/instances
+### registry/instances
 
 数据库访问对象运行实例信息，子节点是当前运行实例的标识。
 运行实例标识由运行服务器的 IP 地址和 PID 构成。运行实例标识均为临时节点，当实例上线时注册，下线时自动清理。
 注册中心监控这些节点的变化来治理运行中实例对数据库的访问等。
 
-### state/datasources
+### registry/datasources
 
 可以治理读写分离从库，可动态添加删除以及禁用。
 
@@ -56,7 +47,7 @@ datasources
 Zookeeper 命令如下：
 
 ```
-[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED
+[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/registry/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED
 ```
 
 ### 禁用从库
@@ -66,5 +57,5 @@ Zookeeper 命令如下：
 Zookeeper 命令如下：
 
 ```
-[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/datasources/your_slave_datasource_name DISABLED
+[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/registry/datasources/your_schema_name/your_slave_datasource_name DISABLED
 ```

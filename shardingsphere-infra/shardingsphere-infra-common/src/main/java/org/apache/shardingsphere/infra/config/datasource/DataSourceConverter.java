@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.util;
+package org.apache.shardingsphere.infra.config.datasource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;

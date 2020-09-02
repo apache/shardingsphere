@@ -15,29 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.callback.governance;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.callback.Callback;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
-
-import java.util.Map;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Data source callback.
+ * DB drop exists exception.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceCallback extends Callback<Map<String, DataSourceConfiguration>> {
+@RequiredArgsConstructor
+@Getter
+public final class DBDropExistsException extends BackendException {
     
-    private static final DataSourceCallback INSTANCE = new DataSourceCallback();
+    private static final long serialVersionUID = 6088272565526510361L;
     
-    /**
-     * Get instance.
-     *
-     * @return data source callback
-     */
-    public static DataSourceCallback getInstance() {
-        return INSTANCE;
-    }
+    private final String databaseName;
 }

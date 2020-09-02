@@ -25,15 +25,15 @@ import org.apache.shardingsphere.governance.core.common.event.props.PropertiesCh
 import org.apache.shardingsphere.governance.core.common.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.common.event.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.common.event.schema.SchemaDeletedEvent;
-import org.apache.shardingsphere.governance.core.common.eventbus.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.metadata.event.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.SchemaContext;
@@ -44,6 +44,7 @@ import org.apache.shardingsphere.infra.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
@@ -74,7 +75,7 @@ public abstract class GovernanceSchemaContexts implements SchemaContexts {
     protected GovernanceSchemaContexts(final SchemaContexts schemaContexts, final GovernanceFacade governanceFacade) {
         this.governanceFacade = governanceFacade;
         this.schemaContexts = schemaContexts;
-        GovernanceEventBus.getInstance().register(this);
+        ShardingSphereEventBus.getInstance().register(this);
         disableDataSources();
         persistMetaData();
     }
@@ -156,7 +157,7 @@ public abstract class GovernanceSchemaContexts implements SchemaContexts {
         schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
         governanceFacade.getMetaDataCenter().persistMetaDataCenterNode(event.getSchemaName(), schemaContexts.getSchemaContexts().get(event.getSchemaName()).getSchema().getMetaData().getSchema());
         governanceFacade.getMetaDataCenter().persistMetaDataCenterNode(event.getSchemaName(), schemaContexts.getSchemaContexts().get(event.getSchemaName()).getSchema().getMetaData().getSchema());
-        GovernanceEventBus.getInstance().post(
+        ShardingSphereEventBus.getInstance().post(
                 new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), schemas.get(event.getSchemaName()).getSchema().getDataSources()));
     }
     
@@ -241,7 +242,7 @@ public abstract class GovernanceSchemaContexts implements SchemaContexts {
         newSchemaContexts.remove(schemaName);
         newSchemaContexts.put(schemaName, getChangedSchemaContext(schemaContexts.getSchemaContexts().get(schemaName), event.getDataSourceConfigurations()));
         schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
-        GovernanceEventBus.getInstance().post(
+        ShardingSphereEventBus.getInstance().post(
                 new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), newSchemaContexts.get(event.getSchemaName()).getSchema().getDataSources()));
     }
     
@@ -335,5 +336,11 @@ public abstract class GovernanceSchemaContexts implements SchemaContexts {
     
     protected abstract Map<String, DataSource> getModifiedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSourceConfigs);
     
-    protected abstract Map<String, Map<String, DataSource>> createDataSourcesMap(Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs);
+    private Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs) {
+        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesConfigs.size(), 1);
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesConfigs.entrySet()) {
+            result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(entry.getValue()));
+        }
+        return result;
+    }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.junit.Test;
 
 import java.sql.SQLException;

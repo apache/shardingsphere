@@ -21,24 +21,26 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.governance.core.common.yaml.swapper.DataSourceConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.infra.callback.governance.DataSourceCallback;
-import org.apache.shardingsphere.infra.callback.governance.RuleCallback;
-import org.apache.shardingsphere.infra.callback.governance.SchemaNameCallback;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.eventbus.event.DataSourceEvent;
+import org.apache.shardingsphere.infra.eventbus.event.RuleEvent;
+import org.apache.shardingsphere.infra.eventbus.event.SchemaNameEvent;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.masterslave.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.governance.core.common.yaml.swapper.DataSourceConfigurationYamlSwapper;
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -46,6 +48,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -65,9 +68,7 @@ public final class ConfigCenter {
     public ConfigCenter(final ConfigurationRepository repository) {
         node = new ConfigCenterNode();
         this.repository = repository;
-        DataSourceCallback.getInstance().register(this::persistDataSourceConfiguration);
-        RuleCallback.getInstance().register(this::persistRuleConfigurations);
-        SchemaNameCallback.getInstance().register(this::persistSchemaName);
+        ShardingSphereEventBus.getInstance().register(this);
     }
     
     /**
@@ -80,7 +81,7 @@ public final class ConfigCenter {
      */
     public void persistConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs,
                                       final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
-        persistDataSourceConfiguration(schemaName, dataSourceConfigs, isOverwrite);
+        persistDataSourceConfigurations(schemaName, dataSourceConfigs, isOverwrite);
         persistRuleConfigurations(schemaName, ruleConfigurations, isOverwrite);
         // TODO Consider removing the following one.
         persistSchemaName(schemaName, isOverwrite);
@@ -98,14 +99,43 @@ public final class ConfigCenter {
         persistProperties(props, isOverwrite);
     }
     
-    private void persistDataSourceConfiguration(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
+    /**
+     * persist data source configurations.
+     * @param event Data source event.
+     */
+    @Subscribe
+    public synchronized void renew(final DataSourceEvent event) {
+        persistDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
+    }
+    
+    /**
+     * Persist rule configurations.
+     * 
+     * @param event Rule event.
+     */
+    @Subscribe
+    public synchronized void renew(final RuleEvent event) {
+        persistRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
+    }
+    
+    /**
+     * Persist schema name.
+     * 
+     * @param event Schema name event.
+     */
+    @Subscribe
+    public synchronized void renew(final SchemaNameEvent event) {
+        persistSchemaName(event.getSchemaName(), event.isOverwrite());
+    }
+    
+    private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
         if (dataSourceConfigurations.isEmpty() || !isOverwrite) {
             return;
         }
-        persistDataSourceConfiguration(schemaName, dataSourceConfigurations);
+        persistDataSourceConfigurations(schemaName, dataSourceConfigurations);
     }
     
-    private void persistDataSourceConfiguration(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+    private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data source in `%s` for governance.", schemaName);
         Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToYamlConfiguration(entry.getValue())));
@@ -197,6 +227,17 @@ public final class ConfigCenter {
         List<String> newArrayList = new ArrayList<>(schemaNameList);
         newArrayList.add(schemaName);
         repository.persist(node.getSchemaPath(), Joiner.on(",").join(newArrayList));
+    }
+    
+    private void persistSchema(final String schemaName, final boolean isDeleted) {
+        String schemaNames = repository.get(node.getSchemaPath());
+        Collection<String> schemas = new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
+        if (isDeleted) {
+            schemas.remove(schemaName);
+        } else if (!schemas.contains(schemaName)) {
+            schemas.add(schemaName);
+        }
+        repository.persist(node.getSchemaPath(), Joiner.on(",").join(schemas));
     }
     
     /**

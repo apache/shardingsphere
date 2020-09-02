@@ -7,11 +7,11 @@ weight = 2
 
 - As config center manage configuration data, registry center hold all ephemeral status data dynamically generated in runtime(such as available proxy instances, disabled datasource instances etc).
 
-- Registry center can disable the access to slave database and the access of application. Orchestration still has many functions(such as flow control) to be developed.
+- Registry center can disable the access to slave database and the access of application. Governance still has many functions(such as flow control) to be developed.
 
 ## Data Structure in Registry Center
 
-The registry center can create running node of database access object under `state` in defined namespace, to distinguish different database access instances, including `instances` and `datasources` nodes.
+The registry center can create running node of database access object under `registry` in defined namespace, to distinguish different database access instances, including `instances` and `datasources` nodes.
 
 ```
 instances
@@ -19,29 +19,22 @@ instances
     ├──your_instance_ip_b@-@your_instance_pid_y
     ├──....
 datasources
-    ├──ds0
-    ├──ds1
+    ├──schema_1
+    ├      ├──ds_0
+    ├      ├──ds_1
+    ├──schema_2
+    ├      ├──ds_0
+    ├      ├──ds_1
     ├──....
 ```
 
 ShardingSphere-Proxy can support multiple logical data sources, so `datasources` sub-nodes are named `schema_name.data_source_name`.
 
-```
-instances
-    ├──your_instance_ip_a@-@your_instance_pid_x
-    ├──your_instance_ip_b@-@your_instance_pid_y
-    ├──....
-datasources
-    ├──sharding_db.ds0
-    ├──sharding_db.ds1
-    ├──....
-```
-
-### state/instances
+### registry/instances
 
 It includes running instance information of database access object, with sub-nodes as the identifiers of currently running instance, which consist of IP and PID. Those identifiers are temporary nodes, which are registered when instances are on-line and cleared when instances are off-line. The registry center monitors the change of those nodes to govern the database access of running instances and other things.
 
-### state/datasources
+### registry/datasources
 
 It is able to orchestrate read-write split slave database, delete or disable data dynamically.
 
@@ -54,7 +47,7 @@ Write `DISABLED` (case insensitive) to `IP@-@PID` to disable that instance; dele
 Zookeeper command is as follows:
 
 ```
-[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED
+[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/registry/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED
 ```
 
 ### Disable Slave Database
@@ -64,5 +57,5 @@ Under read-write split scenarios, users can write `DISABLED` (case insensitive) 
 Zookeeper command is as follows:
 
 ```
-[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/datasources/your_slave_datasource_name DISABLED
+[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/registry/datasources/your_schema_name/your_slave_datasource_name DISABLED
 ```

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Drop logfile group statement.
  */
-public final class DropLogfileGroupStatement extends DDLStatement {
+public final class DropLogfileGroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

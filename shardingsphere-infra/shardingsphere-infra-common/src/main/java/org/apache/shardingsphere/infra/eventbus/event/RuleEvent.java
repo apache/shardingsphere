@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.callback.governance;
+package org.apache.shardingsphere.infra.eventbus.event;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.callback.Callback;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 import java.util.Collection;
 
 /**
- * Rule callback.
+ * Rule event.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RuleCallback extends Callback<Collection<RuleConfiguration>> {
+@RequiredArgsConstructor
+@Getter
+public final class RuleEvent {
     
-    private static final RuleCallback INSTANCE = new RuleCallback();
+    private final String schemaName;
     
-    /**
-     * Get instance.
-     *
-     * @return rule callback
-     */
-    public static RuleCallback getInstance() {
-        return INSTANCE;
-    }
+    private final Collection<RuleConfiguration> ruleConfigurations;
 }

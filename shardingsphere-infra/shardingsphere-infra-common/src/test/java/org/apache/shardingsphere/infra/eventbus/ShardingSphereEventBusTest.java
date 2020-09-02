@@ -15,26 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.callback.governance;
+package org.apache.shardingsphere.infra.eventbus;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.callback.Callback;
+import org.junit.Test;
 
-/**
- * Schema name callback.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaNameCallback extends Callback<Boolean> {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ShardingSphereEventBusTest {
     
-    private static final SchemaNameCallback INSTANCE = new SchemaNameCallback();
-    
-    /**
-     * Get instance.
-     *
-     * @return data source callback
-     */
-    public static SchemaNameCallback getInstance() {
-        return INSTANCE;
+    @Test
+    public void assertInstance() {
+        assertThat(ShardingSphereEventBus.getInstance(), is(ShardingSphereEventBus.getInstance()));
     }
 }

@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.common.eventbus;
+package org.apache.shardingsphere.infra.eventbus;
 
 import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Governance event bus.
+ * ShardingSphere event bus.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GovernanceEventBus {
+public final class ShardingSphereEventBus {
     
     /**
-     * Get instance of governance event bus.
-     * 
-     * @return instance of governance event bus
+     * Get instance of ShardingSphere event bus.
+     *
+     * @return instance of ShardingSphere event bus
      */
     public static EventBus getInstance() {
-        return GovernanceEventBusHolder.INSTANCE;
+        return ShardingSphereEventBusHolder.INSTANCE;
     }
     
-    private static final class GovernanceEventBusHolder {
+    private static final class ShardingSphereEventBusHolder {
         private static final EventBus INSTANCE = new EventBus();
     }
 }

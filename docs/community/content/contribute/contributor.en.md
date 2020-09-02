@@ -30,7 +30,7 @@ git remote add upstream https://github.com/apache/shardingsphere.git
 
  - Please choose the issue to be edited. If it is a new issue discovered or a new function enhancement to offer, please create an issue and set the right label for it.
  - After choosing the relevant issue, please reply with a deadline to indicate that you are working on it.
- - Find a mentor from the [Developer List](http://incubator.apache.org/projects/shardingsphere.html) and he/she will give you feedback about the design and the implementation of function in time.
+ - Find a mentor from the [Developer List](/en/contribute/contributor/) and he/she will give you feedback about the design and the implementation of function in time.
 
 ### Create Branch 
 
