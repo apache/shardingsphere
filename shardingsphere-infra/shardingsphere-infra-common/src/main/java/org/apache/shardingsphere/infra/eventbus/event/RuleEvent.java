@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public class RuleEvent {
+public final class RuleEvent {
     
     private final String schemaName;
     

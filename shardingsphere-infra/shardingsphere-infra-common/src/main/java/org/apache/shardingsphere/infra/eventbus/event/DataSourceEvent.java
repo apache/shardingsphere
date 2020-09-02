@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public class DataSourceEvent {
+public final class DataSourceEvent {
     
     private final String schemaName;
     

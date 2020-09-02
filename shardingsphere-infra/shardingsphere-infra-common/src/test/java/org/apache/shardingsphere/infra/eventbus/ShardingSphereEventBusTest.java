@@ -22,7 +22,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ShardingSphereEventBusTest {
+public final class ShardingSphereEventBusTest {
     
     @Test
     public void assertInstance() {

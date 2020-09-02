@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
  */
 @RequiredArgsConstructor
 @Getter
-public class MetaDataEvent {
+public final class MetaDataEvent {
     
     private final String schemaName;
     

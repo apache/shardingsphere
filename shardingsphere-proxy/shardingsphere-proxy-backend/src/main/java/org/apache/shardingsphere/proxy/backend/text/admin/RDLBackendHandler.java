@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
