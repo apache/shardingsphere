@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.callback.governance.DataSourceCallback;
-import org.apache.shardingsphere.infra.callback.governance.RuleCallback;
-import org.apache.shardingsphere.infra.callback.governance.SchemaNameCallback;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.eventbus.event.DataSourceEvent;
+import org.apache.shardingsphere.infra.eventbus.event.RuleEvent;
+import org.apache.shardingsphere.infra.eventbus.event.SchemaNameEvent;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
@@ -78,8 +79,8 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         if (ProxySchemaContexts.getInstance().getSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
             return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
         }
-        SchemaNameCallback.getInstance().run(context.getSqlStatement().getDatabaseName(), false);
         // TODO Need to get the executed feedback from registry center for returning.
+        ShardingSphereEventBus.getInstance().post(new SchemaNameEvent(context.getSqlStatement().getDatabaseName(), true));
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
@@ -89,8 +90,8 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         if (!ProxySchemaContexts.getInstance().getSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
             return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
         }
-        SchemaNameCallback.getInstance().run(context.getSqlStatement().getDatabaseName(), true);
         // TODO Need to get the executed feedback from registry center for returning.
+        ShardingSphereEventBus.getInstance().post(new SchemaNameEvent(context.getSqlStatement().getDatabaseName(), true));
         UpdateResponse result = new UpdateResponse();
         result.setType("DROP");
         return result;
@@ -100,7 +101,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         Map<String, YamlDataSourceParameter> parameters = new CreateDataSourcesStatementContextConverter().convert(context);
         Map<String, DataSourceConfiguration> dataSources = DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(parameters));
         // TODO Need to get the executed feedback from registry center for returning.
-        DataSourceCallback.getInstance().run(backendConnection.getSchema(), dataSources);
+        ShardingSphereEventBus.getInstance().post(new DataSourceEvent(backendConnection.getSchema(), dataSources));
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
@@ -110,7 +111,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         YamlShardingRuleConfiguration configurations = new CreateShardingRuleStatementContextConverter().convert(context);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(configurations));
         // TODO Need to get the executed feedback from registry center for returning.
-        RuleCallback.getInstance().run(backendConnection.getSchema(), rules);
+        ShardingSphereEventBus.getInstance().post(new RuleEvent(backendConnection.getSchema(), rules));
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
