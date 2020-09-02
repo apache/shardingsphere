@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -46,7 +45,6 @@ import java.util.Optional;
 /**
  * Sharding update statement validator.
  */
-@Slf4j
 public final class ShardingUpdateStatementValidator implements ShardingStatementValidator<UpdateStatement> {
     
     @Override
@@ -69,8 +67,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
                 if (shardingColumnSetAssignmentValue.isPresent() && shardingValue.isPresent() && shardingColumnSetAssignmentValue.get().equals(shardingValue.get())) {
                     continue;
                 }
-                log.warn("should not update sharding key, logic table: {}, column: {}", tableName, each);
-//                throw new ShardingSphereException("Can not update sharding key, logic table: [%s], column: [%s].", tableName, each);
+                throw new ShardingSphereException("Can not update sharding key, logic table: [%s], column: [%s].", tableName, each);
             }
         }
     }

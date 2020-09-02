@@ -72,7 +72,7 @@ public final class ShardingUpdateStatementValidatorTest {
         new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
-    @Test
+    @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         RouteContext routeContext = new RouteContext(new UpdateStatementContext(createUpdateStatement()), Collections.emptyList(), new RouteResult());
@@ -96,7 +96,7 @@ public final class ShardingUpdateStatementValidatorTest {
         new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
     
-    @Test
+    @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKeyAndShardingParameterNotEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
