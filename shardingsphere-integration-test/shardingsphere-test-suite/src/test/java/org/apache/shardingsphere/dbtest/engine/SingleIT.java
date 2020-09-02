@@ -19,6 +19,7 @@ package org.apache.shardingsphere.dbtest.engine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
@@ -31,6 +32,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Getter(AccessLevel.PROTECTED)
 public abstract class SingleIT extends BaseIT {
     
@@ -68,6 +70,6 @@ public abstract class SingleIT extends BaseIT {
     }
     
     protected void printExceptionContext(final Exception ex) {
-        System.err.println(String.format("ruleType=%s, databaseType=%s, expectedDataFile=%s, sql=%s, ex.msg=%s", getRuleType(), getDatabaseType().getName(), expectedDataFile, sql, ex.getMessage()));
+        log.error(String.format("ruleType=%s, databaseType=%s, expectedDataFile=%s, sql=%s, ex.msg=%s", getRuleType(), getDatabaseType().getName(), expectedDataFile, sql, ex.getMessage()));
     }
 }
