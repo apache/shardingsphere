@@ -76,7 +76,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         if (allowRangeQuery) {
             return availableTargetNames;
         }
-        throw new UnsupportedOperationException("Since the property of `allow-range-query-with-inline-sharding` is false, inline sharding algorithm can not tackle with range query.");
+        throw new UnsupportedOperationException("Since the property of `" + ALLOW_RANGE_QUERY_KEY + "` is false, inline sharding algorithm can not tackle with range query.");
     }
     
     @Override
