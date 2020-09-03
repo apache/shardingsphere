@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.governance.schema;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.schema.GovernanceSchemaContexts;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -43,12 +42,6 @@ public final class ProxyGovernanceSchemaContexts extends GovernanceSchemaContext
     public ProxyGovernanceSchemaContexts(final SchemaContexts schemaContexts, final GovernanceFacade governanceFacade) {
         super(schemaContexts, governanceFacade);
         backendDataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
-    }
-    
-    @Override
-    protected Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
-        Map<String, DataSourceConfiguration> newDataSourceConfigs = Maps.filterKeys(newDataSources, each -> !oldSchemaContext.getSchema().getDataSources().containsKey(each));
-        return createDataSources(DataSourceConverter.getDataSourceParameterMap(newDataSourceConfigs));
     }
     
     @Override

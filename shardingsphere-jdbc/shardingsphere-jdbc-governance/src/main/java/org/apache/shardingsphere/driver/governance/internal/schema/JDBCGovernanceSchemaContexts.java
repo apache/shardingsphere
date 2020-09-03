@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.governance.internal.schema;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.schema.GovernanceSchemaContexts;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -39,12 +38,6 @@ public final class JDBCGovernanceSchemaContexts extends GovernanceSchemaContexts
     
     public JDBCGovernanceSchemaContexts(final SchemaContexts schemaContexts, final GovernanceFacade governanceFacade) {
         super(schemaContexts, governanceFacade);
-    }
-    
-    @Override
-    protected Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
-        Map<String, DataSourceConfiguration> newDataSourceConfigs = Maps.filterKeys(newDataSources, each -> !oldSchemaContext.getSchema().getDataSources().containsKey(each));
-        return DataSourceConverter.getDataSourceMap(newDataSourceConfigs);
     }
     
     @Override

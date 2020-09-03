@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.schema;
 
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.common.event.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangeCompletedEvent;
@@ -332,7 +333,10 @@ public abstract class GovernanceSchemaContexts implements SchemaContexts {
         return result;
     }
     
-    protected abstract Map<String, DataSource> getAddedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSourceConfigs);
+    private Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
+        Map<String, DataSourceConfiguration> newDataSourceConfigs = Maps.filterKeys(newDataSources, each -> !oldSchemaContext.getSchema().getDataSources().containsKey(each));
+        return DataSourceConverter.getDataSourceMap(newDataSourceConfigs);
+    }
     
     protected abstract Map<String, DataSource> getModifiedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSourceConfigs);
     
