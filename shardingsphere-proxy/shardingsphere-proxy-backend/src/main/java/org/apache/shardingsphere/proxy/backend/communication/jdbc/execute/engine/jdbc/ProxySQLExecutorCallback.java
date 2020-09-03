@@ -90,7 +90,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     }
     
     private List<QueryHeader> getQueryHeaders(final SQLStatementContext<?> sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext) {
+        if (isHasSelectExpandProjections()) {
             return getQueryHeaders(((SelectStatementContext) sqlStatementContext).getProjectionsContext(), resultSetMetaData);
         }
         return getQueryHeaders(resultSetMetaData);
@@ -110,6 +110,11 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
             result.add(QueryHeaderBuilder.build(resultSetMetaData, ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema()), columnIndex));
         }
         return result;
+    }
+    
+    private boolean isHasSelectExpandProjections() {
+        return sqlStatementContext instanceof SelectStatementContext
+                && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
     private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
