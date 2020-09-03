@@ -100,8 +100,8 @@ public final class GovernanceSchemaContextsTest {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         when(governanceFacade.getMetaDataCenter()).thenReturn(metaDataCenter);
-        governanceSchemaContexts = new GovernanceSchemaContextsFixture(new StandardSchemaContexts(getSchemaContextMap(),
-                authentication, configurationProperties, new H2DatabaseType()), governanceFacade);
+        governanceSchemaContexts = new GovernanceSchemaContextsFixture(
+                new StandardSchemaContexts(getSchemaContextMap(), authentication, configurationProperties, new H2DatabaseType()), governanceFacade);
     }
     
     @SneakyThrows(Exception.class)
