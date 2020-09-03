@@ -96,7 +96,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private boolean containsSubquery() {
         Collection<WhereSegment> subqueryPredicateSegments = WhereSegmentExtractUtils.getSubqueryWhereSegments(getSqlStatement());
         for (WhereSegment each : subqueryPredicateSegments) {
-            if (!each.getAndPredicates().isEmpty()) {
+            if (null == each.getExpr()) {
                 return true;
             }
         }
@@ -178,7 +178,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return TableExtractUtils.getTablesFromSelect(getSqlStatement());
+        TableExtractUtils utils = new TableExtractUtils();
+        utils.extractTablesFromSelect(getSqlStatement());
+        return utils.getRewriteTables();
     }
     
     @Override
@@ -191,6 +193,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
      * @return tables.
      */
     public Collection<SimpleTableSegment> getSimpleTableSegments() {
-        return TableExtractUtils.getSimpleTableFromSelect(getSqlStatement());
+        TableExtractUtils utils = new TableExtractUtils();
+        utils.extractTablesFromSelect(getSqlStatement());
+        return utils.getRewriteTables();
     }
 }

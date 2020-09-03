@@ -36,10 +36,12 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Co
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DataTypeNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExprListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FuncApplicationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FuncExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FunctionExprCommonSubexprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OwnerContext;
@@ -52,14 +54,17 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ta
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.util.predicate.PredicateBuildUtils;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
@@ -69,15 +74,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateBetweenRightValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateCompareRightValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.keyword.KeywordValue;
@@ -173,26 +175,29 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         if (null != ctx.cExpr()) {
             return visit(ctx.cExpr());
         }
-        if (null != ctx.BETWEEN() && null == ctx.NOT()) {
+        if (null != ctx.BETWEEN()) {
             return createBetweenSegment(ctx);
         }
-        if (null != ctx.IN() && null == ctx.NOT()) {
+        if (null != ctx.IN()) {
             return createInSegment(ctx);
         }
         if (null != ctx.comparisonOperator()) {
-            ASTNode left = visit(ctx.aExpr(0));
-            if (left instanceof ColumnSegment) {
-                ColumnSegment columnSegment = (ColumnSegment) left;
-                SQLSegment right = (SQLSegment) visit(ctx.aExpr(1));
-                PredicateRightValue value = right instanceof ColumnSegment
-                        ? (PredicateRightValue) right : new PredicateCompareRightValue(right.getStartIndex(), right.getStopIndex(), ctx.comparisonOperator().getText(), (ExpressionSegment) right);
-                return new PredicateSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegment, value);
-            }
-            visit(ctx.aExpr(1));
-            return new LiteralExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+            BinaryOperationExpression result = new BinaryOperationExpression();
+            result.setStartIndex(ctx.start.getStartIndex());
+            result.setStopIndex(ctx.stop.getStopIndex());
+            result.setLeft((ExpressionSegment) visit(ctx.aExpr(0)));
+            result.setRight((ExpressionSegment) visit(ctx.aExpr(1)));
+            result.setOperator(ctx.comparisonOperator().getText());
+            return result;
         }
         if (null != ctx.logicalOperator()) {
-            return new PredicateBuildUtils(visit(ctx.aExpr(0)), visit(ctx.aExpr(1)), ctx.logicalOperator().getText()).mergePredicate();
+            BinaryOperationExpression result = new BinaryOperationExpression();
+            result.setStartIndex(ctx.start.getStartIndex());
+            result.setStopIndex(ctx.stop.getStopIndex());
+            result.setLeft((ExpressionSegment) visit(ctx.aExpr(0)));
+            result.setRight((ExpressionSegment) visit(ctx.aExpr(1)));
+            result.setOperator(ctx.logicalOperator().getText());
+            return result;
         }
         super.visitAExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
@@ -250,23 +255,73 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
     }
     
-    private PredicateSegment createInSegment(final AExprContext ctx) {
-        ColumnSegment column = (ColumnSegment) visit(ctx.aExpr(0).cExpr().columnref());
-        ASTNode predicateInRightValue = visit(ctx.inExpr());
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, (PredicateRightValue) predicateInRightValue);
+    private BinaryOperationExpression createInSegment(final AExprContext ctx) {
+        BinaryOperationExpression result = new BinaryOperationExpression();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        result.setLeft((ExpressionSegment) visit(ctx.aExpr(0)));
+        result.setRight(visitInExpression(ctx.inExpr()));
+        if (null != ctx.NOT()) {
+            result.setOperator("NOT IN");
+        } else {
+            result.setOperator("IN");
+        }
+        return result;
     }
     
-    private PredicateSegment createBetweenSegment(final AExprContext ctx) {
-        ColumnSegment column = (ColumnSegment) visit(ctx.aExpr().get(0));
-        SQLSegment value = (SQLSegment) visit(ctx.bExpr());
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(value.getStartIndex(), value.getStopIndex(),
-                (ExpressionSegment) value, (ExpressionSegment) visit(ctx.aExpr(1))));
+    private ExpressionSegment visitInExpression(final InExprContext ctx) {
+        if (null != ctx.selectWithParens()) {
+            SelectStatement select = (SelectStatement) visit(ctx.selectWithParens());
+            SubquerySegment subquerySegment = new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), select);
+            SubqueryExpressionSegment result = new SubqueryExpressionSegment(subquerySegment);
+            return result;
+        }
+        return (ExpressionSegment) visit(ctx.exprList());
+    }
+    
+    @Override
+    public ASTNode visitExprList(final ExprListContext ctx) {
+        ListExpression result = new ListExpression();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        if (null != ctx.exprList()) {
+            result.getItems().addAll(((ListExpression) visitExprList(ctx.exprList())).getItems());
+        }
+        result.getItems().add((ExpressionSegment) visit(ctx.aExpr()));
+        return result;
+    }
+    
+    private BetweenExpression createBetweenSegment(final AExprContext ctx) {
+        BetweenExpression result = new BetweenExpression();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        result.setLeft((ExpressionSegment) visit(ctx.aExpr(0)));
+        result.setBetweenExpr((ExpressionSegment) visit(ctx.bExpr()));
+        result.setAndExpr((ExpressionSegment) visit(ctx.aExpr(1)));
+        if (null != ctx.NOT()) {
+            result.setNot(true);
+        }
+        return result;
     }
     
     @Override
     public ASTNode visitBExpr(final BExprContext ctx) {
         if (null != ctx.cExpr()) {
             return visit(ctx.cExpr());
+        }
+        if (null != ctx.TYPE_CAST_() || null != ctx.qualOp()) {
+            BinaryOperationExpression result = new BinaryOperationExpression();
+            result.setStartIndex(ctx.start.getStartIndex());
+            result.setStopIndex(ctx.stop.getStopIndex());
+            result.setLeft((ExpressionSegment) visit(ctx.bExpr(0)));
+            if (null != ctx.TYPE_CAST_()) {
+                result.setOperator(ctx.TYPE_CAST_().getText());
+                result.setRight(new CommonExpressionSegment(ctx.typeName().start.getStartIndex(), ctx.typeName().stop.getStopIndex(), ctx.typeName().getText()));
+            } else {
+                result.setOperator(ctx.qualOp().getText());
+                result.setRight((ExpressionSegment) visit(ctx.bExpr(1)));
+            }
+            return result;
         }
         for (BExprContext each : ctx.bExpr()) {
             visit(each);

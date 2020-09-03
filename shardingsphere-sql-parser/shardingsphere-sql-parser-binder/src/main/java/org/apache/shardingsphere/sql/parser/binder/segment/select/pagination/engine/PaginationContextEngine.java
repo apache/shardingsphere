@@ -19,15 +19,14 @@ package org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.en
 
 import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,26 +52,35 @@ public final class PaginationContextEngine {
         Optional<WhereSegment> whereSegment = selectStatement.getWhere();
         if (topProjectionSegment.isPresent()) {
             return new TopPaginationContextEngine().createPaginationContext(
-                    topProjectionSegment.get(), whereSegment.isPresent() ? whereSegment.get().getAndPredicates() : Collections.emptyList(), parameters);
+                    topProjectionSegment.get(), whereSegment.isPresent() ? whereSegment.get().getExpr() : null, parameters);
         }
         if (whereSegment.isPresent()) {
-            return new RowNumberPaginationContextEngine().createPaginationContext(whereSegment.get().getAndPredicates(), projectionsContext, parameters);
+            return new RowNumberPaginationContextEngine().createPaginationContext(whereSegment.get().getExpr(), projectionsContext, parameters);
         }
         return new PaginationContext(null, null, parameters);
     }
     
     private Optional<TopProjectionSegment> findTopProjection(final SelectStatement selectStatement) {
-        for (TableReferenceSegment tableReferenceSegment : selectStatement.getTableReferences()) {
-            if (!(tableReferenceSegment.getTableFactor().getTable() instanceof SubqueryTableSegment)) {
-                continue;
-            }
-            SelectStatement subquerySelect = ((SubqueryTableSegment) tableReferenceSegment.getTableFactor().getTable()).getSubquery().getSelect();
+        List<SubqueryTableSegment> subqueryTableSegments = SQLUtil.getSubqueryTableSegmentFromTableSegment(selectStatement.getFrom());
+        for (SubqueryTableSegment subquery : subqueryTableSegments) {
+            SelectStatement subquerySelect = subquery.getSubquery().getSelect();
             for (ProjectionSegment each : subquerySelect.getProjections().getProjections()) {
                 if (each instanceof TopProjectionSegment) {
                     return Optional.of((TopProjectionSegment) each);
                 }
-            }   
+            }
         }
+//        for (TableReferenceSegment tableReferenceSegment : selectStatement.getTableReferences()) {
+//            if (!(tableReferenceSegment.getTableFactor().getTable() instanceof SubqueryTableSegment)) {
+//                continue;
+//            }
+//            SelectStatement subquerySelect = ((SubqueryTableSegment) tableReferenceSegment.getTableFactor().getTable()).getSubquery().getSelect();
+//            for (ProjectionSegment each : subquerySelect.getProjections().getProjections()) {
+//                if (each instanceof TopProjectionSegment) {
+//                    return Optional.of((TopProjectionSegment) each);
+//                }
+//            }
+//        }
         return Optional.empty();
     }
 }

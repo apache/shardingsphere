@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -41,16 +40,16 @@ public final class TableReferenceSegment implements SQLSegment {
      *  get all tables.
      * @return Collection.
      */
-    public Collection<SimpleTableSegment> getSimpleTableSegments() {
-        Collection<SimpleTableSegment> tables = new LinkedList<>();
-        if (null != tableFactor) {
-            tables.addAll(tableFactor.getSimpleTableSegments());
-        }
-        if (!joinedTables.isEmpty()) {
-            for (JoinedTableSegment each : joinedTables) {
-                tables.addAll(each.getSimpleTableSegments());
-            }
-        }
-        return tables;
-    }
+//    public Collection<SimpleTableSegment> getSimpleTableSegments() {
+//        Collection<SimpleTableSegment> tables = new LinkedList<>();
+//        if (null != tableFactor) {
+//            tables.addAll(tableFactor.getSimpleTableSegments());
+//        }
+//        if (!joinedTables.isEmpty()) {
+//            for (JoinedTableSegment each : joinedTables) {
+//                tables.addAll(each.getSimpleTableSegments());
+//            }
+//        }
+//        return tables;
+//    }
 }

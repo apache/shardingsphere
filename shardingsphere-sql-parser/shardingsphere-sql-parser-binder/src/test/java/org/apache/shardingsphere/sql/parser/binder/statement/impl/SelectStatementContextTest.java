@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBy
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -166,8 +166,8 @@ public final class SelectStatementContextTest {
     public void assertContainsSubquery() {
         SubqueryProjectionSegment projectionSegment = mock(SubqueryProjectionSegment.class);
         SelectStatement subSelectStatement = new SelectStatement();
-        WhereSegment whereSegment = new WhereSegment(0, 0);
-        whereSegment.getAndPredicates().add(mock(AndPredicate.class));
+        WhereSegment whereSegment = new WhereSegment(0, 0, null);
+//        whereSegment.getAndPredicates().add(mock(AndPredicate.class));
         subSelectStatement.setWhere(whereSegment);
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement);
         when(projectionSegment.getSubquery()).thenReturn(subquerySegment);
@@ -184,13 +184,14 @@ public final class SelectStatementContextTest {
     public void assertContainsSubqueryWhereEmpty() {
         SubqueryProjectionSegment projectionSegment = mock(SubqueryProjectionSegment.class);
         SelectStatement subSelectStatement = new SelectStatement();
-        WhereSegment whereSegment = new WhereSegment(0, 0);
-        subSelectStatement.setWhere(whereSegment);
+        SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(new SubquerySegment(0, 0, subSelectStatement));
+        SelectStatement selectStatement = new SelectStatement();
+        WhereSegment whereSegment = new WhereSegment(0, 0, subqueryExpressionSegment);
+        selectStatement.setWhere(whereSegment);
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement);
         when(projectionSegment.getSubquery()).thenReturn(subquerySegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(projectionSegment);
-        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(projectionsSegment);
         SelectStatementContext actual = new SelectStatementContext(
                 selectStatement, null, null, null, null);

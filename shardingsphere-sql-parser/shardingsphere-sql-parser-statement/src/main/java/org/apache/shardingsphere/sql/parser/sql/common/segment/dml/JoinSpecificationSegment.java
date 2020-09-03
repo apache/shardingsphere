@@ -21,10 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,7 +34,7 @@ public final class JoinSpecificationSegment implements SQLSegment {
     
     private int stopIndex;
     
-    private final Collection<AndPredicate> andPredicates = new LinkedList<>();
+    private ExpressionSegment condition;
     
     private final Collection<ColumnSegment> usingColumns = new LinkedList<>();
     
@@ -45,20 +42,20 @@ public final class JoinSpecificationSegment implements SQLSegment {
      * get tables.
      * @return tables.
      */
-    public Collection<SimpleTableSegment> getSimpleTableSegments() {
-        Collection<SimpleTableSegment> tables = new LinkedList<>();
-        for (AndPredicate each : andPredicates) {
-            for (PredicateSegment e : each.getPredicates()) {
-                if (null != e.getColumn() && (e.getColumn().getOwner().isPresent())) {
-                    OwnerSegment ownerSegment = e.getColumn().getOwner().get();
-                    tables.add(new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
-                }
-                if (null != e.getRightValue() && (e.getRightValue() instanceof ColumnSegment) && ((ColumnSegment) e.getRightValue()).getOwner().isPresent()) {
-                    OwnerSegment ownerSegment = ((ColumnSegment) e.getRightValue()).getOwner().get();
-                    tables.add(new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
-                }
-            }
-        }
-        return tables;
-    }
+//    public Collection<SimpleTableSegment> getSimpleTableSegments() {
+//        Collection<SimpleTableSegment> tables = new LinkedList<>();
+//        for (AndPredicate each : andPredicates) {
+//            for (PredicateSegment e : each.getPredicates()) {
+//                if (null != e.getColumn() && (e.getColumn().getOwner().isPresent())) {
+//                    OwnerSegment ownerSegment = e.getColumn().getOwner().get();
+//                    tables.add(new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
+//                }
+//                if (null != e.getRightValue() && (e.getRightValue() instanceof ColumnSegment) && ((ColumnSegment) e.getRightValue()).getOwner().isPresent()) {
+//                    OwnerSegment ownerSegment = ((ColumnSegment) e.getRightValue()).getOwner().get();
+//                    tables.add(new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
+//                }
+//            }
+//        }
+//        return tables;
+//    }
 }

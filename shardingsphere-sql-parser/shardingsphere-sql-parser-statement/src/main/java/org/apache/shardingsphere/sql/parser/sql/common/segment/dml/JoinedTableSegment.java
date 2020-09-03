@@ -20,10 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 @Getter
 @Setter
@@ -41,14 +37,14 @@ public final class JoinedTableSegment implements SQLSegment {
      * get table.
      * @return tableSegment.
      */
-    public Collection<SimpleTableSegment> getSimpleTableSegments() {
-        Collection<SimpleTableSegment> tables = new LinkedList<>();
-        if (null != tableFactor) {
-            tables.addAll(tableFactor.getSimpleTableSegments());
-        }
-        if (null != joinSpecification) {
-            tables.addAll(joinSpecification.getSimpleTableSegments());
-        }
-        return tables;
-    }
+//    public Collection<SimpleTableSegment> getSimpleTableSegments() {
+//        Collection<SimpleTableSegment> tables = new LinkedList<>();
+//        if (null != tableFactor) {
+//            tables.addAll(tableFactor.getSimpleTableSegments());
+//        }
+//        if (null != joinSpecification) {
+//            tables.addAll(joinSpecification.getSimpleTableSegments());
+//        }
+//        return tables;
+//    }
 }

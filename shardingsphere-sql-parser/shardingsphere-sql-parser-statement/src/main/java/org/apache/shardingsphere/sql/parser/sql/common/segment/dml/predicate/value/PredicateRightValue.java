@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
  * Predicate right value.
  */
-public interface PredicateRightValue extends SQLSegment {
+public interface PredicateRightValue extends ExpressionSegment {
 }
