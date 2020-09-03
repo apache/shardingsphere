@@ -80,7 +80,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
             return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
         }
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new SchemaNameEvent(context.getSqlStatement().getDatabaseName(), true));
+        ShardingSphereEventBus.getInstance().post(new SchemaNameEvent(context.getSqlStatement().getDatabaseName(), false));
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
