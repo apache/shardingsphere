@@ -43,7 +43,7 @@ public final class MetaDataManager {
      * @return table meta data
      */
     public TableMetaData getTableMetaData(final String tableName) {
-        return getTableMetaData(tableName, null);
+        return getTableMetaData(tableName, "");
     }
     
     /**
