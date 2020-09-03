@@ -832,4 +832,12 @@
     <alter-table sql-case-id="alter_table_attach_partition">
         <table name="t_order" stop-index="18" start-index="12"/>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_detach_partition">
+        <table name="t_order" stop-index="18" start-index="12"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_in_hash_partitioned_table">
+        <table name="t_order" stop-index="18" start-index="12"/>
+    </alter-table>
 </sql-parser-test-cases>
