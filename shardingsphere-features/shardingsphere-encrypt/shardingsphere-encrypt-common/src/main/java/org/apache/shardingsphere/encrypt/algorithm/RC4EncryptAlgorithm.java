@@ -36,8 +36,6 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
     
     private static final String RC4_KEY = "rc4-key-value";
     
-    private static final String RC4_KEY_COMPATIBLE = "rc4-key-value";
-    
     private static final int SBOX_LENGTH = 256;
     
     private static final int KEY_MIN_LENGTH = 5;
@@ -54,11 +52,7 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
     @SneakyThrows
     public void init() {
         reset();
-        if (props.containsKey(RC4_KEY)) {
-            setKey(StringUtils.getBytesUtf8(props.getProperty(RC4_KEY)));
-        } else {
-            setKey(StringUtils.getBytesUtf8(props.getProperty(RC4_KEY_COMPATIBLE)));
-        }
+        setKey(StringUtils.getBytesUtf8(props.getProperty(RC4_KEY)));
     }
     
     @Override
@@ -94,7 +88,6 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
     
     /**
      * Crypt given byte array. Be aware, that you must init key, before using.
-     *
      * @param message array to be crypt
      * @return byte array
      * @see <a href="http://en.wikipedia.org/wiki/RC4#Pseudo-random_generation_algorithm_.28PRGA.29">Pseudo-random generation algorithm</a>
