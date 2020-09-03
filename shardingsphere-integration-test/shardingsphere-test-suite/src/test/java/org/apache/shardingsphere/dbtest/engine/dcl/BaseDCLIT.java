@@ -55,7 +55,7 @@ public abstract class BaseDCLIT extends SingleIT {
     }
     
     private Map<String, DataSource> createInstanceDataSourceMap() throws SQLException {
-        return "masterslave".equals(getRuleType()) || "shadow".equals(getRuleType()) ? getDataSourceMap() : getShardingInstanceDataSourceMap();
+        return "shadow".equals(getRuleType()) ? getDataSourceMap() : getShardingInstanceDataSourceMap();
     }
     
     private Map<String, DataSource> getShardingInstanceDataSourceMap() throws SQLException {
