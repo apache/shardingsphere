@@ -68,13 +68,13 @@ import java.util.stream.Collectors;
 /**
  * Governance schema contexts.
  */
-public class GovernanceSchemaContexts implements SchemaContexts {
+public final class GovernanceSchemaContexts implements SchemaContexts {
     
     private final GovernanceFacade governanceFacade;
     
     private volatile SchemaContexts schemaContexts;
     
-    protected GovernanceSchemaContexts(final SchemaContexts schemaContexts, final GovernanceFacade governanceFacade) {
+    public GovernanceSchemaContexts(final SchemaContexts schemaContexts, final GovernanceFacade governanceFacade) {
         this.governanceFacade = governanceFacade;
         this.schemaContexts = schemaContexts;
         ShardingSphereEventBus.getInstance().register(this);
@@ -101,7 +101,7 @@ public class GovernanceSchemaContexts implements SchemaContexts {
     }
     
     @Override
-    public final DatabaseType getDatabaseType() {
+    public DatabaseType getDatabaseType() {
         return schemaContexts.getDatabaseType();
     }
     
@@ -116,32 +116,32 @@ public class GovernanceSchemaContexts implements SchemaContexts {
     }
     
     @Override
-    public final Map<String, SchemaContext> getSchemaContexts() {
+    public Map<String, SchemaContext> getSchemaContexts() {
         return schemaContexts.getSchemaContexts();
     }
     
     @Override
-    public final SchemaContext getDefaultSchemaContext() {
+    public SchemaContext getDefaultSchemaContext() {
         return schemaContexts.getDefaultSchemaContext();
     }
     
     @Override
-    public final Authentication getAuthentication() {
+    public Authentication getAuthentication() {
         return schemaContexts.getAuthentication();
     }
     
     @Override
-    public final ConfigurationProperties getProps() {
+    public ConfigurationProperties getProps() {
         return schemaContexts.getProps();
     }
     
     @Override
-    public final boolean isCircuitBreak() {
+    public boolean isCircuitBreak() {
         return schemaContexts.isCircuitBreak();
     }
     
     @Override
-    public final void close() throws Exception {
+    public void close() throws Exception {
         schemaContexts.close();
         governanceFacade.close();
     }
@@ -306,7 +306,7 @@ public class GovernanceSchemaContexts implements SchemaContexts {
         return builder.build().getSchemaContexts().values().iterator().next();
     }
     
-    private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
+    private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws SQLException {
         Collection<String> deletedDataSources = getDeletedDataSources(oldSchemaContext, newDataSources);
         Map<String, DataSource> modifiedDataSources = getModifiedDataSources(oldSchemaContext, newDataSources);
         oldSchemaContext.getSchema().closeDataSources(deletedDataSources);
@@ -346,7 +346,7 @@ public class GovernanceSchemaContexts implements SchemaContexts {
         return DataSourceConverter.getDataSourceMap(modifiedDataSourceConfigs);
     }
     
-    private synchronized boolean isModifiedDataSource(final Map<String, DataSource> oldDataSources, final String newDataSourceName, final DataSourceConfiguration newDataSourceConfig) {
+    private boolean isModifiedDataSource(final Map<String, DataSource> oldDataSources, final String newDataSourceName, final DataSourceConfiguration newDataSourceConfig) {
         DataSourceConfiguration dataSourceConfig = DataSourceConverter.getDataSourceConfigurationMap(oldDataSources).get(newDataSourceName);
         return newDataSourceConfig.equals(dataSourceConfig);
     }

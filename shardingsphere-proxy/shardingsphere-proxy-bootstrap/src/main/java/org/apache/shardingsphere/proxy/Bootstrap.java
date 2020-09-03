@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.schema.GovernanceSchemaContexts;
 import org.apache.shardingsphere.governance.core.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.SchemaContext;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfiguratio
 import org.apache.shardingsphere.proxy.db.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.governance.GovernanceBootstrap;
-import org.apache.shardingsphere.proxy.governance.schema.ProxyGovernanceSchemaContexts;
 import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -95,7 +95,7 @@ public final class Bootstrap {
     }
     
     private static SchemaContexts createSchemaContexts(final SchemaContexts schemaContexts, final boolean governanceEnabled) {
-        return governanceEnabled ? new ProxyGovernanceSchemaContexts(schemaContexts, GovernanceFacade.getInstance()) : schemaContexts;
+        return governanceEnabled ? new GovernanceSchemaContexts(schemaContexts, GovernanceFacade.getInstance()) : schemaContexts;
     }
     
     private static TransactionContexts createTransactionContexts(final SchemaContexts schemaContexts, final boolean governanceEnabled) {

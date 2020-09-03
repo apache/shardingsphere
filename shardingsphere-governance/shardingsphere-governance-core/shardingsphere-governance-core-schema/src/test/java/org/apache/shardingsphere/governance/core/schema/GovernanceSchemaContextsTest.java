@@ -50,10 +50,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -149,7 +148,7 @@ public final class GovernanceSchemaContextsTest {
     @Test
     @SneakyThrows(Exception.class)
     public void assertSchemaAdd() {
-        SchemaAddedEvent event = new SchemaAddedEvent("schema_add", getDataSourceConfigurations(), new ArrayList<>());
+        SchemaAddedEvent event = new SchemaAddedEvent("schema_add", getDataSourceConfigurations(), new LinkedList<>());
         governanceSchemaContexts.renew(event);
         assertNotNull(governanceSchemaContexts.getSchemaContexts().get("schema_add"));
     }
@@ -160,7 +159,7 @@ public final class GovernanceSchemaContextsTest {
         dataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         dataSource.setUsername("sa");
         dataSource.setPassword("");
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(3, 1);
         result.put("ds_m", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_0", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_1", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
@@ -193,15 +192,15 @@ public final class GovernanceSchemaContextsTest {
     
     @Test
     public void assertMetaDataChanged() {
-        MetaDataChangedEvent event = new MetaDataChangedEvent(Arrays.asList("schema_changed"), mock(RuleSchemaMetaData.class));
+        MetaDataChangedEvent event = new MetaDataChangedEvent(Collections.singletonList("schema_changed"), mock(RuleSchemaMetaData.class));
         governanceSchemaContexts.renew(event);
-        assertTrue(governanceSchemaContexts.getSchemaContexts().keySet().contains("schema"));
-        assertFalse(governanceSchemaContexts.getSchemaContexts().keySet().contains("schema_changed"));
+        assertTrue(governanceSchemaContexts.getSchemaContexts().containsKey("schema"));
+        assertFalse(governanceSchemaContexts.getSchemaContexts().containsKey("schema_changed"));
     }
     
     @Test
     public void assertMetaDataChangedWithExistSchema() {
-        MetaDataChangedEvent event = new MetaDataChangedEvent(Arrays.asList("schema"), mock(RuleSchemaMetaData.class));
+        MetaDataChangedEvent event = new MetaDataChangedEvent(Collections.singletonList("schema"), mock(RuleSchemaMetaData.class));
         governanceSchemaContexts.renew(event);
         assertThat(governanceSchemaContexts.getSchemaContexts().get("schema"), not(schemaContext));
     }
@@ -210,7 +209,7 @@ public final class GovernanceSchemaContextsTest {
     @SneakyThrows(Exception.class)
     public void assertRuleConfigurationsChanged() {
         assertThat(governanceSchemaContexts.getSchemaContexts().get("schema"), is(schemaContext));
-        RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("schema", new ArrayList<>());
+        RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("schema", new LinkedList<>());
         governanceSchemaContexts.renew(event);
         assertThat(governanceSchemaContexts.getSchemaContexts().get("schema"), not(schemaContext));
     }
@@ -227,7 +226,7 @@ public final class GovernanceSchemaContextsTest {
     public void assertDataSourceChanged() {
         DataSourceChangedEvent event = new DataSourceChangedEvent("schema", getChangedDataSourceConfigurations());
         governanceSchemaContexts.renew(event);
-        assertTrue(governanceSchemaContexts.getSchemaContexts().get("schema").getSchema().getDataSources().keySet().contains("ds_2"));
+        assertTrue(governanceSchemaContexts.getSchemaContexts().get("schema").getSchema().getDataSources().containsKey("ds_2"));
     }
     
     private Map<String, DataSourceConfiguration> getChangedDataSourceConfigurations() {
@@ -236,7 +235,7 @@ public final class GovernanceSchemaContextsTest {
         dataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         dataSource.setUsername("sa");
         dataSource.setPassword("");
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(3, 1);
         result.put("ds_m", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_1", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_2", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
