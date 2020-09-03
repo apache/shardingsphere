@@ -43,9 +43,20 @@ public final class MetaDataManager {
      * @return table meta data
      */
     public TableMetaData getTableMetaData(final String tableName) {
+        return getTableMetaData(tableName, null);
+    }
+    
+    /**
+     * Get table meta data by table name.
+     * 
+     * @param tableName table name
+     * @param databaseType database type
+     * @return table meta data
+     */
+    public TableMetaData getTableMetaData(final String tableName, final String databaseType) {
         if (!tableMetaDataMap.containsKey(tableName)) {
             try {
-                TableMetaDataLoader.load(dataSource, tableName, "").ifPresent(tableMetaData -> tableMetaDataMap.put(tableName, tableMetaData));
+                TableMetaDataLoader.load(dataSource, tableName, databaseType).ifPresent(tableMetaData -> tableMetaDataMap.put(tableName, tableMetaData));
             } catch (final SQLException ex) {
                 throw new RuntimeException(String.format("Load metaData for table %s failed", tableName), ex);
             }

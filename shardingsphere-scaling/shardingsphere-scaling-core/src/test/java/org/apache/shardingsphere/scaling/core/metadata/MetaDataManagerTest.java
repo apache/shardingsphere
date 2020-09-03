@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -32,8 +34,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -107,6 +107,7 @@ public final class MetaDataManagerTest {
     public void assertGetTableMetaData() {
         MetaDataManager metaDataManager = new MetaDataManager(dataSource);
         assertColumnMetaData(metaDataManager.getTableMetaData(TEST_TABLE));
+        assertColumnMetaData(metaDataManager.getTableMetaData(TEST_TABLE, "MySQL"));
         assertPrimaryKeys(metaDataManager.getTableMetaData(TEST_TABLE).getPrimaryKeyColumns());
     }
     
