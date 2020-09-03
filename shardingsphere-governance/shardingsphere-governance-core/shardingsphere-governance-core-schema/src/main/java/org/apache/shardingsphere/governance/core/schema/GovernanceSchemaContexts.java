@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
 /**
  * Governance schema contexts.
  */
-public abstract class GovernanceSchemaContexts implements SchemaContexts {
+public class GovernanceSchemaContexts implements SchemaContexts {
     
     private final GovernanceFacade governanceFacade;
     

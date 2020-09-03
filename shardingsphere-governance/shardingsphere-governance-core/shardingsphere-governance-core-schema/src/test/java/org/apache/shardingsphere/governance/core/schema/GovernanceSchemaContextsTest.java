@@ -32,7 +32,6 @@ import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.governance.core.schema.fixture.GovernanceSchemaContextsFixture;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -93,14 +92,14 @@ public final class GovernanceSchemaContextsTest {
     
     private ConfigurationProperties configurationProperties = new ConfigurationProperties(new Properties());
     
-    private GovernanceSchemaContextsFixture governanceSchemaContexts;
+    private GovernanceSchemaContexts governanceSchemaContexts;
     
     @Before
     public void setUp() {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         when(governanceFacade.getMetaDataCenter()).thenReturn(metaDataCenter);
-        governanceSchemaContexts = new GovernanceSchemaContextsFixture(
+        governanceSchemaContexts = new GovernanceSchemaContexts(
                 new StandardSchemaContexts(getSchemaContextMap(), authentication, configurationProperties, new H2DatabaseType()), governanceFacade);
     }
     
