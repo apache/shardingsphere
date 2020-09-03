@@ -29,6 +29,16 @@ import java.util.List;
 public interface GovernanceRepository extends TypedSPI {
     
     /**
+     * Path separator.
+     */
+    String PATH_SEPARATOR = "/";
+    
+    /**
+     * Dot separator.
+     */
+    String DOT_SEPARATOR = ".";
+    
+    /**
      * Initialize governance center.
      *
      * @param name governance center name
