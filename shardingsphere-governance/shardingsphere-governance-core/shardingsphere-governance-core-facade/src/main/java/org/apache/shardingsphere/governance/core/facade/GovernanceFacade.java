@@ -20,6 +20,7 @@ package org.apache.shardingsphere.governance.core.facade;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -38,6 +39,8 @@ import java.util.Properties;
 /**
  * Governance facade.
  */
+
+@Slf4j
 public final class GovernanceFacade implements AutoCloseable {
     
     private boolean isOverwrite;
@@ -100,6 +103,7 @@ public final class GovernanceFacade implements AutoCloseable {
     @Override
     public void close() {
         repositoryFacade.close();
+        log.info("GovernanceRepositoryFacade has been closed.");
     }
     
     /**
