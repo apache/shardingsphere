@@ -72,9 +72,7 @@ public final class Bootstrap {
         if (null == yamlConfig.getServerConfiguration().getGovernance()) {
             init(new YamlProxyConfigurationSwapper().swap(yamlConfig), port, false);
         } else {
-            try (GovernanceFacade governanceFacade = GovernanceFacade.getInstance()) {
-                init(new GovernanceBootstrap(governanceFacade).init(yamlConfig), port, true);
-            }
+            init(new GovernanceBootstrap(GovernanceFacade.getInstance()).init(yamlConfig), port, true);
         }
     }
     
