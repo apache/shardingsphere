@@ -221,3 +221,11 @@ curl -X POST \
 ShardingSphere-Scaling 与 ShardingSphere-UI 集成了用户界面，所以上述所有任务相关的操作都可以通过 UI 界面点点鼠标来实现，当然本质上还是调用了上述基本接口。
 
 更多信息请参考 ShardingSphere-UI 项目。
+
+## 注意事项
+
+ShardingSphere-Scaling 对迁移的表的表结构有如下限制：
+
+  - 必须有主键
+  - 不能是联合主键
+  - 主键必须是数字类型
