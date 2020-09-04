@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 143 家公司。
+共计 146 家公司。
 
 ### 金融行业
 <ul>
@@ -74,6 +74,8 @@ chapter = true
     <li><a href="https://www.shebaotong.com/" rel="nofollow">上海社宝信息科技有限公司</a></li>
     <li><a href="https://www.itrus.com.cn/" rel="nofollow">天威诚信</a></li>
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">公交云</a></li>
+     <li><a href="http://www.ushareit.com/" rel="nofollow">茄子快传</a></li>
+     
 </ul>
 
 ### 出行
@@ -177,6 +179,8 @@ chapter = true
     <li><a href="https://www.hikvision.com/" rel="nofollow">海康威视</a></li>
     <li><a href="http://www.jtkjbike.com/" rel="nofollow">金通科技集团</a></li>
     <li><a href="http://www.iotlead.com/" rel="nofollow">广州理德物联网科技有限公司</a></li>
+     <li><a href=" http://tcslwxwl.cn.b2b168.com/" rel="nofollow">神州商龙科技股份有限公司 </a></li>
+    
 </ul>
 
 ### 软件开发及服务
@@ -216,6 +220,8 @@ chapter = true
     <li><a href="https://www.zyhealth.com/" rel="nofollow">智云健康</a></li>
     <li><a href="https://www.ddky.com/" rel="nofollow">叮当快药</a></li>
     <li><a href="https://www.keep.com/">Keep</a></li>
+     <li><a href="http://www.dxy.cn/">丁香园</a></li>
+   
 </ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
