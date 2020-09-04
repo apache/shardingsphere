@@ -92,8 +92,8 @@ public final class ConfigCenterTest {
     public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         ConfigCenter configurationService = new ConfigCenter(configurationRepository);
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(configurationRepository, times(0)).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository, times(0)).persist("/config/schema/sharding_db/rule", readYAML(SHARDING_RULE_YAML));
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
@@ -114,8 +114,8 @@ public final class ConfigCenterTest {
     public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigCenter configurationService = new ConfigCenter(configurationRepository);
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(configurationRepository, times(0)).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository, times(0)).persist("/config/schema/sharding_db/rule", readYAML(SHARDING_RULE_YAML));
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/rule"), ArgumentMatchers.any());
         
     }
     
@@ -131,16 +131,16 @@ public final class ConfigCenterTest {
     public void assertPersistConfigurationForMasterSlaveRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         ConfigCenter configurationService = new ConfigCenter(configurationRepository);
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), false);
-        verify(configurationRepository, times(0)).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository, times(0)).persist("/config/schema/sharding_db/rule", readYAML(MASTER_SLAVE_RULE_YAML));
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
     public void assertPersistConfigurationForMasterSlaveRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigCenter configurationService = new ConfigCenter(configurationRepository);
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), false);
-        verify(configurationRepository, times(0)).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository, times(0)).persist("/config/schema/sharding_db/rule", readYAML(MASTER_SLAVE_RULE_YAML));
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
@@ -155,16 +155,16 @@ public final class ConfigCenterTest {
     public void assertPersistConfigurationForShardingRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         ConfigCenter configurationService = new ConfigCenter(configurationRepository);
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(configurationRepository, times(0)).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository, times(0)).persist("/config/schema/sharding_db/rule", readYAML(SHARDING_RULE_YAML));
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigCenter configurationService = new ConfigCenter(configurationRepository);
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(configurationRepository, times(0)).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository, times(0)).persist("/config/schema/sharding_db/rule", readYAML(SHARDING_RULE_YAML));
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
@@ -179,8 +179,8 @@ public final class ConfigCenterTest {
     public void assertPersistConfigurationForMasterSlaveRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         ConfigCenter configurationService = new ConfigCenter(configurationRepository);
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), false);
-        verify(configurationRepository, times(0)).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository, times(0)).persist("/config/schema/sharding_db/rule", readYAML(MASTER_SLAVE_RULE_YAML));
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
@@ -188,8 +188,8 @@ public final class ConfigCenterTest {
         ConfigCenter configurationService = new ConfigCenter(configurationRepository);
         configurationService.persistConfigurations("sharding_db",
                 createDataSourceConfigurations(), createMasterSlaveRuleConfiguration(), false);
-        verify(configurationRepository, times(0)).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository, times(0)).persist("/config/schema/sharding_db/rule", readYAML(MASTER_SLAVE_RULE_YAML));
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
