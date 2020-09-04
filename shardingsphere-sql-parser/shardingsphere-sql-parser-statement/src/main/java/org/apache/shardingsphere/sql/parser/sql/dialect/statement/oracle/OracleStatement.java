@@ -21,7 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Oracle statement.
- * 
  */
 public interface OracleStatement extends SQLStatement {
 }

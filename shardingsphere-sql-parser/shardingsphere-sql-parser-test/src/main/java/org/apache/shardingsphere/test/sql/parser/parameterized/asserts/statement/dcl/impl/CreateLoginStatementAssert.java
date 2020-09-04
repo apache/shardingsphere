@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.CreateLoginStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
 
 /**
  * Create login statement assert.
@@ -36,6 +36,6 @@ public final class CreateLoginStatementAssert {
      * @param actual actual create login statement
      * @param expected expected create login statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateLoginStatement actual, final CreateLoginStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerCreateLoginStatement actual, final CreateLoginStatementTestCase expected) {
     }
 }

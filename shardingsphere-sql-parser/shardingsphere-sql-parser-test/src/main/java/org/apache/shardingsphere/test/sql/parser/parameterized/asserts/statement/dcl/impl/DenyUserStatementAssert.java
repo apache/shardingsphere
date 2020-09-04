@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.DenyUserStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DenyUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -40,11 +40,11 @@ public final class DenyUserStatementAssert {
      * @param actual actual deny user statement
      * @param expected expected deny user statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DenyUserStatement actual, final DenyUserStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final DenyUserStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final DenyUserStatement actual, final DenyUserStatementTestCase expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final DenyUserStatementTestCase expected) {
         if (null != expected.getTable()) {
             assertNotNull(assertContext.getText("Actual table segment should exist."), actual.getTable());
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());

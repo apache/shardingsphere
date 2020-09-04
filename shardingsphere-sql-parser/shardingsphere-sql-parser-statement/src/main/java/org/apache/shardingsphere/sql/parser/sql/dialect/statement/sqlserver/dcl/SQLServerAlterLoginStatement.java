@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
- * Set password statement.
+ * SQLServer alter login statement.
  */
-public final class SetPasswordStatement extends AbstractSQLStatement implements DCLStatement {
+public final class SQLServerAlterLoginStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
 }

@@ -34,14 +34,14 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerAlterLoginStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DenyUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDropLoginStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
@@ -108,7 +108,7 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor implements DCLVi
     
     @Override
     public ASTNode visitDeny(final DenyContext ctx) {
-        DenyUserStatement result = new DenyUserStatement();
+        SQLServerDenyUserStatement result = new SQLServerDenyUserStatement();
         if (null != ctx.classPrivilegesClause()) {
             for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause())) {
                 result.setTable(each);
@@ -144,16 +144,16 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor implements DCLVi
     
     @Override
     public ASTNode visitCreateLogin(final CreateLoginContext ctx) {
-        return new CreateLoginStatement();
+        return new SQLServerCreateLoginStatement();
     }
     
     @Override
     public ASTNode visitAlterLogin(final AlterLoginContext ctx) {
-        return new AlterLoginStatement();
+        return new SQLServerAlterLoginStatement();
     }
     
     @Override
     public ASTNode visitDropLogin(final DropLoginContext ctx) {
-        return new DropLoginStatement();
+        return new SQLServerDropLoginStatement();
     }
 }

@@ -53,23 +53,23 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetDefaultRoleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetPasswordStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetRoleStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerAlterLoginStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DenyUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDropLoginStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RenameUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLRenameUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetDefaultRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetPasswordStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetDefaultRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetPasswordStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetRoleStatement;
 
 /**
  * DCL statement assert.
@@ -95,28 +95,28 @@ public final class DCLStatementAssert {
             AlterUserStatementAssert.assertIs(assertContext, (AlterUserStatement) actual, (AlterUserStatementTestCase) expected);
         } else if (actual instanceof DropUserStatement) {
             DropUserStatementAssert.assertIs(assertContext, (DropUserStatement) actual, (DropUserStatementTestCase) expected);
-        } else if (actual instanceof RenameUserStatement) {
-            RenameUserStatementAssert.assertIs(assertContext, (RenameUserStatement) actual, (RenameUserStatementTestCase) expected);
-        } else if (actual instanceof DenyUserStatement) {
-            DenyUserStatementAssert.assertIs(assertContext, (DenyUserStatement) actual, (DenyUserStatementTestCase) expected);
-        } else if (actual instanceof CreateLoginStatement) {
-            CreateLoginStatementAssert.assertIs(assertContext, (CreateLoginStatement) actual, (CreateLoginStatementTestCase) expected);
-        } else if (actual instanceof AlterLoginStatement) {
-            AlterLoginStatementAssert.assertIs(assertContext, (AlterLoginStatement) actual, (AlterLoginStatementTestCase) expected);
-        } else if (actual instanceof DropLoginStatement) {
-            DropLoginStatementAssert.assertIs(assertContext, (DropLoginStatement) actual, (DropLoginStatementTestCase) expected);
+        } else if (actual instanceof MySQLRenameUserStatement) {
+            RenameUserStatementAssert.assertIs(assertContext, (MySQLRenameUserStatement) actual, (RenameUserStatementTestCase) expected);
+        } else if (actual instanceof SQLServerDenyUserStatement) {
+            DenyUserStatementAssert.assertIs(assertContext, (SQLServerDenyUserStatement) actual, (DenyUserStatementTestCase) expected);
+        } else if (actual instanceof SQLServerCreateLoginStatement) {
+            CreateLoginStatementAssert.assertIs(assertContext, (SQLServerCreateLoginStatement) actual, (CreateLoginStatementTestCase) expected);
+        } else if (actual instanceof SQLServerAlterLoginStatement) {
+            AlterLoginStatementAssert.assertIs(assertContext, (SQLServerAlterLoginStatement) actual, (AlterLoginStatementTestCase) expected);
+        } else if (actual instanceof SQLServerDropLoginStatement) {
+            DropLoginStatementAssert.assertIs(assertContext, (SQLServerDropLoginStatement) actual, (DropLoginStatementTestCase) expected);
         } else if (actual instanceof CreateRoleStatement) {
             CreateRoleStatementAssert.assertIs(assertContext, (CreateRoleStatement) actual, (CreateRoleStatementTestCase) expected);
         } else if (actual instanceof AlterRoleStatement) {
             AlterRoleStatementAssert.assertIs(assertContext, (AlterRoleStatement) actual, (AlterRoleStatementTestCase) expected);
         } else if (actual instanceof DropRoleStatement) {
             DropRoleStatementAssert.assertIs(assertContext, (DropRoleStatement) actual, (DropRoleStatementTestCase) expected);
-        } else if (actual instanceof SetRoleStatement) {
-            SetRoleStatementAssert.assertIs(assertContext, (SetRoleStatement) actual, (SetRoleStatementTestCase) expected);
-        } else if (actual instanceof SetDefaultRoleStatement) {
-            SetDefaultRoleStatementAssert.assertIs(assertContext, (SetDefaultRoleStatement) actual, (SetDefaultRoleStatementTestCase) expected);
-        } else if (actual instanceof SetPasswordStatement) {
-            SetPasswordStatementAssert.assertIs(assertContext, (SetPasswordStatement) actual, (SetPasswordStatementTestCase) expected);
+        } else if (actual instanceof MySQLSetRoleStatement) {
+            SetRoleStatementAssert.assertIs(assertContext, (MySQLSetRoleStatement) actual, (SetRoleStatementTestCase) expected);
+        } else if (actual instanceof MySQLSetDefaultRoleStatement) {
+            SetDefaultRoleStatementAssert.assertIs(assertContext, (MySQLSetDefaultRoleStatement) actual, (SetDefaultRoleStatementTestCase) expected);
+        } else if (actual instanceof MySQLSetPasswordStatement) {
+            SetPasswordStatementAssert.assertIs(assertContext, (MySQLSetPasswordStatement) actual, (SetPasswordStatementTestCase) expected);
         }
     }
 }

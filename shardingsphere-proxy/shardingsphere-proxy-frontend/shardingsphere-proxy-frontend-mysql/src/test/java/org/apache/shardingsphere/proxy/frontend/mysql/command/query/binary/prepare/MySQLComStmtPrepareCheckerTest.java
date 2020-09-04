@@ -45,7 +45,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserSt
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RenameUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLRenameUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -84,7 +84,7 @@ public final class MySQLComStmtPrepareCheckerTest {
             new AlterTableStatement(mock(SimpleTableSegment.class)), new AlterUserStatement(), new MySQLAnalyzeTableStatement(), new MySQLCacheIndexStatement(),
             new CallStatement(), new ChangeMasterStatement(), new MySQLChecksumTableStatement(), new CommitStatement(), new CreateIndexStatement(), new DropIndexStatement(),
             new CreateDatabaseStatement(""), new DropDatabaseStatement(""), new CreateTableStatement(mock(SimpleTableSegment.class)), new DropTableStatement(), new CreateUserStatement(),
-            new RenameUserStatement(), new DropUserStatement(), new CreateViewStatement(), new DropViewStatement(), new DeleteStatement(), new DoStatement(), new MySQLFlushStatement(),
+            new MySQLRenameUserStatement(), new DropUserStatement(), new CreateViewStatement(), new DropViewStatement(), new DeleteStatement(), new DoStatement(), new MySQLFlushStatement(),
             new GrantStatement(), new InsertStatement(), new MySQLInstallPluginStatement(), new MySQLKillStatement(), new MySQLLoadIndexInfoStatement(), new MySQLOptimizeTableStatement(),
             new RenameTableStatement(), new MySQLRepairTableStatement(), new MySQLResetStatement(), new RevokeStatement(), new SelectStatement(), new SetStatement(), new MySQLShowWarningsStatement(),
             new MySQLShowErrorsStatement(), new MySQLShowBinlogStatement(), new MySQLShowCreateProcedureStatement(), new MySQLShowCreateFunctionStatement(), new MySQLShowCreateEventStatement(),

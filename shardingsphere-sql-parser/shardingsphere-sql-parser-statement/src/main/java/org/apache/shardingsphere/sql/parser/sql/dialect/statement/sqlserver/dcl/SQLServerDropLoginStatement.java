@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
- * Set default role statement.
+ * SQLServer drop login statement.
  */
-public final class SetDefaultRoleStatement extends AbstractSQLStatement implements DCLStatement {
+public final class SQLServerDropLoginStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
 }

@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
- * Deny user statement.
+ * SQLServer create login statement.
  */
-@Getter
-@Setter
-public final class DenyUserStatement extends AbstractSQLStatement implements DCLStatement {
-    
-    private SimpleTableSegment table;
+public final class SQLServerCreateLoginStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
 }

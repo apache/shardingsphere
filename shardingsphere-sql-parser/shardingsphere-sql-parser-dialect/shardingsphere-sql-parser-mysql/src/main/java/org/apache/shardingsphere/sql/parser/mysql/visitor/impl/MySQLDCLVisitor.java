@@ -40,11 +40,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserS
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RenameUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLRenameUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetDefaultRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetPasswordStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetDefaultRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetPasswordStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetRoleStatement;
 
 import java.util.Optional;
 
@@ -96,7 +96,7 @@ public final class MySQLDCLVisitor extends MySQLVisitor implements DCLVisitor {
     
     @Override
     public ASTNode visitRenameUser(final RenameUserContext ctx) {
-        return new RenameUserStatement();
+        return new MySQLRenameUserStatement();
     }
     
     @Override
@@ -111,16 +111,16 @@ public final class MySQLDCLVisitor extends MySQLVisitor implements DCLVisitor {
     
     @Override
     public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
-        return new SetDefaultRoleStatement();
+        return new MySQLSetDefaultRoleStatement();
     }
     
     @Override
     public ASTNode visitSetRole(final SetRoleContext ctx) {
-        return new SetRoleStatement();
+        return new MySQLSetRoleStatement();
     }
     
     @Override
     public ASTNode visitSetPassword(final SetPasswordContext ctx) {
-        return new SetPasswordStatement();
+        return new MySQLSetPasswordStatement();
     }
 }

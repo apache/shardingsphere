@@ -48,7 +48,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DenyUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
@@ -152,8 +152,8 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof RevokeStatement) {
             return new RevokeStatementContext((RevokeStatement) sqlStatement);
         }
-        if (sqlStatement instanceof DenyUserStatement) {
-            return new DenyUserStatementContext((DenyUserStatement) sqlStatement);
+        if (sqlStatement instanceof SQLServerDenyUserStatement) {
+            return new DenyUserStatementContext((SQLServerDenyUserStatement) sqlStatement);
         }
         return new CommonSQLStatementContext(sqlStatement);
     }

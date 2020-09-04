@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Create login statement.
+ * MySQL rename user statement.
  */
-public final class CreateLoginStatement extends AbstractSQLStatement implements DCLStatement {
+public final class MySQLRenameUserStatement extends AbstractSQLStatement implements DCLStatement, MySQLStatement {
 }

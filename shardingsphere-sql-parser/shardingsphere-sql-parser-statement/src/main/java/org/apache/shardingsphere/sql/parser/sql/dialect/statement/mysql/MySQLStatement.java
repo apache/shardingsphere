@@ -21,7 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * MySQL statement.
- * 
  */
 public interface MySQLStatement extends SQLStatement {
 }
