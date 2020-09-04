@@ -348,7 +348,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     
     private boolean isModifiedDataSource(final Map<String, DataSource> oldDataSources, final String newDataSourceName, final DataSourceConfiguration newDataSourceConfig) {
         DataSourceConfiguration dataSourceConfig = DataSourceConverter.getDataSourceConfigurationMap(oldDataSources).get(newDataSourceName);
-        return newDataSourceConfig.equals(dataSourceConfig);
+        return null != dataSourceConfig && !newDataSourceConfig.equals(dataSourceConfig);
     }
     
     private Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs) {
