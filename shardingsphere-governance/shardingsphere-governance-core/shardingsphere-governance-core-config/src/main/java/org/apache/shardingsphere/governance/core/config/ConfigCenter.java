@@ -84,7 +84,7 @@ public final class ConfigCenter {
         persistDataSourceConfigurations(schemaName, dataSourceConfigs, isOverwrite);
         persistRuleConfigurations(schemaName, ruleConfigurations, isOverwrite);
         // TODO Consider removing the following one.
-        persistSchemaName(schemaName, isOverwrite);
+        persistSchemaName(schemaName);
     }
     
     /**
@@ -129,10 +129,12 @@ public final class ConfigCenter {
     }
     
     private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
-        if (dataSourceConfigurations.isEmpty() || !isOverwrite) {
+        if (dataSourceConfigurations.isEmpty()) {
             return;
         }
-        persistDataSourceConfigurations(schemaName, dataSourceConfigurations);
+        if (isOverwrite || !hasDataSourceConfiguration(schemaName)) {
+            persistDataSourceConfigurations(schemaName, dataSourceConfigurations);
+        }
     }
     
     private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
@@ -143,10 +145,12 @@ public final class ConfigCenter {
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
-        if (ruleConfigurations.isEmpty() || !isOverwrite) {
+        if (ruleConfigurations.isEmpty()) {
             return;
         }
-        persistRuleConfigurations(schemaName, ruleConfigurations);
+        if (isOverwrite || !hasRuleConfiguration(schemaName)) {
+            persistRuleConfigurations(schemaName, ruleConfigurations);
+        }
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
@@ -200,21 +204,22 @@ public final class ConfigCenter {
     }
     
     private void persistAuthentication(final Authentication authentication, final boolean isOverwrite) {
-        if (null != authentication && isOverwrite) {
+        if (null != authentication && (isOverwrite || !hasAuthentication())) {
             repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication)));
         }
     }
     
     private void persistProperties(final Properties props, final boolean isOverwrite) {
-        if (!props.isEmpty() && isOverwrite) {
+        if (!props.isEmpty() && (isOverwrite || !hasProperties())) {
             repository.persist(node.getPropsPath(), YamlEngine.marshal(props));
         }
     }
     
-    private void persistSchemaName(final String schemaName, final boolean isOverwrite) {
-        if (!isOverwrite) {
-            return;
-        }
+    private boolean hasProperties() {
+        return !Strings.isNullOrEmpty(repository.get(node.getPropsPath()));
+    }
+    
+    private void persistSchemaName(final String schemaName) {
         String schemaNames = repository.get(node.getSchemaPath());
         if (Strings.isNullOrEmpty(schemaNames)) {
             repository.persist(node.getSchemaPath(), schemaName);
