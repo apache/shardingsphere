@@ -15,39 +15,12 @@
  * limitations under the License.
  */
 
-grammar PostgreSQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createIndex
-    | alterIndex
-    | dropIndex
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | setTransaction
-    | beginTransaction
-    | commit
-    | rollback
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | show
-    | set
-    | resetParameter
-    | call
-    | alterFunction
-    ) SEMI_?
-    ;
+/**
+ * Alter function statement test case.
+ */
+public class AlterFunctionStatementTestCase extends SQLParserTestCase {
+}

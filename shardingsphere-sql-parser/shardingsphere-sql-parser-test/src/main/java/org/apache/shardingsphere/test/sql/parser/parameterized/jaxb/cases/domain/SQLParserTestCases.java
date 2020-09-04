@@ -47,6 +47,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetDefaultRoleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetPasswordStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetRoleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateIndexStatementTestCase;
@@ -213,6 +214,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "common")
     private final List<CommonStatementTestCase> commonTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-function")
+    private final List<AlterFunctionStatementTestCase> alterFunctionTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      * 
@@ -264,6 +268,7 @@ public final class SQLParserTestCases {
         putAll(showTestCases, result);
         putAll(setVariableTestCases, result);
         putAll(commonTestCases, result);
+        putAll(alterFunctionTestCases, result);
         return result;
     }
     
