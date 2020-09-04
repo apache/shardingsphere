@@ -406,10 +406,6 @@
     </dql-test-case>
     
     <!-- // TODO -->
-<!--    <dql-test-case sql="SELECT status as &quot;status&quot; FROM t_order" db-types="MySQL">-->
-<!--        <assertion expected-data-file="select_alias_as_single_quote_string.xml" />-->
-<!--    </dql-test-case>-->
-
 <!--    <dql-test-case sql="SELECT DISTINCT item_id FROM t_order_item">-->
 <!--        <assertion expected-data-file="select_distinct_with_single_column_without_order_by.xml" />-->
 <!--    </dql-test-case>-->
