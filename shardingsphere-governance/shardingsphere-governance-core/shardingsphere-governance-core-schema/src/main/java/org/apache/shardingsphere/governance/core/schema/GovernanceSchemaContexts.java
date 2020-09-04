@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.schema;
 
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.common.event.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangeCompletedEvent;
@@ -62,17 +63,18 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Governance schema contexts.
  */
-public abstract class GovernanceSchemaContexts implements SchemaContexts {
+public final class GovernanceSchemaContexts implements SchemaContexts {
     
     private final GovernanceFacade governanceFacade;
     
     private volatile SchemaContexts schemaContexts;
     
-    protected GovernanceSchemaContexts(final SchemaContexts schemaContexts, final GovernanceFacade governanceFacade) {
+    public GovernanceSchemaContexts(final SchemaContexts schemaContexts, final GovernanceFacade governanceFacade) {
         this.governanceFacade = governanceFacade;
         this.schemaContexts = schemaContexts;
         ShardingSphereEventBus.getInstance().register(this);
@@ -99,7 +101,7 @@ public abstract class GovernanceSchemaContexts implements SchemaContexts {
     }
     
     @Override
-    public final DatabaseType getDatabaseType() {
+    public DatabaseType getDatabaseType() {
         return schemaContexts.getDatabaseType();
     }
     
@@ -114,32 +116,32 @@ public abstract class GovernanceSchemaContexts implements SchemaContexts {
     }
     
     @Override
-    public final Map<String, SchemaContext> getSchemaContexts() {
+    public Map<String, SchemaContext> getSchemaContexts() {
         return schemaContexts.getSchemaContexts();
     }
     
     @Override
-    public final SchemaContext getDefaultSchemaContext() {
+    public SchemaContext getDefaultSchemaContext() {
         return schemaContexts.getDefaultSchemaContext();
     }
     
     @Override
-    public final Authentication getAuthentication() {
+    public Authentication getAuthentication() {
         return schemaContexts.getAuthentication();
     }
     
     @Override
-    public final ConfigurationProperties getProps() {
+    public ConfigurationProperties getProps() {
         return schemaContexts.getProps();
     }
     
     @Override
-    public final boolean isCircuitBreak() {
+    public boolean isCircuitBreak() {
         return schemaContexts.isCircuitBreak();
     }
     
     @Override
-    public final void close() throws Exception {
+    public void close() throws Exception {
         schemaContexts.close();
         governanceFacade.close();
     }
@@ -304,7 +306,7 @@ public abstract class GovernanceSchemaContexts implements SchemaContexts {
         return builder.build().getSchemaContexts().values().iterator().next();
     }
     
-    private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws Exception {
+    private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws SQLException {
         Collection<String> deletedDataSources = getDeletedDataSources(oldSchemaContext, newDataSources);
         Map<String, DataSource> modifiedDataSources = getModifiedDataSources(oldSchemaContext, newDataSources);
         oldSchemaContext.getSchema().closeDataSources(deletedDataSources);
@@ -332,9 +334,22 @@ public abstract class GovernanceSchemaContexts implements SchemaContexts {
         return result;
     }
     
-    protected abstract Map<String, DataSource> getAddedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSourceConfigs);
+    private Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
+        Map<String, DataSourceConfiguration> newDataSourceConfigs = Maps.filterKeys(newDataSources, each -> !oldSchemaContext.getSchema().getDataSources().containsKey(each));
+        return DataSourceConverter.getDataSourceMap(newDataSourceConfigs);
+    }
     
-    protected abstract Map<String, DataSource> getModifiedDataSources(SchemaContext oldSchemaContext, Map<String, DataSourceConfiguration> newDataSourceConfigs);
+    private Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
+        Map<String, DataSourceConfiguration> modifiedDataSourceConfigs = newDataSourceConfigs.entrySet().stream()
+                .filter(entry -> isModifiedDataSource(oldSchemaContext.getSchema().getDataSources(), entry.getKey(), entry.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (key, repeatKey) -> key, LinkedHashMap::new));
+        return DataSourceConverter.getDataSourceMap(modifiedDataSourceConfigs);
+    }
+    
+    private boolean isModifiedDataSource(final Map<String, DataSource> oldDataSources, final String newDataSourceName, final DataSourceConfiguration newDataSourceConfig) {
+        DataSourceConfiguration dataSourceConfig = DataSourceConverter.getDataSourceConfigurationMap(oldDataSources).get(newDataSourceName);
+        return newDataSourceConfig.equals(dataSourceConfig);
+    }
     
     private Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs) {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesConfigs.size(), 1);
