@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.governance.schema;
+package org.apache.shardingsphere.proxy.backend.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecorator;
