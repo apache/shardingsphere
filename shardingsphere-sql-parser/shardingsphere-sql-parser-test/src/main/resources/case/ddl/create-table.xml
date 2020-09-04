@@ -1336,6 +1336,52 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_range_partitioned_and_values">
+        <table name="t_order" start-index="13" stop-index="19" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_hash">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="bigint" start-index="22" stop-index="45">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="bigint" start-index="47" stop-index="69">
+            <column name="cust_id" />
+        </column-definition>
+        <column-definition type="text" start-index="71" stop-index="81">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_list">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="bigserial" start-index="22" stop-index="47">
+            <column name="city_id" />
+        </column-definition>
+        <column-definition type="text" start-index="49" stop-index="66">
+            <column name="name" />
+        </column-definition>
+        <column-definition type="bigint" start-index="68" stop-index="84">
+            <column name="population" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_of_type">
+        <table name="t_order" start-index="13" stop-index="19" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_in_tablespace">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="serial" start-index="22" stop-index="30">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="text" start-index="32" stop-index="40">
+            <column name="name" />
+        </column-definition>
+        <column-definition type="text" start-index="42" stop-index="54">
+            <column name="location" />
+        </column-definition>
+    </create-table>
     <create-table sql-case-id="create_table_with_sign_column">
         <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT" primary-key="true" start-index="21" stop-index="38">

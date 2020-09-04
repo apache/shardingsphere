@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -120,28 +119,6 @@ public final class DataSourceConverter {
         result.getProps().put("minPoolSize", dataSourceParameter.getMinPoolSize());
         result.getProps().put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
         result.getProps().put("readOnly", dataSourceParameter.isReadOnly());
-        return result;
-    }
-    
-    /**
-     * Get data source parameter.
-     *
-     * @param dataSource data source
-     * @return data source parameter
-     */
-    public static DataSourceParameter getDataSourceParameter(final DataSource dataSource) {
-        DataSourceParameter result = new DataSourceParameter();
-        HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
-        result.setUrl(hikariDataSource.getJdbcUrl());
-        result.setUsername(hikariDataSource.getUsername());
-        result.setPassword(hikariDataSource.getPassword());
-        result.setConnectionTimeoutMilliseconds(hikariDataSource.getConnectionTimeout());
-        result.setIdleTimeoutMilliseconds(hikariDataSource.getIdleTimeout());
-        result.setMaxLifetimeMilliseconds(hikariDataSource.getMaxLifetime());
-        result.setMaxPoolSize(hikariDataSource.getMaximumPoolSize());
-        result.setMinPoolSize(hikariDataSource.getMinimumIdle());
-        // TODO setMaintenanceIntervalMilliseconds
-        result.setReadOnly(hikariDataSource.isReadOnly());
         return result;
     }
 }

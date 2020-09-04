@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbtest.cases.assertion.dml;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import lombok.Getter;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 
@@ -25,4 +26,7 @@ import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAs
  */
 @Getter
 public final class DMLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
+    
+    @XmlAttribute(name = "dml-returning")
+    private boolean dmlReturning;
 }

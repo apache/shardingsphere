@@ -21,16 +21,16 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.driver.governance.internal.circuit.datasource.CircuitBreakerDataSource;
-import org.apache.shardingsphere.driver.governance.internal.schema.JDBCGovernanceSchemaContexts;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.schema.GovernanceSchemaContexts;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.infra.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -68,14 +68,14 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
-        schemaContexts = new JDBCGovernanceSchemaContexts(createSchemaContexts(governanceFacade), governanceFacade);
+        schemaContexts = new GovernanceSchemaContexts(createSchemaContexts(governanceFacade), governanceFacade);
         transactionContexts = createTransactionContexts(schemaContexts.getDatabaseType(), schemaContexts.getDefaultSchemaContext().getSchema().getDataSources());
     }
     
     public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations,
                                                  final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
-        schemaContexts = new JDBCGovernanceSchemaContexts(createSchemaContexts(dataSourceMap, ruleConfigurations, props), governanceFacade);
+        schemaContexts = new GovernanceSchemaContexts(createSchemaContexts(dataSourceMap, ruleConfigurations, props), governanceFacade);
         transactionContexts = createTransactionContexts(schemaContexts.getDatabaseType(), schemaContexts.getDefaultSchemaContext().getSchema().getDataSources());
         uploadLocalConfiguration(governanceFacade);
     }

@@ -215,6 +215,6 @@
     
     <grant sql-case-id="grant_all_on_table_with_owner_for_postgresql">
         <!-- FIXME ds_0 is not table, should be schema -->
-        <table name="ds_0" start-index="24" stop-index="27" />
+        <!--<table name="ds_0" start-index="24" stop-index="27" />-->
     </grant>
 </sql-parser-test-cases>
