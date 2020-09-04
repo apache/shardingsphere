@@ -116,7 +116,6 @@ public final class GovernanceShardingSphereDataSourceTest {
     public void assertRenewDataSource() throws Exception {
         governanceSchemaContexts.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
         assertThat(governanceSchemaContexts.getDefaultSchemaContext().getSchema().getDataSources().size(), is(3));
-        
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
