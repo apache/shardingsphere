@@ -129,10 +129,7 @@ public final class ConfigCenter {
     }
     
     private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
-        if (dataSourceConfigurations.isEmpty()) {
-            return;
-        }
-        if (isOverwrite || !hasDataSourceConfiguration(schemaName)) {
+        if (!dataSourceConfigurations.isEmpty() && (isOverwrite || !hasDataSourceConfiguration(schemaName))) {
             persistDataSourceConfigurations(schemaName, dataSourceConfigurations);
         }
     }
@@ -145,10 +142,7 @@ public final class ConfigCenter {
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
-        if (ruleConfigurations.isEmpty()) {
-            return;
-        }
-        if (isOverwrite || !hasRuleConfiguration(schemaName)) {
+        if (!ruleConfigurations.isEmpty() && (isOverwrite || !hasRuleConfiguration(schemaName))) {
             persistRuleConfigurations(schemaName, ruleConfigurations);
         }
     }
