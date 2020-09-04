@@ -52,7 +52,9 @@ public final class WhereSegmentExtractUtils {
         Collection<WhereSegment> result = new LinkedList<>();
         result.addAll(getSubqueryWhereSegmentsFromProjections(selectStatement.getProjections()));
         result.addAll(getSubqueryWhereSegmentsFromTableSegment(selectStatement.getFrom()));
-        result.addAll(getSubqueryWhereSegmentsFromWhere(selectStatement.getWhere().orElse(null)));
+        if (selectStatement.getWhere().isPresent()) {
+            result.addAll(getSubqueryWhereSegmentsFromExpression(selectStatement.getWhere().get().getExpr()));
+        }
         return result;
     }
     
@@ -66,20 +68,29 @@ public final class WhereSegmentExtractUtils {
                 continue;
             }
             SelectStatement subquerySelect = ((SubqueryProjectionSegment) each).getSubquery().getSelect();
-            subquerySelect.getWhere().ifPresent(result::add);
-            result.addAll(getSubqueryWhereSegments(subquerySelect));
+//            subquerySelect.getWhere().ifPresent(result::add);
+            result.addAll(getSubqueryWhereSegmentsFromSubquery(subquerySelect));
         }
         return result;
     }
     
+    private static Collection<WhereSegment> getSubqueryWhereSegmentsFromSubquery(final SelectStatement subquerySelect) {
+        Collection<WhereSegment> result = new LinkedList<>();
+//        SelectStatement subquerySelect = projection.getSubquery().getSelect();
+        subquerySelect.getWhere().ifPresent(result::add);
+        result.addAll(getSubqueryWhereSegments(subquerySelect));
+        return result;
+    }
+    
     private static Collection<WhereSegment> getSubqueryWhereSegmentsFromTableSegment(final TableSegment tableSegment) {
-        if (null != tableSegment) {
+        if (null == tableSegment) {
             return Collections.emptyList();
         }
         Collection<WhereSegment> result = new LinkedList<>();
         if (tableSegment instanceof SubqueryTableSegment) {
             SelectStatement subquerySelect = ((SubqueryTableSegment) tableSegment).getSubquery().getSelect();
-            result.addAll(getSubqueryWhereSegments(subquerySelect));
+//            result.addAll(getSubqueryWhereSegments(subquerySelect));
+            result.addAll(getSubqueryWhereSegmentsFromSubquery(subquerySelect));
         }
         if (tableSegment instanceof JoinTableSegment) {
             result.addAll(getSubqueryWhereSegmentsFromTableSegment(((JoinTableSegment) tableSegment).getLeft()));
@@ -88,20 +99,21 @@ public final class WhereSegmentExtractUtils {
         return result;
     }
     
-    private static Collection<WhereSegment> getSubqueryWhereSegmentsFromWhere(final WhereSegment where) {
-        if (null == where) {
-            return Collections.emptyList();
-        }
-        Collection<WhereSegment> result = new LinkedList<>();
-        result.add(where);
-        result.addAll(getSubqueryWhereSegmentsFromExpression(where.getExpr()));
-        return result;
-    }
+//    private static Collection<WhereSegment> getSubqueryWhereSegmentsFromWhere(final WhereSegment where) {
+//        if (null == where) {
+//            return Collections.emptyList();
+//        }
+//        Collection<WhereSegment> result = new LinkedList<>();
+//        result.add(where);
+//        result.addAll(getSubqueryWhereSegmentsFromExpression(where.getExpr()));
+//        return result;
+//    }
     
     private static Collection<WhereSegment> getSubqueryWhereSegmentsFromExpression(final ExpressionSegment expressionSegment) {
         Collection<WhereSegment> result = new LinkedList<>();
         if (expressionSegment instanceof SubqueryExpressionSegment) {
-            result.addAll(getSubqueryWhereSegments(((SubqueryExpressionSegment) expressionSegment).getSubquery().getSelect()));
+//            result.addAll(getSubqueryWhereSegments(((SubqueryExpressionSegment) expressionSegment).getSubquery().getSelect()));
+            result.addAll(getSubqueryWhereSegmentsFromSubquery(((SubqueryExpressionSegment) expressionSegment).getSubquery().getSelect()));
         }
         if (expressionSegment instanceof ListExpression) {
             for (ExpressionSegment each : ((ListExpression) expressionSegment).getItems()) {

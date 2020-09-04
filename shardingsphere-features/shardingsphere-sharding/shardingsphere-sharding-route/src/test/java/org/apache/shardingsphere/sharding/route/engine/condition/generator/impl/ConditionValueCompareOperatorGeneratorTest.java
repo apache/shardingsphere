@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
 import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
-import org.apache.shardingsphere.sharding.route.engine.condition.Column;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -43,7 +43,10 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @Test
     public void assertGenerateConditionValue() {
         int value = 1;
-        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "=", new LiteralExpressionSegment(0, 0, value));
+//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "=", new LiteralExpressionSegment(0, 0, value));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression();
+        rightValue.setOperator("=");
+        rightValue.setRight(new LiteralExpressionSegment(0, 0, value));
         Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertTrue(((ListRouteValue<Integer>) routeValue.get()).getValues().contains(value));
@@ -52,7 +55,10 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithLessThanOperator() {
-        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "<", new LiteralExpressionSegment(0, 0, 1));
+//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "<", new LiteralExpressionSegment(0, 0, 1));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression();
+        rightValue.setOperator("<");
+        rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
         Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertTrue(Range.lessThan(1).encloses(((RangeRouteValue<Integer>) routeValue.get()).getValueRange()));
@@ -61,7 +67,10 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithGreaterThanOperator() {
-        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, ">", new LiteralExpressionSegment(0, 0, 1));
+//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, ">", new LiteralExpressionSegment(0, 0, 1));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression();
+        rightValue.setOperator(">");
+        rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
         Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertTrue(Range.greaterThan(1).encloses(((RangeRouteValue<Integer>) routeValue.get()).getValueRange()));
@@ -70,7 +79,10 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithAtMostOperator() {
-        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "<=", new LiteralExpressionSegment(0, 0, 1));
+//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "<=", new LiteralExpressionSegment(0, 0, 1));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression();
+        rightValue.setOperator("<=");
+        rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
         Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertTrue(Range.atMost(1).encloses(((RangeRouteValue<Integer>) routeValue.get()).getValueRange()));
@@ -79,7 +91,10 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithAtLeastOperator() {
-        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, ">=", new LiteralExpressionSegment(0, 0, 1));
+//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, ">=", new LiteralExpressionSegment(0, 0, 1));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression();
+        rightValue.setOperator(">=");
+        rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
         Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertTrue(Range.atLeast(1).encloses(((RangeRouteValue<Integer>) routeValue.get()).getValueRange()));
@@ -87,20 +102,29 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     
     @Test
     public void assertGenerateConditionValueWithErrorOperator() {
-        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "!=", new LiteralExpressionSegment(0, 0, 1));
+//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "!=", new LiteralExpressionSegment(0, 0, 1));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression();
+        rightValue.setOperator("!=");
+        rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
         assertFalse(generator.generate(rightValue, column, new LinkedList<>()).isPresent());
     }
     
     @Test
     public void assertGenerateConditionValueWithoutNowExpression() {
-        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "=", new CommonExpressionSegment(0, 0, "value"));
+//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "=", new CommonExpressionSegment(0, 0, "value"));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression();
+        rightValue.setOperator("=");
+        rightValue.setRight(new CommonExpressionSegment(0, 0, "value"));
         assertFalse(generator.generate(rightValue, column, new LinkedList<>()).isPresent());
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithNowExpression() {
-        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "=", new CommonExpressionSegment(0, 0, "now()"));
+//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "=", new CommonExpressionSegment(0, 0, "now()"));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression();
+        rightValue.setOperator("=");
+        rightValue.setRight(new LiteralExpressionSegment(0, 0, "now()"));
         Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertFalse(((ListRouteValue<Integer>) routeValue.get()).getValues().isEmpty());

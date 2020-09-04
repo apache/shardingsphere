@@ -15,29 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.condition.generator;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
 
-import org.apache.shardingsphere.sharding.route.engine.condition.Column;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Condition value generator.
- *
- * @param <T> type of predicate right value
- */
-public interface ConditionValueGenerator<T extends ExpressionSegment> {
+@Getter
+@Setter
+public class JoinTableSegment implements TableSegment {
     
-    /**
-     * Generate route value.
-     * 
-     * @param predicateRightValue predicate right value
-     * @param column column
-     * @param parameters SQL parameters
-     * @return route value
-     */
-    Optional<RouteValue> generate(T predicateRightValue, Column column, List<Object> parameters);
+    private int startIndex;
+    
+    private int stopIndex;
+    
+    private AliasSegment alias;
+    
+    private TableSegment left;
+    
+    private String joinType;
+    
+    private TableSegment right;
+    
+    private List<ColumnSegment> using;
+    
+    private ExpressionSegment condition;
+    
+    @Override
+    public Optional<String> getAlias() {
+        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
+    }
 }

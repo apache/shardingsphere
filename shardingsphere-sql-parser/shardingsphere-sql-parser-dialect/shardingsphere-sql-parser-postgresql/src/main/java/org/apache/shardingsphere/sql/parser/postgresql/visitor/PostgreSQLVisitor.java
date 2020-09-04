@@ -59,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -255,16 +256,16 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
     }
     
-    private BinaryOperationExpression createInSegment(final AExprContext ctx) {
-        BinaryOperationExpression result = new BinaryOperationExpression();
+    private InExpression createInSegment(final AExprContext ctx) {
+        InExpression result = new InExpression();
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setLeft((ExpressionSegment) visit(ctx.aExpr(0)));
         result.setRight(visitInExpression(ctx.inExpr()));
         if (null != ctx.NOT()) {
-            result.setOperator("NOT IN");
+            result.setNot(true);
         } else {
-            result.setOperator("IN");
+            result.setNot(false);
         }
         return result;
     }

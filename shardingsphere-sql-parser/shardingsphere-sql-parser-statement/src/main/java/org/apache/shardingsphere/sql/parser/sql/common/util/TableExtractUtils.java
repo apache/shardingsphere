@@ -141,7 +141,9 @@ public final class TableExtractUtils {
     public void extractTablesFromDelete(final DeleteStatement deleteStatement) {
         
         extractTablesFromTableSegment(deleteStatement.getTableSegment());
-        extractTablesFromExpression(deleteStatement.getWhere().get().getExpr());
+        if (deleteStatement.getWhere().isPresent()) {
+            extractTablesFromExpression(deleteStatement.getWhere().get().getExpr());
+        }
     }
     
     /**
@@ -152,7 +154,9 @@ public final class TableExtractUtils {
     public void extractTablesFromUpdate(final UpdateStatement updateStatement) {
         
         extractTablesFromTableSegment(updateStatement.getTableSegment());
-        extractTablesFromExpression(updateStatement.getWhere().get().getExpr());
+        if (updateStatement.getWhere().isPresent()) {
+            extractTablesFromExpression(updateStatement.getWhere().get().getExpr());
+        }
     }
     
     private boolean needRewrite(final OwnerSegment owner) {

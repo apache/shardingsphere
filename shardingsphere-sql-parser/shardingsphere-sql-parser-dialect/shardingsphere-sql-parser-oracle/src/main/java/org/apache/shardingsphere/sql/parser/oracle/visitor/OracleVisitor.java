@@ -64,6 +64,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
@@ -297,8 +298,8 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
         return visit(ctx.bitExpr(0));
     }
     
-    private BinaryOperationExpression createInSegment(final PredicateContext ctx) {
-        BinaryOperationExpression result = new BinaryOperationExpression();
+    private InExpression createInSegment(final PredicateContext ctx) {
+        InExpression result = new InExpression();
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setLeft((ExpressionSegment) visit(ctx.bitExpr(0)));
@@ -311,8 +312,8 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
             }
             result.setRight(listExpression);
         }
-        String operator = null != ctx.NOT() ? "NOT IN" : "IN";
-        result.setOperator(operator);
+        Boolean operator = null != ctx.NOT() ? true : false;
+        result.setNot(operator);
         return result;
     }
     

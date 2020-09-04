@@ -96,7 +96,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private boolean containsSubquery() {
         Collection<WhereSegment> subqueryPredicateSegments = WhereSegmentExtractUtils.getSubqueryWhereSegments(getSqlStatement());
         for (WhereSegment each : subqueryPredicateSegments) {
-            if (null == each.getExpr()) {
+            if (null != each) {
                 return true;
             }
         }

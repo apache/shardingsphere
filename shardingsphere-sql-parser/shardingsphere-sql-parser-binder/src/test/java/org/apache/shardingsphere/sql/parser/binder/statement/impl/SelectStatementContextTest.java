@@ -165,6 +165,13 @@ public final class SelectStatementContextTest {
     @Test
     public void assertContainsSubquery() {
         SubqueryProjectionSegment projectionSegment = mock(SubqueryProjectionSegment.class);
+        SubquerySegment subquery = mock(SubquerySegment.class);
+        when(projectionSegment.getSubquery()).thenReturn(subquery);
+        SelectStatement select = mock(SelectStatement.class);
+        when(subquery.getSelect()).thenReturn(select);
+        WhereSegment subwhere = mock(WhereSegment.class);
+        when(select.getWhere()).thenReturn(Optional.of(subwhere));
+        when(projectionSegment.getSubquery().getSelect().getWhere()).thenReturn(Optional.of(mock(WhereSegment.class)));
         SelectStatement subSelectStatement = new SelectStatement();
         WhereSegment whereSegment = new WhereSegment(0, 0, null);
 //        whereSegment.getAndPredicates().add(mock(AndPredicate.class));
@@ -195,7 +202,7 @@ public final class SelectStatementContextTest {
         selectStatement.setProjections(projectionsSegment);
         SelectStatementContext actual = new SelectStatementContext(
                 selectStatement, null, null, null, null);
-        assertFalse(actual.isContainsSubquery());
+        assertTrue(actual.isContainsSubquery());
     }
     
     private OrderByContext createOrderBy(final String type) {

@@ -19,12 +19,11 @@ package org.apache.shardingsphere.sql.parser.sql92.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ColumnNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentValuesContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DuplicateSpecificationContext;
@@ -45,27 +44,26 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SelectC
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SelectSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SingleTableClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableReferencesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.WhereClauseContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.JoinSpecificationSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.JoinedTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.TableFactorSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.BinaryOperationProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -75,14 +73,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.OrPredicateSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -137,10 +134,7 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
-        CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue<TableReferenceSegment>) visit(ctx.tableReferences());
-        for (TableReferenceSegment each : tableReferences.getValue()) {
-            result.getTables().addAll(each.getSimpleTableSegments());
-        }
+        result.setTableSegment((TableSegment) visit(ctx.tableReferences()));
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -186,7 +180,7 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement result = new DeleteStatement();
-        result.getTables().add((SimpleTableSegment) visit(ctx.singleTableClause()));
+        result.setTableSegment((TableSegment) visit(ctx.singleTableClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
@@ -226,10 +220,8 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
             result.getProjections().setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
         }
         if (null != ctx.fromClause()) {
-            CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue<TableReferenceSegment>) visit(ctx.fromClause());
-            for (TableReferenceSegment each : tableReferences.getValue()) {
-                result.getTableReferences().add(each);
-            }
+            TableSegment tableSegment = (TableSegment) visit(ctx.fromClause());
+            result.setFrom(tableSegment);
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -321,6 +313,15 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
             result.setAlias(alias);
             return result;
         }
+        if (projection instanceof BinaryOperationExpression) {
+            BinaryOperationProjection result = new BinaryOperationProjection();
+            result.setStartIndex(((BinaryOperationExpression) projection).getStartIndex());
+            int stopIndex = null != alias ? alias.getStopIndex() : ((BinaryOperationExpression) projection).getStopIndex();
+            result.setStopIndex(stopIndex);
+            result.setExpression((BinaryOperationExpression) projection);
+            result.setAlias(alias);
+            return result;
+        }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()))
                 : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()));
@@ -335,101 +336,96 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
-        CollectionValue<TableReferenceSegment> result = new CollectionValue<>();
-        for (EscapedTableReferenceContext each : ctx.escapedTableReference()) {
-            result.getValue().add((TableReferenceSegment) visit(each));
+        TableSegment result = (TableSegment) visit(ctx.escapedTableReference(0));
+        if (ctx.escapedTableReference().size() > 1) {
+            for (int i = 1; i < ctx.escapedTableReference().size(); i++) {
+                result = generateJoinTableSourceFromEscapedTableReference(ctx.escapedTableReference(i), result);
+            }
         }
         return result;
     }
     
+    private JoinTableSegment generateJoinTableSourceFromEscapedTableReference(final EscapedTableReferenceContext ctx, final TableSegment tableSegment) {
+        JoinTableSegment result = new JoinTableSegment();
+        result.setStartIndex(tableSegment.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        result.setLeft(tableSegment);
+        result.setRight((TableSegment) visit(ctx));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitEscapedTableReference(final EscapedTableReferenceContext ctx) {
+        return visit(ctx.tableReference());
+    }
+    
     @Override
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
-        TableReferenceSegment result = new TableReferenceSegment();
-        if (null != ctx.tableFactor()) {
-            TableFactorSegment tableFactor = (TableFactorSegment) visit(ctx.tableFactor());
-            result.setTableFactor(tableFactor);
-        }
+        TableSegment result;
+        TableSegment left;
+        left = (TableSegment) visit(ctx.tableFactor());
         if (!ctx.joinedTable().isEmpty()) {
             for (JoinedTableContext each : ctx.joinedTable()) {
-                JoinedTableSegment joinedTableSegment = (JoinedTableSegment) visit(each);
-                result.getJoinedTables().add(joinedTableSegment);
+                left = visitJoinedTable(each, left);
             }
         }
+        result = left;
         return result;
     }
     
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
-        TableFactorSegment result = new TableFactorSegment();
         if (null != ctx.subquery()) {
             SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery);
-            SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(subquerySegment);
+            SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
             if (null != ctx.alias()) {
-                subqueryTableSegment.setAlias((AliasSegment) visit(ctx.alias()));
+                result.setAlias((AliasSegment) visit(ctx.alias()));
             }
-            result.setTable(subqueryTableSegment);
+            return result;
         }
         if (null != ctx.tableName()) {
-            SimpleTableSegment table = (SimpleTableSegment) visit(ctx.tableName());
+            SimpleTableSegment result = (SimpleTableSegment) visit(ctx.tableName());
             if (null != ctx.alias()) {
-                table.setAlias((AliasSegment) visit(ctx.alias()));
+                result.setAlias((AliasSegment) visit(ctx.alias()));
             }
-            result.setTable(table);
+            return result;
         }
-        if (null != ctx.tableReferences()) {
-            CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue) visit(ctx.tableReferences());
-            result.getTableReferences().addAll(tableReferences.getValue());
-        }
-        return result;
+        return visit(ctx.tableReferences());
     }
     
-    @Override
-    public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
-        JoinedTableSegment result = new JoinedTableSegment();
-        TableFactorSegment tableFactor = (TableFactorSegment) visit(ctx.tableFactor());
-        result.setTableFactor(tableFactor);
+    private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final TableSegment tableSegment) {
+        JoinTableSegment result = new JoinTableSegment();
+        result.setLeft(tableSegment);
+        result.setStartIndex(tableSegment.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        TableSegment right = (TableSegment) visit(ctx.tableFactor());
+        result.setRight(right);
         if (null != ctx.joinSpecification()) {
-            result.setJoinSpecification((JoinSpecificationSegment) visit(ctx.joinSpecification()));
+            result = visitJoinSpecification(ctx.joinSpecification(), result);
         }
         return result;
     }
     
-    @Override
-    public ASTNode visitJoinSpecification(final JoinSpecificationContext ctx) {
-        JoinSpecificationSegment result = new JoinSpecificationSegment();
+    private JoinTableSegment visitJoinSpecification(final JoinSpecificationContext ctx, final JoinTableSegment joinTableSource) {
         if (null != ctx.expr()) {
-            ASTNode expr = visit(ctx.expr());
-            if (expr instanceof PredicateSegment) {
-                AndPredicate andPredicate = new AndPredicate();
-                andPredicate.getPredicates().add((PredicateSegment) expr);
-                result.getAndPredicates().add(andPredicate);
-            }
-            if (expr instanceof OrPredicateSegment) {
-                result.getAndPredicates().addAll(((OrPredicateSegment) expr).getAndPredicates());
-            }
+            ExpressionSegment condition = (ExpressionSegment) visit(ctx.expr());
+            joinTableSource.setCondition(condition);
         }
         if (null != ctx.USING()) {
-            Collection<ColumnSegment> columnSegmentList = new LinkedList<>();
-            for (ColumnNameContext each : ctx.columnNames().columnName()) {
-                columnSegmentList.add((ColumnSegment) visit(each));
+            List<ColumnSegment> columnSegmentList = new LinkedList<>();
+            for (ColumnNameContext cname : ctx.columnNames().columnName()) {
+                columnSegmentList.add((ColumnSegment) visit(cname));
             }
-            result.getUsingColumns().addAll(columnSegmentList);
+            joinTableSource.setUsing(columnSegmentList);
         }
-        return result;
+        return joinTableSource;
     }
     
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
-        WhereSegment result = new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        ASTNode segment = visit(ctx.expr());
-        if (segment instanceof OrPredicateSegment) {
-            result.getAndPredicates().addAll(((OrPredicateSegment) segment).getAndPredicates());
-        } else if (segment instanceof PredicateSegment) {
-            AndPredicate andPredicate = new AndPredicate();
-            andPredicate.getPredicates().add((PredicateSegment) segment);
-            result.getAndPredicates().add(andPredicate);
-        }
+        ExpressionSegment segment = (ExpressionSegment) visit(ctx.expr());
+        WhereSegment result = new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), segment);
         return result;
     }
     
