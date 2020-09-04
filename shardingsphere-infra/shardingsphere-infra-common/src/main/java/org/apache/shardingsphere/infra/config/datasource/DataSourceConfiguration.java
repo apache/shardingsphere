@@ -162,6 +162,9 @@ public final class DataSourceConfiguration {
             return false;
         }
         for (Entry<String, Object> entry : props.entrySet()) {
+            if (!dataSourceConfig.props.containsKey(entry.getKey())) {
+                continue;
+            }
             if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceConfig.props.get(entry.getKey())))) {
                 return false;
             }
