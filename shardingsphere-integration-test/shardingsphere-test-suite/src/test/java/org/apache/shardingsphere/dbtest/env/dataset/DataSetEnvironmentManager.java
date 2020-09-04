@@ -68,7 +68,6 @@ public final class DataSetEnvironmentManager {
      * @throws ParseException parse exception
      */
     public void initialize() throws SQLException, ParseException {
-        clear();
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
             DataNode dataNode = entry.getKey();
