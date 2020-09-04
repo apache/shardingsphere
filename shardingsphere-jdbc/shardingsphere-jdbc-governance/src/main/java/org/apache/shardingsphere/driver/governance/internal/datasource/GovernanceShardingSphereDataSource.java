@@ -58,13 +58,13 @@ import java.util.logging.Logger;
 @Getter
 public final class GovernanceShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
-    @SuppressWarnings("UseOfSystemOutOrSystemErr")
-    @Setter
-    private PrintWriter logWriter = new PrintWriter(System.out);
-    
     private final SchemaContexts schemaContexts;
     
     private final TransactionContexts transactionContexts;
+    
+    @SuppressWarnings("UseOfSystemOutOrSystemErr")
+    @Setter
+    private PrintWriter logWriter = new PrintWriter(System.out);
     
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
