@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,8 +30,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
-import javax.sql.DataSource;
 
 public final class DataSourceConverterTest {
     
@@ -79,13 +78,6 @@ public final class DataSourceConverterTest {
         assertThat(props.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
         assertThat(props.get("username"), is("root"));
         assertThat(props.get("password"), is("root"));
-    }
-    
-    @Test
-    public void assertGetDataSourceParameter() {
-        DataSource dataSource = createDataSource();
-        DataSourceParameter actual = DataSourceConverter.getDataSourceParameter(dataSource);
-        assertDataSourceParameter(actual);
     }
     
     private DataSource createDataSource() {

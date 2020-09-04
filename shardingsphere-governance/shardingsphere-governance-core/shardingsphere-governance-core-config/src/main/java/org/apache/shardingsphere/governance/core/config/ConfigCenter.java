@@ -125,7 +125,7 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final SchemaNameEvent event) {
-        persistSchemaName(event.getSchemaName(), event.isOverwrite());
+        persistSchema(event.getSchemaName(), event.isDrop());
     }
     
     private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
@@ -229,10 +229,10 @@ public final class ConfigCenter {
         repository.persist(node.getSchemaPath(), Joiner.on(",").join(newArrayList));
     }
     
-    private void persistSchema(final String schemaName, final boolean isDeleted) {
+    private void persistSchema(final String schemaName, final boolean isDrop) {
         String schemaNames = repository.get(node.getSchemaPath());
         Collection<String> schemas = new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
-        if (isDeleted) {
+        if (isDrop) {
             schemas.remove(schemaName);
         } else if (!schemas.contains(schemaName)) {
             schemas.add(schemaName);

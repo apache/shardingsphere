@@ -29,5 +29,5 @@ public final class SchemaNameEvent {
     
     private final String schemaName;
     
-    private final boolean overwrite; 
+    private final boolean isDrop; 
 }

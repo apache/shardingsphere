@@ -20,18 +20,21 @@ package org.apache.shardingsphere.governance.core.config;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.eventbus.event.DataSourceEvent;
+import org.apache.shardingsphere.infra.eventbus.event.RuleEvent;
+import org.apache.shardingsphere.infra.eventbus.event.SchemaNameEvent;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Test;
@@ -55,6 +58,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -439,5 +443,48 @@ public final class ConfigCenterTest {
         when(configurationRepository.get("/config/schema")).thenReturn("master_slave_db");
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), true);
         verify(configurationRepository).persist(eq("/config/schema"), eq("master_slave_db,sharding_db"));
+    }
+    
+    @Test
+    public void assertRenewDataSourceEvent() {
+        DataSourceEvent event = new DataSourceEvent("sharding_db", createDataSourceConfigurations());
+        ConfigCenter configurationService = new ConfigCenter(configurationRepository);
+        configurationService.renew(event);
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/datasource"), anyString());
+    }
+    
+    @Test
+    public void assertRenewRuleEvent() {
+        RuleEvent event = new RuleEvent("sharding_db", createRuleConfigurations());
+        ConfigCenter configurationService = new ConfigCenter(configurationRepository);
+        configurationService.renew(event);
+        verify(configurationRepository).persist(eq("/config/schema/sharding_db/rule"), anyString());
+    }
+    
+    @Test
+    public void assertRenewSchemaNameEventWithDrop() {
+        SchemaNameEvent event = new SchemaNameEvent("sharding_db", true);
+        when(configurationRepository.get("/config/schema")).thenReturn("sharding_db,master_slave_db");
+        ConfigCenter configurationService = new ConfigCenter(configurationRepository);
+        configurationService.renew(event);
+        verify(configurationRepository).persist(eq("/config/schema"), eq("master_slave_db"));
+    }
+    
+    @Test
+    public void assertRenewSchemaNameEventWithAdd() {
+        SchemaNameEvent event = new SchemaNameEvent("sharding_db", false);
+        when(configurationRepository.get("/config/schema")).thenReturn("master_slave_db");
+        ConfigCenter configurationService = new ConfigCenter(configurationRepository);
+        configurationService.renew(event);
+        verify(configurationRepository).persist(eq("/config/schema"), eq("master_slave_db,sharding_db"));
+    }
+    
+    @Test
+    public void assertRenewSchemaNameEventWithAddAndExist() {
+        SchemaNameEvent event = new SchemaNameEvent("sharding_db", false);
+        when(configurationRepository.get("/config/schema")).thenReturn("sharding_db,master_slave_db");
+        ConfigCenter configurationService = new ConfigCenter(configurationRepository);
+        configurationService.renew(event);
+        verify(configurationRepository).persist(eq("/config/schema"), eq("sharding_db,master_slave_db"));
     }
 }
