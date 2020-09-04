@@ -113,7 +113,7 @@ public final class GovernanceFacade implements AutoCloseable {
     
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class GovernanceFacadeHolder {
-        
+    
         public static final GovernanceFacade INSTANCE = new GovernanceFacade();
     }
 }

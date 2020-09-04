@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.core.datasource;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.transaction.context.impl.StandardTransactionCon
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
-import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -43,7 +41,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  * ShardingSphere data source.
@@ -55,10 +52,6 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     private final SchemaContexts schemaContexts;
     
     private final TransactionContexts transactionContexts;
-    
-    @SuppressWarnings("UseOfSystemOutOrSystemErr")
-    @Setter
-    private PrintWriter logWriter = new PrintWriter(System.out);
     
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         DatabaseType databaseType = createDatabaseType(dataSourceMap);
@@ -90,11 +83,6 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
         engine.init(databaseType, dataSourceMap);
         return new StandardTransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, engine));
-    }
-    
-    @Override
-    public Logger getParentLogger() {
-        return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     }
     
     @Override
