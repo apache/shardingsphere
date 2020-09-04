@@ -37,6 +37,5 @@
         <module>shardingsphere-proxy-frontend</module>
         <module>shardingsphere-proxy-backend</module>
         <module>shardingsphere-proxy-bootstrap</module>
-        <module>shardingsphere-proxy-governance</module>
     </modules>
 </project>
