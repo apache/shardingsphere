@@ -24,7 +24,7 @@ import java.sql.Types;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class PostgreSQLColumnTypeTest {
+public final class PostgreSQLColumnTypeTest {
     
     @Test
     public void assertValueOfJDBCType() {
@@ -52,5 +52,4 @@ public class PostgreSQLColumnTypeTest {
     public void assertGetValue() {
         assertThat(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8.getValue(), is(20));
     }
-    
 }
