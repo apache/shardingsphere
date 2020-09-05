@@ -236,7 +236,7 @@ Answer:
 
 Answer:
 
-1. Update to 4.0.1 above.
+1. Update to 5.x above.
 2. Configure`allow-range-query-with-inline-sharding` to `true` (Default value is `false`).
 3. A tip here: then each range query will be broadcast to every sharding table.
 
