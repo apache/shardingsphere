@@ -116,7 +116,6 @@ public final class ConfigCenterTest {
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
         verify(configurationRepository).persist(eq("/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configurationRepository).persist(eq("/config/schema/sharding_db/rule"), ArgumentMatchers.any());
-        
     }
     
     @Test

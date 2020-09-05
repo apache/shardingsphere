@@ -20,12 +20,8 @@ package org.apache.shardingsphere.governance.core.config.listener;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.commons.collections4.SetUtils;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.common.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.common.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.common.event.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.common.event.schema.SchemaDeletedEvent;
@@ -37,6 +33,9 @@ import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -57,13 +56,13 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     
     private final ConfigCenterNode configurationNode;
     
-    private final Collection<String> existedSchemaNames = new LinkedHashSet<>();
+    private final Collection<String> existedSchemaNames;
     
     public SchemaChangedListener(final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
         super(configurationRepository, new ConfigCenterNode().getAllSchemaConfigPaths(schemaNames));
         configurationService = new ConfigCenter(configurationRepository);
         configurationNode = new ConfigCenterNode();
-        existedSchemaNames.addAll(schemaNames);
+        existedSchemaNames = new LinkedHashSet<>(schemaNames);
     }
     
     @Override
@@ -105,8 +104,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     }
     
     private boolean isValidNodeChangedEvent(final String schemaName, final String nodeFullPath) {
-        return !existedSchemaNames.contains(schemaName)
-                || configurationNode.getDataSourcePath(schemaName).equals(nodeFullPath) || configurationNode.getRulePath(schemaName).equals(nodeFullPath);
+        return !existedSchemaNames.contains(schemaName) || configurationNode.getDataSourcePath(schemaName).equals(nodeFullPath) || configurationNode.getRulePath(schemaName).equals(nodeFullPath);
     }
     
     private GovernanceEvent createAddedEvent(final String schemaName) {
@@ -114,7 +112,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         if (!isOwnCompleteConfigurations(schemaName)) {
             return new SchemaAddedEvent(schemaName, Collections.emptyMap(), Collections.emptyList());
         }
-        return new SchemaAddedEvent(schemaName, configurationService.loadDataSourceConfigurations(schemaName), createRuleConfigurations(schemaName));
+        return new SchemaAddedEvent(schemaName, configurationService.loadDataSourceConfigurations(schemaName), configurationService.loadRuleConfigurations(schemaName));
     }
     
     private GovernanceEvent createUpdatedEvent(final String schemaName, final DataChangedEvent event) {
@@ -123,8 +121,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     }
     
     private GovernanceEvent createUpdatedEventForExistedSchema(final DataChangedEvent event, final String schemaName) {
-        return event.getKey().equals(configurationNode.getDataSourcePath(schemaName))
-                ? createDataSourceChangedEvent(schemaName, event) : createRuleChangedEvent(schemaName, event);
+        return event.getKey().equals(configurationNode.getDataSourcePath(schemaName)) ? createDataSourceChangedEvent(schemaName, event) : createRuleChangedEvent(schemaName, event);
     }
     
     @SuppressWarnings("unchecked")
@@ -143,9 +140,5 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     
     private boolean isOwnCompleteConfigurations(final String schemaName) {
         return configurationService.hasDataSourceConfiguration(schemaName) && configurationService.hasRuleConfiguration(schemaName);
-    }
-    
-    private Collection<RuleConfiguration> createRuleConfigurations(final String schemaName) {
-        return configurationService.loadRuleConfigurations(schemaName);
     }
 }
