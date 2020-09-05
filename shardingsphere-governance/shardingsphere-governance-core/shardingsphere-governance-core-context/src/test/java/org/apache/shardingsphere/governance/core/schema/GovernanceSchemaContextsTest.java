@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.governance.core.schema;
 
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.governance.core.common.event.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.common.event.props.PropertiesChangedEvent;
@@ -98,8 +98,7 @@ public final class GovernanceSchemaContextsTest {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         when(governanceFacade.getMetaDataCenter()).thenReturn(metaDataCenter);
-        governanceSchemaContexts = new GovernanceSchemaContexts(
-                new StandardSchemaContexts(getSchemaContextMap(), authentication, configurationProperties, new H2DatabaseType()), governanceFacade);
+        governanceSchemaContexts = new GovernanceSchemaContexts(new StandardSchemaContexts(getSchemaContextMap(), authentication, configurationProperties, new H2DatabaseType()), governanceFacade);
     }
     
     @SneakyThrows(Exception.class)
@@ -154,11 +153,13 @@ public final class GovernanceSchemaContextsTest {
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
-        BasicDataSource dataSource = new BasicDataSource();
+        HikariDataSource dataSource = new HikariDataSource();
         dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        dataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         dataSource.setUsername("sa");
         dataSource.setPassword("");
+        dataSource.setMaximumPoolSize(1);
+        dataSource.setMinimumIdle(1);
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(3, 1);
         result.put("ds_m", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_0", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
@@ -230,11 +231,13 @@ public final class GovernanceSchemaContextsTest {
     }
     
     private Map<String, DataSourceConfiguration> getChangedDataSourceConfigurations() {
-        BasicDataSource dataSource = new BasicDataSource();
+        HikariDataSource dataSource = new HikariDataSource();
         dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        dataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         dataSource.setUsername("sa");
         dataSource.setPassword("");
+        dataSource.setMaximumPoolSize(1);
+        dataSource.setMinimumIdle(1);
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(3, 1);
         result.put("ds_m", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_1", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
