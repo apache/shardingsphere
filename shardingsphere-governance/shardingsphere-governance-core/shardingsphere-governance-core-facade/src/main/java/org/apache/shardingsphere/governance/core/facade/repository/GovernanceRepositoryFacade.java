@@ -19,7 +19,6 @@ package org.apache.shardingsphere.governance.core.facade.repository;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.governance.repository.api.config.GovernanceConf
  * Governance repository facade.
  */
 @Getter
-@Slf4j
 public final class GovernanceRepositoryFacade implements AutoCloseable {
     
     static {
@@ -46,7 +44,6 @@ public final class GovernanceRepositoryFacade implements AutoCloseable {
     public GovernanceRepositoryFacade(final GovernanceConfiguration config) {
         registryRepository = createRegistryRepository(config);
         configurationRepository = createConfigurationRepository(config);
-        log.info("RegistryRepository/ConfigurationRepository with governance name {} has been created.");
     }
     
     private RegistryRepository createRegistryRepository(final GovernanceConfiguration config) {
@@ -76,6 +73,5 @@ public final class GovernanceRepositoryFacade implements AutoCloseable {
         if (registryRepository != configurationRepository) {
             configurationRepository.close();
         }
-        log.info("RegistryRepository/ConfigurationRepository with governance name {} has been closed.");
     }
 }
