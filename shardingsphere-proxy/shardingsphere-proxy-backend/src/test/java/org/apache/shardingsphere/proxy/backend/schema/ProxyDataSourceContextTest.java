@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCRawBackendDataSourceFactory;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory.JDBCRawBackendDataSourceFactory;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.reset;
 
 public final class ProxyDataSourceContextTest {
-
+    
     @Test
     public void assertEmptySchemaDataSources() {
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = new HashMap<>();
@@ -48,7 +48,7 @@ public final class ProxyDataSourceContextTest {
         assertThat(proxyDataSourceContext.getDatabaseType(), instanceOf(MySQLDatabaseType.class));
         assertTrue(proxyDataSourceContext.getDataSourcesMap().isEmpty());
     }
-
+    
     @Test(expected = ShardingSphereException.class)
     public void assertWrongSchemaDataSources() {
         DataSourceParameter dataSourceParameter = new DataSourceParameter();
@@ -59,7 +59,7 @@ public final class ProxyDataSourceContextTest {
         schemaDataSources.put("order", dataSourceParameterMap);
         new ProxyDataSourceContext(schemaDataSources);
     }
-
+    
     @Test(expected = ShardingSphereException.class)
     public void assertThrowByBuild() throws Exception {
         JDBCRawBackendDataSourceFactory jdbcRawBackendDataSourceFactory = mock(JDBCRawBackendDataSourceFactory.class);
@@ -67,7 +67,7 @@ public final class ProxyDataSourceContextTest {
         build(jdbcRawBackendDataSourceFactory);
         reset(jdbcRawBackendDataSourceFactory);
     }
-
+    
     @Test
     public void assertRightMysqlSchemaDataSources() throws Exception {
         JDBCRawBackendDataSourceFactory jdbcRawBackendDataSourceFactory = mock(JDBCRawBackendDataSourceFactory.class);
@@ -77,7 +77,7 @@ public final class ProxyDataSourceContextTest {
         assertTrue(proxyDataSourceContext.getDataSourcesMap().size() == 1);
         reset(jdbcRawBackendDataSourceFactory);
     }
-
+    
     private ProxyDataSourceContext build(final JDBCRawBackendDataSourceFactory jdbcRawBackendDataSourceFactory) throws Exception {
         JDBCRawBackendDataSourceFactory jdbcBackendDataSourceFactory = (JDBCRawBackendDataSourceFactory) JDBCRawBackendDataSourceFactory.getInstance();
         Class<?> jdbcBackendDataSourceFactoryClass = jdbcBackendDataSourceFactory.getClass();

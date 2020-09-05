@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.datasource;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.decorator;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecorator;
@@ -28,7 +28,7 @@ public final class HikariJDBCParameterDecorator implements JDBCParameterDecorato
     @Override
     public void decorate(final HikariDataSource dataSource) {
         dataSource.getDataSourceProperties().setProperty("useServerPrepStmts", Boolean.TRUE.toString());
-        dataSource.getDataSourceProperties().setProperty("cachePrepStmts", "true");
+        dataSource.getDataSourceProperties().setProperty("cachePrepStmts", Boolean.TRUE.toString());
         dataSource.getDataSourceProperties().setProperty("prepStmtCacheSize", "250");
         dataSource.getDataSourceProperties().setProperty("prepStmtCacheSqlLimit", "2048");
         dataSource.getDataSourceProperties().setProperty("useLocalSessionState", Boolean.TRUE.toString());

@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecorator;
 import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 
 import javax.sql.DataSource;
+import java.util.Optional;
 
 /**
  * Backend data source factory using {@code HikariDataSource} for JDBC raw.
@@ -34,6 +37,10 @@ import javax.sql.DataSource;
 public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSourceFactory {
     
     private static final JDBCRawBackendDataSourceFactory INSTANCE = new JDBCRawBackendDataSourceFactory();
+    
+    static {
+        ShardingSphereServiceLoader.register(JDBCParameterDecorator.class);
+    }
     
     /**
      * Get instance of {@code JDBCBackendDataSourceFactory}.
@@ -44,6 +51,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         return INSTANCE;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
         HikariConfig config = new HikariConfig();
@@ -59,19 +67,9 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         config.setMaximumPoolSize(dataSourceParameter.getMaxPoolSize());
         config.setMinimumIdle(dataSourceParameter.getMinPoolSize());
         config.setReadOnly(dataSourceParameter.isReadOnly());
-        config.addDataSourceProperty("useServerPrepStmts", Boolean.TRUE.toString());
-        config.addDataSourceProperty("cachePrepStmts", "true");
-        config.addDataSourceProperty("prepStmtCacheSize", 250);
-        config.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
-        config.addDataSourceProperty("useLocalSessionState", Boolean.TRUE.toString());
-        config.addDataSourceProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        config.addDataSourceProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
-        config.addDataSourceProperty("cacheServerConfiguration", Boolean.TRUE.toString());
-        config.addDataSourceProperty("elideSetAutoCommits", Boolean.TRUE.toString());
-        config.addDataSourceProperty("maintainTimeStats", Boolean.FALSE.toString());
-        config.addDataSourceProperty("netTimeoutForStreamingResults", 0);
-        config.addDataSourceProperty("tinyInt1isBit", Boolean.FALSE.toString());
-        return new HikariDataSource(config);
+        DataSource result = new HikariDataSource(config);
+        findJDBCParameterDecorator(result).ifPresent(decorator -> decorator.decorate(result));
+        return result;
     }
     
     private void validateDriverClassName(final String driverClassName) {
@@ -80,5 +78,10 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         } catch (final ClassNotFoundException ex) {
             throw new ShardingSphereException("Cannot load JDBC driver class `%s`, make sure it in ShardingSphere-Proxy's classpath.", driverClassName);
         }
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private Optional<JDBCParameterDecorator> findJDBCParameterDecorator(final DataSource dataSource) {
+        return ShardingSphereServiceLoader.newServiceInstances(JDBCParameterDecorator.class).stream().filter(each -> each.getType() == dataSource.getClass()).findFirst();
     }
 }
