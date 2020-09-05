@@ -79,7 +79,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-governance-core-schema</artifactId>
+            <artifactId>shardingsphere-governance-core-context</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         
