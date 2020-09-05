@@ -69,23 +69,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLGrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLRenameUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLRevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleAlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleDropUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleGrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleRevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLAlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLDropUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLGrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLRevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dcl.SQL92GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dcl.SQL92RevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerAlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDropUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerGrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerRevokeStatement;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -102,19 +85,14 @@ public final class MySQLComStmtPrepareChecker {
     private static final Set<Class> SQL_STATEMENTS_ALLOWED = new HashSet<>();
     
     static {
-        SQL_STATEMENTS_ALLOWED.addAll(Arrays.asList(AlterTableStatement.class, MySQLAnalyzeTableStatement.class,
-            MySQLAlterUserStatement.class, OracleAlterUserStatement.class, PostgreSQLAlterUserStatement.class, SQLServerAlterUserStatement.class, 
+        SQL_STATEMENTS_ALLOWED.addAll(Arrays.asList(AlterTableStatement.class, MySQLAlterUserStatement.class, MySQLAnalyzeTableStatement.class,
             MySQLCacheIndexStatement.class, CallStatement.class, ChangeMasterStatement.class, MySQLChecksumTableStatement.class, CommitStatement.class,
             CreateIndexStatement.class, DropIndexStatement.class, CreateDatabaseStatement.class, DropDatabaseStatement.class,
-            CreateTableStatement.class, DropTableStatement.class, MySQLCreateUserStatement.class, OracleCreateUserStatement.class, 
-            PostgreSQLCreateUserStatement.class, SQLServerCreateUserStatement.class, MySQLRenameUserStatement.class, 
-            MySQLDropUserStatement.class, OracleDropUserStatement.class, PostgreSQLDropUserStatement.class, SQLServerDropUserStatement.class,
+            CreateTableStatement.class, DropTableStatement.class, MySQLCreateUserStatement.class, MySQLRenameUserStatement.class, MySQLDropUserStatement.class,
             CreateViewStatement.class, DropViewStatement.class, DeleteStatement.class, DoStatement.class, MySQLFlushStatement.class,
-            MySQLGrantStatement.class, OracleGrantStatement.class, PostgreSQLGrantStatement.class, SQL92GrantStatement.class, SQLServerGrantStatement.class, 
-            InsertStatement.class, MySQLInstallPluginStatement.class, MySQLKillStatement.class, MySQLLoadIndexInfoStatement.class,
+            MySQLGrantStatement.class, InsertStatement.class, MySQLInstallPluginStatement.class, MySQLKillStatement.class, MySQLLoadIndexInfoStatement.class,
             MySQLOptimizeTableStatement.class, RenameTableStatement.class, MySQLRepairTableStatement.class, MySQLResetStatement.class,
-            MySQLRevokeStatement.class, OracleRevokeStatement.class, PostgreSQLRevokeStatement.class, SQL92RevokeStatement.class, SQLServerRevokeStatement.class,
-            SelectStatement.class, SetStatement.class, MySQLShowWarningsStatement.class, MySQLShowErrorsStatement.class,
+            MySQLRevokeStatement.class, SelectStatement.class, SetStatement.class, MySQLShowWarningsStatement.class, MySQLShowErrorsStatement.class,
             MySQLShowBinlogStatement.class, MySQLShowCreateProcedureStatement.class, MySQLShowCreateFunctionStatement.class, MySQLShowCreateEventStatement.class,
             MySQLShowCreateTableStatement.class, MySQLShowCreateViewStatement.class, MySQLShowBinaryLogsStatement.class, MySQLShowStatusStatement.class,
             StartSlaveStatement.class, StopSlaveStatement.class, TruncateStatement.class, MySQLUninstallPluginStatement.class, UpdateStatement.class));
