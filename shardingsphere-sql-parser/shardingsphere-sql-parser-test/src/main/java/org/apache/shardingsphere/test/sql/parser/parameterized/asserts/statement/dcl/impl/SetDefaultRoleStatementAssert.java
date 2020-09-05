@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetDefaultRoleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetDefaultRoleStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetDefaultRoleStatement;
 
 /**
  * Set default role statement assert.
@@ -36,6 +36,6 @@ public final class SetDefaultRoleStatementAssert {
      * @param actual actual set role statement
      * @param expected expected set role statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLSetDefaultRoleStatement actual, final SetDefaultRoleStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SetDefaultRoleStatement actual, final SetDefaultRoleStatementTestCase expected) {
     }
 }

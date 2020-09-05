@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.GrantCo
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.PrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dcl.SQL92GrantStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dcl.SQL92RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.SQL92Visitor;
 
 import java.util.Collection;
@@ -37,7 +37,7 @@ public final class SQL92DCLVisitor extends SQL92Visitor implements DCLVisitor {
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement();
+        SQL92GrantStatement result = new SQL92GrantStatement();
         if (null != ctx.privilegeClause()) {
             for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause())) {
                 result.getTables().add(each);
@@ -48,7 +48,7 @@ public final class SQL92DCLVisitor extends SQL92Visitor implements DCLVisitor {
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        RevokeStatement result = new RevokeStatement();
+        SQL92RevokeStatement result = new SQL92RevokeStatement();
         if (null != ctx.privilegeClause()) {
             for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause())) {
                 result.getTables().add(each);

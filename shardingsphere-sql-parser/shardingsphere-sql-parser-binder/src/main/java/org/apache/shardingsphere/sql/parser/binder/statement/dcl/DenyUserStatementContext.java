@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sql.parser.binder.statement.dcl;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DenyUserStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,11 +31,11 @@ import java.util.Collections;
  * Deny user statement context.
  */
 @Getter
-public final class DenyUserStatementContext extends CommonSQLStatementContext<SQLServerDenyUserStatement> implements TableAvailable {
+public final class DenyUserStatementContext extends CommonSQLStatementContext<DenyUserStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
-    public DenyUserStatementContext(final SQLServerDenyUserStatement sqlStatement) {
+    public DenyUserStatementContext(final DenyUserStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
     }

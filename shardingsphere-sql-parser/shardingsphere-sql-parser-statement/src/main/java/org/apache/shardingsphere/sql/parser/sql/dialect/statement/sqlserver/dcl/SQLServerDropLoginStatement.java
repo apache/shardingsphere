@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropLoginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer drop login statement.
  */
-public final class SQLServerDropLoginStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
+public final class SQLServerDropLoginStatement extends DropLoginStatement implements DCLStatement, SQLServerStatement {
 }

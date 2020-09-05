@@ -17,19 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DenyUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer deny user statement.
  */
-@Getter
-@Setter
-public final class SQLServerDenyUserStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
-    
-    private SimpleTableSegment table;
+public final class SQLServerDenyUserStatement extends DenyUserStatement implements DCLStatement, SQLServerStatement {
 }

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterLoginStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.AlterLoginStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerAlterLoginStatement;
 
 /**
  * Alter login statement assert.
@@ -36,6 +36,6 @@ public final class AlterLoginStatementAssert {
      * @param actual actual alter login statement
      * @param expected expected alter login statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerAlterLoginStatement actual, final AlterLoginStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterLoginStatement actual, final AlterLoginStatementTestCase expected) {
     }
 }

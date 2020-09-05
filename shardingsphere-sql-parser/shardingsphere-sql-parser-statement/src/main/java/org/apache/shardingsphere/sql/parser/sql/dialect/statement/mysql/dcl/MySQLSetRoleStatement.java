@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL set role statement.
  */
-public final class MySQLSetRoleStatement extends AbstractSQLStatement implements DCLStatement, MySQLStatement {
+public final class MySQLSetRoleStatement extends SetRoleStatement implements DCLStatement, MySQLStatement {
 }
