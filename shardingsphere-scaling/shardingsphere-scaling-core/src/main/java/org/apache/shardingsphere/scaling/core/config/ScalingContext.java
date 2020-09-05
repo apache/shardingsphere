@@ -24,7 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Scaling context.
+ * ShardingSphere-Scaling context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -39,16 +39,16 @@ public final class ScalingContext {
     private ShardingScalingExecuteEngine importerExecuteEngine;
     
     /**
-     * Get instance of Sharding-Scaling's context.
+     * Get instance of ShardingSphere-Scaling's context.
      *
-     * @return instance of Sharding-Scaling's context.
+     * @return instance of ShardingSphere-Scaling's context.
      */
     public static ScalingContext getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Initialize Scaling context.
+     * Initialize ShardingSphere-Scaling context.
      *
      * @param serverConfiguration serverConfiguration
      */

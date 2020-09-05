@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.governance.internal.datasource;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.driver.governance.internal.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -42,7 +41,6 @@ import org.apache.shardingsphere.transaction.context.impl.StandardTransactionCon
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
-import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -50,7 +48,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  * Governance ShardingSphere data source.
@@ -61,10 +58,6 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     private final SchemaContexts schemaContexts;
     
     private final TransactionContexts transactionContexts;
-    
-    @SuppressWarnings("UseOfSystemOutOrSystemErr")
-    @Setter
-    private PrintWriter logWriter = new PrintWriter(System.out);
     
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
@@ -142,11 +135,6 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     @Override
     public Connection getConnection(final String username, final String password) {
         return getConnection();
-    }
-    
-    @Override
-    public Logger getParentLogger() {
-        return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     }
     
     @Override
