@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * Data source parameter converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceConverter {
+public final class DataSourceParameterConverter {
     
     /**
      * Get data source parameter map.
@@ -48,14 +48,29 @@ public final class DataSourceConverter {
     }
     
     /**
-     * Get data source parameter map.
+     * Get data source parameter map from YAML configuration.
      *
      * @param dataSourceParameters yaml data source parameters
      * @return data source parameter map
      */
-    public static Map<String, DataSourceParameter> getDataSourceParameterMap2(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
+    public static Map<String, DataSourceParameter> getDataSourceParameterMapFromYamlConfiguration(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         return dataSourceParameters.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
+    }
+    
+    private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfig) {
+        bindSynonym(dataSourceConfig);
+        DataSourceParameter result = new DataSourceParameter();
+        for (Field each : result.getClass().getDeclaredFields()) {
+            try {
+                each.setAccessible(true);
+                if (dataSourceConfig.getProps().containsKey(each.getName())) {
+                    each.set(result, dataSourceConfig.getProps().get(each.getName()));
+                }
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
+        return result;
     }
     
     private static DataSourceParameter createDataSourceParameter(final YamlDataSourceParameter yamlDataSourceParameter) {
@@ -73,21 +88,6 @@ public final class DataSourceConverter {
         return result;
     }
     
-    private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfig) {
-        bindSynonym(dataSourceConfig);
-        DataSourceParameter result = new DataSourceParameter();
-        for (Field each : result.getClass().getDeclaredFields()) {
-            try {
-                each.setAccessible(true);
-                if (dataSourceConfig.getProps().containsKey(each.getName())) {
-                    each.set(result, dataSourceConfig.getProps().get(each.getName()));
-                }
-            } catch (final ReflectiveOperationException ignored) {
-            }
-        }
-        return result;
-    }
-
     private static void bindSynonym(final DataSourceConfiguration dataSourceConfiguration) {
         dataSourceConfiguration.addPropertySynonym("url", "jdbcUrl");
         dataSourceConfiguration.addPropertySynonym("user", "username");
@@ -99,7 +99,7 @@ public final class DataSourceConverter {
     /**
      * Get data source configuration map.
      *
-     * @param dataSourceParameterMap data source map
+     * @param dataSourceParameterMap data source parameter map
      * @return data source configuration map
      */
     public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSourceParameter> dataSourceParameterMap) {
