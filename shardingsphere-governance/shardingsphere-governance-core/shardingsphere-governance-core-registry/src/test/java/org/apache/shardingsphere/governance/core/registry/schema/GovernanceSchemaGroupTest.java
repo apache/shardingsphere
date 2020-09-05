@@ -25,11 +25,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class GovernanceShardingSchemaGroupTest {
+public final class GovernanceSchemaGroupTest {
     
     @Test
     public void assertAddWithExistedSchemaName() {
-        GovernanceShardingSchemaGroup actual = new GovernanceShardingSchemaGroup();
+        GovernanceSchemaGroup actual = new GovernanceSchemaGroup();
         actual.add(new GovernanceSchema("test_0.ds_0"));
         actual.add(new GovernanceSchema("test_0.ds_1"));
         assertThat(actual.getDataSourceNames("test_0").size(), is(2));
@@ -39,7 +39,7 @@ public final class GovernanceShardingSchemaGroupTest {
     
     @Test
     public void assertAddWithoutExistedSchemaName() {
-        GovernanceShardingSchemaGroup actual = new GovernanceShardingSchemaGroup();
+        GovernanceSchemaGroup actual = new GovernanceSchemaGroup();
         actual.add(new GovernanceSchema("test_0.ds_0"));
         actual.add(new GovernanceSchema("test_1.ds_1"));
         assertThat(actual.getDataSourceNames("test_0").size(), is(1));
@@ -50,7 +50,7 @@ public final class GovernanceShardingSchemaGroupTest {
     
     @Test
     public void assertPut() {
-        GovernanceShardingSchemaGroup actual = new GovernanceShardingSchemaGroup();
+        GovernanceSchemaGroup actual = new GovernanceSchemaGroup();
         actual.put("test", Arrays.asList("ds_0", "ds_1"));
         assertThat(actual.getDataSourceNames("test").size(), is(2));
         assertTrue(actual.getDataSourceNames("test").contains("ds_0"));

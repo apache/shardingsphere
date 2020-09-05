@@ -24,42 +24,42 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Governance sharding schema group.
+ * Governance schema group.
  */
-public final class GovernanceShardingSchemaGroup {
+public final class GovernanceSchemaGroup {
     
     private final Map<String, Collection<String>> schemaGroup = new HashMap<>();
     
     /**
-     * Add governance sharding schema.
+     * Add governance schema.
      * 
-     * @param governanceShardingSchema governance sharding schema
+     * @param governanceSchema governance schema
      */
-    public void add(final GovernanceSchema governanceShardingSchema) {
-        String schemaName = governanceShardingSchema.getSchemaName();
+    public void add(final GovernanceSchema governanceSchema) {
+        String schemaName = governanceSchema.getSchemaName();
         if (!schemaGroup.containsKey(schemaName)) {
             schemaGroup.put(schemaName, new LinkedList<>());
         }
-        schemaGroup.get(schemaName).add(governanceShardingSchema.getDataSourceName());
+        schemaGroup.get(schemaName).add(governanceSchema.getDataSourceName());
     }
     
     /**
-     * Put governance sharding schema.
+     * Put governance schema.
      * 
-     * @param shardingSchemaName sharding schema name
+     * @param schemaName schema name
      * @param dataSourceNames data source names
      */
-    public void put(final String shardingSchemaName, final Collection<String> dataSourceNames) {
-        schemaGroup.put(shardingSchemaName, dataSourceNames);
+    public void put(final String schemaName, final Collection<String> dataSourceNames) {
+        schemaGroup.put(schemaName, dataSourceNames);
     }
     
     /**
      * Get data source names.
      * 
-     * @param shardingSchemaName sharding schema name
+     * @param schemaName schema name
      * @return data source names
      */
-    public Collection<String> getDataSourceNames(final String shardingSchemaName) {
-        return schemaGroup.getOrDefault(shardingSchemaName, Collections.emptyList());
+    public Collection<String> getDataSourceNames(final String schemaName) {
+        return schemaGroup.getOrDefault(schemaName, Collections.emptyList());
     }
 }

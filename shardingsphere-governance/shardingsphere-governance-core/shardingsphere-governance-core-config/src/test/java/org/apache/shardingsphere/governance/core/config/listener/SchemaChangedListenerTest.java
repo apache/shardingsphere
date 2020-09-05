@@ -139,7 +139,7 @@ public final class SchemaChangedListenerTest {
     }
     
     @Test
-    public void assertCreateShardingSchemaAddedEventForNewSchema() {
+    public void assertCreateSchemaAddedEventForNewSchema() {
         String shardingRule = readYAML(SHARDING_RULE_FILE);
         String dataSource = readYAML(DATA_SOURCE_FILE);
         when(configurationRepository.get("/config/schema/logic_db/rule")).thenReturn(shardingRule);
