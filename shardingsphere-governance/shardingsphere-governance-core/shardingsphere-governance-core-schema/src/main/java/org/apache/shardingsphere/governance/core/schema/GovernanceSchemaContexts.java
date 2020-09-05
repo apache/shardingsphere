@@ -235,10 +235,10 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
      * Renew data source configuration.
      *
      * @param event data source changed event.
-     * @throws Exception exception
+     * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void renew(final DataSourceChangedEvent event) throws Exception {
+    public synchronized void renew(final DataSourceChangedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
         Map<String, SchemaContext> newSchemaContexts = new HashMap<>(schemaContexts.getSchemaContexts());
         newSchemaContexts.remove(schemaName);
@@ -299,20 +299,20 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         return new ShardingSphereSchema(oldShardingSphereSchema.getConfigurations(), oldShardingSphereSchema.getRules(), oldShardingSphereSchema.getDataSources(), metaData);
     }
     
-    private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Collection<RuleConfiguration> configurations) throws SQLException {
+    private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         ShardingSphereSchema oldSchema = oldSchemaContext.getSchema();
         SchemaContextsBuilder builder = new SchemaContextsBuilder(schemaContexts.getDatabaseType(), Collections.singletonMap(oldSchemaContext.getName(), oldSchema.getDataSources()),
-                Collections.singletonMap(oldSchemaContext.getName(), configurations), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
+                Collections.singletonMap(oldSchemaContext.getName(), ruleConfigs), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
         return builder.build().getSchemaContexts().values().iterator().next();
     }
     
-    private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) throws SQLException {
-        Collection<String> deletedDataSources = getDeletedDataSources(oldSchemaContext, newDataSources);
-        Map<String, DataSource> modifiedDataSources = getModifiedDataSources(oldSchemaContext, newDataSources);
+    private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSourceConfigs) throws SQLException {
+        Collection<String> deletedDataSources = getDeletedDataSources(oldSchemaContext, newDataSourceConfigs);
+        Map<String, DataSource> modifiedDataSources = getModifiedDataSources(oldSchemaContext, newDataSourceConfigs);
         oldSchemaContext.getSchema().closeDataSources(deletedDataSources);
         oldSchemaContext.getSchema().closeDataSources(modifiedDataSources.keySet());
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldSchemaContext.getName(), 
-                getNewDataSources(oldSchemaContext.getSchema().getDataSources(), getAddedDataSources(oldSchemaContext, newDataSources), modifiedDataSources, deletedDataSources));
+                getNewDataSources(oldSchemaContext.getSchema().getDataSources(), getAddedDataSources(oldSchemaContext, newDataSourceConfigs), modifiedDataSources, deletedDataSources));
         return new SchemaContextsBuilder(schemaContexts.getDatabaseType(), dataSourcesMap,
                 Collections.singletonMap(oldSchemaContext.getName(), oldSchemaContext.getSchema().getConfigurations()), schemaContexts.getAuthentication(), 
                 schemaContexts.getProps().getProps()).build().getSchemaContexts().get(oldSchemaContext.getName());
@@ -328,15 +328,14 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         return result;
     }
     
-    private Collection<String> getDeletedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
+    private Collection<String> getDeletedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
         Collection<String> result = new LinkedList<>(oldSchemaContext.getSchema().getDataSources().keySet());
-        result.removeAll(newDataSources.keySet());
+        result.removeAll(newDataSourceConfigs.keySet());
         return result;
     }
     
-    private Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSources) {
-        Map<String, DataSourceConfiguration> newDataSourceConfigs = Maps.filterKeys(newDataSources, each -> !oldSchemaContext.getSchema().getDataSources().containsKey(each));
-        return DataSourceConverter.getDataSourceMap(newDataSourceConfigs);
+    private Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
+        return DataSourceConverter.getDataSourceMap(Maps.filterKeys(newDataSourceConfigs, each -> !oldSchemaContext.getSchema().getDataSources().containsKey(each)));
     }
     
     private Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
