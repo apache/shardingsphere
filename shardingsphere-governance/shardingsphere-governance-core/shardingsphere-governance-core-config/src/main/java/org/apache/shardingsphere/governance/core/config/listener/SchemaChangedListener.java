@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  */
 public final class SchemaChangedListener extends PostGovernanceRepositoryEventListener {
     
-    private final ConfigCenter configurationService;
+    private final ConfigCenter configCenter;
     
     private final ConfigCenterNode configurationNode;
     
@@ -60,7 +60,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     
     public SchemaChangedListener(final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
         super(configurationRepository, new ConfigCenterNode().getAllSchemaConfigPaths(schemaNames));
-        configurationService = new ConfigCenter(configurationRepository);
+        configCenter = new ConfigCenter(configurationRepository);
         configurationNode = new ConfigCenterNode();
         existedSchemaNames = new LinkedHashSet<>(schemaNames);
     }
@@ -112,7 +112,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         if (!isOwnCompleteConfigurations(schemaName)) {
             return new SchemaAddedEvent(schemaName, Collections.emptyMap(), Collections.emptyList());
         }
-        return new SchemaAddedEvent(schemaName, configurationService.loadDataSourceConfigurations(schemaName), configurationService.loadRuleConfigurations(schemaName));
+        return new SchemaAddedEvent(schemaName, configCenter.loadDataSourceConfigurations(schemaName), configCenter.loadRuleConfigurations(schemaName));
     }
     
     private GovernanceEvent createUpdatedEvent(final String schemaName, final DataChangedEvent event) {
@@ -139,6 +139,6 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     }
     
     private boolean isOwnCompleteConfigurations(final String schemaName) {
-        return configurationService.hasDataSourceConfiguration(schemaName) && configurationService.hasRuleConfiguration(schemaName);
+        return configCenter.hasDataSourceConfiguration(schemaName) && configCenter.hasRuleConfiguration(schemaName);
     }
 }
