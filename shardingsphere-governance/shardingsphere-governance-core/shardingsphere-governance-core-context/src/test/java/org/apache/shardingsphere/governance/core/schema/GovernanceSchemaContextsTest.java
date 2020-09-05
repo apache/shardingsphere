@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.schema;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.common.event.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
@@ -39,11 +38,13 @@ import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
+import org.apache.shardingsphere.test.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,6 +74,9 @@ import static org.mockito.Mockito.when;
 public final class GovernanceSchemaContextsTest {
     
     @Mock
+    private DatabaseType databaseType;
+    
+    @Mock
     private GovernanceFacade governanceFacade;
     
     @Mock
@@ -95,13 +99,15 @@ public final class GovernanceSchemaContextsTest {
     
     @Before
     public void setUp() {
+        when(databaseType.getName()).thenReturn("H2");
+        when(databaseType.getDataSourceMetaData(any(), any())).thenReturn(mock(DataSourceMetaData.class));
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         when(governanceFacade.getMetaDataCenter()).thenReturn(metaDataCenter);
-        governanceSchemaContexts = new GovernanceSchemaContexts(new StandardSchemaContexts(getSchemaContextMap(), authentication, configurationProperties, new H2DatabaseType()), governanceFacade);
+        governanceSchemaContexts = new GovernanceSchemaContexts(new StandardSchemaContexts(getSchemaContextMap(), authentication, configurationProperties, databaseType), governanceFacade);
     }
     
-    @SneakyThrows(Exception.class)
+    @SneakyThrows
     private Map<String, SchemaContext> getSchemaContextMap() {
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
@@ -145,7 +151,7 @@ public final class GovernanceSchemaContextsTest {
     }
     
     @Test
-    @SneakyThrows(Exception.class)
+    @SneakyThrows
     public void assertSchemaAdd() {
         SchemaAddedEvent event = new SchemaAddedEvent("schema_add", getDataSourceConfigurations(), new LinkedList<>());
         governanceSchemaContexts.renew(event);
@@ -153,13 +159,7 @@ public final class GovernanceSchemaContextsTest {
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
-        HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        dataSource.setUsername("sa");
-        dataSource.setPassword("");
-        dataSource.setMaximumPoolSize(1);
-        dataSource.setMinimumIdle(1);
+        MockedDataSource dataSource = new MockedDataSource();
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(3, 1);
         result.put("ds_m", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_0", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
@@ -207,7 +207,7 @@ public final class GovernanceSchemaContextsTest {
     }
     
     @Test
-    @SneakyThrows(Exception.class)
+    @SneakyThrows
     public void assertRuleConfigurationsChanged() {
         assertThat(governanceSchemaContexts.getSchemaContexts().get("schema"), is(schemaContext));
         RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("schema", new LinkedList<>());
@@ -223,7 +223,7 @@ public final class GovernanceSchemaContextsTest {
     }
     
     @Test
-    @SneakyThrows(Exception.class)
+    @SneakyThrows
     public void assertDataSourceChanged() {
         DataSourceChangedEvent event = new DataSourceChangedEvent("schema", getChangedDataSourceConfigurations());
         governanceSchemaContexts.renew(event);
@@ -231,13 +231,7 @@ public final class GovernanceSchemaContextsTest {
     }
     
     private Map<String, DataSourceConfiguration> getChangedDataSourceConfigurations() {
-        HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        dataSource.setUsername("sa");
-        dataSource.setPassword("");
-        dataSource.setMaximumPoolSize(1);
-        dataSource.setMinimumIdle(1);
+        MockedDataSource dataSource = new MockedDataSource();
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(3, 1);
         result.put("ds_m", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_1", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
