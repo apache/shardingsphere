@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.transaction;
+package org.apache.shardingsphere.governance.context.transaction;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangeCompletedEvent;

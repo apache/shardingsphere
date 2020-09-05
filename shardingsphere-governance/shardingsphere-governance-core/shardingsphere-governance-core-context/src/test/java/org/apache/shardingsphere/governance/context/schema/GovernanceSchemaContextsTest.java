@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.schema;
+package org.apache.shardingsphere.governance.context.schema;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.common.event.auth.AuthenticationChangedEvent;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.schema;
+package org.apache.shardingsphere.governance.context.schema;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
