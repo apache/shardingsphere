@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory;
 
 import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
 
