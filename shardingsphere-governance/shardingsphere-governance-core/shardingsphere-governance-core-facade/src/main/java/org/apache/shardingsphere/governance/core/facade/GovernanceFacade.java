@@ -38,7 +38,6 @@ import java.util.Properties;
 /**
  * Governance facade.
  */
-
 public final class GovernanceFacade implements AutoCloseable {
     
     private boolean isOverwrite;
