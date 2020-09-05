@@ -28,7 +28,7 @@ import org.apache.shardingsphere.governance.core.common.yaml.swapper.GovernanceC
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.util.DataSourceConverter;
+import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 
@@ -77,7 +77,8 @@ public final class GovernanceBootstrap {
     private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
         Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>(ruleConfigs.size(), 1);
         for (Entry<String, YamlProxyRuleConfiguration> entry : ruleConfigs.entrySet()) {
-            result.put(entry.getKey(), DataSourceConverter.getDataSourceConfigurationMap(DataSourceConverter.getDataSourceParameterMap2(entry.getValue().getDataSources())));
+            result.put(entry.getKey(), 
+                    DataSourceParameterConverter.getDataSourceConfigurationMap(DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(entry.getValue().getDataSources())));
         }
         return result;
     }
@@ -99,7 +100,7 @@ public final class GovernanceBootstrap {
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
         Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>(schemaNames.size(), 1);
         for (String each : schemaNames) {
-            result.put(each, DataSourceConverter.getDataSourceParameterMap(governanceFacade.getConfigCenter().loadDataSourceConfigurations(each)));
+            result.put(each, DataSourceParameterConverter.getDataSourceParameterMap(governanceFacade.getConfigCenter().loadDataSourceConfigurations(each)));
         }
         return result;
     }
