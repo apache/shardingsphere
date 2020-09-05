@@ -44,7 +44,7 @@ public final class DataSourceStateChangedListener extends PostGovernanceReposito
     
     @Override
     protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        Optional<GovernanceSchema> governanceSchema = registryCenterNode.getGovernanceShardingSchema(event.getKey());
+        Optional<GovernanceSchema> governanceSchema = registryCenterNode.getGovernanceSchema(event.getKey());
         if (governanceSchema.isPresent()) {
             return Optional.of(new DisabledStateChangedEvent(governanceSchema.get(), isDataSourceDisabled(event)));
         }

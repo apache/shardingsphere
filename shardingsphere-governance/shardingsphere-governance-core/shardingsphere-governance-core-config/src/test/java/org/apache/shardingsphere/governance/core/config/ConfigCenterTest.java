@@ -97,14 +97,14 @@ public final class ConfigCenterTest {
     }
     
     @Test
-    public void assertMoreShardingSchema() {
+    public void assertMoreSchema() {
         ConfigCenter configurationService = new ConfigCenter(configurationRepository);
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
         verify(configurationRepository, times(0)).persist("/config/schema", "myTest1,myTest2,sharding_db");
     }
     
     @Test
-    public void assertMoreAndContainsShardingSchema() {
+    public void assertMoreAndContainsSchema() {
         ConfigCenter configurationService = new ConfigCenter(configurationRepository);
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
         verify(configurationRepository, times(0)).persist("/config/schema", "myTest1,sharding_db");
