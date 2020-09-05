@@ -239,7 +239,7 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 
 回答：
 
-1. 需要使用4.1.0以上版本。
+1. 需要使用5.x以上版本。
 2. 将配置项`allow-range-query-with-inline-sharding`设置为true即可（默认为false）。
 3. 需要注意的是，此时所有的范围查询将会使用广播的方式查询每一个分表。
 
