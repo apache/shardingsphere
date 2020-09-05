@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.config.util;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -75,5 +76,46 @@ public final class DataSourceParameterConverterTest {
         assertThat(props.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
         assertThat(props.get("username"), is("root"));
         assertThat(props.get("password"), is("root"));
+    }
+    
+    @Test
+    public void assertGetDataSourceParameterMapFromYamlConfiguration() {
+        Map<String, YamlDataSourceParameter> yamlDataSourceParameterMap = new HashMap<>();
+        YamlDataSourceParameter yamlDataSourceParameter0 = new YamlDataSourceParameter();
+        yamlDataSourceParameter0.setUrl("jdbc:mysql://localhost:3306/t_order");
+        setYamlDataSourceParameterPropertyWithoutUrl(yamlDataSourceParameter0);
+        yamlDataSourceParameterMap.put("ds_0", yamlDataSourceParameter0);
+        YamlDataSourceParameter yamlDataSourceParameter1 = new YamlDataSourceParameter();
+        yamlDataSourceParameter1.setUrl("jdbc:mysql://localhost:3306/t_order_item");
+        setYamlDataSourceParameterPropertyWithoutUrl(yamlDataSourceParameter1);
+        yamlDataSourceParameterMap.put("ds_1", yamlDataSourceParameter1);
+        Map<String, DataSourceParameter> actualDataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(yamlDataSourceParameterMap);
+        assertThat(actualDataSourceParameterMap.size(), is(2));
+        assertThat(actualDataSourceParameterMap.get("ds_0").getUrl(), is("jdbc:mysql://localhost:3306/t_order"));
+        assertThat(actualDataSourceParameterMap.get("ds_1").getUrl(), is("jdbc:mysql://localhost:3306/t_order_item"));
+        assertDataSourceParameter(actualDataSourceParameterMap.get("ds_0"));
+        assertDataSourceParameter(actualDataSourceParameterMap.get("ds_1"));
+    }
+    
+    private void setYamlDataSourceParameterPropertyWithoutUrl(final YamlDataSourceParameter yamlDataSourceParameter) {
+        yamlDataSourceParameter.setMaxPoolSize(50);
+        yamlDataSourceParameter.setMinPoolSize(1);
+        yamlDataSourceParameter.setConnectionTimeoutMilliseconds(30 * 1000L);
+        yamlDataSourceParameter.setIdleTimeoutMilliseconds(60 * 1000L);
+        yamlDataSourceParameter.setMaxLifetimeMilliseconds(0L);
+        yamlDataSourceParameter.setMaintenanceIntervalMilliseconds(30 * 1000L);
+        yamlDataSourceParameter.setUsername("root");
+        yamlDataSourceParameter.setPassword("root");
+    }
+    
+    private void assertDataSourceParameter(final DataSourceParameter dataSourceParameter) {
+        assertThat(dataSourceParameter.getMaxPoolSize(), is(50));
+        assertThat(dataSourceParameter.getMinPoolSize(), is(1));
+        assertThat(dataSourceParameter.getConnectionTimeoutMilliseconds(), is(30 * 1000L));
+        assertThat(dataSourceParameter.getIdleTimeoutMilliseconds(), is(60 * 1000L));
+        assertThat(dataSourceParameter.getMaxLifetimeMilliseconds(), is(0L));
+        assertThat(dataSourceParameter.getMaintenanceIntervalMilliseconds(), is(30 * 1000L));
+        assertThat(dataSourceParameter.getUsername(), is("root"));
+        assertThat(dataSourceParameter.getPassword(), is("root"));
     }
 }
