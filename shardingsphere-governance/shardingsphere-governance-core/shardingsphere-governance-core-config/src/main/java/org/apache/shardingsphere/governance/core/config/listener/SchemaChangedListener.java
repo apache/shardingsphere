@@ -109,18 +109,17 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     
     private GovernanceEvent createAddedEvent(final String schemaName) {
         existedSchemaNames.add(schemaName);
-        if (!isOwnCompleteConfigurations(schemaName)) {
-            return new SchemaAddedEvent(schemaName, Collections.emptyMap(), Collections.emptyList());
-        }
-        return new SchemaAddedEvent(schemaName, configCenter.loadDataSourceConfigurations(schemaName), configCenter.loadRuleConfigurations(schemaName));
+        return isOwnCompleteConfigurations(schemaName)
+                ? new SchemaAddedEvent(schemaName, configCenter.loadDataSourceConfigurations(schemaName), configCenter.loadRuleConfigurations(schemaName))
+                : new SchemaAddedEvent(schemaName, Collections.emptyMap(), Collections.emptyList());
     }
     
     private GovernanceEvent createUpdatedEvent(final String schemaName, final DataChangedEvent event) {
         // TODO Consider remove judgement.
-        return existedSchemaNames.contains(schemaName) ? createUpdatedEventForExistedSchema(event, schemaName) : createAddedEvent(schemaName);
+        return existedSchemaNames.contains(schemaName) ? createUpdatedEventForExistedSchema(schemaName, event) : createAddedEvent(schemaName);
     }
     
-    private GovernanceEvent createUpdatedEventForExistedSchema(final DataChangedEvent event, final String schemaName) {
+    private GovernanceEvent createUpdatedEventForExistedSchema(final String schemaName, final DataChangedEvent event) {
         return event.getKey().equals(configurationNode.getDataSourcePath(schemaName)) ? createDataSourceChangedEvent(schemaName, event) : createRuleChangedEvent(schemaName, event);
     }
     
