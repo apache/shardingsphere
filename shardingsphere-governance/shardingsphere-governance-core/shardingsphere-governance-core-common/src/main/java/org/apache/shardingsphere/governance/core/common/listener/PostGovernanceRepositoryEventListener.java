@@ -39,16 +39,16 @@ public abstract class PostGovernanceRepositoryEventListener implements Governanc
     private final Collection<String> watchKeys;
     
     @Override
-    public final void watch(final ChangedType... watchedChangedTypes) {
-        Collection<ChangedType> watchedChangedTypeList = Arrays.asList(watchedChangedTypes);
+    public final void watch(final ChangedType... changedTypes) {
+        Collection<ChangedType> watchedChangedTypeList = Arrays.asList(changedTypes);
         for (String watchKey : watchKeys) {
             watch(watchKey, watchedChangedTypeList);
         }
     }
     
-    private void watch(final String watchKey, final Collection<ChangedType> watchedChangedTypeList) {
+    private void watch(final String watchKey, final Collection<ChangedType> changedTypes) {
         governanceRepository.watch(watchKey, dataChangedEvent -> {
-            if (watchedChangedTypeList.contains(dataChangedEvent.getChangedType())) {
+            if (changedTypes.contains(dataChangedEvent.getChangedType())) {
                 Optional<GovernanceEvent> event = createGovernanceEvent(dataChangedEvent);
                 event.ifPresent(ShardingSphereEventBus.getInstance()::post);
             }
