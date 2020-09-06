@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shadow.route.engine.judge.util;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class ShadowValueJudgeUtilTest {
@@ -31,8 +32,8 @@ public final class ShadowValueJudgeUtilTest {
     
     @Test
     public void assertShadowValueWhenBooleanAndFalse() {
-        assertTrue(!ShadowValueJudgeUtil.isShadowValue(Boolean.FALSE));
-        assertTrue(!ShadowValueJudgeUtil.isShadowValue(false));
+        assertFalse(ShadowValueJudgeUtil.isShadowValue(Boolean.FALSE));
+        assertFalse(ShadowValueJudgeUtil.isShadowValue(false));
     }
     
     @Test
@@ -42,9 +43,9 @@ public final class ShadowValueJudgeUtilTest {
     
     @Test
     public void assertShadowValueWhenIntegerAndOther() {
-        assertTrue(!ShadowValueJudgeUtil.isShadowValue(-1));
-        assertTrue(!ShadowValueJudgeUtil.isShadowValue(0));
-        assertTrue(!ShadowValueJudgeUtil.isShadowValue(2));
+        assertFalse(ShadowValueJudgeUtil.isShadowValue(-1));
+        assertFalse(ShadowValueJudgeUtil.isShadowValue(0));
+        assertFalse(ShadowValueJudgeUtil.isShadowValue(2));
     }
     
     @Test
@@ -56,21 +57,21 @@ public final class ShadowValueJudgeUtilTest {
     
     @Test
     public void assertShadowValueWhenStringAndFalse() {
-        assertTrue(!ShadowValueJudgeUtil.isShadowValue("false"));
-        assertTrue(!ShadowValueJudgeUtil.isShadowValue("False"));
-        assertTrue(!ShadowValueJudgeUtil.isShadowValue("FALSE"));
+        assertFalse(ShadowValueJudgeUtil.isShadowValue("false"));
+        assertFalse(ShadowValueJudgeUtil.isShadowValue("False"));
+        assertFalse(ShadowValueJudgeUtil.isShadowValue("FALSE"));
     }
     
     @Test
     public void assertShadowValueWhenStringAndOther() {
-        assertTrue(!ShadowValueJudgeUtil.isShadowValue("tru"));
-        assertTrue(!ShadowValueJudgeUtil.isShadowValue("rue"));
-        assertTrue(!ShadowValueJudgeUtil.isShadowValue("als"));
-        assertTrue(!ShadowValueJudgeUtil.isShadowValue("other"));
+        assertFalse(ShadowValueJudgeUtil.isShadowValue("tru"));
+        assertFalse(ShadowValueJudgeUtil.isShadowValue("rue"));
+        assertFalse(ShadowValueJudgeUtil.isShadowValue("als"));
+        assertFalse(ShadowValueJudgeUtil.isShadowValue("other"));
     }
     
     @Test
     public void assertShadowValueWhenOtherObj() {
-        assertTrue(!ShadowValueJudgeUtil.isShadowValue(new Object()));
+        assertFalse(ShadowValueJudgeUtil.isShadowValue(new Object()));
     }
 }
