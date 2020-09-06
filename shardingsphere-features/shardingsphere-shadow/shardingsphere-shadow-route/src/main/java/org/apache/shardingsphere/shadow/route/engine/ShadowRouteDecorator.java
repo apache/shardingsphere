@@ -60,7 +60,7 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
             });
             return new RouteContext(sqlStatementContext, parameters, routeResult);
         }
-        if (isShadowSQL(routeContext, shadowRule)) {
+        if (isShadow(routeContext, shadowRule)) {
             shadowRule.getShadowMappings().values().forEach(each -> routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
         } else {
             shadowRule.getShadowMappings().keySet().forEach(each -> routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
@@ -80,7 +80,7 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
             return routeContext;
         }
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
-        if (isShadowSQL(routeContext, shadowRule)) {
+        if (isShadow(routeContext, shadowRule)) {
             for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
                 toBeRemoved.add(each);
                 String shadowDataSourceName = shadowRule.getShadowMappings().get(each.getDataSourceMapper().getActualName());
@@ -92,7 +92,7 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
         return routeContext;
     }
     
-    private boolean isShadowSQL(final RouteContext routeContext, final ShadowRule shadowRule) {
+    private boolean isShadow(final RouteContext routeContext, final ShadowRule shadowRule) {
         List<Object> parameters = routeContext.getParameters();
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         ShadowDataSourceJudgeEngine shadowDataSourceRouter = parameters.isEmpty() ? new SimpleShadowDataSourceJudgeEngine(shadowRule, sqlStatementContext)
