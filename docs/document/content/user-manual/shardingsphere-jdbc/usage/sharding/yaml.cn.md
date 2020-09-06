@@ -60,11 +60,11 @@ rules:
     database_inline:
       type: INLINE
       props:
-        algorithm.expression: ds${user_id % 2}
+        algorithm-expression: ds${user_id % 2}
     table_inline:
       type: INLINE
       props:
-        algorithm.expression: t_order_${order_id % 2}
+        algorithm-expression: t_order_${order_id % 2}
 ```
 
 ```java

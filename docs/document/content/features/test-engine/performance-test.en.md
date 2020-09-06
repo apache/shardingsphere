@@ -254,7 +254,7 @@ encryptRule:
     aes_encryptor:
       type: AES
       props:
-        aes.key.value: 123456abc
+        aes-key-value: 123456abc
     md5_encryptor:
       type: MD5
   tables:

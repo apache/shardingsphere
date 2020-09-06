@@ -33,7 +33,7 @@ rules:
     order_encryptor:
       type: AES
       props:
-        aes.key.value: 123456
+        aes-key-value: 123456
 
 - !SHADOW
   column: shadows

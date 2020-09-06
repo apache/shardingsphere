@@ -42,9 +42,9 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     @Before
     public void setUp() {
         VolumeBasedRangeShardingAlgorithm shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("range.lower", "10");
-        shardingAlgorithm.getProps().setProperty("range.upper", "45");
-        shardingAlgorithm.getProps().setProperty("sharding.volume", "10");
+        shardingAlgorithm.getProps().setProperty("range-lower", "10");
+        shardingAlgorithm.getProps().setProperty("range-upper", "45");
+        shardingAlgorithm.getProps().setProperty("sharding-volume", "10");
         shardingAlgorithm.init();
         shardingStrategy = new StandardShardingStrategy("order_id", shardingAlgorithm);
     }
@@ -97,9 +97,9 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     @Test
     public void assertGetAutoTablesAmount() {
         VolumeBasedRangeShardingAlgorithm shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("range.lower", "10");
-        shardingAlgorithm.getProps().setProperty("range.upper", "45");
-        shardingAlgorithm.getProps().setProperty("sharding.volume", "10");
+        shardingAlgorithm.getProps().setProperty("range-lower", "10");
+        shardingAlgorithm.getProps().setProperty("range-upper", "45");
+        shardingAlgorithm.getProps().setProperty("sharding-volume", "10");
         shardingAlgorithm.init();
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(6));
     }

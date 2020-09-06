@@ -34,9 +34,9 @@ import java.util.Properties;
  */
 public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
     
-    private static final String ALGORITHM_EXPRESSION_KEY = "algorithm.expression";
+    private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
     
-    private static final String ALLOW_RANGE_QUERY_KEY = "allow.range.query.with.inline.sharding";
+    private static final String ALLOW_RANGE_QUERY_KEY = "allow-range-query-with-inline-sharding";
     
     private Closure<?> closure;
     
@@ -76,7 +76,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         if (allowRangeQuery) {
             return availableTargetNames;
         }
-        throw new UnsupportedOperationException("Since the property of `allow.range.query.with.inline.sharding` is false, inline sharding algorithm can not tackle with range query.");
+        throw new UnsupportedOperationException("Since the property of `" + ALLOW_RANGE_QUERY_KEY + "` is false, inline sharding algorithm can not tackle with range query.");
     }
     
     @Override

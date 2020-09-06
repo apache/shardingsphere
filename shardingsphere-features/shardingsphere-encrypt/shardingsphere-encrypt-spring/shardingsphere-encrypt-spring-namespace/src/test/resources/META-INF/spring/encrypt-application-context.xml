@@ -31,7 +31,7 @@
     
     <encrypt:encrypt-algorithm id="aesEncryptor" type="AES">
         <props>
-            <prop key="aes.key.value">${aes.key.value}</prop>
+            <prop key="aes-key-value">${aes-key-value}</prop>
         </props>
     </encrypt:encrypt-algorithm>
     <encrypt:encrypt-algorithm id="md5Encryptor" type="MD5" />

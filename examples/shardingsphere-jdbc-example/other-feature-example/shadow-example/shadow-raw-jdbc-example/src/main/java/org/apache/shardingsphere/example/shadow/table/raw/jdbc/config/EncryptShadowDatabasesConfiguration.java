@@ -64,7 +64,7 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
     private Map<String, ShardingSphereAlgorithmConfiguration> getEncryptAlgorithmConfigurations() {
         Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(2, 1);
         Properties props = new Properties();
-        props.setProperty("aes.key.value", "123456");
+        props.setProperty("aes-key-value", "123456");
         result.put("name_encryptor", new ShardingSphereAlgorithmConfiguration("AES", props));
         result.put("pwd_encryptor", new ShardingSphereAlgorithmConfiguration("assistedTest", null));
         return result;

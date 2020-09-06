@@ -41,7 +41,7 @@ public final class AESEncryptAlgorithmTest {
     @Before
     public void setUp() {
         Properties props = new Properties();
-        props.setProperty("aes.key.value", "test");
+        props.setProperty("aes-key-value", "test");
         encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("AES", props), EncryptAlgorithm.class);
     }
     

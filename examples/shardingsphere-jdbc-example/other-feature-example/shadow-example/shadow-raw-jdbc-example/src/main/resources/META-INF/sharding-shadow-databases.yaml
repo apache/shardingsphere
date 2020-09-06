@@ -65,11 +65,11 @@ shardingAlgorithms:
   database_inline:
     type: INLINE
     props:
-      algorithm.expression: ds_${user_id % 2}
+      algorithm-expression: ds_${user_id % 2}
   table_inline:
     type: INLINE
     props:
-      algorithm.expression: t_user
+      algorithm-expression: t_user
 
 props:
   sql.show: true

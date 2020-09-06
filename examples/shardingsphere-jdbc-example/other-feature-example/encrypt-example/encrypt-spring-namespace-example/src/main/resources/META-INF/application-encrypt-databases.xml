@@ -44,7 +44,7 @@
     
     <encrypt:encrypt-algorithm id="name_encryptor" type="AES">
         <props>
-            <prop key="aes.key.value">123456</prop>
+            <prop key="aes-key-value">123456</prop>
         </props>
     </encrypt:encrypt-algorithm>
     <encrypt:encrypt-algorithm id="pwd_encryptor" type="assistedTest" />

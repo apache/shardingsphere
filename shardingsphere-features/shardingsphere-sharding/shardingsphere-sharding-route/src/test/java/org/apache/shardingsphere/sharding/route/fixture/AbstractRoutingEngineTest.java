@@ -41,10 +41,10 @@ public abstract class AbstractRoutingEngineTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${order_id % 2}", "ds_${user_id % 2}"));
         Properties props0 = new Properties();
-        props0.setProperty("algorithm.expression", "ds_${user_id % 2}");
+        props0.setProperty("algorithm-expression", "ds_${user_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props0));
         Properties props1 = new Properties();
-        props1.setProperty("algorithm.expression", "t_order_${order_id % 2}");
+        props1.setProperty("algorithm-expression", "t_order_${order_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_order_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props1));
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
     }
@@ -55,13 +55,13 @@ public abstract class AbstractRoutingEngineTest {
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${order_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getBindingTableGroups().add("t_order,t_order_item");
         Properties props0 = new Properties();
-        props0.setProperty("algorithm.expression", "ds_${user_id % 2}");
+        props0.setProperty("algorithm-expression", "ds_${user_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props0));
         Properties props1 = new Properties();
-        props1.setProperty("algorithm.expression", "t_order_${order_id % 2}");
+        props1.setProperty("algorithm-expression", "t_order_${order_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_order_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props1));
         Properties props2 = new Properties();
-        props2.setProperty("algorithm.expression", "t_order_item_${order_id % 2}");
+        props2.setProperty("algorithm-expression", "t_order_item_${order_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_order_item_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props2));
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
     }
@@ -72,13 +72,13 @@ public abstract class AbstractRoutingEngineTest {
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${order_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getBroadcastTables().add("t_config");
         Properties props0 = new Properties();
-        props0.setProperty("algorithm.expression", "ds_${user_id % 2}");
+        props0.setProperty("algorithm-expression", "ds_${user_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props0));
         Properties props1 = new Properties();
-        props1.setProperty("algorithm.expression", "t_order_${order_id % 2}");
+        props1.setProperty("algorithm-expression", "t_order_${order_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_order_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props1));
         Properties props2 = new Properties();
-        props2.setProperty("algorithm.expression", "t_order_item_${order_id % 2}");
+        props2.setProperty("algorithm-expression", "t_order_item_${order_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_order_item_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props2));
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
     }
@@ -98,10 +98,10 @@ public abstract class AbstractRoutingEngineTest {
             createStandardShardingStrategyConfiguration("ds_inline", "ds_${user_id % 2}"), new HintShardingStrategyConfiguration("hint_test")));
         shardingRuleConfig.getShardingAlgorithms().put("hint_test", new ShardingSphereAlgorithmConfiguration("HINT_TEST", new Properties()));
         Properties props0 = new Properties();
-        props0.setProperty("algorithm.expression", "ds_${user_id % 2}");
+        props0.setProperty("algorithm-expression", "ds_${user_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props0));
         Properties props1 = new Properties();
-        props1.setProperty("algorithm.expression", "t_hint_ds_test_${order_id % 2}");
+        props1.setProperty("algorithm-expression", "t_hint_ds_test_${order_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_hint_ds_test_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props1));
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
     }
@@ -110,7 +110,7 @@ public abstract class AbstractRoutingEngineTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getBroadcastTables().add("t_product");
         Properties props0 = new Properties();
-        props0.setProperty("algorithm.expression", "ds_${user_id % 2}");
+        props0.setProperty("algorithm-expression", "ds_${user_id % 2}");
         shardingRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "ds_inline"));
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${user_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${user_id % 2}", "ds_${user_id % 2}"));
@@ -119,13 +119,13 @@ public abstract class AbstractRoutingEngineTest {
         shardingRuleConfig.getBindingTableGroups().add("t_order,t_order_item");
         shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props0));
         Properties props1 = new Properties();
-        props1.setProperty("algorithm.expression", "t_order_${user_id % 2}");
+        props1.setProperty("algorithm-expression", "t_order_${user_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_order_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props1));
         Properties props2 = new Properties();
-        props2.setProperty("algorithm.expression", "t_order_item_${user_id % 2}");
+        props2.setProperty("algorithm-expression", "t_order_item_${user_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_order_item_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props2));
         Properties props3 = new Properties();
-        props3.setProperty("algorithm.expression", "t_user_${user_id % 2}");
+        props3.setProperty("algorithm-expression", "t_user_${user_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_user_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props3));
         shardingRuleConfig.getShardingAlgorithms().put("hint_test", new ShardingSphereAlgorithmConfiguration("HINT_TEST", new Properties()));
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1", "main"));
