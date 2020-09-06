@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-master_ds: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration
+master_ds: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
   
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   props:

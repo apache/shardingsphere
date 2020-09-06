@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-ds_0: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration
+ds_0: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
    props:
      driverClassName: com.mysql.jdbc.Driver
@@ -25,7 +25,7 @@ ds_0: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSou
      connectionInitSqls:
         - set names utf8mb4;
         - set names utf8;
-ds_1: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration
+ds_1: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
  props:
    driverClassName: com.mysql.jdbc.Driver
