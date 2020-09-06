@@ -17,19 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DescribeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Describe statement.
+ * MySQL describe statement.
  */
-@Getter
-@Setter
-public final class MySQLDescribeStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    private SimpleTableSegment table;
+public final class MySQLDescribeStatement extends DescribeStatement implements DALStatement, MySQLStatement {
 }

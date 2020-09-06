@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Flush statement.
+ * MySQL flush statement.
  */
-public final class MySQLFlushStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLFlushStatement extends FlushStatement implements DALStatement, MySQLStatement {
 }

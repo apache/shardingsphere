@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowColumnsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowColumnsStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 
 /**
  * Show columns statement assert.
@@ -36,6 +36,6 @@ public final class ShowColumnsStatementAssert {
      * @param actual actual show columns statement
      * @param expected expected show columns statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowColumnsStatement actual, final ShowColumnsStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowColumnsStatement actual, final ShowColumnsStatementTestCase expected) {
     }
 }

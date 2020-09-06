@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.RepairTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Repair table statement.
+ * MySQL repair table statement.
  */
-public final class MySQLRepairTableStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLRepairTableStatement extends RepairTableStatement implements DALStatement, MySQLStatement {
 }

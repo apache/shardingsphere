@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Uninstall plugin statement.
+ * MySQL uninstall plugin statement.
  */
-public final class MySQLUninstallPluginStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLUninstallPluginStatement extends UninstallPluginStatement implements DALStatement, MySQLStatement {
 }

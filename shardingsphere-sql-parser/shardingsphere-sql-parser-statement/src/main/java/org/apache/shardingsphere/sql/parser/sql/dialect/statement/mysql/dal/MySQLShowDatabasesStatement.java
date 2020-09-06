@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Show databases statement.
+ * MySQL show databases statement.
  */
-public final class MySQLShowDatabasesStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLShowDatabasesStatement extends ShowDatabasesStatement implements DALStatement, MySQLStatement {
 }

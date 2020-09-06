@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Optimize table statement.
+ * MySQL optimize table statement.
  */
-public final class MySQLOptimizeTableStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLOptimizeTableStatement extends OptimizeTableStatement implements DALStatement, MySQLStatement {
 }

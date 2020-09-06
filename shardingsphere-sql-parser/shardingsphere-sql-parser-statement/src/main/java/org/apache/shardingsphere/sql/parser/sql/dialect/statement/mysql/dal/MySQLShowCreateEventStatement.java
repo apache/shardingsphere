@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateEventStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Show create event statement.
+ * MySQL show create event statement.
  */
-public final class MySQLShowCreateEventStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLShowCreateEventStatement extends ShowCreateEventStatement implements DALStatement, MySQLStatement {
 }
