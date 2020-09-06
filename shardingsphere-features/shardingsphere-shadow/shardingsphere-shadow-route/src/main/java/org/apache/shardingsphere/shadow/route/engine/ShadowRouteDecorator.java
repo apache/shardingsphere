@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.shadow.route.engine;
 
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
+import org.apache.shardingsphere.shadow.route.engine.judge.ShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.shadow.route.engine.impl.PreparedShadowDataSourceRouter;
-import org.apache.shardingsphere.shadow.route.engine.impl.SimpleShadowDataSourceRouter;
+import org.apache.shardingsphere.shadow.route.engine.judge.impl.PreparedShadowDataSourceJudgeEngine;
+import org.apache.shardingsphere.shadow.route.engine.judge.impl.SimpleShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
@@ -48,14 +49,14 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
     }
     
     private RouteContext getRouteContext(final RouteContext routeContext, final ShadowRule shadowRule) {
-        SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         RouteResult routeResult = new RouteResult();
         List<Object> parameters = routeContext.getParameters();
         if (!(sqlStatement instanceof DMLStatement)) {
-            shadowRule.getShadowMappings().forEach((k, v) -> {
-                routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(k, k), Collections.emptyList()));
-                routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(v, v), Collections.emptyList()));
+            shadowRule.getShadowMappings().forEach((key, value) -> {
+                routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(key, key), Collections.emptyList()));
+                routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(value, value), Collections.emptyList()));
             });
             return new RouteContext(sqlStatementContext, parameters, routeResult);
         }
@@ -93,10 +94,10 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
     
     private boolean isShadowSQL(final RouteContext routeContext, final ShadowRule shadowRule) {
         List<Object> parameters = routeContext.getParameters();
-        SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
-        ShadowDataSourceRouter shadowDataSourceRouter = parameters.isEmpty() ? new SimpleShadowDataSourceRouter(shadowRule, sqlStatementContext)
-                : new PreparedShadowDataSourceRouter(shadowRule, sqlStatementContext, parameters);
-        return shadowDataSourceRouter.isShadowSQL();
+        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
+        ShadowDataSourceJudgeEngine shadowDataSourceRouter = parameters.isEmpty() ? new SimpleShadowDataSourceJudgeEngine(shadowRule, sqlStatementContext)
+                : new PreparedShadowDataSourceJudgeEngine(shadowRule, sqlStatementContext, parameters);
+        return shadowDataSourceRouter.isShadow();
     }
     
     @Override

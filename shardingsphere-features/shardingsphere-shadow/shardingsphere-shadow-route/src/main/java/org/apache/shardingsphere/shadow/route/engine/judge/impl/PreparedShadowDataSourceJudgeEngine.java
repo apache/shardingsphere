@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine.impl;
+package org.apache.shardingsphere.shadow.route.engine.judge.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shadow.route.engine.judge.util.ShadowValueJudgeUtil;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.shadow.route.engine.ShadowDataSourceRouter;
+import org.apache.shardingsphere.shadow.route.engine.judge.ShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
@@ -36,26 +37,25 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Shadow judgement engine for prepared.
+ * Prepared shadow data source judge engine.
  */
 @RequiredArgsConstructor
-public final class PreparedShadowDataSourceRouter implements ShadowDataSourceRouter {
+public final class PreparedShadowDataSourceJudgeEngine implements ShadowDataSourceJudgeEngine {
     
     private final ShadowRule shadowRule;
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     private final List<Object> parameters;
     
     @Override
-    public boolean isShadowSQL() {
+    public boolean isShadow() {
         if (sqlStatementContext instanceof InsertStatementContext) {
             Collection<ColumnSegment> columnSegments = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getColumns();
             int count = 0;
             for (ColumnSegment each : columnSegments) {
                 if (each.getIdentifier().getValue().equals(shadowRule.getColumn())) {
-                    Object value = parameters.get(count);
-                    return isShadowField(value);
+                    return ShadowValueJudgeUtil.isShadowValue(parameters.get(count));
                 }
                 count++;
             }
@@ -82,8 +82,7 @@ public final class PreparedShadowDataSourceRouter implements ShadowDataSourceRou
                 Preconditions.checkArgument(each.getRightValue() instanceof PredicateCompareRightValue, "must be PredicateCompareRightValue");
                 PredicateCompareRightValue rightValue = (PredicateCompareRightValue) each.getRightValue();
                 int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) rightValue.getExpression()).getParameterMarkerIndex();
-                Object value = parameters.get(parameterMarkerIndex);
-                return isShadowField(value);
+                return ShadowValueJudgeUtil.isShadowValue(parameters.get(parameterMarkerIndex));
             }
         }
         return false;

@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine.impl;
+package org.apache.shardingsphere.shadow.route.engine.judge.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.condition.ShadowConditionEngine;
-import org.apache.shardingsphere.shadow.route.engine.ShadowDataSourceRouter;
+import org.apache.shardingsphere.shadow.route.engine.judge.ShadowDataSourceJudgeEngine;
+import org.apache.shardingsphere.shadow.route.engine.judge.util.ShadowValueJudgeUtil;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
@@ -33,17 +34,17 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Simple shadow judgement engine.
+ * Simple shadow data source judge engine.
  */
 @RequiredArgsConstructor
-public final class SimpleShadowDataSourceRouter implements ShadowDataSourceRouter {
+public final class SimpleShadowDataSourceJudgeEngine implements ShadowDataSourceJudgeEngine {
     
     private final ShadowRule shadowRule;
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     @Override
-    public boolean isShadowSQL() {
+    public boolean isShadow() {
         if (sqlStatementContext instanceof InsertStatementContext) {
             for (InsertValueContext each : ((InsertStatementContext) sqlStatementContext).getInsertValueContexts()) {
                 if (judgeShadowSqlForInsert(each, (InsertStatementContext) sqlStatementContext)) {
@@ -58,7 +59,7 @@ public final class SimpleShadowDataSourceRouter implements ShadowDataSourceRoute
                 return false;
             }
             List<Object> values = shadowCondition.get().getValues(Collections.emptyList());
-            return !values.isEmpty() && isShadowField(values.get(0));
+            return !values.isEmpty() && ShadowValueJudgeUtil.isShadowValue(values.get(0));
         }
         return false;
     }
@@ -69,8 +70,7 @@ public final class SimpleShadowDataSourceRouter implements ShadowDataSourceRoute
             String columnName = descendingColumnNames.next();
             if (shadowRule.getColumn().equals(columnName)) {
                 int columnIndex = insertStatementContext.getColumnNames().indexOf(columnName);
-                Object value = insertValueContext.getValue(columnIndex);
-                return isShadowField(value);
+                return ShadowValueJudgeUtil.isShadowValue(insertValueContext.getValue(columnIndex));
             }
         }
         return false;
