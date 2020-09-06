@@ -33,7 +33,7 @@ curl -X POST \
   -H 'content-type: application/json' \
   -d '{
    "ruleConfiguration": {
-      "sourceDatasource": "ds_0: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '\''123456'\'keyGenerateStrategy
+      "sourceDatasource": "ds_0: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '\''123456'\'keyGenerateStrategy
 ```
 
 更多管理接口详情请参见[使用手册](/cn/user-manual/shardingsphere-scaling/usage/)。

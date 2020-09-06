@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.governance.context.schema;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.common.event.auth.AuthenticationChangedEvent;
-import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.common.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.core.common.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.common.event.schema.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.common.event.schema.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.event.auth.AuthenticationChangedEvent;
+import org.apache.shardingsphere.governance.core.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.governance.core.event.rule.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.governance.core.event.schema.SchemaAddedEvent;
+import org.apache.shardingsphere.governance.core.event.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.metadata.MetaDataCenter;
 import org.apache.shardingsphere.governance.core.metadata.event.MetaDataChangedEvent;

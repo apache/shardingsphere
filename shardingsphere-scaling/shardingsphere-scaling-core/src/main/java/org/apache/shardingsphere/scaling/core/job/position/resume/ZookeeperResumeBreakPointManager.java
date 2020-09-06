@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.governance.core.common.yaml.config.YamlGovernanceCenterConfiguration;
-import org.apache.shardingsphere.governance.core.common.yaml.swapper.GovernanceCenterConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceCenterConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.zookeeper.CuratorZookeeperRepository;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 
