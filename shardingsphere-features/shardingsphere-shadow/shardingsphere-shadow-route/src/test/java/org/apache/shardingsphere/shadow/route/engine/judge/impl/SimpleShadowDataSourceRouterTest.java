@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine.impl;
+package org.apache.shardingsphere.shadow.route.engine.judge.impl;
 
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -71,14 +71,14 @@ public final class SimpleShadowDataSourceRouterTest {
         insertStatement.getValues().addAll(Collections.singletonList(new InsertValuesSegment(
                 0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "name"), new LiteralExpressionSegment(0, 0, true)))));
         InsertStatementContext insertStatementContext = new InsertStatementContext(schemaMetaData, Collections.emptyList(), insertStatement);
-        SimpleShadowDataSourceRouter simpleShadowDataSourceRouter = new SimpleShadowDataSourceRouter(shadowRule, insertStatementContext);
-        assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadowSQL());
+        SimpleShadowDataSourceJudgeEngine simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, insertStatementContext);
+        assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadow());
         insertStatement.getValues().clear();
         insertStatement.getValues().addAll(Collections.singletonList(
                 new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "name"), new LiteralExpressionSegment(0, 0, false)))));
         insertStatementContext = new InsertStatementContext(schemaMetaData, Collections.emptyList(), insertStatement);
-        simpleShadowDataSourceRouter = new SimpleShadowDataSourceRouter(shadowRule, insertStatementContext);
-        assertFalse("should not be shadow", simpleShadowDataSourceRouter.isShadowSQL());
+        simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, insertStatementContext);
+        assertFalse("should not be shadow", simpleShadowDataSourceRouter.isShadow());
     }
     
     @Test
@@ -95,13 +95,13 @@ public final class SimpleShadowDataSourceRouterTest {
         projectionsSegment.getProjections().addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "true")));
         selectStatement.setProjections(projectionsSegment);
         SelectStatementContext selectStatementContext = new SelectStatementContext(schemaMetaData, Collections.emptyList(), selectStatement);
-        SimpleShadowDataSourceRouter simpleShadowDataSourceRouter = new SimpleShadowDataSourceRouter(shadowRule, selectStatementContext);
-        assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadowSQL());
+        SimpleShadowDataSourceJudgeEngine simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, selectStatementContext);
+        assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadow());
         andPredicate.getPredicates().clear();
         andPredicate.getPredicates().addAll(Collections.singletonList(
                 new PredicateSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("shadow")), new PredicateCompareRightValue(0, 0, "=", new LiteralExpressionSegment(0, 0, false)))));
         projectionsSegment.getProjections().clear();
         projectionsSegment.getProjections().addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "false")));
-        assertFalse("should not be shadow", simpleShadowDataSourceRouter.isShadowSQL());
+        assertFalse("should not be shadow", simpleShadowDataSourceRouter.isShadow());
     }
 }

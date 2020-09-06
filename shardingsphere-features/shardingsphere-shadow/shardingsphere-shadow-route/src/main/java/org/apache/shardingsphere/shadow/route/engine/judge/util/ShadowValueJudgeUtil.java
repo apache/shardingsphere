@@ -15,28 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine;
+package org.apache.shardingsphere.shadow.route.engine.judge.util;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Route decorator for shadow.
+ * Shadow value judge util.
  */
-public interface ShadowDataSourceRouter {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShadowValueJudgeUtil {
     
     /**
-     * Judge whether SQL is shadow.
-     *
-     * @return SQL is shadow or not
+     * Judge whether shadow value.
+     * 
+     * @param value value to be judged 
+     * @return is shadow value ot not
      */
-    boolean isShadowSQL();
-    
-    /**
-     * Judge whether field is shadow.
-     * @param value the field
-     * @return field is shadow or not
-     */
-    default boolean isShadowField(final Object value) {
+    public static boolean isShadowValue(final Object value) {
         return (value instanceof Boolean && (Boolean) value)
-                || (value instanceof Integer && 1 == (Integer) value)
-                || (value instanceof String && Boolean.parseBoolean((String) value));
+                || (value instanceof Integer && 1 == (Integer) value) || (value instanceof String && Boolean.parseBoolean((String) value));
     }
 }

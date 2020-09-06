@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine.impl;
+package org.apache.shardingsphere.shadow.route.engine.judge.impl;
 
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -49,7 +49,7 @@ public final class PreparedShadowDataSourceRouterTest {
                 Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("shadow"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
         InsertStatementContext insertStatementContext = new InsertStatementContext(schemaMetaData, Arrays.asList(1, "Tom", 2, "Jerry", 3, true), insertStatement);
-        PreparedShadowDataSourceRouter preparedShadowDataSourceRouter = new PreparedShadowDataSourceRouter(shadowRule, insertStatementContext, Arrays.asList(1, "Tom", true));
-        assertTrue("should be shadow", preparedShadowDataSourceRouter.isShadowSQL());
+        PreparedShadowDataSourceJudgeEngine preparedShadowDataSourceRouter = new PreparedShadowDataSourceJudgeEngine(shadowRule, insertStatementContext, Arrays.asList(1, "Tom", true));
+        assertTrue("should be shadow", preparedShadowDataSourceRouter.isShadow());
     }
 }
