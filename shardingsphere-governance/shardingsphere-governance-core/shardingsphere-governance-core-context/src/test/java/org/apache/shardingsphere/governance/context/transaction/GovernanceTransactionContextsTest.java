@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.context.transaction;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangeCompletedEvent;
+import org.apache.shardingsphere.governance.core.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;

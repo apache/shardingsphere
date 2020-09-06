@@ -20,8 +20,8 @@ package org.apache.shardingsphere.driver.governance.internal.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.governance.core.common.yaml.config.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.governance.core.common.yaml.swapper.GovernanceCenterConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceCenterConfigurationYamlSwapper;
 
 /**
  * YAML governance configuration swapper utility.
