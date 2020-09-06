@@ -47,7 +47,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public final class GovernanceFacadeTest {
     
-    private final GovernanceFacade governanceFacade = GovernanceFacade.getInstance();
+    private final GovernanceFacade governanceFacade = new GovernanceFacade();
     
     @Mock
     private GovernanceRepositoryFacade repositoryFacade;

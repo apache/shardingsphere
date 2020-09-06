@@ -70,41 +70,41 @@ public final class Bootstrap {
         int port = bootstrapArgs.getPort();
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
         if (null == yamlConfig.getServerConfiguration().getGovernance()) {
-            init(new YamlProxyConfigurationSwapper().swap(yamlConfig), port, false);
+            init(new YamlProxyConfigurationSwapper().swap(yamlConfig), port, null);
         } else {
-            init(new GovernanceBootstrap(GovernanceFacade.getInstance()).init(yamlConfig), port, true);
+            GovernanceFacade governanceFacade = new GovernanceFacade();
+            init(new GovernanceBootstrap(governanceFacade).init(yamlConfig), port, governanceFacade);
         }
     }
     
-    private static void init(final ProxyConfiguration proxyConfig, final int port, final boolean governanceEnabled) throws SQLException {
-        initSchemaContexts(proxyConfig, governanceEnabled);
+    private static void init(final ProxyConfiguration proxyConfig, final int port, final GovernanceFacade governanceFacade) throws SQLException {
+        SchemaContexts schemaContexts = createSchemaContexts(proxyConfig);
+        TransactionContexts transactionContexts = createTransactionContexts(schemaContexts);
+        if (null != governanceFacade) {
+            schemaContexts = new GovernanceSchemaContexts(schemaContexts, governanceFacade);
+            transactionContexts = new GovernanceTransactionContexts(transactionContexts);
+        }
+        ProxySchemaContexts.getInstance().init(schemaContexts, transactionContexts);
         initOpenTracing();
         setDatabaseServerInfo();
         ShardingSphereProxy.getInstance().start(port);
     }
     
-    private static void initSchemaContexts(final ProxyConfiguration proxyConfig, final boolean governanceEnabled) throws SQLException {
+    private static SchemaContexts createSchemaContexts(final ProxyConfiguration proxyConfig) throws SQLException {
         ProxyDataSourceContext dataSourceContext = new ProxyDataSourceContext(proxyConfig.getSchemaDataSources());
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(
                 dataSourceContext.getDatabaseType(), dataSourceContext.getDataSourcesMap(), proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
-        SchemaContexts schemaContexts = createSchemaContexts(schemaContextsBuilder.build(), governanceEnabled);
-        TransactionContexts transactionContexts = createTransactionContexts(schemaContexts, governanceEnabled);
-        ProxySchemaContexts.getInstance().init(schemaContexts, transactionContexts);
+        return schemaContextsBuilder.build();
     }
     
-    private static SchemaContexts createSchemaContexts(final SchemaContexts schemaContexts, final boolean governanceEnabled) {
-        return governanceEnabled ? new GovernanceSchemaContexts(schemaContexts, GovernanceFacade.getInstance()) : schemaContexts;
-    }
-    
-    private static TransactionContexts createTransactionContexts(final SchemaContexts schemaContexts, final boolean governanceEnabled) {
+    private static TransactionContexts createTransactionContexts(final SchemaContexts schemaContexts) {
         Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(schemaContexts.getSchemaContexts().size(), 1);
         for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContexts().entrySet()) {
             ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
             engine.init(schemaContexts.getDatabaseType(), entry.getValue().getSchema().getDataSources());
             transactionManagerEngines.put(entry.getKey(), engine);
         }
-        TransactionContexts contexts = new StandardTransactionContexts(transactionManagerEngines);
-        return governanceEnabled ? new GovernanceTransactionContexts(contexts) : contexts;
+        return new StandardTransactionContexts(transactionManagerEngines);
     }
     
     private static void initOpenTracing() {

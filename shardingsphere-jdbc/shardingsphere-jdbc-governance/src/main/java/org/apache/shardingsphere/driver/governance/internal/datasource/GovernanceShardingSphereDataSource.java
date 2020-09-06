@@ -65,16 +65,16 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         transactionContexts = createTransactionContexts(schemaContexts.getDatabaseType(), schemaContexts.getDefaultSchemaContext().getSchema().getDataSources());
     }
     
-    public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations,
-                                                 final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
+    public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, 
+                                              final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
-        schemaContexts = new GovernanceSchemaContexts(createSchemaContexts(dataSourceMap, ruleConfigurations, props), governanceFacade);
+        schemaContexts = new GovernanceSchemaContexts(createSchemaContexts(dataSourceMap, ruleConfigs, props), governanceFacade);
         transactionContexts = createTransactionContexts(schemaContexts.getDatabaseType(), schemaContexts.getDefaultSchemaContext().getSchema().getDataSources());
         uploadLocalConfiguration(governanceFacade);
     }
     
     private GovernanceFacade createGovernanceFacade(final GovernanceConfiguration config) {
-        GovernanceFacade result = GovernanceFacade.getInstance();
+        GovernanceFacade result = new GovernanceFacade();
         result.init(config, Collections.singletonList(DefaultSchema.LOGIC_NAME));
         result.onlineInstance();
         return result;
@@ -90,10 +90,9 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         return schemaContextsBuilder.build();
     }
     
-    private SchemaContexts createSchemaContexts(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations,
-                                                final Properties props) throws SQLException {
+    private SchemaContexts createSchemaContexts(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(createDatabaseType(dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap),
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), new Authentication(), props);
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigs), new Authentication(), props);
         return schemaContextsBuilder.build();
     }
     
