@@ -85,7 +85,7 @@ public abstract class BaseDQLIT extends SingleIT {
         dropDatabases();
     }
     
-    private static void clearData(final DatabaseType databaseType) throws SQLException, IOException, JAXBException {
+    private static void clearData(final DatabaseType databaseType) throws IOException, JAXBException {
         for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).clear();
         }
