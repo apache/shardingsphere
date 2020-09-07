@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlProxyUserConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.proxy.fixture.FixtureYamlRuleConfiguration;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,6 +50,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public final class StandardBootstrapInitializerTest {
@@ -112,7 +115,7 @@ public final class StandardBootstrapInitializerTest {
         return serverConfiguration;
     }
     
-    private void assertSchemaDataSources(Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
+    private void assertSchemaDataSources(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
         assertThat(schemaDataSources.size(), is(1));
         assertTrue("there is no such key !", schemaDataSources.containsKey("datasource-0"));
         Map<String, DataSourceParameter> dataSourceParameterMap = schemaDataSources.get("datasource-0");
@@ -130,7 +133,7 @@ public final class StandardBootstrapInitializerTest {
         assertThat(dataSourceParameter.getMinPoolSize(), is(10));
     }
     
-    private void assertSchemaRules(Map<String, Collection<RuleConfiguration>> schemaRules) {
+    private void assertSchemaRules(final Map<String, Collection<RuleConfiguration>> schemaRules) {
         assertThat(schemaRules.size(), is(1));
         assertTrue("there is no such key !", schemaRules.containsKey("datasource-0"));
         Collection<RuleConfiguration> ruleConfigurations = schemaRules.get("datasource-0");
@@ -140,7 +143,7 @@ public final class StandardBootstrapInitializerTest {
         assertThat(((FixtureRuleConfiguration)ruleConfiguration).getName(), is("testRule"));
     }
     
-    private void assertAuthentication(Authentication authentication) {
+    private void assertAuthentication(final Authentication authentication) {
         assertThat(authentication.getUsers().size(), is(1));
         assertTrue("there is no such key !", authentication.getUsers().containsKey("root"));
         ProxyUser proxyUser = authentication.getUsers().get("root");
@@ -150,8 +153,24 @@ public final class StandardBootstrapInitializerTest {
         assertTrue("there is no such element !", proxyUser.getAuthorizedSchemas().contains("ds-2"));
     }
     
-    private void assertProps(Properties props) {
+    private void assertProps(final Properties props) {
         assertThat(props.getProperty("alpha-1"), is("alpha-A"));
         assertThat(props.getProperty("beta-2"), is("beta-B"));
+    }
+    
+    @Test
+    public void assertDecorateSchemaContexts() {
+        SchemaContexts schemaContexts = mock(SchemaContexts.class);
+        StandardBootstrapInitializer standardBootstrapInitializer = spy(StandardBootstrapInitializer.class);
+        SchemaContexts newSchemaContexts = standardBootstrapInitializer.decorateSchemaContexts(schemaContexts);
+        assertThat(schemaContexts, is(newSchemaContexts));
+    }
+    
+    @Test
+    public void assertDecorateTransactionContexts() {
+        TransactionContexts transactionContexts = mock(TransactionContexts.class);
+        StandardBootstrapInitializer standardBootstrapInitializer = spy(StandardBootstrapInitializer.class);
+        TransactionContexts newTransactionContexts = standardBootstrapInitializer.decorateTransactionContexts(transactionContexts);
+        assertThat(transactionContexts, is(newTransactionContexts));
     }
 }
