@@ -12,8 +12,7 @@ Edit `%SHARDINGSPHERE_SCALING_HOME%/conf/server.yaml`. Please refer to [Configur
 
 If the backend database is PostgreSQL, there's no need for additional dependencies.
 
-If the backend database is MySQL, download [MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz) 
-and decompress, then copy `mysql-connector-java-5.1.47.jar` to `%SHARDINGSPHERE_SCALING_HOME%/lib` directory.
+If the backend database is MySQL, please download [mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar) and put it into `%SHARDINGSPHERE_SCALING_HOME%/lib` directory.
 
 ## 3. Start Server
 
@@ -33,7 +32,7 @@ curl -X POST \
   -H 'content-type: application/json' \
   -d '{
    "ruleConfiguration": {
-      "sourceDatasource": "ds_0: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '\''123456'\'keyGenerateStrategy
+      "sourceDatasource": "ds_0: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '\''123456'\'keyGenerateStrategy
 ```
 
 Please refer to [Configuration Manual](/en/user-manual/shardingsphere-scaling/usage/) for more details. 

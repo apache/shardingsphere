@@ -50,7 +50,7 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
     @Test
     public void assertAESEncryptor() {
         assertThat(aesEncryptor.getType(), is("AES"));
-        assertThat(aesEncryptor.getProps().getProperty("aes.key.value"), is("123456"));
+        assertThat(aesEncryptor.getProps().getProperty("aes-key-value"), is("123456"));
     }
     
     @Test
@@ -68,7 +68,7 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
     private void assertEncryptors(final Map<String, EncryptAlgorithm> encryptors) {
         assertThat(encryptors.size(), is(2));
         assertThat(encryptors.get("aesEncryptor"), instanceOf(AESEncryptAlgorithm.class));
-        assertThat(encryptors.get("aesEncryptor").getProps().getProperty("aes.key.value"), is("123456"));
+        assertThat(encryptors.get("aesEncryptor").getProps().getProperty("aes-key-value"), is("123456"));
         assertThat(encryptors.get("md5Encryptor"), instanceOf(MD5EncryptAlgorithm.class));
     }
     

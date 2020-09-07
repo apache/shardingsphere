@@ -30,14 +30,14 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Object
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.OracleVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleAlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleAlterUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleCreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleDropRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleDropUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleGrantStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleRevokeStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -49,7 +49,7 @@ public final class OracleDCLVisitor extends OracleVisitor implements DCLVisitor 
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement();
+        OracleGrantStatement result = new OracleGrantStatement();
         if (null != ctx.objectPrivilegeClause()) {
             for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.objectPrivilegeClause())) {
                 result.getTables().add(each);
@@ -60,7 +60,7 @@ public final class OracleDCLVisitor extends OracleVisitor implements DCLVisitor 
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        RevokeStatement result = new RevokeStatement();
+        OracleRevokeStatement result = new OracleRevokeStatement();
         if (null != ctx.objectPrivilegeClause()) {
             for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.objectPrivilegeClause())) {
                 result.getTables().add(each);
@@ -75,31 +75,31 @@ public final class OracleDCLVisitor extends OracleVisitor implements DCLVisitor 
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new CreateUserStatement();
+        return new OracleCreateUserStatement();
     }
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DropUserStatement();
+        return new OracleDropUserStatement();
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new AlterUserStatement();
+        return new OracleAlterUserStatement();
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new CreateRoleStatement();
+        return new OracleCreateRoleStatement();
     }
     
     @Override
     public ASTNode visitAlterRole(final AlterRoleContext ctx) {
-        return new AlterRoleStatement();
+        return new OracleAlterRoleStatement();
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new DropRoleStatement();
+        return new OracleDropRoleStatement();
     }
 }

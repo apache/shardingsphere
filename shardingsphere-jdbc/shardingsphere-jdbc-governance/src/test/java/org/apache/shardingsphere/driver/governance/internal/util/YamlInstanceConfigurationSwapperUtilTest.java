@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.driver.governance.internal.util;
 
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
-import org.apache.shardingsphere.governance.core.common.yaml.config.YamlGovernanceCenterConfiguration;
-import org.apache.shardingsphere.governance.core.common.yaml.config.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;

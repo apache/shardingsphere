@@ -18,44 +18,39 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.decorator;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.junit.Before;
 import org.junit.Test;
+
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
 public final class HikariJDBCParameterDecoratorTest {
     
-    private HikariJDBCParameterDecorator hikariJDBCParameterDecorator;
-    
-    @Before
-    public void setUp() {
-        hikariJDBCParameterDecorator = new HikariJDBCParameterDecorator();
-    }
-    
     @Test
     public void assertGetTypeResultIsHikariDataSource() {
-        assertEquals(HikariDataSource.class, hikariJDBCParameterDecorator.getType());
+        assertSame(HikariDataSource.class, new HikariJDBCParameterDecorator().getType());
     }
     
     @Test
     public void assertDecoratedHikariDataSource() {
-        HikariDataSource hikariDataSource = new HikariDataSource();
-        hikariJDBCParameterDecorator.decorate(hikariDataSource);
-        Properties properties = hikariDataSource.getDataSourceProperties();
-        assertThat(properties.getProperty("useServerPrepStmts"), is(Boolean.TRUE.toString()));
-        assertThat(properties.getProperty("cachePrepStmts"), is(Boolean.TRUE.toString()));
-        assertThat(properties.getProperty("prepStmtCacheSize"), is("250"));
-        assertThat(properties.getProperty("prepStmtCacheSqlLimit"), is("2048"));
-        assertThat(properties.getProperty("useLocalSessionState"), is(Boolean.TRUE.toString()));
-        assertThat(properties.getProperty("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));
-        assertThat(properties.getProperty("cacheResultSetMetadata"), is(Boolean.FALSE.toString()));
-        assertThat(properties.getProperty("cacheServerConfiguration"), is(Boolean.TRUE.toString()));
-        assertThat(properties.getProperty("elideSetAutoCommits"), is(Boolean.TRUE.toString()));
-        assertThat(properties.getProperty("maintainTimeStats"), is(Boolean.FALSE.toString()));
-        assertThat(properties.getProperty("netTimeoutForStreamingResults"), is("0"));
-        assertThat(properties.getProperty("tinyInt1isBit"), is(Boolean.FALSE.toString()));
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setDriverClassName("org.apache.shardingsphere.jdbc.test.MockedDriver");
+        dataSource.setJdbcUrl("mock:jdbc");
+        HikariDataSource actual = new HikariJDBCParameterDecorator().decorate(dataSource);
+        Properties props = actual.getDataSourceProperties();
+        assertThat(props.getProperty("useServerPrepStmts"), is(Boolean.TRUE.toString()));
+        assertThat(props.getProperty("cachePrepStmts"), is(Boolean.TRUE.toString()));
+        assertThat(props.getProperty("prepStmtCacheSize"), is("250"));
+        assertThat(props.getProperty("prepStmtCacheSqlLimit"), is("2048"));
+        assertThat(props.getProperty("useLocalSessionState"), is(Boolean.TRUE.toString()));
+        assertThat(props.getProperty("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));
+        assertThat(props.getProperty("cacheResultSetMetadata"), is(Boolean.FALSE.toString()));
+        assertThat(props.getProperty("cacheServerConfiguration"), is(Boolean.TRUE.toString()));
+        assertThat(props.getProperty("elideSetAutoCommits"), is(Boolean.TRUE.toString()));
+        assertThat(props.getProperty("maintainTimeStats"), is(Boolean.FALSE.toString()));
+        assertThat(props.getProperty("netTimeoutForStreamingResults"), is("0"));
+        assertThat(props.getProperty("tinyInt1isBit"), is(Boolean.FALSE.toString()));
     }
 }

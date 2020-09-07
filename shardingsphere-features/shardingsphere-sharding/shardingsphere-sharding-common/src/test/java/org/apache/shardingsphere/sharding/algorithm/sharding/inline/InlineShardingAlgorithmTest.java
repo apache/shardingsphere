@@ -50,15 +50,15 @@ public final class InlineShardingAlgorithmTest {
     
     private StandardShardingStrategy createShardingStrategy() {
         InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("algorithm.expression", "t_order_$->{order_id % 4}");
-        shardingAlgorithm.getProps().setProperty("allow.range.query.with.inline.sharding", "true");
+        shardingAlgorithm.getProps().setProperty("algorithm-expression", "t_order_$->{order_id % 4}");
+        shardingAlgorithm.getProps().setProperty("allow-range-query-with-inline-sharding", "true");
         shardingAlgorithm.init();
         return new StandardShardingStrategy("order_id", shardingAlgorithm);
     }
     
     private StandardShardingStrategy createShardingStrategyWithSimplified() {
         InlineShardingAlgorithm shardingAlgorithmWithSimplified = new InlineShardingAlgorithm();
-        shardingAlgorithmWithSimplified.getProps().setProperty("algorithm.expression", "t_order_${order_id % 4}");
+        shardingAlgorithmWithSimplified.getProps().setProperty("algorithm-expression", "t_order_${order_id % 4}");
         shardingAlgorithmWithSimplified.init();
         return new StandardShardingStrategy("order_id", shardingAlgorithmWithSimplified);
     }

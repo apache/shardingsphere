@@ -15,21 +15,21 @@
 # limitations under the License.
 #
 
-ds: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration
+ds: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
   dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
   props:
     url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     maxTotal: 16
     password: ''
     username: sa
-ds_0: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration
+ds_0: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
   dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
   props:
     url: jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     maxTotal: 16
     password: ''
     username: sa
-ds_1: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration
+ds_1: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
   dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
   props:
     url: jdbc:h2:mem:ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL

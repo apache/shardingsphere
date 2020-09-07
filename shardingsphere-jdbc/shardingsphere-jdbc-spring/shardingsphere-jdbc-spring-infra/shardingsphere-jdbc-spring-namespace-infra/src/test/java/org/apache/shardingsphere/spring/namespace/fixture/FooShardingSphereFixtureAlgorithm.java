@@ -32,7 +32,7 @@ public final class FooShardingSphereFixtureAlgorithm implements ShardingSphereFi
     
     @Override
     public void init() {
-        value = props.getProperty("fixture.value");
+        value = props.getProperty("fixture-value");
     }
     
     @Override

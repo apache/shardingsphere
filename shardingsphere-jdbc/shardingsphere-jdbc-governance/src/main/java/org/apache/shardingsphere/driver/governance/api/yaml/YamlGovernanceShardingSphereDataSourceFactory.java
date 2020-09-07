@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.driver.governance.internal.util.YamlGovernanceRepositoryConfigurationSwapperUtil;
 import org.apache.shardingsphere.driver.governance.internal.yaml.YamlGovernanceRootRuleConfigurations;
-import org.apache.shardingsphere.governance.core.common.yaml.config.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;

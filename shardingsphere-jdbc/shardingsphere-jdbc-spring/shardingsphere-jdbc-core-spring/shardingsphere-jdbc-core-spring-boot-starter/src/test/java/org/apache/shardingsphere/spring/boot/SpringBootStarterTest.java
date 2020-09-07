@@ -93,9 +93,9 @@ public class SpringBootStarterTest {
         Map<String, ShardingAlgorithm> shardingAlgorithmMap = rule.getShardingAlgorithms();
         assertNotNull(shardingAlgorithmMap);
         InlineShardingAlgorithm databaseShardingAlgorithm = InlineShardingAlgorithm.class.cast(shardingAlgorithmMap.get("databaseShardingAlgorithm"));
-        assertThat(databaseShardingAlgorithm.getProps().getProperty("algorithm.expression"), is("ds_$->{user_id % 2}"));
+        assertThat(databaseShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("ds_$->{user_id % 2}"));
         InlineShardingAlgorithm orderTableShardingAlgorithm = InlineShardingAlgorithm.class.cast(shardingAlgorithmMap.get("orderTableShardingAlgorithm"));
-        assertThat(orderTableShardingAlgorithm.getProps().getProperty("algorithm.expression"), is("t_order_$->{order_id % 2}"));
+        assertThat(orderTableShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("t_order_$->{order_id % 2}"));
         Collection<TableRule> tableRules = rule.getTableRules();
         assertNotNull(tableRules);
         assertThat(tableRules.size(), equalTo(1));
@@ -111,11 +111,11 @@ public class SpringBootStarterTest {
         ShardingStrategy databaseShardingStrategy = tableRule.getDatabaseShardingStrategy();
         assertNotNull(databaseShardingStrategy);
         assertThat(databaseShardingStrategy.getShardingColumns(), is(Sets.newTreeSet(Collections.singleton("user_id"))));
-        assertThat(databaseShardingStrategy.getShardingAlgorithm().getProps().getProperty("algorithm.expression"), is("ds_$->{user_id % 2}"));
+        assertThat(databaseShardingStrategy.getShardingAlgorithm().getProps().getProperty("algorithm-expression"), is("ds_$->{user_id % 2}"));
         ShardingStrategy tableShardingStrategy = tableRule.getTableShardingStrategy();
         assertNotNull(tableShardingStrategy);
         assertThat(tableShardingStrategy.getShardingColumns(), is(Sets.newTreeSet(Collections.singleton("order_id"))));
-        assertThat(tableShardingStrategy.getShardingAlgorithm().getProps().getProperty("algorithm.expression"), is("t_order_$->{order_id % 2}"));
+        assertThat(tableShardingStrategy.getShardingAlgorithm().getProps().getProperty("algorithm-expression"), is("t_order_$->{order_id % 2}"));
     }
     
     private void assertMasterSlaveRule(final MasterSlaveRule rule) {

@@ -61,7 +61,7 @@ public final class LocalShardingDatabasesAndTablesConfiguration implements Examp
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
         Properties props = new Properties();
-        props.setProperty("algorithm.expression", "demo_ds_${user_id % 2}");
+        props.setProperty("algorithm-expression", "demo_ds_${user_id % 2}");
         result.getShardingAlgorithms() .put("inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
         result.getShardingAlgorithms() .put("standard_test_tbl", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
         result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
@@ -87,7 +87,7 @@ public final class LocalShardingDatabasesAndTablesConfiguration implements Examp
     
     private static Properties getProperties() {
         Properties result = new Properties();
-        result.setProperty("worker.id", "123");
+        result.setProperty("worker-id", "123");
         return result;
     }
 }

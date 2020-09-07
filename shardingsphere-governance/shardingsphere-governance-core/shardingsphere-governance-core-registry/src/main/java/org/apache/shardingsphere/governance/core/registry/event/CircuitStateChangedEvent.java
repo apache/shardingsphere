@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.common.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
 
 /**
  * Circuit state event.

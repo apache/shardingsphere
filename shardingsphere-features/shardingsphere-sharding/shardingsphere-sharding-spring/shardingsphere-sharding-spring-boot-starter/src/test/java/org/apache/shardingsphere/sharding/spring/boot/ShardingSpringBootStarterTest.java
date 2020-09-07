@@ -61,14 +61,14 @@ public class ShardingSpringBootStarterTest {
     
     @Test
     public void assertShardingAlgorithm() {
-        assertThat(databaseShardingAlgorithm.getProps().getProperty("algorithm.expression"), is("ds_$->{user_id % 2}"));
-        assertThat(orderTableShardingAlgorithm.getProps().getProperty("algorithm.expression"), is("t_order_$->{order_id % 2}"));
-        assertThat(orderItemTableShardingAlgorithm.getProps().getProperty("algorithm.expression"), is("t_order_item_$->{order_id % 2}"));
+        assertThat(databaseShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("ds_$->{user_id % 2}"));
+        assertThat(orderTableShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("t_order_$->{order_id % 2}"));
+        assertThat(orderItemTableShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("t_order_item_$->{order_id % 2}"));
     }
     
     @Test
     public void assertKeyGenerateAlgorithm() {
-        assertThat(keyGenerator.getProps().getProperty("worker.id"), is("123"));
+        assertThat(keyGenerator.getProps().getProperty("worker-id"), is("123"));
     }
     
     @Test
@@ -122,18 +122,18 @@ public class ShardingSpringBootStarterTest {
         assertThat(shardingRuleConfiguration.getShardingAlgorithms().size(), is(3));
         assertThat(shardingRuleConfiguration.getShardingAlgorithms().get("orderItemTableShardingAlgorithm"), instanceOf(InlineShardingAlgorithm.class));
         assertThat(shardingRuleConfiguration.getShardingAlgorithms().get("orderItemTableShardingAlgorithm").getType(), is("INLINE"));
-        assertThat(shardingRuleConfiguration.getShardingAlgorithms().get("orderItemTableShardingAlgorithm").getProps().getProperty("algorithm.expression"), is("t_order_item_$->{order_id % 2}"));
+        assertThat(shardingRuleConfiguration.getShardingAlgorithms().get("orderItemTableShardingAlgorithm").getProps().getProperty("algorithm-expression"), is("t_order_item_$->{order_id % 2}"));
         assertThat(shardingRuleConfiguration.getShardingAlgorithms().get("databaseShardingAlgorithm"), instanceOf(InlineShardingAlgorithm.class));
         assertThat(shardingRuleConfiguration.getShardingAlgorithms().get("databaseShardingAlgorithm").getType(), is("INLINE"));
-        assertThat(shardingRuleConfiguration.getShardingAlgorithms().get("databaseShardingAlgorithm").getProps().getProperty("algorithm.expression"), is("ds_$->{user_id % 2}"));
+        assertThat(shardingRuleConfiguration.getShardingAlgorithms().get("databaseShardingAlgorithm").getProps().getProperty("algorithm-expression"), is("ds_$->{user_id % 2}"));
         assertThat(shardingRuleConfiguration.getShardingAlgorithms().get("orderTableShardingAlgorithm"), instanceOf(InlineShardingAlgorithm.class));
         assertThat(shardingRuleConfiguration.getShardingAlgorithms().get("orderTableShardingAlgorithm").getType(), is("INLINE"));
-        assertThat(shardingRuleConfiguration.getShardingAlgorithms().get("orderTableShardingAlgorithm").getProps().getProperty("algorithm.expression"), is("t_order_$->{order_id % 2}"));
+        assertThat(shardingRuleConfiguration.getShardingAlgorithms().get("orderTableShardingAlgorithm").getProps().getProperty("algorithm-expression"), is("t_order_$->{order_id % 2}"));
     }
     
     private void assertShardingConfigurationKeyGenerators() {
         assertThat(shardingRuleConfiguration.getKeyGenerators().size(), is(1));
         assertThat(shardingRuleConfiguration.getKeyGenerators().get("keyGenerator"), instanceOf(SnowflakeKeyGenerateAlgorithm.class));
-        assertThat(shardingRuleConfiguration.getKeyGenerators().get("keyGenerator").getProps().getProperty("worker.id"), is("123"));
+        assertThat(shardingRuleConfiguration.getKeyGenerators().get("keyGenerator").getProps().getProperty("worker-id"), is("123"));
     }
 }

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Create role statement.
  */
-public final class CreateRoleStatement extends AbstractSQLStatement implements DCLStatement {
+public abstract class CreateRoleStatement extends AbstractSQLStatement {
 }

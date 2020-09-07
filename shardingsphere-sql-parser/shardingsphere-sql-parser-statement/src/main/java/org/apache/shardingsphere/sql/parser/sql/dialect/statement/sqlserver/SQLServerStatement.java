@@ -21,7 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * SQLServer statement.
- * 
  */
 public interface SQLServerStatement extends SQLStatement {
 }

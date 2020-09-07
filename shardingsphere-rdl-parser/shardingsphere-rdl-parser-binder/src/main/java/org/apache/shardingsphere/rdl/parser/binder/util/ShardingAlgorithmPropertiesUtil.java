@@ -39,10 +39,10 @@ public final class ShardingAlgorithmPropertiesUtil {
     
     static {
         TYPE_AND_PROPERTIES = new LinkedHashMap<>();
-        TYPE_AND_PROPERTIES.put("MOD", Collections.singleton("sharding.count"));
-        TYPE_AND_PROPERTIES.put("HASH_MOD", Collections.singleton("sharding.count"));
-        TYPE_AND_PROPERTIES.put("VOLUME_RANGE", Arrays.asList("range.lower", "range.upper", "sharding.volume"));
-        TYPE_AND_PROPERTIES.put("BOUNDARY_RANGE", Collections.singleton("sharding.ranges"));
+        TYPE_AND_PROPERTIES.put("MOD", Collections.singleton("sharding-count"));
+        TYPE_AND_PROPERTIES.put("HASH_MOD", Collections.singleton("sharding-count"));
+        TYPE_AND_PROPERTIES.put("VOLUME_RANGE", Arrays.asList("range-lower", "range-upper", "sharding-volume"));
+        TYPE_AND_PROPERTIES.put("BOUNDARY_RANGE", Collections.singleton("sharding-ranges"));
     }
     
     /**

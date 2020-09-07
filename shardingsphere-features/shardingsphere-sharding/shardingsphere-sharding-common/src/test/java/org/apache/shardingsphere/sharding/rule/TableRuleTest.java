@@ -91,7 +91,7 @@ public final class TableRuleTest {
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", "ds0,ds1");
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
         ModShardingAlgorithm shardingAlgorithm = new ModShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("sharding.count", "4");
+        shardingAlgorithm.getProps().setProperty("sharding-count", "4");
         shardingAlgorithm.init();
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
         assertThat(actual.getLogicTable(), is("logic_table"));
@@ -110,7 +110,7 @@ public final class TableRuleTest {
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", null);
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
         ModShardingAlgorithm shardingAlgorithm = new ModShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("sharding.count", "4");
+        shardingAlgorithm.getProps().setProperty("sharding-count", "4");
         shardingAlgorithm.init();
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
         assertThat(actual.getLogicTable(), is("logic_table"));
@@ -166,7 +166,7 @@ public final class TableRuleTest {
         ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration("LOGIC_TABLE", "");
         shardingTableRuleConfiguration.setTableShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", "INLINE"));
         InlineShardingAlgorithm inlineShardingAlgorithm = new InlineShardingAlgorithm();
-        inlineShardingAlgorithm.getProps().setProperty("algorithm.expression", "xxx");
+        inlineShardingAlgorithm.getProps().setProperty("algorithm-expression", "xxx");
         inlineShardingAlgorithm.init();
         new TableRule(shardingTableRuleConfiguration, Arrays.asList("ds0", "ds1"), null, inlineShardingAlgorithm, null);
     }

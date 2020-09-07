@@ -80,12 +80,12 @@ public final class RegistryCenterNode {
     }
     
     /**
-     * Get governance sharding schema.
+     * Get governance schema.
      *
      * @param dataSourceNodeFullPath data source node full path
-     * @return governance sharding schema
+     * @return governance schema
      */
-    public Optional<GovernanceSchema> getGovernanceShardingSchema(final String dataSourceNodeFullPath) {
+    public Optional<GovernanceSchema> getGovernanceSchema(final String dataSourceNodeFullPath) {
         Pattern pattern = Pattern.compile(getDataSourcesNodeFullRootPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
         return matcher.find() ? Optional.of(new GovernanceSchema(matcher.group(1), matcher.group(2))) : Optional.empty();

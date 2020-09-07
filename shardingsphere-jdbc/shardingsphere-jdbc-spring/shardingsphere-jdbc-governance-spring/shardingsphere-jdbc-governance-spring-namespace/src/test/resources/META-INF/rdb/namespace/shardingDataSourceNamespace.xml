@@ -36,7 +36,7 @@
     <sharding:sharding-algorithm id="defaultHintShardingAlgorithm" type="HINT_TEST"/>
     <sharding:sharding-algorithm id="inlineStrategyShardingAlgorithm" type="INLINE">
         <props>
-            <prop key="algorithm.expression">t_order_${order_id % 4}</prop>
+            <prop key="algorithm-expression">t_order_${order_id % 4}</prop>
         </props>
     </sharding:sharding-algorithm>
     

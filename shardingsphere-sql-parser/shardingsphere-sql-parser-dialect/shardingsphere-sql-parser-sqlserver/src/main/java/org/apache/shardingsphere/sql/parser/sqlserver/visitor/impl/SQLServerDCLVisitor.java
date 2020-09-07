@@ -34,18 +34,18 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterLoginStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateLoginStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DenyUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropLoginStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerAlterLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerAlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerAlterUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerCreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDropLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDropRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDropUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerGrantStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerRevokeStatement;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.SQLServerVisitor;
 
 import java.util.Collection;
@@ -58,7 +58,7 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor implements DCLVi
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement();
+        SQLServerGrantStatement result = new SQLServerGrantStatement();
         if (null != ctx.classPrivilegesClause()) {
             for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause())) {
                 result.getTables().add(each);
@@ -74,7 +74,7 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor implements DCLVi
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        RevokeStatement result = new RevokeStatement();
+        SQLServerRevokeStatement result = new SQLServerRevokeStatement();
         if (null != ctx.classPrivilegesClause()) {
             for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause())) {
                 result.getTables().add(each);
@@ -98,17 +98,17 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor implements DCLVi
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new CreateUserStatement();
+        return new SQLServerCreateUserStatement();
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new AlterUserStatement();
+        return new SQLServerAlterUserStatement();
     }
     
     @Override
     public ASTNode visitDeny(final DenyContext ctx) {
-        DenyUserStatement result = new DenyUserStatement();
+        SQLServerDenyUserStatement result = new SQLServerDenyUserStatement();
         if (null != ctx.classPrivilegesClause()) {
             for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause())) {
                 result.setTable(each);
@@ -124,36 +124,36 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor implements DCLVi
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DropUserStatement();
+        return new SQLServerDropUserStatement();
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new CreateRoleStatement();
+        return new SQLServerCreateRoleStatement();
     }
     
     @Override
     public ASTNode visitAlterRole(final AlterRoleContext ctx) {
-        return new AlterRoleStatement();
+        return new SQLServerAlterRoleStatement();
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new DropRoleStatement();
+        return new SQLServerDropRoleStatement();
     }
     
     @Override
     public ASTNode visitCreateLogin(final CreateLoginContext ctx) {
-        return new CreateLoginStatement();
+        return new SQLServerCreateLoginStatement();
     }
     
     @Override
     public ASTNode visitAlterLogin(final AlterLoginContext ctx) {
-        return new AlterLoginStatement();
+        return new SQLServerAlterLoginStatement();
     }
     
     @Override
     public ASTNode visitDropLogin(final DropLoginContext ctx) {
-        return new DropLoginStatement();
+        return new SQLServerDropLoginStatement();
     }
 }

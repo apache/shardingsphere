@@ -31,7 +31,7 @@ rules:
       table_inline:
         type: INLINE
         props:
-          algorithm.expression: t_order_${order_id % 2}
+          algorithm-expression: t_order_${order_id % 2}
     keyGenerators:
       snowflake:
         type: SNOWFLAKE
@@ -41,7 +41,7 @@ rules:
       aes_encryptor:
         type: AES
         props:
-          aes.key.value: 123456abcd
+          aes-key-value: 123456abcd
       md5_encryptor:
         type: MD5
     tables:

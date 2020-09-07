@@ -41,17 +41,17 @@ import java.util.stream.Collectors;
  */
 public final class IntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
     
-    private static final String DATE_TIME_PATTERN_KEY = "datetime.pattern";
+    private static final String DATE_TIME_PATTERN_KEY = "datetime-pattern";
     
-    private static final String DATE_TIME_LOWER_KEY = "datetime.lower";
+    private static final String DATE_TIME_LOWER_KEY = "datetime-lower";
     
-    private static final String DATE_TIME_UPPER_KEY = "datetime.upper";
+    private static final String DATE_TIME_UPPER_KEY = "datetime-upper";
     
-    private static final String SHARDING_SUFFIX_FORMAT_KEY = "sharding.suffix.pattern";
+    private static final String SHARDING_SUFFIX_FORMAT_KEY = "sharding-suffix-pattern";
     
-    private static final String INTERVAL_AMOUNT_KEY = "datetime.interval.amount";
+    private static final String INTERVAL_AMOUNT_KEY = "datetime-interval-amount";
     
-    private static final String INTERVAL_UNIT_KEY = "datetime.interval.unit";
+    private static final String INTERVAL_UNIT_KEY = "datetime-interval-unit";
     
     @Getter
     @Setter

@@ -31,7 +31,7 @@
     
     <algorithm-fixture:test-algorithm id="algorithmWithProps" type="FIXTURE">
         <props>
-            <prop key="fixture.value">${fixture.value}</prop>
+            <prop key="fixture-value">${fixture-value}</prop>
         </props>
     </algorithm-fixture:test-algorithm>
     

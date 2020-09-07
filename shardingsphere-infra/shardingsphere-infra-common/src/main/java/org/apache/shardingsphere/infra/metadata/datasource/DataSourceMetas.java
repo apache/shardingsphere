@@ -36,12 +36,12 @@ public final class DataSourceMetas {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public DataSourceMetas(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap) {
-        dataSourceMetaDataMap = getDataSourceMetaDataMap(databaseType, databaseAccessConfigurationMap);
+    public DataSourceMetas(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigMap) {
+        dataSourceMetaDataMap = getDataSourceMetaDataMap(databaseType, databaseAccessConfigMap);
     }
     
-    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap) {
-        return databaseAccessConfigurationMap.entrySet().stream()
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigMap) {
+        return databaseAccessConfigMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> databaseType.getDataSourceMetaData(entry.getValue().getUrl(), entry.getValue().getUsername())));
     }
     

@@ -17,7 +17,7 @@ weight = 4
 
 | *名称*         | *数据类型* | *说明*        |
 | ------------- | --------- | ------------- |
-| aes.key.value | String    | AES 使用的 KEY |
+| aes-key-value | String    | AES 使用的 KEY |
 
 ## RC4 加密算法
 
@@ -27,4 +27,4 @@ weight = 4
 
 | *名称*         | *数据类型* | *说明*        |
 | ------------- | --------- | ------------- |
-| rc4.key.value | String    | RC4 使用的 KEY |
+| rc4-key-value | String    | RC4 使用的 KEY |
