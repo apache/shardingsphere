@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -65,6 +66,7 @@ public final class GovernanceBootstrapInitializerTest {
     
     private void assertProxyConfiguration(final ProxyConfiguration actual) {
         assertTrue(actual.getSchemaDataSources().containsKey("db"));
+        assertNotNull(actual.getSchemaDataSources().get("db").get("db"));
         assertTrue(actual.getSchemaRules().containsKey("db"));
     }
 }
