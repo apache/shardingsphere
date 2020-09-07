@@ -31,8 +31,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.executor.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
@@ -40,23 +38,11 @@ import org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
 /**
  * ShardingSphere-Proxy.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereProxy {
-    
-    private static final ShardingSphereProxy INSTANCE = new ShardingSphereProxy();
     
     private EventLoopGroup bossGroup;
     
     private EventLoopGroup workerGroup;
-    
-    /**
-     * Get instance of proxy context.
-     *
-     * @return instance of proxy context.
-     */
-    public static ShardingSphereProxy getInstance() {
-        return INSTANCE;
-    }
     
     /**
      * Start ShardingSphere-Proxy.

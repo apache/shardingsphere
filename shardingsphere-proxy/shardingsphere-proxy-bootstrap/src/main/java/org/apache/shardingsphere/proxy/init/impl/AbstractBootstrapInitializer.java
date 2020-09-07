@@ -56,7 +56,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         ProxySchemaContexts.getInstance().init(schemaContexts, transactionContexts);
         initOpenTracing();
         setDatabaseServerInfo();
-        ShardingSphereProxy.getInstance().start(port);
+        new ShardingSphereProxy().start(port);
     }
     
     private SchemaContexts createSchemaContexts(final ProxyConfiguration proxyConfig) throws SQLException {
