@@ -40,7 +40,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -136,7 +135,7 @@ public final class DataSetEnvironmentManager {
     public void clear() {
         List<Callable<Void>> clearTasks = new LinkedList<>();
         for (Entry<String, Collection<String>> entry : getDataNodeMap().entrySet()) {
-            clearTasks.add(new CallableTask(dataSourceMap.get(entry.getKey()), entry.getValue()));
+            clearTasks.add(new ClearTask(dataSourceMap.get(entry.getKey()), entry.getValue()));
         }
         try {
             shardingSphereExecutorService.getExecutorService().invokeAll(clearTasks);
@@ -187,7 +186,7 @@ public final class DataSetEnvironmentManager {
     }
     
     @RequiredArgsConstructor
-    private static class CallableTask implements Callable<Void> {
+    private static class ClearTask implements Callable<Void> {
         
         private final DataSource dataSource;
         
