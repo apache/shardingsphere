@@ -61,10 +61,8 @@ This refers to step6 and step7.
 
 When the Seata AT transaction is Revert SQL, we needs to parsed the physical SQL twice after the ShardingSphere fragmentation, so we needs to design an SPI to avoid the loss of the performance in the second SQL parsing.
 
-Reference pape
+Reference paper
 
 [1]: Transactions for Distributed Actors in the Cloud
 
 https://www.microsoft.com/en-us/research/wp-content/uploads/2016/10/EldeebBernstein-TransactionalActors-MSR-TR-1.pdf
-
-
