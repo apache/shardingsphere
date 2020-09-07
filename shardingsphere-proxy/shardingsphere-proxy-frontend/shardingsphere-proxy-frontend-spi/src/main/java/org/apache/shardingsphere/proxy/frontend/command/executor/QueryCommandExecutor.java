@@ -15,23 +15,51 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.command;
+package org.apache.shardingsphere.proxy.frontend.command.executor;
 
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
- * Command executor.
+ * Query command executor.
  */
-public interface CommandExecutor {
+public interface QueryCommandExecutor extends CommandExecutor {
     
     /**
-     * Execute command.
+     * Judge whether query response.
      *
-     * @return database packets to be sent
+     * @return is query response or not
+     */
+    boolean isQueryResponse();
+    
+    /**
+     * Judge whether update response.
+     *
+     * @return is update response or not
+     */
+    boolean isUpdateResponse();
+    
+    /**
+     * Judge whether error response.
+     *
+     * @return is error response or not
+     */
+    boolean isErrorResponse();
+    
+    /**
+     * Goto next result value.
+     *
+     * @return has more result value or not
      * @throws SQLException SQL exception
      */
-    Collection<DatabasePacket<?>> execute() throws SQLException;
+    boolean next() throws SQLException;
+    
+    /**
+     * Get query data.
+     *
+     * @return database packet of query data
+     * @throws SQLException SQL exception
+     */
+    DatabasePacket<?> getQueryData() throws SQLException;
 }

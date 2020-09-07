@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.auth;
 
-import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationResult;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

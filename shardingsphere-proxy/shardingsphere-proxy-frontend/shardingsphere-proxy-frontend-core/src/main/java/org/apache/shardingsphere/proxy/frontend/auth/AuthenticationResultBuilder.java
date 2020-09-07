@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.auth;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationResult;
 
 /**
  * Authentication result builder.
