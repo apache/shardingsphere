@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.proxy.frontend.engine;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
  * Authentication result.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Getter
 public final class AuthenticationResult {
     
@@ -33,35 +32,4 @@ public final class AuthenticationResult {
     private final String database;
     
     private final boolean finished;
-    
-    /**
-     * Create finished authentication result.
-     * 
-     * @param username username
-     * @param database database
-     * @return finished authentication result
-     */
-    public static AuthenticationResult finished(final String username, final String database) {
-        return new AuthenticationResult(username, database, true);
-    }
-    
-    /**
-     * Create continued authentication result.
-     *
-     * @return continued authentication result
-     */
-    public static AuthenticationResult continued() {
-        return new AuthenticationResult(null, null, false);
-    }
-    
-    /**
-     * Create continued authentication result.
-     * 
-     * @param username username
-     * @param database database
-     * @return continued authentication result
-     */
-    public static AuthenticationResult continued(final String username, final String database) {
-        return new AuthenticationResult(username, database, false);
-    }
 }

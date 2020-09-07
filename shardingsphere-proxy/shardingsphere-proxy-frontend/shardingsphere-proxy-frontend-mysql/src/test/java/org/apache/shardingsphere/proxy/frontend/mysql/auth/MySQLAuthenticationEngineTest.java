@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
-import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationResult;
+import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResultBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -104,7 +104,7 @@ public final class MySQLAuthenticationEngineTest {
     private void setAuthenticationResult() {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("currentAuthResult");
         field.setAccessible(true);
-        field.set(authenticationEngine, AuthenticationResult.continued("root", "sharding_db"));
+        field.set(authenticationEngine, AuthenticationResultBuilder.continued("root", "sharding_db"));
     }
     
     @Test
