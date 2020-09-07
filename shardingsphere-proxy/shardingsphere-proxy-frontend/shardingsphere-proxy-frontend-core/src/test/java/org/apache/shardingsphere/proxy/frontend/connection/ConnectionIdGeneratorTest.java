@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend;
+package org.apache.shardingsphere.proxy.frontend.connection;
 
 import lombok.SneakyThrows;
 import org.junit.After;
