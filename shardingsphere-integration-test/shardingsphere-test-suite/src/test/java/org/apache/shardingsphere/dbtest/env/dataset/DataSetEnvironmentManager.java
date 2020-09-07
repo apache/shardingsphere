@@ -134,7 +134,7 @@ public final class DataSetEnvironmentManager {
      * 
      */
     public void clear() {
-        List<Callable<Boolean>> clearDatasources = new ArrayList<>();
+        List<Callable<Void>> clearDatasources = new ArrayList<>();
         for (Entry<String, Collection<String>> entry : getDataNodeMap().entrySet()) {
             CallableClear callableClear = new CallableClear(dataSourceMap.get(entry.getKey()), entry.getValue());
             clearDatasources.add(callableClear);
@@ -188,14 +188,14 @@ public final class DataSetEnvironmentManager {
     }
     
     @RequiredArgsConstructor
-    private static class CallableClear implements Callable<Boolean> {
+    private static class CallableClear implements Callable<Void> {
         
         private final DataSource dataSource;
         
         private final Collection<String> tableNames;
         
         @Override
-        public Boolean call() throws SQLException {
+        public Void call() throws SQLException {
             try (Connection connection = dataSource.getConnection()) {
                 for (String each : tableNames) {
                     String tableName = generateTableName(each, DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL()));
@@ -204,7 +204,7 @@ public final class DataSetEnvironmentManager {
                     }
                 }
             }
-            return true;
+            return null;
         }
     }
 }
