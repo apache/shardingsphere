@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.proxy.init.impl;
 
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlProxyUserConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
@@ -29,16 +32,18 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.proxy.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.proxy.fixture.FixtureYamlRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -61,6 +66,9 @@ public final class StandardBootstrapInitializerTest {
         when(yamlConfig.getServerConfiguration()).thenReturn(serverConfiguration);
         ProxyConfiguration proxyConfiguration = new StandardBootstrapInitializer().getProxyConfiguration(yamlConfig);
         assertSchemaDataSources(proxyConfiguration.getSchemaDataSources());
+        assertSchemaRules(proxyConfiguration.getSchemaRules());
+        assertAuthentication(proxyConfiguration.getAuthentication());
+        assertProps(proxyConfiguration.getProps());
     }
     
     private Map<String, YamlProxyRuleConfiguration> generateYamlProxyRuleConfiguration() {
@@ -78,7 +86,9 @@ public final class StandardBootstrapInitializerTest {
         dataSources.put("hikari", yamlDataSourceParameter);
         YamlProxyRuleConfiguration yamlProxyRuleConfiguration = new YamlProxyRuleConfiguration();
         yamlProxyRuleConfiguration.setDataSources(dataSources);
-        List<YamlRuleConfiguration> rules = Lists.newArrayList(new FixtureYamlRuleConfiguration());
+        FixtureYamlRuleConfiguration fixtureYamlRuleConfiguration = new FixtureYamlRuleConfiguration();
+        fixtureYamlRuleConfiguration.setName("testRule");
+        List<YamlRuleConfiguration> rules = Lists.newArrayList(fixtureYamlRuleConfiguration);
         yamlProxyRuleConfiguration.setRules(rules);
         Map<String, YamlProxyRuleConfiguration> ruleConfigurations = new HashMap<>();
         ruleConfigurations.put("datasource-0", yamlProxyRuleConfiguration);
@@ -118,5 +128,30 @@ public final class StandardBootstrapInitializerTest {
         assertThat(dataSourceParameter.getMaxLifetimeMilliseconds(), is(4000L));
         assertThat(dataSourceParameter.getMaxPoolSize(), is(20));
         assertThat(dataSourceParameter.getMinPoolSize(), is(10));
+    }
+    
+    private void assertSchemaRules(Map<String, Collection<RuleConfiguration>> schemaRules) {
+        assertThat(schemaRules.size(), is(1));
+        assertTrue("there is no such key !", schemaRules.containsKey("datasource-0"));
+        Collection<RuleConfiguration> ruleConfigurations = schemaRules.get("datasource-0");
+        assertThat(ruleConfigurations.size(), is(1));
+        RuleConfiguration ruleConfiguration = ruleConfigurations.iterator().next();
+        assertThat(ruleConfiguration, instanceOf(FixtureRuleConfiguration.class));
+        assertThat(((FixtureRuleConfiguration)ruleConfiguration).getName(), is("testRule"));
+    }
+    
+    private void assertAuthentication(Authentication authentication) {
+        assertThat(authentication.getUsers().size(), is(1));
+        assertTrue("there is no such key !", authentication.getUsers().containsKey("root"));
+        ProxyUser proxyUser = authentication.getUsers().get("root");
+        assertThat(proxyUser.getPassword(), is("root"));
+        assertThat(proxyUser.getAuthorizedSchemas().size(), is(2));
+        assertTrue("there is no such element !", proxyUser.getAuthorizedSchemas().contains("ds-1"));
+        assertTrue("there is no such element !", proxyUser.getAuthorizedSchemas().contains("ds-2"));
+    }
+    
+    private void assertProps(Properties props) {
+        assertThat(props.getProperty("alpha-1"), is("alpha-A"));
+        assertThat(props.getProperty("beta-2"), is("beta-B"));
     }
 }
