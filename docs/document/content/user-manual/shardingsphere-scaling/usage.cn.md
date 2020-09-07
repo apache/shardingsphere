@@ -19,8 +19,7 @@ weight = 2
 
 **注意**：
 
-如果后端连接 MySQL 数据库，需要下载[MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
-解压缩后，将 mysql-connector-java-5.1.47.jar 拷贝到 `${shardingsphere-scaling}\lib` 目录。
+如果后端连接 MySQL 数据库，请下载 [mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar)，并将其放入 `${shardingsphere-scaling}\lib` 目录。
 
 ### 权限要求
 
