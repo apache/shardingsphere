@@ -94,7 +94,7 @@ public final class CommandExecutorTaskTest {
     @SneakyThrows
     public void assertRunNeedFlushByFalse() {
         when(backendConnection.getConnectionSize()).thenReturn(1);
-        when(queryCommandExecutor.execute()).thenReturn(Collections.EMPTY_LIST);
+        when(queryCommandExecutor.execute()).thenReturn(Collections.emptyList());
         when(executeEngine.getCommandPacket(eq(payload), eq(commandPacketType), eq(backendConnection))).thenReturn(commandPacket);
         when(executeEngine.getCommandExecutor(eq(commandPacketType), eq(commandPacket), eq(backendConnection))).thenReturn(queryCommandExecutor);
         when(executeEngine.getCommandPacketType(eq(payload))).thenReturn(commandPacketType);
