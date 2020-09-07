@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.engine;
+package org.apache.shardingsphere.proxy.frontend.auth;
 
+import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationResult;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,11 +26,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class AuthenticationResultTest {
+public final class AuthenticationResultBuilderTest {
     
     @Test
     public void assertContinuedWithEmpty() {
-        AuthenticationResult actual = AuthenticationResult.continued();
+        AuthenticationResult actual = AuthenticationResultBuilder.continued();
         assertNull(actual.getUsername());
         assertNull(actual.getDatabase());
         assertFalse(actual.isFinished());
@@ -37,7 +38,7 @@ public final class AuthenticationResultTest {
     
     @Test
     public void assertContinued() {
-        AuthenticationResult actual = AuthenticationResult.continued("username", "database");
+        AuthenticationResult actual = AuthenticationResultBuilder.continued("username", "database");
         assertThat(actual.getUsername(), is("username"));
         assertThat(actual.getDatabase(), is("database"));
         assertFalse(actual.isFinished());
@@ -45,7 +46,7 @@ public final class AuthenticationResultTest {
     
     @Test
     public void assertFinished() {
-        AuthenticationResult actual = AuthenticationResult.finished("username", "database");
+        AuthenticationResult actual = AuthenticationResultBuilder.finished("username", "database");
         assertThat(actual.getUsername(), is("username"));
         assertThat(actual.getDatabase(), is("database"));
         assertTrue(actual.isFinished());

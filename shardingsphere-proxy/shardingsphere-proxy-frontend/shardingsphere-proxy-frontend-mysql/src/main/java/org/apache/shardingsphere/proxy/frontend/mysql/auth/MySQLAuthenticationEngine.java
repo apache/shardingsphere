@@ -33,6 +33,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.ConnectionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationResult;
 
@@ -75,7 +76,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         }
         Optional<MySQLServerErrorCode> errorCode = authenticationHandler.login(currentAuthResult.getUsername(), authResponse, currentAuthResult.getDatabase());
         context.writeAndFlush(errorCode.isPresent() ? createErrorPacket(errorCode.get(), context) : new MySQLOKPacket(++sequenceId));
-        return AuthenticationResult.finished(currentAuthResult.getUsername(), currentAuthResult.getDatabase());
+        return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), currentAuthResult.getDatabase());
     }
     
     private AuthenticationResult authPhaseFastPath(final ChannelHandlerContext context, final PacketPayload payload) {
@@ -84,14 +85,14 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         sequenceId = packet.getSequenceId();
         if (!Strings.isNullOrEmpty(packet.getDatabase()) && !ProxySchemaContexts.getInstance().schemaExists(packet.getDatabase())) {
             context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_BAD_DB_ERROR, packet.getDatabase()));
-            return AuthenticationResult.continued();
+            return AuthenticationResultBuilder.continued();
         }
         if (isClientPluginAuth(packet) && !MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName().equals(packet.getAuthPluginName())) {
             connectionPhase = MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH;
             context.writeAndFlush(new MySQLAuthSwitchRequestPacket(++sequenceId, MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName(), authenticationHandler.getAuthPluginData()));
-            return AuthenticationResult.continued(packet.getUsername(), packet.getDatabase());
+            return AuthenticationResultBuilder.continued(packet.getUsername(), packet.getDatabase());
         }
-        return AuthenticationResult.finished(packet.getUsername(), packet.getDatabase());
+        return AuthenticationResultBuilder.finished(packet.getUsername(), packet.getDatabase());
     }
     
     private boolean isClientPluginAuth(final MySQLHandshakeResponse41Packet packet) {
