@@ -51,7 +51,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         return INSTANCE;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
         HikariConfig config = new HikariConfig();
@@ -68,8 +68,8 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         config.setMinimumIdle(dataSourceParameter.getMinPoolSize());
         config.setReadOnly(dataSourceParameter.isReadOnly());
         DataSource result = new HikariDataSource(config);
-        findJDBCParameterDecorator(result).ifPresent(decorator -> decorator.decorate(result));
-        return result;
+        Optional<JDBCParameterDecorator> decorator = findJDBCParameterDecorator(result);
+        return decorator.isPresent() ? decorator.get().decorate(result) : result;
     }
     
     private void validateDriverClassName(final String driverClassName) {
