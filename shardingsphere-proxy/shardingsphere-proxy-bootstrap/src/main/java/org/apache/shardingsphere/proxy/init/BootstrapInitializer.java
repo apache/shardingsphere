@@ -29,7 +29,7 @@ public interface BootstrapInitializer {
     /**
      * Initialize.
      * 
-     * @param proxyConfig Proxy configuration
+     * @param proxyConfig proxy configuration
      * @param port port
      * @throws SQLException SQL exception
      */
