@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.fixture;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -40,9 +40,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 /**
- * Mock data source.
+ * Call time record data source.
  */
-public final class MockDataSource implements DataSource, AutoCloseable {
+public final class CallTimeRecordDataSource implements DataSource, AutoCloseable {
     
     private final AtomicInteger count = new AtomicInteger(0);
     
@@ -52,7 +52,7 @@ public final class MockDataSource implements DataSource, AutoCloseable {
             throw new SQLException("datasource is not enough");
         }
         count.getAndIncrement();
-        return new MockConnection();
+        return new CallTimeRecordConnection();
     }
     
     @Override
@@ -99,7 +99,7 @@ public final class MockDataSource implements DataSource, AutoCloseable {
     public void close() {
     }
     
-    private final class MockConnection implements Connection {
+    private final class CallTimeRecordConnection implements Connection {
         
         @Override
         public Statement createStatement() {
