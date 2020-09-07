@@ -39,7 +39,7 @@ public final class PostgreSQLProtocolFrontendEngine implements DatabaseProtocolF
     
     private final PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
     
-    private final DatabasePacketCodecEngine codecEngine = new PostgreSQLPacketCodecEngine();
+    private final DatabasePacketCodecEngine<?> codecEngine = new PostgreSQLPacketCodecEngine();
     
     @Override
     public String getDatabaseType() {

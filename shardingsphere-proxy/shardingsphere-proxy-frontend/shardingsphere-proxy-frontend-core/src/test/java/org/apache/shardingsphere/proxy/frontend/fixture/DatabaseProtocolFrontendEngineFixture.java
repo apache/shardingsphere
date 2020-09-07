@@ -37,7 +37,7 @@ public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProt
     }
     
     @Override
-    public DatabasePacketCodecEngine getCodecEngine() {
+    public DatabasePacketCodecEngine<?> getCodecEngine() {
         return null;
     }
     
@@ -53,6 +53,5 @@ public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProt
     
     @Override
     public void release(final BackendConnection backendConnection) {
-        
     }
 }

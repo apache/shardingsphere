@@ -41,7 +41,7 @@ public interface DatabaseProtocolFrontendEngine extends DatabaseTypeAwareSPI {
      * 
      * @return database packet codec engine
      */
-    DatabasePacketCodecEngine getCodecEngine();
+    DatabasePacketCodecEngine<?> getCodecEngine();
     
     /**
      * Get authentication engine.

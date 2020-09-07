@@ -38,7 +38,7 @@ public final class MySQLProtocolFrontendEngine implements DatabaseProtocolFronte
     
     private final MySQLCommandExecuteEngine commandExecuteEngine = new MySQLCommandExecuteEngine();
     
-    private final DatabasePacketCodecEngine codecEngine = new MySQLPacketCodecEngine();
+    private final DatabasePacketCodecEngine<?> codecEngine = new MySQLPacketCodecEngine();
     
     @Override
     public String getDatabaseType() {

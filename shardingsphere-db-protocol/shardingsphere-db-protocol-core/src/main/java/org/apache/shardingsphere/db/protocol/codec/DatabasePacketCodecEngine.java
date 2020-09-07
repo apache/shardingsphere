@@ -29,7 +29,7 @@ import java.util.List;
  * 
  * @param <T> type of database packet
  */
-public interface DatabasePacketCodecEngine<T extends DatabasePacket> {
+public interface DatabasePacketCodecEngine<T extends DatabasePacket<?>> {
     
     /**
      * Judge is valid header or not.
