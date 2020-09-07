@@ -28,14 +28,16 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
  * Governance bootstrap initializer.
  */
 @RequiredArgsConstructor
-public final class GovernanceBootstrapInitializer extends StandardBootstrapInitializer {
+public final class GovernanceBootstrapInitializer extends AbstractBootstrapInitializer {
     
     private final GovernanceFacade governanceFacade;
     
+    @Override
     protected SchemaContexts decorateSchemaContexts(final SchemaContexts schemaContexts) {
         return new GovernanceSchemaContexts(schemaContexts, governanceFacade);
     }
     
+    @Override
     protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts) {
         return new GovernanceTransactionContexts(transactionContexts);
     }
