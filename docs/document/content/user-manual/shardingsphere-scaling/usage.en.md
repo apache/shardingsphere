@@ -19,8 +19,7 @@ The migration scene we support：
 
 **Attention**: 
 
-If the backend database is MySQL, download [MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz) 
-and decompress, then copy mysql-connector-java-5.1.47.jar to `${shardingsphere-scaling}\lib directory`.
+If the backend database is MySQL, please download [mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar) and put it into `${shardingsphere-scaling}\lib directory`.
 
 ### Privileges
 
