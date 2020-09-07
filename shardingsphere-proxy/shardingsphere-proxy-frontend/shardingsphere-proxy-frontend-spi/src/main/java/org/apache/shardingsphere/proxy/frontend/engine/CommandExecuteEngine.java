@@ -23,8 +23,8 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.QueryCommandExecutor;
 
 import java.sql.SQLException;
 import java.util.Optional;
