@@ -134,13 +134,13 @@ public final class DataSetEnvironmentManager {
      * 
      */
     public void clear() {
-        List<Callable<Boolean>> clearNodes = new ArrayList<>();
+        List<Callable<Boolean>> clearDatasources = new ArrayList<>();
         for (Entry<String, Collection<String>> entry : getDataNodeMap().entrySet()) {
             CallableClear callableClear = new CallableClear(dataSourceMap.get(entry.getKey()), entry.getValue());
-            clearNodes.add(callableClear);
+            clearDatasources.add(callableClear);
         }
         try {
-            shardingSphereExecutorService.getExecutorService().invokeAll(clearNodes);
+            shardingSphereExecutorService.getExecutorService().invokeAll(clearDatasources);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
