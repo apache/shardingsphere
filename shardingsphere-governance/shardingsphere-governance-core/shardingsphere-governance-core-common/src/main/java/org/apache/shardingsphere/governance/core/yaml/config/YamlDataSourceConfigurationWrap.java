@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
  */
 @Getter
 @Setter
-public final class YamlDataSourceConfigurationWarp implements YamlConfiguration {
+public final class YamlDataSourceConfigurationWrap implements YamlConfiguration {
     
     private Map<String, YamlDataSourceConfiguration> dataSources;
 }

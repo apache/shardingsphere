@@ -14,11 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-dataSource: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
-  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
-  props:
-    url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    maxTotal: 100
-    password: ''
-    username: sa
+dataSources:
+   dataSource:
+     dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+     props:
+       url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+       maxTotal: 100
+       password: ''
+       username: sa

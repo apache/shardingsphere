@@ -26,7 +26,7 @@ import org.apache.shardingsphere.governance.core.event.rule.RuleConfigurationsCh
 import org.apache.shardingsphere.governance.core.event.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.event.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.listener.PostGovernanceRepositoryEventListener;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWarp;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
@@ -123,7 +123,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     }
     
     private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
-        YamlDataSourceConfigurationWarp result = YamlEngine.unmarshal(event.getValue(), YamlDataSourceConfigurationWarp.class);
+        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshal(event.getValue(), YamlDataSourceConfigurationWrap.class);
         Preconditions.checkState(null != result && !result.getDataSources().isEmpty(), "No available data sources to load for governance.");
         return new DataSourceChangedEvent(schemaName, result.getDataSources().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue()))));

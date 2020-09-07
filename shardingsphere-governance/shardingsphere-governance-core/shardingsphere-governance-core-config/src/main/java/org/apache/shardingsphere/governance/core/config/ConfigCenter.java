@@ -25,7 +25,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWarp;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -139,9 +139,9 @@ public final class ConfigCenter {
         Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data source in `%s` for governance.", schemaName);
         Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToYamlConfiguration(entry.getValue())));
-        YamlDataSourceConfigurationWarp yamlDataSourceConfigurationWarp = new YamlDataSourceConfigurationWarp();
-        yamlDataSourceConfigurationWarp.setDataSources(yamlDataSourceConfigurations);
-        repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(yamlDataSourceConfigurationWarp));
+        YamlDataSourceConfigurationWrap yamlDataSourceConfigurationWrap = new YamlDataSourceConfigurationWrap();
+        yamlDataSourceConfigurationWrap.setDataSources(yamlDataSourceConfigurations);
+        repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(yamlDataSourceConfigurationWrap));
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
@@ -252,7 +252,7 @@ public final class ConfigCenter {
         if (!hasDataSourceConfiguration(schemaName)) {
             return new LinkedHashMap<>();
         }
-        YamlDataSourceConfigurationWarp result = YamlEngine.unmarshal(repository.get(node.getDataSourcePath(schemaName)), YamlDataSourceConfigurationWarp.class);
+        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshal(repository.get(node.getDataSourcePath(schemaName)), YamlDataSourceConfigurationWrap.class);
         return result.getDataSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue())));
     }
     
