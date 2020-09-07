@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.init;
 
-import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
+import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 
 import java.sql.SQLException;
 
@@ -29,9 +29,9 @@ public interface BootstrapInitializer {
     /**
      * Initialize.
      * 
-     * @param proxyConfig proxy configuration
+     * @param yamlConfig YAML proxy configuration
      * @param port port
      * @throws SQLException SQL exception
      */
-    void init(ProxyConfiguration proxyConfig, int port) throws SQLException;
+    void init(YamlProxyConfiguration yamlConfig, int port) throws SQLException;
 }

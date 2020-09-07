@@ -22,6 +22,9 @@ import org.apache.shardingsphere.governance.context.schema.GovernanceSchemaConte
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.infra.context.SchemaContexts;
+import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
+import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.governance.GovernanceBootstrap;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 /**
@@ -31,6 +34,11 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
 public final class GovernanceBootstrapInitializer extends AbstractBootstrapInitializer {
     
     private final GovernanceFacade governanceFacade;
+    
+    @Override
+    protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
+        return new GovernanceBootstrap(governanceFacade).init(yamlConfig);
+    }
     
     @Override
     protected SchemaContexts decorateSchemaContexts(final SchemaContexts schemaContexts) {

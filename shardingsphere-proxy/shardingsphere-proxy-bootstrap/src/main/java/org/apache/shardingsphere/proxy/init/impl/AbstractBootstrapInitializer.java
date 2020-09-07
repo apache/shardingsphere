@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.proxy.backend.schema.ProxyDataSourceContext;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
+import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.db.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.init.BootstrapInitializer;
@@ -48,7 +49,8 @@ import java.util.Optional;
 public abstract class AbstractBootstrapInitializer implements BootstrapInitializer {
     
     @Override
-    public final void init(final ProxyConfiguration proxyConfig, final int port) throws SQLException {
+    public final void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
+        ProxyConfiguration proxyConfig = getProxyConfiguration(yamlConfig);
         SchemaContexts schemaContexts = decorateSchemaContexts(createSchemaContexts(proxyConfig));
         TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(schemaContexts));
         ProxySchemaContexts.getInstance().init(schemaContexts, transactionContexts);
@@ -88,6 +90,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
             MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
         }
     }
+    
+    protected abstract ProxyConfiguration getProxyConfiguration(YamlProxyConfiguration yamlConfig);
     
     protected abstract SchemaContexts decorateSchemaContexts(SchemaContexts schemaContexts);
     

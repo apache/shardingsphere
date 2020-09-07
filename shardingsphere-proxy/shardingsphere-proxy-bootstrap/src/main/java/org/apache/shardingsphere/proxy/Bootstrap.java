@@ -21,11 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.proxy.arg.BootstrapArguments;
-import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
-import org.apache.shardingsphere.proxy.governance.GovernanceBootstrap;
 import org.apache.shardingsphere.proxy.init.BootstrapInitializer;
 import org.apache.shardingsphere.proxy.init.impl.GovernanceBootstrapInitializer;
 import org.apache.shardingsphere.proxy.init.impl.StandardBootstrapInitializer;
@@ -50,20 +47,10 @@ public final class Bootstrap {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         int port = bootstrapArgs.getPort();
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        init(port, yamlConfig);
+        createBootstrapInitializer(yamlConfig).init(yamlConfig, port);
     }
     
-    private static void init(final int port, final YamlProxyConfiguration yamlConfig) throws SQLException {
-        BootstrapInitializer initializer;
-        ProxyConfiguration proxyConfig;
-        if (null == yamlConfig.getServerConfiguration().getGovernance()) {
-            initializer = new StandardBootstrapInitializer();
-            proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        } else {
-            GovernanceFacade governanceFacade = new GovernanceFacade();
-            initializer = new GovernanceBootstrapInitializer(governanceFacade);
-            proxyConfig = new GovernanceBootstrap(governanceFacade).init(yamlConfig);
-        }
-        initializer.init(proxyConfig, port);
+    private static BootstrapInitializer createBootstrapInitializer(final YamlProxyConfiguration yamlConfig) {
+        return null == yamlConfig.getServerConfiguration().getGovernance() ? new StandardBootstrapInitializer() : new GovernanceBootstrapInitializer(new GovernanceFacade());
     }
 }

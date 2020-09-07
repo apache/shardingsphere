@@ -17,15 +17,21 @@
 
 package org.apache.shardingsphere.proxy.init.impl;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.context.SchemaContexts;
+import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
+import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 /**
  * Standard bootstrap initializer.
  */
-@Slf4j
 public final class StandardBootstrapInitializer extends AbstractBootstrapInitializer {
+    
+    @Override
+    protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
+        return new YamlProxyConfigurationSwapper().swap(yamlConfig);
+    }
     
     @Override
     protected SchemaContexts decorateSchemaContexts(final SchemaContexts schemaContexts) {
