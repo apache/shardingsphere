@@ -134,10 +134,9 @@ public final class DataSetEnvironmentManager {
      * 
      */
     public void clear() {
-        List<Callable<Void>> clearTasks = new ArrayList<>();
+        List<Callable<Void>> clearTasks = new LinkedList<>();
         for (Entry<String, Collection<String>> entry : getDataNodeMap().entrySet()) {
-            CallableTask callableTask = new CallableTask(dataSourceMap.get(entry.getKey()), entry.getValue());
-            clearTasks.add(callableTask);
+            clearTasks.add(new CallableTask(dataSourceMap.get(entry.getKey()), entry.getValue()));
         }
         try {
             shardingSphereExecutorService.getExecutorService().invokeAll(clearTasks);
