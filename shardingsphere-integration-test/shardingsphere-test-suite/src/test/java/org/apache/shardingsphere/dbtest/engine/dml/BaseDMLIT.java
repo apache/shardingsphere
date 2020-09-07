@@ -81,7 +81,7 @@ public abstract class BaseDMLIT extends SingleIT {
     }
     
     @After
-    public void clearData() throws SQLException {
+    public void clearData() {
         dataSetEnvironmentManager.clear();
     }
     
