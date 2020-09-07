@@ -102,7 +102,7 @@ public final class DataSourceConfiguration {
      * 
      * @return data source
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @SneakyThrows(ReflectiveOperationException.class)
     public DataSource createDataSource() {
         DataSource result = (DataSource) Class.forName(dataSourceClassName).getConstructor().newInstance();
@@ -116,8 +116,8 @@ public final class DataSourceConfiguration {
                 setterMethod.get().invoke(result, entry.getValue());
             }
         }
-        findJDBCParameterDecorator(result).ifPresent(decorator -> decorator.decorate(result));
-        return result;
+        Optional<JDBCParameterDecorator> decorator = findJDBCParameterDecorator(result);
+        return decorator.isPresent() ? decorator.get().decorate(result) : result;
     }
     
     @SuppressWarnings("rawtypes")

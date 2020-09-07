@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test;
+package org.apache.shardingsphere.jdbc.test;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;

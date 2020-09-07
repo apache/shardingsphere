@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.context.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.context.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
-import org.apache.shardingsphere.test.MockedDataSource;
+import org.apache.shardingsphere.jdbc.test.MockedDataSource;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
