@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
-import org.apache.shardingsphere.proxy.frontend.ConnectionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.mysql.auth.MySQLAuthenticationEngine;
 import org.junit.Before;
@@ -48,6 +48,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +67,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLProtocolFrontendEngineTest {
     
-    private static final String SCHEMA = "schema_";
+    private static final String SCHEMA = "schema_%s";
     
     private MySQLProtocolFrontendEngine mysqlProtocolFrontendEngine;
     
@@ -84,7 +85,7 @@ public final class MySQLProtocolFrontendEngineTest {
         resetConnectionIdGenerator();
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void resetConnectionIdGenerator() {
         Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
         field.setAccessible(true);
@@ -128,8 +129,7 @@ public final class MySQLProtocolFrontendEngineTest {
     }
 
     @Test
-    @SneakyThrows
-    public void assertErrorMsgWhenLoginFailure() {
+    public void assertErrorMsgWhenLoginFailure() throws UnknownHostException {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ProxyUser proxyUser = new ProxyUser("error", Collections.singleton("db1"));
         setAuthentication(proxyUser);
@@ -144,21 +144,20 @@ public final class MySQLProtocolFrontendEngineTest {
         verify(context).writeAndFlush(argThat((ArgumentMatcher<MySQLErrPacket>) argument -> "Access denied for user 'root'@'192.168.0.102' (using password: YES)".equals(argument.getErrorMessage())));
     }
     
-    @SneakyThrows
     private void setAuthentication(final ProxyUser proxyUser) {
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
         initProxySchemaContexts(authentication);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionPhase(final MySQLConnectionPhase connectionPhase) {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
         field.setAccessible(true);
         field.set(mysqlProtocolFrontendEngine.getAuthEngine(), connectionPhase);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void initProxySchemaContexts(final Authentication authentication) {
         Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
@@ -172,7 +171,7 @@ public final class MySQLProtocolFrontendEngineTest {
     private Map<String, SchemaContext> getSchemaContextMap() {
         Map<String, SchemaContext> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
-            String name = SCHEMA + i;
+            String name = String.format(SCHEMA, i);
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
             RuntimeContext runtimeContext = mock(RuntimeContext.class);
             result.put(name, new SchemaContext(name, schema, runtimeContext));
