@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.engine;
+package org.apache.shardingsphere.proxy.frontend.auth;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
