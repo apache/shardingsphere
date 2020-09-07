@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.governance;
+package org.apache.shardingsphere.proxy.init.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -36,30 +36,30 @@ import java.util.Collections;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class GovernanceBootstrapTest {
+public final class GovernanceBootstrapInitializerTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private GovernanceFacade governanceFacade;
     
-    private GovernanceBootstrap governanceBootstrap;
+    private GovernanceBootstrapInitializer initializer;
     
     @Before
     public void setUp() {
-        governanceBootstrap = new GovernanceBootstrap(governanceFacade);
+        initializer = new GovernanceBootstrapInitializer(governanceFacade);
         when(governanceFacade.getConfigCenter().getAllSchemaNames()).thenReturn(Collections.singletonList("db"));
         when(governanceFacade.getConfigCenter().loadDataSourceConfigurations("db")).thenReturn(Collections.singletonMap("db", new DataSourceConfiguration(HikariDataSource.class.getName())));
     }
     
     @Test
-    public void assertInitFromRegistryCenter() throws IOException {
+    public void assertGetProxyConfiguration() throws IOException {
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/reg_center/");
-        assertProxyConfiguration(governanceBootstrap.init(new YamlProxyConfiguration(yamlProxyConfig.getServerConfiguration(), yamlProxyConfig.getRuleConfigurations())));
+        assertProxyConfiguration(initializer.getProxyConfiguration(new YamlProxyConfiguration(yamlProxyConfig.getServerConfiguration(), yamlProxyConfig.getRuleConfigurations())));
     }
     
     @Test
-    public void assertInitFromLocalConfiguration() throws IOException {
+    public void assertGetProxyConfigurationFromLocalConfiguration() throws IOException {
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/local");
-        assertProxyConfiguration(governanceBootstrap.init(new YamlProxyConfiguration(yamlProxyConfig.getServerConfiguration(), yamlProxyConfig.getRuleConfigurations())));
+        assertProxyConfiguration(initializer.getProxyConfiguration(new YamlProxyConfiguration(yamlProxyConfig.getServerConfiguration(), yamlProxyConfig.getRuleConfigurations())));
     }
     
     private void assertProxyConfiguration(final ProxyConfiguration actual) {
