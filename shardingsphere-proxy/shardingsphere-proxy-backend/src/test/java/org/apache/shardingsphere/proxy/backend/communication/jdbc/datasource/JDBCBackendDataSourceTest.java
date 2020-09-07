@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.fixture.CallTimeRecordDataSource;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -103,7 +104,7 @@ public final class JDBCBackendDataSourceTest {
     private Map<String, DataSource> mockDataSources(final int size) {
         Map<String, DataSource> result = new HashMap<>(size, 1);
         for (int i = 0; i < size; i++) {
-            result.put("ds_" + i, new MockDataSource());
+            result.put("ds_" + i, new CallTimeRecordDataSource());
         }
         return result;
     }
