@@ -74,9 +74,9 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     }
     
     @Override
-    @SneakyThrows
+    @SneakyThrows(InterruptedException.class)
     public void writeQueryData(final ChannelHandlerContext context,
-                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) {
+                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
         if (queryCommandExecutor.isQueryResponse() && !context.channel().isActive()) {
             context.write(new PostgreSQLCommandCompletePacket());
             context.write(new PostgreSQLReadyForQueryPacket());
