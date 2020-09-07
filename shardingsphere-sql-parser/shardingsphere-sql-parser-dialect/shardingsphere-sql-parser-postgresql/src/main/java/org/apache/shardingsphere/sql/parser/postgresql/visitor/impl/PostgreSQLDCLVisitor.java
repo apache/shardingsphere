@@ -30,15 +30,15 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Pr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.PostgreSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLAlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLAlterUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLCreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLDropRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLDropUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLGrantStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLRevokeStatement;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -50,7 +50,7 @@ public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor implements DCL
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement();
+        PostgreSQLGrantStatement result = new PostgreSQLGrantStatement();
         Optional<Collection<SimpleTableSegment>> tableSegmentOptional = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
         tableSegmentOptional.ifPresent(tableSegment -> result.getTables().addAll(tableSegment));
         return result;
@@ -58,7 +58,7 @@ public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor implements DCL
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        RevokeStatement result = new RevokeStatement();
+        PostgreSQLRevokeStatement result = new PostgreSQLRevokeStatement();
         Optional<Collection<SimpleTableSegment>> tableSegmentOptional = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
         tableSegmentOptional.ifPresent(tableSegment -> result.getTables().addAll(tableSegment));
         return result;
@@ -76,31 +76,31 @@ public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor implements DCL
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new CreateUserStatement();
+        return new PostgreSQLCreateUserStatement();
     }
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DropUserStatement();
+        return new PostgreSQLDropUserStatement();
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new AlterUserStatement();
+        return new PostgreSQLAlterUserStatement();
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new CreateRoleStatement();
+        return new PostgreSQLCreateRoleStatement();
     }
     
     @Override
     public ASTNode visitAlterRole(final AlterRoleContext ctx) {
-        return new AlterRoleStatement();
+        return new PostgreSQLAlterRoleStatement();
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new DropRoleStatement();
+        return new PostgreSQLDropRoleStatement();
     }
 }

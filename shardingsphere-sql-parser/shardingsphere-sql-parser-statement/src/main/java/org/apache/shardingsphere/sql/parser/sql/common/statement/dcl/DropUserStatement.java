@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Drop user statement.
+ * Drop role statement.
  */
-public final class DropUserStatement extends AbstractSQLStatement implements DCLStatement {
+public abstract class DropUserStatement extends AbstractSQLStatement {
 }

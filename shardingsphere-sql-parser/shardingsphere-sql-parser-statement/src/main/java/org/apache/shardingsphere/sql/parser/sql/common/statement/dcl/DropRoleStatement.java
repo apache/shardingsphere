@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop role statement.
  */
-public final class DropRoleStatement extends AbstractSQLStatement implements DCLStatement {
+public abstract class DropRoleStatement extends AbstractSQLStatement {
 }
