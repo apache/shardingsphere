@@ -17,19 +17,31 @@
 
 package org.apache.shardingsphere.proxy.init.impl;
 
+import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
+import org.apache.shardingsphere.proxy.fixture.FixtureYamlRuleConfiguration;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class StandardBootstrapInitializerTest {
+    
+    @Before
+    public void setUp() {
+        ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
+    }
     
     @Test
     public void assertGetProxyConfiguration() {
@@ -49,6 +61,8 @@ public final class StandardBootstrapInitializerTest {
         dataSources.put("hikari", yamlDataSourceParameter);
         YamlProxyRuleConfiguration yamlProxyRuleConfiguration = new YamlProxyRuleConfiguration();
         yamlProxyRuleConfiguration.setDataSources(dataSources);
+        List<YamlRuleConfiguration> rules = Lists.newArrayList(new FixtureYamlRuleConfiguration());
+        yamlProxyRuleConfiguration.setRules(rules);
         Map<String, YamlProxyRuleConfiguration> ruleConfigurations = new HashMap<>();
         ruleConfigurations.put("datasource-0", yamlProxyRuleConfiguration);
         return ruleConfigurations;
