@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.governance;
+package org.apache.shardingsphere.proxy.init.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
-import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.context.schema.GovernanceSchemaContexts;
+import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.context.SchemaContexts;
+import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -40,20 +45,15 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Governance bootstrap.
+ * Governance bootstrap initializer.
  */
 @RequiredArgsConstructor
-public final class GovernanceBootstrap {
+public final class GovernanceBootstrapInitializer extends AbstractBootstrapInitializer {
     
     private final GovernanceFacade governanceFacade;
     
-    /**
-     * Initialize governance.
-     * 
-     * @param yamlConfig YAML proxy configuration
-     * @return proxy configuration
-     */
-    public ProxyConfiguration init(final YamlProxyConfiguration yamlConfig) {
+    @Override
+    protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
         governanceFacade.init(new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance()), yamlConfig.getRuleConfigurations().keySet());
         initConfigurations(yamlConfig);
         return loadProxyConfiguration();
@@ -65,8 +65,8 @@ public final class GovernanceBootstrap {
         if (isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
             governanceFacade.onlineInstance();
         } else {
-            governanceFacade.onlineInstance(getDataSourceConfigurationMap(ruleConfigs),
-                    getRuleConfigurations(ruleConfigs), new AuthenticationYamlSwapper().swapToObject(serverConfig.getAuthentication()), serverConfig.getProps());
+            governanceFacade.onlineInstance(
+                    getDataSourceConfigurationMap(ruleConfigs), getRuleConfigurations(ruleConfigs), getAuthentication(serverConfig.getAuthentication()), serverConfig.getProps());
         }
     }
     
@@ -77,7 +77,7 @@ public final class GovernanceBootstrap {
     private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
         Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>(ruleConfigs.size(), 1);
         for (Entry<String, YamlProxyRuleConfiguration> entry : ruleConfigs.entrySet()) {
-            result.put(entry.getKey(), 
+            result.put(entry.getKey(),
                     DataSourceParameterConverter.getDataSourceConfigurationMap(DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(entry.getValue().getDataSources())));
         }
         return result;
@@ -86,6 +86,10 @@ public final class GovernanceBootstrap {
     private Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> yamlRuleConfigurations) {
         YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
         return yamlRuleConfigurations.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
+    }
+    
+    private Authentication getAuthentication(final YamlAuthenticationConfiguration authConfig) {
+        return new AuthenticationYamlSwapper().swapToObject(authConfig);
     }
     
     private ProxyConfiguration loadProxyConfiguration() {
@@ -111,5 +115,15 @@ public final class GovernanceBootstrap {
             result.put(each, governanceFacade.getConfigCenter().loadRuleConfigurations(each));
         }
         return result;
+    }
+    
+    @Override
+    protected SchemaContexts decorateSchemaContexts(final SchemaContexts schemaContexts) {
+        return new GovernanceSchemaContexts(schemaContexts, governanceFacade);
+    }
+    
+    @Override
+    protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts) {
+        return new GovernanceTransactionContexts(transactionContexts);
     }
 }
