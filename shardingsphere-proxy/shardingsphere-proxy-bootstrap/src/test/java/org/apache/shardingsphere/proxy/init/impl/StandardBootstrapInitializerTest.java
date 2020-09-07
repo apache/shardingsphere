@@ -17,5 +17,12 @@
 
 package org.apache.shardingsphere.proxy.init.impl;
 
+import org.junit.Test;
+
 public final class StandardBootstrapInitializerTest {
+    
+    @Test
+    public void assertGetProxyConfiguration() {
+        
+    }
 }
