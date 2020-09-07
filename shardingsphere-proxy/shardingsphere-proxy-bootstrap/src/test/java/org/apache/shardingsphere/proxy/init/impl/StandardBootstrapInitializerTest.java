@@ -99,14 +99,14 @@ public final class StandardBootstrapInitializerTest {
     }
     
     private YamlProxyServerConfiguration generateYamlProxyServerConfiguration() {
-        YamlProxyServerConfiguration serverConfiguration = new YamlProxyServerConfiguration();
-        YamlAuthenticationConfiguration authentication = new YamlAuthenticationConfiguration();
         YamlProxyUserConfiguration yamlProxyUserConfiguration = new YamlProxyUserConfiguration();
         yamlProxyUserConfiguration.setPassword("root");
         yamlProxyUserConfiguration.setAuthorizedSchemas("ds-1,ds-2");
         Map<String, YamlProxyUserConfiguration> users = new HashMap<>();
         users.put("root", yamlProxyUserConfiguration);
+        YamlAuthenticationConfiguration authentication = new YamlAuthenticationConfiguration();
         authentication.setUsers(users);
+        YamlProxyServerConfiguration serverConfiguration = new YamlProxyServerConfiguration();
         serverConfiguration.setAuthentication(authentication);
         Properties props = new Properties();
         props.setProperty("alpha-1", "alpha-A");
@@ -140,7 +140,7 @@ public final class StandardBootstrapInitializerTest {
         assertThat(ruleConfigurations.size(), is(1));
         RuleConfiguration ruleConfiguration = ruleConfigurations.iterator().next();
         assertThat(ruleConfiguration, instanceOf(FixtureRuleConfiguration.class));
-        assertThat(((FixtureRuleConfiguration)ruleConfiguration).getName(), is("testRule"));
+        assertThat(((FixtureRuleConfiguration) ruleConfiguration).getName(), is("testRule"));
     }
     
     private void assertAuthentication(final Authentication authentication) {
