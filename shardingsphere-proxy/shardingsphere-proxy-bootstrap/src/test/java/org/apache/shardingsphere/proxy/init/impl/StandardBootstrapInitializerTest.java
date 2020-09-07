@@ -17,12 +17,40 @@
 
 package org.apache.shardingsphere.proxy.init.impl;
 
+import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
+import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class StandardBootstrapInitializerTest {
     
     @Test
     public void assertGetProxyConfiguration() {
-        
+        Map<String, YamlProxyRuleConfiguration> ruleConfigurations = generateYamlProxyRuleConfiguration();
+        YamlProxyConfiguration yamlConfig = mock(YamlProxyConfiguration.class);
+        when(yamlConfig.getRuleConfigurations()).thenReturn(ruleConfigurations);
+        StandardBootstrapInitializer standardBootstrapInitializer = new StandardBootstrapInitializer();
+        ProxyConfiguration proxyConfiguration = standardBootstrapInitializer.getProxyConfiguration(yamlConfig);
+    }
+    
+    private Map<String, YamlProxyRuleConfiguration> generateYamlProxyRuleConfiguration() {
+        YamlDataSourceParameter yamlDataSourceParameter = new YamlDataSourceParameter();
+        yamlDataSourceParameter.setUsername("root");
+        yamlDataSourceParameter.setPassword("root");
+        yamlDataSourceParameter.setReadOnly(false);
+        Map<String, YamlDataSourceParameter> dataSources = new HashMap<>();
+        dataSources.put("hikari", yamlDataSourceParameter);
+        YamlProxyRuleConfiguration yamlProxyRuleConfiguration = new YamlProxyRuleConfiguration();
+        yamlProxyRuleConfiguration.setDataSources(dataSources);
+        Map<String, YamlProxyRuleConfiguration> ruleConfigurations = new HashMap<>();
+        ruleConfigurations.put("datasource-0", yamlProxyRuleConfiguration);
+        return ruleConfigurations;
     }
 }
