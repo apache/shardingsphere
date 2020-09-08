@@ -31,9 +31,9 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationA
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
-import org.apache.shardingsphere.orchestration.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.repository.zookeeper.CuratorZookeeperRepository;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.governance.repository.zookeeper.CuratorZookeeperRepository;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.spi.ElasticJobEntry;
 import org.apache.shardingsphere.scaling.elasticjob.job.ScalingElasticJob;
@@ -60,10 +60,10 @@ public final class ScalingElasticJobEntry implements ElasticJobEntry {
     
     private String namespace;
     
-    private OrchestrationCenterConfiguration registryCenter;
+    private GovernanceCenterConfiguration registryCenter;
     
     @Override
-    public void init(final String namespace, final OrchestrationCenterConfiguration registryCenter) {
+    public void init(final String namespace, final GovernanceCenterConfiguration registryCenter) {
         log.info("Scaling elastic job start...");
         this.namespace = namespace;
         this.registryCenter = registryCenter;

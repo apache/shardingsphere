@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.spi;
 
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 
 import java.util.Collection;
 
@@ -33,7 +33,7 @@ public final class ElasticJobEntryLoader {
      * @param namespace registry center namespace
      * @param registryCenter registry center
      */
-    public static void init(final String namespace, final OrchestrationCenterConfiguration registryCenter) {
+    public static void init(final String namespace, final GovernanceCenterConfiguration registryCenter) {
         ShardingSphereServiceLoader.register(ElasticJobEntry.class);
         Collection<ElasticJobEntry> elasticJobEntries = ShardingSphereServiceLoader.newServiceInstances(ElasticJobEntry.class);
         for (ElasticJobEntry each : elasticJobEntries) {

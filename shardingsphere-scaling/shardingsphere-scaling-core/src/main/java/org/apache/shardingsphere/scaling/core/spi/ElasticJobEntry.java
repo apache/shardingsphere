@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.spi;
 
-import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 
 /**
  * Elastic job entry.
@@ -30,5 +30,5 @@ public interface ElasticJobEntry {
      * @param namespace registry center namespace
      * @param registryCenter registry center
      */
-    void init(String namespace, OrchestrationCenterConfiguration registryCenter);
+    void init(String namespace, GovernanceCenterConfiguration registryCenter);
 }
