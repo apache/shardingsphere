@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.fixture;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class FixtureRuleConfiguration implements RuleConfiguration {
     
-    private String name;
+    private final String name;
 }
