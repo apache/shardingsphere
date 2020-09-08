@@ -28,7 +28,7 @@ import org.springframework.core.env.Environment;
  */
 public final class PrimaryReplicaAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry {
     
-    private static final String MASTER_SLAVE_ALGORITHMS = "spring.shardingsphere.rules.master-slave.load-balancers.";
+    private static final String PRIMARY_REPLICA_ALGORITHMS = "spring.shardingsphere.rules.primary-replica.load-balancers.";
     
     /**
      * Instantiates a new primary-replica algorithm provided bean registry.
@@ -41,6 +41,6 @@ public final class PrimaryReplicaAlgorithmProvidedBeanRegistry extends AbstractA
     
     @Override
     public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) throws BeansException {
-        registerBean(MASTER_SLAVE_ALGORITHMS, PrimaryReplicaLoadBalanceAlgorithm.class, registry);
+        registerBean(PRIMARY_REPLICA_ALGORITHMS, PrimaryReplicaLoadBalanceAlgorithm.class, registry);
     }
 }

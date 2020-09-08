@@ -25,7 +25,7 @@
         <artifactId>shardingsphere-master-slave-spring</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-master-slave-spring-boot-starter</artifactId>
+    <artifactId>shardingsphere-primary-replica-spring-boot-starter</artifactId>
     <name>${project.artifactId}</name>
 
     <dependencies>
