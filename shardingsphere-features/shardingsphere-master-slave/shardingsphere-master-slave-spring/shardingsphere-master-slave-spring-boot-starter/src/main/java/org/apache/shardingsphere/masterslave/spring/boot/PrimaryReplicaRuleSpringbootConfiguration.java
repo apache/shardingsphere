@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.boot;
+package org.apache.shardingsphere.primaryreplica.spring.boot;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.masterslave.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.masterslave.spring.boot.algorithm.MasterSlaveAlgorithmProvidedBeanRegistry;
-import org.apache.shardingsphere.masterslave.spring.boot.condition.MasterSlaveSpringBootCondition;
-import org.apache.shardingsphere.masterslave.spring.boot.rule.YamlMasterSlaveRuleSpringBootConfiguration;
+import org.apache.shardingsphere.masterslave.spi.PrimaryReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.spring.boot.algorithm.PrimaryReplicaAlgorithmProvidedBeanRegistry;
+import org.apache.shardingsphere.masterslave.spring.boot.condition.PrimaryReplicaSpringBootCondition;
+import org.apache.shardingsphere.masterslave.spring.boot.rule.YamlPrimaryReplicaRuleSpringBootConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.swapper.MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapper;
 import org.springframework.beans.factory.ObjectProvider;
@@ -39,41 +39,41 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Rule spring boot configuration for master-slave.
+ * Rule spring boot configuration for primary-replica.
  */
 @Configuration
-@EnableConfigurationProperties(YamlMasterSlaveRuleSpringBootConfiguration.class)
-@ConditionalOnClass(YamlMasterSlaveRuleConfiguration.class)
-@Conditional(MasterSlaveSpringBootCondition.class)
+@EnableConfigurationProperties(YamlPrimaryReplicaRuleSpringBootConfiguration.class)
+@ConditionalOnClass(YamlPrimaryReplicaRuleConfiguration.class)
+@Conditional(PrimaryReplicaSpringBootCondition.class)
 @RequiredArgsConstructor
-public class MasterSlaveRuleSpringbootConfiguration {
+public class PrimaryReplicaRuleSpringbootConfiguration {
     
-    private final MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapper swapper = new MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapper();
+    private final PrimaryReplicaRuleAlgorithmProviderConfigurationYamlSwapper swapper = new PrimaryReplicaRuleAlgorithmProviderConfigurationYamlSwapper();
     
-    private final YamlMasterSlaveRuleSpringBootConfiguration yamlConfig;
+    private final YamlPrimaryReplicaRuleSpringBootConfiguration yamlConfig;
     
     /**
-     * Master slave rule configuration for spring boot.
+     * Primary replica rule configuration for spring boot.
      *
      * @param loadBalanceAlgorithms load balance algorithms
-     * @return master slave rule configuration
+     * @return primary replica rule configuration
      */
     @Bean
-    public RuleConfiguration masterSlaveRuleConfiguration(final ObjectProvider<Map<String, MasterSlaveLoadBalanceAlgorithm>> loadBalanceAlgorithms) {
-        AlgorithmProvidedMasterSlaveRuleConfiguration result = swapper.swapToObject(yamlConfig.getMasterSlave());
-        Map<String, MasterSlaveLoadBalanceAlgorithm> balanceAlgorithmMap = Optional.ofNullable(loadBalanceAlgorithms.getIfAvailable()).orElse(Collections.emptyMap());
+    public RuleConfiguration primaryReplicaRuleConfiguration(final ObjectProvider<Map<String, PrimaryReplicaLoadBalanceAlgorithm>> loadBalanceAlgorithms) {
+        AlgorithmProvidedPrimaryReplicaRuleConfiguration result = swapper.swapToObject(yamlConfig.getPrimaryReplica());
+        Map<String, PrimaryReplicaLoadBalanceAlgorithm> balanceAlgorithmMap = Optional.ofNullable(loadBalanceAlgorithms.getIfAvailable()).orElse(Collections.emptyMap());
         result.setLoadBalanceAlgorithms(balanceAlgorithmMap);
         return result;
     }
     
     /**
-     * Master slave algorithm provided bean registry.
+     * Primary replica algorithm provided bean registry.
      *
      * @param environment environment
-     * @return Master slave algorithm provided bean registry
+     * @return Primary replica algorithm provided bean registry
      */
     @Bean
-    public static MasterSlaveAlgorithmProvidedBeanRegistry masterSlaveAlgorithmProvidedBeanRegistry(final Environment environment) {
-        return new MasterSlaveAlgorithmProvidedBeanRegistry(environment);
+    public static PrimaryReplicaAlgorithmProvidedBeanRegistry primaryReplicaAlgorithmProvidedBeanRegistry(final Environment environment) {
+        return new PrimaryReplicaAlgorithmProvidedBeanRegistry(environment);
     }
 }
