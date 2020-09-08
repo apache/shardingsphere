@@ -27,13 +27,13 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Master-slave rule configuration.
+ * Primary-replica rule configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
+public final class PrimaryReplicaRuleConfiguration implements RuleConfiguration {
     
-    private final Collection<MasterSlaveDataSourceRuleConfiguration> dataSources;
+    private final Collection<PrimaryReplicaDataSourceRuleConfiguration> dataSources;
     
     private final Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers;
 }
