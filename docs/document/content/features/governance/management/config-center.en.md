@@ -49,30 +49,31 @@ sql.show: true
 A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by users themselves.
 
 ```yaml
-ds_0: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
-  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  props:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
-    password: null
-    maxPoolSize: 50
-    maintenanceIntervalMilliseconds: 30000
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    minPoolSize: 1
-    username: root
-    maxLifetimeMilliseconds: 1800000
-ds_1: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
-  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  props:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
-    password: null
-    maxPoolSize: 50
-    maintenanceIntervalMilliseconds: 30000
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    minPoolSize: 1
-    username: root
-    maxLifetimeMilliseconds: 1800000
+dataSources:
+  ds_0: 
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    props:
+      url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+      password: null
+      maxPoolSize: 50
+      maintenanceIntervalMilliseconds: 30000
+      connectionTimeoutMilliseconds: 30000
+      idleTimeoutMilliseconds: 60000
+      minPoolSize: 1
+      username: root
+      maxLifetimeMilliseconds: 1800000
+  ds_1: 
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    props:
+      url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+      password: null
+      maxPoolSize: 50
+      maintenanceIntervalMilliseconds: 30000
+      connectionTimeoutMilliseconds: 30000
+      idleTimeoutMilliseconds: 60000
+      minPoolSize: 1
+      username: root
+      maxLifetimeMilliseconds: 1800000
 ```
 
 ### config/schema/schemeName/rule

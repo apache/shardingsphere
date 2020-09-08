@@ -27,7 +27,6 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
@@ -79,7 +78,7 @@ public final class HttpServerHandlerTest {
     }
     
     private void startScalingJob() {
-        scalingConfiguration.getRuleConfiguration().setSourceDatasource("ds_0: !!" + YamlDataSourceConfiguration.class.getName() + "\n  "
+        scalingConfiguration.getRuleConfiguration().setSourceDatasource("dataSources:\n ds_0:\n  "
                 + "dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    "
                 + "jdbcUrl: jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\n    username: root\n    password: 'password'\n    connectionTimeout: 30000\n    "
                 + "idleTimeout: 60000\n    maxLifetime: 1800000\n    maxPoolSize: 50\n    minPoolSize: 1\n    maintenanceIntervalMilliseconds: 30000\n    readOnly: false\n");

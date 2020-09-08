@@ -26,7 +26,7 @@ import org.apache.shardingsphere.governance.core.event.rule.RuleConfigurationsCh
 import org.apache.shardingsphere.governance.core.event.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.event.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.listener.PostGovernanceRepositoryEventListener;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
@@ -123,11 +122,10 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         return event.getKey().equals(configurationNode.getDataSourcePath(schemaName)) ? createDataSourceChangedEvent(schemaName, event) : createRuleChangedEvent(schemaName, event);
     }
     
-    @SuppressWarnings("unchecked")
     private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
-        Map<String, YamlDataSourceConfiguration> dataSourceConfigurations = (Map) YamlEngine.unmarshal(event.getValue());
-        Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data sources to load for governance.");
-        return new DataSourceChangedEvent(schemaName, dataSourceConfigurations.entrySet().stream()
+        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshal(event.getValue(), YamlDataSourceConfigurationWrap.class);
+        Preconditions.checkState(null != result && !result.getDataSources().isEmpty(), "No available data sources to load for governance.");
+        return new DataSourceChangedEvent(schemaName, result.getDataSources().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue()))));
     }
     
