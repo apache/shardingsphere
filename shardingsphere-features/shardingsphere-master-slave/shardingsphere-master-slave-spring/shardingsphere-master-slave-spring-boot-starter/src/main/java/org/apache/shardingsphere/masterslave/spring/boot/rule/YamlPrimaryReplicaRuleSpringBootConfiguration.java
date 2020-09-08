@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.boot.rule;
+package org.apache.shardingsphere.primaryreplica.spring.boot.rule;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.yaml.config.YamlPrimaryReplicaRuleConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * YAML master-slave rule spring boot configuration.
+ * YAML primary-replica rule spring boot configuration.
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere.rules")
 @Getter
 @Setter
-public final class YamlMasterSlaveRuleSpringBootConfiguration {
+public final class YamlPrimaryReplicaRuleSpringBootConfiguration {
     
-    private YamlMasterSlaveRuleConfiguration masterSlave;
+    private YamlPrimaryReplicaRuleConfiguration primaryReplica;
 }
