@@ -53,11 +53,11 @@ import java.util.concurrent.Callable;
  */
 public final class DataSetEnvironmentManager {
     
+    private static final ShardingSphereExecutorService SHARDING_SPHERE_EXECUTOR_SERVICE = new ShardingSphereExecutorService(20);
+    
     private final DataSet dataSet;
     
     private final Map<String, DataSource> dataSourceMap;
-    
-    private static final ShardingSphereExecutorService shardingSphereExecutorService = new ShardingSphereExecutorService(20);
     
     public DataSetEnvironmentManager(final String path, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(path)) {
@@ -138,7 +138,7 @@ public final class DataSetEnvironmentManager {
             clearTasks.add(new ClearTask(dataSourceMap.get(entry.getKey()), entry.getValue()));
         }
         try {
-            shardingSphereExecutorService.getExecutorService().invokeAll(clearTasks);
+            SHARDING_SPHERE_EXECUTOR_SERVICE.getExecutorService().invokeAll(clearTasks);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
