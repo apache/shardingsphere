@@ -34,12 +34,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Proxy schema contexts.
+ * Proxy context.
  */
 @Getter
-public final class ProxySchemaContexts {
+public final class ProxyContext {
     
-    private static final ProxySchemaContexts INSTANCE = new ProxySchemaContexts();
+    private static final ProxyContext INSTANCE = new ProxyContext();
     
     private final JDBCBackendDataSource backendDataSource;
     
@@ -47,7 +47,7 @@ public final class ProxySchemaContexts {
     
     private TransactionContexts transactionContexts;
     
-    private ProxySchemaContexts() {
+    private ProxyContext() {
         backendDataSource = new JDBCBackendDataSource();
         schemaContexts = new StandardSchemaContexts();
         transactionContexts = new StandardTransactionContexts();
@@ -58,7 +58,7 @@ public final class ProxySchemaContexts {
      *
      * @return instance of ShardingSphere schemas.
      */
-    public static ProxySchemaContexts getInstance() {
+    public static ProxyContext getInstance() {
         return INSTANCE;
     }
     

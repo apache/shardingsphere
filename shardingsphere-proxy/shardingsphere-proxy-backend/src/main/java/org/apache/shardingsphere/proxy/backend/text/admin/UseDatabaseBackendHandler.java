@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
@@ -44,7 +44,7 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     @Override
     public BackendResponse execute() {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
-        if (ProxySchemaContexts.getInstance().schemaExists(schema) && isAuthorizedSchema(schema)) {
+        if (ProxyContext.getInstance().schemaExists(schema) && isAuthorizedSchema(schema)) {
             backendConnection.setCurrentSchema(schema);
             return new UpdateResponse();
         }
@@ -53,7 +53,7 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     }
     
     private boolean isAuthorizedSchema(final String schema) {
-        Collection<String> authorizedSchemas = ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get(backendConnection.getUsername()).getAuthorizedSchemas();
+        Collection<String> authorizedSchemas = ProxyContext.getInstance().getSchemaContexts().getAuthentication().getUsers().get(backendConnection.getUsername()).getAuthorizedSchemas();
         return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
     }
     

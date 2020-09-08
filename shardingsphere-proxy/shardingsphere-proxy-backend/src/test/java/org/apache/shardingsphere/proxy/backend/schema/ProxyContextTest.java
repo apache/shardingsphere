@@ -40,18 +40,18 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ProxySchemaContextsTest {
+public final class ProxyContextTest {
     
     @Test
     public void assertGetDataSourceSample() throws NoSuchFieldException, IllegalAccessException {
         Map<String, DataSource> mockDataSourceMap = new HashMap<>(2, 1);
         mockDataSourceMap.put("ds_1", new MockedDataSource());
         mockDataSourceMap.put("ds_2", new MockedDataSource());
-        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(),
+        schemaContexts.set(ProxyContext.getInstance(),
                 new StandardSchemaContexts(getSchemaContextMap(mockDataSourceMap), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
-        Optional<DataSource> actual = ProxySchemaContexts.getInstance().getDataSourceSample();
+        Optional<DataSource> actual = ProxyContext.getInstance().getDataSourceSample();
         assertThat(actual, is(Optional.of(mockDataSourceMap.get("ds_1"))));
     }
     

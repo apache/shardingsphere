@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.infra.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.proxy.backend.schema.ProxyDataSourceContext;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.db.DatabaseServerInfo;
@@ -53,7 +53,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         ProxyConfiguration proxyConfig = getProxyConfiguration(yamlConfig);
         SchemaContexts schemaContexts = decorateSchemaContexts(createSchemaContexts(proxyConfig));
         TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(schemaContexts));
-        ProxySchemaContexts.getInstance().init(schemaContexts, transactionContexts);
+        ProxyContext.getInstance().init(schemaContexts, transactionContexts);
         initOpenTracing();
         setDatabaseServerInfo();
         new ShardingSphereProxy().start(port);
@@ -77,13 +77,13 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private void initOpenTracing() {
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
+        if (ProxyContext.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
             OpenTracingTracer.init();
         }
     }
     
     private void setDatabaseServerInfo() {
-        Optional<DataSource> dataSourceSample = ProxySchemaContexts.getInstance().getDataSourceSample();
+        Optional<DataSource> dataSourceSample = ProxyContext.getInstance().getDataSourceSample();
         if (dataSourceSample.isPresent()) {
             DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample.get());
             log.info(databaseServerInfo.toString());

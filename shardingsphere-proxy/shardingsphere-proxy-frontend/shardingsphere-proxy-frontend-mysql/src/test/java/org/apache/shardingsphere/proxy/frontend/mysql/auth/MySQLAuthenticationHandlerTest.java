@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -110,14 +110,14 @@ public final class MySQLAuthenticationHandlerTest {
     private void setAuthentication(final ProxyUser proxyUser) {
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
-        initProxySchemaContexts(authentication);
+        initProxyContext(authentication);
     }
     
     @SneakyThrows
-    private void initProxySchemaContexts(final Authentication authentication) {
-        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+    private void initProxyContext(final Authentication authentication) {
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        field.set(ProxySchemaContexts.getInstance(), getSchemaContexts(authentication));
+        field.set(ProxyContext.getInstance(), getSchemaContexts(authentication));
     }
     
     private SchemaContexts getSchemaContexts(final Authentication authentication) {

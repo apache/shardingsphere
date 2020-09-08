@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.Que
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintShowTableStatusCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.result.HintShowTableStatusResult;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
@@ -57,7 +57,7 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
     protected MergedResult createMergedResult() {
         Map<String, HintShowTableStatusResult> results = new HashMap<>();
         Collection<String> tableNames =
-                ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema()).getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData().getAllTableNames();
+                ProxyContext.getInstance().getSchema(backendConnection.getSchema()).getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData().getAllTableNames();
         for (String each : tableNames) {
             if (HintManager.isDatabaseShardingOnly()) {
                 fillShardingValues(results, each, HintManager.getDatabaseShardingValues(), Collections.emptyList());

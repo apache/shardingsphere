@@ -25,7 +25,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.jdbc.JDBCExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.StatementExecutorWrapper;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
@@ -56,7 +56,7 @@ public final class DatabaseCommunicationEngineFactory {
      * @return instance of text protocol backend handler
      */
     public DatabaseCommunicationEngine newTextProtocolInstance(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
-        SchemaContext schema = ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema());
+        SchemaContext schema = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
         return new JDBCDatabaseCommunicationEngine(sql, backendConnection, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(schema, sqlStatement)));
     }
     
@@ -70,7 +70,7 @@ public final class DatabaseCommunicationEngineFactory {
      * @return instance of text protocol backend handler
      */
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
-        SchemaContext schema = ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema());
+        SchemaContext schema = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
         return new JDBCDatabaseCommunicationEngine(sql,
                 backendConnection, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(schema, sqlStatement, parameters)));
     }
