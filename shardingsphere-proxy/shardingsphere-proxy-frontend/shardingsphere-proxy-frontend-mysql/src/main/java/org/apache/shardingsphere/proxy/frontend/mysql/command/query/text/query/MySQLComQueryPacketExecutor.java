@@ -90,15 +90,13 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     }
     
     private BackendResponse getBackendResponse() {
-        BackendResponse result;
         try {
-            result = textProtocolBackendHandler.execute();
+            return textProtocolBackendHandler.execute();
         // CHECKSTYLE:OFF
         } catch (final Exception ex) {
         // CHECKSTYLE:OFF
-            result = new ErrorResponse(ex);
+            return new ErrorResponse(ex);
         }
-        return result;
     }
     
     private Collection<DatabasePacket<?>> createQueryPackets(final QueryResponse backendResponse) {

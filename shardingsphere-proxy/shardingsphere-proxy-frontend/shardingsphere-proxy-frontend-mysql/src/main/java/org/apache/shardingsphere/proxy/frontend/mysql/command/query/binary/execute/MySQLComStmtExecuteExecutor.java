@@ -94,15 +94,13 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     }
     
     private BackendResponse getBackendResponse() {
-        BackendResponse result;
         try {
-            result = databaseCommunicationEngine.execute();
+            return databaseCommunicationEngine.execute();
         // CHECKSTYLE:OFF
         } catch (final Exception ex) {
         // CHECKSTYLE:OFF
-            result = new ErrorResponse(ex);
+            return new ErrorResponse(ex);
         }
-        return result;
     }
     
     private Collection<DatabasePacket<?>> createQueryPacket(final QueryResponse backendResponse) {
