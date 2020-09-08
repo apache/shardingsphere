@@ -49,13 +49,17 @@ public final class ProxySchemaContexts {
     
     private static final ProxySchemaContexts INSTANCE = new ProxySchemaContexts();
     
-    private SchemaContexts schemaContexts = new StandardSchemaContexts();
+    private final JDBCBackendDataSource backendDataSource;
     
-    private TransactionContexts transactionContexts = new StandardTransactionContexts();
+    private SchemaContexts schemaContexts;
     
-    private final JDBCBackendDataSource backendDataSource = new JDBCBackendDataSource();
+    private TransactionContexts transactionContexts;
     
-    private ProxySchemaContexts() { }
+    private ProxySchemaContexts() {
+        backendDataSource = new JDBCBackendDataSource();
+        schemaContexts = new StandardSchemaContexts();
+        transactionContexts = new StandardTransactionContexts();
+    }
     
     /**
      * Get instance of proxy schema schemas.
