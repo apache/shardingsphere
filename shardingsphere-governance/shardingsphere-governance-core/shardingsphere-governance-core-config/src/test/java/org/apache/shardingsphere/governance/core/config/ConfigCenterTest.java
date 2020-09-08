@@ -28,9 +28,9 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.eventbus.event.DataSourceEvent;
-import org.apache.shardingsphere.infra.eventbus.event.RuleEvent;
-import org.apache.shardingsphere.infra.eventbus.event.SchemaNameEvent;
+import org.apache.shardingsphere.governance.core.event.persist.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.persist.RulePersistEvent;
+import org.apache.shardingsphere.governance.core.event.persist.SchemaNamePersistEvent;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -445,7 +445,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertRenewDataSourceEvent() {
-        DataSourceEvent event = new DataSourceEvent("sharding_db", createDataSourceConfigurations());
+        DataSourcePersistEvent event = new DataSourcePersistEvent("sharding_db", createDataSourceConfigurations());
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
         verify(configurationRepository).persist(eq("/config/schema/sharding_db/datasource"), anyString());
@@ -453,7 +453,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertRenewRuleEvent() {
-        RuleEvent event = new RuleEvent("sharding_db", createRuleConfigurations());
+        RulePersistEvent event = new RulePersistEvent("sharding_db", createRuleConfigurations());
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
         verify(configurationRepository).persist(eq("/config/schema/sharding_db/rule"), anyString());
@@ -461,7 +461,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertRenewSchemaNameEventWithDrop() {
-        SchemaNameEvent event = new SchemaNameEvent("sharding_db", true);
+        SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", true);
         when(configurationRepository.get("/config/schema")).thenReturn("sharding_db,master_slave_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
@@ -470,7 +470,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertRenewSchemaNameEventWithAdd() {
-        SchemaNameEvent event = new SchemaNameEvent("sharding_db", false);
+        SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", false);
         when(configurationRepository.get("/config/schema")).thenReturn("master_slave_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
@@ -479,7 +479,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertRenewSchemaNameEventWithAddAndExist() {
-        SchemaNameEvent event = new SchemaNameEvent("sharding_db", false);
+        SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", false);
         when(configurationRepository.get("/config/schema")).thenReturn("sharding_db,master_slave_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.eventbus;
+package org.apache.shardingsphere.governance.core.eventbus;
 
 import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;

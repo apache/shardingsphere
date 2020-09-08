@@ -21,8 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.SchemaContext;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.eventbus.event.MetaDataEvent;
+import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.event.persist.MetaDataPersistEvent;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
@@ -133,7 +133,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (refreshStrategy.isPresent()) {
             refreshStrategy.get().refreshMetaData(schema.getSchema().getMetaData(), ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType(),
                     schema.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
-            ShardingSphereEventBus.getInstance().post(new MetaDataEvent(schema.getName(), schema.getSchema().getMetaData().getSchema()));
+            ShardingSphereEventBus.getInstance().post(new MetaDataPersistEvent(schema.getName(), schema.getSchema().getMetaData().getSchema()));
         }
     }
     

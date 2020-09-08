@@ -32,10 +32,10 @@ import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfig
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.eventbus.event.DataSourceEvent;
-import org.apache.shardingsphere.infra.eventbus.event.RuleEvent;
-import org.apache.shardingsphere.infra.eventbus.event.SchemaNameEvent;
+import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.event.persist.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.persist.RulePersistEvent;
+import org.apache.shardingsphere.governance.core.event.persist.SchemaNamePersistEvent;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -104,7 +104,7 @@ public final class ConfigCenter {
      * @param event Data source event.
      */
     @Subscribe
-    public synchronized void renew(final DataSourceEvent event) {
+    public synchronized void renew(final DataSourcePersistEvent event) {
         persistDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
     }
     
@@ -114,7 +114,7 @@ public final class ConfigCenter {
      * @param event Rule event.
      */
     @Subscribe
-    public synchronized void renew(final RuleEvent event) {
+    public synchronized void renew(final RulePersistEvent event) {
         persistRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
     }
     
@@ -124,7 +124,7 @@ public final class ConfigCenter {
      * @param event Schema name event.
      */
     @Subscribe
-    public synchronized void renew(final SchemaNameEvent event) {
+    public synchronized void renew(final SchemaNamePersistEvent event) {
         persistSchema(event.getSchemaName(), event.isDrop());
     }
     
