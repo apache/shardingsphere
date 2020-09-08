@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.KillStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL kill statement.
  */
-public final class MySQLKillStatement extends KillStatement implements DALStatement, MySQLStatement {
+public final class MySQLKillStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

@@ -17,12 +17,18 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL use statement.
  */
-public final class MySQLUseStatement extends UseStatement implements DALStatement, MySQLStatement {
+@Getter
+@Setter
+public final class MySQLUseStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+
+    private String schema;
 }

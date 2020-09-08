@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,11 +31,11 @@ import java.util.Collections;
  * Show create table statement context.
  */
 @Getter
-public final class ShowCreateTableStatementContext extends CommonSQLStatementContext<ShowCreateTableStatement> implements TableAvailable {
+public final class ShowCreateTableStatementContext extends CommonSQLStatementContext<MySQLShowCreateTableStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
-    public ShowCreateTableStatementContext(final ShowCreateTableStatement sqlStatement) {
+    public ShowCreateTableStatementContext(final MySQLShowCreateTableStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
     }

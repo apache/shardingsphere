@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,11 +31,11 @@ import java.util.Collections;
  * Show index statement context.
  */
 @Getter
-public final class ShowIndexStatementContext extends CommonSQLStatementContext<ShowIndexStatement> implements TableAvailable {
+public final class ShowIndexStatementContext extends CommonSQLStatementContext<MySQLShowIndexStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
-    public ShowIndexStatementContext(final ShowIndexStatement sqlStatement) {
+    public ShowIndexStatementContext(final MySQLShowIndexStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
     }

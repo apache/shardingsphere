@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.UseStatementTestCase;
 
@@ -39,7 +39,7 @@ public final class MySQLUseStatementAssert {
      * @param actual actual use statement
      * @param expected expected use statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final UseStatement actual, final UseStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLUseStatement actual, final UseStatementTestCase expected) {
         assertThat(assertContext.getText("Schema name assertion error: "), actual.getSchema(), is(expected.getSchema().getName()));
         // TODO create a new assert class named `SchemaAssert`
         // TODO extract and assert start index, stop index, start delimiter and end delimiter

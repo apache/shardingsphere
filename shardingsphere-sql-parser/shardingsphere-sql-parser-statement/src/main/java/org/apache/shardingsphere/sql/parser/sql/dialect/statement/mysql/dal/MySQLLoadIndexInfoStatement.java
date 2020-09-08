@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.LoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL load index info statement.
  */
-public final class MySQLLoadIndexInfoStatement extends LoadIndexInfoStatement implements DALStatement, MySQLStatement {
+public final class MySQLLoadIndexInfoStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

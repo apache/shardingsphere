@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowWarningsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL show warnings statement.
  */
-public final class MySQLShowWarningsStatement extends ShowWarningsStatement implements DALStatement, MySQLStatement {
+public final class MySQLShowWarningsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

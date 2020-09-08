@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCreateTableStatementTestCase;
 
@@ -36,6 +36,6 @@ public final class ShowCreateTableStatementAssert {
      * @param actual actual show create table statement
      * @param expected expected show create table statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowCreateTableStatement actual, final ShowCreateTableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowCreateTableStatement actual, final ShowCreateTableStatementTestCase expected) {
     }
 }

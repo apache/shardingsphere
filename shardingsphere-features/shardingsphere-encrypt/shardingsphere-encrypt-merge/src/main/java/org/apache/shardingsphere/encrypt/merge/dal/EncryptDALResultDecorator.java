@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DescribeStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDescribeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 
 /**
  * DAL result decorator for encrypt.
@@ -46,6 +46,6 @@ public final class EncryptDALResultDecorator implements ResultDecorator {
     }
     
     private boolean isNeedMergeEncryptColumns(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof DescribeStatement || sqlStatement instanceof ShowColumnsStatement;
+        return sqlStatement instanceof MySQLDescribeStatement || sqlStatement instanceof MySQLShowColumnsStatement;
     }
 }

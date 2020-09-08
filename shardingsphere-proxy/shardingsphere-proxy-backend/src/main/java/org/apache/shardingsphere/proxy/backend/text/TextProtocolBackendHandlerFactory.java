@@ -38,9 +38,6 @@ import org.apache.shardingsphere.rdl.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowTablesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
@@ -48,6 +45,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
@@ -106,13 +106,13 @@ public final class TextProtocolBackendHandlerFactory {
     }
     
     private static TextProtocolBackendHandler createDALBackendHandler(final String sql, final DALStatement dalStatement, final BackendConnection backendConnection) {
-        if (dalStatement instanceof UseStatement) {
-            return new UseDatabaseBackendHandler((UseStatement) dalStatement, backendConnection);
+        if (dalStatement instanceof MySQLUseStatement) {
+            return new UseDatabaseBackendHandler((MySQLUseStatement) dalStatement, backendConnection);
         }
-        if (dalStatement instanceof ShowDatabasesStatement) {
+        if (dalStatement instanceof MySQLShowDatabasesStatement) {
             return new ShowDatabasesBackendHandler(backendConnection);
         }
-        if (dalStatement instanceof ShowTablesStatement) {
+        if (dalStatement instanceof MySQLShowTablesStatement) {
             return new ShowTablesBackendHandler(sql, dalStatement, backendConnection);
         }
         // FIXME: There are three SetStatement classes.
