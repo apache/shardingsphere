@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend;
+package org.apache.shardingsphere.proxy.backend.schema.datasource;
 
 /**
  * Backend data source.
