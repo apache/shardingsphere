@@ -15,12 +15,4 @@
 # limitations under the License.
 #
 
-port: 8888
-blockQueueSize: 10000
-pushTimeout: 1000
-workerThread: 30
-#name: elasticjob
-#registryCenter:
-#  type: zookeeper
-#  serverLists: localhost:2181
-#  props:
+org.apache.shardingsphere.scaling.elasticjob.ScalingElasticJobEntry

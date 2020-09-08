@@ -15,30 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.spi;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.orchestration.repository.api.config.OrchestrationCenterConfiguration;
 
 /**
- * Job configuration.
+ * Elastic job entry.
  */
-@NoArgsConstructor
-@Setter
-@Getter
-public final class JobConfiguration {
+public interface ElasticJobEntry {
     
-    private int concurrency = 3;
-    
-    private int retryTimes = 3;
-    
-    private String jobName;
-    
-    private boolean running = true;
-    
-    private String[] shardingTables;
-    
-    private int shardingItem;
-    
+    /**
+     * Init elastic job.
+     *
+     * @param namespace registry center namespace
+     * @param registryCenter registry center
+     */
+    void init(String namespace, OrchestrationCenterConfiguration registryCenter);
 }
