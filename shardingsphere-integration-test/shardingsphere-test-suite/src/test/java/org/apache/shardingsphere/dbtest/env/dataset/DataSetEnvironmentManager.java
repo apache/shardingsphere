@@ -139,6 +139,7 @@ public final class DataSetEnvironmentManager {
         }
         try {
             shardingSphereExecutorService.getExecutorService().invokeAll(clearTasks);
+            shardingSphereExecutorService.close();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
