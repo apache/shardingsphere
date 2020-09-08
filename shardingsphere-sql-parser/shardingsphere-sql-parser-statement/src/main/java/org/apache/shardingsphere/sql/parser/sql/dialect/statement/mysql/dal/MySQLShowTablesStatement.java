@@ -30,12 +30,12 @@ import java.util.Optional;
  */
 @Setter
 public final class MySQLShowTablesStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-
+    
     private RemoveAvailable fromSchema;
-
+    
     /**
      * Get from schema.
-     *
+     * 
      * @return from schema
      */
     public Optional<RemoveAvailable> getFromSchema() {

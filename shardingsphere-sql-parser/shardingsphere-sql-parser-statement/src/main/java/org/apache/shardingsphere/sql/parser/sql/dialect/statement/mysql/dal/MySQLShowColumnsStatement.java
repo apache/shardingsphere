@@ -33,11 +33,11 @@ import java.util.Optional;
 @Getter
 @Setter
 public final class MySQLShowColumnsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-
+    
     private SimpleTableSegment table;
-
+    
     private RemoveAvailable fromSchema;
-
+    
     /**
      * Get from schema.
      *

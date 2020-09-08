@@ -33,14 +33,14 @@ import java.util.Optional;
 @Getter
 @Setter
 public final class MySQLShowIndexStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-
+    
     private SimpleTableSegment table;
-
+    
     private SchemaSegment schema;
-
+    
     /**
      * Get schema.
-     *
+     * 
      * @return schema
      */
     public Optional<SchemaSegment> getSchema() {

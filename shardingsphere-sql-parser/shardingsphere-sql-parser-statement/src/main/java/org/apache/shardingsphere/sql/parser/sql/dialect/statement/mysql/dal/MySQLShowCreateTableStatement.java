@@ -30,6 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 @Getter
 @Setter
 public final class MySQLShowCreateTableStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-
+    
     private SimpleTableSegment table;
 }
