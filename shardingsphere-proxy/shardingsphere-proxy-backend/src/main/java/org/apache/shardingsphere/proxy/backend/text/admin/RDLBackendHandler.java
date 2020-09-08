@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.eventbus.event.DataSourceEvent;
-import org.apache.shardingsphere.infra.eventbus.event.RuleEvent;
-import org.apache.shardingsphere.infra.eventbus.event.SchemaNameEvent;
+import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.event.persist.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.persist.RulePersistEvent;
+import org.apache.shardingsphere.governance.core.event.persist.SchemaNamePersistEvent;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
@@ -80,7 +80,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
             return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
         }
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new SchemaNameEvent(context.getSqlStatement().getDatabaseName(), false));
+        ShardingSphereEventBus.getInstance().post(new SchemaNamePersistEvent(context.getSqlStatement().getDatabaseName(), false));
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
@@ -91,7 +91,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
             return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
         }
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new SchemaNameEvent(context.getSqlStatement().getDatabaseName(), true));
+        ShardingSphereEventBus.getInstance().post(new SchemaNamePersistEvent(context.getSqlStatement().getDatabaseName(), true));
         UpdateResponse result = new UpdateResponse();
         result.setType("DROP");
         return result;
@@ -102,7 +102,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(parameters));
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new DataSourceEvent(backendConnection.getSchema(), dataSources));
+        ShardingSphereEventBus.getInstance().post(new DataSourcePersistEvent(backendConnection.getSchema(), dataSources));
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
@@ -112,7 +112,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         YamlShardingRuleConfiguration configurations = new CreateShardingRuleStatementContextConverter().convert(context);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(configurations));
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new RuleEvent(backendConnection.getSchema(), rules));
+        ShardingSphereEventBus.getInstance().post(new RulePersistEvent(backendConnection.getSchema(), rules));
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;

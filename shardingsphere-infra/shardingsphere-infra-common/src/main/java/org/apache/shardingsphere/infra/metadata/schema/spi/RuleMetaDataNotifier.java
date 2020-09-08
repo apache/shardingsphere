@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.eventbus.event;
+package org.apache.shardingsphere.infra.metadata.schema.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.spi.type.TypedSPI;
 
 /**
- * Meta data event.
+ * Rule meta data notifier.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MetaDataEvent {
+public interface RuleMetaDataNotifier extends TypedSPI {
     
-    private final String schemaName;
-    
-    private final RuleSchemaMetaData metaData;
+    /**
+     * Notify rule meta data changed.
+     * @param schemaName schema name
+     * @param metaData meta data
+     */
+    void notify(String schemaName, RuleSchemaMetaData metaData);
 }

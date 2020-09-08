@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.eventbus;
+package org.apache.shardingsphere.governance.core.event.persist;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.Collection;
 
-public final class ShardingSphereEventBusTest {
+/**
+ * Rule event.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class RulePersistEvent implements GovernanceEvent {
     
-    @Test
-    public void assertInstance() {
-        assertThat(ShardingSphereEventBus.getInstance(), is(ShardingSphereEventBus.getInstance()));
-    }
+    private final String schemaName;
+    
+    private final Collection<RuleConfiguration> ruleConfigurations;
 }
