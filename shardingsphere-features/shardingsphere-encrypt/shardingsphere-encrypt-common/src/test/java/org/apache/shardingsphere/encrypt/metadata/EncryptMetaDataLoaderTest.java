@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class EncryptMetaDataLoaderTest {
     
-    private static final String TABLE_NAE = "t_encrypt";
+    private static final String TABLE_NAME = "t_encrypt";
     
     static {
         ShardingSphereServiceLoader.register(RuleMetaDataLoader.class);
@@ -87,7 +87,7 @@ public final class EncryptMetaDataLoaderTest {
     private ResultSet createColumnResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn(TABLE_NAE);
+        when(result.getString("TABLE_NAME")).thenReturn(TABLE_NAME);
         when(result.getString("COLUMN_NAME")).thenReturn("id", "pwd_cipher", "pwd_plain");
         return result;
     }
@@ -97,16 +97,16 @@ public final class EncryptMetaDataLoaderTest {
         EncryptRule rule = createEncryptRule();
         EncryptMetaDataLoader loader = (EncryptMetaDataLoader) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(rule), RuleMetaDataLoader.class).get(rule);
         SchemaMetaData actual = loader.load(databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(Collections.singletonList(rule)), rule, props, Collections.emptyList());
-        assertThat(actual.get(TABLE_NAE).getColumnMetaData(0).getName(), is("id"));
-        assertThat(actual.get(TABLE_NAE).getColumnMetaData(1).getName(), is("pwd_cipher"));
-        assertThat(actual.get(TABLE_NAE).getColumnMetaData(2).getName(), is("pwd_plain"));
+        assertThat(actual.get(TABLE_NAME).getColumnMetaData(0).getName(), is("id"));
+        assertThat(actual.get(TABLE_NAME).getColumnMetaData(1).getName(), is("pwd_cipher"));
+        assertThat(actual.get(TABLE_NAME).getColumnMetaData(2).getName(), is("pwd_plain"));
     }
     
     @Test
     public void assertLoadByExistedTable() throws SQLException {
         EncryptRule rule = createEncryptRule();
         EncryptMetaDataLoader loader = (EncryptMetaDataLoader) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(rule), RuleMetaDataLoader.class).get(rule);
-        Optional<TableMetaData> actual = loader.load(databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(Collections.singletonList(rule)), TABLE_NAE, rule, props);
+        Optional<TableMetaData> actual = loader.load(databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(Collections.singletonList(rule)), TABLE_NAME, rule, props);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getColumnMetaData(0).getName(), is("id"));
         assertThat(actual.get().getColumnMetaData(1).getName(), is("pwd_cipher"));
@@ -123,8 +123,8 @@ public final class EncryptMetaDataLoaderTest {
     
     private EncryptRule createEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
-        when(result.getEncryptTableNames()).thenReturn(Collections.singletonList(TABLE_NAE));
-        when(result.findEncryptTable(TABLE_NAE)).thenReturn(Optional.of(mock(EncryptTable.class)));
+        when(result.getEncryptTableNames()).thenReturn(Collections.singletonList(TABLE_NAME));
+        when(result.findEncryptTable(TABLE_NAME)).thenReturn(Optional.of(mock(EncryptTable.class)));
         return result;
     }
 }
