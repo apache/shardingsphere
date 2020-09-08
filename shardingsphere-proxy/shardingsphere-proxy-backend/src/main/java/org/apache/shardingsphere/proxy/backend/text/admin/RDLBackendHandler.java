@@ -76,7 +76,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private BackendResponse execute(final CreateDatabaseStatementContext context) {
-        if (ProxySchemaContexts.getInstance().getSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
+        if (ProxySchemaContexts.getInstance().getAllSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
             return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
         }
         // TODO Need to get the executed feedback from registry center for returning.
@@ -87,7 +87,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private BackendResponse execute(final DropDatabaseStatementContext context) {
-        if (!ProxySchemaContexts.getInstance().getSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
+        if (!ProxySchemaContexts.getInstance().getAllSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
             return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
         }
         // TODO Need to get the executed feedback from registry center for returning.

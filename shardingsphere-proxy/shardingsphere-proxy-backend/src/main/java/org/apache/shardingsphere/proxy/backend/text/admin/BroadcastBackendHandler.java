@@ -49,7 +49,7 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     public BackendResponse execute() {
         Collection<BackendResponse> responses = new LinkedList<>();
         String originalSchema = backendConnection.getSchema();
-        for (String each : ProxySchemaContexts.getInstance().getSchemaNames()) {
+        for (String each : ProxySchemaContexts.getInstance().getAllSchemaNames()) {
             backendConnection.setCurrentSchema(each);
             responses.add(databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection).execute());
         }
