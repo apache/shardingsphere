@@ -24,7 +24,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.env.Environment;
 
 /**
- * Master slave algorithm provided bean registry.
+ * Primary replica algorithm provided bean registry.
  */
 public final class MasterSlaveAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry {
     
