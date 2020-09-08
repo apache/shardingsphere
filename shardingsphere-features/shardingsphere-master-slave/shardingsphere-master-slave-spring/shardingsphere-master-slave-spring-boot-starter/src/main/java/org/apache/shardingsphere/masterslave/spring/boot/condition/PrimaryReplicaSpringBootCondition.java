@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.boot.condition;
+package org.apache.shardingsphere.primaryreplica.spring.boot.condition;
 
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -24,15 +24,15 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Spring boot condition for master-slave .
+ * Spring boot condition for primary-replica.
  */
-public final class MasterSlaveSpringBootCondition extends SpringBootCondition {
+public final class PrimaryReplicaSpringBootCondition extends SpringBootCondition {
     
-    private static final String MASTER_SLAVE_PREFIX = "spring.shardingsphere.rules.master-slave";
+    private static final String PRIMARY_REPLICA_PREFIX = "spring.shardingsphere.rules.primary-replica";
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), MASTER_SLAVE_PREFIX)
-                ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere master-slave rule configuration in local file.");
+        return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), RIMARY_REPLICA_PREFIX)
+                ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere primary-replica rule configuration in local file.");
     }
 }
