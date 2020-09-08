@@ -15,39 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql;
+package org.apache.shardingsphere.proxy.frontend.mysql;
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
-import org.apache.shardingsphere.db.protocol.postgresql.codec.PostgreSQLPacketCodecEngine;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
-import org.apache.shardingsphere.proxy.frontend.postgresql.auth.PostgreSQLAuthenticationEngine;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLCommandExecuteEngine;
+import org.apache.shardingsphere.proxy.frontend.mysql.auth.MySQLAuthenticationEngine;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.MySQLCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 /**
- * Frontend engine for PostgreSQL protocol.
+ * Frontend engine for MySQL.
  */
 @Getter
-public final class PostgreSQLProtocolFrontendEngine implements DatabaseProtocolFrontendEngine {
+public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine {
     
-    private final FrontendContext frontendContext = new FrontendContext(true, false);
+    private final FrontendContext frontendContext = new FrontendContext(false, true);
     
-    private final PostgreSQLAuthenticationEngine authEngine = new PostgreSQLAuthenticationEngine();
+    private final MySQLAuthenticationEngine authEngine = new MySQLAuthenticationEngine();
     
-    private final PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
+    private final MySQLCommandExecuteEngine commandExecuteEngine = new MySQLCommandExecuteEngine();
     
-    private final DatabasePacketCodecEngine<?> codecEngine = new PostgreSQLPacketCodecEngine();
+    private final DatabasePacketCodecEngine<?> codecEngine = new MySQLPacketCodecEngine();
     
     @Override
     public String getDatabaseType() {
-        return "PostgreSQL";
+        return "MySQL";
     }
     
     @Override
     public void release(final BackendConnection backendConnection) {
-        BinaryStatementRegistry.getInstance().unregister(backendConnection.getConnectionId());
     }
 }

@@ -65,11 +65,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLProtocolFrontendEngineTest {
+public final class MySQLFrontendEngineTest {
     
     private static final String SCHEMA = "schema_%s";
     
-    private MySQLProtocolFrontendEngine mysqlProtocolFrontendEngine;
+    private MySQLFrontendEngine mysqlFrontendEngine;
     
     @Mock
     private ChannelHandlerContext context;
@@ -90,12 +90,12 @@ public final class MySQLProtocolFrontendEngineTest {
         Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
         field.setAccessible(true);
         field.set(ConnectionIdGenerator.getInstance(), 0);
-        mysqlProtocolFrontendEngine = new MySQLProtocolFrontendEngine();
+        mysqlFrontendEngine = new MySQLFrontendEngine();
     }
     
     @Test
     public void assertHandshake() {
-        assertTrue(mysqlProtocolFrontendEngine.getAuthEngine().handshake(context) > 0);
+        assertTrue(mysqlFrontendEngine.getAuthEngine().handshake(context) > 0);
         verify(context).writeAndFlush(isA(MySQLHandshakePacket.class));
     }
     
@@ -105,7 +105,7 @@ public final class MySQLProtocolFrontendEngineTest {
         ProxyUser proxyUser = new ProxyUser("", Collections.singleton("db1"));
         setAuthentication(proxyUser);
         when(payload.readStringNul()).thenReturn("root");
-        AuthenticationResult actual = mysqlProtocolFrontendEngine.getAuthEngine().auth(context, payload);
+        AuthenticationResult actual = mysqlFrontendEngine.getAuthEngine().auth(context, payload);
         assertThat(actual.getUsername(), is("root"));
         assertNull(actual.getDatabase());
         assertTrue(actual.isFinished());
@@ -121,7 +121,7 @@ public final class MySQLProtocolFrontendEngineTest {
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
         when(context.channel()).thenReturn(channel);
-        AuthenticationResult actual = mysqlProtocolFrontendEngine.getAuthEngine().auth(context, payload);
+        AuthenticationResult actual = mysqlFrontendEngine.getAuthEngine().auth(context, payload);
         assertThat(actual.getUsername(), is("root"));
         assertNull(actual.getDatabase());
         assertTrue(actual.isFinished());
@@ -137,7 +137,7 @@ public final class MySQLProtocolFrontendEngineTest {
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(context.channel()).thenReturn(channel);
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress(InetAddress.getByAddress(new byte[] {(byte) 192, (byte) 168, (byte) 0, (byte) 102}), 3307));
-        AuthenticationResult actual = mysqlProtocolFrontendEngine.getAuthEngine().auth(context, payload);
+        AuthenticationResult actual = mysqlFrontendEngine.getAuthEngine().auth(context, payload);
         assertThat(actual.getUsername(), is("root"));
         assertNull(actual.getDatabase());
         assertTrue(actual.isFinished());
@@ -154,7 +154,7 @@ public final class MySQLProtocolFrontendEngineTest {
     private void setConnectionPhase(final MySQLConnectionPhase connectionPhase) {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
         field.setAccessible(true);
-        field.set(mysqlProtocolFrontendEngine.getAuthEngine(), connectionPhase);
+        field.set(mysqlFrontendEngine.getAuthEngine(), connectionPhase);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

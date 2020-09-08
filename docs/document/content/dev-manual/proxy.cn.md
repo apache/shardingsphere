@@ -11,10 +11,10 @@ chapter = true
 | ------------------------------- | ---------------------------------------------- |
 | DatabaseProtocolFrontendEngine  | 用于ShardingSphere-Proxy解析与适配访问数据库的协议 |
 
-| *已知实现类*                      | *详细说明*                                      |
-| -------------------------------- | ---------------------------------------------- |
-| MySQLProtocolFrontendEngine      | 基于 MySQL 的数据库协议实现                      |
-| PostgreSQLProtocolFrontendEngine | 基于 PostgreSQL 的SQL 解析器实现                 |
+| *已知实现类*              | *详细说明*                                      |
+| ------------------------ | ---------------------------------------------- |
+| MySQLFrontendEngine      | 基于 MySQL 的数据库协议实现                      |
+| PostgreSQLFrontendEngine | 基于 PostgreSQL 的SQL 解析器实现                 |
 
 ## JDBCDriverURLRecognizer
 
