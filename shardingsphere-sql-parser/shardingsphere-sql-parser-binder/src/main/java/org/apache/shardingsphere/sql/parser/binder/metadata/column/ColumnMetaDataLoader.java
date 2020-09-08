@@ -49,23 +49,23 @@ public final class ColumnMetaDataLoader {
      * Load column meta data list.
      * 
      * @param connection connection
-     * @param table table name
+     * @param tableNamePattern table name pattern
      * @param databaseType database type
      * @return column meta data list
      * @throws SQLException SQL exception
      */
-    public static Collection<ColumnMetaData> load(final Connection connection, final String table, final String databaseType) throws SQLException {
+    public static Collection<ColumnMetaData> load(final Connection connection, final String tableNamePattern, final String databaseType) throws SQLException {
         Collection<ColumnMetaData> result = new LinkedList<>();
-        Collection<String> primaryKeys = loadPrimaryKeys(connection, table, databaseType);
+        Collection<String> primaryKeys = loadPrimaryKeys(connection, tableNamePattern, databaseType);
         List<String> columnNames = new ArrayList<>();
         List<Integer> columnTypes = new ArrayList<>();
         List<String> columnTypeNames = new ArrayList<>();
         List<Boolean> isPrimaryKeys = new ArrayList<>();
         List<Boolean> isCaseSensitives = new ArrayList<>();
-        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), table, "%")) {
+        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), tableNamePattern, "%")) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString(TABLE_NAME);
-                if (Objects.equals(table, tableName)) {
+                if (Objects.equals(tableNamePattern, tableName)) {
                     String columnName = resultSet.getString(COLUMN_NAME);
                     columnTypes.add(resultSet.getInt(DATA_TYPE));
                     columnTypeNames.add(resultSet.getString(TYPE_NAME));
@@ -74,7 +74,7 @@ public final class ColumnMetaDataLoader {
                 }
             }
         }
-        try (ResultSet resultSet = connection.createStatement().executeQuery(generateEmptyResultSQL(table, databaseType))) {
+        try (ResultSet resultSet = connection.createStatement().executeQuery(generateEmptyResultSQL(tableNamePattern, databaseType))) {
             for (String each : columnNames) {
                 isCaseSensitives.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(each)));
             }
