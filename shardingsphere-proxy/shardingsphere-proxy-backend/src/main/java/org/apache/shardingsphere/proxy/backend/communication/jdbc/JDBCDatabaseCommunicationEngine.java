@@ -114,7 +114,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
-        return TransactionType.XA == connection.getTransactionType() && sqlStatement instanceof DDLStatement && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
+        return TransactionType.XA == connection.getTransactionType() 
+                && sqlStatement instanceof DDLStatement && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
     }
     
     private String getTableName(final SQLStatementContext<?> sqlStatementContext) {
