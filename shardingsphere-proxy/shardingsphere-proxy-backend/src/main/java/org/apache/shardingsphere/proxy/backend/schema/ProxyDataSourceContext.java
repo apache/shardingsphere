@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.schema;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory.JDBCRawBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 
@@ -42,33 +41,29 @@ public final class ProxyDataSourceContext {
     
     private final Map<String, Map<String, DataSource>> dataSourcesMap;
     
-    public ProxyDataSourceContext(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
-        databaseType = isToInitDatabaseType(schemaDataSources) ? DatabaseTypes.getActualDatabaseType(getDatabaseTypeName(schemaDataSources)) : new MySQLDatabaseType();
-        dataSourcesMap = createDataSourcesMap(schemaDataSources);
+    public ProxyDataSourceContext(final Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap) {
+        databaseType = containsDataSourceParameter(dataSourceParametersMap) ? getDatabaseType(dataSourceParametersMap) : new MySQLDatabaseType();
+        dataSourcesMap = createDataSourcesMap(dataSourceParametersMap);
     }
     
-    private boolean isToInitDatabaseType(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
-        return !schemaDataSources.isEmpty() && !schemaDataSources.values().iterator().next().isEmpty();
+    private boolean containsDataSourceParameter(final Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap) {
+        return !dataSourceParametersMap.isEmpty() && !dataSourceParametersMap.values().iterator().next().isEmpty();
     }
     
-    private static String getDatabaseTypeName(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
-        return JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType();
+    private static DatabaseType getDatabaseType(final Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap) {
+        String databaseTypeName = JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(dataSourceParametersMap.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType();
+        return DatabaseTypes.getActualDatabaseType(databaseTypeName);
     }
     
-    private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
-        return schemaDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> createDataSources(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap) {
+        return dataSourceParametersMap.entrySet().stream().collect(
+                Collectors.toMap(Entry::getKey, entry -> createDataSources(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private static Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            try {
-                result.put(entry.getKey(), JDBCRawBackendDataSourceFactory.getInstance().build(entry.getKey(), entry.getValue()));
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                throw new ShardingSphereException(String.format("Can not build data source, name is `%s`.", entry.getKey()), ex);
-            }
+            result.put(entry.getKey(), JDBCRawBackendDataSourceFactory.getInstance().build(entry.getKey(), entry.getValue()));
         }
         return result;
     }
