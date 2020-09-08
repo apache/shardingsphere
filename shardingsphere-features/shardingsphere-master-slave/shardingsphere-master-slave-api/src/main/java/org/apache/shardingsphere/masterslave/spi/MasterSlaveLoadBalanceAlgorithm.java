@@ -22,17 +22,17 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import java.util.List;
 
 /**
- * Master-slave database load-balance algorithm.
+ * Primary-replica database load-balance algorithm.
  */
-public interface MasterSlaveLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
+public interface PrimaryReplicaLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Get data source.
      * 
-     * @param name master-slave logic data source name
-     * @param masterDataSourceName name of master data sources
-     * @param slaveDataSourceNames names of slave data sources
+     * @param name primary-replica logic data source name
+     * @param primaryDataSourceName name of primary data sources
+     * @param replicaDataSourceNames names of replica data sources
      * @return name of selected data source
      */
-    String getDataSource(String name, String masterDataSourceName, List<String> slaveDataSourceNames);
+    String getDataSource(String name, String primaryDataSourceName, List<String> replicaDataSourceNames);
 }
