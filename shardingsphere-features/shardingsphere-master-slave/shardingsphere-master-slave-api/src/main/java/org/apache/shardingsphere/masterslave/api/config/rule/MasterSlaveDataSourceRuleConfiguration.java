@@ -23,17 +23,17 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * Master-slave data source rule configuration.
+ * Primary-replica data source rule configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MasterSlaveDataSourceRuleConfiguration {
+public final class PrimaryReplicaDataSourceRuleConfiguration {
     
     private final String name;
     
-    private final String masterDataSourceName;
+    private final String primaryDataSourceName;
     
-    private final List<String> slaveDataSourceNames;
+    private final List<String> replicaDataSourceNames;
     
     private final String loadBalancerName;
 }
