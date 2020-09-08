@@ -50,9 +50,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 public final class StandardBootstrapInitializerTest {
+    
+    private final StandardBootstrapInitializer initializer = new StandardBootstrapInitializer();
     
     @Before
     public void setUp() {
@@ -62,7 +63,7 @@ public final class StandardBootstrapInitializerTest {
     @Test
     public void assertGetProxyConfiguration() {
         YamlProxyConfiguration yamlConfig = new YamlProxyConfiguration(createYamlProxyServerConfiguration(), createYamlProxyRuleConfigurationMap());
-        ProxyConfiguration actual = new StandardBootstrapInitializer().getProxyConfiguration(yamlConfig);
+        ProxyConfiguration actual = initializer.getProxyConfiguration(yamlConfig);
         assertProxyConfiguration(actual);
     }
     
@@ -193,16 +194,12 @@ public final class StandardBootstrapInitializerTest {
     @Test
     public void assertDecorateSchemaContexts() {
         SchemaContexts schemaContexts = mock(SchemaContexts.class);
-        StandardBootstrapInitializer standardBootstrapInitializer = spy(StandardBootstrapInitializer.class);
-        SchemaContexts newSchemaContexts = standardBootstrapInitializer.decorateSchemaContexts(schemaContexts);
-        assertThat(schemaContexts, is(newSchemaContexts));
+        assertThat(initializer.decorateSchemaContexts(schemaContexts), is(schemaContexts));
     }
     
     @Test
     public void assertDecorateTransactionContexts() {
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
-        StandardBootstrapInitializer standardBootstrapInitializer = spy(StandardBootstrapInitializer.class);
-        TransactionContexts newTransactionContexts = standardBootstrapInitializer.decorateTransactionContexts(transactionContexts);
-        assertThat(transactionContexts, is(newTransactionContexts));
+        assertThat(initializer.decorateTransactionContexts(transactionContexts), is(transactionContexts));
     }
 }
