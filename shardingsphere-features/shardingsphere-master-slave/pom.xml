@@ -30,7 +30,7 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>shardingsphere-master-slave-api</module>
+        <module>shardingsphere-primary-replica-api</module>
         <module>shardingsphere-master-slave-common</module>
         <module>shardingsphere-master-slave-route</module>
         <module>shardingsphere-master-slave-spring</module>
