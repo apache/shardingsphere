@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -51,6 +52,24 @@ public final class TableMetaDataLoader {
                 return Optional.empty();
             }
             return Optional.of(new TableMetaData(ColumnMetaDataLoader.load(connection, tableNamePattern, databaseType), IndexMetaDataLoader.load(connection, tableNamePattern, databaseType)));
+        }
+    }
+    
+    /**
+     * Load table without column and index meta data, this is for unconfigured table.
+     *
+     * @param dataSource data source
+     * @param table table name pattern
+     * @param databaseType database type
+     * @return table meta data
+     * @throws SQLException SQL exception
+     */
+    public static Optional<TableMetaData> loadWithoutColumnMetaData(final DataSource dataSource, final String tableNamePattern, final String databaseType) throws SQLException {
+        try (MetaDataConnection connection = new MetaDataConnection(dataSource.getConnection())) {
+            if (!isTableExist(connection, tableNamePattern, databaseType)) {
+                return Optional.empty();
+            }
+            return Optional.of(new TableMetaData(Collections.emptyList(), Collections.emptyList()));
         }
     }
     
