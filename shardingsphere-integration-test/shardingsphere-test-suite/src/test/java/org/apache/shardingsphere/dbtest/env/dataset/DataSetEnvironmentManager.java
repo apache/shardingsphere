@@ -57,7 +57,7 @@ public final class DataSetEnvironmentManager {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final ShardingSphereExecutorService shardingSphereExecutorService = new ShardingSphereExecutorService(20);
+    private static final ShardingSphereExecutorService shardingSphereExecutorService = new ShardingSphereExecutorService(20);
     
     public DataSetEnvironmentManager(final String path, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(path)) {
@@ -139,7 +139,6 @@ public final class DataSetEnvironmentManager {
         }
         try {
             shardingSphereExecutorService.getExecutorService().invokeAll(clearTasks);
-            shardingSphereExecutorService.close();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
