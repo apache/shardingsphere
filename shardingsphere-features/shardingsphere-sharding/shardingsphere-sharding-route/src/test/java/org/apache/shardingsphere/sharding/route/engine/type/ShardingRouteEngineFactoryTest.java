@@ -92,7 +92,7 @@ public final class ShardingRouteEngineFactoryTest {
     @Before
     public void setUp() {
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        when(shardingSphereMetaData.getSchema()).thenReturn(mock(RuleSchemaMetaData.class));
+        when(shardingSphereMetaData.getRuleSchemaMetaData()).thenReturn(mock(RuleSchemaMetaData.class));
         tableNames = new ArrayList<>();
         when(tablesContext.getTableNames()).thenReturn(tableNames);
     }
