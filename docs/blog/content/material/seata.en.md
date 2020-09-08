@@ -47,15 +47,15 @@ https://github.com/apache/incubator-shardingsphere-example/tree/dev/sharding-jdb
 
 Operation Manual
 
-1.Follow the steps in seata-work-shop, download and start seata server.
+1. Follow the steps in seata-work-shop, download and start seata server.
 
-https://github.com/seata/seata-workshop
+   https://github.com/seata/seata-workshop
 
-This refers to step6 and step7.
+   This refers to step6 and step7.
 
-2.Execute the script resources/sql/undo_log.sql in each database sharding, and create undo_log table.
+2. Execute the script resources/sql/undo_log.sql in each database sharding, and create undo_log table.
 
-3.Run YamlConfigurationTransactionExample.java
+3. Run YamlConfigurationTransactionExample.java
 
 ### Items to be optimized
 
