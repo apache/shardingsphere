@@ -64,9 +64,7 @@ public final class StandardBootstrapInitializerTest {
     public void assertGetProxyConfiguration() {
         Map<String, YamlProxyRuleConfiguration> ruleConfigurations = generateYamlProxyRuleConfiguration();
         YamlProxyServerConfiguration serverConfiguration = generateYamlProxyServerConfiguration();
-        YamlProxyConfiguration yamlConfig = mock(YamlProxyConfiguration.class);
-        when(yamlConfig.getRuleConfigurations()).thenReturn(ruleConfigurations);
-        when(yamlConfig.getServerConfiguration()).thenReturn(serverConfiguration);
+        YamlProxyConfiguration yamlConfig = new YamlProxyConfiguration(serverConfiguration, ruleConfigurations);
         ProxyConfiguration proxyConfiguration = new StandardBootstrapInitializer().getProxyConfiguration(yamlConfig);
         assertSchemaDataSources(proxyConfiguration.getSchemaDataSources());
         assertSchemaRules(proxyConfiguration.getSchemaRules());
