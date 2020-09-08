@@ -59,7 +59,7 @@ public final class TableMetaDataLoader {
      * Load table without column and index meta data, this is for unconfigured table.
      *
      * @param dataSource data source
-     * @param table table name pattern
+     * @param tableNamePattern table name pattern
      * @param databaseType database type
      * @return table meta data
      * @throws SQLException SQL exception
