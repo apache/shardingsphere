@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop login statement.
  */
-public final class DropLoginStatement extends AbstractSQLStatement implements DCLStatement {
+public abstract class DropLoginStatement extends AbstractSQLStatement {
 }

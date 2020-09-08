@@ -21,12 +21,12 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.common.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.core.common.event.rule.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.governance.core.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.governance.core.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.governance.core.schema.GovernanceSchemaContexts;
+import org.apache.shardingsphere.governance.context.schema.GovernanceSchemaContexts;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -113,10 +113,9 @@ public final class GovernanceShardingSphereDataSourceTest {
     }
     
     @Test
-    public void assertRenewDataSource() throws Exception {
+    public void assertRenewDataSource() throws SQLException {
         governanceSchemaContexts.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
         assertThat(governanceSchemaContexts.getDefaultSchemaContext().getSchema().getDataSources().size(), is(3));
-        
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {

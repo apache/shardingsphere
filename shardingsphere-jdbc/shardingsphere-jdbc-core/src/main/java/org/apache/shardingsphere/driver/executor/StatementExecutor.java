@@ -21,8 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.eventbus.event.MetaDataEvent;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
@@ -35,9 +33,13 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.M
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
+import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataNotifier;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import javax.sql.DataSource;
@@ -55,6 +57,10 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public final class StatementExecutor {
+    
+    static {
+        ShardingSphereServiceLoader.register(RuleMetaDataNotifier.class);
+    }
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -247,7 +253,14 @@ public final class StatementExecutor {
             RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(schemaContext.getSchema().getRules());
             refreshStrategy.get().refreshMetaData(schemaContext.getSchema().getMetaData(), schemaContexts.getDatabaseType(), dataSourceMap, sqlStatementContext,
                 tableName -> metaDataLoader.load(schemaContexts.getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
-            ShardingSphereEventBus.getInstance().post(new MetaDataEvent(DefaultSchema.LOGIC_NAME, schemaContext.getSchema().getMetaData().getSchema()));
+            notifyPersistRuleMetaData(DefaultSchema.LOGIC_NAME, schemaContext.getSchema().getMetaData().getSchema());
+        }
+    }
+    
+    private void notifyPersistRuleMetaData(final String schemaName, final RuleSchemaMetaData metaData) {
+        RuleMetaDataNotifier notifier = TypedSPIRegistry.getRegisteredService(RuleMetaDataNotifier.class);
+        if (null != notifier) {
+            notifier.notify(schemaName, metaData);
         }
     }
     

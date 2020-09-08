@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallback;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
 
 import javax.sql.DataSource;
@@ -36,6 +37,9 @@ public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDat
     public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
                                 final Map<String, DataSource> dataSourceMap, final AlterTableStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        callback.load(tableName).ifPresent(tableMetaData -> metaData.getSchema().getConfiguredSchemaMetaData().put(tableName, tableMetaData));
+        SchemaMetaData schemaMetaData = metaData.getSchema().getConfiguredSchemaMetaData();
+        if (null != schemaMetaData && schemaMetaData.containsTable(tableName)) {
+            callback.load(tableName).ifPresent(tableMetaData -> metaData.getSchema().getConfiguredSchemaMetaData().put(tableName, tableMetaData));
+        }
     }
 }

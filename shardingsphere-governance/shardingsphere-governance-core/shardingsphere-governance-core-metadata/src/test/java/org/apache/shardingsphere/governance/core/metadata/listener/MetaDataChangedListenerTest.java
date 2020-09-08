@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.metadata.listener;
 
-import org.apache.shardingsphere.governance.core.common.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.metadata.MetaDataJson;
 import org.apache.shardingsphere.governance.core.metadata.event.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;

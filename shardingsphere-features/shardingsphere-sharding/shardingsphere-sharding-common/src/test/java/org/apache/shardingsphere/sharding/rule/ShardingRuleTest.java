@@ -343,12 +343,12 @@ public final class ShardingRuleTest {
         shardingRuleConfiguration.getBroadcastTables().add("BROADCAST_TABLE");
         InlineShardingAlgorithm shardingAlgorithmDB = new InlineShardingAlgorithm();
         Properties props = new Properties();
-        props.setProperty("algorithm.expression", "ds_%{ds_id % 2}");
+        props.setProperty("algorithm-expression", "ds_%{ds_id % 2}");
         shardingAlgorithmDB.setProps(props);
         shardingRuleConfiguration.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("ds_id", "standard"));
         InlineShardingAlgorithm shardingAlgorithmTBL = new InlineShardingAlgorithm();
         props = new Properties();
-        props.setProperty("algorithm.expression", "table_%{table_id % 2}");
+        props.setProperty("algorithm-expression", "table_%{table_id % 2}");
         shardingAlgorithmTBL.setProps(props);
         shardingRuleConfiguration.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "standard"));
         shardingRuleConfiguration.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "default"));

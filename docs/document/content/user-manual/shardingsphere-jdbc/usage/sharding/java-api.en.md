@@ -58,12 +58,12 @@ shardingRuleConfig.getTables().add(orderTableRuleConfig);
 
 // Configure database sharding algorithm
 Properties dbShardingAlgorithmrProps = new Properties();
-dbShardingAlgorithmrProps.setProperty("algorithm.expression", "ds${user_id % 2}");
+dbShardingAlgorithmrProps.setProperty("algorithm-expression", "ds${user_id % 2}");
 shardingRuleConfig.getShardingAlgorithms().put("dbShardingAlgorithm", new ShardingSphereAlgorithmConfiguration("INLINE", dbShardingAlgorithmrProps));
 
 // Configure table sharding algorithm
 Properties tableShardingAlgorithmrProps = new Properties();
-tableShardingAlgorithmrProps.setProperty("algorithm.expression", "t_order${order_id % 2}");
+tableShardingAlgorithmrProps.setProperty("algorithm-expression", "t_order${order_id % 2}");
 shardingRuleConfig.getShardingAlgorithms().put("tableShardingAlgorithm", new ShardingSphereAlgorithmConfiguration("INLINE", tableShardingAlgorithmrProps));
 
 // Create ShardingSphereDataSource

@@ -42,11 +42,11 @@ import java.util.Properties;
 @Getter
 public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
-    private static final String DATE_TIME_LOWER_KEY = "datetime.lower";
+    private static final String DATE_TIME_LOWER_KEY = "datetime-lower";
     
-    private static final String DATE_TIME_UPPER_KEY = "datetime.upper";
+    private static final String DATE_TIME_UPPER_KEY = "datetime-upper";
     
-    private static final String SHARDING_SECONDS_KEY = "sharding.seconds";
+    private static final String SHARDING_SECONDS_KEY = "sharding-seconds";
     
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     

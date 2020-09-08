@@ -51,4 +51,4 @@ rules:
     order_encryptor:
       type: aes
       props:
-        aes.key.value: 123456
+        aes-key-value: 123456

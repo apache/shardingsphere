@@ -39,7 +39,7 @@ import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
-import org.apache.shardingsphere.proxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.MySQLErrPacketFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -94,15 +94,13 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     }
     
     private BackendResponse getBackendResponse() {
-        BackendResponse result;
         try {
-            result = databaseCommunicationEngine.execute();
+            return databaseCommunicationEngine.execute();
         // CHECKSTYLE:OFF
         } catch (final Exception ex) {
         // CHECKSTYLE:OFF
-            result = new ErrorResponse(ex);
+            return new ErrorResponse(ex);
         }
-        return result;
     }
     
     private Collection<DatabasePacket<?>> createQueryPacket(final QueryResponse backendResponse) {

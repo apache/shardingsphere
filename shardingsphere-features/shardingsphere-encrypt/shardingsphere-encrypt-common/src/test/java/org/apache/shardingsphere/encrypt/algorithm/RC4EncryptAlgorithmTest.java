@@ -42,7 +42,7 @@ public final class RC4EncryptAlgorithmTest {
     @Before
     public void setUp() {
         Properties props = new Properties();
-        props.setProperty("rc4.key.value", "test-sharding");
+        props.setProperty("rc4-key-value", "test-sharding");
         encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("Rc4", props), EncryptAlgorithm.class);
     }
     
@@ -63,7 +63,7 @@ public final class RC4EncryptAlgorithmTest {
         for (int i = 0; i < 100; i++) {
             keyBuffer.append("test");
         }
-        props.setProperty("rc4.key.value", keyBuffer.toString());
+        props.setProperty("rc4-key-value", keyBuffer.toString());
         encryptAlgorithm.setProps(props);
         encryptAlgorithm.init();
     }
@@ -80,6 +80,6 @@ public final class RC4EncryptAlgorithmTest {
     
     @Test
     public void assertGetProperties() {
-        assertThat(encryptAlgorithm.getProps().getProperty("rc4.key.value"), is("test-sharding"));
+        assertThat(encryptAlgorithm.getProps().getProperty("rc4-key-value"), is("test-sharding"));
     }
 }

@@ -22,11 +22,11 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.common.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.common.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.common.event.schema.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.common.event.schema.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.rule.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.governance.core.event.schema.SchemaAddedEvent;
+import org.apache.shardingsphere.governance.core.event.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
@@ -126,7 +126,7 @@ public final class SchemaChangedListenerTest {
         assertThat(encryptRuleConfig.getEncryptors().size(), is(1));
         ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = encryptRuleConfig.getEncryptors().get("order_encryptor");
         assertThat(encryptAlgorithmConfig.getType(), is("AES"));
-        assertThat(encryptAlgorithmConfig.getProps().get("aes.key.value"), is(123456));
+        assertThat(encryptAlgorithmConfig.getProps().get("aes-key-value"), is(123456));
     }
     
     @Test
@@ -139,7 +139,7 @@ public final class SchemaChangedListenerTest {
     }
     
     @Test
-    public void assertCreateShardingSchemaAddedEventForNewSchema() {
+    public void assertCreateSchemaAddedEventForNewSchema() {
         String shardingRule = readYAML(SHARDING_RULE_FILE);
         String dataSource = readYAML(DATA_SOURCE_FILE);
         when(configurationRepository.get("/config/schema/logic_db/rule")).thenReturn(shardingRule);

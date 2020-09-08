@@ -34,7 +34,7 @@ import java.util.Properties;
  */
 public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
     
-    private static final String RC4_KEY = "rc4.key.value";
+    private static final String RC4_KEY = "rc4-key-value";
     
     private static final int SBOX_LENGTH = 256;
     

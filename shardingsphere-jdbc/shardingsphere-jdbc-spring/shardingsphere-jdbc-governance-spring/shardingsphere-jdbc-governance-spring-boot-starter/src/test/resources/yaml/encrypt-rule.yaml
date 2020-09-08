@@ -20,7 +20,7 @@ rules:
     encryptors:
       order_encrypt:
         props:
-          aes.key.value: '123456'
+          aes-key-value: '123456'
         type: AES
     tables:
       t_order:

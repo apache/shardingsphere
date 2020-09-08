@@ -102,7 +102,7 @@ public final class DataSourceConfiguration {
      * 
      * @return data source
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @SneakyThrows(ReflectiveOperationException.class)
     public DataSource createDataSource() {
         DataSource result = (DataSource) Class.forName(dataSourceClassName).getConstructor().newInstance();
@@ -116,14 +116,13 @@ public final class DataSourceConfiguration {
                 setterMethod.get().invoke(result, entry.getValue());
             }
         }
-        findJDBCParameterDecorator(result).ifPresent(decorator -> decorator.decorate(result));
-        return result;
+        Optional<JDBCParameterDecorator> decorator = findJDBCParameterDecorator(result);
+        return decorator.isPresent() ? decorator.get().decorate(result) : result;
     }
     
     @SuppressWarnings("rawtypes")
     private Optional<JDBCParameterDecorator> findJDBCParameterDecorator(final DataSource dataSource) {
         return ShardingSphereServiceLoader.newServiceInstances(JDBCParameterDecorator.class).stream().filter(each -> each.getType() == dataSource.getClass()).findFirst();
-        
     }
     
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {
@@ -162,6 +161,9 @@ public final class DataSourceConfiguration {
             return false;
         }
         for (Entry<String, Object> entry : props.entrySet()) {
+            if (!dataSourceConfig.props.containsKey(entry.getKey())) {
+                continue;
+            }
             if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceConfig.props.get(entry.getKey())))) {
                 return false;
             }

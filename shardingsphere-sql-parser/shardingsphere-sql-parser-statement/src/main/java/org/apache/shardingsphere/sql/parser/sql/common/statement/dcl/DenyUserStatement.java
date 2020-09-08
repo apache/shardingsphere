@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
  */
 @Getter
 @Setter
-public final class DenyUserStatement extends AbstractSQLStatement implements DCLStatement {
-    
+public abstract class DenyUserStatement extends AbstractSQLStatement {
+
     private SimpleTableSegment table;
 }

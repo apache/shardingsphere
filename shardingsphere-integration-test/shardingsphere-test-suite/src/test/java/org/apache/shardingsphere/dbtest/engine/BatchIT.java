@@ -96,7 +96,7 @@ public abstract class BatchIT extends BaseIT {
     }
     
     @After
-    public void clearData() throws SQLException {
+    public void clearData() {
         dataSetEnvironmentManager.clear();
     }
     

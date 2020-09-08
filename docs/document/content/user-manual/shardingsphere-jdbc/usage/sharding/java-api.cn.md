@@ -57,12 +57,12 @@ shardingRuleConfig.getTables().add(orderTableRuleConfig);
 
 // 配置分库算法
 Properties dbShardingAlgorithmrProps = new Properties();
-dbShardingAlgorithmrProps.setProperty("algorithm.expression", "ds${user_id % 2}");
+dbShardingAlgorithmrProps.setProperty("algorithm-expression", "ds${user_id % 2}");
 shardingRuleConfig.getShardingAlgorithms().put("dbShardingAlgorithm", new ShardingSphereAlgorithmConfiguration("INLINE", dbShardingAlgorithmrProps));
 
 // 配置分表算法
 Properties tableShardingAlgorithmrProps = new Properties();
-tableShardingAlgorithmrProps.setProperty("algorithm.expression", "t_order${order_id % 2}");
+tableShardingAlgorithmrProps.setProperty("algorithm-expression", "t_order${order_id % 2}");
 shardingRuleConfig.getShardingAlgorithms().put("tableShardingAlgorithm", new ShardingSphereAlgorithmConfiguration("INLINE", tableShardingAlgorithmrProps));
 
 // 创建 ShardingSphereDataSource

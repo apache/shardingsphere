@@ -18,16 +18,18 @@
 package org.apache.shardingsphere.dbtest.env.dataset;
 
 import com.google.common.base.Joiner;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValueGroup;
 import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.executor.kernel.impl.ShardingSphereExecutorService;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -44,11 +46,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
 
 /**
  * Data set environment manager.
  */
 public final class DataSetEnvironmentManager {
+    
+    private static final ShardingSphereExecutorService SHARDING_SPHERE_EXECUTOR_SERVICE = new ShardingSphereExecutorService(20);
     
     private final DataSet dataSet;
     
@@ -68,7 +73,6 @@ public final class DataSetEnvironmentManager {
      * @throws ParseException parse exception
      */
     public void initialize() throws SQLException, ParseException {
-        clear();
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
             DataNode dataNode = entry.getKey();
@@ -127,25 +131,17 @@ public final class DataSetEnvironmentManager {
     /**
      * Clear data.
      * 
-     * @throws SQLException SQL exception
      */
-    public void clear() throws SQLException {
+    public void clear() {
+        List<Callable<Void>> clearTasks = new LinkedList<>();
         for (Entry<String, Collection<String>> entry : getDataNodeMap().entrySet()) {
-            clear(entry.getKey(), entry.getValue());
+            clearTasks.add(new ClearTask(dataSourceMap.get(entry.getKey()), entry.getValue()));
         }
-    }
-    
-    private void clear(final String dataSourceName, final Collection<String> tableNames) throws SQLException {
-        try (Connection connection = dataSourceMap.get(dataSourceName).getConnection()) {
-            for (String each : tableNames) {
-                String tableName = generateTableName(each, DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL()));
-                try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", tableName))) {
-                    preparedStatement.executeUpdate();
-                    // CHECKSTYLE:OFF
-                } catch (final SQLException ex) {
-                    // CHECKSTYLE:ON
-                }
-            }
+        try {
+            SHARDING_SPHERE_EXECUTOR_SERVICE.getExecutorService().invokeAll(clearTasks);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
         }
     }
     
@@ -174,7 +170,7 @@ public final class DataSetEnvironmentManager {
         return result;
     }
     
-    private String generateTableName(final String tableName, final DatabaseType databaseType) {
+    private static String generateTableName(final String tableName, final DatabaseType databaseType) {
         switch (databaseType.getName()) {
             case "H2":
             case "PostgreSQL":
@@ -186,6 +182,27 @@ public final class DataSetEnvironmentManager {
                 return "[" + tableName + "]";
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
+        }
+    }
+    
+    @RequiredArgsConstructor
+    private static class ClearTask implements Callable<Void> {
+        
+        private final DataSource dataSource;
+        
+        private final Collection<String> tableNames;
+        
+        @Override
+        public Void call() throws SQLException {
+            try (Connection connection = dataSource.getConnection()) {
+                for (String each : tableNames) {
+                    String tableName = generateTableName(each, DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL()));
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", tableName))) {
+                        preparedStatement.execute();
+                    }
+                }
+            }
+            return null;
         }
     }
 }

@@ -39,7 +39,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Bootstrap of ShardingScaling.
+ * Bootstrap of ShardingSphere-Scaling.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
@@ -58,7 +58,7 @@ public final class Bootstrap {
      */
     public static void main(final String[] args) throws IOException, InterruptedException {
         initServerConfig();
-        log.info("ShardingScaling Startup");
+        log.info("ShardingSphere-Scaling Startup");
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -70,7 +70,7 @@ public final class Bootstrap {
                     .childHandler(new HttpServerInitializer());
             int port = ScalingContext.getInstance().getServerConfiguration().getPort();
             Channel channel = bootstrap.bind(port).sync().channel();
-            log.info("ShardingScaling is server on http://127.0.0.1:" + port + '/');
+            log.info("ShardingSphere-Scaling is server on http://127.0.0.1:{}/", port);
             channel.closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();

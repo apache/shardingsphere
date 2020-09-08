@@ -40,7 +40,7 @@ import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.MySQLErrPacketFactory;
 
 import java.sql.SQLException;
@@ -72,7 +72,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     }
     
     @Override
-    public Collection<DatabasePacket<?>> execute() throws SQLException {
+    public Collection<DatabasePacket<?>> execute() {
         if (ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
         }
@@ -90,15 +90,13 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     }
     
     private BackendResponse getBackendResponse() {
-        BackendResponse result;
         try {
-            result = textProtocolBackendHandler.execute();
+            return textProtocolBackendHandler.execute();
         // CHECKSTYLE:OFF
         } catch (final Exception ex) {
         // CHECKSTYLE:OFF
-            result = new ErrorResponse(ex);
+            return new ErrorResponse(ex);
         }
-        return result;
     }
     
     private Collection<DatabasePacket<?>> createQueryPackets(final QueryResponse backendResponse) {

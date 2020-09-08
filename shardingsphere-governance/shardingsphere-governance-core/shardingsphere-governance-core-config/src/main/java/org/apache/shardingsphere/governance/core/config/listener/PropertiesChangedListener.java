@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.governance.core.config.listener;
 
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.governance.core.common.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.common.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.core.common.listener.PostGovernanceRepositoryEventListener;
+import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.governance.core.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
