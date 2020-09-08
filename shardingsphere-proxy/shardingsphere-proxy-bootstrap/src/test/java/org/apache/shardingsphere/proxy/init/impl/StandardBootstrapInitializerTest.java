@@ -85,7 +85,7 @@ public final class StandardBootstrapInitializerTest {
         yamlDataSourceParameter.setMaxLifetimeMilliseconds(4000L);
         yamlDataSourceParameter.setMaxPoolSize(20);
         yamlDataSourceParameter.setMinPoolSize(10);
-        Map<String, YamlDataSourceParameter> dataSources = new HashMap<>();
+        Map<String, YamlDataSourceParameter> dataSources = new HashMap<>(1, 1);
         dataSources.put("hikari", yamlDataSourceParameter);
         YamlProxyRuleConfiguration yamlProxyRuleConfiguration = new YamlProxyRuleConfiguration();
         yamlProxyRuleConfiguration.setDataSources(dataSources);
@@ -93,26 +93,26 @@ public final class StandardBootstrapInitializerTest {
         fixtureYamlRuleConfiguration.setName("testRule");
         List<YamlRuleConfiguration> rules = Lists.newArrayList(fixtureYamlRuleConfiguration);
         yamlProxyRuleConfiguration.setRules(rules);
-        Map<String, YamlProxyRuleConfiguration> ruleConfigurations = new HashMap<>();
-        ruleConfigurations.put("datasource-0", yamlProxyRuleConfiguration);
-        return ruleConfigurations;
+        Map<String, YamlProxyRuleConfiguration> result = new HashMap<>(1, 1);
+        result.put("datasource-0", yamlProxyRuleConfiguration);
+        return result;
     }
     
     private YamlProxyServerConfiguration generateYamlProxyServerConfiguration() {
         YamlProxyUserConfiguration yamlProxyUserConfiguration = new YamlProxyUserConfiguration();
         yamlProxyUserConfiguration.setPassword("root");
         yamlProxyUserConfiguration.setAuthorizedSchemas("ds-1,ds-2");
-        Map<String, YamlProxyUserConfiguration> users = new HashMap<>();
+        Map<String, YamlProxyUserConfiguration> users = new HashMap<>(1, 1);
         users.put("root", yamlProxyUserConfiguration);
         YamlAuthenticationConfiguration authentication = new YamlAuthenticationConfiguration();
         authentication.setUsers(users);
-        YamlProxyServerConfiguration serverConfiguration = new YamlProxyServerConfiguration();
-        serverConfiguration.setAuthentication(authentication);
+        YamlProxyServerConfiguration result = new YamlProxyServerConfiguration();
+        result.setAuthentication(authentication);
         Properties props = new Properties();
         props.setProperty("alpha-1", "alpha-A");
         props.setProperty("beta-2", "beta-B");
-        serverConfiguration.setProps(props);
-        return serverConfiguration;
+        result.setProps(props);
+        return result;
     }
     
     private void assertSchemaDataSources(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
