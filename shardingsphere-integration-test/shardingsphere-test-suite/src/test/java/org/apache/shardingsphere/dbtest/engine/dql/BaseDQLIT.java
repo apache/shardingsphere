@@ -123,6 +123,9 @@ public abstract class BaseDQLIT extends SingleIT {
         if ("shadow".equals(getRuleType())) {
             return;
         }
+        if (0 == actualMetaData.getColumnCount()) {
+            return;
+        }
         assertThat(actualMetaData.getColumnCount(), is(expectedColumns.size()));
         int index = 1;
         for (DataSetColumn each : expectedColumns) {

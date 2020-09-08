@@ -18,12 +18,6 @@
 <dataset>
     <metadata>
         <column name="order_id" />
-        <column name="user_id" />
-        <column name="status" />
-        <column name="order_id" />
-        <column name="order_id" />
-        <column name="user_id" />
-        <column name="status" />
     </metadata>
     <row values="1000, 10, init_slave, 1000, 1000, 10, init_slave" />
     <row values="1001, 10, init_slave, 1001, 1001, 10, init_slave" />
