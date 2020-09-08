@@ -33,7 +33,7 @@ import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
@@ -76,7 +76,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private BackendResponse execute(final CreateDatabaseStatementContext context) {
-        if (ProxySchemaContexts.getInstance().getSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
+        if (ProxyContext.getInstance().getAllSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
             return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
         }
         // TODO Need to get the executed feedback from registry center for returning.
@@ -87,7 +87,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private BackendResponse execute(final DropDatabaseStatementContext context) {
-        if (!ProxySchemaContexts.getInstance().getSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
+        if (!ProxyContext.getInstance().getAllSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
             return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
         }
         // TODO Need to get the executed feedback from registry center for returning.
@@ -119,7 +119,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private SQLStatementContext<?> getSQLStatementContext() {
-        DatabaseType databaseType = ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType();
+        DatabaseType databaseType = ProxyContext.getInstance().getSchemaContexts().getDatabaseType();
         if (sqlStatement instanceof CreateDataSourcesStatement) {
             return new CreateDataSourcesStatementContext((CreateDataSourcesStatement) sqlStatement, databaseType);
         }
@@ -146,7 +146,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private boolean isRegistryCenterExisted() {
-        return !(ProxySchemaContexts.getInstance().getSchemaContexts() instanceof StandardSchemaContexts);
+        return !(ProxyContext.getInstance().getSchemaContexts() instanceof StandardSchemaContexts);
     }
     
     @Override

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,9 +58,9 @@ public class ShowTablesBackendHandlerTest {
         tablesBackendHandler = new ShowTablesBackendHandler("show tables", mock(SQLStatement.class), backendConnection);
         Map<String, SchemaContext> schemaContextMap = getSchemaContextMap();
         when(backendConnection.getSchema()).thenReturn("schema_0");
-        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(),
+        schemaContexts.set(ProxyContext.getInstance(),
                 new StandardSchemaContexts(schemaContextMap, getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     

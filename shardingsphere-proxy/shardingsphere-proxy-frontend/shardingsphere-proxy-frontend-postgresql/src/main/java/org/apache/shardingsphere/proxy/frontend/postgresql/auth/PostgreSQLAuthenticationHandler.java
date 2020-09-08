@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.auth;
 
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 
 import java.security.MessageDigest;
 import java.util.Collection;
@@ -33,7 +35,8 @@ import java.util.Map;
 /**
  * Authentication handler for PostgreSQL.
  */
-public class PostgreSQLAuthenticationHandler {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PostgreSQLAuthenticationHandler {
     
     /**
      * Login.
@@ -46,7 +49,7 @@ public class PostgreSQLAuthenticationHandler {
      */
     public static PostgreSQLLoginResult loginWithMd5Password(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
         ProxyUser proxyUser = null;
-        for (Map.Entry<String, ProxyUser> entry : ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().entrySet()) {
+        for (Map.Entry<String, ProxyUser> entry : ProxyContext.getInstance().getSchemaContexts().getAuthentication().getUsers().entrySet()) {
             if (entry.getKey().equals(username)) {
                 proxyUser = entry.getValue();
                 break;

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.fixture.CallTimeRecordDataSource;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
@@ -70,9 +70,9 @@ public final class JDBCBackendDataSourceTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setSchemaContexts() {
-        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(),
+        schemaContexts.set(ProxyContext.getInstance(),
                 new StandardSchemaContexts(createSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
@@ -89,9 +89,9 @@ public final class JDBCBackendDataSourceTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setTransactionContexts() {
-        Field transactionContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("transactionContexts");
+        Field transactionContexts = ProxyContext.getInstance().getClass().getDeclaredField("transactionContexts");
         transactionContexts.setAccessible(true);
-        transactionContexts.set(ProxySchemaContexts.getInstance(), createTransactionContexts());
+        transactionContexts.set(ProxyContext.getInstance(), createTransactionContexts());
     }
     
     private TransactionContexts createTransactionContexts() {
@@ -111,19 +111,19 @@ public final class JDBCBackendDataSourceTest {
     
     @Test
     public void assertGetConnectionFixedOne() throws SQLException {
-        Connection actual = ProxySchemaContexts.getInstance().getBackendDataSource().getConnection("schema", "ds_1");
+        Connection actual = ProxyContext.getInstance().getBackendDataSource().getConnection("schema", "ds_1");
         assertThat(actual, instanceOf(Connection.class));
     }
     
     @Test
     public void assertGetConnectionsSucceed() throws SQLException {
-        List<Connection> actual = ProxySchemaContexts.getInstance().getBackendDataSource().getConnections("schema", "ds_1", 5, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actual = ProxyContext.getInstance().getBackendDataSource().getConnections("schema", "ds_1", 5, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(5));
     }
     
     @Test(expected = SQLException.class)
     public void assertGetConnectionsFailed() throws SQLException {
-        ProxySchemaContexts.getInstance().getBackendDataSource().getConnections("schema", "ds_1", 6, ConnectionMode.MEMORY_STRICTLY);
+        ProxyContext.getInstance().getBackendDataSource().getConnections("schema", "ds_1", 6, ConnectionMode.MEMORY_STRICTLY);
     }
     
     @Test
@@ -156,7 +156,7 @@ public final class JDBCBackendDataSourceTest {
         
         @Override
         public List<Connection> call() throws SQLException {
-            return ProxySchemaContexts.getInstance().getBackendDataSource().getConnections("schema", datasourceName, connectionSize, connectionMode);
+            return ProxyContext.getInstance().getBackendDataSource().getConnections("schema", datasourceName, connectionSize, connectionMode);
         }
     }
 }

@@ -27,19 +27,19 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
 import javax.sql.DataSource;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Proxy schema contexts.
+ * Proxy context.
  */
 @Getter
-public final class ProxySchemaContexts {
+public final class ProxyContext {
     
-    private static final ProxySchemaContexts INSTANCE = new ProxySchemaContexts();
+    private static final ProxyContext INSTANCE = new ProxyContext();
     
     private final JDBCBackendDataSource backendDataSource;
     
@@ -47,7 +47,7 @@ public final class ProxySchemaContexts {
     
     private TransactionContexts transactionContexts;
     
-    private ProxySchemaContexts() {
+    private ProxyContext() {
         backendDataSource = new JDBCBackendDataSource();
         schemaContexts = new StandardSchemaContexts();
         transactionContexts = new StandardTransactionContexts();
@@ -58,7 +58,7 @@ public final class ProxySchemaContexts {
      *
      * @return instance of ShardingSphere schemas.
      */
-    public static ProxySchemaContexts getInstance() {
+    public static ProxyContext getInstance() {
         return INSTANCE;
     }
     
@@ -76,30 +76,30 @@ public final class ProxySchemaContexts {
     /**
      * Check schema exists.
      *
-     * @param schema schema
+     * @param schemaName schema name
      * @return schema exists or not
      */
-    public boolean schemaExists(final String schema) {
-        return null != schemaContexts && schemaContexts.getSchemaContexts().containsKey(schema);
+    public boolean schemaExists(final String schemaName) {
+        return schemaContexts.getSchemaContexts().containsKey(schemaName);
     }
     
     /**
-     * Get ShardingSphere schema.
+     * Get schema context.
      *
      * @param schemaName schema name
-     * @return ShardingSphere schema
+     * @return schema context
      */
     public SchemaContext getSchema(final String schemaName) {
         return Strings.isNullOrEmpty(schemaName) ? null : schemaContexts.getSchemaContexts().get(schemaName);
     }
     
     /**
-     * Get schema names.
+     * Get all schema names.
      *
-     * @return schema names
+     * @return all schema names
      */
-    public List<String> getSchemaNames() {
-        return new LinkedList<>(schemaContexts.getSchemaContexts().keySet());
+    public List<String> getAllSchemaNames() {
+        return new ArrayList<>(schemaContexts.getSchemaContexts().keySet());
     }
     
     /**
@@ -108,7 +108,7 @@ public final class ProxySchemaContexts {
      * @return data source sample
      */
     public Optional<DataSource> getDataSourceSample() {
-        List<String> schemaNames = getSchemaNames();
+        List<String> schemaNames = getAllSchemaNames();
         if (schemaNames.isEmpty()) {
             return Optional.empty();
         }

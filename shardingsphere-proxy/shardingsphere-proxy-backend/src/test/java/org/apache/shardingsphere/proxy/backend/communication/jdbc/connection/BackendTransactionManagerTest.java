@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -64,9 +64,9 @@ public final class BackendTransactionManagerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setTransactionContexts() {
-        Field transactionContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("transactionContexts");
+        Field transactionContexts = ProxyContext.getInstance().getClass().getDeclaredField("transactionContexts");
         transactionContexts.setAccessible(true);
-        transactionContexts.set(ProxySchemaContexts.getInstance(), getTransactionContexts());
+        transactionContexts.set(ProxyContext.getInstance(), getTransactionContexts());
     }
     
     private TransactionContexts getTransactionContexts() {

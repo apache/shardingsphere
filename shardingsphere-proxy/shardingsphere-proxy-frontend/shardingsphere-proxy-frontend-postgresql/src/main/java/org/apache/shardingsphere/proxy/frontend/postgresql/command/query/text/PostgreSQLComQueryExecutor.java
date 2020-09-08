@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
@@ -70,7 +70,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak()) {
+        if (ProxyContext.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new PostgreSQLErrorResponsePacket());
         }
         BackendResponse backendResponse = getBackendResponse();

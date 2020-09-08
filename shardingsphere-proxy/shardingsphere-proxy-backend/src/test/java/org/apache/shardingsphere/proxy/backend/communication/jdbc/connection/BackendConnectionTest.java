@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.schema.datasource.impl.JDBCBackendDataSource;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -86,9 +86,9 @@ public final class BackendConnectionTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setSchemaContexts() {
-        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        field.set(ProxySchemaContexts.getInstance(),
+        field.set(ProxyContext.getInstance(),
                 new StandardSchemaContexts(createSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
@@ -105,9 +105,9 @@ public final class BackendConnectionTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setTransactionContexts() {
-        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("transactionContexts");
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("transactionContexts");
         field.setAccessible(true);
-        field.set(ProxySchemaContexts.getInstance(), createTransactionContexts());
+        field.set(ProxyContext.getInstance(), createTransactionContexts());
     }
     
     private TransactionContexts createTransactionContexts() {
@@ -121,9 +121,9 @@ public final class BackendConnectionTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setBackendDataSource() {
-        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("backendDataSource");
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
         field.setAccessible(true);
-        field.set(ProxySchemaContexts.getInstance(), backendDataSource);
+        field.set(ProxyContext.getInstance(), backendDataSource);
     }
     
     @Test
@@ -292,10 +292,10 @@ public final class BackendConnectionTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @After
     public void clean() {
-        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("backendDataSource");
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
         field.setAccessible(true);
         Class<?> clazz = field.getType();
         Object datasource = clazz.getDeclaredConstructors()[0].newInstance();
-        field.set(ProxySchemaContexts.getInstance(), datasource);
+        field.set(ProxyContext.getInstance(), datasource);
     }
 }

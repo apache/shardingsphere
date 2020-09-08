@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,9 +59,9 @@ public final class UseDatabaseBackendHandlerTest {
     public void setUp() {
         backendConnection = mock(BackendConnection.class);
         when(backendConnection.getUsername()).thenReturn("root");
-        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(),
+        schemaContexts.set(ProxyContext.getInstance(),
                 new StandardSchemaContexts(getSchemaContextMap(), getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
