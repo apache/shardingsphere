@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.api.config;
+package org.apache.shardingsphere.primaryreplica.api.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
