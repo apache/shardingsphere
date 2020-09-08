@@ -97,8 +97,8 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     }
     
     private void persistMetaData() {
-        schemaContexts.getSchemaContexts().forEach((key, value) 
-                -> governanceFacade.getMetaDataCenter().persistMetaDataCenterNode(key, value.getSchema().getMetaData().getRuleSchemaMetaData()));
+        schemaContexts.getSchemaContexts().forEach((key, value) -> governanceFacade.getMetaDataCenter()
+            .persistMetaDataCenterNode(key, value.getSchema().getMetaData().getRuleSchemaMetaData()));
     }
     
     @Override
