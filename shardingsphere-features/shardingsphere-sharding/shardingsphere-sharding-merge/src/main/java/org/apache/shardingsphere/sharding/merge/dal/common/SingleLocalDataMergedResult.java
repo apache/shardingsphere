@@ -39,7 +39,6 @@ public final class SingleLocalDataMergedResult implements MergedResult {
         this.values = values.iterator();
     }
     
-    
     @Override
     public boolean next() {
         if (values.hasNext()) {
