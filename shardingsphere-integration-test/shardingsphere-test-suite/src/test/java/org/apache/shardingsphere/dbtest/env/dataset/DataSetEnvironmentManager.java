@@ -197,7 +197,7 @@ public final class DataSetEnvironmentManager {
             try (Connection connection = dataSource.getConnection()) {
                 for (String each : tableNames) {
                     String tableName = generateTableName(each, DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL()));
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", tableName))) {
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s", tableName))) {
                         preparedStatement.execute();
                     }
                 }
