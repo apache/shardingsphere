@@ -27,22 +27,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Round-robin slave database load-balance algorithm.
+ * Round-robin replica database load-balance algorithm.
  */
 @Getter
 @Setter
-public final class RoundRobinMasterSlaveLoadBalanceAlgorithm implements MasterSlaveLoadBalanceAlgorithm {
+public final class RoundRobinPrimaryReplicaLoadBalanceAlgorithm implements PrimaryReplicaLoadBalanceAlgorithm {
     
     private static final ConcurrentHashMap<String, AtomicInteger> COUNTS = new ConcurrentHashMap<>();
     
     private Properties props = new Properties();
     
     @Override
-    public String getDataSource(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
+    public String getDataSource(final String name, final String primaryDataSourceName, final List<String> replicaDataSourceNames) {
         AtomicInteger count = COUNTS.containsKey(name) ? COUNTS.get(name) : new AtomicInteger(0);
         COUNTS.putIfAbsent(name, count);
-        count.compareAndSet(slaveDataSourceNames.size(), 0);
-        return slaveDataSourceNames.get(Math.abs(count.getAndIncrement()) % slaveDataSourceNames.size());
+        count.compareAndSet(replicaDataSourceNames.size(), 0);
+        return replicaDataSourceNames.get(Math.abs(count.getAndIncrement()) % replicaDataSourceNames.size());
     }
     
     @Override

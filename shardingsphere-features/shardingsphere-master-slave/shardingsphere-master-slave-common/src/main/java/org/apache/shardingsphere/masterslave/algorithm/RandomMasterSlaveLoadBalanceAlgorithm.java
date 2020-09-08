@@ -26,11 +26,11 @@ import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Random slave database load-balance algorithm.
+ * Random replica database load-balance algorithm.
  */
 @Getter
 @Setter
-public final class RandomMasterSlaveLoadBalanceAlgorithm implements MasterSlaveLoadBalanceAlgorithm {
+public final class RandomPrimaryReplicaLoadBalanceAlgorithm implements PrimaryReplicaLoadBalanceAlgorithm {
     
     private Properties props = new Properties();
     
