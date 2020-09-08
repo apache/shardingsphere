@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata.column;
 
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.util.JdbcUtil;
@@ -42,6 +43,8 @@ public final class ColumnMetaDataLoader {
     
     private static final String TYPE_NAME = "TYPE_NAME";
     
+    private static final String TABLE_NAME = "TABLE_NAME";
+    
     /**
      * Load column meta data list.
      * 
@@ -61,11 +64,14 @@ public final class ColumnMetaDataLoader {
         List<Boolean> isCaseSensitives = new ArrayList<>();
         try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), table, "%")) {
             while (resultSet.next()) {
-                String columnName = resultSet.getString(COLUMN_NAME);
-                columnTypes.add(resultSet.getInt(DATA_TYPE));
-                columnTypeNames.add(resultSet.getString(TYPE_NAME));
-                isPrimaryKeys.add(primaryKeys.contains(columnName));
-                columnNames.add(columnName);
+                String tableName = resultSet.getString(TABLE_NAME);
+                if (Objects.equals(table, tableName)) {
+                    String columnName = resultSet.getString(COLUMN_NAME);
+                    columnTypes.add(resultSet.getInt(DATA_TYPE));
+                    columnTypeNames.add(resultSet.getString(TYPE_NAME));
+                    isPrimaryKeys.add(primaryKeys.contains(columnName));
+                    columnNames.add(columnName);
+                }
             }
         }
         try (ResultSet resultSet = connection.createStatement().executeQuery(generateEmptyResultSQL(table, databaseType))) {
