@@ -16,27 +16,27 @@ weight = 2
 ```
 namespace
    ├──states
-        ├──proxynodes
-              ├──${your_instance_ip_a}@${your_instance_pid_x}@${UUID}
-              ├──${your_instance_ip_b}@${your_instance_pid_y}@${UUID}
-              ├──....
-        ├──datanodes
-              ├──${schema_1}
-              ├      ├──${ds_0}
-              ├      ├──${ds_1}
-              ├──${schema_2}
-              ├      ├──${ds_0}
-              ├      ├──${ds_1}
-              ├──....
+   ├    ├──proxynodes
+   ├    ├     ├──${your_instance_ip_a}@${your_instance_pid_x}@${UUID}
+   ├    ├     ├──${your_instance_ip_b}@${your_instance_pid_y}@${UUID}
+   ├    ├     ├──....
+   ├    ├──datanodes
+   ├    ├     ├──${schema_1}
+   ├    ├     ├      ├──${ds_0}
+   ├    ├     ├      ├──${ds_1}
+   ├    ├     ├──${schema_2}
+   ├    ├     ├      ├──${ds_0}
+   ├    ├     ├      ├──${ds_1}
+   ├    ├     ├──....
 ```
 
-### /proxynodes
+### /states/proxynodes
 
 数据库访问对象运行实例信息，子节点是当前运行实例的标识。
 运行实例标识由运行服务器的 IP 地址和 PID 构成。运行实例标识均为临时节点，当实例上线时注册，下线时自动清理。
 注册中心监控这些节点的变化来治理运行中实例对数据库的访问等。
 
-### /datanodes
+### /states/datanodes
 
 可以治理读写分离从库，可动态添加删除以及禁用。
 
