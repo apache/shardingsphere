@@ -33,14 +33,15 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.MySQLErrPacketFactory;
 
 import java.sql.SQLException;
@@ -57,13 +58,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
     @Getter
-    private volatile boolean isQueryResponse;
-    
-    @Getter
-    private volatile boolean isUpdateResponse;
-    
-    @Getter
-    private volatile boolean isErrorResponse;
+    private volatile ResponseType responseType;
     
     private int currentSequenceId;
     
@@ -78,14 +73,14 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         }
         BackendResponse backendResponse = getBackendResponse();
         if (backendResponse instanceof QueryResponse) {
-            isQueryResponse = true;
+            responseType = ResponseType.QUERY;
             return createQueryPackets((QueryResponse) backendResponse);
         }
         if (backendResponse instanceof UpdateResponse) {
-            isUpdateResponse = true;
+            responseType = ResponseType.UPDATE;
             return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
-        isErrorResponse = true;
+        responseType = ResponseType.ERROR;
         return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
     }
     

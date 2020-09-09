@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
@@ -82,7 +82,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLComStmtPrepareChecker {
     
-    private static final Set<Class> SQL_STATEMENTS_ALLOWED = new HashSet<>();
+    private static final Set<Class<?>> SQL_STATEMENTS_ALLOWED = new HashSet<>();
     
     static {
         SQL_STATEMENTS_ALLOWED.addAll(Arrays.asList(AlterTableStatement.class, MySQLAlterUserStatement.class, MySQLAnalyzeTableStatement.class,
@@ -92,7 +92,7 @@ public final class MySQLComStmtPrepareChecker {
             CreateViewStatement.class, DropViewStatement.class, DeleteStatement.class, DoStatement.class, MySQLFlushStatement.class,
             MySQLGrantStatement.class, InsertStatement.class, MySQLInstallPluginStatement.class, MySQLKillStatement.class, MySQLLoadIndexInfoStatement.class,
             MySQLOptimizeTableStatement.class, RenameTableStatement.class, MySQLRepairTableStatement.class, MySQLResetStatement.class,
-            MySQLRevokeStatement.class, SelectStatement.class, SetStatement.class, MySQLShowWarningsStatement.class, MySQLShowErrorsStatement.class,
+            MySQLRevokeStatement.class, SelectStatement.class, MySQLSetStatement.class, MySQLShowWarningsStatement.class, MySQLShowErrorsStatement.class,
             MySQLShowBinlogStatement.class, MySQLShowCreateProcedureStatement.class, MySQLShowCreateFunctionStatement.class, MySQLShowCreateEventStatement.class,
             MySQLShowCreateTableStatement.class, MySQLShowCreateViewStatement.class, MySQLShowBinaryLogsStatement.class, MySQLShowStatusStatement.class,
             StartSlaveStatement.class, StopSlaveStatement.class, TruncateStatement.class, MySQLUninstallPluginStatement.class, UpdateStatement.class));

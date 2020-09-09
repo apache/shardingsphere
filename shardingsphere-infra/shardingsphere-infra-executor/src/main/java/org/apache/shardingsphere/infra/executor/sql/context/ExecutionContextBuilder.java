@@ -59,7 +59,7 @@ public final class ExecutionContextBuilder {
     }
     
     private static Collection<ExecutionUnit> build(final ShardingSphereMetaData metaData, final GenericSQLRewriteResult sqlRewriteResult, final SQLStatementContext sqlStatementContext) {
-        String dataSourceName = metaData.getDataSources().getAllInstanceDataSourceNames().iterator().next();
+        String dataSourceName = metaData.getDataSourceMetaDatas().getAllInstanceDataSourceNames().iterator().next();
         return Collections.singletonList(new ExecutionUnit(dataSourceName,
                 new SQLUnit(sqlRewriteResult.getSqlRewriteUnit().getSql(), sqlRewriteResult.getSqlRewriteUnit().getParameters(), getActualTableNames(sqlStatementContext),
                         getPrimaryKeyColumns(metaData, sqlStatementContext))));

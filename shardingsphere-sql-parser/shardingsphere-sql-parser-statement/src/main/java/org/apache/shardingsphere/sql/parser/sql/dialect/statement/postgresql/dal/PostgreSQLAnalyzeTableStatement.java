@@ -15,17 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.executor;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
-import org.junit.Test;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class ExecutorContextTest {
-    
-    @Test
-    public void assertGetInstance() {
-        assertThat(BackendExecutorContext.getInstance().getExecutorKernel(), is(BackendExecutorContext.getInstance().getExecutorKernel()));
-    }
+/**
+ * PostgreSQL analyze table statement.
+ */
+public final class PostgreSQLAnalyzeTableStatement extends AnalyzeTableStatement implements DALStatement, PostgreSQLStatement {
 }

@@ -30,7 +30,8 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,7 +85,7 @@ public final class MySQLComStmtExecuteExecutorTest {
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
         when(databaseCommunicationEngine.execute()).thenReturn(new QueryResponse(Collections.singletonList(mock(QueryHeader.class))));
         mysqlComStmtExecuteExecutor.execute();
-        assertThat(mysqlComStmtExecuteExecutor.isQueryResponse(), is(true));
+        assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.QUERY));
     }
     
     @Test
@@ -95,7 +96,7 @@ public final class MySQLComStmtExecuteExecutorTest {
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
         when(databaseCommunicationEngine.execute()).thenReturn(new UpdateResponse());
         mysqlComStmtExecuteExecutor.execute();
-        assertThat(mysqlComStmtExecuteExecutor.isUpdateResponse(), is(true));
+        assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.UPDATE));
     }
     
     @Test
@@ -106,6 +107,6 @@ public final class MySQLComStmtExecuteExecutorTest {
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
         when(databaseCommunicationEngine.execute()).thenReturn(new ErrorResponse(sqlException));
         mysqlComStmtExecuteExecutor.execute();
-        assertThat(mysqlComStmtExecuteExecutor.isErrorResponse(), is(true));
+        assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.ERROR));
     }
 }

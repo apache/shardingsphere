@@ -27,8 +27,9 @@ import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
+import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -44,8 +45,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -69,7 +70,7 @@ public final class PostgreSQLComBindExecutorTest {
         ErrorResponse errorResponse = new ErrorResponse(new PSQLException(mock(ServerErrorMessage.class)));
         when(databaseCommunicationEngine.execute()).thenReturn(errorResponse);
         assertThat(((LinkedList) postgreSQLComBindExecutor.execute()).get(1), instanceOf(PostgreSQLErrorResponsePacket.class));
-        assertTrue(postgreSQLComBindExecutor.isErrorResponse());
+        assertThat(postgreSQLComBindExecutor.getResponseType(), is(ResponseType.ERROR));
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {

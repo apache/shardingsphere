@@ -15,10 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.schema.datasource;
+package org.apache.shardingsphere.proxy.backend.context;
 
-/**
- * Backend data source.
- */
-public interface BackendDataSource {
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class BackendExecutorContextTest {
+    
+    @Test
+    public void assertGetInstance() {
+        assertThat(BackendExecutorContext.getInstance().getExecutorKernel(), is(BackendExecutorContext.getInstance().getExecutorKernel()));
+    }
 }

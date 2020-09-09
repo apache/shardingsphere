@@ -28,12 +28,13 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -47,39 +48,56 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private final SchemaContext schema;
     
+    private int currentSequenceId;
+    
     public MySQLComStmtPrepareExecutor(final MySQLComStmtPreparePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
         schema = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
     }
     
-    private int getColumnsCount(final SQLStatement sqlStatement) {
+    @Override
+    public Collection<DatabasePacket<?>> execute() {
+        SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
+        if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
+            return Collections.singletonList(new MySQLErrPacket(++currentSequenceId, MySQLServerErrorCode.ER_UNSUPPORTED_PS));
+        }
+        int parameterCount = sqlStatement.getParameterCount();
+        int projectionCount = getProjectionCount(sqlStatement);
+        int statementId = PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parameterCount);
+        return createPackets(statementId, projectionCount, parameterCount);
+    }
+    
+    private int getProjectionCount(final SQLStatement sqlStatement) {
         return sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
     }
     
-    @Override
-    public Collection<DatabasePacket<?>> execute() {
+    private Collection<DatabasePacket<?>> createPackets(final int statementId, final int projectionCount, final int parameterCount) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
-        int currentSequenceId = 0;
-        SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
-        if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
-            result.add(new MySQLErrPacket(++currentSequenceId, MySQLServerErrorCode.ER_UNSUPPORTED_PS));
-            return result;
+        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, statementId, projectionCount, parameterCount, 0));
+        if (parameterCount > 0) {
+            result.addAll(createParameterColumnDefinition41Packets(parameterCount));
         }
-        int parametersCount = sqlStatement.getParameterCount();
-        int columnsCount = getColumnsCount(sqlStatement);
-        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersCount), columnsCount, parametersCount, 0));
-        if (parametersCount > 0) {
-            for (int i = 0; i < parametersCount; i++) {
-                result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
-            }
-            result.add(new MySQLEofPacket(++currentSequenceId));
+        if (projectionCount > 0) {
+            result.addAll(createProjectionColumnDefinition41Packets(projectionCount));
         }
-        if (columnsCount > 0) {
-            for (int i = 0; i < columnsCount; i++) {
-                result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
-            }
-            result.add(new MySQLEofPacket(++currentSequenceId));
+        return result;
+    }
+    
+    private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final int parameterCount) {
+        Collection<DatabasePacket<?>> result = new LinkedList<>();
+        for (int i = 0; i < parameterCount; i++) {
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
         }
+        result.add(new MySQLEofPacket(++currentSequenceId));
+        return result;
+    }
+    
+    private Collection<DatabasePacket<?>> createProjectionColumnDefinition41Packets(final int projectionCount) {
+        Collection<DatabasePacket<?>> result = new LinkedList<>();
+        for (int i = 0; i < projectionCount; i++) {
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
+        }
+        result.add(new MySQLEofPacket(++currentSequenceId));
         return result;
     }
 }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Show binary logs statement.
+ * MySQL show binary logs statement.
  */
 public final class MySQLShowBinaryLogsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

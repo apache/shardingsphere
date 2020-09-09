@@ -38,7 +38,7 @@ public final class DataSourceStateChangedListener extends PostGovernanceReposito
     private final RegistryCenterNode registryCenterNode;
     
     public DataSourceStateChangedListener(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
-        super(registryRepository, new RegistryCenterNode().getAllDataSourcesSchemaPaths(schemaNames));
+        super(registryRepository, new RegistryCenterNode().getAllSchemaPaths(schemaNames));
         registryCenterNode = new RegistryCenterNode();
     }
     

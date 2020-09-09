@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Show create table statement.
+ * MySQL show create table statement.
  */
 @Getter
 @Setter

@@ -30,13 +30,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Data source metas.
+ * Data source meta datas.
  */
-public final class DataSourceMetas {
+public final class DataSourceMetaDatas {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public DataSourceMetas(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigMap) {
+    public DataSourceMetaDatas(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigMap) {
         dataSourceMetaDataMap = getDataSourceMetaDataMap(databaseType, databaseAccessConfigMap);
     }
     

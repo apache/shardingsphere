@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 import java.util.Optional;
 
 /**
- * Show columns statement.
+ * MySQL show columns statement.
  */
 @Getter
 @Setter

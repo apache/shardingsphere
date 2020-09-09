@@ -87,7 +87,7 @@ public final class GovernanceFacadeTest {
         verify(configCenter).persistConfigurations("sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), false);
         verify(configCenter).persistGlobalConfiguration(authentication, props, false);
         verify(registryCenter).persistInstanceOnline();
-        verify(registryCenter).persistDataSourcesNode();
+        verify(registryCenter).persistDataNodes();
         verify(listenerManager).init();
     }
     
@@ -95,7 +95,7 @@ public final class GovernanceFacadeTest {
     public void assertOnlineInstanceWithoutParameters() {
         governanceFacade.onlineInstance();
         verify(registryCenter).persistInstanceOnline();
-        verify(registryCenter).persistDataSourcesNode();
+        verify(registryCenter).persistDataNodes();
         verify(listenerManager).init();
     }
     

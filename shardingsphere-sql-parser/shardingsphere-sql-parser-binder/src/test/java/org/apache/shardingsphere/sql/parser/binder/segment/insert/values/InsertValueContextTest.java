@@ -41,10 +41,10 @@ public final class InsertValueContextTest {
         List<Object> parameters = Collections.emptyList();
         int parametersOffset = 0;
         InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, parametersOffset);
-        Method calculateParametersCountMethod = InsertValueContext.class.getDeclaredMethod("calculateParametersCount", Collection.class);
-        calculateParametersCountMethod.setAccessible(true);
-        int calculateParametersCountResult = (int) calculateParametersCountMethod.invoke(insertValueContext, new Object[] {assignments});
-        assertThat(insertValueContext.getParametersCount(), is(calculateParametersCountResult));
+        Method calculateParameterCountMethod = InsertValueContext.class.getDeclaredMethod("calculateParameterCount", Collection.class);
+        calculateParameterCountMethod.setAccessible(true);
+        int calculateParameterCountResult = (int) calculateParameterCountMethod.invoke(insertValueContext, new Object[] {assignments});
+        assertThat(insertValueContext.getParameterCount(), is(calculateParameterCountResult));
         Method getValueExpressionsMethod = InsertValueContext.class.getDeclaredMethod("getValueExpressions", Collection.class);
         getValueExpressionsMethod.setAccessible(true);
         List<ExpressionSegment> getValueExpressionsResult = (List<ExpressionSegment>) getValueExpressionsMethod.invoke(insertValueContext, new Object[] {assignments});
@@ -67,8 +67,7 @@ public final class InsertValueContextTest {
     }
     
     private Collection<ExpressionSegment> makeParameterMarkerExpressionSegment() {
-        ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(0, 10, 5);
-        return Collections.singleton(parameterMarkerExpressionSegment);
+        return Collections.singleton(new ParameterMarkerExpressionSegment(0, 10, 5));
     }
     
     @Test
@@ -82,7 +81,6 @@ public final class InsertValueContextTest {
     }
     
     private Collection<ExpressionSegment> makeLiteralExpressionSegment(final Object literalObject) {
-        LiteralExpressionSegment parameterMarkerExpressionSegment = new LiteralExpressionSegment(0, 10, literalObject);
-        return Collections.singleton(parameterMarkerExpressionSegment);
+        return Collections.singleton(new LiteralExpressionSegment(0, 10, literalObject));
     }
 }
