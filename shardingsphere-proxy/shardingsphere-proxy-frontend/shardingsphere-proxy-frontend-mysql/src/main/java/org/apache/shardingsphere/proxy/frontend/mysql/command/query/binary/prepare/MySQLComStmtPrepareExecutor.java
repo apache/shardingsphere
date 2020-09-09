@@ -62,16 +62,16 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             return result;
         }
         int parameterCount = sqlStatement.getParameterCount();
-        int columnCount = getColumnCount(sqlStatement);
-        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parameterCount), columnCount, parameterCount, 0));
+        int projectionCount = getProjectionCount(sqlStatement);
+        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parameterCount), projectionCount, parameterCount, 0));
         if (parameterCount > 0) {
             for (int i = 0; i < parameterCount; i++) {
                 result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
             }
             result.add(new MySQLEofPacket(++currentSequenceId));
         }
-        if (columnCount > 0) {
-            for (int i = 0; i < columnCount; i++) {
+        if (projectionCount > 0) {
+            for (int i = 0; i < projectionCount; i++) {
                 result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
             }
             result.add(new MySQLEofPacket(++currentSequenceId));
@@ -79,7 +79,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return result;
     }
     
-    private int getColumnCount(final SQLStatement sqlStatement) {
+    private int getProjectionCount(final SQLStatement sqlStatement) {
         return sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
     }
 }
