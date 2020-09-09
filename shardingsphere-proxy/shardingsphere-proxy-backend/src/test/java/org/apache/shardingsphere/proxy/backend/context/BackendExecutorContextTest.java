@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.executor;
+package org.apache.shardingsphere.proxy.backend.context;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ExecutorContextTest {
+public final class BackendExecutorContextTest {
     
     @Test
     public void assertGetInstance() {
