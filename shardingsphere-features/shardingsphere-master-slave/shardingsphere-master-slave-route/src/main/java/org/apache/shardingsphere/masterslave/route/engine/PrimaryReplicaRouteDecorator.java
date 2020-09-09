@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.route.engine;
+package org.apache.shardingsphere.primaryreplica.route.engine;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -25,10 +25,10 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
-import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
-import org.apache.shardingsphere.masterslave.route.engine.impl.MasterSlaveDataSourceRouter;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveDataSourceRule;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
+import org.apache.shardingsphere.primaryreplica.constant.PrimaryReplicaOrder;
+import org.apache.shardingsphere.primaryreplica.route.engine.impl.PrimaryReplicaDataSourceRouter;
+import org.apache.shardingsphere.primaryreplica.rule.PrimaryReplicaDataSourceRule;
+import org.apache.shardingsphere.primaryreplica.rule.PrimaryReplicaRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,14 +36,14 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Route decorator for master-slave.
+ * Route decorator for primary-replica.
  */
-public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSlaveRule> {
+public final class PrimaryReplicaRouteDecorator implements RouteDecorator<PrimaryReplicaRule> {
     
     @Override
-    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final MasterSlaveRule masterSlaveRule, final ConfigurationProperties props) {
+    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final PrimaryReplicaRule primaryReplicaRule, final ConfigurationProperties props) {
         if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
-            String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule.getSingleDataSourceRule()).route(routeContext.getSqlStatementContext().getSqlStatement());
+            String dataSourceName = new PrimaryReplicaDataSourceRouter(primaryReplicaRule.getSingleDataSourceRule()).route(routeContext.getSqlStatementContext().getSqlStatement());
             RouteResult routeResult = new RouteResult();
             routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
             return new RouteContext(routeContext.getSqlStatementContext(), routeContext.getParameters(), routeResult);
@@ -52,10 +52,10 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             String dataSourceName = each.getDataSourceMapper().getLogicName();
-            Optional<MasterSlaveDataSourceRule> dataSourceRule = masterSlaveRule.findDataSourceRule(dataSourceName);
+            Optional<PrimaryReplicaDataSourceRule> dataSourceRule = primaryReplicaRule.findDataSourceRule(dataSourceName);
             if (dataSourceRule.isPresent() && dataSourceRule.get().getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 toBeRemoved.add(each);
-                String actualDataSourceName = new MasterSlaveDataSourceRouter(dataSourceRule.get()).route(routeContext.getSqlStatementContext().getSqlStatement());
+                String actualDataSourceName = new PrimaryReplicaDataSourceRouter(dataSourceRule.get()).route(routeContext.getSqlStatementContext().getSqlStatement());
                 toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), actualDataSourceName), each.getTableMappers()));
             }
         }
@@ -66,11 +66,11 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
     
     @Override
     public int getOrder() {
-        return MasterSlaveOrder.ORDER;
+        return PrimaryReplicaOrder.ORDER;
     }
     
     @Override
-    public Class<MasterSlaveRule> getTypeClass() {
-        return MasterSlaveRule.class;
+    public Class<PrimaryReplicaRule> getTypeClass() {
+        return PrimaryReplicaRule.class;
     }
 }
