@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.algorithm;
+package org.apache.shardingsphere.primaryreplica.algorithm;
 
 import org.junit.Test;
 
@@ -25,18 +25,18 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class RoundRobinMasterSlaveLoadBalanceAlgorithmTest {
+public final class RoundRobinPrimaryReplicaLoadBalanceAlgorithmTest {
     
-    private final RoundRobinMasterSlaveLoadBalanceAlgorithm roundRobinMasterSlaveLoadBalanceAlgorithm = new RoundRobinMasterSlaveLoadBalanceAlgorithm();
+    private final RoundRobinPrimaryReplicaLoadBalanceAlgorithm roundRobinPrimaryReplicaLoadBalanceAlgorithm = new RoundRobinPrimaryReplicaLoadBalanceAlgorithm();
     
     @Test
     public void assertGetDataSource() {
-        String masterDataSourceName = "test_ds_master";
-        String slaveDataSourceName1 = "test_ds_slave_1";
-        String slaveDataSourceName2 = "test_ds_slave_2";
-        List<String> slaveDataSourceNames = Arrays.asList(slaveDataSourceName1, slaveDataSourceName2);
-        assertThat(roundRobinMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName1));
-        assertThat(roundRobinMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName2));
-        assertThat(roundRobinMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName1));
+        String primaryDataSourceName = "test_ds_primary";
+        String replicaDataSourceName1 = "test_ds_replica_1";
+        String replicaDataSourceName2 = "test_ds_replica_2";
+        List<String> replicaDataSourceNames = Arrays.asList(replicaDataSourceName1, replicaDataSourceName2);
+        assertThat(roundRobinPrimaryReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, replicaDataSourceNames), is(replicaDataSourceName1));
+        assertThat(roundRobinPrimaryReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, replicaDataSourceNames), is(replicaDataSourceName2));
+        assertThat(roundRobinPrimaryReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, replicaDataSourceNames), is(replicaDataSourceName1));
     }
 }
