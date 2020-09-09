@@ -32,7 +32,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.proxy.backend.executor.BackendExecutorContext;
+import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
 
 /**
