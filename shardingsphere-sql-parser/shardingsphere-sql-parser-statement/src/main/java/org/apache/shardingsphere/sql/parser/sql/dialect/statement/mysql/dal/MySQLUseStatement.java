@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Use statement.
+ * MySQL use statement.
  */
 @Getter
 @Setter

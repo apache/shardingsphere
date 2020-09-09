@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * MySQL show create view statement.
+ * PostgreSQL set statement.
  */
-public final class MySQLShowCreateViewStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class PostgreSQLSetStatement extends SetStatement implements DALStatement, PostgreSQLStatement {
 }

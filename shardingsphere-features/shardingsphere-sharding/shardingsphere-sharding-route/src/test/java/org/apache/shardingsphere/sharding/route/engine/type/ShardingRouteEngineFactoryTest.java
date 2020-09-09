@@ -36,18 +36,19 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dcl.GrantStatementC
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLGrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleGrantStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLGrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dcl.SQL92GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerGrantStatement;
@@ -138,8 +139,16 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForDALSet() {
-        DALStatement dalStatement = mock(SetStatement.class);
+    public void assertNewInstanceForMySQLDALSet() {
+        DALStatement dalStatement = mock(MySQLSetStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions, props);
+        assertThat(actual, instanceOf(ShardingDatabaseBroadcastRoutingEngine.class));
+    }
+
+    @Test
+    public void assertNewInstanceForPostgreSQLDALSet() {
+        DALStatement dalStatement = mock(PostgreSQLSetStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingDatabaseBroadcastRoutingEngine.class));

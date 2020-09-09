@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Load index info statement.
+ * MySQL load index info statement.
  */
 public final class MySQLLoadIndexInfoStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

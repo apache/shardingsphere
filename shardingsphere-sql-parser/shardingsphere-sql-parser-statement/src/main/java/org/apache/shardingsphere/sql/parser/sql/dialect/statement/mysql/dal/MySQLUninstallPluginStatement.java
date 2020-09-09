@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Uninstall plugin statement.
+ * MySQL uninstall plugin statement.
  */
 public final class MySQLUninstallPluginStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

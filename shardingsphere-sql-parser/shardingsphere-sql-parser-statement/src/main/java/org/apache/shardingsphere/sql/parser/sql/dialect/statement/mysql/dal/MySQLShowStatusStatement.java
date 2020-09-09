@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Show status statement.
+ * MySQL show status statement.
  */
 public final class MySQLShowStatusStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }
