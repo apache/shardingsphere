@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.yaml.config;
+package org.apache.shardingsphere.primaryreplica.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.masterslave.yaml.config.rule.YamlMasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.api.config.PrimaryReplicaRuleConfiguration;
+import org.apache.shardingsphere.masterslave.yaml.config.rule.YamlPrimaryReplicaDataSourceRuleConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Master-slave rule configuration for YAML.
+ * Primary-replica rule configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlMasterSlaveRuleConfiguration implements YamlRuleConfiguration {
+public final class YamlPrimaryReplicaRuleConfiguration implements YamlRuleConfiguration {
     
-    private Map<String, YamlMasterSlaveDataSourceRuleConfiguration> dataSources = new LinkedHashMap<>();
+    private Map<String, YamlPrimaryReplicaDataSourceRuleConfiguration> dataSources = new LinkedHashMap<>();
     
     private Map<String, YamlShardingSphereAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
     
     @Override
-    public Class<MasterSlaveRuleConfiguration> getRuleConfigurationType() {
-        return MasterSlaveRuleConfiguration.class;
+    public Class<PrimaryReplicaRuleConfiguration> getRuleConfigurationType() {
+        return PrimaryReplicaRuleConfiguration.class;
     }
 }
