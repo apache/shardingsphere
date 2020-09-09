@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.frontend.fixture;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
-import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationEngine;
-import org.apache.shardingsphere.proxy.frontend.engine.CommandExecuteEngine;
+import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationEngine;
+import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProtocolFrontendEngine {
@@ -37,7 +37,7 @@ public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProt
     }
     
     @Override
-    public DatabasePacketCodecEngine getCodecEngine() {
+    public DatabasePacketCodecEngine<?> getCodecEngine() {
         return null;
     }
     
@@ -53,6 +53,5 @@ public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProt
     
     @Override
     public void release(final BackendConnection backendConnection) {
-        
     }
 }

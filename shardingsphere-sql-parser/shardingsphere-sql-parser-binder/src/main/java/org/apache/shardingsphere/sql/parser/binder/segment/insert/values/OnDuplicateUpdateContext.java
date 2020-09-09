@@ -34,7 +34,8 @@ import java.util.stream.Collectors;
 @Getter
 @ToString
 public final class OnDuplicateUpdateContext {
-    private final int parametersCount;
+    
+    private final int parameterCount;
     
     private final List<ExpressionSegment> valueExpressions;
     
@@ -44,13 +45,13 @@ public final class OnDuplicateUpdateContext {
     
     public OnDuplicateUpdateContext(final Collection<AssignmentSegment> assignments, final List<Object> parameters, final int parametersOffset) {
         List<ExpressionSegment> expressionSegments = assignments.stream().map(AssignmentSegment::getValue).collect(Collectors.toList());
-        parametersCount = calculateParametersCount(expressionSegments);
+        parameterCount = calculateParameterCount(expressionSegments);
         valueExpressions = getValueExpressions(expressionSegments);
         this.parameters = getParameters(parameters, parametersOffset);
         columns = assignments.stream().map(AssignmentSegment::getColumn).collect(Collectors.toList());
     }
     
-    private int calculateParametersCount(final Collection<ExpressionSegment> assignments) {
+    private int calculateParameterCount(final Collection<ExpressionSegment> assignments) {
         int result = 0;
         for (ExpressionSegment each : assignments) {
             if (each instanceof ParameterMarkerExpressionSegment) {
@@ -67,11 +68,11 @@ public final class OnDuplicateUpdateContext {
     }
     
     private List<Object> getParameters(final List<Object> parameters, final int parametersOffset) {
-        if (0 == parametersCount) {
+        if (0 == parameterCount) {
             return Collections.emptyList();
         }
-        List<Object> result = new ArrayList<>(parametersCount);
-        result.addAll(parameters.subList(parametersOffset, parametersOffset + parametersCount));
+        List<Object> result = new ArrayList<>(parameterCount);
+        result.addAll(parameters.subList(parametersOffset, parametersOffset + parameterCount));
         return result;
     }
     

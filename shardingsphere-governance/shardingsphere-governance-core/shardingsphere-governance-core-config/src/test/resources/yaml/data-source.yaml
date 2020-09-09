@@ -14,11 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-master_ds: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration
-  
-  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  props:
-    url: jdbc:mysql://localhost:3306/demo_ds_master
-    username: root
-    password: null
+dataSources:
+   master_ds:
+     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+     props:
+       url: jdbc:mysql://localhost:3306/demo_ds_master
+       username: root
+       password: null

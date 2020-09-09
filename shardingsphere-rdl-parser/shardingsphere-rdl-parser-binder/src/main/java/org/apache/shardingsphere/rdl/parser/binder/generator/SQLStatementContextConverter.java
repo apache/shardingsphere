@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 /**
  * SQL statement context converter.
  */
-public interface SQLStatementContextConverter<I extends SQLStatementContext, O> {
+public interface SQLStatementContextConverter<I extends SQLStatementContext<?>, O> {
     
     /**
      * Convert sql statement.

@@ -42,7 +42,7 @@ public final class ShardingSphereAlgorithmSpringNamespaceTest extends AbstractJU
     @Test
     public void assertAlgorithmWithProps() {
         assertThat(algorithmWithProps.getType(), is("FIXTURE"));
-        assertThat(algorithmWithProps.getProps().getProperty("fixture.value"), is("foo"));
+        assertThat(algorithmWithProps.getProps().getProperty("fixture-value"), is("foo"));
         assertThat(((FooShardingSphereFixtureAlgorithm) algorithmWithProps).getValue(), is("foo"));
     }
     

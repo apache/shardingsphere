@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.rl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Replication statement.
  */
-public abstract class RLStatement extends AbstractSQLStatement {
+public interface RLStatement extends SQLStatement {
 }

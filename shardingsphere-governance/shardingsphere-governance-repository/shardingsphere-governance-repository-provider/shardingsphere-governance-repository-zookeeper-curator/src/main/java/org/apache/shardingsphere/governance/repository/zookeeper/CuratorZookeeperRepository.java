@@ -90,7 +90,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
             builder.connectionTimeoutMs(operationTimeoutMilliseconds);
         }
         if (!Strings.isNullOrEmpty(digest)) {
-            builder.authorization("digest", digest.getBytes(Charsets.UTF_8))
+            builder.authorization(ZookeeperPropertyKey.DIGEST.getKey(), digest.getBytes(Charsets.UTF_8))
                 .aclProvider(new ACLProvider() {
                     
                     @Override
@@ -229,7 +229,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        String path = key + "/";
+        String path = key + PATH_SEPARATOR;
         if (!caches.containsKey(path)) {
             addCacheData(key);
         }
@@ -253,7 +253,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
-        caches.put(cachePath + "/", cache);
+        caches.put(cachePath + PATH_SEPARATOR, cache);
     }
     
     private ChangedType getChangedType(final CuratorCacheListener.Type type) {

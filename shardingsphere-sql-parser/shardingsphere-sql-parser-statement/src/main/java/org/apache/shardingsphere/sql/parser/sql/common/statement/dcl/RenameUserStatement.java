@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Rename user statement.
  */
-public final class RenameUserStatement extends DCLStatement {
+public abstract class RenameUserStatement extends AbstractSQLStatement {
 }

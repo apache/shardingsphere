@@ -49,33 +49,34 @@ sql.show: true
 多个数据库连接池的集合，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid, HikariCP）。
 
 ```yaml
-ds_0: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration
-  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  props:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
-    password: null
-    maxPoolSize: 50
-    maintenanceIntervalMilliseconds: 30000
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    minPoolSize: 1
-    username: root
-    maxLifetimeMilliseconds: 1800000
-ds_1: !!org.apache.shardingsphere.governance.core.common.yaml.configYamlDataSourceConfiguration
-  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  props:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
-    password: null
-    maxPoolSize: 50
-    maintenanceIntervalMilliseconds: 30000
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    minPoolSize: 1
-    username: root
-    maxLifetimeMilliseconds: 1800000
+dataSources:
+  ds_0: 
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    props:
+      url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+      password: null
+      maxPoolSize: 50
+      maintenanceIntervalMilliseconds: 30000
+      connectionTimeoutMilliseconds: 30000
+      idleTimeoutMilliseconds: 60000
+      minPoolSize: 1
+      username: root
+      maxLifetimeMilliseconds: 1800000
+  ds_1: 
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    props:
+      url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+      password: null
+      maxPoolSize: 50
+      maintenanceIntervalMilliseconds: 30000
+      connectionTimeoutMilliseconds: 30000
+      idleTimeoutMilliseconds: 60000
+      minPoolSize: 1
+      username: root
+      maxLifetimeMilliseconds: 1800000
 ```
 
-### config/schema/sharding_db/rule
+### config/schema/schemeName/rule
 
 规则配置，可包括数据分片、读写分离、数据加密、影子库压测、多副本等配置。
 
@@ -93,4 +94,4 @@ rules:
 
 ## 动态生效
 
-在注册中心上修改、删除、新增相关配置，会动态推送到生产环境并立即生效。
+在配置中心上修改、删除、新增相关配置，会动态推送到生产环境并立即生效。

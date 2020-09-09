@@ -20,19 +20,19 @@ grammar DMLStatement;
 import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 
 insert
-    : withClause_? INSERT INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause)
+    : withClause_? INSERT top? INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause)
     ;
     
 insertDefaultValue
-    : columnNames? DEFAULT VALUES
+    : columnNames? outputClause_? DEFAULT VALUES
     ;
 
 insertValuesClause
-    : columnNames? VALUES assignmentValues (COMMA_ assignmentValues)*
+    : columnNames? outputClause_? VALUES assignmentValues (COMMA_ assignmentValues)*
     ;
 
 insertSelectClause
-    : columnNames? select
+    : columnNames? outputClause_? select
     ;
 
 update
@@ -156,7 +156,7 @@ havingClause
 subquery
     : LP_ unionClause RP_
     ;
-    
+
 withClause_
     : WITH cteClause_ (COMMA_ cteClause_)*
     ;
@@ -164,4 +164,23 @@ withClause_
 cteClause_
     : identifier columnNames? AS subquery
     ;
-    
+
+outputClause_
+    : OUTPUT (outputWithColumns_ | outputWithAaterisk_) (INTO outputTableName_ columnNames?)?
+    ;
+
+outputWithColumns_
+    : outputWithColumn_ (COMMA_ outputWithColumn_)*
+    ;
+
+outputWithColumn_
+    : (INSERTED | DELETED) DOT_ name (AS? alias)?
+    ;
+
+outputWithAaterisk_
+    : (INSERTED | DELETED) DOT_ASTERISK_
+    ;
+
+outputTableName_
+    : (AT_? name) | tableName
+    ;

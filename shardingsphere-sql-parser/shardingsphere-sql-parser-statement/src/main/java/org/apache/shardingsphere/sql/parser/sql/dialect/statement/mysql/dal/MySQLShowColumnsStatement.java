@@ -21,17 +21,18 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 import java.util.Optional;
 
 /**
- * Show columns statement.
+ * MySQL show columns statement.
  */
 @Getter
 @Setter
-public final class MySQLShowColumnsStatement extends DALStatement implements MySQLStatement {
+public final class MySQLShowColumnsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private SimpleTableSegment table;
     

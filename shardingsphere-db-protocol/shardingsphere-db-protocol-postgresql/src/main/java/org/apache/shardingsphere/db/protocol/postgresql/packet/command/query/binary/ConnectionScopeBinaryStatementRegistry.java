@@ -31,13 +31,13 @@ public final class ConnectionScopeBinaryStatementRegistry {
     /**
      * Register SQL.
      *
-     * @param statementId statement id
+     * @param statementId statement ID
      * @param sql SQL
-     * @param parametersCount parameters count
+     * @param parameterCount parameter count
      * @param binaryStatementParameterTypes binary statement parameter types
      */
-    public void register(final String statementId, final String sql, final int parametersCount, final List<PostgreSQLBinaryStatementParameterType> binaryStatementParameterTypes) {
-        binaryStatements.put(statementId, new PostgreSQLBinaryStatement(sql, parametersCount, binaryStatementParameterTypes));
+    public void register(final String statementId, final String sql, final int parameterCount, final List<PostgreSQLBinaryStatementParameterType> binaryStatementParameterTypes) {
+        binaryStatements.put(statementId, new PostgreSQLBinaryStatement(sql, parameterCount, binaryStatementParameterTypes));
     }
     
     /**

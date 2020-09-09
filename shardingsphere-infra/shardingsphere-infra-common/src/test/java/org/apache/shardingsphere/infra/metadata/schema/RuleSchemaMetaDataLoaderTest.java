@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema;
 
-import com.google.common.util.concurrent.MoreExecutors;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.fixture.rule.DataNodeRoutedFixtureRule;
@@ -34,7 +32,6 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.concurrent.Executors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -62,7 +59,6 @@ public final class RuleSchemaMetaDataLoaderTest {
     public void setUp() throws SQLException {
         ResultSet resultSet = mockResultSet();
         when(dataSource.getConnection().getMetaData().getTables(any(), any(), any(), any())).thenReturn(resultSet);
-        when(props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
     }
     
     private ResultSet mockResultSet() throws SQLException {
@@ -74,12 +70,12 @@ public final class RuleSchemaMetaDataLoaderTest {
     
     @Test
     public void assertSyncLoadFullDatabase() throws SQLException {
-        assertRuleSchemaMetaData(loader.load(databaseType, dataSource, props, null));
+        assertRuleSchemaMetaData(loader.load(databaseType, dataSource, props));
     }
     
     @Test
     public void assertAsyncLoadFullDatabase() throws SQLException {
-        assertRuleSchemaMetaData(loader.load(databaseType, dataSource, props, MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1))));
+        assertRuleSchemaMetaData(loader.load(databaseType, dataSource, props));
     }
     
     private void assertRuleSchemaMetaData(final RuleSchemaMetaData actual) {

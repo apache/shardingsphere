@@ -74,8 +74,8 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
         assertThat(rule.getTableRule("t_order").getActualDataNodes(), is(Arrays.asList(
                 new DataNode("ds_0.t_order_0"), new DataNode("ds_0.t_order_1"), new DataNode("ds_0.t_order_2"), new DataNode("ds_0.t_order_3"),
                 new DataNode("ds_1.t_order_0"), new DataNode("ds_1.t_order_1"), new DataNode("ds_1.t_order_2"), new DataNode("ds_1.t_order_3"))));
-        assertThat(rule.getTableRule("t_order").getDatabaseShardingStrategy().getShardingAlgorithm().getProps().getProperty("algorithm.expression"), is("ds_$->{user_id % 2}"));
-        assertThat(rule.getTableRule("t_order").getTableShardingStrategy().getShardingAlgorithm().getProps().getProperty("algorithm.expression"), is("t_order_$->{order_id % 4}"));
+        assertThat(rule.getTableRule("t_order").getDatabaseShardingStrategy().getShardingAlgorithm().getProps().getProperty("algorithm-expression"), is("ds_$->{user_id % 2}"));
+        assertThat(rule.getTableRule("t_order").getTableShardingStrategy().getShardingAlgorithm().getProps().getProperty("algorithm-expression"), is("t_order_$->{order_id % 4}"));
     }
     
     private void assertMasterSlaveRule(final MasterSlaveRule rule) {
@@ -90,7 +90,7 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
     private void assertEncryptRule(final EncryptRule rule) {
         assertThat(rule.getCipherColumn("t_order", "pwd"), is("pwd_cipher"));
         assertTrue(rule.findEncryptor("t_order", "pwd").isPresent());
-        assertThat(rule.findEncryptor("t_order", "pwd").get().getProps().getProperty("aes.key.value"), is("123456"));
+        assertThat(rule.findEncryptor("t_order", "pwd").get().getProps().getProperty("aes-key-value"), is("123456"));
     }
     
     @Test

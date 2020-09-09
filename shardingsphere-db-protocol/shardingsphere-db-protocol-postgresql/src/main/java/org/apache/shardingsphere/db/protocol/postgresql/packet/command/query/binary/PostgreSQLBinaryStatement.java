@@ -33,7 +33,7 @@ public final class PostgreSQLBinaryStatement {
     
     private final String sql;
     
-    private final int parametersCount;
+    private final int parameterCount;
     
     private final List<PostgreSQLBinaryStatementParameterType> parameterTypes;
 }

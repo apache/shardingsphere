@@ -46,10 +46,10 @@ public final class OnDuplicateUpdateContextTest {
         List<Object> parameters = Collections.emptyList();
         int parametersOffset = 0;
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, parametersOffset);
-        Method calculateParametersCountMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("calculateParametersCount", Collection.class);
-        calculateParametersCountMethod.setAccessible(true);
-        int calculateParametersCountResult = (int) calculateParametersCountMethod.invoke(onDuplicateUpdateContext, new Object[]{assignments});
-        assertThat(onDuplicateUpdateContext.getParametersCount(), is(calculateParametersCountResult));
+        Method calculateParameterCountMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("calculateParameterCount", Collection.class);
+        calculateParameterCountMethod.setAccessible(true);
+        int calculateParameterCountResult = (int) calculateParameterCountMethod.invoke(onDuplicateUpdateContext, new Object[]{assignments});
+        assertThat(onDuplicateUpdateContext.getParameterCount(), is(calculateParameterCountResult));
         Method getValueExpressionsMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("getValueExpressions", Collection.class);
         getValueExpressionsMethod.setAccessible(true);
         List<ExpressionSegment> getValueExpressionsResult = (List<ExpressionSegment>) getValueExpressionsMethod.invoke(onDuplicateUpdateContext, new Object[]{assignments});
@@ -75,10 +75,10 @@ public final class OnDuplicateUpdateContextTest {
     }
     
     private Collection<AssignmentSegment> makeParameterMarkerExpressionAssignmentSegment() {
-        ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(0, 10, 5);
-        AssignmentSegment assignmentSegment1 = makeAssignmentSegment(parameterMarkerExpressionSegment);
-        ParameterMarkerExpressionSegment parameterMarkerExpressionSegment2 = new ParameterMarkerExpressionSegment(0, 10, 6);
-        AssignmentSegment assignmentSegment2 = makeAssignmentSegment(parameterMarkerExpressionSegment2);
+        ParameterMarkerExpressionSegment parameterMarkerExpressionSegment0 = new ParameterMarkerExpressionSegment(0, 10, 5);
+        AssignmentSegment assignmentSegment1 = makeAssignmentSegment(parameterMarkerExpressionSegment0);
+        ParameterMarkerExpressionSegment parameterMarkerExpressionSegment1 = new ParameterMarkerExpressionSegment(0, 10, 6);
+        AssignmentSegment assignmentSegment2 = makeAssignmentSegment(parameterMarkerExpressionSegment1);
         return Lists.newArrayList(assignmentSegment1, assignmentSegment2);
     }
     

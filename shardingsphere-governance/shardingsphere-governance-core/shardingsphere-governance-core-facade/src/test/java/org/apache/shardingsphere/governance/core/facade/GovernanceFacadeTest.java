@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.facade;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.facade.listener.GovernanceListenerManager;
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public final class GovernanceFacadeTest {
     
-    private final GovernanceFacade governanceFacade = GovernanceFacade.getInstance();
+    private final GovernanceFacade governanceFacade = new GovernanceFacade();
     
     @Mock
     private GovernanceRepositoryFacade repositoryFacade;
@@ -87,7 +87,7 @@ public final class GovernanceFacadeTest {
         verify(configCenter).persistConfigurations("sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), false);
         verify(configCenter).persistGlobalConfiguration(authentication, props, false);
         verify(registryCenter).persistInstanceOnline();
-        verify(registryCenter).persistDataSourcesNode();
+        verify(registryCenter).persistDataNodes();
         verify(listenerManager).init();
     }
     
@@ -95,7 +95,7 @@ public final class GovernanceFacadeTest {
     public void assertOnlineInstanceWithoutParameters() {
         governanceFacade.onlineInstance();
         verify(registryCenter).persistInstanceOnline();
-        verify(registryCenter).persistDataSourcesNode();
+        verify(registryCenter).persistDataNodes();
         verify(listenerManager).init();
     }
     

@@ -67,7 +67,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
                 if (shardingColumnSetAssignmentValue.isPresent() && shardingValue.isPresent() && shardingColumnSetAssignmentValue.get().equals(shardingValue.get())) {
                     continue;
                 }
-                throw new ShardingSphereException("Can not update sharding key, logic table: [%s], column: [%s].", tableName, each);
+                throw new ShardingSphereException("Can not update sharding key, logic table: [%s], column: [%s].", tableName, shardingColumn);
             }
         }
     }

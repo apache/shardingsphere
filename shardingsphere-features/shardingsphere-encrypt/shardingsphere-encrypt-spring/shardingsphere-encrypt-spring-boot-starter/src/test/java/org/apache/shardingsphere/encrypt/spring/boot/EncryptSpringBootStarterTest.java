@@ -45,7 +45,7 @@ public class EncryptSpringBootStarterTest {
     
     @Test
     public void assertAesEncryptor() {
-        assertThat(aesEncryptor.getProps().getProperty("aes.key.value"), is("123456"));
+        assertThat(aesEncryptor.getProps().getProperty("aes-key-value"), is("123456"));
     }
     
     @Test

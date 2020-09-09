@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.frontend.spi;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
-import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationEngine;
-import org.apache.shardingsphere.proxy.frontend.engine.CommandExecuteEngine;
+import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationEngine;
+import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
 
 /**
@@ -41,7 +41,7 @@ public interface DatabaseProtocolFrontendEngine extends DatabaseTypeAwareSPI {
      * 
      * @return database packet codec engine
      */
-    DatabasePacketCodecEngine getCodecEngine();
+    DatabasePacketCodecEngine<?> getCodecEngine();
     
     /**
      * Get authentication engine.

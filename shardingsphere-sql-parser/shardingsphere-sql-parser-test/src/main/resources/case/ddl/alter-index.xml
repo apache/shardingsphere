@@ -31,4 +31,5 @@
     </alter-index>
 
     <alter-index sql-case-id="alter_index_alter_column" />
+    <alter-index sql-case-id="alter_index_set_tablespace" />
 </sql-parser-test-cases>

@@ -42,6 +42,6 @@ public final class DropTableStatementMetaDataRefreshStrategyTest extends Abstrac
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         DropTableStatementContext dropTableStatementContext = new DropTableStatementContext(dropTableStatement);
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), dropTableStatementContext, tableName -> Optional.empty());
-        assertFalse(getMetaData().getSchema().getConfiguredSchemaMetaData().containsTable("t_order"));
+        assertFalse(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().containsTable("t_order"));
     }
 }

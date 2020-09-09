@@ -54,7 +54,7 @@
     <sql-case id="alter_table_add_composite_primary_key" value="ALTER TABLE t_order ADD status int,ADD CONSTRAINT pk_order_id_user_id_status PRIMARY KEY (order_id, user_id, status)" db-types="MySQL,PostgreSQL" />
 <!--    TODO support PostgreSQL-->
     <sql-case id="alter_table_add_unique_key" value="ALTER TABLE t_order ADD CONSTRAINT uk_order_id UNIQUE (order_id)" db-types="MySQL,Oracle,SQLServer"/>
-    <sql-case id="alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE" db-types="MySQL,Oracle,SQLServer" />
+    <sql-case id="alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE" db-types="MySQL,Oracle,SQLServer,PostgreSQL" />
 <!--    TODO support PostgreSQL-->
     <sql-case id="alter_table_add_constraints" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id),ADD UNIQUE (order_id), ADD FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" db-types="MySQL" />
     <sql-case id="alter_table_drop_primary_key" value="ALTER TABLE t_order DROP PRIMARY KEY" db-types="MySQL,Oracle" />
@@ -106,5 +106,8 @@
     <sql-case id="alter_table_alter_column_for_sqlserver" value="ALTER TABLE t_order ALTER COLUMN column4 VARCHAR(20)" db-types="SQLServer" />
     <sql-case id="alter_table_set_schema" value="ALTER TABLE t_order SET SCHEMA yourschema" db-types="PostgreSQL" />
     <sql-case id="alter_table_attach_partition" value="ALTER TABLE t_order ATTACH PARTITION measurement_y2016m07 FOR VALUES FROM ('2016-07-01') TO ('2016-08-01')" db-types="PostgreSQL"/>
+    <sql-case id="alter_table_detach_partition" value="ALTER TABLE t_order ATTACH PARTITION measurement_y2016m07 FOR VALUES FROM ('2016-07-01') TO ('2016-08-01')" db-types="PostgreSQL"/>
+    <sql-case id="alter_table_in_hash_partitioned_table" value="ALTER TABLE t_order ATTACH PARTITION orders_p4 FOR VALUES WITH (MODULUS 4, REMAINDER 3)" db-types="PostgreSQL" />
+    <sql-case id="alter_index_set_tablespace" value="ALTER INDEX distributors SET TABLESPACE fasttablespace" db-types="PostgreSQL" />
     <sql-case id="alter_index_alter_column" value="ALTER INDEX t_order_idx ALTER COLUMN 3 SET STATISTICS 1000" db-types="PostgreSQL"/>
 </sql-cases>

@@ -106,5 +106,5 @@ Anyone with a GitHub account can ask questions (error reports) about shardingsph
 
 ## Appointment
 
-- Unless otherwise specified, please use Hugo `0.37.1` version.
+- Unless otherwise specified, please use Hugo `0.70.0` version.
 - asf-site branches are updated by the official on a regular basis, you do not need to submit pull request to asf-site.

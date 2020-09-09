@@ -17,14 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.schema;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
@@ -43,8 +40,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Rule schema meta data loader.
@@ -65,13 +60,12 @@ public final class RuleSchemaMetaDataLoader {
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param props configuration properties
-     * @param executorService executor service
      * @return rule schema meta data
      * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public RuleSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                   final ConfigurationProperties props, final ListeningExecutorService executorService) throws SQLException {
+                                   final ConfigurationProperties props) throws SQLException {
         Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         SchemaMetaData configuredSchemaMetaData = new SchemaMetaData();
         for (Entry<ShardingSphereRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
@@ -83,10 +77,8 @@ public final class RuleSchemaMetaDataLoader {
             configuredSchemaMetaData.merge(schemaMetaData);
         }
         decorate(configuredSchemaMetaData);
-        int maxConnectionCount = props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = null == executorService ? syncLoad(databaseType, dataSourceMap, maxConnectionCount, excludedTableNames)
-                : asyncLoad(databaseType, dataSourceMap, executorService, maxConnectionCount, excludedTableNames);
-        return new RuleSchemaMetaData(configuredSchemaMetaData, unconfiguredSchemaMetaDataMap);
+        Map<String, SchemaMetaData> unConfiguredSchemaMetaDataMap = loadUnConfiguredSchemaMetaData(databaseType, dataSourceMap, excludedTableNames);
+        return new RuleSchemaMetaData(configuredSchemaMetaData, unConfiguredSchemaMetaDataMap);
     }
     
     /**
@@ -95,15 +87,14 @@ public final class RuleSchemaMetaDataLoader {
      * @param databaseType database type
      * @param dataSource data source
      * @param props configuration properties
-     * @param executorService executor service
      * @return rule schema meta data
      * @throws SQLException SQL exception
      */
     public RuleSchemaMetaData load(final DatabaseType databaseType, final DataSource dataSource, 
-                                   final ConfigurationProperties props, final ListeningExecutorService executorService) throws SQLException {
+                                   final ConfigurationProperties props) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
-        return load(databaseType, dataSourceMap, props, executorService);
+        return load(databaseType, dataSourceMap, props);
     }
     
     /**
@@ -145,33 +136,11 @@ public final class RuleSchemaMetaDataLoader {
         return load(databaseType, dataSourceMap, tableName, props);
     }
     
-    private Map<String, SchemaMetaData> asyncLoad(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ListeningExecutorService executorService,
-                                                  final int maxConnectionCount, final Collection<String> excludedTableNames) {
-        Map<String, SchemaMetaData> result = new ConcurrentHashMap<>(dataSourceMap.size(), 1);
-        dataSourceMap.entrySet().stream().map(each -> executorService.submit(() -> {
-            try {
-                SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(each.getValue(), maxConnectionCount, databaseType.getName(), excludedTableNames);
-                if (!schemaMetaData.getAllTableNames().isEmpty()) {
-                    result.put(each.getKey(), schemaMetaData);
-                }
-            } catch (final SQLException ex) {
-                throw new ShardingSphereException("RuleSchemaMetaData load failed", ex);
-            }
-        })).forEach(listenableFuture -> {
-            try {
-                listenableFuture.get();
-            } catch (final InterruptedException | ExecutionException ex) {
-                throw new ShardingSphereException("RuleSchemaMetaData load failed", ex);
-            }
-        });
-        return result;
-    }
-    
-    private Map<String, SchemaMetaData> syncLoad(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                 final int maxConnectionCount, final Collection<String> excludedTableNames) throws SQLException {
+    private Map<String, SchemaMetaData> loadUnConfiguredSchemaMetaData(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                                       final Collection<String> excludedTableNames) throws SQLException {
         Map<String, SchemaMetaData> result = new HashMap<>(dataSourceMap.size(), 1);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(entry.getValue(), maxConnectionCount, databaseType.getName(), excludedTableNames);
+            SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(entry.getValue(), databaseType.getName(), excludedTableNames);
             if (!schemaMetaData.getAllTableNames().isEmpty()) {
                 result.put(entry.getKey(), schemaMetaData);
             }

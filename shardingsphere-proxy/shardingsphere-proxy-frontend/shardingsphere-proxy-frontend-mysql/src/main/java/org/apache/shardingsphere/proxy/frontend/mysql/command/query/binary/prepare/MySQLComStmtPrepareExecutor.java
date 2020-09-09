@@ -28,8 +28,8 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
-import org.apache.shardingsphere.proxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
@@ -49,11 +49,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     public MySQLComStmtPrepareExecutor(final MySQLComStmtPreparePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
-        schema = ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema());
-    }
-    
-    private int getColumnsCount(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
+        schema = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
     }
     
     @Override
@@ -65,21 +61,25 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             result.add(new MySQLErrPacket(++currentSequenceId, MySQLServerErrorCode.ER_UNSUPPORTED_PS));
             return result;
         }
-        int parametersCount = sqlStatement.getParameterCount();
-        int columnsCount = getColumnsCount(sqlStatement);
-        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersCount), columnsCount, parametersCount, 0));
-        if (parametersCount > 0) {
-            for (int i = 0; i < parametersCount; i++) {
+        int parameterCount = sqlStatement.getParameterCount();
+        int projectionCount = getProjectionCount(sqlStatement);
+        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parameterCount), projectionCount, parameterCount, 0));
+        if (parameterCount > 0) {
+            for (int i = 0; i < parameterCount; i++) {
                 result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
             }
             result.add(new MySQLEofPacket(++currentSequenceId));
         }
-        if (columnsCount > 0) {
-            for (int i = 0; i < columnsCount; i++) {
+        if (projectionCount > 0) {
+            for (int i = 0; i < projectionCount; i++) {
                 result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
             }
             result.add(new MySQLEofPacket(++currentSequenceId));
         }
         return result;
+    }
+    
+    private int getProjectionCount(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
     }
 }

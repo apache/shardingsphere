@@ -70,14 +70,14 @@
     
     <sharding:sharding-algorithm id="databaseAlgorithm" type="INLINE">
         <props>
-            <prop key="algorithm.expression">demo_ds_${user_id % 2}</prop>
+            <prop key="algorithm-expression">demo_ds_${user_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseAlgorithm" />
     
     <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
         <props>
-            <prop key="worker.id">123</prop>
+            <prop key="worker-id">123</prop>
         </props>
     </sharding:key-generate-algorithm>
     

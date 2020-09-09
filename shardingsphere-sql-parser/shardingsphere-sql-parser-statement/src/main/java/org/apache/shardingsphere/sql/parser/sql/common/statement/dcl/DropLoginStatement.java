@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Drop login statement.
  */
-public final class DropLoginStatement extends DCLStatement {
+public abstract class DropLoginStatement extends AbstractSQLStatement {
 }

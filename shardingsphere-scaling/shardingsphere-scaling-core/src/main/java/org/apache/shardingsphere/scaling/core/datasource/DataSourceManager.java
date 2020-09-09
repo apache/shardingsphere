@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.datasource;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,16 +32,17 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Data source manager.
  */
+@Slf4j
 @NoArgsConstructor
 public final class DataSourceManager implements AutoCloseable {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
 
     @Getter
-    private final Map<DataSourceConfiguration, HikariDataSource> cachedDataSources = new ConcurrentHashMap<>();
+    private final Map<DataSourceConfiguration, DataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
 
     @Getter
-    private final Map<DataSourceConfiguration, HikariDataSource> sourceDatasources = new ConcurrentHashMap<>();
+    private final Map<DataSourceConfiguration, DataSourceWrapper> sourceDatasources = new ConcurrentHashMap<>();
 
     public DataSourceManager(final List<SyncConfiguration> syncConfigs) {
         createDatasources(syncConfigs);
@@ -54,14 +56,14 @@ public final class DataSourceManager implements AutoCloseable {
     private void createSourceDatasources(final List<SyncConfiguration> syncConfigs) {
         for (SyncConfiguration syncConfiguration : syncConfigs) {
             DataSourceConfiguration dataSourceConfig = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration();
-            HikariDataSource hikariDataSource = (HikariDataSource) dataSourceFactory.newInstance(dataSourceConfig);
+            DataSourceWrapper hikariDataSource = dataSourceFactory.newInstance(dataSourceConfig);
             cachedDataSources.put(dataSourceConfig, hikariDataSource);
             sourceDatasources.put(dataSourceConfig, hikariDataSource);
         }
     }
     
     private void createTargetDatasources(final DataSourceConfiguration dataSourceConfig) {
-        cachedDataSources.put(dataSourceConfig, (HikariDataSource) dataSourceFactory.newInstance(dataSourceConfig));
+        cachedDataSources.put(dataSourceConfig, dataSourceFactory.newInstance(dataSourceConfig));
     }
     
     /**
@@ -78,7 +80,7 @@ public final class DataSourceManager implements AutoCloseable {
             if (cachedDataSources.containsKey(dataSourceConfig)) {
                 return cachedDataSources.get(dataSourceConfig);
             }
-            HikariDataSource result = (HikariDataSource) dataSourceFactory.newInstance(dataSourceConfig);
+            DataSourceWrapper result = dataSourceFactory.newInstance(dataSourceConfig);
             cachedDataSources.put(dataSourceConfig, result);
             return result;
         }
@@ -89,9 +91,11 @@ public final class DataSourceManager implements AutoCloseable {
      */
     @Override
     public void close() {
-        for (HikariDataSource each : cachedDataSources.values()) {
-            if (!each.isClosed()) {
+        for (DataSourceWrapper each : cachedDataSources.values()) {
+            try {
                 each.close();
+            } catch (IOException e) {
+                log.warn("An exception occurred while closing the data source", e);
             }
         }
         cachedDataSources.clear();

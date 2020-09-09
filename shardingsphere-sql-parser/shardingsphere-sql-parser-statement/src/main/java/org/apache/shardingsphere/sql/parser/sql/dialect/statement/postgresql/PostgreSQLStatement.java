@@ -21,7 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * PostgreSQL statement.
- * 
  */
 public interface PostgreSQLStatement extends SQLStatement {
 }

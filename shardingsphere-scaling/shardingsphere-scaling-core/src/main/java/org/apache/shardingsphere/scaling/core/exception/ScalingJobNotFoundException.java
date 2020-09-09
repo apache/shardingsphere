@@ -27,13 +27,4 @@ public final class ScalingJobNotFoundException extends RuntimeException {
     public ScalingJobNotFoundException(final String message) {
         super(message);
     }
-    
-    public ScalingJobNotFoundException(final Throwable cause) {
-        super(cause);
-    }
-    
-    public ScalingJobNotFoundException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-    
 }

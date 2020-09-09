@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBy
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,7 +37,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class SelectStatement extends DMLStatement {
+public final class SelectStatement extends AbstractSQLStatement implements DMLStatement {
     
     private ProjectionsSegment projections;
     

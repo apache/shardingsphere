@@ -67,11 +67,11 @@ rules:
     table_inline:
       type: INLINE
       props:
-        algorithm.expression: t_user_${id % 2}
+        algorithm-expression: t_user_${id % 2}
     mod:
       type: MOD
       props:
-        sharding.count: 2
+        sharding-count: 2
   
   keyGenerators:
     increment:

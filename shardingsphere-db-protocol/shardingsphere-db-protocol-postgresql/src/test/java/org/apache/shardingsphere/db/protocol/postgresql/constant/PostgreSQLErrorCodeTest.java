@@ -19,18 +19,18 @@ package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-public class PostgreSQLErrorCodeTest {
+public final class PostgreSQLErrorCodeTest {
     
     @Test
     public void assertGetErrorCode() {
-        assertEquals(PostgreSQLErrorCode.PROTOCOL_VIOLATION.getErrorCode(), "08P01");
+        assertThat(PostgreSQLErrorCode.PROTOCOL_VIOLATION.getErrorCode(), is("08P01"));
     }
     
     @Test
     public void assertGetConditionName() {
-        assertEquals(PostgreSQLErrorCode.PROTOCOL_VIOLATION.getConditionName(), "protocol_violation");
+        assertThat(PostgreSQLErrorCode.PROTOCOL_VIOLATION.getConditionName(), is("protocol_violation"));
     }
-    
 }

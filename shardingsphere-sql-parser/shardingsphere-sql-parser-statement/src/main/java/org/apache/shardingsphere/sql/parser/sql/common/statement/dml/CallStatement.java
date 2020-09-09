@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Call statement.
  */
-public final class CallStatement extends DMLStatement {
+public final class CallStatement extends AbstractSQLStatement implements DMLStatement {
 }

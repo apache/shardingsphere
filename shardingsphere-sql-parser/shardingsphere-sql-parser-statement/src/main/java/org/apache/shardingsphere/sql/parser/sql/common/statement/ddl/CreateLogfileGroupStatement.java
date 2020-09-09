@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Create logfile group statement.
  */
-public final class CreateLogfileGroupStatement extends DDLStatement {
+public final class CreateLogfileGroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

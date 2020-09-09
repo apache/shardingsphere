@@ -77,7 +77,7 @@
     },
     {
       "name": "spring.shardingsphere.governance",
-      "type": "java.util.Map<java.lang.String,org.apache.shardingsphere.governance.core.common.yaml.config.YamlGovernanceCenterConfiguration>",
+      "type": "java.util.Map<java.lang.String,org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration>",
       "sourceType": "org.apache.shardingsphere.spring.boot.governance.common.GovernanceSpringBootRootConfiguration",
       "description": "Customize ShardingSphere governance instance."
     },

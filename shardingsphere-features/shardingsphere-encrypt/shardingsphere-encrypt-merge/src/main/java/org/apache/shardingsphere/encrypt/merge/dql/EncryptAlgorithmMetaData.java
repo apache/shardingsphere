@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Pro
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -46,7 +47,15 @@ public final class EncryptAlgorithmMetaData {
      * @return encryptor
      */
     public Optional<EncryptAlgorithm> findEncryptor(final int columnIndex) {
-        Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(columnIndex - 1);
+        List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
+        if (expandProjections.isEmpty()) {
+            return Optional.empty();
+        }
+        return findEncryptor(columnIndex, expandProjections);
+    }
+    
+    private Optional<EncryptAlgorithm> findEncryptor(final int columnIndex, final List<Projection> expandProjections) {
+        Projection projection = expandProjections.get(columnIndex - 1);
         if (projection instanceof ColumnProjection) {
             String columnName = ((ColumnProjection) projection).getName();
             Optional<String> tableName = selectStatementContext.getTablesContext().findTableName((ColumnProjection) projection, schemaMetaData);

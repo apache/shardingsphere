@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts.JDBCBackendDataSource;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -69,6 +69,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class BackendConnectionTest {
     
+    private static final String SCHEMA_PATTERN = "schema_%s";
+    
     @Mock
     private JDBCBackendDataSource backendDataSource;
     
@@ -79,21 +81,21 @@ public final class BackendConnectionTest {
         setSchemaContexts();
         setTransactionContexts();
         setBackendDataSource();
-        backendConnection.setCurrentSchema("schema_0");
+        backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setSchemaContexts() {
-        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        field.set(ProxySchemaContexts.getInstance(),
+        field.set(ProxyContext.getInstance(),
                 new StandardSchemaContexts(createSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private Map<String, SchemaContext> createSchemaContextMap() {
         Map<String, SchemaContext> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
-            String name = "schema_" + i;
+            String name = String.format(SCHEMA_PATTERN, i);
             RuntimeContext runtimeContext = mock(RuntimeContext.class);
             SchemaContext schemaContext = new SchemaContext(name, mock(ShardingSphereSchema.class), runtimeContext);
             result.put(name, schemaContext);
@@ -103,15 +105,15 @@ public final class BackendConnectionTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setTransactionContexts() {
-        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("transactionContexts");
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("transactionContexts");
         field.setAccessible(true);
-        field.set(ProxySchemaContexts.getInstance(), createTransactionContexts());
+        field.set(ProxyContext.getInstance(), createTransactionContexts());
     }
     
     private TransactionContexts createTransactionContexts() {
         TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
         for (int i = 0; i < 10; i++) {
-            String name = "schema_" + i;
+            String name = String.format(SCHEMA_PATTERN, i);
             when(result.getEngines().get(name)).thenReturn(new ShardingTransactionManagerEngine());
         }
         return result;
@@ -119,9 +121,9 @@ public final class BackendConnectionTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setBackendDataSource() {
-        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("backendDataSource");
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
         field.setAccessible(true);
-        field.set(ProxySchemaContexts.getInstance(), backendDataSource);
+        field.set(ProxyContext.getInstance(), backendDataSource);
     }
     
     @Test
@@ -201,7 +203,7 @@ public final class BackendConnectionTest {
     public void assertAutoCloseConnectionWithoutTransaction() throws SQLException {
         BackendConnection actual;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
-            backendConnection.setCurrentSchema("schema_0");
+            backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
             when(backendDataSource.getConnections(anyString(), anyString(), eq(12), any())).thenReturn(MockConnectionUtil.mockNewConnections(12));
             backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
             assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.INIT));
@@ -220,7 +222,7 @@ public final class BackendConnectionTest {
     public void assertAutoCloseConnectionWithTransaction() throws SQLException {
         BackendConnection actual;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
-            backendConnection.setCurrentSchema("schema_0");
+            backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
             when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
             backendConnection.getStateHandler().setStatus(ConnectionStatus.TRANSACTION);
@@ -238,7 +240,7 @@ public final class BackendConnectionTest {
     public void assertAutoCloseConnectionWithException() {
         BackendConnection actual = null;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
-            backendConnection.setCurrentSchema("schema_0");
+            backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
             backendConnection.setTransactionType(TransactionType.XA);
             backendConnection.getStateHandler().setStatus(ConnectionStatus.TRANSACTION);
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
@@ -290,10 +292,10 @@ public final class BackendConnectionTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @After
     public void clean() {
-        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("backendDataSource");
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
         field.setAccessible(true);
         Class<?> clazz = field.getType();
-        Object datasource = clazz.getDeclaredConstructors()[0].newInstance(ProxySchemaContexts.getInstance());
-        field.set(ProxySchemaContexts.getInstance(), datasource);
+        Object datasource = clazz.getDeclaredConstructors()[0].newInstance();
+        field.set(ProxyContext.getInstance(), datasource);
     }
 }

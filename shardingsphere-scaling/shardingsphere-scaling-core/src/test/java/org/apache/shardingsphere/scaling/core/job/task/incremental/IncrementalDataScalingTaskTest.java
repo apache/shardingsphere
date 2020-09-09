@@ -27,6 +27,7 @@ import org.apache.shardingsphere.scaling.core.fixture.FixtureNopManager;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
 import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,20 +46,27 @@ public final class IncrementalDataScalingTaskTest {
     
     private static final String PASSWORD = "password";
     
+    private IncrementalDataScalingTask incrementalDataSyncTask;
+    
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
+        incrementalDataSyncTask = new DefaultSyncTaskFactory().createIncrementalDataSyncTask(3, mockDumperConfig(), mockImporterConfiguration());
     }
     
     @Test
     public void assertStart() {
-        IncrementalDataScalingTask incrementalDataSyncTask = new DefaultSyncTaskFactory().createIncrementalDataSyncTask(3, mockDumperConfig(), mockImporterConfiguration());
         incrementalDataSyncTask.start();
         SyncProgress progress = incrementalDataSyncTask.getProgress();
         assertTrue(progress instanceof IncrementalDataSyncTaskProgress);
         assertThat(((IncrementalDataSyncTaskProgress) progress).getId(), is("ds0"));
         assertThat(((IncrementalDataSyncTaskProgress) progress).getDelayMillisecond(), is(0L));
         assertTrue(((IncrementalDataSyncTaskProgress) progress).getPosition() instanceof IncrementalPosition);
+    }
+    
+    @After
+    public void tearDown() {
+        incrementalDataSyncTask.stop();
     }
     
     private ImporterConfiguration mockImporterConfiguration() {

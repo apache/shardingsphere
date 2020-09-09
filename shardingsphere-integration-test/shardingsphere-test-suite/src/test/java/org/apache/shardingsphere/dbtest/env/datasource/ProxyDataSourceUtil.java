@@ -65,7 +65,6 @@ public final class ProxyDataSourceUtil {
         result.setPassword("root");
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        result.setConnectionTestQuery("SELECT 1");
         if ("Oracle".equals(databaseType.getName())) {
             result.setConnectionInitSql("ALTER SESSION SET CURRENT_SCHEMA = " + dataSourceName);
         }

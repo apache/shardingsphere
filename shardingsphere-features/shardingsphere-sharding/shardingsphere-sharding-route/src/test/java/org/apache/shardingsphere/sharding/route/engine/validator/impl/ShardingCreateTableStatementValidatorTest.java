@@ -49,7 +49,7 @@ public final class ShardingCreateTableStatementValidatorTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
         when(ruleSchemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
-        when(metaData.getSchema()).thenReturn(ruleSchemaMetaData);
+        when(metaData.getRuleSchemaMetaData()).thenReturn(ruleSchemaMetaData);
         new ShardingCreateTableStatementValidator().preValidate(shardingRule, routeContext, metaData);
     }
 }

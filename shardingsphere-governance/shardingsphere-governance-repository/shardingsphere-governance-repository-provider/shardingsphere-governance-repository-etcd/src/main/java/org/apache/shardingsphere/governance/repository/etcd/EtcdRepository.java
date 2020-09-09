@@ -72,7 +72,7 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public List<String> getChildrenKeys(final String key) {
-        String prefix = key + "/";
+        String prefix = key + PATH_SEPARATOR;
         ByteSequence prefixByteSequence = ByteSequence.from(prefix, Charsets.UTF_8);
         GetOption getOption = GetOption.newBuilder().withPrefix(prefixByteSequence).withSortField(GetOption.SortTarget.KEY).withSortOrder(GetOption.SortOrder.ASCEND).build();
         List<KeyValue> keyValues = client.getKVClient().get(prefixByteSequence, getOption).get().getKvs();
@@ -81,7 +81,7 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     
     private String getSubNodeKeyName(final String prefix, final String fullPath) {
         String pathWithoutPrefix = fullPath.substring(prefix.length());
-        return pathWithoutPrefix.contains("/") ? pathWithoutPrefix.substring(0, pathWithoutPrefix.indexOf('/')) : pathWithoutPrefix;
+        return pathWithoutPrefix.contains(PATH_SEPARATOR) ? pathWithoutPrefix.substring(0, pathWithoutPrefix.indexOf(PATH_SEPARATOR)) : pathWithoutPrefix;
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})

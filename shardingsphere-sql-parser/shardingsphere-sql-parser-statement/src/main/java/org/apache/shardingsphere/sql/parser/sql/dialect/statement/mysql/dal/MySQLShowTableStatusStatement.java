@@ -19,16 +19,17 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 import java.util.Optional;
 
 /**
- * Show table status statement.
+ * MySQL show table status statement.
  */
 @Setter
-public final class MySQLShowTableStatusStatement extends DALStatement implements MySQLStatement {
+public final class MySQLShowTableStatusStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private RemoveAvailable fromSchema;
     

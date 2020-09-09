@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
@@ -28,12 +29,15 @@ import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundExcept
 import org.apache.shardingsphere.scaling.core.job.ScalingJobProgress;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+import org.apache.shardingsphere.scaling.core.job.position.resume.FakeResumeBreakPointManager;
+import org.apache.shardingsphere.scaling.core.job.position.resume.IncrementalPositionResumeBreakPointManager;
+import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
 import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -58,20 +62,11 @@ public final class ScalingJobControllerTest {
         ScalingContext.getInstance().init(mockServerConfiguration());
         scalingJobController = new ScalingJobController();
         shardingScalingJob = mockShardingScalingJob();
-        scalingJobController.start(shardingScalingJob);
-    }
-    
-    private ServerConfiguration mockServerConfiguration() {
-        ServerConfiguration result = new ServerConfiguration();
-        result.setBlockQueueSize(1000);
-        result.setPort(8080);
-        result.setPushTimeout(1000);
-        result.setWorkerThread(30);
-        return result;
     }
     
     @Test
     public void assertStartPreparedJob() {
+        scalingJobController.start(shardingScalingJob);
         SyncProgress progress = scalingJobController.getProgresses(shardingScalingJob.getJobId());
         assertTrue(progress instanceof ScalingJobProgress);
         assertThat(((ScalingJobProgress) progress).getId(), is(shardingScalingJob.getJobId()));
@@ -92,6 +87,7 @@ public final class ScalingJobControllerTest {
     
     @Test
     public void assertStopExistJob() {
+        scalingJobController.start(shardingScalingJob);
         scalingJobController.stop(shardingScalingJob.getJobId());
         SyncProgress progress = scalingJobController.getProgresses(shardingScalingJob.getJobId());
         assertTrue(progress instanceof ScalingJobProgress);
@@ -100,14 +96,36 @@ public final class ScalingJobControllerTest {
     
     @Test(expected = ScalingJobNotFoundException.class)
     public void assertStopNotExistJob() {
-        scalingJobController.stop(9);
-        scalingJobController.getProgresses(9);
+        scalingJobController.stop(99);
+        scalingJobController.getProgresses(99);
     }
     
     @Test
     public void assertListShardingScalingJobs() {
-        List<ShardingScalingJob> shardingScalingJobs = scalingJobController.listShardingScalingJobs();
-        assertThat(shardingScalingJobs.size(), is(1));
+        assertThat(scalingJobController.listShardingScalingJobs().size(), is(0));
+        scalingJobController.start(shardingScalingJob);
+        assertThat(scalingJobController.listShardingScalingJobs().size(), is(1));
+    }
+    
+    @Test
+    @SneakyThrows(ReflectiveOperationException.class)
+    public void assertOnlyIncrementalDataTasks() {
+        ReflectionUtil.setFieldValue(ResumeBreakPointManagerFactory.class, null, "clazz", IncrementalPositionResumeBreakPointManager.class);
+        ShardingScalingJob shardingScalingJob = mockShardingScalingJob();
+        scalingJobController.start(shardingScalingJob);
+        SyncProgress progress = scalingJobController.getProgresses(shardingScalingJob.getJobId());
+        assertThat(((ScalingJobProgress) progress).getIncrementalDataTasks().size(), is(1));
+        assertThat(((ScalingJobProgress) progress).getInventoryDataTasks().size(), is(0));
+        ReflectionUtil.setFieldValue(ResumeBreakPointManagerFactory.class, null, "clazz", FakeResumeBreakPointManager.class);
+    }
+    
+    private ServerConfiguration mockServerConfiguration() {
+        ServerConfiguration result = new ServerConfiguration();
+        result.setBlockQueueSize(1000);
+        result.setPort(8080);
+        result.setPushTimeout(1000);
+        result.setWorkerThread(30);
+        return result;
     }
     
     private ShardingScalingJob mockShardingScalingJob() {

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Rollback statement.
  */
-public final class RollbackStatement extends TCLStatement {
+public final class RollbackStatement extends AbstractSQLStatement implements TCLStatement {
 }

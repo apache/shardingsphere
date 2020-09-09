@@ -32,7 +32,7 @@
         <module>shardingsphere-governance-core-config</module>
         <module>shardingsphere-governance-core-registry</module>
         <module>shardingsphere-governance-core-metadata</module>
-        <module>shardingsphere-governance-core-schema</module>
+        <module>shardingsphere-governance-core-context</module>
         <module>shardingsphere-governance-core-facade</module>
     </modules>
 </project>

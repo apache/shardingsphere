@@ -70,18 +70,18 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
         binaryStatement = MySQLBinaryStatementRegistry.getInstance().getBinaryStatement(statementId);
         flags = payload.readInt1();
         Preconditions.checkArgument(ITERATION_COUNT == payload.readInt4());
-        int parametersCount = binaryStatement.getParametersCount();
+        int parameterCount = binaryStatement.getParameterCount();
         sql = binaryStatement.getSql();
-        if (parametersCount > 0) {
-            nullBitmap = new MySQLNullBitmap(parametersCount, NULL_BITMAP_OFFSET);
+        if (parameterCount > 0) {
+            nullBitmap = new MySQLNullBitmap(parameterCount, NULL_BITMAP_OFFSET);
             for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {
                 nullBitmap.getNullBitmap()[i] = payload.readInt1();
             }
             newParametersBoundFlag = MySQLNewParametersBoundFlag.valueOf(payload.readInt1());
             if (MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST == newParametersBoundFlag) {
-                binaryStatement.setParameterTypes(getParameterTypes(payload, parametersCount));
+                binaryStatement.setParameterTypes(getParameterTypes(payload, parameterCount));
             }
-            parameters = getParameters(payload, parametersCount);
+            parameters = getParameters(payload, parameterCount);
         } else {
             nullBitmap = null;
             newParametersBoundFlag = null;
@@ -89,9 +89,9 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
         }
     }
     
-    private List<MySQLBinaryStatementParameterType> getParameterTypes(final MySQLPacketPayload payload, final int parametersCount) {
-        List<MySQLBinaryStatementParameterType> result = new ArrayList<>(parametersCount);
-        for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
+    private List<MySQLBinaryStatementParameterType> getParameterTypes(final MySQLPacketPayload payload, final int parameterCount) {
+        List<MySQLBinaryStatementParameterType> result = new ArrayList<>(parameterCount);
+        for (int parameterIndex = 0; parameterIndex < parameterCount; parameterIndex++) {
             MySQLColumnType columnType = MySQLColumnType.valueOf(payload.readInt1());
             int unsignedFlag = payload.readInt1();
             result.add(new MySQLBinaryStatementParameterType(columnType, unsignedFlag));
@@ -99,9 +99,9 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
         return result;
     }
     
-    private List<Object> getParameters(final MySQLPacketPayload payload, final int parametersCount) throws SQLException {
-        List<Object> result = new ArrayList<>(parametersCount);
-        for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
+    private List<Object> getParameters(final MySQLPacketPayload payload, final int parameterCount) throws SQLException {
+        List<Object> result = new ArrayList<>(parameterCount);
+        for (int parameterIndex = 0; parameterIndex < parameterCount; parameterIndex++) {
             MySQLBinaryProtocolValue binaryProtocolValue = MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(binaryStatement.getParameterTypes().get(parameterIndex).getColumnType());
             result.add(nullBitmap.isNullParameter(parameterIndex) ? null : binaryProtocolValue.read(payload));
         }
@@ -113,7 +113,7 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
         payload.writeInt4(statementId);
         payload.writeInt1(flags);
         payload.writeInt4(ITERATION_COUNT);
-        if (binaryStatement.getParametersCount() > 0) {
+        if (binaryStatement.getParameterCount() > 0) {
             for (int each : nullBitmap.getNullBitmap()) {
                 payload.writeInt1(each);
             }

@@ -37,9 +37,9 @@ public final class MySQLComStmtPrepareOKPacket implements MySQLPacket {
     
     private final int statementId;
     
-    private final int columnsCount;
+    private final int columnCount;
     
-    private final int parametersCount;
+    private final int parameterCount;
     
     private final int warningCount;
     
@@ -48,8 +48,8 @@ public final class MySQLComStmtPrepareOKPacket implements MySQLPacket {
         payload.writeInt1(STATUS);
         payload.writeInt4(statementId);
         // TODO Column Definition Block should be added in future when the metadata of the columns is cached.
-        payload.writeInt2(columnsCount);
-        payload.writeInt2(parametersCount);
+        payload.writeInt2(columnCount);
+        payload.writeInt2(parameterCount);
         payload.writeReserved(1);
         payload.writeInt2(warningCount);
     }

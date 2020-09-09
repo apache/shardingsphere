@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.admin.quit;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.proxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
 import java.util.Collection;
 import java.util.Collections;

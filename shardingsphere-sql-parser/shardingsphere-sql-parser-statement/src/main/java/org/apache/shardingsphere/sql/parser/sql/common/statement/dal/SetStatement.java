@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public final class SetStatement extends DALStatement {
+public abstract class SetStatement extends AbstractSQLStatement {
     
     private final List<VariableAssignSegment> variableAssigns = new LinkedList<>();
 }

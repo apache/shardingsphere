@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.metadata.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.common.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 
 import java.util.Collection;

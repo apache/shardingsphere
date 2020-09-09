@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
 /**
  * Alter role statement.
  */
-public final class AlterRoleStatement extends DCLStatement {
+public abstract class AlterRoleStatement extends AbstractSQLStatement {
 }
