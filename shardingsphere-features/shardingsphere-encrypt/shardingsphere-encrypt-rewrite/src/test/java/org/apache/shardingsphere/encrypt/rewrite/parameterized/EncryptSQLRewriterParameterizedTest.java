@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
@@ -75,7 +75,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         ConfigurationProperties props = new ConfigurationProperties(ruleConfigurations.getProps());
         RouteContext routeContext = new DataNodeRouter(metaData, props, rules).route(
                 standardSqlParserEngine.parse(getTestParameters().getInputSQL(), false), getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(),
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
                 props, rules).rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), routeContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit()) : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
@@ -94,6 +94,6 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(ruleSchemaMetaData.getSchemaMetaData()).thenReturn(schemaMetaData);
-        return new ShardingSphereMetaData(mock(DataSourceMetas.class), ruleSchemaMetaData);
+        return new ShardingSphereMetaData(mock(DataSourceMetaDatas.class), ruleSchemaMetaData);
     }
 }

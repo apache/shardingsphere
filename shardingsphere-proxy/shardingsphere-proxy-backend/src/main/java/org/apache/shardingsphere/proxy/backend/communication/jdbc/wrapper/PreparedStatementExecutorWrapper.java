@@ -66,7 +66,8 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
                     new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(schema.getSchema().getDataSources().keySet().iterator().next(), new SQLUnit(sql, parameters)));
         }
         RouteContext routeContext = new DataNodeRouter(schema.getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).route(sqlStatement, sql, parameters);
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schema.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules);
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schema.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), 
+                PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules);
         SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(sql, new ArrayList<>(parameters), routeContext);
         return new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(schema.getSchema().getMetaData(), sqlRewriteResult));
     }
