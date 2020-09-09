@@ -19,3 +19,11 @@ port: 8888
 blockQueueSize: 10000
 pushTimeout: 1000
 workerThread: 30
+
+#resumeBreakPoint:
+#  name: scalingjob
+#  registryCenter:
+#    type: ZooKeeper
+#    serverLists: localhost:2181
+#    props:
+#      retryIntervalMilliseconds: 10000

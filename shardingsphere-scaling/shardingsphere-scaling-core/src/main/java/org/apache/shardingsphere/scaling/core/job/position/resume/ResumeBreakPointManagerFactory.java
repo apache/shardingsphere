@@ -20,6 +20,9 @@ package org.apache.shardingsphere.scaling.core.job.position.resume;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 /**
  * Resume from break-point manager factory.
@@ -30,8 +33,10 @@ public final class ResumeBreakPointManagerFactory {
     private static Class<? extends ResumeBreakPointManager> clazz = FakeResumeBreakPointManager.class;
     
     static {
-        if (ZookeeperResumeBreakPointManager.isAvailable()) {
-            clazz = ZookeeperResumeBreakPointManager.class;
+        ShardingSphereServiceLoader.register(RegistryRepository.class);
+        ShardingSphereServiceLoader.register(ConfigurationRepository.class);
+        if (RepositoryResumeBreakPointManager.isAvailable()) {
+            clazz = RepositoryResumeBreakPointManager.class;
         }
     }
     
