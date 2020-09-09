@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+--- !!java.util.LinkedHashMap
 ds_0: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   props:
