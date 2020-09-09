@@ -94,6 +94,6 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(ruleSchemaMetaData.getSchemaMetaData()).thenReturn(schemaMetaData);
-        return new ShardingSphereMetaData(mock(DataSourceMetas.class), ruleSchemaMetaData);
+        return new ShardingSphereMetaData(mock(DataSourceMetas.class), ruleSchemaMetaData, "sharding_db");
     }
 }

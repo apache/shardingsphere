@@ -15,28 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replica.yaml.config;
+package org.apache.shardingsphere.replica.rule;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration;
-
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.replica.api.config.ReplicaActualTableRuleConfiguration;
 
 /**
- * Replica rule configuration for YAML.
+ * Replica table rule.
  */
 @Getter
-@Setter
-public final class YamlReplicaRuleConfiguration implements YamlRuleConfiguration {
+public final class ReplicaTableRule implements ShardingSphereRule {
     
-    private Collection<YamlReplicaLogicTableRuleConfiguration> tables = Collections.emptyList();
+    private final String physicsTable;
     
-    @Override
-    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
-        return ReplicaRuleConfiguration.class;
+    private final String replicaGroupId;
+    
+    private final String replicaPeers;
+    
+    private final String dataSourceName;
+    
+    public ReplicaTableRule(final ReplicaActualTableRuleConfiguration configuration) {
+        physicsTable = configuration.getPhysicsTable();
+        replicaGroupId = configuration.getReplicaGroupId();
+        replicaPeers = configuration.getReplicaPeers();
+        dataSourceName = configuration.getDataSourceName();
     }
 }

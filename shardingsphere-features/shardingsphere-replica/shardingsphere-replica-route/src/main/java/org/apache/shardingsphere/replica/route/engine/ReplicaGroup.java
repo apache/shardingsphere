@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replica.constant;
+package org.apache.shardingsphere.replica.route.engine;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.route.context.RawGroup;
 
 /**
- * Replica order.
+ * Replica group.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReplicaOrder {
+@AllArgsConstructor
+@Getter
+public final class ReplicaGroup implements RawGroup {
     
-    /**
-     * Replica order.
-     */
-    public static final int ORDER = 80;
+    public static final String BLANK_REPLICA_GROUP_KEY = "Nil";
+    
+    private final String physicsTable;
+    
+    private final String replicaGroupId;
+    
+    private final String replicaPeers;
+    
+    private final String dataSourceName;
 }

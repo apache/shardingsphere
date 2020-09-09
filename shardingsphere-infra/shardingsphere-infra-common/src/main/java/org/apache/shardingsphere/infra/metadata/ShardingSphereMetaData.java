@@ -32,4 +32,6 @@ public final class ShardingSphereMetaData {
     private final DataSourceMetas dataSources;
     
     private final RuleSchemaMetaData schema;
+    
+    private final String schemaName;
 }

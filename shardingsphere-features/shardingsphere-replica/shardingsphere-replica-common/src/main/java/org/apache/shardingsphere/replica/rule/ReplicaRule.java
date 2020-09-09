@@ -17,66 +17,55 @@
 
 package org.apache.shardingsphere.replica.rule;
 
-import org.apache.shardingsphere.infra.rule.DataSourceRoutedRule;
-import org.apache.shardingsphere.replica.api.config.ReplicaDataSourceConfiguration;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.replica.api.config.ReplicaActualTableRuleConfiguration;
+import org.apache.shardingsphere.replica.api.config.ReplicaLogicTableRuleConfiguration;
 import org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Replica rule.
  */
-public final class ReplicaRule implements DataSourceRoutedRule {
+@Slf4j
+public final class ReplicaRule implements ShardingSphereRule {
     
-    private final Map<String, Collection<String>> dataSourceRules;
+    @Getter
+    private final Collection<ReplicaTableRule> replicaTableRules;
+    
+    private final Map<String, ReplicaTableRule> physicsTableRules;
     
     public ReplicaRule(final ReplicaRuleConfiguration configuration) {
-        dataSourceRules = new HashMap<>(configuration.getDataSources().size(), 1);
-        for (ReplicaDataSourceConfiguration each : configuration.getDataSources()) {
-            dataSourceRules.put(each.getName(), each.getReplicaSourceNames());
-        }
-    }
-    
-    /**
-     * Get single replica data sources.
-     *
-     * @return replica data source rule
-     */
-    public Collection<String> getSingleReplicaDataSources() {
-        return dataSourceRules.values().iterator().next();
-    }
-    
-    /**
-     * Find replica data sources.
-     * 
-     * @param dataSourceName data source name
-     * @return replica data source names
-     */
-    public Optional<Collection<String>> findReplicaDataSources(final String dataSourceName) {
-        return Optional.ofNullable(dataSourceRules.get(dataSourceName));
-    }
-    
-    /**
-     * Find logic data source name.
-     * 
-     * @param replicaDataSourceName replica data source name
-     * @return logic data source name
-     */
-    public Optional<String> findLogicDataSource(final String replicaDataSourceName) {
-        for (Entry<String, Collection<String>> entry : dataSourceRules.entrySet()) {
-            if (entry.getValue().contains(replicaDataSourceName)) {
-                return Optional.of(entry.getKey());
+        Collection<ReplicaTableRule> replicaTableRules = new ArrayList<>();
+        Map<String, ReplicaTableRule> physicsTableRules = new ConcurrentHashMap<>();
+        for (ReplicaLogicTableRuleConfiguration entry : configuration.getTables()) {
+            for (ReplicaActualTableRuleConfiguration each : entry.getReplicaGroups()) {
+                String physicsTable = each.getPhysicsTable();
+                ReplicaTableRule replaced = physicsTableRules.putIfAbsent(physicsTable, new ReplicaTableRule(each));
+                if (null != replaced) {
+                    log.error("key already exists, key={}", physicsTable);
+                    throw new IllegalArgumentException("key already exists, key=" + physicsTable);
+                }
+                replicaTableRules.add(new ReplicaTableRule(each));
             }
         }
-        return Optional.empty();
+        this.replicaTableRules = replicaTableRules;
+        this.physicsTableRules = physicsTableRules;
     }
     
-    @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        return dataSourceRules;
+    /**
+     * Find routing by table.
+     *
+     * @param physicsTable physics table name
+     * @return replica table rule
+     */
+    public Optional<ReplicaTableRule> findRoutingByTable(final String physicsTable) {
+        return Optional.ofNullable(physicsTableRules.get(physicsTable));
     }
 }

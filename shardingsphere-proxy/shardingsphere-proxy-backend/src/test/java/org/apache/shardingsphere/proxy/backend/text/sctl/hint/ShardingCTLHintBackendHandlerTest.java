@@ -210,7 +210,8 @@ public final class ShardingCTLHintBackendHandlerTest {
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
         when(result.getSchema()).thenReturn(shardingSphereSchema);
         when(shardingSphereSchema.getMetaData()).thenReturn(
-                new ShardingSphereMetaData(mock(DataSourceMetas.class), new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap())));
+                new ShardingSphereMetaData(mock(DataSourceMetas.class), new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap()),
+                        "sharding_db"));
         return Collections.singletonMap("schema", result);
     }
     

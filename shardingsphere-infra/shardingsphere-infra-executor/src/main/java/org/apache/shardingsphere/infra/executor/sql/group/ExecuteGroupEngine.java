@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.group;
 
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -33,9 +34,10 @@ public interface ExecuteGroupEngine<T> {
     /**
      * Generate execution input groups.
      *
+     * @param routeContext route context
      * @param executionUnits execution units
      * @return execution input groups
      * @throws SQLException SQL exception
      */
-    Collection<InputGroup<T>> generate(Collection<ExecutionUnit> executionUnits) throws SQLException;
+    Collection<InputGroup<T>> generate(RouteContext routeContext, Collection<ExecutionUnit> executionUnits) throws SQLException;
 }

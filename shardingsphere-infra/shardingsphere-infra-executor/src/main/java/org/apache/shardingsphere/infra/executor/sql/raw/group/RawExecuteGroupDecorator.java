@@ -15,23 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replica.yaml.config;
+package org.apache.shardingsphere.infra.executor.sql.raw.group;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupDecorator;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * Replica data source configuration for YAML.
+ * Raw execute group decorator.
+ *
+ * @param <T> type of input value
+ * @param <R> type of ShardingSphere rule
  */
-@Getter
-@Setter
-public final class YamlReplicaDataSourceConfiguration implements YamlConfiguration {
-    
-    private String name;
-    
-    private Collection<String> replicaDataSourceNames = new LinkedList<>();
+public interface RawExecuteGroupDecorator<T, R extends ShardingSphereRule> extends ExecuteGroupDecorator<T, R> {
 }

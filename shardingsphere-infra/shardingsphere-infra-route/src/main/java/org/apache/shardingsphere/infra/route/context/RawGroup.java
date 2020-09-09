@@ -15,19 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replica.constant;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package org.apache.shardingsphere.infra.route.context;
 
 /**
- * Replica order.
+ * Raw rule group.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReplicaOrder {
-    
-    /**
-     * Replica order.
-     */
-    public static final int ORDER = 80;
+public interface RawGroup {
 }

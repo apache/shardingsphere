@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replica.constant;
+package org.apache.shardingsphere.replica.yaml.config;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Replica order.
+ * Replica logic table rule configuration for YAML.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReplicaOrder {
+@Getter
+@Setter
+public final class YamlReplicaLogicTableRuleConfiguration implements YamlConfiguration {
     
-    /**
-     * Replica order.
-     */
-    public static final int ORDER = 80;
+    private String logicTable;
+    
+    private Collection<YamlReplicaActualTableRuleConfiguration> replicaGroups = Collections.emptyList();
 }

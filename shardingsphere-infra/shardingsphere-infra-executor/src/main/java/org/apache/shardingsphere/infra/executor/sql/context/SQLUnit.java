@@ -20,9 +20,13 @@ package org.apache.shardingsphere.infra.executor.sql.context;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * SQL unit.
@@ -36,4 +40,15 @@ public final class SQLUnit {
     private final String sql;
     
     private final List<Object> parameters;
+
+    private final Set<String> actualTables;
+    
+    private final Map<String, List<String>> primaryKeyColumns;
+
+    @Setter
+    private boolean readOnly;
+
+    public SQLUnit(final String sql, final List<Object> parameters) {
+        this(sql, parameters, Collections.emptySet(), Collections.emptyMap());
+    }
 }

@@ -15,19 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replica.constant;
+package org.apache.shardingsphere.infra.executor.sql.raw.execute.callback;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Replica order.
+ * Raw executor callback.
+ *
+ * @param <I> type of input value
+ * @param <O> type of output value
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReplicaOrder {
-    
+public interface RawExecutorCallback<I, O> {
+
     /**
-     * Replica order.
+     * Execute.
+     *
+     * @param inputs input values
+     * @param isTrunkThread is execution in trunk thread
+     * @param dataMap data map
+     * @return execution results
+     * @throws SQLException throw when execute failure
      */
-    public static final int ORDER = 80;
+    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, Map<String, Object> dataMap) throws SQLException;
 }

@@ -15,28 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replica.yaml.config;
+package org.apache.shardingsphere.replica.api.config;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Replica rule configuration for YAML.
+ * Replica logic table rule configuration.
  */
 @Getter
-@Setter
-public final class YamlReplicaRuleConfiguration implements YamlRuleConfiguration {
+public final class ReplicaLogicTableRuleConfiguration implements RuleConfiguration {
     
-    private Collection<YamlReplicaLogicTableRuleConfiguration> tables = Collections.emptyList();
+    private final String logicTable;
     
-    @Override
-    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
-        return ReplicaRuleConfiguration.class;
+    private final Collection<ReplicaActualTableRuleConfiguration> replicaGroups;
+    
+    public ReplicaLogicTableRuleConfiguration(final String logicTable, final Collection<ReplicaActualTableRuleConfiguration> replicaGroups) {
+        this.logicTable = logicTable;
+        if (null != replicaGroups) {
+            this.replicaGroups = replicaGroups;
+        } else {
+            this.replicaGroups = Collections.emptyList();
+        }
     }
 }

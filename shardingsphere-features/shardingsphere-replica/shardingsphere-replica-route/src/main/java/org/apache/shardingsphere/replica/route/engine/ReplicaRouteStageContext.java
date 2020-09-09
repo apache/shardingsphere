@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replica.api.config;
+package org.apache.shardingsphere.replica.route.engine;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.route.context.RouteStageContext;
 
-import java.util.Collection;
+import java.util.Map;
 
 /**
- * Replica data source configuration.
+ * Replica route stage context.
  */
+@RequiredArgsConstructor
 @Getter
-public final class ReplicaDataSourceConfiguration implements RuleConfiguration {
+public final class ReplicaRouteStageContext implements RouteStageContext {
     
-    private final String name;
+    private final String schemaName;
     
-    private final Collection<String> replicaSourceNames;
+    private final Map<String, ReplicaGroup> replicaGroups;
     
-    public ReplicaDataSourceConfiguration(final String name, final Collection<String> replicaSourceNames) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Name is required.");
-        Preconditions.checkArgument(null != replicaSourceNames && !replicaSourceNames.isEmpty(), "replica source names are required.");
-        this.name = name;
-        this.replicaSourceNames = replicaSourceNames;
-    }
+    private final boolean readOnly;
 }
