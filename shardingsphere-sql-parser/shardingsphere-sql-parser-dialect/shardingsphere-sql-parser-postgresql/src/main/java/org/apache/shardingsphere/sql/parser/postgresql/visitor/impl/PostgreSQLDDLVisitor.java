@@ -96,7 +96,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement((SimpleTableSegment) visit(ctx.tableName()));
+        CreateTableStatement result = new CreateTableStatement((SimpleTableSegment) visit(ctx.tableName()), false);
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {

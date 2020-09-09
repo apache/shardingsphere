@@ -43,7 +43,19 @@ public final class ShardingCreateTableStatementValidatorTest {
 
     @Test(expected = TableExistsException.class)
     public void assertValidateCreateTable() {
-        CreateTableStatement sqlStatement = new CreateTableStatement(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")));
+        CreateTableStatement sqlStatement = new CreateTableStatement(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")), false);
+        SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
+        RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
+        when(ruleSchemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
+        when(metaData.getSchema()).thenReturn(ruleSchemaMetaData);
+        new ShardingCreateTableStatementValidator().preValidate(shardingRule, routeContext, metaData);
+    }
+    
+    @Test
+    public void assertValidateCreateTableIfNotExists() {
+        CreateTableStatement sqlStatement = new CreateTableStatement(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")), true);
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
         RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
