@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -56,15 +57,22 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        Collection<DatabasePacket<?>> result = new LinkedList<>();
         SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
-            result.add(new MySQLErrPacket(++currentSequenceId, MySQLServerErrorCode.ER_UNSUPPORTED_PS));
-            return result;
+            return Collections.singletonList(new MySQLErrPacket(++currentSequenceId, MySQLServerErrorCode.ER_UNSUPPORTED_PS));
         }
         int parameterCount = sqlStatement.getParameterCount();
         int projectionCount = getProjectionCount(sqlStatement);
         int statementId = PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parameterCount);
+        return createPackets(statementId, projectionCount, parameterCount);
+    }
+    
+    private int getProjectionCount(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
+    }
+    
+    private Collection<DatabasePacket<?>> createPackets(final int statementId, final int projectionCount, final int parameterCount) {
+        Collection<DatabasePacket<?>> result = new LinkedList<>();
         result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, statementId, projectionCount, parameterCount, 0));
         if (parameterCount > 0) {
             result.addAll(createParameterColumnDefinition41Packets(parameterCount));
@@ -73,10 +81,6 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             result.addAll(createProjectionColumnDefinition41Packets(projectionCount));
         }
         return result;
-    }
-    
-    private int getProjectionCount(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
     }
     
     private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final int parameterCount) {
