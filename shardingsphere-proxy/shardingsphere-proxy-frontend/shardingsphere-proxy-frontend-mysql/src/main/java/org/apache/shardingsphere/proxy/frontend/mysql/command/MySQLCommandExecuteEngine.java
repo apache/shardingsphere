@@ -35,6 +35,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
+import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.MySQLErrPacketFactory;
 
 import java.sql.SQLException;
@@ -74,7 +75,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     @SneakyThrows(InterruptedException.class)
     public void writeQueryData(final ChannelHandlerContext context, 
                                final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
-        if (!queryCommandExecutor.isQueryResponse() || !context.channel().isActive()) {
+        if (ResponseType.QUERY != queryCommandExecutor.getResponseType() || !context.channel().isActive()) {
             return;
         }
         int count = 0;

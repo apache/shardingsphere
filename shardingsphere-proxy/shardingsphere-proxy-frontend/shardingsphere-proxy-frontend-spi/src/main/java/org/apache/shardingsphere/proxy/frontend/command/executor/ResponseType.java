@@ -17,35 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.command.executor;
 
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-
-import java.sql.SQLException;
-
 /**
- * Query command executor.
+ * Response type.
  */
-public interface QueryCommandExecutor extends CommandExecutor {
+public enum ResponseType {
     
-    /**
-     * Get response type.
-     *
-     * @return response type
-     */
-    ResponseType getResponseType();
-    
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
-    
-    /**
-     * Get query data.
-     *
-     * @return database packet of query data
-     * @throws SQLException SQL exception
-     */
-    DatabasePacket<?> getQueryData() throws SQLException;
+    QUERY, UPDATE, ERROR
 }
