@@ -97,7 +97,7 @@ public final class ExecutionContextBuilder {
     private static Map<String, List<String>> getPrimaryKeyColumns(final ShardingSphereMetaData metaData, final Set<String> logicTableNames) {
         Map<String, List<String>> primaryKeyColumns = new HashMap<>(logicTableNames.size());
         for (String each: logicTableNames) {
-            primaryKeyColumns.put(each, metaData.getSchema().getSchemaMetaData().get(each).getPrimaryKeyColumns());
+            primaryKeyColumns.put(each, metaData.getRuleSchemaMetaData().getSchemaMetaData().get(each).getPrimaryKeyColumns());
         }
         return primaryKeyColumns;
     }
