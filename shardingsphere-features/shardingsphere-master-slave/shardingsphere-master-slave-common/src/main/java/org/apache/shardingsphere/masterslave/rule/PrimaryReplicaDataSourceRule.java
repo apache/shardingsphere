@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.rule;
+package org.apache.shardingsphere.primaryreplica.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.spi.PrimaryReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.primaryreplica.api.config.rule.PrimaryReplicaDataSourceRuleConfiguration;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,43 +33,43 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Master-slave data source rule.
+ * Primary-replica data source rule.
  */
 @Getter
-public final class MasterSlaveDataSourceRule {
+public final class PrimaryReplicaDataSourceRule {
     
     private final String name;
     
-    private final String masterDataSourceName;
+    private final String primaryDataSourceName;
     
-    private final List<String> slaveDataSourceNames;
+    private final List<String> replicaDataSourceNames;
     
-    private final MasterSlaveLoadBalanceAlgorithm loadBalancer;
+    private final PrimaryReplicaLoadBalanceAlgorithm loadBalancer;
     
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public MasterSlaveDataSourceRule(final MasterSlaveDataSourceRuleConfiguration configuration, final MasterSlaveLoadBalanceAlgorithm loadBalancer) {
+    public PrimaryReplicaDataSourceRule(final PrimaryReplicaDataSourceRuleConfiguration configuration, final PrimaryReplicaLoadBalanceAlgorithm loadBalancer) {
         checkConfiguration(configuration);
         name = configuration.getName();
-        masterDataSourceName = configuration.getMasterDataSourceName();
-        slaveDataSourceNames = configuration.getSlaveDataSourceNames();
+        primaryDataSourceName = configuration.getPrimaryDataSourceName();
+        replicaDataSourceNames = configuration.getReplicaDataSourceNames();
         this.loadBalancer = loadBalancer;
     }
     
-    private void checkConfiguration(final MasterSlaveDataSourceRuleConfiguration configuration) {
+    private void checkConfiguration(final PrimaryReplicaDataSourceRuleConfiguration configuration) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(configuration.getName()), "Name is required.");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(configuration.getMasterDataSourceName()), "Master data source name is required.");
-        Preconditions.checkArgument(null != configuration.getSlaveDataSourceNames() && !configuration.getSlaveDataSourceNames().isEmpty(), "Slave data source names are required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(configuration.getPrimaryDataSourceName()), "Primary data source name is required.");
+        Preconditions.checkArgument(null != configuration.getReplicaDataSourceNames() && !configuration.getReplicaDataSourceNames().isEmpty(), "Replica data source names are required.");
     }
     
     /**
-     * Get slave data source names.
+     * Get replica data source names.
      *
-     * @return available slave data source names
+     * @return available replica data source names
      */
-    public List<String> getSlaveDataSourceNames() {
-        return slaveDataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
+    public List<String> getReplicaDataSourceNames() {
+        return replicaDataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
     }
     
     /**
@@ -94,8 +94,8 @@ public final class MasterSlaveDataSourceRule {
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>(1, 1);
         Collection<String> actualDataSourceNames = new LinkedList<>();
-        actualDataSourceNames.add(masterDataSourceName);
-        actualDataSourceNames.addAll(slaveDataSourceNames);
+        actualDataSourceNames.add(primaryDataSourceName);
+        actualDataSourceNames.addAll(replicaDataSourceNames);
         result.put(name, actualDataSourceNames);
         return result;
     }
