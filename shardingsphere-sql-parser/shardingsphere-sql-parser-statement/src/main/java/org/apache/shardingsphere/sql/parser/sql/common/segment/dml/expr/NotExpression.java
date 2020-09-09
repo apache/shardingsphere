@@ -29,4 +29,6 @@ public class NotExpression implements ExpressionSegment {
     private int stopIndex;
     
     private ExpressionSegment expression;
+    
+    private String text;
 }

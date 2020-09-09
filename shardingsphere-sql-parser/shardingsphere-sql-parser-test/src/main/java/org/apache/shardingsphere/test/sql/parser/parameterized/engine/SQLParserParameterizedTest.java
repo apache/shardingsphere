@@ -75,15 +75,6 @@ public abstract class SQLParserParameterizedTest {
     
     @Test
     public final void assertSupportedSQL() {
-        if ("MySQL".equals(databaseType)) {
-//            String sql1 = "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
-//                    + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))";
-            String sql1 = "select * from table1 where 1";
-            SQLStatement actual1 = SQLParserEngineFactory.getSQLParserEngine(databaseType).parse(sql1, false);
-            System.out.println("fasfasd");
-    
-    
-        }
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());

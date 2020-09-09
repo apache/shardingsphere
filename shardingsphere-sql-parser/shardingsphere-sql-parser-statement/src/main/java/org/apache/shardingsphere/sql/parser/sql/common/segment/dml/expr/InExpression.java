@@ -37,6 +37,8 @@ public class InExpression implements ExpressionSegment {
     
     private boolean not;
     
+    private String text;
+    
     /**
      * Get expression list from right.
      *
@@ -46,13 +48,9 @@ public class InExpression implements ExpressionSegment {
         Collection<ExpressionSegment> result = new LinkedList<>();
         if (right instanceof ListExpression) {
             result.addAll(((ListExpression) right).getItems());
+        } else {
+            result.add(this);
         }
-        result.add(this);
         return result;
     }
-//
-//    @Override
-//    public String toString() {
-//        return getText();
-//    }
 }

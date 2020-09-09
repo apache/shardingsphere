@@ -189,6 +189,8 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
             result.setLeft((ExpressionSegment) visit(ctx.aExpr(0)));
             result.setRight((ExpressionSegment) visit(ctx.aExpr(1)));
             result.setOperator(ctx.comparisonOperator().getText());
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            result.setText(text);
             return result;
         }
         if (null != ctx.logicalOperator()) {
@@ -198,6 +200,8 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
             result.setLeft((ExpressionSegment) visit(ctx.aExpr(0)));
             result.setRight((ExpressionSegment) visit(ctx.aExpr(1)));
             result.setOperator(ctx.logicalOperator().getText());
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            result.setText(text);
             return result;
         }
         super.visitAExpr(ctx);
@@ -267,6 +271,8 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         } else {
             result.setNot(false);
         }
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        result.setText(text);
         return result;
     }
     
@@ -275,6 +281,8 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
             SelectStatement select = (SelectStatement) visit(ctx.selectWithParens());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), select);
             SubqueryExpressionSegment result = new SubqueryExpressionSegment(subquerySegment);
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex()));
+            result.setText(text);
             return result;
         }
         return (ExpressionSegment) visit(ctx.exprList());
@@ -289,6 +297,8 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
             result.getItems().addAll(((ListExpression) visitExprList(ctx.exprList())).getItems());
         }
         result.getItems().add((ExpressionSegment) visit(ctx.aExpr()));
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        result.setText(text);
         return result;
     }
     
@@ -302,6 +312,8 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         if (null != ctx.NOT()) {
             result.setNot(true);
         }
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        result.setText(text);
         return result;
     }
     
@@ -322,6 +334,8 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
                 result.setOperator(ctx.qualOp().getText());
                 result.setRight((ExpressionSegment) visit(ctx.bExpr(1)));
             }
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            result.setText(text);
             return result;
         }
         for (BExprContext each : ctx.bExpr()) {

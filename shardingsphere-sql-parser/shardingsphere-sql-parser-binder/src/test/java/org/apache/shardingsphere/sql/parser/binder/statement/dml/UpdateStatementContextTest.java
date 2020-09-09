@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.binder.statement.dml;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
@@ -48,12 +46,6 @@ public final class UpdateStatementContextTest {
     
     @Mock
     private WhereSegment whereSegment;
-    
-    @Mock
-    private AndPredicate andPredicate;
-    
-    @Mock
-    private PredicateSegment predicateSegment;
     
     @Mock
     private ColumnSegment columnSegment;

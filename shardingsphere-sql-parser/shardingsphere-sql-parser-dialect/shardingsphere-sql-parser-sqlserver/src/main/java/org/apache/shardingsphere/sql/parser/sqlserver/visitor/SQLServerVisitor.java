@@ -251,12 +251,16 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
             result.setLeft((ExpressionSegment) visit(ctx.expr(0)));
             result.setRight((ExpressionSegment) visit(ctx.expr(1)));
             result.setOperator(ctx.logicalOperator().getText());
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            result.setText(text);
             return result;
         }
         NotExpression result = new NotExpression();
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setExpression((ExpressionSegment) visit(ctx.expr(0)));
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        result.setText(text);
         return result;
     }
     
@@ -270,6 +274,8 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
             result.setRight(new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), new Interval(ctx.IS().getSymbol().getStopIndex() + 1,
                     ctx.stop.getStopIndex())));
             result.setOperator("IS");
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            result.setText(text);
             return result;
         }
         if (null != ctx.comparisonOperator() || null != ctx.SAFE_EQ_()) {
@@ -280,6 +286,8 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     
     private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
         BinaryOperationExpression result = new BinaryOperationExpression();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
         result.setLeft((ExpressionSegment) visit(ctx.booleanPrimary()));
         if (null != ctx.predicate()) {
             result.setRight((ExpressionSegment) visit(ctx.predicate()));
@@ -288,6 +296,8 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         }
         String operator = null != ctx.SAFE_EQ_() ? ctx.SAFE_EQ_().getText() : ctx.comparisonOperator().getText();
         result.setOperator(operator);
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        result.setText(text);
         return result;
     }
     
@@ -310,14 +320,18 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setLeft((ExpressionSegment) visit(ctx.bitExpr(0)));
-        String operator;
         ListExpression listExpression = new ListExpression();
+        String listText = ctx.start.getInputStream().getText(new Interval(ctx.simpleExpr(0).start.getStartIndex(), ctx.stop.getStopIndex()));
+        listExpression.setText(listText);
         for (SimpleExprContext each : ctx.simpleExpr()) {
             listExpression.getItems().add((ExpressionSegment) visit(each));
         }
         result.setRight(listExpression);
+        String operator;
         operator = null != ctx.NOT() ? "NOT LIKE" : "LIKE";
         result.setOperator(operator);
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        result.setText(text);
         return result;
     }
     
@@ -330,6 +344,10 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
             result.setRight(new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()))));
         } else {
             ListExpression listExpression = new ListExpression();
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex()));
+            listExpression.setText(text);
+            listExpression.setStartIndex(ctx.LP_().getSymbol().getStartIndex());
+            listExpression.setStopIndex(ctx.RP_().getSymbol().getStopIndex());
             for (ExprContext each : ctx.expr()) {
                 listExpression.getItems().add((ExpressionSegment) visit(each));
             }
@@ -337,6 +355,8 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         }
         boolean operator = null != ctx.NOT() ? true : false;
         result.setNot(operator);
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        result.setText(text);
         return result;
     }
     
@@ -347,6 +367,8 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         result.setLeft((ExpressionSegment) visit(ctx.bitExpr(0)));
         result.setBetweenExpr((ExpressionSegment) visit(ctx.bitExpr(1)));
         result.setAndExpr((ExpressionSegment) visit(ctx.predicate()));
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        result.setText(text);
         return result;
     }
     
@@ -361,6 +383,8 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         result.setLeft((ExpressionSegment) visit(ctx.getChild(0)));
         result.setRight((ExpressionSegment) visit(ctx.getChild(2)));
         result.setOperator(ctx.getChild(1).getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        result.setText(text);
         return result;
     }
     

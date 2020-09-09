@@ -36,4 +36,6 @@ public class AggregateExpression implements ExpressionSegment {
     private List<ExpressionSegment> args;
     
     private boolean distinct;
+    
+    private String text;
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquer
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 
@@ -31,6 +32,10 @@ public final class SubqueryExpressionSegment implements SimpleExpressionSegment 
     
     @Getter
     private final SubquerySegment subquery;
+    
+    @Getter
+    @Setter
+    private String text;
     
     @Override
     public int getStartIndex() {

@@ -18,20 +18,23 @@
 package org.apache.shardingsphere.shadow.condition;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateBetweenRightValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateCompareRightValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateInRightValue;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -56,7 +59,27 @@ public final class ShadowConditionEngine {
         if (!whereSegment.isPresent()) {
             return Optional.empty();
         }
-        for (AndPredicate each : whereSegment.get().getAndPredicates()) {
+    
+        Collection<AndPredicate> andPredicates = new LinkedList<>();
+        ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
+        if (expression instanceof BinaryOperationExpression) {
+            String operator = ((BinaryOperationExpression) expression).getOperator();
+            boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
+            if (logical) {
+                ExpressionBuildUtil utils = new ExpressionBuildUtil(((BinaryOperationExpression) expression).getLeft(), ((BinaryOperationExpression) expression).getRight(), operator);
+                andPredicates.addAll(utils.mergePredicate().getAndPredicates());
+            
+            } else {
+                AndPredicate andPredicate = new AndPredicate();
+                andPredicate.getPredicates().add(expression);
+                andPredicates.add(andPredicate);
+            }
+        } else {
+            AndPredicate andPredicate = new AndPredicate();
+            andPredicate.getPredicates().add(expression);
+            andPredicates.add(andPredicate);
+        }
+        for (AndPredicate each : andPredicates) {
             Optional<ShadowCondition> condition = createShadowCondition(each);
             if (condition.isPresent()) {
                 return condition;
@@ -75,10 +98,18 @@ public final class ShadowConditionEngine {
     }
     
     private Optional<ShadowCondition> createShadowCondition(final AndPredicate andPredicate) {
-        for (PredicateSegment predicate : andPredicate.getPredicates()) {
+        for (ExpressionSegment predicate : andPredicate.getPredicates()) {
+            ColumnSegment column = null;
+            if (predicate instanceof BinaryOperationExpression && ((BinaryOperationExpression) predicate).getLeft() instanceof ColumnSegment) {
+                column = (ColumnSegment) ((BinaryOperationExpression) predicate).getLeft();
+            } else if (predicate instanceof InExpression && ((InExpression) predicate).getLeft() instanceof ColumnSegment) {
+                column = (ColumnSegment) ((InExpression) predicate).getLeft();
+            } else if (predicate instanceof BetweenExpression && ((BetweenExpression) predicate).getLeft() instanceof ColumnSegment) {
+                column = (ColumnSegment) ((BetweenExpression) predicate).getLeft();
+            }
             Collection<Integer> stopIndexes = new HashSet<>();
             if (stopIndexes.add(predicate.getStopIndex())) {
-                Optional<ShadowCondition> condition = shadowRule.getColumn().equals(predicate.getColumn().getIdentifier().getValue())
+                Optional<ShadowCondition> condition = shadowRule.getColumn().equals(column.getIdentifier().getValue())
                         ? createShadowCondition(predicate) : Optional.empty();
                 if (condition.isPresent()) {
                     return condition;
@@ -88,24 +119,30 @@ public final class ShadowConditionEngine {
         return Optional.empty();
     }
     
-    private Optional<ShadowCondition> createShadowCondition(final PredicateSegment predicateSegment) {
-        if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
-            PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
-            return isSupportedOperator(compareRightValue.getOperator()) ? createCompareShadowCondition(predicateSegment, compareRightValue) : Optional.empty();
+    private Optional<ShadowCondition> createShadowCondition(final ExpressionSegment expression) {
+        if (expression instanceof BinaryOperationExpression) {
+            String operator = ((BinaryOperationExpression) expression).getOperator();
+            boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
+            if (!logical) {
+                return isSupportedOperator(operator) ? createCompareShadowCondition((BinaryOperationExpression) expression) : Optional.empty();
+            }
         }
-        if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
+        if (expression instanceof InExpression) {
             throw new ShardingSphereException("The SQL clause 'IN...' is unsupported in shadow rule.");
         }
-        if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
+        if (expression instanceof BetweenExpression) {
             throw new ShardingSphereException("The SQL clause 'BETWEEN...AND...' is unsupported in shadow rule.");
         }
         return Optional.empty();
     }
     
-    private static Optional<ShadowCondition> createCompareShadowCondition(final PredicateSegment predicateSegment, final PredicateCompareRightValue compareRightValue) {
-        return compareRightValue.getExpression() instanceof SimpleExpressionSegment
-                ? Optional.of(new ShadowCondition(predicateSegment.getColumn().getIdentifier().getValue(), compareRightValue.getExpression().getStartIndex(),
-                predicateSegment.getStopIndex(), compareRightValue.getExpression()))
+    private static Optional<ShadowCondition> createCompareShadowCondition(final BinaryOperationExpression expression) {
+        if (!(expression.getLeft() instanceof ColumnSegment)) {
+            return Optional.empty();
+        }
+        return expression.getRight() instanceof SimpleExpressionSegment
+                ? Optional.of(new ShadowCondition(((ColumnSegment) expression.getLeft()).getIdentifier().getValue(), expression.getRight().getStartIndex(),
+                expression.getStopIndex(), expression.getRight()))
                 : Optional.empty();
     }
     

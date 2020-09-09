@@ -31,4 +31,9 @@ public final class DerivedParameterMarkerExpressionSegment extends ParameterMark
     public DerivedParameterMarkerExpressionSegment(final int parameterMarkerIndex) {
         super(0, 0, parameterMarkerIndex);
     }
+    
+    @Override
+    public String getText() {
+        return null;
+    }
 }

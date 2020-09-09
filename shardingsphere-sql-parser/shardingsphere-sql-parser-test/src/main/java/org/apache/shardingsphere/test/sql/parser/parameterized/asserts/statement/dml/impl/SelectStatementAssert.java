@@ -57,11 +57,7 @@ public final class SelectStatementAssert {
         assertGroupByClause(assertContext, actual, expected);
         assertOrderByClause(assertContext, actual, expected);
         assertLimitClause(assertContext, actual, expected);
-        assertTableReferences(assertContext, actual, expected);
-    }
-    
-    private static void assertTableReferences(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-//        TableReferencesAssert.assertIs(assertContext, (List<TableReferenceSegment>) actual.getTableReferences(), expected.getTableReferences());
+//        TODO support table assert
     }
     
     private static void assertProjection(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {

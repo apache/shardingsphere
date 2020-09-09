@@ -15,36 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.util.predicate;
+package org.apache.shardingsphere.sql.parser.sql.common.util;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.LogicalOperator;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.OrPredicateSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Optional;
 
-/**
- * Predicate builder.
- */
 @RequiredArgsConstructor
-public final class PredicateBuildUtils {
+public class ExpressionBuildUtil {
     
-    private final ASTNode left;
+    private final ExpressionSegment left;
     
-    private final ASTNode right;
+    private final ExpressionSegment right;
     
     private final String operator;
     
     /**
      * Merge predicate.
-     * 
+     *
      * @return Or predicate segment
      */
     public OrPredicateSegment mergePredicate() {
@@ -92,12 +89,21 @@ public final class PredicateBuildUtils {
         if (astNode instanceof AndPredicate) {
             return Collections.singleton((AndPredicate) astNode);
         }
-        if (astNode instanceof PredicateSegment) {
-            AndPredicate andPredicate = new AndPredicate();
-            andPredicate.getPredicates().add((PredicateSegment) astNode);
-            return Collections.singleton(andPredicate);
+        if (astNode instanceof BinaryOperationExpression) {
+            String operator = ((BinaryOperationExpression) astNode).getOperator();
+            boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
+            if (logical) {
+                ExpressionBuildUtil util = new ExpressionBuildUtil(((BinaryOperationExpression) astNode).getLeft(), ((BinaryOperationExpression) astNode).getRight(), operator);
+                return util.mergePredicate().getAndPredicates();
+            } else {
+                AndPredicate andPredicate = new AndPredicate();
+                andPredicate.getPredicates().add((BinaryOperationExpression) astNode);
+                return Collections.singleton(andPredicate);
+            }
         }
-        return new LinkedList<>();
+        AndPredicate andPredicate = new AndPredicate();
+        andPredicate.getPredicates().add((ExpressionSegment) astNode);
+        return Collections.singleton(andPredicate);
     }
     
     private AndPredicate createAndPredicate(final AndPredicate left, final AndPredicate right) {

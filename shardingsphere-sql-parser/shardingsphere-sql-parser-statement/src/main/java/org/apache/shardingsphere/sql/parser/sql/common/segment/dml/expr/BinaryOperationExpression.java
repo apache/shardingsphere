@@ -20,9 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 /**
  * Binary operation expression.
  */
@@ -40,53 +37,5 @@ public class BinaryOperationExpression implements ExpressionSegment {
     
     private String operator;
     
-    /**
-     * Get expression list.
-     *
-     * @return ExpressionSegment list.
-     */
-    public Collection<ExpressionSegment> getExpressionList() {
-        Collection<ExpressionSegment> result = new LinkedList<>();
-        boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
-        if (logical) {
-            if (!(left instanceof BinaryOperationExpression)) {
-                result.add(left);
-            } else {
-                result.addAll(((BinaryOperationExpression) left).getExpressionList());
-            }
-            if (!(right instanceof BinaryOperationExpression)) {
-                result.add(right);
-            } else {
-                result.addAll(((BinaryOperationExpression) right).getExpressionList());
-            }
-        } else {
-            result.add(this);
-        }
-        return result;
-    }
-    
-    /**
-     * Get and expression list.
-     *
-     * @return ExpressionSegment list.
-     */
-    public Collection<Collection<ExpressionSegment>> getAndExpressionList() {
-        Collection<ExpressionSegment> result = new LinkedList<>();
-        boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
-        if (logical) {
-            if (!(left instanceof BinaryOperationExpression)) {
-                result.add(left);
-            } else {
-                result.addAll(((BinaryOperationExpression) left).getExpressionList());
-            }
-            if (!(right instanceof BinaryOperationExpression)) {
-                result.add(right);
-            } else {
-                result.addAll(((BinaryOperationExpression) right).getExpressionList());
-            }
-        } else {
-            result.add(this);
-        }
-        return result;
-    }
+    private String text;
 }

@@ -27,4 +27,6 @@ public class AllColumnExpression implements ExpressionSegment {
     private int startIndex;
     
     private int stopIndex;
+    
+    private String text = "*";
 }

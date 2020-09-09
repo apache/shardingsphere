@@ -32,5 +32,7 @@ public class ListExpression implements ExpressionSegment {
     private int stopIndex;
     
     private List<ExpressionSegment> items = new LinkedList<>();
+    
+    private String text;
 }
 

@@ -25,9 +25,14 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToke
 import org.apache.shardingsphere.shadow.rewrite.token.generator.BaseShadowSQLTokenGenerator;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -48,7 +53,26 @@ public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLToke
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Preconditions.checkState(((WhereAvailable) sqlStatementContext).getWhere().isPresent());
         Collection<SQLToken> result = new LinkedList<>();
-        for (AndPredicate each : ((WhereAvailable) sqlStatementContext).getWhere().get().getAndPredicates()) {
+        Collection<AndPredicate> andPredicates = new LinkedList<>();
+        ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
+        if (expression instanceof BinaryOperationExpression) {
+            String operator = ((BinaryOperationExpression) expression).getOperator();
+            boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
+            if (logical) {
+                ExpressionBuildUtil utils = new ExpressionBuildUtil(((BinaryOperationExpression) expression).getLeft(), ((BinaryOperationExpression) expression).getRight(), operator);
+                andPredicates.addAll(utils.mergePredicate().getAndPredicates());
+            
+            } else {
+                AndPredicate andPredicate = new AndPredicate();
+                andPredicate.getPredicates().add(expression);
+                andPredicates.add(andPredicate);
+            }
+        } else {
+            AndPredicate andPredicate = new AndPredicate();
+            andPredicate.getPredicates().add(expression);
+            andPredicates.add(andPredicate);
+        }
+        for (AndPredicate each : andPredicates) {
             result.addAll(generateSQLTokens(((WhereAvailable) sqlStatementContext).getWhere().get(), each));
         }
         return result;
@@ -56,9 +80,21 @@ public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLToke
     
     private Collection<SQLToken> generateSQLTokens(final WhereSegment whereSegment, final AndPredicate andPredicate) {
         Collection<SQLToken> result = new LinkedList<>();
-        List<PredicateSegment> predicates = (LinkedList<PredicateSegment>) andPredicate.getPredicates();
+        List<ExpressionSegment> predicates = (LinkedList<ExpressionSegment>) andPredicate.getPredicates();
         for (int i = 0; i < predicates.size(); i++) {
-            if (!getShadowRule().getColumn().equals(predicates.get(i).getColumn().getIdentifier().getValue())) {
+            ExpressionSegment expression = predicates.get(i);
+            ColumnSegment column = null;
+            if (expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
+                column = (ColumnSegment) ((BinaryOperationExpression) expression).getLeft();
+            } else if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
+                column = (ColumnSegment) ((InExpression) expression).getLeft();
+            } else if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
+                column = (ColumnSegment) ((BetweenExpression) expression).getLeft();
+            }
+            if (null == column) {
+                continue;
+            }
+            if (!getShadowRule().getColumn().equals(column.getIdentifier().getValue())) {
                 continue;
             }
             if (1 == predicates.size()) {

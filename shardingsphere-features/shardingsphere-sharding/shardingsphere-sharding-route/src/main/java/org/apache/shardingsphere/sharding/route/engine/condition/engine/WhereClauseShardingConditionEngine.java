@@ -37,8 +37,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenE
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereSegmentExtractUtils;
 
@@ -90,82 +92,77 @@ public final class WhereClauseShardingConditionEngine {
     }
     
     private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext sqlStatementContext, final ExpressionSegment expressionSegment, final List<Object> parameters) {
-        List<ExpressionSegment> expressions = new LinkedList<>();
-        if (!(expressionSegment instanceof BinaryOperationExpression)) {
-            expressions.add(expressionSegment);
-        } else {
-            expressions.addAll(((BinaryOperationExpression) expressionSegment).getExpressionList());
-        }
         Collection<ShardingCondition> result = new LinkedList<>();
-        for (ExpressionSegment each : expressions) {
-            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatementContext, each, parameters);
-            if (!routeValueMap.isEmpty()) {
-                result.add(createShardingCondition(routeValueMap));
+    
+        Collection<AndPredicate> andPredicates = new LinkedList<>();
+        if (expressionSegment instanceof BinaryOperationExpression) {
+            String operator = ((BinaryOperationExpression) expressionSegment).getOperator();
+            boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
+            if (logical) {
+                ExpressionBuildUtil utils = new ExpressionBuildUtil(((BinaryOperationExpression) expressionSegment).getLeft(), ((BinaryOperationExpression) expressionSegment).getRight(), operator);
+                andPredicates.addAll(utils.mergePredicate().getAndPredicates());
+        
+            } else {
+                AndPredicate andPredicate = new AndPredicate();
+                andPredicate.getPredicates().add(expressionSegment);
+                andPredicates.add(andPredicate);
             }
+        } else {
+            AndPredicate andPredicate = new AndPredicate();
+            andPredicate.getPredicates().add(expressionSegment);
+            andPredicates.add(andPredicate);
         }
-//        for (AndPredicate each : andPredicates) {
-//            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatementContext, each, parameters);
-//            if (routeValueMap.isEmpty()) {
-//                return Collections.emptyList();
-//            }
-//            result.add(createShardingCondition(routeValueMap));
-//        }
+    
+        for (AndPredicate each : andPredicates) {
+            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatementContext, each, parameters);
+            if (routeValueMap.isEmpty()) {
+                return Collections.emptyList();
+            }
+            result.add(createShardingCondition(routeValueMap));
+        }
         return result;
     }
     
-    private Map<Column, Collection<RouteValue>> createRouteValueMap(final SQLStatementContext sqlStatementContext, final ExpressionSegment expression, final List<Object> parameters) {
-        Optional<RouteValue> routeValue = Optional.empty();
-        Column column = null;
-        if (expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
-            ColumnSegment columnSegment = (ColumnSegment) ((BinaryOperationExpression) expression).getLeft();
-            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment, schemaMetaData);
-            if (tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
-                column = new Column(columnSegment.getIdentifier().getValue(), tableName.get());
-                routeValue = ConditionValueGeneratorFactory.generate(expression, column, parameters);
-            }
-        }
-        if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
-            ColumnSegment columnSegment = (ColumnSegment) ((InExpression) expression).getLeft();
-            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment, schemaMetaData);
-            if (tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
-                column = new Column(columnSegment.getIdentifier().getValue(), tableName.get());
-                routeValue = ConditionValueGeneratorFactory.generate(expression, column, parameters);
-            }
-        }
-        if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
-            ColumnSegment columnSegment = (ColumnSegment) ((BetweenExpression) expression).getLeft();
-            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment, schemaMetaData);
-            if (tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
-                column = new Column(columnSegment.getIdentifier().getValue(), tableName.get());
-                routeValue = ConditionValueGeneratorFactory.generate(expression, column, parameters);
-            }
-        }
+    private Map<Column, Collection<RouteValue>> createRouteValueMap(final SQLStatementContext sqlStatementContext, final AndPredicate expressions, final List<Object> parameters) {
         Map<Column, Collection<RouteValue>> result = new HashMap<>();
-        if (routeValue.isPresent()) {
-            if (!result.containsKey(column)) {
-                Collection<RouteValue> routeValues = new LinkedList<>();
-                routeValues.add(routeValue.get());
-                result.put(column, routeValues);
-            } else {
-                result.get(column).add(routeValue.get());
+    
+        for (ExpressionSegment each : expressions.getPredicates()) {
+            Optional<RouteValue> routeValue = Optional.empty();
+            Column column = null;
+            if (each instanceof BinaryOperationExpression && ((BinaryOperationExpression) each).getLeft() instanceof ColumnSegment) {
+                ColumnSegment columnSegment = (ColumnSegment) ((BinaryOperationExpression) each).getLeft();
+                Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment, schemaMetaData);
+                if (tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
+                    column = new Column(columnSegment.getIdentifier().getValue(), tableName.get());
+                    routeValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
+                }
+            }
+            if (each instanceof InExpression && ((InExpression) each).getLeft() instanceof ColumnSegment) {
+                ColumnSegment columnSegment = (ColumnSegment) ((InExpression) each).getLeft();
+                Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment, schemaMetaData);
+                if (tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
+                    column = new Column(columnSegment.getIdentifier().getValue(), tableName.get());
+                    routeValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
+                }
+            }
+            if (each instanceof BetweenExpression && ((BetweenExpression) each).getLeft() instanceof ColumnSegment) {
+                ColumnSegment columnSegment = (ColumnSegment) ((BetweenExpression) each).getLeft();
+                Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment, schemaMetaData);
+                if (tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
+                    column = new Column(columnSegment.getIdentifier().getValue(), tableName.get());
+                    routeValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
+                }
+            }
+            if (routeValue.isPresent()) {
+                if (!result.containsKey(column)) {
+                    Collection<RouteValue> routeValues = new LinkedList<>();
+                    routeValues.add(routeValue.get());
+                    result.put(column, routeValues);
+                } else {
+                    result.get(column).add(routeValue.get());
+                }
             }
         }
-        
-//        for (PredicateSegment each : andPredicate.getPredicates()) {
-//            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(each.getColumn(), schemaMetaData);
-//            if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName.get())) {
-//                continue;
-//            }
-//            Column column = new Column(each.getColumn().getIdentifier().getValue(), tableName.get());
-//            Optional<RouteValue> routeValue = ConditionValueGeneratorFactory.generate(each.getRightValue(), column, parameters);
-//            if (!routeValue.isPresent()) {
-//                continue;
-//            }
-//            if (!result.containsKey(column)) {
-//                result.put(column, new LinkedList<>());
-//            }
-//            result.get(column).add(routeValue.get());
-//        }
         return result;
     }
     

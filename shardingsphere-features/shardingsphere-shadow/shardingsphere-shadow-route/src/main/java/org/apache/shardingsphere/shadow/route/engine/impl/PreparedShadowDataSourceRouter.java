@@ -19,19 +19,21 @@ package org.apache.shardingsphere.shadow.route.engine.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.route.engine.ShadowDataSourceRouter;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateCompareRightValue;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,27 +63,61 @@ public final class PreparedShadowDataSourceRouter implements ShadowDataSourceRou
             }
             return false;
         }
-        if (sqlStatementContext instanceof WhereAvailable) {
-            Optional<WhereSegment> whereSegment = ((WhereAvailable) sqlStatementContext).getWhere();
-            if (!whereSegment.isPresent()) {
-                return false;
+        if (!(sqlStatementContext instanceof WhereAvailable)) {
+            return false;
+        }
+        Optional<WhereSegment> whereSegment = ((WhereAvailable) sqlStatementContext).getWhere();
+        if (!whereSegment.isPresent()) {
+            return false;
+        }
+        Collection<AndPredicate> andPredicates = new LinkedList<>();
+        ExpressionSegment expression = whereSegment.get().getExpr();
+        if (expression instanceof BinaryOperationExpression) {
+            String operator = ((BinaryOperationExpression) expression).getOperator();
+            boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
+            if (logical) {
+                ExpressionBuildUtil utils = new ExpressionBuildUtil(((BinaryOperationExpression) expression).getLeft(), ((BinaryOperationExpression) expression).getRight(), operator);
+                andPredicates.addAll(utils.mergePredicate().getAndPredicates());
+        
+            } else {
+                AndPredicate andPredicate = new AndPredicate();
+                andPredicate.getPredicates().add(expression);
+                andPredicates.add(andPredicate);
             }
-            Collection<AndPredicate> andPredicates = whereSegment.get().getAndPredicates();
-            for (AndPredicate andPredicate : andPredicates) {
-                if (judgePredicateSegments(andPredicate.getPredicates())) {
-                    return true;
-                }
+        } else {
+            AndPredicate andPredicate = new AndPredicate();
+            andPredicate.getPredicates().add(expression);
+            andPredicates.add(andPredicate);
+        }
+        for (AndPredicate andPredicate : andPredicates) {
+            if (judgePredicateSegments(andPredicate.getPredicates())) {
+                return true;
             }
         }
         return false;
     }
     
-    private boolean judgePredicateSegments(final Collection<PredicateSegment> predicates) {
-        for (PredicateSegment each : predicates) {
-            if (each.getColumn().getIdentifier().getValue().equals(shadowRule.getColumn())) {
-                Preconditions.checkArgument(each.getRightValue() instanceof PredicateCompareRightValue, "must be PredicateCompareRightValue");
-                PredicateCompareRightValue rightValue = (PredicateCompareRightValue) each.getRightValue();
-                int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) rightValue.getExpression()).getParameterMarkerIndex();
+    private boolean judgePredicateSegments(final Collection<ExpressionSegment> predicates) {
+        for (ExpressionSegment each : predicates) {
+            if (!(each instanceof BinaryOperationExpression)) {
+                continue;
+            }
+            BinaryOperationExpression expression = (BinaryOperationExpression) each;
+            ColumnSegment column = null;
+            ExpressionSegment right = null;
+            if (expression.getLeft() instanceof ColumnSegment) {
+                column = (ColumnSegment) ((BinaryOperationExpression) each).getLeft();
+                right = ((BinaryOperationExpression) each).getRight();
+            }
+            if (null == column) {
+                continue;
+            }
+            if (column.getIdentifier().getValue().equals(shadowRule.getColumn())) {
+                Preconditions.checkArgument(each instanceof BinaryOperationExpression, "must be BinaryOperationExpression");
+                if (!(right instanceof ParameterMarkerExpressionSegment)) {
+                    continue;
+                }
+                int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) right).getParameterMarkerIndex();
                 Object value = parameters.get(parameterMarkerIndex);
                 return isShadowField(value);
             }

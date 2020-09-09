@@ -38,6 +38,6 @@ public final class WhereClauseAssert {
      * @param expected expected where clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final WhereSegment actual, final ExpectedWhereClause expected) {
-//        PredicatesAssert.assertIs(assertContext, actual.getAndPredicates(), expected.getAndPredicates());
+//        TODO support expr in where assert
     }
 }
