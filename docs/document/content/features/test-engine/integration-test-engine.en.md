@@ -47,7 +47,7 @@ mysql.password=root
 postgresql.host=db.psql
 postgresql.port=5432
 postgresql.username=postgres
-postgresql.password=
+postgresql.password=postgres
 
 ## SQLServer configuration
 sqlserver.host=db.mssql
