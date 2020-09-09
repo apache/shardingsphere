@@ -74,7 +74,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         if (ProxyContext.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
         }
-        BackendResponse backendResponse = getBackendResponse();
+        BackendResponse backendResponse = databaseCommunicationEngine.execute();
         if (backendResponse instanceof QueryResponse) {
             responseType = ResponseType.QUERY;
             return createQueryPacket((QueryResponse) backendResponse);
@@ -85,16 +85,6 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         }
         responseType = ResponseType.ERROR;
         return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
-    }
-    
-    private BackendResponse getBackendResponse() {
-        try {
-            return databaseCommunicationEngine.execute();
-        // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-        // CHECKSTYLE:OFF
-            return new ErrorResponse(ex);
-        }
     }
     
     private Collection<DatabasePacket<?>> createQueryPacket(final QueryResponse backendResponse) {
