@@ -217,9 +217,9 @@ public final class ConfigCenter {
     }
     
     private void persistSchemaName(final String schemaName) {
-        String schemaNames = repository.get(node.getSchemaPath());
+        String schemaNames = repository.get(node.getSchemasPath());
         if (Strings.isNullOrEmpty(schemaNames)) {
-            repository.persist(node.getSchemaPath(), schemaName);
+            repository.persist(node.getSchemasPath(), schemaName);
             return;
         }
         List<String> schemaNameList = Splitter.on(",").splitToList(schemaNames);
@@ -228,18 +228,18 @@ public final class ConfigCenter {
         }
         List<String> newArrayList = new ArrayList<>(schemaNameList);
         newArrayList.add(schemaName);
-        repository.persist(node.getSchemaPath(), Joiner.on(",").join(newArrayList));
+        repository.persist(node.getSchemasPath(), Joiner.on(",").join(newArrayList));
     }
     
     private void persistSchema(final String schemaName, final boolean isDrop) {
-        String schemaNames = repository.get(node.getSchemaPath());
+        String schemaNames = repository.get(node.getSchemasPath());
         Collection<String> schemas = new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
         if (isDrop) {
             schemas.remove(schemaName);
         } else if (!schemas.contains(schemaName)) {
             schemas.add(schemaName);
         }
-        repository.persist(node.getSchemaPath(), Joiner.on(",").join(schemas));
+        repository.persist(node.getSchemasPath(), Joiner.on(",").join(schemas));
     }
     
     /**
@@ -293,7 +293,7 @@ public final class ConfigCenter {
      * @return all schema names
      */
     public Collection<String> getAllSchemaNames() {
-        String schemaNames = repository.get(node.getSchemaPath());
+        String schemaNames = repository.get(node.getSchemasPath());
         return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : node.splitSchemaName(schemaNames);
     }
     

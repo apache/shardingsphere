@@ -59,10 +59,10 @@ public class GovernanceSpringBootRegistryMasterSlaveTest {
     public static void init() {
         EmbedTestingServer.start();
         TestGovernanceRepository repository = new TestGovernanceRepository();
-        repository.persist("/config/schema/logic_db/datasource", readYAML(DATA_SOURCE_FILE));
-        repository.persist("/config/schema/logic_db/rule", readYAML(RULE_FILE));
-        repository.persist("/config/props", "{}\n");
-        repository.persist("/registry/datasources", "");
+        repository.persist("/schemas/logic_db/datasource", readYAML(DATA_SOURCE_FILE));
+        repository.persist("/schemas/logic_db/rule", readYAML(RULE_FILE));
+        repository.persist("/props", "{}\n");
+        repository.persist("/states/datanodes", "");
     }
     
     @Test
