@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.yaml.swapper;
+package org.apache.shardingsphere.primaryreplica.yaml.swapper;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
-import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.masterslave.yaml.config.rule.YamlMasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.api.config.PrimaryReplicaRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.api.config.rule.PrimaryReplicaDataSourceRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.constant.PrimaryReplicaOrder;
+import org.apache.shardingsphere.primaryreplica.yaml.config.YamlPrimaryReplicaRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.yaml.config.rule.YamlPrimaryReplicaDataSourceRuleConfiguration;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class MasterSlaveRuleConfigurationYamlSwapperTest {
+public final class PrimaryReplicaRuleConfigurationYamlSwapperTest {
     
     private final Collection<YamlRuleConfigurationSwapper> collection = ShardingSphereServiceLoader.newServiceInstances(YamlRuleConfigurationSwapper.class);
     
@@ -49,77 +49,77 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlWithLoadBalanceAlgorithm() {
-        MasterSlaveDataSourceRuleConfiguration dataSourceConfiguration = new MasterSlaveDataSourceRuleConfiguration("ds", "master", Collections.singletonList("slave"), "roundRobin");
-        YamlMasterSlaveRuleConfiguration actual = getMasterSlaveRuleConfigurationYamlSwapper().swapToYamlConfiguration(new MasterSlaveRuleConfiguration(
+        PrimaryReplicaDataSourceRuleConfiguration dataSourceConfiguration = new PrimaryReplicaDataSourceRuleConfiguration("ds", "primary", Collections.singletonList("replica"), "roundRobin");
+        YamlPrimaryReplicaRuleConfiguration actual = getPrimaryReplicaRuleConfigurationYamlSwapper().swapToYamlConfiguration(new PrimaryReplicaRuleConfiguration(
                 Collections.singleton(dataSourceConfiguration), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()))));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
-        assertThat(actual.getDataSources().get("ds").getMasterDataSourceName(), is("master"));
-        assertThat(actual.getDataSources().get("ds").getSlaveDataSourceNames(), is(Collections.singletonList("slave")));
+        assertThat(actual.getDataSources().get("ds").getPrimaryDataSourceName(), is("primary"));
+        assertThat(actual.getDataSources().get("ds").getReplicaDataSourceNames(), is(Collections.singletonList("replica")));
         assertThat(actual.getDataSources().get("ds").getLoadBalancerName(), is("roundRobin"));
     }
     
     @Test
     public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
-        MasterSlaveDataSourceRuleConfiguration dataSourceConfiguration = new MasterSlaveDataSourceRuleConfiguration("ds", "master", Collections.singletonList("slave"), null);
-        YamlMasterSlaveRuleConfiguration actual = getMasterSlaveRuleConfigurationYamlSwapper().swapToYamlConfiguration(
-                new MasterSlaveRuleConfiguration(Collections.singleton(dataSourceConfiguration), Collections.emptyMap()));
+        PrimaryReplicaDataSourceRuleConfiguration dataSourceConfiguration = new PrimaryReplicaDataSourceRuleConfiguration("ds", "primary", Collections.singletonList("replica"), null);
+        YamlPrimaryReplicaRuleConfiguration actual = getPrimaryReplicaRuleConfigurationYamlSwapper().swapToYamlConfiguration(
+                new PrimaryReplicaRuleConfiguration(Collections.singleton(dataSourceConfiguration), Collections.emptyMap()));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
-        assertThat(actual.getDataSources().get("ds").getMasterDataSourceName(), is("master"));
-        assertThat(actual.getDataSources().get("ds").getSlaveDataSourceNames(), is(Collections.singletonList("slave")));
+        assertThat(actual.getDataSources().get("ds").getPrimaryDataSourceName(), is("primary"));
+        assertThat(actual.getDataSources().get("ds").getReplicaDataSourceNames(), is(Collections.singletonList("replica")));
         assertNull(actual.getDataSources().get("ds").getLoadBalancerName());
     }
     
     @Test
     public void assertSwapToObjectWithLoadBalanceAlgorithmType() {
-        YamlMasterSlaveRuleConfiguration yamlConfiguration = createYamlMasterSlaveRuleConfiguration();
-        yamlConfiguration.getDataSources().get("master_slave_ds").setLoadBalancerName("RANDOM");
-        MasterSlaveRuleConfiguration actual = getMasterSlaveRuleConfigurationYamlSwapper().swapToObject(yamlConfiguration);
-        assertMasterSlaveRuleConfiguration(actual);
+        YamlPrimaryReplicaRuleConfiguration yamlConfiguration = createYamlPrimaryReplicaRuleConfiguration();
+        yamlConfiguration.getDataSources().get("primary_replica_ds").setLoadBalancerName("RANDOM");
+        PrimaryReplicaRuleConfiguration actual = getPrimaryReplicaRuleConfigurationYamlSwapper().swapToObject(yamlConfiguration);
+        assertPrimaryReplicaRuleConfiguration(actual);
         assertThat(actual.getDataSources().iterator().next().getLoadBalancerName(), is("RANDOM"));
     }
     
     @Test
     public void assertSwapToObjectWithoutLoadBalanceAlgorithm() {
-        YamlMasterSlaveRuleConfiguration yamlConfiguration = createYamlMasterSlaveRuleConfiguration();
-        MasterSlaveRuleConfiguration actual = getMasterSlaveRuleConfigurationYamlSwapper().swapToObject(yamlConfiguration);
-        assertMasterSlaveRuleConfiguration(actual);
+        YamlPrimaryReplicaRuleConfiguration yamlConfiguration = createYamlPrimaryReplicaRuleConfiguration();
+        PrimaryReplicaRuleConfiguration actual = getPrimaryReplicaRuleConfigurationYamlSwapper().swapToObject(yamlConfiguration);
+        assertPrimaryReplicaRuleConfiguration(actual);
         assertNull(actual.getDataSources().iterator().next().getLoadBalancerName());
     }
     
-    private YamlMasterSlaveRuleConfiguration createYamlMasterSlaveRuleConfiguration() {
-        YamlMasterSlaveRuleConfiguration result = new YamlMasterSlaveRuleConfiguration();
-        result.getDataSources().put("master_slave_ds", new YamlMasterSlaveDataSourceRuleConfiguration());
-        result.getDataSources().get("master_slave_ds").setName("master_slave_ds");
-        result.getDataSources().get("master_slave_ds").setMasterDataSourceName("master_ds");
-        result.getDataSources().get("master_slave_ds").setSlaveDataSourceNames(Arrays.asList("slave_ds_0", "slave_ds_1"));
+    private YamlPrimaryReplicaRuleConfiguration createYamlPrimaryReplicaRuleConfiguration() {
+        YamlPrimaryReplicaRuleConfiguration result = new YamlPrimaryReplicaRuleConfiguration();
+        result.getDataSources().put("primary_replica_ds", new YamlPrimaryReplicaDataSourceRuleConfiguration());
+        result.getDataSources().get("primary_replica_ds").setName("primary_replica_ds");
+        result.getDataSources().get("primary_replica_ds").setPrimaryDataSourceName("primary_ds");
+        result.getDataSources().get("primary_replica_ds").setReplicaDataSourceNames(Arrays.asList("replica_ds_0", "replica_ds_1"));
         return result;
     }
     
-    private void assertMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration actual) {
-        MasterSlaveDataSourceRuleConfiguration group = actual.getDataSources().iterator().next();
-        assertThat(group.getName(), is("master_slave_ds"));
-        assertThat(group.getMasterDataSourceName(), is("master_ds"));
-        assertThat(group.getSlaveDataSourceNames(), is(Arrays.asList("slave_ds_0", "slave_ds_1")));
+    private void assertPrimaryReplicaRuleConfiguration(final PrimaryReplicaRuleConfiguration actual) {
+        PrimaryReplicaDataSourceRuleConfiguration group = actual.getDataSources().iterator().next();
+        assertThat(group.getName(), is("primary_replica_ds"));
+        assertThat(group.getPrimaryDataSourceName(), is("primary_ds"));
+        assertThat(group.getReplicaDataSourceNames(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
     }
     
     @Test
     public void assertGetTypeClass() {
-        MasterSlaveRuleConfigurationYamlSwapper masterSlaveRuleConfigurationYamlSwapper = getMasterSlaveRuleConfigurationYamlSwapper();
-        Class<MasterSlaveRuleConfiguration> actual = masterSlaveRuleConfigurationYamlSwapper.getTypeClass();
-        assertTrue(actual.isAssignableFrom(MasterSlaveRuleConfiguration.class));
+        PrimaryReplicaRuleConfigurationYamlSwapper primaryReplicaRuleConfigurationYamlSwapper = getPrimaryReplicaRuleConfigurationYamlSwapper();
+        Class<PrimaryReplicaRuleConfiguration> actual = primaryReplicaRuleConfigurationYamlSwapper.getTypeClass();
+        assertTrue(actual.isAssignableFrom(PrimaryReplicaRuleConfiguration.class));
     }
     
     @Test
     public void assertGetOrder() {
-        MasterSlaveRuleConfigurationYamlSwapper masterSlaveRuleConfigurationYamlSwapper = getMasterSlaveRuleConfigurationYamlSwapper();
-        int actual = masterSlaveRuleConfigurationYamlSwapper.getOrder();
-        assertThat(actual, is(MasterSlaveOrder.ORDER));
+        PrimaryReplicaRuleConfigurationYamlSwapper primaryReplicaRuleConfigurationYamlSwapper = getPrimaryReplicaRuleConfigurationYamlSwapper();
+        int actual = primaryReplicaRuleConfigurationYamlSwapper.getOrder();
+        assertThat(actual, is(PrimaryReplicaOrder.ORDER));
     }
     
-    private MasterSlaveRuleConfigurationYamlSwapper getMasterSlaveRuleConfigurationYamlSwapper() {
-        Optional<MasterSlaveRuleConfigurationYamlSwapper> optional = collection.stream()
-                .filter(swapper -> swapper instanceof MasterSlaveRuleConfigurationYamlSwapper)
-                .map(swapper -> (MasterSlaveRuleConfigurationYamlSwapper) swapper)
+    private PrimaryReplicaRuleConfigurationYamlSwapper getPrimaryReplicaRuleConfigurationYamlSwapper() {
+        Optional<PrimaryReplicaRuleConfigurationYamlSwapper> optional = collection.stream()
+                .filter(swapper -> swapper instanceof PrimaryReplicaRuleConfigurationYamlSwapper)
+                .map(swapper -> (PrimaryReplicaRuleConfigurationYamlSwapper) swapper)
                 .findFirst();
         assertTrue(optional.isPresent());
         return optional.get();
