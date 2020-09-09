@@ -16,25 +16,25 @@ The registry center can create running node of database access object under `sta
 ```
 namespace
    ├──states
-        ├──proxynodes
-              ├──${your_instance_ip_a}@${your_instance_pid_x}@${UUID}
-              ├──${your_instance_ip_b}@${your_instance_pid_y}@${UUID}
-              ├──....
-        ├──datanodes
-              ├──${schema_1}
-              ├      ├──${ds_0}
-              ├      ├──${ds_1}
-              ├──${schema_2}
-              ├      ├──${ds_0}
-              ├      ├──${ds_1}
-              ├──....
+   ├    ├──proxynodes
+   ├    ├     ├──${your_instance_ip_a}@${your_instance_pid_x}@${UUID}
+   ├    ├     ├──${your_instance_ip_b}@${your_instance_pid_y}@${UUID}
+   ├    ├     ├──....
+   ├    ├──datanodes
+   ├    ├     ├──${schema_1}
+   ├    ├     ├      ├──${ds_0}
+   ├    ├     ├      ├──${ds_1}
+   ├    ├     ├──${schema_2}
+   ├    ├     ├      ├──${ds_0}
+   ├    ├     ├      ├──${ds_1}
+   ├    ├     ├──....
 ```
 
-### /proxynodes
+### /states/proxynodes
 
 It includes running instance information of database access object, with sub-nodes as the identifiers of currently running instance, which consist of IP and PID. Those identifiers are temporary nodes, which are registered when instances are on-line and cleared when instances are off-line. The registry center monitors the change of those nodes to govern the database access of running instances and other things.
 
-### /datanodes
+### /states/datanodes
 
 It is able to orchestrate read-write split slave database, delete or disable data dynamically.
 
