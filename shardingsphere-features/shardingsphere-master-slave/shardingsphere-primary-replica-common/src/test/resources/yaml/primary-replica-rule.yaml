@@ -16,51 +16,51 @@
 #
 
 dataSources:
-  master_ds_0: !!com.zaxxer.hikari.HikariDataSource
+  primary_ds_0: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:master_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:primary_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
-  master_ds_0_slave_0: !!com.zaxxer.hikari.HikariDataSource
+  primary_ds_0_replica_0: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:slave_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:replica_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
-  master_ds_0_slave_1: !!com.zaxxer.hikari.HikariDataSource
+  primary_ds_0_replica_1: !!com.zaxxer.hikari.HikariDataSource
       driverClassName: org.h2.Driver
-      jdbcUrl: jdbc:h2:mem:slave_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+      jdbcUrl: jdbc:h2:mem:replica_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
       username: sa
       password: 
-  master_ds_1: !!com.zaxxer.hikari.HikariDataSource
+  primary_ds_1: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:master_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:primary_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
-  master_ds_1_slave_0: !!com.zaxxer.hikari.HikariDataSource
+  primary_ds_1_replica_0: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:slave_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:replica_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
-  master_ds_1_slave_1: !!com.zaxxer.hikari.HikariDataSource
+  primary_ds_1_replica_1: !!com.zaxxer.hikari.HikariDataSource
       driverClassName: org.h2.Driver
-      jdbcUrl: jdbc:h2:mem:slave_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+      jdbcUrl: jdbc:h2:mem:replica_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
       username: sa
       password: 
 
 rules:
-- !MASTER_SLAVE
+- !PRIMARY_REPLICA
   dataSources:
     ds_0:
-      masterDataSourceName: master_ds_0
-      slaveDataSourceNames:
-        - master_ds_0_slave_0
-        - master_ds_0_slave_1
+      primaryDataSourceName: primary_ds_0
+      replicaDataSourceNames:
+        - primary_ds_0_replica_0
+        - primary_ds_0_replica_1
       loadBalancerName: roundRobin
     ds_1:
-      masterDataSourceName: master_ds_1
-      slaveDataSourceNames: 
-        - master_ds_1_slave_0
-        - master_ds_1_slave_1
+      primaryDataSourceName: primary_ds_1
+      replicaDataSourceNames: 
+        - primary_ds_1_replica_0
+        - primary_ds_1_replica_1
       loadBalancerName: random
   loadBalancers:
     roundRobin:
