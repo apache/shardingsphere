@@ -67,11 +67,11 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     }
     
     @Override
-    public Collection<DatabasePacket<?>> execute() {
+    public Collection<DatabasePacket<?>> execute() throws SQLException {
         if (ProxyContext.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
         }
-        BackendResponse backendResponse = getBackendResponse();
+        BackendResponse backendResponse = textProtocolBackendHandler.execute();
         if (backendResponse instanceof QueryResponse) {
             responseType = ResponseType.QUERY;
             return createQueryPackets((QueryResponse) backendResponse);
@@ -82,14 +82,6 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         }
         responseType = ResponseType.ERROR;
         return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
-    }
-    
-    private BackendResponse getBackendResponse() {
-        try {
-            return textProtocolBackendHandler.execute();
-        } catch (final SQLException ex) {
-            return new ErrorResponse(ex);
-        }
     }
     
     private Collection<DatabasePacket<?>> createQueryPackets(final QueryResponse backendResponse) {
