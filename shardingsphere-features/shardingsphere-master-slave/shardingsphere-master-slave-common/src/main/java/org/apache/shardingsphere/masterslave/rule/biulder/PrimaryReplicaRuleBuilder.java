@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.rule.biulder;
+package org.apache.shardingsphere.primaryreplica.rule.biulder;
 
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.api.config.PrimaryReplicaRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
-import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
+import org.apache.shardingsphere.primaryreplica.constant.PrimaryReplicaOrder;
+import org.apache.shardingsphere.primaryreplica.rule.PrimaryReplicaRule;
 
 import java.util.Collection;
 
 /**
- * Master-slave rule builder.
+ * Primary-replica rule builder.
  */
-public final class MasterSlaveRuleBuilder implements ShardingSphereRuleBuilder<MasterSlaveRule, MasterSlaveRuleConfiguration> {
+public final class PrimaryReplicaRuleBuilder implements ShardingSphereRuleBuilder<PrimaryReplicaRule, PrimaryReplicaRuleConfiguration> {
     
     @Override
-    public MasterSlaveRule build(final MasterSlaveRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
-        return new MasterSlaveRule(ruleConfiguration);
+    public PrimaryReplicaRule build(final PrimaryReplicaRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+        return new PrimaryReplicaRule(ruleConfiguration);
     }
     
     @Override
     public int getOrder() {
-        return MasterSlaveOrder.ORDER;
+        return PrimaryReplicaOrder.ORDER;
     }
     
     @Override
-    public Class<MasterSlaveRuleConfiguration> getTypeClass() {
-        return MasterSlaveRuleConfiguration.class;
+    public Class<PrimaryReplicaRuleConfiguration> getTypeClass() {
+        return PrimaryReplicaRuleConfiguration.class;
     }
 }
