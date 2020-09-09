@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spring.boot;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.spring.boot.fixture.TestJndiInitialContextFactory;
-import org.apache.shardingsphere.test.MockedDataSource;
+import org.apache.shardingsphere.jdbc.test.MockedDataSource;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;

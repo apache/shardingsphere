@@ -20,29 +20,27 @@ package org.apache.shardingsphere.governance.core.config.listener;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.commons.collections4.SetUtils;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.common.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.common.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.common.event.schema.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.common.event.schema.SchemaDeletedEvent;
-import org.apache.shardingsphere.governance.core.common.listener.PostGovernanceRepositoryEventListener;
-import org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.governance.core.common.yaml.swapper.DataSourceConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.event.rule.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.governance.core.event.schema.SchemaAddedEvent;
+import org.apache.shardingsphere.governance.core.event.schema.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.listener.PostGovernanceRepositoryEventListener;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
+import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
@@ -53,102 +51,91 @@ import java.util.stream.Collectors;
  */
 public final class SchemaChangedListener extends PostGovernanceRepositoryEventListener {
     
-    private final ConfigCenter configurationService;
+    private final ConfigCenter configCenter;
     
     private final ConfigCenterNode configurationNode;
     
-    private final Collection<String> existedSchemaNames = new LinkedHashSet<>();
+    private final Collection<String> existedSchemaNames;
     
     public SchemaChangedListener(final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
         super(configurationRepository, new ConfigCenterNode().getAllSchemaConfigPaths(schemaNames));
-        configurationService = new ConfigCenter(configurationRepository);
+        configCenter = new ConfigCenter(configurationRepository);
         configurationNode = new ConfigCenterNode();
-        existedSchemaNames.addAll(schemaNames);
+        existedSchemaNames = new LinkedHashSet<>(schemaNames);
     }
     
     @Override
     protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         // TODO Consider removing the following one.
-        if (configurationNode.getSchemaPath().equals(event.getKey())) {
+        if (configurationNode.getSchemasPath().equals(event.getKey())) {
             return createSchemaNamesUpdatedEvent(event.getValue());
         }
-        String shardingSchemaName = configurationNode.getSchemaName(event.getKey());
-        if (Strings.isNullOrEmpty(shardingSchemaName) || !isValidNodeChangedEvent(shardingSchemaName, event.getKey())) {
+        String schemaName = configurationNode.getSchemaName(event.getKey());
+        if (Strings.isNullOrEmpty(schemaName) || !isValidNodeChangedEvent(schemaName, event.getKey())) {
             return Optional.empty();
         }
         if (ChangedType.ADDED == event.getChangedType()) {
-            return Optional.of(createAddedEvent(shardingSchemaName));
+            return Optional.of(createAddedEvent(schemaName));
         }
         if (ChangedType.UPDATED == event.getChangedType()) {
-            return Optional.of(createUpdatedEvent(shardingSchemaName, event));
+            return Optional.of(createUpdatedEvent(schemaName, event));
         }
         if (ChangedType.DELETED == event.getChangedType()) {
-            return Optional.of(createDeletedEvent(shardingSchemaName));
+            existedSchemaNames.remove(schemaName);
+            return Optional.of(new SchemaDeletedEvent(schemaName));
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createSchemaNamesUpdatedEvent(final String shardingSchemaNames) {
-        Collection<String> persistShardingSchemaNames = configurationNode.splitSchemaName(shardingSchemaNames);
-        Set<String> addedSchemaNames = SetUtils.difference(new HashSet<>(persistShardingSchemaNames), new HashSet<>(existedSchemaNames));
+    private Optional<GovernanceEvent> createSchemaNamesUpdatedEvent(final String schemaNames) {
+        Collection<String> persistedSchemaNames = configurationNode.splitSchemaName(schemaNames);
+        Set<String> addedSchemaNames = SetUtils.difference(new HashSet<>(persistedSchemaNames), new HashSet<>(existedSchemaNames));
         if (!addedSchemaNames.isEmpty()) {
             return Optional.of(createAddedEvent(addedSchemaNames.iterator().next()));
         }
-        Set<String> deletedSchemaNames = SetUtils.difference(new HashSet<>(existedSchemaNames), new HashSet<>(persistShardingSchemaNames));
+        Set<String> deletedSchemaNames = SetUtils.difference(new HashSet<>(existedSchemaNames), new HashSet<>(persistedSchemaNames));
         if (!deletedSchemaNames.isEmpty()) {
-            return Optional.of(createDeletedEvent(deletedSchemaNames.iterator().next()));
+            String schemaName = deletedSchemaNames.iterator().next();
+            existedSchemaNames.remove(schemaName);
+            return Optional.of(new SchemaDeletedEvent(schemaName));
         }
         return Optional.empty();
     }
     
-    private boolean isValidNodeChangedEvent(final String shardingSchemaName, final String nodeFullPath) {
-        return !existedSchemaNames.contains(shardingSchemaName)
-                || configurationNode.getDataSourcePath(shardingSchemaName).equals(nodeFullPath) || configurationNode.getRulePath(shardingSchemaName).equals(nodeFullPath);
+    private boolean isValidNodeChangedEvent(final String schemaName, final String nodeFullPath) {
+        return !existedSchemaNames.contains(schemaName) || configurationNode.getDataSourcePath(schemaName).equals(nodeFullPath) || configurationNode.getRulePath(schemaName).equals(nodeFullPath);
     }
     
-    private GovernanceEvent createAddedEvent(final String shardingSchemaName) {
-        existedSchemaNames.add(shardingSchemaName);
-        if (!isOwnCompleteConfigurations(shardingSchemaName)) {
-            return new SchemaAddedEvent(shardingSchemaName, Collections.emptyMap(), Collections.emptyList());
-        }
-        return new SchemaAddedEvent(shardingSchemaName, configurationService.loadDataSourceConfigurations(shardingSchemaName), createRuleConfigurations(shardingSchemaName));
+    private GovernanceEvent createAddedEvent(final String schemaName) {
+        existedSchemaNames.add(schemaName);
+        return isOwnCompleteConfigurations(schemaName)
+                ? new SchemaAddedEvent(schemaName, configCenter.loadDataSourceConfigurations(schemaName), configCenter.loadRuleConfigurations(schemaName))
+                : new SchemaAddedEvent(schemaName, Collections.emptyMap(), Collections.emptyList());
     }
     
-    private GovernanceEvent createUpdatedEvent(final String shardingSchemaName, final DataChangedEvent event) {
+    private GovernanceEvent createUpdatedEvent(final String schemaName, final DataChangedEvent event) {
         // TODO Consider remove judgement.
-        return existedSchemaNames.contains(shardingSchemaName) ? createUpdatedEventForExistedSchema(event, shardingSchemaName) : createAddedEvent(shardingSchemaName);
+        return existedSchemaNames.contains(schemaName) ? createUpdatedEventForExistedSchema(schemaName, event) : createAddedEvent(schemaName);
     }
     
-    private GovernanceEvent createUpdatedEventForExistedSchema(final DataChangedEvent event, final String shardingSchemaName) {
-        return event.getKey().equals(configurationNode.getDataSourcePath(shardingSchemaName))
-                ? createDataSourceChangedEvent(shardingSchemaName, event) : createRuleChangedEvent(shardingSchemaName, event);
+    private GovernanceEvent createUpdatedEventForExistedSchema(final String schemaName, final DataChangedEvent event) {
+        return event.getKey().equals(configurationNode.getDataSourcePath(schemaName)) ? createDataSourceChangedEvent(schemaName, event) : createRuleChangedEvent(schemaName, event);
     }
     
-    @SuppressWarnings("unchecked")
-    private DataSourceChangedEvent createDataSourceChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
-        Map<String, YamlDataSourceConfiguration> dataSourceConfigurations = (Map) YamlEngine.unmarshal(event.getValue());
-        Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data sources to load for governance.");
-        return new DataSourceChangedEvent(shardingSchemaName, dataSourceConfigurations.entrySet().stream()
+    private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
+        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshal(event.getValue(), YamlDataSourceConfigurationWrap.class);
+        Preconditions.checkState(null != result && !result.getDataSources().isEmpty(), "No available data sources to load for governance.");
+        return new DataSourceChangedEvent(schemaName, result.getDataSources().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue()))));
     }
     
-    private GovernanceEvent createRuleChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
+    private GovernanceEvent createRuleChangedEvent(final String schemaName, final DataChangedEvent event) {
         YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(event.getValue(), YamlRootRuleConfigurations.class);
         Preconditions.checkState(null != configurations, "No available rule to load for governance.");
-        return new RuleConfigurationsChangedEvent(
-                shardingSchemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()));
+        return new RuleConfigurationsChangedEvent(schemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()));
     }
     
-    private boolean isOwnCompleteConfigurations(final String shardingSchemaName) {
-        return configurationService.hasDataSourceConfiguration(shardingSchemaName) && configurationService.hasRuleConfiguration(shardingSchemaName);
-    }
-    
-    private Collection<RuleConfiguration> createRuleConfigurations(final String shardingSchemaName) {
-        return configurationService.loadRuleConfigurations(shardingSchemaName);
-    }
-    
-    private GovernanceEvent createDeletedEvent(final String shardingSchemaName) {
-        existedSchemaNames.remove(shardingSchemaName);
-        return new SchemaDeletedEvent(shardingSchemaName);
+    private boolean isOwnCompleteConfigurations(final String schemaName) {
+        return configCenter.hasDataSourceConfiguration(schemaName) && configCenter.hasRuleConfiguration(schemaName);
     }
 }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.tex
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -50,6 +51,6 @@ public final class PostgreSQLComQueryExecutorTest {
         ErrorResponse errorResponse = new ErrorResponse(new PSQLException(mock(ServerErrorMessage.class)));
         when(textProtocolBackendHandler.execute()).thenReturn(errorResponse);
         assertThat(postgreSQLComQueryExecutor.execute().iterator().next(), instanceOf(PostgreSQLErrorResponsePacket.class));
-        assertThat(postgreSQLComQueryExecutor.isErrorResponse(), is(true));
+        assertThat(postgreSQLComQueryExecutor.getResponseType(), is(ResponseType.ERROR));
     }
 }

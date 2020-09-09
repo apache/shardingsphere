@@ -44,10 +44,6 @@ import java.util.Properties;
 @Slf4j
 public final class ApolloRepository implements ConfigurationRepository {
     
-    private static final String DOT_SEPARATOR = ".";
-    
-    private static final String PATH_SEPARATOR = "/";
-    
     private final Map<String, DataChangedEventListener> caches = new HashMap<>();
     
     private ApolloConfigWrapper configWrapper;

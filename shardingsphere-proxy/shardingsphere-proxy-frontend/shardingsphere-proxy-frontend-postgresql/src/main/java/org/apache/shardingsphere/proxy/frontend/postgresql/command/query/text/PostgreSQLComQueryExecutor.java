@@ -30,14 +30,15 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLErrPacketFactory;
 
 import java.sql.ResultSetMetaData;
@@ -56,21 +57,15 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
     @Getter
-    private volatile boolean isQueryResponse;
-    
-    @Getter
-    private volatile boolean isUpdateResponse;
-    
-    @Getter
-    private volatile boolean isErrorResponse;
+    private volatile ResponseType responseType;
     
     public PostgreSQLComQueryExecutor(final PostgreSQLComQueryPacket comQueryPacket, final BackendConnection backendConnection) {
         textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypes.getActualDatabaseType("PostgreSQL"), comQueryPacket.getSql(), backendConnection);
     }
     
     @Override
-    public Collection<DatabasePacket<?>> execute() throws SQLException {
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak()) {
+    public Collection<DatabasePacket<?>> execute() {
+        if (ProxyContext.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new PostgreSQLErrorResponsePacket());
         }
         BackendResponse backendResponse = getBackendResponse();
@@ -79,10 +74,10 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
             return result.<List<DatabasePacket<?>>>map(Collections::singletonList).orElseGet(Collections::emptyList);
         }
         if (backendResponse instanceof UpdateResponse) {
-            isUpdateResponse = true;
+            responseType = ResponseType.UPDATE;
             return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
-        isErrorResponse = true;
+        responseType = ResponseType.ERROR;
         return Collections.singletonList(createErrorPacket((ErrorResponse) backendResponse));
     }
     
@@ -100,7 +95,9 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
         List<PostgreSQLColumnDescription> columnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
-        isQueryResponse = !columnDescriptions.isEmpty();
+        if (columnDescriptions.isEmpty()) {
+            responseType = ResponseType.QUERY;
+        }
         if (columnDescriptions.isEmpty()) {
             return Optional.empty();
         }

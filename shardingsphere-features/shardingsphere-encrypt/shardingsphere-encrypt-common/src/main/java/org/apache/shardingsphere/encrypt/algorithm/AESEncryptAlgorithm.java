@@ -42,7 +42,7 @@ import java.util.Properties;
 @Setter
 public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
-    private static final String AES_KEY = "aes.key.value";
+    private static final String AES_KEY = "aes-key-value";
     
     private Properties props = new Properties();
     

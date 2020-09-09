@@ -672,7 +672,11 @@ subqueryOp
     ;
 
 allOp
-    : mathOperator
+    : op | mathOperator
+    ;
+
+op
+    : (AND_ | OR_ | NOT_ | TILDE_ | VERTICAL_BAR_ | AMPERSAND_ | SIGNED_LEFT_SHIFT_ | SIGNED_RIGHT_SHIFT_ | CARET_ | MOD_ | COLON_ | PLUS_ | MINUS_ | ASTERISK_ |   SLASH_ | BACKSLASH_ |   DOT_ | DOT_ASTERISK_ |  SAFE_EQ_ |   DEQ_ | EQ_ | CQ_ | NEQ_ | GT_ | GTE_ | LT_ | LTE_ | POUND_ | LP_ | RP_ | LBE_ | RBE_ | LBT_ | RBT_ | COMMA_ | DQ_ | SQ_ | BQ_ | QUESTION_ |   AT_ | SEMI_ | TILDE_TILDE_ |  NOT_TILDE_TILDE_ | TYPE_CAST_ )+
     ;
 
 mathOperator
@@ -958,7 +962,7 @@ extractArg
     ;
 
 genericType
-    :    typeFunctionName typeModifiers? | typeFunctionName attrs typeModifiers?
+    : typeFunctionName typeModifiers? | typeFunctionName attrs typeModifiers?
     ;
 
 typeModifiers
@@ -966,7 +970,7 @@ typeModifiers
     ;
 
 numeric
-    : INT | INTEGER | SMALLINT | BIGINT| REAL | FLOAT optFloat | DOUBLE PRECISION | DECIMAL typeModifiers? | DEC typeModifiers? | NUMERIC typeModifiers? | BOOLEAN
+    : INT | INTEGER | SMALLINT | BIGINT| REAL | FLOAT optFloat | DOUBLE PRECISION | DECIMAL typeModifiers? | DEC typeModifiers? | NUMERIC typeModifiers? | BOOLEAN | FLOAT8 | FLOAT4 | INT2 | INT4 | INT8
 	;
 
 constDatetime
@@ -974,6 +978,7 @@ constDatetime
     | TIMESTAMP timezone?
     | TIME LP_ NUMBER_ RP_ timezone?
     | TIME timezone?
+    | DATE
     ;
 
 timezone
@@ -1016,6 +1021,9 @@ attrName
 
 colLable
     : identifier
+    | colNameKeyword
+    | typeFuncNameKeyword
+    | reservedKeyword
     ;
 
 bit
@@ -1311,7 +1319,7 @@ dataTypeName
     : INT | INT2 | INT4 | INT8 | SMALLINT | INTEGER | BIGINT | DECIMAL | NUMERIC | REAL | FLOAT | FLOAT4 | FLOAT8 | DOUBLE PRECISION | SMALLSERIAL | SERIAL | BIGSERIAL
     | MONEY | VARCHAR | CHARACTER | CHAR | TEXT | NAME | BYTEA | TIMESTAMP | DATE | TIME | INTERVAL | BOOLEAN | ENUM | POINT
     | LINE | LSEG | BOX | PATH | POLYGON | CIRCLE | CIDR | INET | MACADDR | MACADDR8 | BIT | VARBIT | TSVECTOR | TSQUERY | UUID | XML
-    | JSON | INT4RANGE | INT8RANGE | NUMRANGE | TSRANGE | TSTZRANGE | DATERANGE | ARRAY | identifier
+    | JSON | INT4RANGE | INT8RANGE | NUMRANGE | TSRANGE | TSTZRANGE | DATERANGE | ARRAY | identifier | constDatetime | typeName
     ;
 
 dataTypeLength
@@ -1548,7 +1556,7 @@ defList
     ;
 
 defElem
-    : colLabel  defArg?
+    : (colLabel EQ_ defArg) | colLabel
     ;
 
 colLabel
@@ -1749,5 +1757,17 @@ commonFuncOptItem
 functionSetResetClause
     : SET setRestMore
     | variableResetStmt
+    ;
+
+rowSecurityCmd
+    : ALL | SELECT | INSERT	| UPDATE | DELETE
+    ;
+
+event
+    : SELECT | UPDATE | DELETE | INSERT
+    ;
+
+typeNameList
+    : typeName (COMMA_ typeName)*
     ;
 

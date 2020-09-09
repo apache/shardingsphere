@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter login statement.
  */
-public final class AlterLoginStatement extends AbstractSQLStatement implements DCLStatement {
+public abstract class AlterLoginStatement extends AbstractSQLStatement {
 }

@@ -41,10 +41,6 @@ import java.util.concurrent.Executor;
 @Slf4j
 public final class NacosRepository implements ConfigurationRepository {
     
-    private static final String DOT_SEPARATOR = ".";
-    
-    private static final String PATH_SEPARATOR = "/";
-    
     private ConfigService configService;
     
     private NacosProperties nacosProperties;

@@ -55,23 +55,23 @@
 
     <sharding:sharding-algorithm id="inlineDatabaseStrategyAlgorithm" type="INLINE">
         <props>
-            <prop key="algorithm.expression">demo_ds_${user_id % 2}</prop>
+            <prop key="algorithm-expression">demo_ds_${user_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
     <sharding:sharding-algorithm id="inlineOrderTableStrategyAlgorithm" type="INLINE">
         <props>
-            <prop key="algorithm.expression">t_order_${order_id % 2}</prop>
+            <prop key="algorithm-expression">t_order_${order_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
     <sharding:sharding-algorithm id="inlineOrderItemTableStrategyAlgorithm" type="INLINE">
         <props>
-            <prop key="algorithm.expression">t_order_item_${order_id % 2}</prop>
+            <prop key="algorithm-expression">t_order_item_${order_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
 
     <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
         <props>
-            <prop key="worker.id">123</prop>
+            <prop key="worker-id">123</prop>
         </props>
     </sharding:key-generate-algorithm>
     

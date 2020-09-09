@@ -22,11 +22,11 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.governance.core.common.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.common.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.common.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.common.event.schema.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.common.event.schema.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.rule.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.governance.core.event.schema.SchemaAddedEvent;
+import org.apache.shardingsphere.governance.core.event.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
@@ -74,14 +74,14 @@ public final class SchemaChangedListenerTest {
     
     @Test
     public void assertCreateIgnoredEvent() {
-        assertFalse(schemaChangedListener.createGovernanceEvent(new DataChangedEvent("/config/schema/encrypt_db", "test", ChangedType.UPDATED)).isPresent());
-        assertFalse(schemaChangedListener.createGovernanceEvent(new DataChangedEvent("/config/schema/encrypt_db/rule", "test", ChangedType.IGNORED)).isPresent());
+        assertFalse(schemaChangedListener.createGovernanceEvent(new DataChangedEvent("/schemas/encrypt_db", "test", ChangedType.UPDATED)).isPresent());
+        assertFalse(schemaChangedListener.createGovernanceEvent(new DataChangedEvent("/schemas/encrypt_db/rule", "test", ChangedType.IGNORED)).isPresent());
     }
     
     @Test
     public void assertCreateDataSourceChangedEventForExistedSchema() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/sharding_db/datasource", dataSource, ChangedType.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/sharding_db/datasource", dataSource, ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(DataSourceChangedEvent.class));
@@ -91,7 +91,7 @@ public final class SchemaChangedListenerTest {
     @Test
     public void assertCreateRuleConfigurationsChangedEventForExistedSchema() {
         String shardingRule = readYAML(SHARDING_RULE_FILE);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/sharding_db/rule", shardingRule, ChangedType.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/sharding_db/rule", shardingRule, ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((RuleConfigurationsChangedEvent) actual.get()).getSchemaName(), is("sharding_db"));
@@ -103,7 +103,7 @@ public final class SchemaChangedListenerTest {
     @Test
     public void assertCreateMasterSlaveRuleChangedEventForExistedSchema() {
         String masterSlaveRule = readYAML(MASTER_SLAVE_RULE_FILE);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/masterslave_db/rule", masterSlaveRule, ChangedType.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/masterslave_db/rule", masterSlaveRule, ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         RuleConfigurationsChangedEvent event = (RuleConfigurationsChangedEvent) actual.get();
@@ -116,7 +116,7 @@ public final class SchemaChangedListenerTest {
     @Test
     public void assertCreateEncryptRuleChangedEventForExistedSchema() {
         String encryptRule = readYAML(ENCRYPT_RULE_FILE);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/encrypt_db/rule", encryptRule, ChangedType.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/encrypt_db/rule", encryptRule, ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         RuleConfigurationsChangedEvent event = (RuleConfigurationsChangedEvent) actual.get();
@@ -126,27 +126,27 @@ public final class SchemaChangedListenerTest {
         assertThat(encryptRuleConfig.getEncryptors().size(), is(1));
         ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = encryptRuleConfig.getEncryptors().get("order_encryptor");
         assertThat(encryptAlgorithmConfig.getType(), is("AES"));
-        assertThat(encryptAlgorithmConfig.getProps().get("aes.key.value"), is(123456));
+        assertThat(encryptAlgorithmConfig.getProps().get("aes-key-value"), is(123456));
     }
     
     @Test
     public void assertCreateIgnoredGovernanceEventForNewSchema() {
-        when(configurationRepository.get("/config/schema/logic_db/datasource")).thenReturn("");
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/logic_db/rule", "rule", ChangedType.UPDATED);
+        when(configurationRepository.get("/schemas/logic_db/datasource")).thenReturn("");
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/rule", "rule", ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(SchemaAddedEvent.class));
     }
     
     @Test
-    public void assertCreateShardingSchemaAddedEventForNewSchema() {
+    public void assertCreateSchemaAddedEventForNewSchema() {
         String shardingRule = readYAML(SHARDING_RULE_FILE);
         String dataSource = readYAML(DATA_SOURCE_FILE);
-        when(configurationRepository.get("/config/schema/logic_db/rule")).thenReturn(shardingRule);
-        when(configurationRepository.get("/config/schema/logic_db/datasource")).thenReturn(dataSource);
-        when(configurationRepository.get("/config/schema/logic_db/rule")).thenReturn(shardingRule);
-        when(configurationRepository.get("/config/schema/logic_db/datasource")).thenReturn(dataSource);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/logic_db/datasource", dataSource, ChangedType.UPDATED);
+        when(configurationRepository.get("/schemas/logic_db/rule")).thenReturn(shardingRule);
+        when(configurationRepository.get("/schemas/logic_db/datasource")).thenReturn(dataSource);
+        when(configurationRepository.get("/schemas/logic_db/rule")).thenReturn(shardingRule);
+        when(configurationRepository.get("/schemas/logic_db/datasource")).thenReturn(dataSource);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/datasource", dataSource, ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((SchemaAddedEvent) actual.get()).getRuleConfigurations().iterator().next(), instanceOf(ShardingRuleConfiguration.class));
@@ -156,11 +156,11 @@ public final class SchemaChangedListenerTest {
     public void assertCreateMasterSlaveSchemaAddedEventForNewSchema() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         String masterSlaveRule = readYAML(MASTER_SLAVE_RULE_FILE);
-        when(configurationRepository.get("/config/schema/logic_db/rule")).thenReturn(masterSlaveRule);
-        when(configurationRepository.get("/config/schema/logic_db/datasource")).thenReturn(dataSource);
-        when(configurationRepository.get("/config/schema/logic_db/rule")).thenReturn(masterSlaveRule);
-        when(configurationRepository.get("/config/schema/logic_db/datasource")).thenReturn(dataSource);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/logic_db/datasource", dataSource, ChangedType.UPDATED);
+        when(configurationRepository.get("/schemas/logic_db/rule")).thenReturn(masterSlaveRule);
+        when(configurationRepository.get("/schemas/logic_db/datasource")).thenReturn(dataSource);
+        when(configurationRepository.get("/schemas/logic_db/rule")).thenReturn(masterSlaveRule);
+        when(configurationRepository.get("/schemas/logic_db/datasource")).thenReturn(dataSource);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/datasource", dataSource, ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((SchemaAddedEvent) actual.get()).getRuleConfigurations().iterator().next(), instanceOf(MasterSlaveRuleConfiguration.class));
@@ -170,11 +170,11 @@ public final class SchemaChangedListenerTest {
     public void assertCreateEncryptSchemaAddedEventForNewSchema() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         String encryptRule = readYAML(ENCRYPT_RULE_FILE);
-        when(configurationRepository.get("/config/schema/logic_db/rule")).thenReturn(encryptRule);
-        when(configurationRepository.get("/config/schema/logic_db/datasource")).thenReturn(dataSource);
-        when(configurationRepository.get("/config/schema/logic_db/rule")).thenReturn(encryptRule);
-        when(configurationRepository.get("/config/schema/logic_db/datasource")).thenReturn(dataSource);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/logic_db/datasource", dataSource, ChangedType.UPDATED);
+        when(configurationRepository.get("/schemas/logic_db/rule")).thenReturn(encryptRule);
+        when(configurationRepository.get("/schemas/logic_db/datasource")).thenReturn(dataSource);
+        when(configurationRepository.get("/schemas/logic_db/rule")).thenReturn(encryptRule);
+        when(configurationRepository.get("/schemas/logic_db/datasource")).thenReturn(dataSource);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/datasource", dataSource, ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((SchemaAddedEvent) actual.get()).getRuleConfigurations().iterator().next(), instanceOf(EncryptRuleConfiguration.class));
@@ -183,7 +183,7 @@ public final class SchemaChangedListenerTest {
     @Test
     public void assertCreateSchemaDeletedEventForNewSchema() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/logic_db/datasource", dataSource, ChangedType.DELETED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/datasource", dataSource, ChangedType.DELETED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((SchemaDeletedEvent) actual.get()).getSchemaName(), is("logic_db"));
@@ -192,7 +192,7 @@ public final class SchemaChangedListenerTest {
     @Test
     public void assertCreateWithSchemaDeletedEvent() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/logic_db", dataSource, ChangedType.DELETED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db", dataSource, ChangedType.DELETED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(SchemaDeletedEvent.class));
@@ -201,7 +201,7 @@ public final class SchemaChangedListenerTest {
     @Test
     public void assertCreateWithSchemaDeletedEventWithDataSourceNode() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/datasource", dataSource, ChangedType.DELETED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/datasource", dataSource, ChangedType.DELETED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(SchemaDeletedEvent.class));
@@ -211,9 +211,9 @@ public final class SchemaChangedListenerTest {
     public void assertCreateAddedEventWithEncryptRuleConfigurationForNewSchema() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         String encryptRule = readYAML(ENCRYPT_RULE_FILE);
-        when(configurationRepository.get("/config/schema/logic_db/rule")).thenReturn(encryptRule);
-        when(configurationRepository.get("/config/schema/logic_db/datasource")).thenReturn(dataSource);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/logic_db/rule", encryptRule, ChangedType.UPDATED);
+        when(configurationRepository.get("/schemas/logic_db/rule")).thenReturn(encryptRule);
+        when(configurationRepository.get("/schemas/logic_db/datasource")).thenReturn(dataSource);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/rule", encryptRule, ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((SchemaAddedEvent) actual.get()).getRuleConfigurations().iterator().next(), instanceOf(EncryptRuleConfiguration.class));
@@ -223,9 +223,9 @@ public final class SchemaChangedListenerTest {
     public void assertCreateAddedEventWithShardingRuleConfigurationForNewSchema() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         String shardingRule = readYAML(SHARDING_RULE_FILE);
-        when(configurationRepository.get("/config/schema/logic_db/rule")).thenReturn(shardingRule);
-        when(configurationRepository.get("/config/schema/logic_db/datasource")).thenReturn(dataSource);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/logic_db/rule", shardingRule, ChangedType.UPDATED);
+        when(configurationRepository.get("/schemas/logic_db/rule")).thenReturn(shardingRule);
+        when(configurationRepository.get("/schemas/logic_db/datasource")).thenReturn(dataSource);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/rule", shardingRule, ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((SchemaAddedEvent) actual.get()).getRuleConfigurations().iterator().next(), instanceOf(ShardingRuleConfiguration.class));
@@ -235,9 +235,9 @@ public final class SchemaChangedListenerTest {
     public void assertCreateAddedEventWithMasterSlaveRuleConfigurationForNewSchema() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         String masterSlaveRule = readYAML(MASTER_SLAVE_RULE_FILE);
-        when(configurationRepository.get("/config/schema/logic_db/rule")).thenReturn(masterSlaveRule);
-        when(configurationRepository.get("/config/schema/logic_db/datasource")).thenReturn(dataSource);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/logic_db/rule", masterSlaveRule, ChangedType.UPDATED);
+        when(configurationRepository.get("/schemas/logic_db/rule")).thenReturn(masterSlaveRule);
+        when(configurationRepository.get("/schemas/logic_db/datasource")).thenReturn(dataSource);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/rule", masterSlaveRule, ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((SchemaAddedEvent) actual.get()).getRuleConfigurations().iterator().next(), instanceOf(MasterSlaveRuleConfiguration.class));
@@ -245,7 +245,7 @@ public final class SchemaChangedListenerTest {
     
     @Test
     public void assertCreateSchemaNamesUpdatedEventForAdd() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema", "sharding_db,masterslave_db,encrypt_db,shadow_db", ChangedType.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas", "sharding_db,masterslave_db,encrypt_db,shadow_db", ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((SchemaAddedEvent) actual.get()).getSchemaName(), is("shadow_db"));
@@ -253,7 +253,7 @@ public final class SchemaChangedListenerTest {
     
     @Test
     public void assertCreateSchemaNamesUpdatedEventForDelete() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema", "sharding_db,masterslave_db", ChangedType.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas", "sharding_db,masterslave_db", ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((SchemaDeletedEvent) actual.get()).getSchemaName(), is("encrypt_db"));
@@ -261,13 +261,13 @@ public final class SchemaChangedListenerTest {
     
     @Test
     public void assertCreateSchemaNamesUpdatedEventForIgnore() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema", "sharding_db,masterslave_db,encrypt_db", ChangedType.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas", "sharding_db,masterslave_db,encrypt_db", ChangedType.UPDATED);
         assertFalse(schemaChangedListener.createGovernanceEvent(dataChangedEvent).isPresent());
     }
     
     @Test
     public void assertCreateSchemaNameAddEvent() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/config/schema/shadow_db", "", ChangedType.ADDED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/shadow_db", "", ChangedType.ADDED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((SchemaAddedEvent) actual.get()).getSchemaName(), is("shadow_db"));

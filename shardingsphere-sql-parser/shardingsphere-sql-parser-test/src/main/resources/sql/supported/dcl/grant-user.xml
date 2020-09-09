@@ -90,11 +90,11 @@
     <sql-case id="grant_all_on_language_to_current_user" value="GRANT ALL PRIVILEGES ON LANGUAGE lang1 TO CURRENT_USER" db-types="PostgreSQL" />
     <sql-case id="grant_usage_on_language" value="GRANT USAGE ON LANGUAGE lang1 TO role1" db-types="PostgreSQL" />
     <sql-case id="grant_usage_on_languages" value="GRANT USAGE ON LANGUAGE lang1, lang2 TO role1" db-types="PostgreSQL" />
-    <sql-case id="grant_all_on_large_object" value="GRANT ALL PRIVILEGES ON LARGE OBJECT loid1 TO role1" db-types="PostgreSQL" />
-    <sql-case id="grant_all_on_large_object_to_roles" value="GRANT ALL PRIVILEGES ON LARGE OBJECT loid1 TO role1, role2" db-types="PostgreSQL" />
-    <sql-case id="grant_all_on_large_object_to_current_user" value="GRANT ALL PRIVILEGES ON LARGE OBJECT loid1 TO CURRENT_USER" db-types="PostgreSQL" />
-    <sql-case id="grant_select_large_object" value="GRANT SELECT ON LARGE OBJECT loid1 TO role1" db-types="PostgreSQL" />
-    <sql-case id="grant_select_on_large_objects" value="GRANT SELECT ON LARGE OBJECT loid1, loid2 TO role1" db-types="PostgreSQL" />
+    <sql-case id="grant_all_on_large_object" value="GRANT ALL PRIVILEGES ON LARGE OBJECT 3344 TO role1" db-types="PostgreSQL" />
+    <sql-case id="grant_all_on_large_object_to_roles" value="GRANT ALL PRIVILEGES ON LARGE OBJECT 3344 TO role1, role2" db-types="PostgreSQL" />
+    <sql-case id="grant_all_on_large_object_to_current_user" value="GRANT ALL PRIVILEGES ON LARGE OBJECT 3344 TO CURRENT_USER" db-types="PostgreSQL" />
+    <sql-case id="grant_select_large_object" value="GRANT SELECT ON LARGE OBJECT 3344 TO role1" db-types="PostgreSQL" />
+    <sql-case id="grant_select_on_large_objects" value="GRANT SELECT ON LARGE OBJECT 3344, 3345 TO role1" db-types="PostgreSQL" />
     <sql-case id="grant_all_on_schema" value="GRANT ALL PRIVILEGES ON SCHEMA schema1 TO role1" db-types="PostgreSQL" />
     <sql-case id="grant_all_on_schema_to_roles" value="GRANT ALL PRIVILEGES ON SCHEMA schema1 TO role1, role2" db-types="PostgreSQL" />
     <sql-case id="grant_all_on_schema_to_current_user" value="GRANT ALL PRIVILEGES ON SCHEMA schema1 TO CURRENT_USER" db-types="PostgreSQL" />

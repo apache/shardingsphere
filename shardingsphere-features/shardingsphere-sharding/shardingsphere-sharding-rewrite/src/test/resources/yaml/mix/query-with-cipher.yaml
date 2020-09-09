@@ -56,15 +56,15 @@ rules:
     t_account_inline:
       type: INLINE
       props:
-        algorithm.expression: t_account_${account_id % 2}
+        algorithm-expression: t_account_${account_id % 2}
     t_account_bak_inline:
       type: INLINE
       props:
-        algorithm.expression: t_account_bak_${account_id % 2}
+        algorithm-expression: t_account_bak_${account_id % 2}
     t_account_detail_inline:
       type: INLINE
       props:
-        algorithm.expression: t_account_detail_${account_id % 2}
+        algorithm-expression: t_account_detail_${account_id % 2}
   
   keyGenerators:
     test:

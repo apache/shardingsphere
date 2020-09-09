@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
-import org.apache.shardingsphere.governance.core.common.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.common.listener.PostGovernanceRepositoryEventListener;
+import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
@@ -35,7 +35,7 @@ import java.util.Optional;
 public final class InstanceStateChangedListener extends PostGovernanceRepositoryEventListener {
     
     public InstanceStateChangedListener(final RegistryRepository registryRepository) {
-        super(registryRepository, Collections.singleton(new RegistryCenterNode().getInstancesNodeFullPath(GovernanceInstance.getInstance().getInstanceId())));
+        super(registryRepository, Collections.singleton(new RegistryCenterNode().getProxyNodePath(GovernanceInstance.getInstance().getInstanceId())));
     }
     
     @Override

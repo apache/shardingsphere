@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Checksum table statement.
+ * MySQL checksum table statement.
  */
 public final class MySQLChecksumTableStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

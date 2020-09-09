@@ -49,17 +49,17 @@ rules:
     database_inline:
       type: INLINE
       props:
-        algorithm.expression: ds_${user_id % 2}
+        algorithm-expression: ds_${user_id % 2}
     table_inline:
       type: INLINE
       props:
-        algorithm.expression: t_order_${order_id % 2}
+        algorithm-expression: t_order_${order_id % 2}
     
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
       props:
-          worker.id: 123
+          worker-id: 123
 
 props:
   sql.show: false

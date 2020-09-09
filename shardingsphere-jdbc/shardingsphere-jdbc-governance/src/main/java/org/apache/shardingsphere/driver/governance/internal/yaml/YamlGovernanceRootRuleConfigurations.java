@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.governance.internal.yaml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.governance.core.common.yaml.config.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 
 /**
  * YAML root rule configurations for governance.

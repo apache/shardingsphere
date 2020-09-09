@@ -56,10 +56,8 @@
     <dcl-test-case sql="ALTER ROLE role_dev_bak WITH NAME = role_dev" db-types="SQLServer"/>
     <dcl-test-case sql="ALTER ROLE default_role RESET ALL" db-types="PostgreSQL"/>
     <dcl-test-case sql="ALTER ROLE default_role RESET client_min_messages" db-types="PostgreSQL"/>
-    <dcl-test-case sql="ALTER ROLE default_role IN DATABASE db_0 RESET client_min_messages" db-types="PostgreSQL"/>
     <dcl-test-case sql="ALTER ROLE default_role SET client_min_messages = DEBUG" db-types="PostgreSQL"/>
     <dcl-test-case sql="ALTER ROLE default_role SET client_min_messages FROM CURRENT" db-types="PostgreSQL"/>
-    <dcl-test-case sql="ALTER ROLE default_role IN DATABASE db_0 SET client_min_messages = DEBUG" db-types="PostgreSQL"/>
     <dcl-test-case sql="ALTER ROLE role_dev NOT IDENTIFIED CONTAINER = ALL"  db-types="Oracle"/>
     <dcl-test-case sql="ALTER ROLE default_role WITH SUPERUSER" db-types="PostgreSQL"/>
     <dcl-test-case sql="ALTER ROLE default_role WITH CREATEDB CREATEROLE" db-types="PostgreSQL"/>
@@ -74,11 +72,9 @@
     <dcl-test-case sql="ALTER USER user_dev_bak WITH NAME = user_dev" db-types="SQLServer"/>
     <dcl-test-case sql="ALTER USER default_user RESET ALL" db-types="PostgreSQL"/>
     <dcl-test-case sql="ALTER USER default_user RESET client_min_messages" db-types="PostgreSQL"/>
-    <dcl-test-case sql="ALTER USER default_user IN DATABASE db_0 RESET client_min_messages" db-types="PostgreSQL"/>
     <dcl-test-case sql="ALTER USER user_dev REVOKE CONNECT THROUGH user2" db-types="Oracle"/>
     <dcl-test-case sql="ALTER USER default_user SET client_min_messages = DEBUG" db-types="PostgreSQL"/>
     <dcl-test-case sql="ALTER USER default_user SET client_min_messages FROM CURRENT" db-types="PostgreSQL"/>
-    <dcl-test-case sql="ALTER USER default_user IN DATABASE db_0 SET client_min_messages = DEBUG" db-types="PostgreSQL"/>
     <dcl-test-case sql="ALTER USER user_dev WITH DEFAULT_SCHEMA = schema" db-types="SQLServer"/>
     <dcl-test-case sql="ALTER USER user_dev WITH LOGIN = login1" db-types="SQLServer"/>
     <dcl-test-case sql="ALTER USER user_dev WITH PASSWORD = 'password'" db-types="SQLServer"/>
@@ -154,14 +150,10 @@
     <dcl-test-case sql="REVOKE ALL PRIVILEGES (order_id) ON TABLE t_order FROM role2" db-types="PostgreSQL"/>
     <dcl-test-case sql="REVOKE ALL PRIVILEGES (order_id) ON TABLE t_order FROM role2, role3" db-types="PostgreSQL"/>
     <dcl-test-case sql="REVOKE ALL PRIVILEGES ON db_0.t_order FROM user_dev" db-types="Oracle"/>
-    <dcl-test-case sql="REVOKE ALL PRIVILEGES ON DATABASE db_0 FROM role2" db-types="PostgreSQL"/>
-    <dcl-test-case sql="REVOKE ALL PRIVILEGES ON DATABASE db_0 FROM role2, role3" db-types="PostgreSQL"/>
     <dcl-test-case sql="REVOKE ALL PRIVILEGES ON SCHEMA public FROM default_role" db-types="PostgreSQL"/>
     <dcl-test-case sql="REVOKE ALL PRIVILEGES ON SCHEMA public FROM default_role, role2" db-types="PostgreSQL"/>
     <dcl-test-case sql="REVOKE ALL PRIVILEGES ON TABLE t_order FROM default_role, role2" db-types="PostgreSQL"/>
     <dcl-test-case sql="REVOKE ALL PRIVILEGES FROM user_dev" db-types="Oracle"/>
-    <dcl-test-case sql="REVOKE CREATE ON DATABASE db_0 FROM default_role" db-types="PostgreSQL"/>
-    <dcl-test-case sql="REVOKE CREATE ON DATABASE db_0, db_1 FROM default_role" db-types="PostgreSQL"/>
     <dcl-test-case sql="REVOKE CREATE ON SCHEMA public FROM default_role" db-types="PostgreSQL"/>
     <dcl-test-case sql="REVOKE INSERT, SELECT, UPDATE, DELETE ON *.* FROM user_dev" db-types="MySQL"/>
     <dcl-test-case sql="REVOKE INSERT, SELECT, UPDATE, DELETE ON t_order FROM user_dev" db-types="SQLServer"/>

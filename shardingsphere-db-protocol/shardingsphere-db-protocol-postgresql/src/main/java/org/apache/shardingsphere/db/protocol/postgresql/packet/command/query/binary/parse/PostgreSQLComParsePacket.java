@@ -50,9 +50,9 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     }
     
     private List<PostgreSQLBinaryStatementParameterType> getParameterTypes(final PostgreSQLPacketPayload payload) {
-        int parametersCount = payload.readInt2();
-        List<PostgreSQLBinaryStatementParameterType> result = new ArrayList<>(parametersCount); 
-        for (int i = 0; i < parametersCount; i++) {
+        int parameterCount = payload.readInt2();
+        List<PostgreSQLBinaryStatementParameterType> result = new ArrayList<>(parameterCount); 
+        for (int i = 0; i < parameterCount; i++) {
             result.add(new PostgreSQLBinaryStatementParameterType(PostgreSQLColumnType.valueOf(payload.readInt4())));
         }
         return result;

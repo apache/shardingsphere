@@ -14,8 +14,7 @@ Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/server.yaml`. Please refer to [Configurat
 
 If the backend database is PostgreSQL, there's no need for additional dependencies.
 
-If the backend database is MySQL, download [MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz) 
-and decompress, then copy `mysql-connector-java-5.1.47.jar` to `%SHARDINGSPHERE_PROXY_HOME%/lib` directory.
+If the backend database is MySQL, please download [mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar) and put it into `%SHARDINGSPHERE_PROXY_HOME%/lib` directory.
 
 ## 3. Start Server
 

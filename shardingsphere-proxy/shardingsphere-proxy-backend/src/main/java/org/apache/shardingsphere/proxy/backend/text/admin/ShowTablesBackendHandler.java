@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -54,7 +54,7 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     
     @Override
     public BackendResponse execute() {
-        SchemaContext context = ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema());
+        SchemaContext context = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
         if (null == context) {
             return new ErrorResponse(new NoDatabaseSelectedException());
         }
@@ -67,8 +67,8 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     }
     
     private QueryResponse getDefaultQueryResponse(final String schemaName) {
-        return new QueryResponse(Collections.singletonList(
-                new QueryHeader(schemaName, "", "Tables_in_" + schemaName, "Tables_in_" + schemaName, 64, Types.VARCHAR, 0, false, false, false, false)));
+        String column = String.format("Tables_in_%s", schemaName);
+        return new QueryResponse(Collections.singletonList(new QueryHeader(schemaName, "", column, column, 64, Types.VARCHAR, 0, false, false, false, false)));
     }
     
     @Override

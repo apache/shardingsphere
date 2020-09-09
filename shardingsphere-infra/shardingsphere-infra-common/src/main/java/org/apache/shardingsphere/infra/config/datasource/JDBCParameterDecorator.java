@@ -30,8 +30,9 @@ public interface JDBCParameterDecorator<T extends DataSource> {
      * Decorate data source.
      * 
      * @param dataSource data source to be decorated
+     * @return decorated data source
      */
-    void decorate(T dataSource);
+    T decorate(T dataSource);
     
     /**
      * Get data source type.

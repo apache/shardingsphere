@@ -54,7 +54,13 @@ public final class BootstrapArguments {
     }
     
     private String paddingWithSlash(final String arg) {
-        String path = arg.endsWith("/") ? arg : (arg + "/");
-        return path.startsWith("/") ? path : ("/" + path);
+        StringBuilder result = new StringBuilder(arg);
+        if (!arg.startsWith("/")) {
+            result.insert(0, '/');
+        }
+        if (!arg.endsWith("/")) {
+            result.append('/');
+        }
+        return result.toString();
     }
 }

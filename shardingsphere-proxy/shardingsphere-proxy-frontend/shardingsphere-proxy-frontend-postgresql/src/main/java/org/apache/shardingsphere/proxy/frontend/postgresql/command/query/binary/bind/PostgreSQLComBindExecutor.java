@@ -35,13 +35,14 @@ import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.Que
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
-import org.apache.shardingsphere.proxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLErrPacketFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -64,17 +65,11 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Getter
-    private volatile boolean isQueryResponse;
-    
-    @Getter
-    private volatile boolean isUpdateResponse;
-    
-    @Getter
-    private volatile boolean isErrorResponse;
+    private volatile ResponseType responseType;
     
     public PostgreSQLComBindExecutor(final PostgreSQLComBindPacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
-        SchemaContext schemaContext = ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema());
+        SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
         if (null != packet.getSql() && null != schemaContext) {
             SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
             databaseCommunicationEngine =
@@ -86,7 +81,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak()) {
+        if (ProxyContext.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new PostgreSQLErrorResponsePacket());
         }
         List<DatabasePacket<?>> result = new LinkedList<>();
@@ -99,11 +94,11 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
             createQueryPacket((QueryResponse) backendResponse).ifPresent(result::add);
         }
         if (backendResponse instanceof UpdateResponse) {
-            isUpdateResponse = true;
+            responseType = ResponseType.UPDATE;
             result.add(createUpdatePacket((UpdateResponse) backendResponse));
         }
         if (backendResponse instanceof ErrorResponse) {
-            isErrorResponse = true;
+            responseType = ResponseType.ERROR;
             result.add(createErrorPacket((ErrorResponse) backendResponse));
         }
         return result;
@@ -123,7 +118,9 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
         List<PostgreSQLColumnDescription> columnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
-        isQueryResponse = !columnDescriptions.isEmpty();
+        if (columnDescriptions.isEmpty()) {
+            responseType = ResponseType.QUERY;
+        }
         if (columnDescriptions.isEmpty() || packet.isBinaryRowData()) {
             return Optional.empty();
         }

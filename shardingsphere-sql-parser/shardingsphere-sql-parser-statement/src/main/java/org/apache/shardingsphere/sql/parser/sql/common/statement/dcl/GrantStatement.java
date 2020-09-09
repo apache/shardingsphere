@@ -28,7 +28,7 @@ import java.util.LinkedList;
  * Grant statement.
  */
 @Getter
-public final class GrantStatement extends AbstractSQLStatement implements DCLStatement {
-    
+public abstract class GrantStatement extends AbstractSQLStatement {
+
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }

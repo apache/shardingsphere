@@ -77,4 +77,20 @@
     <create-index sql-case-id="create_index_with_no_default_fill_factor">
         <table name="t_order" start-index="35" stop-index="41" />
     </create-index>
+
+    <create-index sql-case-id="create_index_with_tablespace">
+        <table name="t_order" start-index="25" stop-index="31" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_using_gist">
+        <table name="t_order" start-index="25" stop-index="31" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_with_concurrently">
+        <table name="t_order" start-index="50" stop-index="56" />
+    </create-index>
+
+    <create-index sql-case-id="create_gin_index">
+        <table name="t_order" start-index="24" stop-index="30" />
+    </create-index>
 </sql-parser-test-cases>

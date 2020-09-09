@@ -28,10 +28,6 @@ public final class PrepareFailedException extends RuntimeException {
         super(message);
     }
 
-    public PrepareFailedException(final Throwable cause) {
-        super(cause);
-    }
-
     public PrepareFailedException(final String message, final Throwable cause) {
         super(message, cause);
     }

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +48,8 @@ import static org.mockito.Mockito.when;
 
 public class ShowTablesBackendHandlerTest {
     
+    private static final String SCHEMA_PATTERN = "schema_%s";
+    
     private ShowTablesBackendHandler tablesBackendHandler;
     
     @Before
@@ -57,11 +59,10 @@ public class ShowTablesBackendHandlerTest {
         when(backendConnection.getUsername()).thenReturn("root");
         tablesBackendHandler = new ShowTablesBackendHandler("show tables", mock(SQLStatement.class), backendConnection);
         Map<String, SchemaContext> schemaContextMap = getSchemaContextMap();
-        when(backendConnection.getSchema()).thenReturn("schema_0");
-        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        when(backendConnection.getSchema()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(),
-                new StandardSchemaContexts(schemaContextMap, getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(schemaContextMap, getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
@@ -69,13 +70,13 @@ public class ShowTablesBackendHandlerTest {
         for (int i = 0; i < 10; i++) {
             SchemaContext context = mock(SchemaContext.class);
             when(context.isComplete()).thenReturn(false);
-            result.put("schema_" + i, context);
+            result.put(String.format(SCHEMA_PATTERN, i), context);
         }
         return result;
     }
     
     private Authentication getAuthentication() {
-        ProxyUser proxyUser = new ProxyUser("root", Arrays.asList("schema_0", "schema_1"));
+        ProxyUser proxyUser = new ProxyUser("root", Arrays.asList(String.format(SCHEMA_PATTERN, 0), String.format(SCHEMA_PATTERN, 1)));
         Authentication result = new Authentication();
         result.getUsers().put("root", proxyUser);
         return result;

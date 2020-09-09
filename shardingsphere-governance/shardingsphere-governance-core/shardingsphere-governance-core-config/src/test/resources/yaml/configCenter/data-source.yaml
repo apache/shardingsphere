@@ -14,18 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-ds_0: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration
+dataSources:
+  ds_0:
    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
    props:
      driverClassName: com.mysql.jdbc.Driver
      url: jdbc:mysql://localhost:3306/ds_0
      username: root
      password: root
-ds_1: !!org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration
- dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
- props:
-   driverClassName: com.mysql.jdbc.Driver
-   url: jdbc:mysql://localhost:3306/ds_1
-   username: root
-   password: root
+  ds_1:
+   dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+   props:
+     driverClassName: com.mysql.jdbc.Driver
+     url: jdbc:mysql://localhost:3306/ds_1
+     username: root
+     password: root

@@ -47,8 +47,15 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     private final SQLStatementContext sqlStatementContext;
     
     @Override
-    public int getColumnCount() {
-        return sqlStatementContext instanceof SelectStatementContext ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size() : 0;
+    public int getColumnCount() throws SQLException {
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            List<Projection> expandProjections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
+            if (expandProjections.isEmpty()) {
+                return resultSetMetaData.getColumnCount();
+            }
+            return expandProjections.size();
+        }
+        return resultSetMetaData.getColumnCount();
     }
     
     @Override
@@ -93,7 +100,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnName(final int column) throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext) {
+        if (isHasSelectExpandProjections()) {
             List<Projection> actualProjections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
             if (column > actualProjections.size()) {
                 throw new SQLException(SQLExceptionConstant.COLUMN_INDEX_OUT_OF_RANGE, SQLExceptionConstant.OUT_OF_INDEX_SQL_STATE, 0);
@@ -104,6 +111,11 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
             }
         }
         return resultSetMetaData.getColumnName(column);
+    }
+    
+    private boolean isHasSelectExpandProjections() {
+        return sqlStatementContext instanceof SelectStatementContext
+                && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
     @Override

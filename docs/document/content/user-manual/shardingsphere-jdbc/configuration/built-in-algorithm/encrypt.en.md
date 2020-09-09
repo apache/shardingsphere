@@ -17,7 +17,7 @@ Attributes:
 
 | *Name*        | *DataType* | *Description* |
 | ------------- | ---------- | ------------- |
-| aes.key.value | String     | AES KEY       |
+| aes-key-value | String     | AES KEY       |
 
 ## RC4 Encrypt Algorithm
 
@@ -27,4 +27,4 @@ Attributes:
 
 | *Name*        | *DataType* | *Description* |
 | ------------- | ---------- | ------------- |
-| rc4.key.value | String     | RC4 KEY       |
+| rc4-key-value | String     | RC4 KEY       |

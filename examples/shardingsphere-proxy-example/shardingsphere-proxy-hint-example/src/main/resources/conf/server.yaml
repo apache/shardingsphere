@@ -48,8 +48,8 @@ props:
     # BASE: Proxy will run with B.A.S.E transaction.
   proxy.transaction.type: LOCAL
   proxy.opentracing.enabled: false
-  proxy.hint.enabled: false
+  proxy.hint.enabled: true
   query.with.cipher.column: true
-  sql.show: false
-  allow.range.query.with.inline.sharding: false
+  sql.show: true
+  allow-range-query-with-inline-sharding: false
   check.table.metadata.enabled: false

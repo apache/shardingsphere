@@ -24,18 +24,19 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.governance.core.common.yaml.config.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.governance.core.common.yaml.swapper.DataSourceConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
+import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.eventbus.event.DataSourceEvent;
-import org.apache.shardingsphere.infra.eventbus.event.RuleEvent;
-import org.apache.shardingsphere.infra.eventbus.event.SchemaNameEvent;
+import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.event.persist.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.persist.RulePersistEvent;
+import org.apache.shardingsphere.governance.core.event.persist.SchemaNamePersistEvent;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -84,7 +85,7 @@ public final class ConfigCenter {
         persistDataSourceConfigurations(schemaName, dataSourceConfigs, isOverwrite);
         persistRuleConfigurations(schemaName, ruleConfigurations, isOverwrite);
         // TODO Consider removing the following one.
-        persistSchemaName(schemaName, isOverwrite);
+        persistSchemaName(schemaName);
     }
     
     /**
@@ -104,7 +105,7 @@ public final class ConfigCenter {
      * @param event Data source event.
      */
     @Subscribe
-    public synchronized void renew(final DataSourceEvent event) {
+    public synchronized void renew(final DataSourcePersistEvent event) {
         persistDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
     }
     
@@ -114,7 +115,7 @@ public final class ConfigCenter {
      * @param event Rule event.
      */
     @Subscribe
-    public synchronized void renew(final RuleEvent event) {
+    public synchronized void renew(final RulePersistEvent event) {
         persistRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
     }
     
@@ -124,29 +125,29 @@ public final class ConfigCenter {
      * @param event Schema name event.
      */
     @Subscribe
-    public synchronized void renew(final SchemaNameEvent event) {
-        persistSchemaName(event.getSchemaName(), event.isOverwrite());
+    public synchronized void renew(final SchemaNamePersistEvent event) {
+        persistSchema(event.getSchemaName(), event.isDrop());
     }
     
     private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
-        if (dataSourceConfigurations.isEmpty() || !isOverwrite) {
-            return;
+        if (!dataSourceConfigurations.isEmpty() && (isOverwrite || !hasDataSourceConfiguration(schemaName))) {
+            persistDataSourceConfigurations(schemaName, dataSourceConfigurations);
         }
-        persistDataSourceConfigurations(schemaName, dataSourceConfigurations);
     }
     
     private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data source in `%s` for governance.", schemaName);
         Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToYamlConfiguration(entry.getValue())));
-        repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(yamlDataSourceConfigurations));
+        YamlDataSourceConfigurationWrap yamlDataSourceConfigurationWrap = new YamlDataSourceConfigurationWrap();
+        yamlDataSourceConfigurationWrap.setDataSources(yamlDataSourceConfigurations);
+        repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(yamlDataSourceConfigurationWrap));
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
-        if (ruleConfigurations.isEmpty() || !isOverwrite) {
-            return;
+        if (!ruleConfigurations.isEmpty() && (isOverwrite || !hasRuleConfiguration(schemaName))) {
+            persistRuleConfigurations(schemaName, ruleConfigurations);
         }
-        persistRuleConfigurations(schemaName, ruleConfigurations);
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
@@ -200,24 +201,25 @@ public final class ConfigCenter {
     }
     
     private void persistAuthentication(final Authentication authentication, final boolean isOverwrite) {
-        if (null != authentication && isOverwrite) {
+        if (null != authentication && (isOverwrite || !hasAuthentication())) {
             repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication)));
         }
     }
     
     private void persistProperties(final Properties props, final boolean isOverwrite) {
-        if (!props.isEmpty() && isOverwrite) {
+        if (!props.isEmpty() && (isOverwrite || !hasProperties())) {
             repository.persist(node.getPropsPath(), YamlEngine.marshal(props));
         }
     }
     
-    private void persistSchemaName(final String schemaName, final boolean isOverwrite) {
-        if (!isOverwrite) {
-            return;
-        }
-        String schemaNames = repository.get(node.getSchemaPath());
+    private boolean hasProperties() {
+        return !Strings.isNullOrEmpty(repository.get(node.getPropsPath()));
+    }
+    
+    private void persistSchemaName(final String schemaName) {
+        String schemaNames = repository.get(node.getSchemasPath());
         if (Strings.isNullOrEmpty(schemaNames)) {
-            repository.persist(node.getSchemaPath(), schemaName);
+            repository.persist(node.getSchemasPath(), schemaName);
             return;
         }
         List<String> schemaNameList = Splitter.on(",").splitToList(schemaNames);
@@ -226,18 +228,18 @@ public final class ConfigCenter {
         }
         List<String> newArrayList = new ArrayList<>(schemaNameList);
         newArrayList.add(schemaName);
-        repository.persist(node.getSchemaPath(), Joiner.on(",").join(newArrayList));
+        repository.persist(node.getSchemasPath(), Joiner.on(",").join(newArrayList));
     }
     
-    private void persistSchema(final String schemaName, final boolean isDeleted) {
-        String schemaNames = repository.get(node.getSchemaPath());
+    private void persistSchema(final String schemaName, final boolean isDrop) {
+        String schemaNames = repository.get(node.getSchemasPath());
         Collection<String> schemas = new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
-        if (isDeleted) {
+        if (isDrop) {
             schemas.remove(schemaName);
         } else if (!schemas.contains(schemaName)) {
             schemas.add(schemaName);
         }
-        repository.persist(node.getSchemaPath(), Joiner.on(",").join(schemas));
+        repository.persist(node.getSchemasPath(), Joiner.on(",").join(schemas));
     }
     
     /**
@@ -246,13 +248,12 @@ public final class ConfigCenter {
      * @param schemaName schema name
      * @return data source configurations
      */
-    @SuppressWarnings("unchecked")
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String schemaName) {
         if (!hasDataSourceConfiguration(schemaName)) {
             return new LinkedHashMap<>();
         }
-        Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(repository.get(node.getDataSourcePath(schemaName)));
-        return result.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue())));
+        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshal(repository.get(node.getDataSourcePath(schemaName)), YamlDataSourceConfigurationWrap.class);
+        return result.getDataSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue())));
     }
     
     /**
@@ -292,7 +293,7 @@ public final class ConfigCenter {
      * @return all schema names
      */
     public Collection<String> getAllSchemaNames() {
-        String schemaNames = repository.get(node.getSchemaPath());
+        String schemaNames = repository.get(node.getSchemasPath());
         return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : node.splitSchemaName(schemaNames);
     }
     

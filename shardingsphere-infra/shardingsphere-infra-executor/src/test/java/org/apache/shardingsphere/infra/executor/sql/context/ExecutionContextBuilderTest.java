@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.context;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
@@ -46,10 +46,10 @@ public final class ExecutionContextBuilderTest {
         String sql = "sql";
         List<Object> parameters = Collections.singletonList("parameter");
         GenericSQLRewriteResult genericSQLRewriteResult = new GenericSQLRewriteResult(new SQLRewriteUnit(sql, parameters));
-        DataSourceMetas dataSourceMetas = mock(DataSourceMetas.class);
+        DataSourceMetaDatas dataSourceMetaDatas = mock(DataSourceMetaDatas.class);
         String firstDataSourceName = "firstDataSourceName";
-        when(dataSourceMetas.getAllInstanceDataSourceNames()).thenReturn(Arrays.asList(firstDataSourceName, "lastDataSourceName"));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(dataSourceMetas, null);
+        when(dataSourceMetaDatas.getAllInstanceDataSourceNames()).thenReturn(Arrays.asList(firstDataSourceName, "lastDataSourceName"));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(dataSourceMetaDatas, null);
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, genericSQLRewriteResult);
         Collection<ExecutionUnit> expected = Collections.singletonList(new ExecutionUnit(firstDataSourceName, new SQLUnit(sql, parameters)));
         assertThat(actual, is(expected));

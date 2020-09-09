@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Cache index statement.
+ * MySQL cache index statement.
  */
 public final class MySQLCacheIndexStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

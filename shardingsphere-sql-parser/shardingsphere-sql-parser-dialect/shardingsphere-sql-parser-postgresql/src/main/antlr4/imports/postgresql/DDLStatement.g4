@@ -21,9 +21,7 @@ import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule,DMLStatement;
 
 createTable
     : CREATE createTableSpecification_ TABLE tableNotExistClause_ tableName
-      createDefinitionClause
-      (OF anyName (LP_ typedTableElementList RP_)?)?
-      (PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec)?
+      (createDefinitionClause | (OF anyName (LP_ typedTableElementList RP_)?) | (PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec))
       inheritClause_ partitionSpec? tableAccessMethodClause? withOption? onCommitOption? tableSpace?
       (AS select withData?)?
       (EXECUTE name executeParamClause withData?)?
@@ -86,7 +84,7 @@ tableAccessMethodClause
     ;
 
 accessMethod
-    : colId
+    : identifier | unreservedWord | colNameKeyword
     ;
 
 createIndex
@@ -111,7 +109,7 @@ createDatabase
     ;
 
 createView
-    : CREATE (OR REPLACE)? (TEMP | TEMPORARY)? RECURSIVE? VIEW name
+    : CREATE (OR REPLACE)? (TEMP | TEMPORARY)? RECURSIVE? VIEW qualifiedName
       (LP_ (columnList (COMMA_ columnList)*)? RP_)?
       (WITH reloptions)?
       AS select
@@ -147,11 +145,11 @@ createdbOptName
 alterTable
     : ALTER TABLE
     ( tableExistClause_ onlyClause_ tableNameClause alterDefinitionClause
-    | ALL IN TABLESPACE name (OWNED BY roleList)? SET TABLESPACE name NOWAIT?)
+    | ALL IN TABLESPACE tableNameClause (OWNED BY roleList)? SET TABLESPACE name NOWAIT?)
     ;
 
 alterIndex
-    : ALTER INDEX indexExistClause_ indexName alterIndexDefinitionClause_
+    : ALTER INDEX (indexExistClause_ | ALL IN TABLESPACE) indexName alterIndexDefinitionClause_
     ;
 
 dropTable
@@ -246,7 +244,7 @@ sequenceOption
 indexParameters
     : (USING INDEX TABLESPACE ignoredIdentifier_)?
     | INCLUDE columnNames
-    | WITH
+    | WITH definition
     ;
 
 action
@@ -269,8 +267,21 @@ tableConstraintOption
     : checkOption
     | UNIQUE columnNames indexParameters
     | primaryKey columnNames indexParameters
-    | EXCLUDE (USING ignoredIdentifier_)?
+    | EXCLUDE (USING ignoredIdentifier_)? LP_ exclusionConstraintList RP_ indexParameters exclusionWhereClause?
     | FOREIGN KEY columnNames REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
+    ;
+
+exclusionWhereClause
+    : WHERE LP_ aExpr RP_
+    ;
+
+exclusionConstraintList
+    : exclusionConstraintElem (COMMA_ exclusionConstraintElem)*
+    ;
+
+exclusionConstraintElem
+    : indexElem WITH anyOperator
+    | indexElem WITH OPERATOR LP_ anyOperator RP_
     ;
 
 inheritClause_
@@ -288,6 +299,11 @@ partParams
 partElem
     : colId (COLLATE anyName)?  anyName?
     | LP_ aExpr RP_ (COLLATE anyName)?  anyName?
+    | funcExprWindowless (COLLATE anyName)?  anyName?
+    ;
+
+funcExprWindowless
+    : funcApplication | functionExprCommonSubexpr
     ;
 
 partStrategy
@@ -350,7 +366,7 @@ alterIndexDependsOnExtension
     ;
 
 alterIndexSetTableSpace
-    : ALL IN TABLESPACE indexName (OWNED BY ignoredIdentifiers_)? SET TABLESPACE name (NOWAIT)?
+    : (OWNED BY ignoredIdentifiers_)? SET TABLESPACE name (NOWAIT)?
     ;
 
 tableNamesClause
@@ -404,7 +420,7 @@ dropColumnSpecification
 columnExistClause_
     : (IF EXISTS)?
     ;
-    
+
 modifyColumnSpecification
     : modifyColumn (SET DATA)? TYPE dataType collateClause_? (USING aExpr)?
     | modifyColumn SET DEFAULT aExpr
@@ -617,6 +633,39 @@ alterOperator
     : ALTER OPERATOR alterOperatorClauses
     ;
 
+alterOperatorClass
+    : ALTER OPERATOR CLASS anyName USING name alterOperatorClassClauses
+    ;
+
+alterOperatorClassClauses
+    : RENAME TO name | SET SCHEMA name | OWNER TO roleSpec
+    ;
+
+alterOperatorFamily
+    : ALTER OPERATOR FAMILY anyName USING name alterOperatorFamilyClauses
+    ;
+
+alterOperatorFamilyClauses
+    : (ADD | DROP) opclassItemList
+    | alterOperatorClassClauses
+    ;
+
+opclassItemList
+    : opclassItem (COMMA_ opclassItem)*
+    ;
+
+opclassItem
+    : OPERATOR NUMBER_ anyOperator opclassPurpose? RECHECK?
+    | OPERATOR NUMBER_ operatorWithArgtypes opclassPurpose? RECHECK?
+    | FUNCTION NUMBER_ functionWithArgtypes
+    | FUNCTION NUMBER_ LP_ typeList RP_ functionWithArgtypes
+    | STORAGE typeName
+    ;
+
+opclassPurpose
+    : FOR SEARCH | FOR ORDER BY anyName
+    ;
+
 alterOperatorClauses
     : operatorWithArgtypes SET SCHEMA name
     | operatorWithArgtypes SET LP_ operatorDefList RP_
@@ -763,7 +812,7 @@ alterDomain
 alterDomainClause
     : anyName (SET | DROP) NOT NULL
     | anyName ADD tableConstraint
-    | anyName DROP CONSTRAINT (IF EXISTS) name dropBehavior?
+    | anyName DROP CONSTRAINT (IF EXISTS)? name dropBehavior?
     | anyName VALIDATE CONSTRAINT name
     | anyName RENAME CONSTRAINT constraintName TO constraintName
     | anyName OWNER TO roleSpec
@@ -992,7 +1041,7 @@ alterPublication
     ;
 
 alterRoutine
-    : ALTER ROUTINE alterProcedureClauses
+    : ALTER ROUTINE functionWithArgtypes alterProcedureClauses
     ;
 
 alterRule
@@ -1048,7 +1097,7 @@ publicationNameItem
     ;
 
 alterSystem
-    : ALTER SYSTEM SET | RESET genericSet
+    : ALTER SYSTEM (SET genericSet | RESET genericReset)
     ;
 
 alterTablespace
@@ -1057,6 +1106,7 @@ alterTablespace
     | RENAME TO name
     | OWNER TO roleSpec)
     ;
+
 alterTextSearchConfiguration
     : ALTER TEXT SEARCH CONFIGURATION anyName alterTextSearchConfigurationClauses
     ;
@@ -1066,7 +1116,7 @@ alterTextSearchConfigurationClauses
     | SET SCHEMA name
     | OWNER TO roleSpec
     | (ADD | ALTER) MAPPING FOR nameList WITH? anyNameList
-    | ALTER MAPPING (FOR nameList) REPLACE anyName WITH anyName
+    | ALTER MAPPING (FOR nameList)? REPLACE anyName WITH anyName
     | DROP MAPPING (IF EXISTS)? FOR nameList
     ;
 
@@ -1144,7 +1194,7 @@ close
     ;
 
 cluster
-    : CLUSTER VERBOSE (qualifiedName clusterIndexSpecification? | name ON qualifiedName)?
+    : CLUSTER VERBOSE? (qualifiedName clusterIndexSpecification? | name ON qualifiedName)?
     ;
 
 clusterIndexSpecification
@@ -1294,7 +1344,46 @@ createExtensionOptItem
     ;
 
 createForeignDataWrapper
-    : CREATE FOREIGN DATA WRAPPER name fdwOptions? createGenericOptions
+    : CREATE FOREIGN DATA WRAPPER name fdwOptions? createGenericOptions?
+    ;
+
+createForeignTable
+    : CREATE FOREIGN TABLE createForeignTableClauses
+    ;
+
+createForeignTableClauses
+    : (IF NOT EXISTS)? qualifiedName LP_ tableElementList? RP_
+      (INHERITS LP_ qualifiedNameList RP_)? SERVER name createGenericOptions?
+    | (IF NOT EXISTS)? qualifiedName PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec
+      SERVER name createGenericOptions?
+    ;
+
+tableElementList
+    : tableElement (COMMA_ tableElement)*
+    ;
+
+tableElement
+    : columnDef	| tableLikeClause | tableConstraint
+    ;
+
+tableLikeClause
+    : LIKE qualifiedName tableLikeOptionList
+    ;
+
+tableLikeOptionList
+    : tableLikeOptionList (INCLUDING | EXCLUDING) tableLikeOption |
+    ;
+
+tableLikeOption
+    : COMMENTS
+    | CONSTRAINTS
+    | DEFAULTS
+    | IDENTITY
+    | GENERATED
+    | INDEXES
+    | STATISTICS
+    | STORAGE
+    | ALL
     ;
 
 createFunction
@@ -1329,7 +1418,7 @@ transformTypeList
     ;
 
 funcAs
-    : STRING_ (COMMA_ STRING_)?
+    : identifier | STRING_ (COMMA_ identifier|STRING_)?
     ;
 
 funcReturn
@@ -1350,3 +1439,425 @@ funcArgWithDefault
     | funcArg EQ_ aExpr
     ;
 
+createLanguage
+    : CREATE (OR REPLACE)? TRUSTED? PROCEDURAL? LANGUAGE name
+    ( HANDLER handlerName (INLINE handlerName)? validatorClause?
+    | LP_ transformElementList RP_)?
+    ;
+
+transformElementList
+    : FROM SQL WITH FUNCTION functionWithArgtypes COMMA_ (TO | FROM) SQL WITH FUNCTION functionWithArgtypes
+    | (TO | FROM) SQL WITH FUNCTION functionWithArgtypes
+    ;
+
+validatorClause
+    : VALIDATOR handlerName	| NO VALIDATOR
+    ;
+
+createPolicy
+    : CREATE POLICY name ON qualifiedName (AS identifier)?
+      (FOR rowSecurityCmd)? (TO roleList)?
+      (USING LP_ aExpr RP_)? (WITH CHECK LP_ aExpr RP_)?
+    ;
+
+createProcedure
+    : CREATE (OR REPLACE)? PROCEDURE funcName funcArgsWithDefaults createfuncOptList
+    ;
+
+createPublication
+    : CREATE PUBLICATION name publicationForTables?	(WITH definition)?
+    ;
+
+publicationForTables
+    : FOR TABLE relationExprList | FOR ALL TABLES
+    ;
+
+createRule
+    : CREATE (OR REPLACE)? RULE name AS ON event TO qualifiedName (WHERE aExpr)?
+      DO (INSTEAD | ALSO)? ruleActionList
+    ;
+
+ruleActionList
+    : NOTHING
+    | ruleActionStmt
+    | LP_ ruleActionMulti RP_
+    ;
+
+ruleActionStmt
+    : select
+    | insert
+    | update
+    | delete
+    | notifyStmt
+    ;
+
+ruleActionMulti
+    : ruleActionStmt? (SEMI_ ruleActionStmt?)*
+    ;
+
+notifyStmt
+    : NOTIFY colId (COMMA_ STRING_)?
+    ;
+
+createTrigger
+    : CREATE TRIGGER name triggerActionTime triggerEvents ON qualifiedName triggerReferencing? triggerForSpec? triggerWhen? EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs? RP_
+    | CREATE CONSTRAINT TRIGGER (FROM qualifiedName)? constraintAttributeSpec FOR EACH ROW triggerWhen EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs RP_
+    ;
+
+triggerEvents
+    : triggerOneEvent (OR triggerOneEvent)*
+    ;
+
+triggerOneEvent
+    : INSERT
+    | DELETE
+    | UPDATE
+    | UPDATE OF columnList
+    | TRUNCATE
+    ;
+
+triggerActionTime
+    : BEFORE | AFTER | INSTEAD OF
+    ;
+
+triggerFuncArgs
+    : triggerFuncArg (COMMA_ triggerFuncArg)*
+    ;
+
+triggerFuncArg
+    : NUMBER_ | STRING_ | colLabel
+    ;
+
+triggerWhen
+    : WHEN LP_ aExpr RP_
+    ;
+
+triggerForSpec
+    : FOR EACH? (ROW | STATEMENT)
+    ;
+
+triggerReferencing
+    : REFERENCING triggerTransitions
+    ;
+
+triggerTransitions
+    : triggerTransition+
+    ;
+
+triggerTransition
+    : transitionOldOrNew transitionRowOrTable AS? transitionRelName
+    ;
+
+transitionRelName
+    : colId
+    ;
+
+transitionRowOrTable
+    : TABLE | ROW
+    ;
+
+transitionOldOrNew
+    : OLD | NEW
+    ;
+
+createSequence
+    : CREATE tempOption? SEQUENCE (IF NOT EXISTS)? qualifiedName seqOptList?
+    ;
+
+tempOption
+    : ((LOCAL | GLOBAL)? (TEMPORARY | TEMP)) | UNLOGGED
+    ;
+
+createServer
+    : CREATE SERVER (IF NOT EXISTS)? name (TYPE STRING_)? foreignServerVersion? FOREIGN DATA WRAPPER name createGenericOptions
+    ;
+
+createStatistics
+    : CREATE STATISTICS (IF NOT EXISTS)? anyName optNameList ON exprList FROM fromList
+    ;
+
+createSubscription
+    : CREATE SUBSCRIPTION name CONNECTION STRING_ PUBLICATION publicationNameList (WITH definition)?
+    ;
+
+createTablespace
+    : CREATE TABLESPACE name (OWNER roleSpec)? LOCATION STRING_ (WITH reloptions)?
+    ;
+
+createTextSearch
+    : CREATE TEXT SEARCH (CONFIGURATION | DICTIONARY | PARSER | TEMPLATE) anyName definition
+    ;
+
+createTransform
+    : CREATE (OR REPLACE)? TRANSFORM FOR typeName LANGUAGE name LP_ transformElementList RP_
+    ;
+
+createType
+    : CREATE TYPE anyName createTypeClauses
+    ;
+
+createTypeClauses
+    : definition?
+    | AS LP_ tableFuncElementList? RP_
+    | AS ENUM LP_ enumValList? RP_
+    | AS RANGE definition
+    ;
+
+enumValList
+    : STRING_ (COMMA_ STRING_)*
+    ;
+
+createUserMapping
+    : CREATE USER MAPPING (IF NOT EXISTS)? FOR authIdent SERVER name createGenericOptions
+    ;
+
+discard
+    : DISCARD (ALL | PLANS | SEQUENCES | TEMPORARY | TEMP)
+    ;
+
+dropAccessMethod
+    : DROP ACCESS METHOD (IF EXISTS)? name dropBehavior?
+    ;
+
+dropAggregate
+    : DROP AGGREGATE (IF EXISTS)? aggregateWithArgtypesList dropBehavior?
+    ;
+
+aggregateWithArgtypesList
+    : aggregateWithArgtypes (COMMA_ aggregateWithArgtypes)*
+    ;
+
+dropCast
+    : DROP CAST (IF EXISTS)? LP_ typeName AS typeName RP_ dropBehavior?
+    ;
+
+dropCollation
+    : DROP COLLATION (IF EXISTS)? name dropBehavior?
+    ;
+
+dropConversion
+    : DROP CONVERSION (IF EXISTS)? name dropBehavior?
+    ;
+
+dropDomain
+    : DROP DOMAIN (IF EXISTS)? nameList dropBehavior?
+    ;
+
+dropEventTrigger
+    : DROP EVENT TRIGGER (IF EXISTS)? name dropBehavior?
+    ;
+
+dropExtension
+    : DROP EXTENSION (IF EXISTS)? nameList dropBehavior?
+    ;
+
+dropForeignDataWrapper
+    : DROP FOREIGN DATA WRAPPER (IF EXISTS)? nameList dropBehavior?
+    ;
+
+dropForeignTable
+    : DROP FOREIGN TABLE (IF EXISTS)? tableName (COMMA_ tableName)* dropBehavior?
+    ;
+
+dropFunction
+    : DROP FUNCTION (IF EXISTS)? functionWithArgtypesList dropBehavior?
+    ;
+
+functionWithArgtypesList
+    : functionWithArgtypes (COMMA_ functionWithArgtypes)*
+    ;
+
+dropLanguage
+    : DROP PROCEDURAL? LANGUAGE (IF EXISTS)? name dropBehavior?
+    ;
+
+dropMaterializedView
+    : DROP MATERIALIZED VIEW (IF EXISTS)? anyNameList dropBehavior?
+    ;
+
+dropOperator
+    : DROP OPERATOR (IF EXISTS)? operatorWithArgtypesList dropBehavior?
+    ;
+
+operatorWithArgtypesList
+    : operatorWithArgtypes (COMMA_ operatorWithArgtypes)*
+    ;
+
+dropOperatorClass
+    : DROP OPERATOR CLASS (IF EXISTS)? anyName USING name dropBehavior?
+    ;
+
+dropOperatorFamily
+    : DROP OPERATOR FAMILY (IF EXISTS)? anyName USING name dropBehavior?
+    ;
+    
+dropOwned
+    : DROP OWNED BY roleList dropBehavior?
+    ;
+
+dropPolicy
+    : DROP POLICY (IF EXISTS)? name ON tableName dropBehavior?
+    ;
+
+dropProcedure
+    : DROP PROCEDURE (IF EXISTS)? functionWithArgtypesList dropBehavior?
+    ;
+
+dropPublication
+    : DROP PUBLICATION (IF EXISTS)? anyNameList dropBehavior?
+    ;
+
+dropRoutine
+    : DROP ROUTINE (IF EXISTS)? functionWithArgtypesList dropBehavior?
+    ;
+
+dropRule
+    : DROP RULE (IF EXISTS)? name ON tableName dropBehavior?
+    ;
+
+dropSequence
+    : DROP SEQUENCE (IF EXISTS)? qualifiedNameList dropBehavior?
+    ;
+
+dropServer
+    : DROP SERVER (IF EXISTS)? qualifiedNameList dropBehavior?
+    ;
+
+dropStatistics
+    : DROP STATISTICS (IF EXISTS)? qualifiedNameList
+    ;
+
+dropSubscription
+    : DROP SUBSCRIPTION (IF EXISTS)? qualifiedName dropBehavior?
+    ;
+
+dropTablespace
+    : DROP TABLESPACE (IF EXISTS)? qualifiedName
+    ;
+
+dropTextSearch
+    : DROP TEXT SEARCH (CONFIGURATION | DICTIONARY | PARSER | TEMPLATE) (IF EXISTS)? name dropBehavior?
+    ;
+
+dropTransform
+    : DROP TRANSFORM (IF EXISTS)? FOR typeName LANGUAGE name dropBehavior?
+    ;
+
+dropTrigger
+    : DROP TRIGGER (IF EXISTS)? qualifiedName ON tableName dropBehavior?
+    ;
+
+dropType
+    : DROP TYPE (IF EXISTS)? anyNameList dropBehavior?
+    ;
+
+dropUserMapping
+    : DROP USER MAPPING (IF EXISTS)? FOR authIdent SERVER name
+    ;
+
+dropView
+    : DROP VIEW (IF EXISTS)? nameList dropBehavior?
+    ;
+
+importForeignSchema
+    : IMPORT FOREIGN SCHEMA name importQualification? FROM SERVER name INTO name createGenericOptions?
+    ;
+
+importQualification
+    : importQualificationType LP_ relationExprList RP_
+    ;
+
+importQualificationType
+    : LIMIT TO | EXCEPT
+    ;
+
+listen
+    : LISTEN colId
+    ;
+
+move
+    : MOVE fetchArgs
+    ;
+
+prepare
+    : PREPARE name prepTypeClause? AS preparableStmt
+    ;
+
+prepTypeClause
+    : LP_ typeList RP_
+    ;
+
+refreshMaterializedView
+    : REFRESH MATERIALIZED VIEW CONCURRENTLY? qualifiedName withData?
+    ;
+
+reIndex
+    : REINDEX reIndexClauses
+    ;
+
+reIndexClauses
+    : reindexTargetType CONCURRENTLY? qualifiedName
+    | reindexTargetMultitable CONCURRENTLY? name
+    | LP_ reindexOptionList RP_ reindexTargetType CONCURRENTLY? qualifiedName
+    | LP_ reindexOptionList RP_ reindexTargetMultitable CONCURRENTLY? name
+    ;
+
+reindexOptionList
+    : reindexOptionElem (COMMA_ reindexOptionElem)*
+    ;
+
+reindexOptionElem
+    : VERBOSE
+    ;
+
+reindexTargetMultitable
+    : SCHEMA | SYSTEM | DATABASE
+    ;
+
+reindexTargetType
+    : INDEX | TABLE
+    ;
+
+alterForeignTable
+    : ALTER FOREIGN TABLE (IF EXISTS)? relationExpr alterForeignTableClauses
+    ;
+
+alterForeignTableClauses
+    : RENAME TO name
+    | RENAME COLUMN? name TO name
+    | alterTableCmds
+    | SET SCHEMA name
+    ;
+
+createOperator
+    : CREATE OPERATOR anyOperator definition
+    ;
+
+createOperatorClass
+    : CREATE OPERATOR CLASS anyName DEFAULT? FOR TYPE typeName USING name (FAMILY anyName)? AS opclassItemList
+    ;
+
+createOperatorFamily
+    : CREATE OPERATOR FAMILY anyName USING name
+    ;
+
+securityLabelStmt
+    : SECURITY LABEL (FOR nonReservedWordOrSconst) ON securityLabelClausces IS securityLabel
+    ;
+
+securityLabel
+    : STRING_ | NULL
+    ;
+
+securityLabelClausces
+    : objectTypeAnyName anyName
+    | COLUMN anyName
+    | (TYPE | DOMAIN) typeName
+    | (AGGREGATE | FUNCTION) aggregateWithArgtypes
+    | LARGE OBJECT numericOnly
+    | (PROCEDURE | ROUTINE) functionWithArgtypes
+    ;
+
+unlisten
+    : UNLISTEN (colId | ASTERISK_)
+    ;

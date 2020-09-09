@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -41,7 +41,7 @@ public final class BackendTransactionManager implements TransactionManager {
         connection = backendConnection;
         transactionType = connection.getTransactionType();
         localTransactionManager = new LocalTransactionManager(backendConnection);
-        ShardingTransactionManagerEngine engine = ProxySchemaContexts.getInstance().getTransactionContexts().getEngines().get(connection.getSchema());
+        ShardingTransactionManagerEngine engine = ProxyContext.getInstance().getTransactionContexts().getEngines().get(connection.getSchema());
         shardingTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
     }
     
