@@ -33,13 +33,14 @@ import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.Que
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.MySQLErrPacketFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -58,19 +59,12 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Getter
-    private volatile boolean isQueryResponse;
-    
-    @Getter
-    private volatile boolean isUpdateResponse;
-    
-    @Getter
-    private volatile boolean isErrorResponse;
+    private volatile ResponseType responseType;
     
     private int currentSequenceId;
     
     public MySQLComStmtExecuteExecutor(final MySQLComStmtExecutePacket comStmtExecutePacket, final BackendConnection backendConnection) {
-        SQLStatement sqlStatement =
-                ProxyContext.getInstance().getSchema(backendConnection.getSchema()).getRuntimeContext().getSqlParserEngine().parse(comStmtExecutePacket.getSql(), true);
+        SQLStatement sqlStatement = ProxyContext.getInstance().getSchema(backendConnection.getSchema()).getRuntimeContext().getSqlParserEngine().parse(comStmtExecutePacket.getSql(), true);
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatement,
                 comStmtExecutePacket.getSql(), comStmtExecutePacket.getParameters(), backendConnection);
     }
@@ -82,14 +76,14 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         }
         BackendResponse backendResponse = getBackendResponse();
         if (backendResponse instanceof QueryResponse) {
-            isQueryResponse = true;
+            responseType = ResponseType.QUERY;
             return createQueryPacket((QueryResponse) backendResponse);
         }
         if (backendResponse instanceof UpdateResponse) {
-            isUpdateResponse = true;
+            responseType = ResponseType.UPDATE;
             return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
-        isErrorResponse = true;
+        responseType = ResponseType.ERROR;
         return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
     }
     
