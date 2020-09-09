@@ -66,17 +66,29 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         int projectionCount = getProjectionCount(sqlStatement);
         result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parameterCount), projectionCount, parameterCount, 0));
         if (parameterCount > 0) {
-            for (int i = 0; i < parameterCount; i++) {
-                result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
-            }
-            result.add(new MySQLEofPacket(++currentSequenceId));
+            result.addAll(createParameterColumnDefinition41Packets(parameterCount));
         }
         if (projectionCount > 0) {
-            for (int i = 0; i < projectionCount; i++) {
-                result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
-            }
-            result.add(new MySQLEofPacket(++currentSequenceId));
+            result.addAll(createProjectionColumnDefinition41Packets(projectionCount));
         }
+        return result;
+    }
+    
+    private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final int parameterCount) {
+        Collection<DatabasePacket<?>> result = new LinkedList<>();
+        for (int i = 0; i < parameterCount; i++) {
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
+        }
+        result.add(new MySQLEofPacket(++currentSequenceId));
+        return result;
+    }
+    
+    private Collection<DatabasePacket<?>> createProjectionColumnDefinition41Packets(final int projectionCount) {
+        Collection<DatabasePacket<?>> result = new LinkedList<>();
+        for (int i = 0; i < projectionCount; i++) {
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
+        }
+        result.add(new MySQLEofPacket(++currentSequenceId));
         return result;
     }
     
