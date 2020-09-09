@@ -15,35 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.algorithm.config;
+package org.apache.shardingsphere.primaryreplica.algorithm.config;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.primaryreplica.api.config.rule.PrimaryReplicaDataSourceRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.spi.PrimaryReplicaLoadBalanceAlgorithm;
 
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * Algorithm provided master-slave rule configuration.
+ * Algorithm provided primary-replica rule configuration.
  */
 @Getter
 @Setter
-public final class AlgorithmProvidedMasterSlaveRuleConfiguration implements RuleConfiguration {
+public final class AlgorithmProvidedPrimaryReplicaRuleConfiguration implements RuleConfiguration {
     
-    private Collection<MasterSlaveDataSourceRuleConfiguration> dataSources = new LinkedList<>();
+    private Collection<PrimaryReplicaDataSourceRuleConfiguration> dataSources = new LinkedList<>();
     
-    private Map<String, MasterSlaveLoadBalanceAlgorithm> loadBalanceAlgorithms = new LinkedHashMap<>();
+    private Map<String, PrimaryReplicaLoadBalanceAlgorithm> loadBalanceAlgorithms = new LinkedHashMap<>();
     
-    public AlgorithmProvidedMasterSlaveRuleConfiguration() {
+    public AlgorithmProvidedPrimaryReplicaRuleConfiguration() {
     }
     
-    public AlgorithmProvidedMasterSlaveRuleConfiguration(final Collection<MasterSlaveDataSourceRuleConfiguration> dataSources,
-                                                         final Map<String, MasterSlaveLoadBalanceAlgorithm> loadBalanceAlgorithms) {
+    public AlgorithmProvidedPrimaryReplicaRuleConfiguration(final Collection<PrimaryReplicaDataSourceRuleConfiguration> dataSources,
+                                                         final Map<String, PrimaryReplicaLoadBalanceAlgorithm> loadBalanceAlgorithms) {
         this.dataSources = dataSources;
         this.loadBalanceAlgorithms = loadBalanceAlgorithms;
     }
