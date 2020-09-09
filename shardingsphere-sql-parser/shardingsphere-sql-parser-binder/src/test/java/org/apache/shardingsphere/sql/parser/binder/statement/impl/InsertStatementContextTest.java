@@ -111,10 +111,10 @@ public final class InsertStatementContextTest {
         SubquerySegment insertSelect = new SubquerySegment(0, 0, selectStatement);
         insertStatement.setInsertSelect(insertSelect);
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
-        InsertStatementContext actual = new InsertStatementContext(schemaMetaData, Arrays.asList("param"), insertStatement);
-        assertThat(actual.getInsertSelectContext().getParametersCount(), is(0));
+        InsertStatementContext actual = new InsertStatementContext(schemaMetaData, Collections.singletonList("param"), insertStatement);
+        assertThat(actual.getInsertSelectContext().getParameterCount(), is(0));
         assertThat(actual.getGroupedParameters().size(), is(1));
-        assertThat(actual.getGroupedParameters().iterator().next(), is(Collections.EMPTY_LIST));
+        assertThat(actual.getGroupedParameters().iterator().next(), is(Collections.emptyList()));
     }
     
     private void setUpInsertValues(final InsertStatement insertStatement) {
@@ -125,24 +125,18 @@ public final class InsertStatementContextTest {
     }
     
     private void setUpOnDuplicateValues(final InsertStatement insertStatement) {
-        AssignmentSegment parameterMarkerExpressionAssignment = new AssignmentSegment(0, 0,
-                new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_1")),
-                new ParameterMarkerExpressionSegment(0, 0, 4)
-        );
-        AssignmentSegment literalExpressionAssignment = new AssignmentSegment(0, 0,
-                new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_2")),
-                new LiteralExpressionSegment(0, 0, 5)
-        );
-        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = new OnDuplicateKeyColumnsSegment(0, 0, Arrays.asList(
-                parameterMarkerExpressionAssignment, literalExpressionAssignment
-        ));
+        AssignmentSegment parameterMarkerExpressionAssignment = new AssignmentSegment(0, 0, 
+                new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_1")), new ParameterMarkerExpressionSegment(0, 0, 4));
+        AssignmentSegment literalExpressionAssignment = new AssignmentSegment(0, 0, 
+                new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_2")), new LiteralExpressionSegment(0, 0, 5));
+        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = new OnDuplicateKeyColumnsSegment(0, 0, Arrays.asList(parameterMarkerExpressionAssignment, literalExpressionAssignment));
         insertStatement.setOnDuplicateKeyColumns(onDuplicateKeyColumnsSegment);
     }
     
     private void assertInsertStatementContext(final InsertStatementContext actual) {
         assertTrue(actual.toString().startsWith(String.format("%s(super", InsertStatementContext.class.getSimpleName())));
         assertNotNull(actual.getTablesContext());
-        assertThat(actual.getTablesContext().getTableNames(), is(Sets.newLinkedHashSet(Arrays.asList("tbl"))));
+        assertThat(actual.getTablesContext().getTableNames(), is(Sets.newLinkedHashSet(Collections.singletonList("tbl"))));
         assertNotNull(actual.getAllTables());
         assertThat(actual.getAllTables().size(), is(1));
         SimpleTableSegment simpleTableSegment = actual.getAllTables().iterator().next();

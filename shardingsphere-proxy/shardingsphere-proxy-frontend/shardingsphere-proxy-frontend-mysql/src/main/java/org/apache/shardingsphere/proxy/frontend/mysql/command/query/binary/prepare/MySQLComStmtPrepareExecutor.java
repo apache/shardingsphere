@@ -52,10 +52,6 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         schema = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
     }
     
-    private int getColumnsCount(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
-    }
-    
     @Override
     public Collection<DatabasePacket<?>> execute() {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
@@ -65,21 +61,25 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             result.add(new MySQLErrPacket(++currentSequenceId, MySQLServerErrorCode.ER_UNSUPPORTED_PS));
             return result;
         }
-        int parametersCount = sqlStatement.getParameterCount();
-        int columnsCount = getColumnsCount(sqlStatement);
-        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersCount), columnsCount, parametersCount, 0));
-        if (parametersCount > 0) {
-            for (int i = 0; i < parametersCount; i++) {
+        int parameterCount = sqlStatement.getParameterCount();
+        int projectionCount = getProjectionCount(sqlStatement);
+        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parameterCount), projectionCount, parameterCount, 0));
+        if (parameterCount > 0) {
+            for (int i = 0; i < parameterCount; i++) {
                 result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
             }
             result.add(new MySQLEofPacket(++currentSequenceId));
         }
-        if (columnsCount > 0) {
-            for (int i = 0; i < columnsCount; i++) {
+        if (projectionCount > 0) {
+            for (int i = 0; i < projectionCount; i++) {
                 result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
             }
             result.add(new MySQLEofPacket(++currentSequenceId));
         }
         return result;
+    }
+    
+    private int getProjectionCount(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
     }
 }

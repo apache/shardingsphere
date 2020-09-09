@@ -35,19 +35,19 @@ import java.util.List;
 @ToString
 public final class InsertValueContext {
     
-    private final int parametersCount;
+    private final int parameterCount;
     
     private final List<ExpressionSegment> valueExpressions;
     
     private final List<Object> parameters;
     
     public InsertValueContext(final Collection<ExpressionSegment> assignments, final List<Object> parameters, final int parametersOffset) {
-        parametersCount = calculateParametersCount(assignments);
+        parameterCount = calculateParameterCount(assignments);
         valueExpressions = getValueExpressions(assignments);
         this.parameters = getParameters(parameters, parametersOffset);
     }
     
-    private int calculateParametersCount(final Collection<ExpressionSegment> assignments) {
+    private int calculateParameterCount(final Collection<ExpressionSegment> assignments) {
         int result = 0;
         for (ExpressionSegment each : assignments) {
             if (each instanceof ParameterMarkerExpressionSegment) {
@@ -64,11 +64,11 @@ public final class InsertValueContext {
     }
     
     private List<Object> getParameters(final List<Object> parameters, final int parametersOffset) {
-        if (0 == parametersCount) {
+        if (0 == parameterCount) {
             return Collections.emptyList();
         }
-        List<Object> result = new ArrayList<>(parametersCount);
-        result.addAll(parameters.subList(parametersOffset, parametersOffset + parametersCount));
+        List<Object> result = new ArrayList<>(parameterCount);
+        result.addAll(parameters.subList(parametersOffset, parametersOffset + parameterCount));
         return result;
     }
     
