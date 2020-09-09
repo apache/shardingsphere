@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.rule.biulder;
+package org.apache.shardingsphere.primaryreplica.rule.biulder;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
+import org.apache.shardingsphere.primaryreplica.api.config.PrimaryReplicaRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.api.config.rule.PrimaryReplicaDataSourceRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.rule.PrimaryReplicaRule;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MasterSlaveRuleBuilderTest {
+public final class PrimaryReplicaRuleBuilderTest {
     
     static {
         ShardingSphereServiceLoader.register(ShardingSphereRuleBuilder.class);
@@ -40,11 +40,11 @@ public final class MasterSlaveRuleBuilderTest {
     
     @Test
     public void assertBuild() {
-        MasterSlaveRuleConfiguration ruleConfig = mock(MasterSlaveRuleConfiguration.class);
-        MasterSlaveDataSourceRuleConfiguration ruleConfiguration = new MasterSlaveDataSourceRuleConfiguration("name", "masterDataSourceName",
+        PrimaryReplicaRuleConfiguration ruleConfig = mock(PrimaryReplicaRuleConfiguration.class);
+        PrimaryReplicaDataSourceRuleConfiguration ruleConfiguration = new PrimaryReplicaDataSourceRuleConfiguration("name", "primaryDataSourceName",
                 Collections.singletonList("name"), "loadBalancerName");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfiguration));
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, Collections.emptyList()), instanceOf(MasterSlaveRule.class));
+        assertThat(builder.build(ruleConfig, Collections.emptyList()), instanceOf(PrimaryReplicaRule.class));
     }
 }
