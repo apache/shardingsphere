@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.yaml.swapper;
+package org.apache.shardingsphere.primaryreplica.yaml.swapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -24,30 +24,30 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.masterslave.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
-import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.masterslave.yaml.config.rule.YamlMasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.algorithm.config.AlgorithmProvidedPrimaryReplicaRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.api.config.rule.PrimaryReplicaDataSourceRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.constant.PrimaryReplicaOrder;
+import org.apache.shardingsphere.primaryreplica.yaml.config.YamlPrimaryReplicaRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.yaml.config.rule.YamlPrimaryReplicaDataSourceRuleConfiguration;
 
 /**
- * Master-slave rule configuration YAML swapper.
+ * Primary-replica rule configuration YAML swapper.
  */
-public final class MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlMasterSlaveRuleConfiguration, AlgorithmProvidedMasterSlaveRuleConfiguration> {
+public final class PrimaryReplicaRuleAlgorithmProviderConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlPrimaryReplicaRuleConfiguration, AlgorithmProvidedPrimaryReplicaRuleConfiguration> {
     
     @Override
-    public YamlMasterSlaveRuleConfiguration swapToYamlConfiguration(final AlgorithmProvidedMasterSlaveRuleConfiguration data) {
-        YamlMasterSlaveRuleConfiguration result = new YamlMasterSlaveRuleConfiguration();
+    public YamlPrimaryReplicaRuleConfiguration swapToYamlConfiguration(final AlgorithmProvidedPrimaryReplicaRuleConfiguration data) {
+        YamlPrimaryReplicaRuleConfiguration result = new YamlPrimaryReplicaRuleConfiguration();
         result.setDataSources(data.getDataSources().stream().collect(
-                Collectors.toMap(MasterSlaveDataSourceRuleConfiguration::getName, this::swapToYamlConfiguration, (a, b) -> b, LinkedHashMap::new)));
+                Collectors.toMap(PrimaryReplicaDataSourceRuleConfiguration::getName, this::swapToYamlConfiguration, (a, b) -> b, LinkedHashMap::new)));
         if (null != data.getLoadBalanceAlgorithms()) {
             data.getLoadBalanceAlgorithms().forEach((key, value) -> result.getLoadBalancers().put(key, YamlShardingSphereAlgorithmConfiguration.buildByTypedSPI(value)));
         }
         return result;
     }
     
-    private YamlMasterSlaveDataSourceRuleConfiguration swapToYamlConfiguration(final MasterSlaveDataSourceRuleConfiguration dataSourceRuleConfiguration) {
-        YamlMasterSlaveDataSourceRuleConfiguration result = new YamlMasterSlaveDataSourceRuleConfiguration();
+    private YamlPrimaryReplicaDataSourceRuleConfiguration swapToYamlConfiguration(final PrimaryReplicaDataSourceRuleConfiguration dataSourceRuleConfiguration) {
+        YamlPrimaryReplicaDataSourceRuleConfiguration result = new YamlPrimaryReplicaDataSourceRuleConfiguration();
         result.setName(dataSourceRuleConfiguration.getName());
         result.setMasterDataSourceName(dataSourceRuleConfiguration.getMasterDataSourceName());
         result.setSlaveDataSourceNames(dataSourceRuleConfiguration.getSlaveDataSourceNames());
@@ -56,24 +56,24 @@ public final class MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapper impl
     }
     
     @Override
-    public AlgorithmProvidedMasterSlaveRuleConfiguration swapToObject(final YamlMasterSlaveRuleConfiguration yamlConfig) {
-        Collection<MasterSlaveDataSourceRuleConfiguration> dataSources = new LinkedList<>();
-        for (Entry<String, YamlMasterSlaveDataSourceRuleConfiguration> entry : yamlConfig.getDataSources().entrySet()) {
+    public AlgorithmProvidedPrimaryReplicaRuleConfiguration swapToObject(final YamlPrimaryReplicaRuleConfiguration yamlConfig) {
+        Collection<PrimaryReplicaDataSourceRuleConfiguration> dataSources = new LinkedList<>();
+        for (Entry<String, YamlPrimaryReplicaDataSourceRuleConfiguration> entry : yamlConfig.getDataSources().entrySet()) {
             dataSources.add(swapToObject(entry.getKey(), entry.getValue()));
         }
-        AlgorithmProvidedMasterSlaveRuleConfiguration ruleConfiguration = new AlgorithmProvidedMasterSlaveRuleConfiguration();
+        AlgorithmProvidedPrimaryReplicaRuleConfiguration ruleConfiguration = new AlgorithmProvidedPrimaryReplicaRuleConfiguration();
         ruleConfiguration.setDataSources(dataSources);
         return ruleConfiguration;
     }
     
-    private MasterSlaveDataSourceRuleConfiguration swapToObject(final String name, final YamlMasterSlaveDataSourceRuleConfiguration yamlDataSourceRuleConfiguration) {
-        return new MasterSlaveDataSourceRuleConfiguration(name, 
+    private PrimaryReplicaDataSourceRuleConfiguration swapToObject(final String name, final YamlPrimaryReplicaDataSourceRuleConfiguration yamlDataSourceRuleConfiguration) {
+        return new PrimaryReplicaDataSourceRuleConfiguration(name, 
                 yamlDataSourceRuleConfiguration.getMasterDataSourceName(), yamlDataSourceRuleConfiguration.getSlaveDataSourceNames(), yamlDataSourceRuleConfiguration.getLoadBalancerName());
     }
     
     @Override
-    public Class<AlgorithmProvidedMasterSlaveRuleConfiguration> getTypeClass() {
-        return AlgorithmProvidedMasterSlaveRuleConfiguration.class;
+    public Class<AlgorithmProvidedPrimaryReplicaRuleConfiguration> getTypeClass() {
+        return AlgorithmProvidedPrimaryReplicaRuleConfiguration.class;
     }
     
     @Override
@@ -83,6 +83,6 @@ public final class MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapper impl
     
     @Override
     public int getOrder() {
-        return MasterSlaveOrder.ALGORITHM_PROVIDER_MASTER_SLAVE_ORDER;
+        return PrimaryReplicaOrder.ALGORITHM_PROVIDER_MASTER_SLAVE_ORDER;
     }
 }
