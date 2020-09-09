@@ -74,6 +74,10 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return result;
     }
     
+    private int getProjectionCount(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
+    }
+    
     private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final int parameterCount) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         for (int i = 0; i < parameterCount; i++) {
@@ -90,9 +94,5 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         }
         result.add(new MySQLEofPacket(++currentSequenceId));
         return result;
-    }
-    
-    private int getProjectionCount(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
     }
 }
