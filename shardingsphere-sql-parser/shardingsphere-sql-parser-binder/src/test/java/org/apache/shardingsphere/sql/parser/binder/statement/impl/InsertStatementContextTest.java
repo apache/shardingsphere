@@ -60,22 +60,22 @@ public final class InsertStatementContextTest {
     public void assertMySQLInsertStatementContextWithColumnNames() {
         assertInsertStatementContextWithColumnNames(new MySQLInsertStatement());
     }
-
+    
     @Test
     public void assertOracleInsertStatementContextWithColumnNames() {
         assertInsertStatementContextWithColumnNames(new OracleInsertStatement());
     }
-
+    
     @Test
     public void assertPostgreSQLInsertStatementContextWithColumnNames() {
         assertInsertStatementContextWithColumnNames(new PostgreSQLInsertStatement());
     }
-
+    
     @Test
     public void assertSQL92InsertStatementContextWithColumnNames() {
         assertInsertStatementContextWithColumnNames(new SQL92InsertStatement());
     }
-
+    
     @Test
     public void assertSQLServerInsertStatementContextWithColumnNames() {
         assertInsertStatementContextWithColumnNames(new SQLServerInsertStatement());

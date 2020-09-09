@@ -61,22 +61,22 @@ public final class SQLStatementContextFactoryTest {
     public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfMySQLInsertStatement() {
         assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new MySQLInsertStatement());
     }
-
+    
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfOracleInsertStatement() {
         assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new OracleInsertStatement());
     }
-
+    
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfPostgreSQLInsertStatement() {
         assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new PostgreSQLInsertStatement());
     }
-
+    
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSQL92InsertStatement() {
         assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new SQL92InsertStatement());
     }
-
+    
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSQLServerInsertStatement() {
         assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new SQLServerInsertStatement());
