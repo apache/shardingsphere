@@ -67,7 +67,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     @Override
     protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         // TODO Consider removing the following one.
-        if (configurationNode.getSchemaPath().equals(event.getKey())) {
+        if (configurationNode.getSchemasPath().equals(event.getKey())) {
             return createSchemaNamesUpdatedEvent(event.getValue());
         }
         String schemaName = configurationNode.getSchemaName(event.getKey());
