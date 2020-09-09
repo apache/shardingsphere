@@ -33,6 +33,6 @@
         <module>shardingsphere-primary-replica-api</module>
         <module>shardingsphere-master-slave-common</module>
         <module>shardingsphere-master-slave-route</module>
-        <module>shardingsphere-master-slave-spring</module>
+        <module>shardingsphere-primary-replica-spring</module>
     </modules>
 </project>
