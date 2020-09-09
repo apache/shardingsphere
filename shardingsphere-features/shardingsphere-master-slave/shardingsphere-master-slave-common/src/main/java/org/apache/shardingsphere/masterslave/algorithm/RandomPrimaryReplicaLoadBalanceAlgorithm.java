@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.algorithm;
+package org.apache.shardingsphere.primaryreplica.algorithm;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.primaryreplica.spi.PrimaryReplicaLoadBalanceAlgorithm;
 
 import java.util.List;
 import java.util.Properties;
@@ -35,8 +35,8 @@ public final class RandomPrimaryReplicaLoadBalanceAlgorithm implements PrimaryRe
     private Properties props = new Properties();
     
     @Override
-    public String getDataSource(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
-        return slaveDataSourceNames.get(ThreadLocalRandom.current().nextInt(slaveDataSourceNames.size()));
+    public String getDataSource(final String name, final String primaryDataSourceName, final List<String> replicaDataSourceNames) {
+        return replicaDataSourceNames.get(ThreadLocalRandom.current().nextInt(replicaDataSourceNames.size()));
     }
     
     @Override
