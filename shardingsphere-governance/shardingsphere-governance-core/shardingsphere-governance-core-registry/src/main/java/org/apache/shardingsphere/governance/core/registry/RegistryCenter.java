@@ -45,14 +45,14 @@ public final class RegistryCenter {
      * Persist instance online.
      */
     public void persistInstanceOnline() {
-        repository.persistEphemeral(node.getInstancesNodeFullPath(instance.getInstanceId()), "");
+        repository.persistEphemeral(node.getProxyNodePath(instance.getInstanceId()), "");
     }
     
     /**
-     * Initialize data sources node.
+     * Initialize data nodes.
      */
-    public void persistDataSourcesNode() {
-        repository.persist(node.getDataSourcesNodeFullRootPath(), "");
+    public void persistDataNodes() {
+        repository.persist(node.getDataNodesPath(), "");
     }
     
     /**
@@ -60,7 +60,7 @@ public final class RegistryCenter {
      * @param instanceData instance data
      */
     public void persistInstanceData(final String instanceData) {
-        repository.persist(node.getInstancesNodeFullPath(instance.getInstanceId()), instanceData);
+        repository.persist(node.getProxyNodePath(instance.getInstanceId()), instanceData);
     }
     
     /**
@@ -68,7 +68,7 @@ public final class RegistryCenter {
      * @return instance data
      */
     public String loadInstanceData() {
-        return repository.get(node.getInstancesNodeFullPath(instance.getInstanceId()));
+        return repository.get(node.getProxyNodePath(instance.getInstanceId()));
     }
     
     /**
@@ -83,10 +83,10 @@ public final class RegistryCenter {
     }
     
     private Collection<String> loadDataSourcesBySchemaName(final String schemaName) {
-        return repository.getChildrenKeys(node.getDataSourcesNodeSchemaPath(schemaName));
+        return repository.getChildrenKeys(node.getSchemaPath(schemaName));
     }
     
     private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
-        return repository.get(node.getDataSourcesNodeDataSourcePath(schemaName, dataSourceName));
+        return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
     }
 }
