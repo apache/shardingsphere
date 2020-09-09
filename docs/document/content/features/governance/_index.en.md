@@ -29,7 +29,6 @@ For the governance function, the goals are as follows:
 
 - Realize the configuration center: support Zookeeper/etcd/Apollo/Nacos, manage the configuration of data sources, rules and policies.
 - Realize the registration center: support Zookeeper/etcd, manage the status of each Proxy example.
-- Implement metadata center: support Zookeeper/etcd, manage metadata of LogicSchema.
 
 For observability, the goals are as follows:
 

@@ -35,7 +35,7 @@ Using ZooKeeper as config center and registry center for example.
 // Omit configure data sources and rule configurations
 // ...
 
-// Configure config/registry/metadata center
+// Configure registry center
 GovernanceCenterConfiguration configuration = new GovernanceCenterConfiguration("Zookeeper", "localhost:2181", new Properties());
 
 // Configure governance
