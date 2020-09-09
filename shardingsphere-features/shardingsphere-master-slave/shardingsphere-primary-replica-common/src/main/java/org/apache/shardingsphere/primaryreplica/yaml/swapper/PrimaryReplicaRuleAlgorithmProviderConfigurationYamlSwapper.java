@@ -33,7 +33,8 @@ import org.apache.shardingsphere.primaryreplica.yaml.config.rule.YamlPrimaryRepl
 /**
  * Primary-replica rule configuration YAML swapper.
  */
-public final class PrimaryReplicaRuleAlgorithmProviderConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlPrimaryReplicaRuleConfiguration, AlgorithmProvidedPrimaryReplicaRuleConfiguration> {
+public final class PrimaryReplicaRuleAlgorithmProviderConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlPrimaryReplicaRuleConfiguration, 
+		AlgorithmProvidedPrimaryReplicaRuleConfiguration> {
     
     @Override
     public YamlPrimaryReplicaRuleConfiguration swapToYamlConfiguration(final AlgorithmProvidedPrimaryReplicaRuleConfiguration data) {
