@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.yaml.swapper;
+package org.apache.shardingsphere.primaryreplica.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.yaml.config.YamlPrimaryReplicaRuleConfiguration;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -33,20 +33,20 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public final class YamlRootRuleConfigurationsForYamlMasterSlaveRuleConfigurationTest {
+public final class YamlRootRuleConfigurationsForYamlPrimaryReplicaRuleConfigurationTest {
     
     @Test
     public void assertUnmarshalWithYamlFile() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/master-slave-rule.yaml");
+        URL url = getClass().getClassLoader().getResource("yaml/primary-replica-rule.yaml");
         assertNotNull(url);
         YamlRootRuleConfigurations rootRuleConfigurations = YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
         assertThat(rootRuleConfigurations.getRules().size(), is(1));
-        assertMasterSlaveRule((YamlMasterSlaveRuleConfiguration) rootRuleConfigurations.getRules().iterator().next());
+        assertPrimaryReplicaRule((YamlPrimaryReplicaRuleConfiguration) rootRuleConfigurations.getRules().iterator().next());
     }
     
     @Test
     public void assertUnmarshalWithYamlBytes() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/master-slave-rule.yaml");
+        URL url = getClass().getClassLoader().getResource("yaml/primary-replica-rule.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
         try (
@@ -59,24 +59,24 @@ public final class YamlRootRuleConfigurationsForYamlMasterSlaveRuleConfiguration
         }
         YamlRootRuleConfigurations rootRuleConfigs = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootRuleConfigurations.class);
         assertThat(rootRuleConfigs.getRules().size(), is(1));
-        assertMasterSlaveRule((YamlMasterSlaveRuleConfiguration) rootRuleConfigs.getRules().iterator().next());
+        assertPrimaryReplicaRule((YamlPrimaryReplicaRuleConfiguration) rootRuleConfigs.getRules().iterator().next());
     }
     
-    private void assertMasterSlaveRule(final YamlMasterSlaveRuleConfiguration actual) {
+    private void assertPrimaryReplicaRule(final YamlPrimaryReplicaRuleConfiguration actual) {
         assertThat(actual.getDataSources().size(), is(2));
-        assertMasterSlaveRuleForDs0(actual);
-        assertMasterSlaveRuleForDs1(actual);
+        assertPrimaryReplicaRuleForDs0(actual);
+        assertPrimaryReplicaRuleForDs1(actual);
     }
     
-    private void assertMasterSlaveRuleForDs0(final YamlMasterSlaveRuleConfiguration actual) {
-        assertThat(actual.getDataSources().get("ds_0").getMasterDataSourceName(), is("master_ds_0"));
-        assertThat(actual.getDataSources().get("ds_0").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
+    private void assertPrimaryReplicaRuleForDs0(final YamlPrimaryReplicaRuleConfiguration actual) {
+        assertThat(actual.getDataSources().get("ds_0").getPrimaryDataSourceName(), is("primary_ds_0"));
+        assertThat(actual.getDataSources().get("ds_0").getReplicaDataSourceNames(), is(Arrays.asList("primary_ds_0_replica_0", "primary_ds_0_replica_1")));
         assertThat(actual.getDataSources().get("ds_0").getLoadBalancerName(), is("roundRobin"));
     }
     
-    private void assertMasterSlaveRuleForDs1(final YamlMasterSlaveRuleConfiguration actual) {
-        assertThat(actual.getDataSources().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
-        assertThat(actual.getDataSources().get("ds_1").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
+    private void assertPrimaryReplicaRuleForDs1(final YamlPrimaryReplicaRuleConfiguration actual) {
+        assertThat(actual.getDataSources().get("ds_1").getPrimaryDataSourceName(), is("primary_ds_1"));
+        assertThat(actual.getDataSources().get("ds_1").getReplicaDataSourceNames(), is(Arrays.asList("primary_ds_1_replica_0", "primary_ds_1_replica_1")));
         assertThat(actual.getDataSources().get("ds_1").getLoadBalancerName(), is("random"));
     }
 }
