@@ -70,17 +70,6 @@ public final class PaginationContextEngine {
                 }
             }
         }
-//        for (TableReferenceSegment tableReferenceSegment : selectStatement.getTableReferences()) {
-//            if (!(tableReferenceSegment.getTableFactor().getTable() instanceof SubqueryTableSegment)) {
-//                continue;
-//            }
-//            SelectStatement subquerySelect = ((SubqueryTableSegment) tableReferenceSegment.getTableFactor().getTable()).getSubquery().getSelect();
-//            for (ProjectionSegment each : subquerySelect.getProjections().getProjections()) {
-//                if (each instanceof TopProjectionSegment) {
-//                    return Optional.of((TopProjectionSegment) each);
-//                }
-//            }
-//        }
         return Optional.empty();
     }
 }

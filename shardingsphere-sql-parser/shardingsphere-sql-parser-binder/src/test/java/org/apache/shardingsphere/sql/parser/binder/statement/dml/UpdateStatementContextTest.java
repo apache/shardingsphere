@@ -53,8 +53,6 @@ public final class UpdateStatementContextTest {
     @Test
     public void assertNewInstance() {
         when(columnSegment.getOwner()).thenReturn(Optional.of(new OwnerSegment(0, 0, new IdentifierValue("tbl_2"))));
-//        when(predicateSegment.getColumn()).thenReturn(columnSegment);
-//        when(andPredicate.getPredicates()).thenReturn(Collections.singletonList(predicateSegment));
         BinaryOperationExpression expression = new BinaryOperationExpression();
         expression.setLeft(columnSegment);
         

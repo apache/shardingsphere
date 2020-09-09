@@ -43,7 +43,6 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @Test
     public void assertGenerateConditionValue() {
         int value = 1;
-//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "=", new LiteralExpressionSegment(0, 0, value));
         BinaryOperationExpression rightValue = new BinaryOperationExpression();
         rightValue.setOperator("=");
         rightValue.setRight(new LiteralExpressionSegment(0, 0, value));
@@ -55,7 +54,6 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithLessThanOperator() {
-//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "<", new LiteralExpressionSegment(0, 0, 1));
         BinaryOperationExpression rightValue = new BinaryOperationExpression();
         rightValue.setOperator("<");
         rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
@@ -67,7 +65,6 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithGreaterThanOperator() {
-//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, ">", new LiteralExpressionSegment(0, 0, 1));
         BinaryOperationExpression rightValue = new BinaryOperationExpression();
         rightValue.setOperator(">");
         rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
@@ -79,7 +76,6 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithAtMostOperator() {
-//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "<=", new LiteralExpressionSegment(0, 0, 1));
         BinaryOperationExpression rightValue = new BinaryOperationExpression();
         rightValue.setOperator("<=");
         rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
@@ -91,7 +87,6 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithAtLeastOperator() {
-//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, ">=", new LiteralExpressionSegment(0, 0, 1));
         BinaryOperationExpression rightValue = new BinaryOperationExpression();
         rightValue.setOperator(">=");
         rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
@@ -102,7 +97,6 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     
     @Test
     public void assertGenerateConditionValueWithErrorOperator() {
-//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "!=", new LiteralExpressionSegment(0, 0, 1));
         BinaryOperationExpression rightValue = new BinaryOperationExpression();
         rightValue.setOperator("!=");
         rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
@@ -111,7 +105,6 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     
     @Test
     public void assertGenerateConditionValueWithoutNowExpression() {
-//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "=", new CommonExpressionSegment(0, 0, "value"));
         BinaryOperationExpression rightValue = new BinaryOperationExpression();
         rightValue.setOperator("=");
         rightValue.setRight(new CommonExpressionSegment(0, 0, "value"));
@@ -121,7 +114,6 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithNowExpression() {
-//        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(0, 0, "=", new CommonExpressionSegment(0, 0, "now()"));
         BinaryOperationExpression rightValue = new BinaryOperationExpression();
         rightValue.setOperator("=");
         rightValue.setRight(new LiteralExpressionSegment(0, 0, "now()"));

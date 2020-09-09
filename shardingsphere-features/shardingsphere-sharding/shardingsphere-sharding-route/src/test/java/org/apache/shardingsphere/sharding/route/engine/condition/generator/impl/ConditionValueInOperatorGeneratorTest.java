@@ -41,7 +41,6 @@ public final class ConditionValueInOperatorGeneratorTest {
     
     @Test
     public void assertNowExpression() {
-//        PredicateInRightValue inRightValue = new PredicateInRightValue(0, 1, Collections.singletonList(new CommonExpressionSegment(0, 0, "now()")));
         ListExpression listExpression = new ListExpression();
         listExpression.getItems().add(new CommonExpressionSegment(0, 0, "now()"));
         InExpression inExpression = new InExpression();

@@ -49,17 +49,9 @@ public final class ShardingDeleteStatementValidatorTest {
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
         DeleteStatement sqlStatement = new DeleteStatement();
-//        sqlStatement.getTables().addAll(createMultiTablesContext().getTables());
         sqlStatement.setTableSegment(tableSegment);
         SQLStatementContext<DeleteStatement> sqlStatementContext = new DeleteStatementContext(sqlStatement);
         RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
         new ShardingDeleteStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
-    }
-
-    private TablesContext createMultiTablesContext() {
-        List<SimpleTableSegment> result = new LinkedList<>();
-        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
-        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
-        return new TablesContext(result);
     }
 }

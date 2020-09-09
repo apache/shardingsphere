@@ -362,15 +362,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         return result;
     }
     
-//    @Override
-//    public ASTNode visitMultipleTableNames(final MultipleTableNamesContext ctx) {
-//        CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
-//        for (TableNameContext each : ctx.tableName()) {
-//            result.getValue().add((SimpleTableSegment) visit(each));
-//        }
-//        return result;
-//    }
-    
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
@@ -518,11 +509,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
             int startIndex = ((BinaryOperationExpression) projection).getStartIndex();
             int stopIndex = null != alias ? alias.getStopIndex() : ((BinaryOperationExpression) projection).getStopIndex();
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, ((BinaryOperationExpression) projection).getText());
-//            BinaryOperationProjection result = new BinaryOperationProjection();
-//            result.setStartIndex(((BinaryOperationExpression) projection).getStartIndex());
-//            int stopIndex = null != alias ? alias.getStopIndex() : ((BinaryOperationExpression) projection).getStopIndex();
-//            result.setStopIndex(stopIndex);
-//            result.setExpression((BinaryOperationExpression) projection);
             result.setAlias(alias);
             return result;
         }

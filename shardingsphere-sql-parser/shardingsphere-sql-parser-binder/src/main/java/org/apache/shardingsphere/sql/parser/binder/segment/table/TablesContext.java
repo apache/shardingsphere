@@ -55,7 +55,6 @@ public final class TablesContext {
             }
         }
         this.tables = realtables;
-//        this(null == tableSegment ? Collections.emptyList() : Collections.singletonList(tableSegment));
     }
     
     /**

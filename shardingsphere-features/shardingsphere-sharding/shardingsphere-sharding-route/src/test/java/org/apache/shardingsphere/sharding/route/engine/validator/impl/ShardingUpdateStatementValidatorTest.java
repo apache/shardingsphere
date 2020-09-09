@@ -60,7 +60,6 @@ public final class ShardingUpdateStatementValidatorTest {
         JoinTableSegment joinTableSegment = new JoinTableSegment();
         joinTableSegment.setLeft(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         joinTableSegment.setRight(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
-//        sqlStatementContext.getTablesContext().getTables().addAll(createMultiTablesContext().getTables());
         sqlStatementContext.getSqlStatement().setTableSegment(joinTableSegment);
         RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
         new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
@@ -108,7 +107,6 @@ public final class ShardingUpdateStatementValidatorTest {
     
     private UpdateStatement createUpdateStatement() {
         UpdateStatement result = new UpdateStatement();
-//        result.getTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         result.setTableSegment(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         result.setSetAssignment(
                 new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, "")))));
@@ -117,7 +115,6 @@ public final class ShardingUpdateStatementValidatorTest {
     
     private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnParameter) {
         UpdateStatement result = new UpdateStatement();
-//        result.getTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         result.setTableSegment(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         Collection<AssignmentSegment> assignments = Collections.singletonList(
                 new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));
@@ -128,18 +125,7 @@ public final class ShardingUpdateStatementValidatorTest {
         binaryOperationExpression.setRight(new ParameterMarkerExpressionSegment(0, 0, 0));
         binaryOperationExpression.setOperator("=");
         WhereSegment where = new WhereSegment(0, 0, binaryOperationExpression);
-//        AndPredicate andPre = new AndPredicate();
-//        andPre.getPredicates().add(new PredicateSegment(0, 1,
-//                new ColumnSegment(0, 0, new IdentifierValue("id")), new PredicateCompareRightValue(0, 0, "=", new ParameterMarkerExpressionSegment(0, 0, 0))));
-//        where.getAndPredicates().add(andPre);
         result.setWhere(where);
         return result;
     }
-
-//    private TablesContext createMultiTablesContext() {
-//        List<SimpleTableSegment> result = new LinkedList<>();
-//        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
-//        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
-//        return new TablesContext(result);
-//    }
 }

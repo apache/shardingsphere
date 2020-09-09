@@ -52,7 +52,6 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
         UpdateStatement sqlStatement = (UpdateStatement) sqlStatementContext.getSqlStatement();
-//        String tableName = sqlStatement.getTables().iterator().next().getTableName().getIdentifier().getValue();
         String tableName = sqlStatementContext.getTablesContext().getTables().iterator().next().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
             String shardingColumn = each.getColumn().getIdentifier().getValue();
@@ -94,9 +93,6 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
     }
     
     private Optional<Object> getShardingValue(final WhereSegment whereSegment, final List<Object> parameters, final String shardingColumn) {
-//        for (AndPredicate each : whereSegment.getAndPredicates()) {
-//            return getShardingValue(each, parameters, shardingColumn);
-//        }
         if (null != whereSegment) {
             return getShardingValue(whereSegment.getExpr(), parameters, shardingColumn);
         }
@@ -104,13 +100,6 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
     }
     
     private Optional<Object> getShardingValue(final ExpressionSegment expression, final List<Object> parameters, final String shardingColumn) {
-//        if (!(expression instanceof BinaryOperationExpression)) {
-//            return Optional.empty();
-//            String operator = ((BinaryOperationExpression) expression).getOperator();
-//            if (((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
-//                return getPredicateCompareShardingValue(((BinaryOperationExpression) expression).getLeft(), parameters);
-//            }
-//        }
         if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
             ColumnSegment column = (ColumnSegment) ((InExpression) expression).getLeft();
             if (!shardingColumn.equalsIgnoreCase(column.getIdentifier().getValue())) {
@@ -133,21 +122,6 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
             Optional<Object> leftResult = getShardingValue(((BinaryOperationExpression) expression).getLeft(), parameters, shardingColumn);
             return leftResult.isPresent() ? leftResult : getShardingValue(((BinaryOperationExpression) expression).getRight(), parameters, shardingColumn);
         }
-    
-//        for (PredicateSegment each : andPredicate.getPredicates()) {
-//            if (!shardingColumn.equalsIgnoreCase(each.getColumn().getIdentifier().getValue())) {
-//                continue;
-//            }
-//            PredicateRightValue rightValue = each.getRightValue();
-//            if (rightValue instanceof PredicateCompareRightValue) {
-//                ExpressionSegment segment = ((PredicateCompareRightValue) rightValue).getExpression();
-//                return getPredicateCompareShardingValue(segment, parameters);
-//            }
-//            if (rightValue instanceof PredicateInRightValue) {
-//                Collection<ExpressionSegment> segments = ((PredicateInRightValue) rightValue).getSqlExpressions();
-//                return getPredicateInShardingValue(segments, parameters);
-//            }
-//        }
         return Optional.empty();
     }
     
