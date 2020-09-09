@@ -15,28 +15,28 @@
 # limitations under the License.
 #
 
---- !!java.util.LinkedHashMap
-ds_0: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
-  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  props:
-    jdbcUrl: jdbc:fixturedb:xxx
-    username: root
-    password: pwd
-    connectionTimeout: 1000
-    idleTimeout: 2000
-    maxLifetime: 4000
-    maxPoolSize: 20
-    minPoolSize: 10
-    readOnly: true
-ds_1: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
-  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  props:
-    jdbcUrl: jdbc:fixturedb:xxx
-    username: root
-    password: pwd
-    connectionTimeout: 1000
-    idleTimeout: 2000
-    maxLifetime: 4000
-    maxPoolSize: 20
-    minPoolSize: 10
-    readOnly: true
+dataSources:
+  ds_0: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    props:
+      jdbcUrl: jdbc:fixturedb:xxx
+      username: root
+      password: pwd
+      connectionTimeout: 1000
+      idleTimeout: 2000
+      maxLifetime: 4000
+      maxPoolSize: 20
+      minPoolSize: 10
+      readOnly: true
+  ds_1: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    props:
+      jdbcUrl: jdbc:fixturedb:xxx
+      username: root
+      password: pwd
+      connectionTimeout: 1000
+      idleTimeout: 2000
+      maxLifetime: 4000
+      maxPoolSize: 20
+      minPoolSize: 10
+      readOnly: true
