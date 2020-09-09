@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.namespace.factorybean;
+package org.apache.shardingsphere.primaryreplica.spring.namespace.factorybean;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.primaryreplica.spi.PrimaryReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 
 import java.util.Properties;
 
 /**
- * Master-slave load balance algorithm factory bean.
+ * Primary-replica load balance algorithm factory bean.
  */
-public final class MasterSlaveLoadBalanceAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<MasterSlaveLoadBalanceAlgorithm> {
+public final class PrimaryReplicaLoadBalanceAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<PrimaryReplicaLoadBalanceAlgorithm> {
     
     static {
-        ShardingSphereServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
+        ShardingSphereServiceLoader.register(PrimaryReplicaLoadBalanceAlgorithm.class);
     }
     
-    public MasterSlaveLoadBalanceAlgorithmFactoryBean(final String type, final Properties props) {
-        super(MasterSlaveLoadBalanceAlgorithm.class, type, props);
+    public PrimaryReplicaLoadBalanceAlgorithmFactoryBean(final String type, final Properties props) {
+        super(PrimaryReplicaLoadBalanceAlgorithm.class, type, props);
     }
 }
