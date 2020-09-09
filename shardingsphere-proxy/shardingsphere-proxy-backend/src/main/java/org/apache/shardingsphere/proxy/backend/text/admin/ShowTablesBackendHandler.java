@@ -53,7 +53,7 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
-    public BackendResponse execute() {
+    public BackendResponse execute() throws SQLException {
         SchemaContext context = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
         if (null == context) {
             return new ErrorResponse(new NoDatabaseSelectedException());

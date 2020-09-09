@@ -78,7 +78,7 @@ public final class MySQLComStmtExecuteExecutorTest {
     }
     
     @Test
-    public void assertIsQueryResponse() throws NoSuchFieldException {
+    public void assertIsQueryResponse() throws NoSuchFieldException, SQLException {
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getSchema()).thenReturn("schema");
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
@@ -89,7 +89,7 @@ public final class MySQLComStmtExecuteExecutorTest {
     }
     
     @Test
-    public void assertIsUpdateResponse() throws NoSuchFieldException {
+    public void assertIsUpdateResponse() throws NoSuchFieldException, SQLException {
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getSchema()).thenReturn("schema");
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
@@ -100,7 +100,7 @@ public final class MySQLComStmtExecuteExecutorTest {
     }
     
     @Test
-    public void assertIsErrorResponse() throws NoSuchFieldException {
+    public void assertIsErrorResponse() throws NoSuchFieldException, SQLException {
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getSchema()).thenReturn("schema");
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);

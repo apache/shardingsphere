@@ -28,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -46,7 +47,7 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     private final BackendConnection backendConnection;
     
     @Override
-    public BackendResponse execute() {
+    public BackendResponse execute() throws SQLException {
         Collection<BackendResponse> responses = new LinkedList<>();
         String originalSchema = backendConnection.getSchema();
         for (String each : ProxyContext.getInstance().getAllSchemaNames()) {

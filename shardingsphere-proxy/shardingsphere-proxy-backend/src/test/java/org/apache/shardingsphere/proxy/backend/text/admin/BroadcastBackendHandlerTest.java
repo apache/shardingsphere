@@ -78,7 +78,7 @@ public final class BroadcastBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteSuccess() {
+    public void assertExecuteSuccess() throws SQLException {
         mockDatabaseCommunicationEngine(new UpdateResponse());
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", mock(SQLStatement.class), backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
@@ -98,7 +98,7 @@ public final class BroadcastBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteFailure() {
+    public void assertExecuteFailure() throws SQLException {
         ErrorResponse errorResponse = new ErrorResponse(new SQLException("no reason", "X999", -1));
         mockDatabaseCommunicationEngine(errorResponse);
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", mock(SQLStatement.class), backendConnection);
@@ -107,7 +107,7 @@ public final class BroadcastBackendHandlerTest {
         verify(databaseCommunicationEngine, times(10)).execute();
     }
     
-    private void mockDatabaseCommunicationEngine(final BackendResponse backendResponse) {
+    private void mockDatabaseCommunicationEngine(final BackendResponse backendResponse) throws SQLException {
         when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
         when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
     }
