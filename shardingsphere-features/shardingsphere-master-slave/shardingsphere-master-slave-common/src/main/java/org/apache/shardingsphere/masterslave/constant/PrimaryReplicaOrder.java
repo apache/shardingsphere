@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.constant;
+package org.apache.shardingsphere.primaryreplica.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
