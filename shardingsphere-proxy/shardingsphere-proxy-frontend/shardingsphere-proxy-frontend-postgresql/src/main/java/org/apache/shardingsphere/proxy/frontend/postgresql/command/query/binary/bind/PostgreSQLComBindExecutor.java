@@ -37,13 +37,11 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
-import org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLErrPacketFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.ResultSetMetaData;
@@ -80,7 +78,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     }
     
     @Override
-    public Collection<DatabasePacket<?>> execute() {
+    public Collection<DatabasePacket<?>> execute() throws SQLException {
         if (ProxyContext.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new PostgreSQLErrorResponsePacket());
         }
@@ -89,29 +87,13 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         if (null == databaseCommunicationEngine) {
             return result;
         }
-        BackendResponse backendResponse = getBackendResponse();
+        BackendResponse backendResponse = databaseCommunicationEngine.execute();
         if (backendResponse instanceof QueryResponse) {
             createQueryPacket((QueryResponse) backendResponse).ifPresent(result::add);
         }
         if (backendResponse instanceof UpdateResponse) {
             responseType = ResponseType.UPDATE;
             result.add(createUpdatePacket((UpdateResponse) backendResponse));
-        }
-        if (backendResponse instanceof ErrorResponse) {
-            responseType = ResponseType.ERROR;
-            result.add(createErrorPacket((ErrorResponse) backendResponse));
-        }
-        return result;
-    }
-    
-    private BackendResponse getBackendResponse() {
-        BackendResponse result;
-        try {
-            result = databaseCommunicationEngine.execute();
-        // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-        // CHECKSTYLE:OFF
-            result = new ErrorResponse(ex);
         }
         return result;
     }
@@ -140,10 +122,6 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponse updateResponse) {
         return new PostgreSQLCommandCompletePacket(updateResponse.getType(), updateResponse.getUpdateCount());
-    }
-    
-    private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
-        return PostgreSQLErrPacketFactory.newInstance(errorResponse.getCause());
     }
     
     @Override

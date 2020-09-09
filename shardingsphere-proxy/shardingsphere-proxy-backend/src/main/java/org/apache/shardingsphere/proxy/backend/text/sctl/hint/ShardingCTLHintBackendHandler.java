@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl.hint;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintCommandExecutorFactory;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -55,7 +54,7 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
         }
         Optional<ShardingCTLHintStatement> shardingTCLStatement = new ShardingCTLHintParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {
-            return new ErrorResponse(new InvalidShardingCTLFormatException(sql));
+            throw new InvalidShardingCTLFormatException(sql);
         }
         HintCommand hintCommand = shardingTCLStatement.get().getHintCommand();
         hintCommandExecutor = HintCommandExecutorFactory.newInstance(hintCommand, backendConnection, sql);
