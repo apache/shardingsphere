@@ -80,7 +80,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     }
     
     @Override
-    public Collection<DatabasePacket<?>> execute() {
+    public Collection<DatabasePacket<?>> execute() throws SQLException {
         if (ProxyContext.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new PostgreSQLErrorResponsePacket());
         }
@@ -89,7 +89,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         if (null == databaseCommunicationEngine) {
             return result;
         }
-        BackendResponse backendResponse = getBackendResponse();
+        BackendResponse backendResponse = databaseCommunicationEngine.execute();
         if (backendResponse instanceof QueryResponse) {
             createQueryPacket((QueryResponse) backendResponse).ifPresent(result::add);
         }
@@ -100,18 +100,6 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         if (backendResponse instanceof ErrorResponse) {
             responseType = ResponseType.ERROR;
             result.add(createErrorPacket((ErrorResponse) backendResponse));
-        }
-        return result;
-    }
-    
-    private BackendResponse getBackendResponse() {
-        BackendResponse result;
-        try {
-            result = databaseCommunicationEngine.execute();
-        // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-        // CHECKSTYLE:OFF
-            result = new ErrorResponse(ex);
         }
         return result;
     }
