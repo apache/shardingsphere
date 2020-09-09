@@ -55,13 +55,15 @@ import static org.mockito.Mockito.mock;
 
 public final class GovernanceBootstrapInitializerTest {
     
-    private static final String DATA_SOURCE_YAML = "conf/reg_center/config_center/data-source.yaml";
+    private static final String DATA_SOURCE_YAML = "conf/reg_center/config_center/data-sources.yaml";
     
     private static final String SHARDING_RULE_YAML = "conf/reg_center/config_center/sharding-rule.yaml";
     
     private static final String AUTHENTICATION_YAML = "conf/reg_center/config_center/authentication.yaml";
-
+    
     private static final String PROPS_YAML = "conf/reg_center/config_center/props.yaml";
+    
+    private FixtureConfigurationRepository configurationRepository = new FixtureConfigurationRepository();
     
     private GovernanceFacade governanceFacade = new GovernanceFacade();
     
@@ -72,10 +74,10 @@ public final class GovernanceBootstrapInitializerTest {
         initConfigCenter();
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/reg_center/");
         assertProxyConfiguration(initializer.getProxyConfiguration(yamlProxyConfig));
+        closeConfigCenter();
     }
     
     private void initConfigCenter() {
-        FixtureConfigurationRepository configurationRepository = new FixtureConfigurationRepository();
         ConfigCenterNode node = new ConfigCenterNode();
         configurationRepository.persist(node.getAuthenticationPath(), YamlUtil.readYAML(AUTHENTICATION_YAML));
         configurationRepository.persist(node.getPropsPath(), YamlUtil.readYAML(PROPS_YAML));
@@ -84,10 +86,15 @@ public final class GovernanceBootstrapInitializerTest {
         configurationRepository.persist(node.getRulePath("db"), YamlUtil.readYAML(SHARDING_RULE_YAML));
     }
     
+    private void closeConfigCenter() {
+        configurationRepository.close();
+    }
+    
     @Test
     public void assertGetProxyConfigurationFromLocalConfiguration() throws IOException {
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/local");
         assertProxyConfiguration(initializer.getProxyConfiguration(yamlProxyConfig));
+        closeConfigCenter();
     }
     
     private void assertProxyConfiguration(final ProxyConfiguration actual) {
