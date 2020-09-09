@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.rule;
+package org.apache.shardingsphere.primaryreplica.rule;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.masterslave.algorithm.RandomMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.masterslave.algorithm.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.primaryreplica.api.config.rule.PrimaryReplicaDataSourceRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.algorithm.RandomPrimaryReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.primaryreplica.algorithm.RoundRobinPrimaryReplicaLoadBalanceAlgorithm;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -31,59 +31,59 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MasterSlaveDataSourceRuleTest {
+public final class PrimaryReplicaDataSourceRuleTest {
     
-    private final MasterSlaveDataSourceRule masterSlaveDataSourceRule = new MasterSlaveDataSourceRule(
-            new MasterSlaveDataSourceRuleConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), "random"), new RandomMasterSlaveLoadBalanceAlgorithm());
+    private final PrimaryReplicaDataSourceRule primaryReplicaDataSourceRule = new PrimaryReplicaDataSourceRule(
+            new PrimaryReplicaDataSourceRuleConfiguration("test_ms", "primary_db", Arrays.asList("replica_db_0", "replica_db_1"), "random"), new RandomPrimaryReplicaLoadBalanceAlgorithm());
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertNewMasterSlaveDataSourceRuleWithoutName() {
-        new MasterSlaveDataSourceRule(new MasterSlaveDataSourceRuleConfiguration("", "master_ds", Collections.singletonList("slave_ds"), null), new RoundRobinMasterSlaveLoadBalanceAlgorithm());
+    public void assertNewPrimaryReplicaDataSourceRuleWithoutName() {
+        new PrimaryReplicaDataSourceRule(new PrimaryReplicaDataSourceRuleConfiguration("", "primary_ds", Collections.singletonList("replica_ds"), null), new RoundRobinPrimaryReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertNewMasterSlaveDataSourceRuleWithoutMasterDataSourceName() {
-        new MasterSlaveDataSourceRule(new MasterSlaveDataSourceRuleConfiguration("ds", "", Collections.singletonList("slave_ds"), null), new RoundRobinMasterSlaveLoadBalanceAlgorithm());
+    public void assertNewPrimaryReplicaDataSourceRuleWithoutPrimaryDataSourceName() {
+        new PrimaryReplicaDataSourceRule(new PrimaryReplicaDataSourceRuleConfiguration("ds", "", Collections.singletonList("replica_ds"), null), new RoundRobinPrimaryReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertNewMasterSlaveDataSourceRuleWithNullSlaveDataSourceName() {
-        new MasterSlaveDataSourceRule(new MasterSlaveDataSourceRuleConfiguration("ds", "master_ds", null, null), new RoundRobinMasterSlaveLoadBalanceAlgorithm());
+    public void assertNewPrimaryReplicaDataSourceRuleWithNullReplicaDataSourceName() {
+        new PrimaryReplicaDataSourceRule(new PrimaryReplicaDataSourceRuleConfiguration("ds", "primary_ds", null, null), new RoundRobinPrimaryReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertNewMasterSlaveDataSourceRuleWithEmptySlaveDataSourceName() {
-        new MasterSlaveDataSourceRule(new MasterSlaveDataSourceRuleConfiguration("ds", "master_ds", Collections.emptyList(), null), new RoundRobinMasterSlaveLoadBalanceAlgorithm());
+    public void assertNewPrimaryReplicaDataSourceRuleWithEmptyReplicaDataSourceName() {
+        new PrimaryReplicaDataSourceRule(new PrimaryReplicaDataSourceRuleConfiguration("ds", "primary_ds", Collections.emptyList(), null), new RoundRobinPrimaryReplicaLoadBalanceAlgorithm());
     }
     
     @Test
-    public void assertGetSlaveDataSourceNamesWithoutDisabledDataSourceNames() {
-        assertThat(masterSlaveDataSourceRule.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
+    public void assertGetReplicaDataSourceNamesWithoutDisabledDataSourceNames() {
+        assertThat(primaryReplicaDataSourceRule.getReplicaDataSourceNames(), is(Arrays.asList("replica_db_0", "replica_db_1")));
     }
     
     @Test
-    public void assertGetSlaveDataSourceNamesWithDisabledDataSourceNames() {
-        masterSlaveDataSourceRule.updateDisabledDataSourceNames("slave_db_0", true);
-        assertThat(masterSlaveDataSourceRule.getSlaveDataSourceNames(), is(Collections.singletonList("slave_db_1")));
+    public void assertGetReplicaDataSourceNamesWithDisabledDataSourceNames() {
+        primaryReplicaDataSourceRule.updateDisabledDataSourceNames("replica_db_0", true);
+        assertThat(primaryReplicaDataSourceRule.getReplicaDataSourceNames(), is(Collections.singletonList("replica_db_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForDisabled() {
-        masterSlaveDataSourceRule.updateDisabledDataSourceNames("slave_db_0", true);
-        assertThat(masterSlaveDataSourceRule.getSlaveDataSourceNames(), is(Collections.singletonList("slave_db_1")));
+        primaryReplicaDataSourceRule.updateDisabledDataSourceNames("replica_db_0", true);
+        assertThat(primaryReplicaDataSourceRule.getReplicaDataSourceNames(), is(Collections.singletonList("replica_db_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForEnabled() {
-        masterSlaveDataSourceRule.updateDisabledDataSourceNames("slave_db_0", true);
-        masterSlaveDataSourceRule.updateDisabledDataSourceNames("slave_db_0", false);
-        assertThat(masterSlaveDataSourceRule.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
+        primaryReplicaDataSourceRule.updateDisabledDataSourceNames("replica_db_0", true);
+        primaryReplicaDataSourceRule.updateDisabledDataSourceNames("replica_db_0", false);
+        assertThat(primaryReplicaDataSourceRule.getReplicaDataSourceNames(), is(Arrays.asList("replica_db_0", "replica_db_1")));
     }
     
     @Test
     public void assertGetDataSourceMapper() {
-        Map<String, Collection<String>> actual = masterSlaveDataSourceRule.getDataSourceMapper();
-        Map<String, Collection<String>> expected = ImmutableMap.of("test_ms", Arrays.asList("master_db", "slave_db_0", "slave_db_1"));
+        Map<String, Collection<String>> actual = primaryReplicaDataSourceRule.getDataSourceMapper();
+        Map<String, Collection<String>> expected = ImmutableMap.of("test_ms", Arrays.asList("primary_db", "replica_db_0", "replica_db_1"));
         assertThat(actual, is(expected));
     }
 }
