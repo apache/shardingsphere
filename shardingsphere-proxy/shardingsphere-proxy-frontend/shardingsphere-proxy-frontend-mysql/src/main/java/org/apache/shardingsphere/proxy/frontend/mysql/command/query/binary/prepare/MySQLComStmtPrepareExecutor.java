@@ -64,7 +64,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         }
         int parameterCount = sqlStatement.getParameterCount();
         int projectionCount = getProjectionCount(sqlStatement);
-        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parameterCount), projectionCount, parameterCount, 0));
+        int statementId = PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parameterCount);
+        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, statementId, projectionCount, parameterCount, 0));
         if (parameterCount > 0) {
             result.addAll(createParameterColumnDefinition41Packets(parameterCount));
         }
