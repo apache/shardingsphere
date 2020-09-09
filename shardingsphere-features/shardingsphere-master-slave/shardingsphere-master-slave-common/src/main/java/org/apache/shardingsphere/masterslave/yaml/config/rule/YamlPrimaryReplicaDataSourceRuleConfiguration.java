@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.yaml.config.rule;
+package org.apache.shardingsphere.primaryreplica.yaml.config.rule;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,17 +26,17 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Master-slave data source rule configuration for YAML.
+ * Primary-replica data source rule configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlMasterSlaveDataSourceRuleConfiguration implements YamlConfiguration {
+public final class YamlPrimaryReplicaDataSourceRuleConfiguration implements YamlConfiguration {
     
     private String name;
     
-    private String masterDataSourceName;
+    private String primaryDataSourceName;
     
-    private List<String> slaveDataSourceNames = new ArrayList<>();
+    private List<String> replicaDataSourceNames = new ArrayList<>();
     
     private String loadBalancerName;
     
