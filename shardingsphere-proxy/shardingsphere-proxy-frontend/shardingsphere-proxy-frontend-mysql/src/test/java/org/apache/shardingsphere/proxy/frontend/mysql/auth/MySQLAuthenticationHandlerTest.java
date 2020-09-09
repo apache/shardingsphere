@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,6 +46,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class MySQLAuthenticationHandlerTest {
+    
+    private static final String SCHEMA_PATTERN = "schema_%s";
     
     private final MySQLAuthenticationHandler authenticationHandler = new MySQLAuthenticationHandler();
     
@@ -127,7 +129,7 @@ public final class MySQLAuthenticationHandlerTest {
     private Map<String, SchemaContext> getSchemaContextMap() {
         Map<String, SchemaContext> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
-            String name = "schema_" + i;
+            String name = String.format(SCHEMA_PATTERN, i);
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
             RuntimeContext runtimeContext = mock(RuntimeContext.class);
             result.put(name, new SchemaContext(name, schema, runtimeContext));

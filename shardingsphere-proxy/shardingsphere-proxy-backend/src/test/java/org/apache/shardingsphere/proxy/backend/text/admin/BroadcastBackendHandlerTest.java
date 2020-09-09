@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,6 +56,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class BroadcastBackendHandlerTest {
     
+    private static final String SCHEMA_PATTERN = "schema_%s";
+    
     @Mock
     private BackendConnection backendConnection;
     
@@ -72,7 +74,7 @@ public final class BroadcastBackendHandlerTest {
         schemaContexts.setAccessible(true);
         schemaContexts.set(ProxyContext.getInstance(),
                 new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
-        when(backendConnection.getSchema()).thenReturn("schema_0");
+        when(backendConnection.getSchema()).thenReturn(String.format(SCHEMA_PATTERN, 0));
     }
     
     @Test
@@ -90,7 +92,7 @@ public final class BroadcastBackendHandlerTest {
     private Map<String, SchemaContext> getSchemaContextMap() {
         Map<String, SchemaContext> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
-            result.put("schema_" + i, mock(SchemaContext.class));
+            result.put(String.format(SCHEMA_PATTERN, i), mock(SchemaContext.class));
         }
         return result;
     }

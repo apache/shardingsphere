@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.fixture.CallTimeRecordDataSource;
-import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
@@ -61,6 +61,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class JDBCBackendDataSourceTest {
+    
+    private static final String DATA_SOURCE_PATTERN = "ds_%s";
     
     @Before
     public void setUp() {
@@ -104,26 +106,26 @@ public final class JDBCBackendDataSourceTest {
     private Map<String, DataSource> mockDataSources(final int size) {
         Map<String, DataSource> result = new HashMap<>(size, 1);
         for (int i = 0; i < size; i++) {
-            result.put("ds_" + i, new CallTimeRecordDataSource());
+            result.put(String.format(DATA_SOURCE_PATTERN, i), new CallTimeRecordDataSource());
         }
         return result;
     }
     
     @Test
     public void assertGetConnectionFixedOne() throws SQLException {
-        Connection actual = ProxyContext.getInstance().getBackendDataSource().getConnection("schema", "ds_1");
+        Connection actual = ProxyContext.getInstance().getBackendDataSource().getConnection("schema", String.format(DATA_SOURCE_PATTERN, 1));
         assertThat(actual, instanceOf(Connection.class));
     }
     
     @Test
     public void assertGetConnectionsSucceed() throws SQLException {
-        List<Connection> actual = ProxyContext.getInstance().getBackendDataSource().getConnections("schema", "ds_1", 5, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actual = ProxyContext.getInstance().getBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 5, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(5));
     }
     
     @Test(expected = SQLException.class)
     public void assertGetConnectionsFailed() throws SQLException {
-        ProxyContext.getInstance().getBackendDataSource().getConnections("schema", "ds_1", 6, ConnectionMode.MEMORY_STRICTLY);
+        ProxyContext.getInstance().getBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 6, ConnectionMode.MEMORY_STRICTLY);
     }
     
     @Test
@@ -131,7 +133,7 @@ public final class JDBCBackendDataSourceTest {
         ExecutorService executorService = Executors.newFixedThreadPool(20);
         Collection<Future<List<Connection>>> futures = new LinkedList<>();
         for (int i = 0; i < 200; i++) {
-            futures.add(executorService.submit(new CallableTask("ds_1", 6, ConnectionMode.MEMORY_STRICTLY)));
+            futures.add(executorService.submit(new CallableTask(String.format(DATA_SOURCE_PATTERN, 1), 6, ConnectionMode.MEMORY_STRICTLY)));
         }
         Collection<Connection> actual = new LinkedList<>();
         for (Future<List<Connection>> each : futures) {

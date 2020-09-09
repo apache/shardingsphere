@@ -27,7 +27,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +44,8 @@ import static org.mockito.Mockito.mock;
 
 public final class ShardingCTLSetBackendHandlerTest {
     
+    private static final String SCHEMA_PATTERN = "schema_%s";
+    
     private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Before
@@ -56,16 +58,16 @@ public final class ShardingCTLSetBackendHandlerTest {
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
-        Map<String, SchemaContext> result = new HashMap<>(10);
+        Map<String, SchemaContext> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
-            result.put("schema_" + i, mock(SchemaContext.class));
+            result.put(String.format(SCHEMA_PATTERN, i), mock(SchemaContext.class));
         }
         return result;
     }
     
     @Test
     public void assertSwitchTransactionTypeXA() {
-        backendConnection.setCurrentSchema("schema_0");
+        backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=XA", backendConnection);
         BackendResponse actual = shardingCTLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));
@@ -74,7 +76,7 @@ public final class ShardingCTLSetBackendHandlerTest {
     
     @Test
     public void assertSwitchTransactionTypeBASE() {
-        backendConnection.setCurrentSchema("schema_0");
+        backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set  transaction_type=BASE", backendConnection);
         BackendResponse actual = shardingCTLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));
@@ -83,7 +85,7 @@ public final class ShardingCTLSetBackendHandlerTest {
     
     @Test
     public void assertSwitchTransactionTypeLOCAL() {
-        backendConnection.setCurrentSchema("schema_0");
+        backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=LOCAL", backendConnection);
         BackendResponse actual = shardingCTLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));
@@ -92,7 +94,7 @@ public final class ShardingCTLSetBackendHandlerTest {
     
     @Test
     public void assertSwitchTransactionTypeFailed() {
-        backendConnection.setCurrentSchema("schema_0");
+        backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=XXX", backendConnection);
         BackendResponse actual = shardingCTLBackendHandler.execute();
         assertThat(actual, instanceOf(ErrorResponse.class));
