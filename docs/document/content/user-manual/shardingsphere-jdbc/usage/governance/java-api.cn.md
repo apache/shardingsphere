@@ -35,7 +35,7 @@ weight = 1
 // 省略配置数据源以及规则
 // ...
 
-// 配置配置/注册/元数据中心
+// 配置配置/注册中心
 GovernanceCenterConfiguration configuration = new GovernanceCenterConfiguration("Zookeeper", "localhost:2181", new Properties());
 
 // 配置治理

@@ -11,30 +11,32 @@ weight = 2
 
 ## 注册中心数据结构
 
-注册中心在定义的命名空间的 `registry` 节点下，创建数据库访问对象运行节点，用于区分不同数据库访问实例。包括 `instances` 和 `datasources` 节点。
+注册中心在定义的命名空间的 `states` 节点下，创建数据库访问对象运行节点，用于区分不同数据库访问实例。包括 `proxynodes` 和 `datanodes` 节点。
 
 ```
-instances
-    ├──your_instance_ip_a@-@your_instance_pid_x
-    ├──your_instance_ip_b@-@your_instance_pid_y
-    ├──....
-datasources
-    ├──schema_1
-    ├      ├──ds_0
-    ├      ├──ds_1
-    ├──schema_2
-    ├      ├──ds_0
-    ├      ├──ds_1
-    ├──....
+namespace
+   ├──states
+        ├──proxynodes
+              ├──${your_instance_ip_a}@${your_instance_pid_x}@${UUID}
+              ├──${your_instance_ip_b}@${your_instance_pid_y}@${UUID}
+              ├──....
+        ├──datanodes
+              ├──${schema_1}
+              ├      ├──${ds_0}
+              ├      ├──${ds_1}
+              ├──${schema_2}
+              ├      ├──${ds_0}
+              ├      ├──${ds_1}
+              ├──....
 ```
 
-### registry/instances
+### /proxynodes
 
 数据库访问对象运行实例信息，子节点是当前运行实例的标识。
 运行实例标识由运行服务器的 IP 地址和 PID 构成。运行实例标识均为临时节点，当实例上线时注册，下线时自动清理。
 注册中心监控这些节点的变化来治理运行中实例对数据库的访问等。
 
-### registry/datasources
+### /datanodes
 
 可以治理读写分离从库，可动态添加删除以及禁用。
 
@@ -42,12 +44,12 @@ datasources
 
 ### 熔断实例
 
-可在 `IP地址@-@PID` 节点写入 `DISABLED`（忽略大小写）表示禁用该实例，删除 `DISABLED` 表示启用。
+可在 `IP地址@PID@UUID` 节点写入 `DISABLED`（忽略大小写）表示禁用该实例，删除 `DISABLED` 表示启用。
 
 Zookeeper 命令如下：
 
 ```
-[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/registry/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED
+[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/states/proxynodes/${your_instance_ip_a}@${your_instance_pid_x}@${UUID} DISABLED
 ```
 
 ### 禁用从库
@@ -57,5 +59,5 @@ Zookeeper 命令如下：
 Zookeeper 命令如下：
 
 ```
-[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/registry/datasources/your_schema_name/your_slave_datasource_name DISABLED
+[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/states/datanodes/${your_schema_name}/${your_slave_datasource_name} DISABLED
 ```
