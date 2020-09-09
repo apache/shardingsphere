@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.namespace.tag;
+package org.apache.shardingsphere.primaryreplica.spring.namespace.tag;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Master-slave rule bean definition tag.
+ * Primary-replica rule bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MasterSlaveRuleBeanDefinitionTag {
+public final class PrimaryReplicaRuleBeanDefinitionTag {
     
     public static final String ROOT_TAG = "rule";
     
     public static final String DATA_SOURCE_TAG = "data-source-rule";
     
-    public static final String MASTER_SLAVE_DATA_SOURCE_ID_ATTRIBUTE = "id";
+    public static final String PRIMARY_REPLICA_DATA_SOURCE_ID_ATTRIBUTE = "id";
     
-    public static final String MASTER_DATA_SOURCE_NAME_ATTRIBUTE = "master-data-source-name";
+    public static final String PRIMARY_DATA_SOURCE_NAME_ATTRIBUTE = "primary-data-source-name";
     
-    public static final String SLAVE_DATA_SOURCE_NAMES_ATTRIBUTE = "slave-data-source-names";
+    public static final String REPLICA_DATA_SOURCE_NAMES_ATTRIBUTE = "replica-data-source-names";
     
     public static final String LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE = "load-balance-algorithm-ref";
 }
