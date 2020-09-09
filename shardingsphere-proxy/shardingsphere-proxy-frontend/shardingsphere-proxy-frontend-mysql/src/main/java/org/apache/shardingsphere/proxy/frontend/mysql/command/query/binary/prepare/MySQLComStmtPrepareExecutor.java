@@ -52,10 +52,6 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         schema = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
     }
     
-    private int getColumnsCount(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
-    }
-    
     @Override
     public Collection<DatabasePacket<?>> execute() {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
@@ -81,5 +77,9 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             result.add(new MySQLEofPacket(++currentSequenceId));
         }
         return result;
+    }
+    
+    private int getColumnsCount(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
     }
 }
