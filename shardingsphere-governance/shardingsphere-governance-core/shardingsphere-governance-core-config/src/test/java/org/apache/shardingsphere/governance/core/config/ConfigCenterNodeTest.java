@@ -75,4 +75,9 @@ public final class ConfigCenterNodeTest {
     public void assertGetSchemaNamePath() {
         assertThat(configurationNode.getSchemaNamePath("sharding_db"), is("/schemas/sharding_db"));
     }
+    
+    @Test
+    public void assertGetTablePath() {
+        assertThat(configurationNode.getTablePath("sharding_db"), is("/schemas/sharding_db/table"));
+    }
 }
