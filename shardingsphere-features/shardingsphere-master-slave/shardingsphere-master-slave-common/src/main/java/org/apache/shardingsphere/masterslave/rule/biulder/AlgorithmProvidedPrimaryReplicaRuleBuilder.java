@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.rule.biulder;
+package org.apache.shardingsphere.primaryreplica.rule.biulder;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
-import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
-import org.apache.shardingsphere.masterslave.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.constant.PrimaryReplicaOrder;
+import org.apache.shardingsphere.primaryreplica.rule.PrimaryReplicaRule;
+import org.apache.shardingsphere.primaryreplica.algorithm.config.AlgorithmProvidedPrimaryReplicaRuleConfiguration;
 
 import java.util.Collection;
 
 /**
- * Algorithm provided master-slave rule builder.
+ * Algorithm provided primary-replica rule builder.
  */
-public final class AlgorithmProvidedMasterSlaveRuleBuilder implements ShardingSphereRuleBuilder<MasterSlaveRule, AlgorithmProvidedMasterSlaveRuleConfiguration> {
+public final class AlgorithmProvidedPrimaryReplicaRuleBuilder implements ShardingSphereRuleBuilder<PrimaryReplicaRule, AlgorithmProvidedPrimaryReplicaRuleConfiguration> {
     
     @Override
-    public MasterSlaveRule build(final AlgorithmProvidedMasterSlaveRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
-        return new MasterSlaveRule(ruleConfiguration);
+    public PrimaryReplicaRule build(final AlgorithmProvidedPrimaryReplicaRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+        return new PrimaryReplicaRule(ruleConfiguration);
     }
     
     @Override
     public int getOrder() {
-        return MasterSlaveOrder.ORDER + 1;
+        return PrimaryReplicaOrder.ORDER + 1;
     }
     
     @Override
-    public Class<AlgorithmProvidedMasterSlaveRuleConfiguration> getTypeClass() {
-        return AlgorithmProvidedMasterSlaveRuleConfiguration.class;
+    public Class<AlgorithmProvidedPrimaryReplicaRuleConfiguration> getTypeClass() {
+        return AlgorithmProvidedPrimaryReplicaRuleConfiguration.class;
     }
 }
