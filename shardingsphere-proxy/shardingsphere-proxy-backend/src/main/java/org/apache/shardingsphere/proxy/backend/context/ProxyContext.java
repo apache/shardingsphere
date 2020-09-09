@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.schema;
+package org.apache.shardingsphere.proxy.backend.context;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
