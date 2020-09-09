@@ -47,6 +47,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private final SchemaContext schema;
     
+    private int currentSequenceId;
+    
     public MySQLComStmtPrepareExecutor(final MySQLComStmtPreparePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
         schema = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
@@ -55,7 +57,6 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket<?>> execute() {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
-        int currentSequenceId = 0;
         SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
             result.add(new MySQLErrPacket(++currentSequenceId, MySQLServerErrorCode.ER_UNSUPPORTED_PS));
