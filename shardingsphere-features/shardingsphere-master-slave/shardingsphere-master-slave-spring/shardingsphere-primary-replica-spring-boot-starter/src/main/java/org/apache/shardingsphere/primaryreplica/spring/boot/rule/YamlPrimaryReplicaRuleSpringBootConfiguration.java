@@ -29,6 +29,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 public final class YamlPrimaryReplicaRuleSpringBootConfiguration {
-    
-    private YamlPrimaryReplicaRuleConfiguration primaryReplica;
+
+	private YamlPrimaryReplicaRuleConfiguration primaryReplica;
 }
