@@ -18,19 +18,19 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xmlns:primary-replica="http://shardingsphere.apache.org/schema/shardingsphere/primaryreplica"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
-                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave
-                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/primaryreplica
+                           http://shardingsphere.apache.org/schema/shardingsphere/primaryreplica/primary-replica.xsd
                            ">
-    <master-slave:load-balance-algorithm id="randomLoadbalancer" type="RANDOM" />
+    <primary-replica:load-balance-algorithm id="randomLoadbalancer" type="RANDOM" />
     
-    <master-slave:rule id="defaultMasterSlaveRule">
-        <master-slave:data-source-rule id="default_ds" master-data-source-name="master_ds" slave-data-source-names="slave_ds_0, slave_ds_1" />
-    </master-slave:rule>
+    <primary-replica:rule id="defaultPrimaryReplicaRule">
+        <primary-replica:data-source-rule id="default_ds" primary-data-source-name="primary_ds" replica-data-source-names="replica_ds_0, replica_ds_1" />
+    </primary-replica:rule>
     
-    <master-slave:rule id="randomMasterSlaveRule">
-        <master-slave:data-source-rule id="random_ds" master-data-source-name="master_ds" slave-data-source-names="slave_ds_0, slave_ds_1" load-balance-algorithm-ref="randomLoadbalancer" />
-    </master-slave:rule>
+    <primary-replica:rule id="randomPrimaryReplicaRule">
+        <primary-replica:data-source-rule id="random_ds" primary-data-source-name="primary_ds" replica-data-source-names="replica_ds_0, replica_ds_1" load-balance-algorithm-ref="randomLoadbalancer" />
+    </primary-replica:rule>
 </beans>
