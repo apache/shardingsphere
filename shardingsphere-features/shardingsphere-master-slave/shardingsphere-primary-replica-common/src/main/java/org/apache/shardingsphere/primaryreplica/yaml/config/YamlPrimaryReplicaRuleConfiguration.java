@@ -22,7 +22,8 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.primaryreplica.api.config.PrimaryReplicaRuleConfiguration;
-primaryreplica
+import org.apache.shardingsphere.primaryreplica.yaml.config.rule.YamlPrimaryReplicaDataSourceRuleConfiguration;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 

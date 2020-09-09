@@ -50,8 +50,8 @@ public final class PrimaryReplicaRuleAlgorithmProviderConfigurationYamlSwapper i
     private YamlPrimaryReplicaDataSourceRuleConfiguration swapToYamlConfiguration(final PrimaryReplicaDataSourceRuleConfiguration dataSourceRuleConfiguration) {
         YamlPrimaryReplicaDataSourceRuleConfiguration result = new YamlPrimaryReplicaDataSourceRuleConfiguration();
         result.setName(dataSourceRuleConfiguration.getName());
-        result.setMasterDataSourceName(dataSourceRuleConfiguration.getMasterDataSourceName());
-        result.setSlaveDataSourceNames(dataSourceRuleConfiguration.getSlaveDataSourceNames());
+        result.setPrimaryDataSourceName(dataSourceRuleConfiguration.getPrimaryDataSourceName());
+        result.setReplicaDataSourceNames(dataSourceRuleConfiguration.getReplicaDataSourceNames());
         result.setLoadBalancerName(dataSourceRuleConfiguration.getLoadBalancerName());
         return result;
     }
@@ -69,7 +69,7 @@ public final class PrimaryReplicaRuleAlgorithmProviderConfigurationYamlSwapper i
     
     private PrimaryReplicaDataSourceRuleConfiguration swapToObject(final String name, final YamlPrimaryReplicaDataSourceRuleConfiguration yamlDataSourceRuleConfiguration) {
         return new PrimaryReplicaDataSourceRuleConfiguration(name, 
-                yamlDataSourceRuleConfiguration.getMasterDataSourceName(), yamlDataSourceRuleConfiguration.getSlaveDataSourceNames(), yamlDataSourceRuleConfiguration.getLoadBalancerName());
+                yamlDataSourceRuleConfiguration.getPrimaryDataSourceName(), yamlDataSourceRuleConfiguration.getReplicaDataSourceNames(), yamlDataSourceRuleConfiguration.getLoadBalancerName());
     }
     
     @Override
@@ -79,11 +79,11 @@ public final class PrimaryReplicaRuleAlgorithmProviderConfigurationYamlSwapper i
     
     @Override
     public String getRuleTagName() {
-        return "MASTER_SLAVE";
+        return "PRIMARY_REPLICA";
     }
     
     @Override
     public int getOrder() {
-        return PrimaryReplicaOrder.ALGORITHM_PROVIDER_MASTER_SLAVE_ORDER;
+        return PrimaryReplicaOrder.ALGORITHM_PROVIDER_PRIMARY_REPLICA_ORDER;
     }
 }
