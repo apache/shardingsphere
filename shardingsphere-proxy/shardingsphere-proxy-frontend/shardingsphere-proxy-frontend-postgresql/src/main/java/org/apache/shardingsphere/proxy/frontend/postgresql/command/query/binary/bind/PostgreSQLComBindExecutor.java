@@ -37,13 +37,11 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
-import org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLErrPacketFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.ResultSetMetaData;
@@ -97,10 +95,6 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
             responseType = ResponseType.UPDATE;
             result.add(createUpdatePacket((UpdateResponse) backendResponse));
         }
-        if (backendResponse instanceof ErrorResponse) {
-            responseType = ResponseType.ERROR;
-            result.add(createErrorPacket((ErrorResponse) backendResponse));
-        }
         return result;
     }
     
@@ -128,10 +122,6 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponse updateResponse) {
         return new PostgreSQLCommandCompletePacket(updateResponse.getType(), updateResponse.getUpdateCount());
-    }
-    
-    private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
-        return PostgreSQLErrPacketFactory.newInstance(errorResponse.getCause());
     }
     
     @Override

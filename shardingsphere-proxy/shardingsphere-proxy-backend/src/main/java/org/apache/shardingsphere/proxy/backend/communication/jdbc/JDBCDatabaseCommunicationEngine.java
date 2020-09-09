@@ -39,7 +39,6 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExe
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
@@ -99,7 +98,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         SQLStatementContext<?> sqlStatementContext = executionContext.getSqlStatementContext();
         if (isExecuteDDLInXATransaction(sqlStatementContext.getSqlStatement())) {
-            return new ErrorResponse(new TableModifyInTransactionException(getTableName(sqlStatementContext)));
+            throw new TableModifyInTransactionException(getTableName(sqlStatementContext));
         }
         response = executeEngine.execute(executionContext);
         refreshTableMetaData(executionContext.getSqlStatementContext());

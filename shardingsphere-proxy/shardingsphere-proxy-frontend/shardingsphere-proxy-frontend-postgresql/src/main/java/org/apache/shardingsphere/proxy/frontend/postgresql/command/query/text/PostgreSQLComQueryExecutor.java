@@ -32,14 +32,12 @@ import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.Que
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
-import org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLErrPacketFactory;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -73,12 +71,8 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
             Optional<PostgreSQLRowDescriptionPacket> result = createQueryPacket((QueryResponse) backendResponse);
             return result.<List<DatabasePacket<?>>>map(Collections::singletonList).orElseGet(Collections::emptyList);
         }
-        if (backendResponse instanceof UpdateResponse) {
-            responseType = ResponseType.UPDATE;
-            return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
-        }
-        responseType = ResponseType.ERROR;
-        return Collections.singletonList(createErrorPacket((ErrorResponse) backendResponse));
+        responseType = ResponseType.UPDATE;
+        return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
     }
     
     private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
@@ -105,10 +99,6 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponse updateResponse) {
         return new PostgreSQLCommandCompletePacket(updateResponse.getType(), updateResponse.getUpdateCount());
-    }
-    
-    private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
-        return PostgreSQLErrPacketFactory.newInstance(errorResponse.getCause());
     }
     
     @Override

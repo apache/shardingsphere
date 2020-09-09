@@ -25,11 +25,10 @@ import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -39,11 +38,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,40 +62,51 @@ public final class RDLBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteCreateDatabaseContext() {
+    public void assertExecuteCreateDatabaseContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchema()).thenReturn("schema");
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new CreateDatabaseStatement("new_db"));
-        BackendResponse response = executeEngine.execute();
-        assertThat(response, instanceOf(ErrorResponse.class));
+        try {
+            executeEngine.execute();
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("No Registry center to execute `CreateDatabaseStatementContext` SQL"));
+        }
         setGovernanceSchemaContexts(true);
-        response = executeEngine.execute();
+        BackendResponse response = executeEngine.execute();
         assertThat(response, instanceOf(UpdateResponse.class));
     }
     
     @Test
-    public void assertExecuteDropDatabaseContext() {
+    public void assertExecuteDropDatabaseContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchema()).thenReturn("schema");
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new DropDatabaseStatement("schema"));
-        BackendResponse response = executeEngine.execute();
-        assertThat(response, instanceOf(ErrorResponse.class));
+        try {
+            executeEngine.execute();
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("No Registry center to execute `DropDatabaseStatementContext` SQL"));
+        }
         setGovernanceSchemaContexts(true);
-        response = executeEngine.execute();
+        BackendResponse response = executeEngine.execute();
         assertThat(response, instanceOf(UpdateResponse.class));
     }
     
     @Test
-    public void assertExecuteCreateDatabaseContextWithException() {
+    public void assertExecuteCreateDatabaseContextWithException() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchema()).thenReturn("schema");
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new CreateDatabaseStatement("schema"));
-        BackendResponse response = executeEngine.execute();
-        assertThat(response, instanceOf(ErrorResponse.class));
+        try {
+            executeEngine.execute();
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("No Registry center to execute `CreateDatabaseStatementContext` SQL"));
+        }
         setGovernanceSchemaContexts(true);
-        response = executeEngine.execute();
-        assertThat(response, instanceOf(ErrorResponse.class));
-        assertThat(((ErrorResponse) response).getCause(), instanceOf(DBCreateExistsException.class));
+        try {
+            executeEngine.execute();
+        } catch (final DBCreateExistsException ex) {
+            assertNull(ex.getMessage());
+        }
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
@@ -102,26 +115,32 @@ public final class RDLBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteDataSourcesContext() {
+    public void assertExecuteDataSourcesContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchema()).thenReturn("schema");
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, mock(CreateDataSourcesStatement.class));
-        BackendResponse response = executeEngine.execute();
-        assertThat(response, instanceOf(ErrorResponse.class));
+        try {
+            executeEngine.execute();
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("No Registry center to execute `CreateDataSourcesStatementContext` SQL"));
+        }
         setGovernanceSchemaContexts(true);
-        response = executeEngine.execute();
+        BackendResponse response = executeEngine.execute();
         assertThat(response, instanceOf(UpdateResponse.class));
     }
     
     @Test
-    public void assertExecuteShardingRuleContext() {
+    public void assertExecuteShardingRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchema()).thenReturn("schema");
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, mock(CreateShardingRuleStatement.class));
-        BackendResponse response = executeEngine.execute();
-        assertThat(response, instanceOf(ErrorResponse.class));
+        try {
+            executeEngine.execute();
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("No Registry center to execute `CreateShardingRuleStatementContext` SQL"));
+        }
         setGovernanceSchemaContexts(true);
-        response = executeEngine.execute();
+        BackendResponse response = executeEngine.execute();
         assertThat(response, instanceOf(UpdateResponse.class));
     }
     

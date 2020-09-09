@@ -20,17 +20,14 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Backend handler for broadcast.
@@ -48,18 +45,12 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     
     @Override
     public BackendResponse execute() throws SQLException {
-        Collection<BackendResponse> responses = new LinkedList<>();
         String originalSchema = backendConnection.getSchema();
         for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
             backendConnection.setCurrentSchema(each);
-            responses.add(databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection).execute());
+            databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection).execute();
         }
         backendConnection.setCurrentSchema(originalSchema);
-        for (BackendResponse each : responses) {
-            if (each instanceof ErrorResponse) {
-                return each;
-            }
-        }
         return new UpdateResponse();
     }
     

@@ -35,14 +35,12 @@ import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.Que
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
-import org.apache.shardingsphere.proxy.frontend.mysql.MySQLErrPacketFactory;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -76,12 +74,8 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
             responseType = ResponseType.QUERY;
             return createQueryPackets((QueryResponse) backendResponse);
         }
-        if (backendResponse instanceof UpdateResponse) {
-            responseType = ResponseType.UPDATE;
-            return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
-        }
-        responseType = ResponseType.ERROR;
-        return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
+        responseType = ResponseType.UPDATE;
+        return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
     }
     
     private Collection<DatabasePacket<?>> createQueryPackets(final QueryResponse backendResponse) {
@@ -115,10 +109,6 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private MySQLOKPacket createUpdatePacket(final UpdateResponse updateResponse) {
         return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
-    }
-    
-    private MySQLErrPacket createErrorPacket(final Exception cause) {
-        return MySQLErrPacketFactory.newInstance(1, cause);
     }
     
     @Override

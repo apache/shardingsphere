@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.Que
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -55,7 +54,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     public BackendResponse execute() {
         Optional<ShardingCTLShowStatement> showStatement = new ShardingCTLShowParser(sql).doParse();
         if (!showStatement.isPresent()) {
-            return new ErrorResponse(new InvalidShardingCTLFormatException(sql));
+            throw new InvalidShardingCTLFormatException(sql);
         }
         switch (showStatement.get().getValue()) {
             case "TRANSACTION_TYPE":
@@ -63,7 +62,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
             case "CACHED_CONNECTIONS":
                 return createResponsePackets("CACHED_CONNECTIONS", backendConnection.getConnectionSize());
             default:
-                return new ErrorResponse(new UnsupportedShardingCTLTypeException(sql));
+                throw new UnsupportedShardingCTLTypeException(sql);
         }
     }
     
