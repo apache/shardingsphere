@@ -67,7 +67,7 @@ public final class DatabaseCommunicationEngineFactory {
      * @param sql SQL to be executed
      * @param parameters SQL parameters
      * @param backendConnection backend connection
-     * @return instance of text protocol backend handler
+     * @return instance of binary protocol backend handler
      */
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
         SchemaContext schema = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
