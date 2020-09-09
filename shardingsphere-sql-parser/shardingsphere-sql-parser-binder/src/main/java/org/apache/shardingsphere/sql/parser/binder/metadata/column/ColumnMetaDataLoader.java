@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata.column;
 
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.util.JdbcUtil;
@@ -42,33 +43,38 @@ public final class ColumnMetaDataLoader {
     
     private static final String TYPE_NAME = "TYPE_NAME";
     
+    private static final String TABLE_NAME = "TABLE_NAME";
+    
     /**
      * Load column meta data list.
      * 
      * @param connection connection
-     * @param table table name
+     * @param tableNamePattern table name pattern
      * @param databaseType database type
      * @return column meta data list
      * @throws SQLException SQL exception
      */
-    public static Collection<ColumnMetaData> load(final Connection connection, final String table, final String databaseType) throws SQLException {
+    public static Collection<ColumnMetaData> load(final Connection connection, final String tableNamePattern, final String databaseType) throws SQLException {
         Collection<ColumnMetaData> result = new LinkedList<>();
-        Collection<String> primaryKeys = loadPrimaryKeys(connection, table, databaseType);
+        Collection<String> primaryKeys = loadPrimaryKeys(connection, tableNamePattern, databaseType);
         List<String> columnNames = new ArrayList<>();
         List<Integer> columnTypes = new ArrayList<>();
         List<String> columnTypeNames = new ArrayList<>();
         List<Boolean> isPrimaryKeys = new ArrayList<>();
         List<Boolean> isCaseSensitives = new ArrayList<>();
-        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), table, "%")) {
+        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), tableNamePattern, "%")) {
             while (resultSet.next()) {
-                String columnName = resultSet.getString(COLUMN_NAME);
-                columnTypes.add(resultSet.getInt(DATA_TYPE));
-                columnTypeNames.add(resultSet.getString(TYPE_NAME));
-                isPrimaryKeys.add(primaryKeys.contains(columnName));
-                columnNames.add(columnName);
+                String tableName = resultSet.getString(TABLE_NAME);
+                if (Objects.equals(tableNamePattern, tableName)) {
+                    String columnName = resultSet.getString(COLUMN_NAME);
+                    columnTypes.add(resultSet.getInt(DATA_TYPE));
+                    columnTypeNames.add(resultSet.getString(TYPE_NAME));
+                    isPrimaryKeys.add(primaryKeys.contains(columnName));
+                    columnNames.add(columnName);
+                }
             }
         }
-        try (ResultSet resultSet = connection.createStatement().executeQuery(generateEmptyResultSQL(table, databaseType))) {
+        try (ResultSet resultSet = connection.createStatement().executeQuery(generateEmptyResultSQL(tableNamePattern, databaseType))) {
             for (String each : columnNames) {
                 isCaseSensitives.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(each)));
             }

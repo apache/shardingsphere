@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
@@ -87,7 +87,7 @@ public final class MySQLComStmtPrepareCheckerTest {
             new MySQLRenameUserStatement(), new MySQLDropUserStatement(), new CreateViewStatement(), new DropViewStatement(), new DeleteStatement(), new DoStatement(), new MySQLFlushStatement(),
             new MySQLGrantStatement(), new InsertStatement(), new MySQLInstallPluginStatement(), new MySQLKillStatement(), 
             new MySQLLoadIndexInfoStatement(), new MySQLOptimizeTableStatement(), new RenameTableStatement(), new MySQLRepairTableStatement(), 
-            new MySQLResetStatement(), new MySQLRevokeStatement(), new SelectStatement(), new SetStatement(), new MySQLShowWarningsStatement(),
+            new MySQLResetStatement(), new MySQLRevokeStatement(), new SelectStatement(), new MySQLSetStatement(), new MySQLShowWarningsStatement(),
             new MySQLShowErrorsStatement(), new MySQLShowBinlogStatement(), new MySQLShowCreateProcedureStatement(), new MySQLShowCreateFunctionStatement(), new MySQLShowCreateEventStatement(),
             new MySQLShowCreateTableStatement(), new MySQLShowCreateViewStatement(), new MySQLShowBinaryLogsStatement(), new MySQLShowStatusStatement(), new StartSlaveStatement(),
             new StopSlaveStatement(), new TruncateStatement(), new MySQLUninstallPluginStatement(), new UpdateStatement());

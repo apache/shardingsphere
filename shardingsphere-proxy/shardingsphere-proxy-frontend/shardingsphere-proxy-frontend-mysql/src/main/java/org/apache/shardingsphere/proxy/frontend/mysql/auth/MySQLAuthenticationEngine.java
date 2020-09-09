@@ -31,7 +31,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandsha
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationEngine;
@@ -83,7 +83,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         MySQLHandshakeResponse41Packet packet = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
         authResponse = packet.getAuthResponse();
         sequenceId = packet.getSequenceId();
-        if (!Strings.isNullOrEmpty(packet.getDatabase()) && !ProxySchemaContexts.getInstance().schemaExists(packet.getDatabase())) {
+        if (!Strings.isNullOrEmpty(packet.getDatabase()) && !ProxyContext.getInstance().schemaExists(packet.getDatabase())) {
             context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_BAD_DB_ERROR, packet.getDatabase()));
             return AuthenticationResultBuilder.continued();
         }

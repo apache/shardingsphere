@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.Connection;
@@ -188,7 +188,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> getConnectionFromUnderlying(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return ProxySchemaContexts.getInstance().getBackendDataSource().getConnections(schema, dataSourceName, connectionSize, connectionMode);
+        return ProxyContext.getInstance().getBackendDataSource().getConnections(schema, dataSourceName, connectionSize, connectionMode);
     }
     
     @Override
@@ -220,7 +220,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        DatabaseType databaseType = ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType();
+        DatabaseType databaseType = ProxyContext.getInstance().getSchemaContexts().getDatabaseType();
         if (databaseType instanceof MySQLDatabaseType) {
             statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
         } else if (databaseType instanceof PostgreSQLDatabaseType) {

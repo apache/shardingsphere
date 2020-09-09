@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.S
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryHeaderBuilder;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
@@ -99,7 +99,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     private List<QueryHeader> getQueryHeaders(final ProjectionsContext projectionsContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
         List<QueryHeader> result = new LinkedList<>();
         for (int columnIndex = 1; columnIndex <= projectionsContext.getExpandProjections().size(); columnIndex++) {
-            result.add(QueryHeaderBuilder.build(projectionsContext, resultSetMetaData, ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema()), columnIndex));
+            result.add(QueryHeaderBuilder.build(projectionsContext, resultSetMetaData, ProxyContext.getInstance().getSchema(backendConnection.getSchema()), columnIndex));
         }
         return result;
     }
@@ -107,7 +107,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     private List<QueryHeader> getQueryHeaders(final ResultSetMetaData resultSetMetaData) throws SQLException {
         List<QueryHeader> result = new LinkedList<>();
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-            result.add(QueryHeaderBuilder.build(resultSetMetaData, ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema()), columnIndex));
+            result.add(QueryHeaderBuilder.build(resultSetMetaData, ProxyContext.getInstance().getSchema(backendConnection.getSchema()), columnIndex));
         }
         return result;
     }

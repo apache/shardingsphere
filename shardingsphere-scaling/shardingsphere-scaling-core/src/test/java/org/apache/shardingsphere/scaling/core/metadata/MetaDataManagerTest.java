@@ -49,6 +49,8 @@ public final class MetaDataManagerTest {
     
     private static final String TYPE_NAME = "TYPE_NAME";
     
+    private static final String TABLE_NAME = "TABLE_NAME";
+    
     private static final String TEST_TABLE = "test";
     
     @Mock
@@ -96,6 +98,7 @@ public final class MetaDataManagerTest {
         when(primaryKeyResultSet.next()).thenReturn(true, false);
         when(primaryKeyResultSet.getString(COLUMN_NAME)).thenReturn("id");
         when(columnMetaDataResultSet.next()).thenReturn(true, true, true, false);
+        when(columnMetaDataResultSet.getString(TABLE_NAME)).thenReturn(TEST_TABLE);
         when(columnMetaDataResultSet.getString(COLUMN_NAME)).thenReturn("id", "name", "age");
         when(columnMetaDataResultSet.getInt(DATA_TYPE)).thenReturn(Types.BIGINT, Types.VARCHAR, Types.INTEGER);
         when(columnMetaDataResultSet.getString(TYPE_NAME)).thenReturn("BIGINT", "VARCHAR", "INTEGER");

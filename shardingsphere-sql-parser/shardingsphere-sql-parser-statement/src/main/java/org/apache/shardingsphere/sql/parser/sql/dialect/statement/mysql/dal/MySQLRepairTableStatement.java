@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Repair table statement.
+ * MySQL repair table statement.
  */
 public final class MySQLRepairTableStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

@@ -41,17 +41,17 @@ public final class TableMetaDataLoader {
      * Load table meta data.
      *
      * @param dataSource data source
-     * @param table table name
+     * @param tableNamePattern table name pattern
      * @param databaseType database type
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    public static Optional<TableMetaData> load(final DataSource dataSource, final String table, final String databaseType) throws SQLException {
+    public static Optional<TableMetaData> load(final DataSource dataSource, final String tableNamePattern, final String databaseType) throws SQLException {
         try (MetaDataConnection connection = new MetaDataConnection(dataSource.getConnection())) {
-            if (!isTableExist(connection, table, databaseType)) {
+            if (!isTableExist(connection, tableNamePattern, databaseType)) {
                 return Optional.empty();
             }
-            return Optional.of(new TableMetaData(ColumnMetaDataLoader.load(connection, table, databaseType), IndexMetaDataLoader.load(connection, table, databaseType)));
+            return Optional.of(new TableMetaData(ColumnMetaDataLoader.load(connection, tableNamePattern, databaseType), IndexMetaDataLoader.load(connection, tableNamePattern, databaseType)));
         }
     }
     
@@ -59,22 +59,22 @@ public final class TableMetaDataLoader {
      * Load table without column and index meta data, this is for unconfigured table.
      *
      * @param dataSource data source
-     * @param table table name
+     * @param tableNamePattern table name pattern
      * @param databaseType database type
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    public static Optional<TableMetaData> loadWithoutColumnMetaData(final DataSource dataSource, final String table, final String databaseType) throws SQLException {
+    public static Optional<TableMetaData> loadWithoutColumnMetaData(final DataSource dataSource, final String tableNamePattern, final String databaseType) throws SQLException {
         try (MetaDataConnection connection = new MetaDataConnection(dataSource.getConnection())) {
-            if (!isTableExist(connection, table, databaseType)) {
+            if (!isTableExist(connection, tableNamePattern, databaseType)) {
                 return Optional.empty();
             }
             return Optional.of(new TableMetaData(Collections.emptyList(), Collections.emptyList()));
         }
     }
     
-    private static boolean isTableExist(final Connection connection, final String table, final String databaseType) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), table, null)) {
+    private static boolean isTableExist(final Connection connection, final String tableNamePattern, final String databaseType) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), tableNamePattern, null)) {
             return resultSet.next();
         }
     }

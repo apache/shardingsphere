@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -53,9 +53,9 @@ public final class RDLBackendHandlerTest {
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(),
+        schemaContexts.set(ProxyContext.getInstance(),
                 new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
@@ -127,14 +127,14 @@ public final class RDLBackendHandlerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setGovernanceSchemaContexts(final boolean isGovernance) {
-        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
         if (isGovernance) {
             SchemaContexts mockedSchemaContexts = mock(SchemaContexts.class);
             when(mockedSchemaContexts.getSchemaContexts()).thenReturn(Collections.singletonMap("schema", mock(SchemaContext.class)));
-            schemaContexts.set(ProxySchemaContexts.getInstance(), mockedSchemaContexts);
+            schemaContexts.set(ProxyContext.getInstance(), mockedSchemaContexts);
         } else {
-            schemaContexts.set(ProxySchemaContexts.getInstance(), new StandardSchemaContexts());
+            schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts());
         }
     }
     

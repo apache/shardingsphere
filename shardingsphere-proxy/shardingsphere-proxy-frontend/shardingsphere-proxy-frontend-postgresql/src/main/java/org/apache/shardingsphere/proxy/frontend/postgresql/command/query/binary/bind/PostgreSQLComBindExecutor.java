@@ -40,7 +40,7 @@ import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLErrPacketFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -74,7 +74,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     public PostgreSQLComBindExecutor(final PostgreSQLComBindPacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
-        SchemaContext schemaContext = ProxySchemaContexts.getInstance().getSchema(backendConnection.getSchema());
+        SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
         if (null != packet.getSql() && null != schemaContext) {
             SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
             databaseCommunicationEngine =
@@ -86,7 +86,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak()) {
+        if (ProxyContext.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new PostgreSQLErrorResponsePacket());
         }
         List<DatabasePacket<?>> result = new LinkedList<>();

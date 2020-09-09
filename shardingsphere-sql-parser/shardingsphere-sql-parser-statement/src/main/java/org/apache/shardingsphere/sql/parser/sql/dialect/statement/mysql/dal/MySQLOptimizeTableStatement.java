@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Optimize table statement.
+ * MySQL optimize table statement.
  */
 public final class MySQLOptimizeTableStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }
