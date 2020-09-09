@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.namespace.handler;
+package org.apache.shardingsphere.primaryreplica.spring.namespace.handler;
 
-import org.apache.shardingsphere.masterslave.spring.namespace.factorybean.MasterSlaveLoadBalanceAlgorithmFactoryBean;
-import org.apache.shardingsphere.masterslave.spring.namespace.parser.MasterSlaveRuleBeanDefinitionParser;
-import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceAlgorithmBeanDefinitionTag;
-import org.apache.shardingsphere.masterslave.spring.namespace.tag.MasterSlaveRuleBeanDefinitionTag;
+import org.apache.shardingsphere.primaryreplica.spring.namespace.factorybean.PrimaryReplicaLoadBalanceAlgorithmFactoryBean;
+import org.apache.shardingsphere.primaryreplica.spring.namespace.parser.PrimaryReplicaRuleBeanDefinitionParser;
+import org.apache.shardingsphere.primaryreplica.spring.namespace.tag.LoadBalanceAlgorithmBeanDefinitionTag;
+import org.apache.shardingsphere.primaryreplica.spring.namespace.tag.PrimaryReplicaRuleBeanDefinitionTag;
 import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Spring namespace handler for master-slave.
+ * Spring namespace handler for primary-replica.
  */
-public final class MasterSlaveNamespaceHandler extends NamespaceHandlerSupport {
+public final class PrimaryReplicaNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(MasterSlaveRuleBeanDefinitionTag.ROOT_TAG, new MasterSlaveRuleBeanDefinitionParser());
-        registerBeanDefinitionParser(LoadBalanceAlgorithmBeanDefinitionTag.ROOT_TAG, new ShardingSphereAlgorithmBeanDefinitionParser(MasterSlaveLoadBalanceAlgorithmFactoryBean.class));
+        registerBeanDefinitionParser(PrimaryReplicaRuleBeanDefinitionTag.ROOT_TAG, new PrimaryReplicaRuleBeanDefinitionParser());
+        registerBeanDefinitionParser(LoadBalanceAlgorithmBeanDefinitionTag.ROOT_TAG, new ShardingSphereAlgorithmBeanDefinitionParser(PrimaryReplicaLoadBalanceAlgorithmFactoryBean.class));
     }
 }
