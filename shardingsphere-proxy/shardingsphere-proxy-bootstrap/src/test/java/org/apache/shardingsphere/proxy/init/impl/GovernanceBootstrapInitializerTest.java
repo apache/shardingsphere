@@ -81,7 +81,7 @@ public final class GovernanceBootstrapInitializerTest {
         ConfigCenterNode node = new ConfigCenterNode();
         configurationRepository.persist(node.getAuthenticationPath(), YamlUtil.readYAML(AUTHENTICATION_YAML));
         configurationRepository.persist(node.getPropsPath(), YamlUtil.readYAML(PROPS_YAML));
-        configurationRepository.persist(node.getSchemaPath(), "db");
+        configurationRepository.persist(node.getSchemasPath(), "db");
         configurationRepository.persist(node.getDataSourcePath("db"), YamlUtil.readYAML(DATA_SOURCE_YAML));
         configurationRepository.persist(node.getRulePath("db"), YamlUtil.readYAML(SHARDING_RULE_YAML));
     }
