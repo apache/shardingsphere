@@ -61,7 +61,7 @@ public final class DatabaseCommunicationEngineFactory {
     }
     
     /**
-     * Create new instance of text protocol backend handler.
+     * Create new instance of binary protocol backend handler.
      *
      * @param sqlStatement sql statement
      * @param sql SQL to be executed
