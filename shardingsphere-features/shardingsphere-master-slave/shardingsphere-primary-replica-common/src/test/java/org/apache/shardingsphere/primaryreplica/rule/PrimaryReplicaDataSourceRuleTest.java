@@ -38,7 +38,8 @@ public final class PrimaryReplicaDataSourceRuleTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewPrimaryReplicaDataSourceRuleWithoutName() {
-        new PrimaryReplicaDataSourceRule(new PrimaryReplicaDataSourceRuleConfiguration("", "primary_ds", Collections.singletonList("replica_ds"), null), new RoundRobinPrimaryReplicaLoadBalanceAlgorithm());
+        new PrimaryReplicaDataSourceRule(new PrimaryReplicaDataSourceRuleConfiguration("", "primary_ds", Collections.singletonList("replica_ds"), null), 
+                new RoundRobinPrimaryReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
