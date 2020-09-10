@@ -31,7 +31,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-rimary-replica-common</artifactId>
+            <artifactId>shardingsphere-primary-replica-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
