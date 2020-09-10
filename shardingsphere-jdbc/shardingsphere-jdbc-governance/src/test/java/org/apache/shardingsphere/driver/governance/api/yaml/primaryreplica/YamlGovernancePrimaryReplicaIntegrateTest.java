@@ -46,10 +46,10 @@ public final class YamlGovernancePrimaryReplicaIntegrateTest extends AbstractYam
     @Parameters(name = "{index}:{0}-{1}")
     public static Collection init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/ms/configWithPrimaryReplicaDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/ms/configWithPrimaryReplicaDataSourceWithoutProps.yaml", false},
-                {"/yaml/integrate/ms/configWithPrimaryReplicaDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/ms/configWithPrimaryReplicaDataSourceWithProps.yaml", false},
+                {"/yaml/integrate/pr/configWithPrimaryReplicaDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/pr/configWithPrimaryReplicaDataSourceWithoutProps.yaml", false},
+                {"/yaml/integrate/pr/configWithPrimaryReplicaDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/pr/configWithPrimaryReplicaDataSourceWithProps.yaml", false},
         });
     }
     
