@@ -17,24 +17,24 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForMasterSlaveTest;
+import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForPrimaryReplicaTest;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public final class MasterSlaveStatementTest extends AbstractShardingSphereDataSourceForMasterSlaveTest {
+public final class PrimaryReplicaStatementTest extends AbstractShardingSphereDataSourceForPrimaryReplicaTest {
     
     @Test(expected = SQLException.class)
     public void assertQueryWithNull() throws SQLException {
-        try (Statement statement = getMasterSlaveDataSource().getConnection().createStatement()) {
+        try (Statement statement = getPrimaryReplicaDataSource().getConnection().createStatement()) {
             statement.executeQuery(null);
         }
     }
     
     @Test(expected = SQLException.class)
     public void assertQueryWithEmptyString() throws SQLException {
-        try (Statement statement = getMasterSlaveDataSource().getConnection().createStatement()) {
+        try (Statement statement = getPrimaryReplicaDataSource().getConnection().createStatement()) {
             statement.executeQuery("");
         }
     }
