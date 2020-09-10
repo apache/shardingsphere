@@ -22,5 +22,5 @@ package org.apache.shardingsphere.proxy.frontend.command.executor;
  */
 public enum ResponseType {
     
-    QUERY, UPDATE, ERROR
+    QUERY, UPDATE
 }

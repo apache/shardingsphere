@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.governance.core.event.persist.MetaDataPersistEvent;
+import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.SchemaContext;
-import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.governance.core.event.persist.MetaDataPersistEvent;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
@@ -37,14 +36,12 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
@@ -83,15 +80,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     @Override
-    public BackendResponse execute() {
-        try {
-            ExecutionContext executionContext = executeEngine.generateExecutionContext(sql);
-            logSQL(executionContext);
-            return doExecute(executionContext);
-        } catch (final TableExistsException | ShardingSphereConfigurationException | SQLException ex) {
-            // TODO Particular handling needed for `createTable` without shardingRule and dataNode.
-            return new ErrorResponse(ex);
-        }
+    public BackendResponse execute() throws SQLException {
+        ExecutionContext executionContext = executeEngine.generateExecutionContext(sql);
+        logSQL(executionContext);
+        return doExecute(executionContext);
     }
     
     private void logSQL(final ExecutionContext executionContext) {
@@ -106,7 +98,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         SQLStatementContext<?> sqlStatementContext = executionContext.getSqlStatementContext();
         if (isExecuteDDLInXATransaction(sqlStatementContext.getSqlStatement())) {
-            return new ErrorResponse(new TableModifyInTransactionException(getTableName(sqlStatementContext)));
+            throw new TableModifyInTransactionException(getTableName(sqlStatementContext));
         }
         response = executeEngine.execute(executionContext);
         refreshTableMetaData(executionContext.getSqlStatementContext());

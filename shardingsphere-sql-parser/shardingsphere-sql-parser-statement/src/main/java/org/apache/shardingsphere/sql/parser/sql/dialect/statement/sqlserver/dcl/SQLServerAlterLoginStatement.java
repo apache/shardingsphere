@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer alter login statement.
  */
-public final class SQLServerAlterLoginStatement extends AlterLoginStatement implements DCLStatement, SQLServerStatement {
+public final class SQLServerAlterLoginStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
 }

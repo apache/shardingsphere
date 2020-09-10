@@ -29,7 +29,6 @@ chapter = true
 
 - 实现配置中心：支持 Zookeeper/etcd/Apollo/Nacos，管理数据源、规则和策略的配置。
 - 实现注册中心：支持 Zookeeper/etcd，管理各个 Proxy 示例的状态。
-- 实现元数据中心：支持 Zookeeper/etcd，管理 LogicSchema 的元数据。
 
 对于可观测性，目标如下：
 

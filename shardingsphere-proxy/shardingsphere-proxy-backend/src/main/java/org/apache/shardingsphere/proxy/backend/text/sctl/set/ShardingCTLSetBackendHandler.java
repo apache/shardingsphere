@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.sctl.set;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -47,16 +46,16 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
     public BackendResponse execute() {
         Optional<ShardingCTLSetStatement> shardingTCLStatement = new ShardingCTLSetParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {
-            return new ErrorResponse(new InvalidShardingCTLFormatException(sql));
+            throw new InvalidShardingCTLFormatException(sql);
         }
         if ("TRANSACTION_TYPE".equals(shardingTCLStatement.get().getKey())) {
             try {
                 backendConnection.setTransactionType(TransactionType.valueOf(shardingTCLStatement.get().getValue()));
             } catch (final IllegalArgumentException ex) {
-                return new ErrorResponse(new UnsupportedShardingCTLTypeException(sql));
+                throw new UnsupportedShardingCTLTypeException(sql);
             }
         } else {
-            return new ErrorResponse(new UnsupportedShardingCTLTypeException(sql));
+            throw new UnsupportedShardingCTLTypeException(sql);
         }
         return new UpdateResponse();
     }

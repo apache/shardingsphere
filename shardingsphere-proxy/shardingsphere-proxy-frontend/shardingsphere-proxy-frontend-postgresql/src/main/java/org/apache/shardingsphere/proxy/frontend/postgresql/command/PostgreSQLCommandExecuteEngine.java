@@ -83,7 +83,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             context.write(new PostgreSQLReadyForQueryPacket());
             return;
         }
-        if (ResponseType.ERROR == queryCommandExecutor.getResponseType() || ResponseType.UPDATE == queryCommandExecutor.getResponseType()) {
+        if (ResponseType.UPDATE == queryCommandExecutor.getResponseType()) {
             context.write(new PostgreSQLReadyForQueryPacket());
             return;
         }
