@@ -125,8 +125,8 @@ public final class GovernanceShardingSphereDataSourceTest {
         dataSource.setUsername("sa");
         dataSource.setPassword("");
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(3, 1);
-        result.put("ds_m", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
-        result.put("ds_s", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
+        result.put("ds_p", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
+        result.put("ds_r", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_0", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         return result;
     }
@@ -145,6 +145,6 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertRenewDisabledState() {
-        governanceSchemaContexts.renew(new DisabledStateChangedEvent(new GovernanceSchema("logic_db.ds_s"), true));
+        governanceSchemaContexts.renew(new DisabledStateChangedEvent(new GovernanceSchema("logic_db.ds_r"), true));
     }
 }
