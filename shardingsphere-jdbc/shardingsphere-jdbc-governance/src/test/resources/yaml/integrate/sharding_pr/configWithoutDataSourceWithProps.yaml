@@ -19,9 +19,9 @@ rules:
 - !SHARDING
   tables:
     config:
-      actualDataNodes: db_ms_${0..1}.t_config
+      actualDataNodes: db_pr_${0..1}.t_config
     t_order: 
-      actualDataNodes: db_ms_${0..1}.t_order_${0..1}
+      actualDataNodes: db_pr_${0..1}.t_order_${0..1}
       databaseStrategy: 
         standard:
           shardingColumn: user_id
@@ -34,7 +34,7 @@ rules:
         column: order_id
         keyGeneratorName: increment
     t_order_item:
-      actualDataNodes: db_ms_${0..1}.t_order_item_${0..1}
+      actualDataNodes: db_pr_${0..1}.t_order_item_${0..1}
       databaseStrategy: 
         standard:
           shardingColumn: user_id
@@ -70,19 +70,19 @@ rules:
     increment:
       type: INCREMENT
 
-- !MASTER_SLAVE
+- !PRIMARY_REPLICA
   dataSources:
-    db_ms_0:
-      masterDataSourceName: db0_master
-      slaveDataSourceNames:
-        - db0_slave
-    db_ms_1:
-      masterDataSourceName: db1_master
-      slaveDataSourceNames:
-        - db1_slave
+    db_pr_0:
+      primaryDataSourceName: db0_primary
+      replicaDataSourceNames:
+        - db0_replica
+    db_pr_1:
+      primaryDataSourceName: db1_primary
+      replicaDataSourceNames:
+        - db1_replica
 
 governance:
-  name: test_sharding_ms_registry_name
+  name: test_sharding_pr_registry_name
   registryCenter:
     type: REG_TEST
     serverLists: localhost:3181
