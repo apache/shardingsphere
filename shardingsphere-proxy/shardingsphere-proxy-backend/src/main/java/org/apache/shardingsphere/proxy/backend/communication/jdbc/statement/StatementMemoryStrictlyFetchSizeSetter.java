@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.infra.spi.type.TypedSPI;
+
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
- * Deny user statement.
+ * Statement memory strictly fetch size setter.
  */
-@Getter
-@Setter
-public abstract class DenyUserStatement extends AbstractSQLStatement {
-
-    private SimpleTableSegment table;
+public interface StatementMemoryStrictlyFetchSizeSetter extends TypedSPI {
+    
+    /**
+     * Set fetch size.
+     * 
+     * @param statement statement to be set
+     * @throws SQLException SQL exception
+     */
+    void setFetchSize(Statement statement) throws SQLException;
 }

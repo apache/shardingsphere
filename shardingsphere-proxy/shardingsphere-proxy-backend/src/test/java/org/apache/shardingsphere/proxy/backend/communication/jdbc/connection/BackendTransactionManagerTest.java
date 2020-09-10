@@ -58,7 +58,7 @@ public final class BackendTransactionManagerTest {
     @Before
     public void setUp() {
         setTransactionContexts();
-        when(backendConnection.getSchema()).thenReturn("schema");
+        when(backendConnection.getSchemaName()).thenReturn("schema");
         when(backendConnection.getStateHandler()).thenReturn(stateHandler);
     }
     

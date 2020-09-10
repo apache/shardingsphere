@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL set password statement.
  */
-public final class MySQLSetPasswordStatement extends SetPasswordStatement implements DCLStatement, MySQLStatement {
+public final class MySQLSetPasswordStatement extends AbstractSQLStatement implements DCLStatement, MySQLStatement {
 }

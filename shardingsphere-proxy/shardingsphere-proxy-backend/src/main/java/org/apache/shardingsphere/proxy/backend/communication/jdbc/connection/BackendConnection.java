@@ -22,17 +22,17 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -55,13 +56,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Slf4j
 public final class BackendConnection implements JDBCExecutionConnection, AutoCloseable {
     
+    static {
+        ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
+    }
+    
     private static final int MAXIMUM_RETRY_COUNT = 5;
     
-    private static final int MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
-    
-    private static final int POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME = 1;
-    
-    private volatile String schema;
+    private volatile String schemaName;
     
     private TransactionType transactionType;
     
@@ -81,14 +82,12 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private final Collection<MethodInvocation> methodInvocations = new LinkedList<>();
     
-    @Getter
-    private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
+    private final ResourceLock resourceLock = new ResourceLock();
     
-    private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceSynchronizer);
+    private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceLock);
     
     public BackendConnection(final TransactionType transactionType) {
-        this.transactionType = transactionType;
-        supportHint = false;
+        this(transactionType, false);
     }
     
     public BackendConnection(final TransactionType transactionType, final boolean supportHint) {
@@ -102,7 +101,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
      * @param transactionType transaction type
      */
     public void setTransactionType(final TransactionType transactionType) {
-        if (null == schema) {
+        if (null == schemaName) {
             throw new ShardingSphereException("Please select database, then switch transaction type.");
         }
         if (isSwitchFailed()) {
@@ -120,14 +119,13 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (isSwitchFailed()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
-        schema = schemaName;
+        this.schemaName = schemaName;
     }
     
-    @SneakyThrows(InterruptedException.class)
     private boolean isSwitchFailed() {
         int retryCount = 0;
         while (stateHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
-            resourceSynchronizer.doAwaitUntil();
+            resourceLock.doAwaitUntil();
             ++retryCount;
             log.warn("Current transaction have not terminated, retry count:[{}].", retryCount);
         }
@@ -170,7 +168,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(schema, "current schema is null");
+        Preconditions.checkNotNull(schemaName, "current schema is null");
         List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
         synchronized (cachedConnections) {
             cachedConnections.putAll(dataSourceName, result);
@@ -179,7 +177,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(schema, "current schema is null");
+        Preconditions.checkNotNull(schemaName, "current schema is null");
         List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
         for (Connection each : result) {
             replayMethodsInvocation(each);
@@ -188,7 +186,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> getConnectionFromUnderlying(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return ProxyContext.getInstance().getBackendDataSource().getConnections(schema, dataSourceName, connectionSize, connectionMode);
+        return ProxyContext.getInstance().getBackendDataSource().getConnections(schemaName, dataSourceName, connectionSize, connectionMode);
     }
     
     @Override
@@ -221,11 +219,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private void setFetchSize(final Statement statement) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getSchemaContexts().getDatabaseType();
-        if (databaseType instanceof MySQLDatabaseType) {
-            statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
-        } else if (databaseType instanceof PostgreSQLDatabaseType) {
-            statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
-        }
+        TypedSPIRegistry.getRegisteredService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getName(), new Properties()).setFetchSize(statement);
     }
     
     /**

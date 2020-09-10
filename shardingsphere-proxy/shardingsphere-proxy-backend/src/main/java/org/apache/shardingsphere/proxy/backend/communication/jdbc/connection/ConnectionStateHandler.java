@@ -29,7 +29,7 @@ public final class ConnectionStateHandler {
     
     private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.INIT);
     
-    private final ResourceSynchronizer resourceSynchronizer;
+    private final ResourceLock resourceLock;
     
     /**
      * Change connection status using get and set.
@@ -39,7 +39,7 @@ public final class ConnectionStateHandler {
     public void setStatus(final ConnectionStatus update) {
         status.getAndSet(update);
         if (ConnectionStatus.TERMINATED == status.get()) {
-            resourceSynchronizer.doNotify();
+            resourceLock.doNotify();
         }
     }
     
@@ -75,19 +75,17 @@ public final class ConnectionStateHandler {
      */
     void doNotifyIfNecessary() {
         if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE) || status.compareAndSet(ConnectionStatus.TERMINATED, ConnectionStatus.RELEASE)) {
-            resourceSynchronizer.doNotify();
+            resourceLock.doNotify();
         }
     }
     
     /**
      * Wait until connection is released if necessary.
-     *
-     * @throws InterruptedException interrupted exception
      */
-    public void waitUntilConnectionReleasedIfNecessary() throws InterruptedException {
+    public void waitUntilConnectionReleasedIfNecessary() {
         if (ConnectionStatus.RUNNING == status.get() || ConnectionStatus.TERMINATED == status.get()) {
             while (!status.compareAndSet(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
-                resourceSynchronizer.doAwaitUntil();
+                resourceLock.doAwaitUntil();
             }
         }
     }

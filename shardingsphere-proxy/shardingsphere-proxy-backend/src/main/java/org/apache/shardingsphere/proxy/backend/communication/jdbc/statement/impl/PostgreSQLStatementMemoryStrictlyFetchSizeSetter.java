@@ -15,12 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
+
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
 
 /**
- * Rename user statement.
+ * Statement memory strictly fetch size setter for PostgreSQL.
  */
-public abstract class RenameUserStatement extends AbstractSQLStatement {
+@Getter
+@Setter
+public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetter implements StatementMemoryStrictlyFetchSizeSetter {
+    
+    private Properties props;
+    
+    @Override
+    public void setFetchSize(final Statement statement) throws SQLException {
+        statement.setFetchSize(1);
+    }
+    
+    @Override
+    public String getType() {
+        return "PostgreSQL";
+    }
 }

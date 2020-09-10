@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RenameUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL rename user statement.
  */
-public final class MySQLRenameUserStatement extends RenameUserStatement implements DCLStatement, MySQLStatement {
+public final class MySQLRenameUserStatement extends AbstractSQLStatement implements DCLStatement, MySQLStatement {
 }

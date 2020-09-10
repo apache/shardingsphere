@@ -15,12 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
+
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
 
 /**
- * Set default role statement.
+ * Statement memory strictly fetch size setter for MySQL.
  */
-public abstract class SetDefaultRoleStatement extends AbstractSQLStatement {
+@Getter
+@Setter
+public final class MySQLStatementMemoryStrictlyFetchSizeSetter implements StatementMemoryStrictlyFetchSizeSetter {
+    
+    private Properties props;
+    
+    @Override
+    public void setFetchSize(final Statement statement) throws SQLException {
+        statement.setFetchSize(Integer.MIN_VALUE);
+    }
+    
+    @Override
+    public String getType() {
+        return "MySQL";
+    }
 }

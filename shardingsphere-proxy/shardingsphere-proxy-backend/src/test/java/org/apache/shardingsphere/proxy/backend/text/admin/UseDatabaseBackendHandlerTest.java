@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -25,10 +24,10 @@ import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
+import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +44,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -57,8 +55,7 @@ public final class UseDatabaseBackendHandlerTest {
     private BackendConnection backendConnection;
     
     @Before
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void setUp() {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         backendConnection = mock(BackendConnection.class);
         when(backendConnection.getUsername()).thenReturn("root");
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
@@ -92,13 +89,11 @@ public final class UseDatabaseBackendHandlerTest {
         assertThat(actual, instanceOf(UpdateResponse.class));
     }
     
-    @Test
+    @Test(expected = UnknownDatabaseException.class)
     public void assertExecuteUseStatementNotExist() {
         MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
         when(useStatement.getSchema()).thenReturn("not_exist");
         UseDatabaseBackendHandler useSchemaBackendHandler = new UseDatabaseBackendHandler(useStatement, backendConnection);
-        BackendResponse actual = useSchemaBackendHandler.execute();
-        assertThat(actual, instanceOf(ErrorResponse.class));
-        verify(backendConnection, times(0)).setCurrentSchema(anyString());
+        useSchemaBackendHandler.execute();
     }
 }
