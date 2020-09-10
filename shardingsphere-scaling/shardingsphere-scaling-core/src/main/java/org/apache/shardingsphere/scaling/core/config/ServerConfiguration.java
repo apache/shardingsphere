@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
 
 /**
  * Global server configuration.
@@ -37,7 +37,5 @@ public final class ServerConfiguration implements YamlConfiguration {
     
     private int workerThread = 30;
     
-    private String name;
-    
-    private YamlGovernanceCenterConfiguration registryCenter;
+    private YamlGovernanceConfiguration resumeBreakPoint;
 }

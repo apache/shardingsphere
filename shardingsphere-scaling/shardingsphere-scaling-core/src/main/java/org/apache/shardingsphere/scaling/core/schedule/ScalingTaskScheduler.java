@@ -22,12 +22,16 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+import org.apache.shardingsphere.scaling.core.job.position.FinishedInventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTaskGroup;
 
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -64,7 +68,7 @@ public final class ScalingTaskScheduler implements Runnable {
     public void run() {
         shardingScalingJob.setStatus(SyncTaskControlStatus.MIGRATE_INVENTORY_DATA.name());
         ExecuteCallback inventoryDataTaskCallback = createInventoryDataTaskCallback();
-        if (shardingScalingJob.getInventoryDataTasks().isEmpty()) {
+        if (isFinished(shardingScalingJob.getInventoryDataTasks())) {
             executeIncrementalDataSyncTask();
             return;
         }
@@ -73,18 +77,24 @@ public final class ScalingTaskScheduler implements Runnable {
         }
     }
     
+    private boolean isFinished(final List<ScalingTask<InventoryPosition>> inventoryDataTasks) {
+        return inventoryDataTasks.stream().allMatch(each -> ((InventoryDataScalingTaskGroup) each).getScalingTasks().stream().allMatch(getFinishPredicate()));
+    }
+    
+    private Predicate<ScalingTask<InventoryPosition>> getFinishPredicate() {
+        return each -> ((InventoryDataScalingTask) each).getPositionManager().getPosition() instanceof FinishedInventoryPosition;
+    }
+    
     private ExecuteCallback createInventoryDataTaskCallback() {
         return new ExecuteCallback() {
             
-            private final AtomicInteger finishedTaskNumber = new AtomicInteger(0);
-            
             @Override
             public void onSuccess() {
-                if (shardingScalingJob.getInventoryDataTasks().size() == finishedTaskNumber.incrementAndGet()) {
+                if (isFinished(shardingScalingJob.getInventoryDataTasks())) {
                     executeIncrementalDataSyncTask();
                 }
             }
-    
+            
             @Override
             public void onFailure(final Throwable throwable) {
                 stop();
@@ -112,7 +122,7 @@ public final class ScalingTaskScheduler implements Runnable {
             public void onSuccess() {
                 shardingScalingJob.setStatus(SyncTaskControlStatus.STOPPED.name());
             }
-    
+            
             @Override
             public void onFailure(final Throwable throwable) {
                 stop();
