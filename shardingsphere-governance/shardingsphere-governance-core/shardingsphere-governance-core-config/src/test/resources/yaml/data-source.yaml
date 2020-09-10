@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 dataSources:
-   master_ds:
+   primary_ds:
      dataSourceClassName: com.zaxxer.hikari.HikariDataSource
      props:
-       url: jdbc:mysql://localhost:3306/demo_ds_master
+       url: jdbc:mysql://localhost:3306/demo_ds_primary
        username: root
        password: null
