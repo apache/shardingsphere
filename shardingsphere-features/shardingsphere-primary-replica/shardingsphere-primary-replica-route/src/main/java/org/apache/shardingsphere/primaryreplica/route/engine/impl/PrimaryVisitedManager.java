@@ -15,39 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.route.engine.impl;
+package org.apache.shardingsphere.primaryreplica.route.engine.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Master data source visited manager.
+ * Primary data source visited manager.
  * 
- * <p>Trace master data source visited or not in current thread.</p>
+ * <p>Trace primary data source visited or not in current thread.</p>
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MasterVisitedManager {
+public final class PrimaryVisitedManager {
     
     private static final ThreadLocal<Boolean> MASTER_VISITED = ThreadLocal.withInitial(() -> false);
     
     /**
-     * Judge master data source visited in current thread.
+     * Judge primary data source visited in current thread.
      * 
-     * @return master data source visited or not in current thread
+     * @return primary data source visited or not in current thread
      */
-    public static boolean isMasterVisited() {
+    public static boolean isPrimaryVisited() {
         return MASTER_VISITED.get();
     }
     
     /**
-     * Set master data source visited in current thread.
+     * Set primary data source visited in current thread.
      */
-    public static void setMasterVisited() {
+    public static void setPrimaryVisited() {
         MASTER_VISITED.set(true);
     }
     
     /**
-     * Clear master data source visited.
+     * Clear primary data source visited.
      */
     public static void clear() {
         MASTER_VISITED.remove();
