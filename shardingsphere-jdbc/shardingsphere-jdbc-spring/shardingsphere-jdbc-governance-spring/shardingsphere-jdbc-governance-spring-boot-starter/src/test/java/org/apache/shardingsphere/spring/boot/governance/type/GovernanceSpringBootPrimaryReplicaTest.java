@@ -22,8 +22,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveDataSourceRule;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
+import org.apache.shardingsphere.primaryreplica.rule.PrimaryReplicaDataSourceRule;
+import org.apache.shardingsphere.primaryreplica.rule.PrimaryReplicaRule;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,10 +43,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = GovernanceSpringBootMasterSlaveTest.class)
+@SpringBootTest(classes = GovernanceSpringBootPrimaryReplicaTest.class)
 @SpringBootApplication
-@ActiveProfiles("masterslave")
-public class GovernanceSpringBootMasterSlaveTest {
+@ActiveProfiles("primaryreplica")
+public class GovernanceSpringBootPrimaryReplicaTest {
     
     @Resource
     private DataSource dataSource;
@@ -69,16 +69,16 @@ public class GovernanceSpringBootMasterSlaveTest {
         }
         Collection<ShardingSphereRule> rules = schemaContexts.getDefaultSchemaContext().getSchema().getRules();
         assertThat(rules.size(), is(1));
-        assertMasterSlaveRule((MasterSlaveRule) rules.iterator().next());
+        assertPrimaryReplicaRule((PrimaryReplicaRule) rules.iterator().next());
     }
     
-    private void assertMasterSlaveRule(final MasterSlaveRule rule) {
-        MasterSlaveDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
-        assertThat(dataSourceRule.getName(), is("ds_ms"));
-        assertThat(dataSourceRule.getName(), is("ds_ms"));
-        assertThat(dataSourceRule.getMasterDataSourceName(), is("ds_master"));
-        assertThat(dataSourceRule.getSlaveDataSourceNames().size(), is(2));
-        assertThat(dataSourceRule.getSlaveDataSourceNames().get(0), is("ds_slave_0"));
-        assertThat(dataSourceRule.getSlaveDataSourceNames().get(1), is("ds_slave_1"));
+    private void assertPrimaryReplicaRule(final PrimaryReplicaRule rule) {
+        PrimaryReplicaDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
+        assertThat(dataSourceRule.getName(), is("ds_pr"));
+        assertThat(dataSourceRule.getName(), is("ds_pr"));
+        assertThat(dataSourceRule.getPrimaryDataSourceName(), is("ds_primary"));
+        assertThat(dataSourceRule.getReplicaDataSourceNames().size(), is(2));
+        assertThat(dataSourceRule.getReplicaDataSourceNames().get(0), is("ds_replica_0"));
+        assertThat(dataSourceRule.getReplicaDataSourceNames().get(1), is("ds_replica_1"));
     }
 }
