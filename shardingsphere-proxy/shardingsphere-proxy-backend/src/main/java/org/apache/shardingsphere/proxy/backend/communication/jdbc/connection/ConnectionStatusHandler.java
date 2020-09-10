@@ -44,15 +44,6 @@ public final class ConnectionStatusHandler {
     }
     
     /**
-     * Get current connection status.
-     *
-     * @return connection status
-     */
-    public ConnectionStatus getStatus() {
-        return status.get();
-    }
-    
-    /**
      * Change connection status to running if necessary.
      */
     public void changeRunningStatusIfNecessary() {

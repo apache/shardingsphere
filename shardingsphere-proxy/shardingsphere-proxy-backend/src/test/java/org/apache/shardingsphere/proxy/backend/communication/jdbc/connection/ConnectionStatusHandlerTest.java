@@ -19,27 +19,19 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import org.junit.Test;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.junit.Assert.assertTrue;
-
 public final class ConnectionStatusHandlerTest {
     
     private final ConnectionStatusHandler connectionStateHandler = new ConnectionStatusHandler(new ResourceLock());
     
     @Test
     public void assertWaitUntilConnectionReleaseForNoneTransaction() throws InterruptedException {
-        AtomicBoolean flag = new AtomicBoolean(true);
         Thread waitThread = new Thread(() -> {
             connectionStateHandler.changeStatus(ConnectionStatus.RUNNING);
             connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
-            if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
-                flag.getAndSet(false);
-            }
         });
         Thread notifyThread = new Thread(() -> {
             try {
-                Thread.sleep(2000);
+                Thread.sleep(2000L);
             } catch (final InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
@@ -49,22 +41,17 @@ public final class ConnectionStatusHandlerTest {
         notifyThread.start();
         waitThread.join();
         notifyThread.join();
-        assertTrue(flag.get());
     }
     
     @Test
     public void assertWaitUntilConnectionReleaseForTransaction() throws InterruptedException {
-        AtomicBoolean flag = new AtomicBoolean(true);
         Thread waitThread = new Thread(() -> {
             connectionStateHandler.changeStatus(ConnectionStatus.TERMINATED);
             connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
-            if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
-                flag.getAndSet(false);
-            }
         });
         Thread notifyThread = new Thread(() -> {
             try {
-                Thread.sleep(2000);
+                Thread.sleep(2000L);
             } catch (final InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
@@ -74,6 +61,5 @@ public final class ConnectionStatusHandlerTest {
         notifyThread.start();
         waitThread.join();
         notifyThread.join();
-        assertTrue(flag.get());
     }
 }

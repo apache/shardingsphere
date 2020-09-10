@@ -133,7 +133,7 @@ public final class BackendConnectionTest {
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(2));
         assertThat(backendConnection.getConnectionSize(), is(2));
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
+        assertTrue(backendConnection.getStateHandler().isInTransaction());
     }
     
     @Test
@@ -143,7 +143,7 @@ public final class BackendConnectionTest {
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(2));
         assertThat(backendConnection.getConnectionSize(), is(10));
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
+        assertTrue(backendConnection.getStateHandler().isInTransaction());
     }
     
     @Test
@@ -154,7 +154,7 @@ public final class BackendConnectionTest {
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(12));
         assertThat(backendConnection.getConnectionSize(), is(12));
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
+        assertTrue(backendConnection.getStateHandler().isInTransaction());
     }
     
     @Test
@@ -165,7 +165,7 @@ public final class BackendConnectionTest {
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
         verify(backendConnection.getMethodInvocations().iterator().next(), times(2)).invoke(any());
         assertThat(actualConnections.size(), is(2));
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
+        assertTrue(backendConnection.getStateHandler().isInTransaction());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -196,7 +196,7 @@ public final class BackendConnectionTest {
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(12));
         assertThat(backendConnection.getConnectionSize(), is(12));
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
+        assertTrue(backendConnection.getStateHandler().isInTransaction());
     }
     
     @Test
@@ -206,7 +206,6 @@ public final class BackendConnectionTest {
             backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
             when(backendDataSource.getConnections(anyString(), anyString(), eq(12), any())).thenReturn(MockConnectionUtil.mockNewConnections(12));
             backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
-            assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.INIT));
             backendConnection.getStateHandler().changeRunningStatusIfNecessary();
             mockResultSetAndStatement(backendConnection);
             actual = backendConnection;
@@ -215,7 +214,6 @@ public final class BackendConnectionTest {
         assertTrue(actual.getCachedConnections().isEmpty());
         assertTrue(actual.getCachedResultSets().isEmpty());
         assertTrue(actual.getCachedStatements().isEmpty());
-        assertThat(actual.getStateHandler().getStatus(), is(ConnectionStatus.RELEASE));
     }
     
     @Test
