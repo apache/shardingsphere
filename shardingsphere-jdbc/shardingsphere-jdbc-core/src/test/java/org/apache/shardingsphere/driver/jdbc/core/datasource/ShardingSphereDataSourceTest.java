@@ -84,17 +84,17 @@ public final class ShardingSphereDataSourceTest {
     }
     
     @Test
-    public void assertGetDatabaseProductNameForMasterSlave() throws SQLException {
+    public void assertGetDatabaseProductNameForPrimaryReplica() throws SQLException {
         DataSource dataSource1 = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
-        DataSource masterDataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
-        DataSource slaveDataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
+        DataSource primaryDataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
+        DataSource replicaDataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
         DataSource dataSource3 = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
         Map<String, DataSource> dataSourceMap = new HashMap<>(4, 1);
         dataSourceMap.put("ds1", dataSource1);
-        dataSourceMap.put("masterDataSource", masterDataSource);
-        dataSourceMap.put("slaveDataSource", slaveDataSource);
+        dataSourceMap.put("primaryDataSource", primaryDataSource);
+        dataSourceMap.put("replicaDataSource", replicaDataSource);
         dataSourceMap.put("ds3", dataSource3);
-        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), masterDataSource.getConnection(), slaveDataSource.getConnection());
+        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), primaryDataSource.getConnection(), replicaDataSource.getConnection());
     }
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
