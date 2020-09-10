@@ -83,7 +83,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
-                backendConnection.getResourceLock().doAwaitUntil();
+                backendConnection.getResourceLock().doAwait();
             }
             DatabasePacket<?> dataValue = queryCommandExecutor.getQueryData();
             context.write(dataValue);

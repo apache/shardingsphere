@@ -22,59 +22,53 @@ import lombok.RequiredArgsConstructor;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Connection state handler.
+ * Connection status handler.
  */
 @RequiredArgsConstructor
-public final class ConnectionStateHandler {
+public final class ConnectionStatusHandler {
     
-    private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.INIT);
+    private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.READY);
     
     private final ResourceLock resourceLock;
     
     /**
-     * Change connection status using get and set.
-     *
-     * @param update new update status
+     * Switch connection status to in transaction.
      */
-    public void setStatus(final ConnectionStatus update) {
-        status.getAndSet(update);
-        if (ConnectionStatus.TERMINATED == status.get()) {
-            resourceLock.doNotify();
+    public void switchInTransactionStatus() {
+        status.set(ConnectionStatus.IN_TRANSACTION);
+    }
+    
+    /**
+     * Switch connection status to ready.
+     */
+    public void switchReadyStatus() {
+        status.set(ConnectionStatus.READY);
+        resourceLock.doNotify();
+    }
+    
+    /**
+     * Switch connection status to running if necessary.
+     */
+    public void switchRunningStatusIfNecessary() {
+        if (ConnectionStatus.IN_TRANSACTION != status.get() && ConnectionStatus.RUNNING != status.get()) {
+            status.set(ConnectionStatus.RUNNING);
         }
     }
     
     /**
-     * Get current connection status.
+     * Judge whether connection is in transaction.
      *
-     * @return connection status
-     */
-    public ConnectionStatus getStatus() {
-        return status.get();
-    }
-    
-    /**
-     * Change connection status to running if necessary.
-     */
-    public void setRunningStatusIfNecessary() {
-        if (ConnectionStatus.TRANSACTION != status.get() && ConnectionStatus.RUNNING != status.get()) {
-            status.getAndSet(ConnectionStatus.RUNNING);
-        }
-    }
-    
-    /**
-     * Judge whether connection is in transaction or not.
-     *
-     * @return true or false
+     * @return whether connection is in transaction
      */
     public boolean isInTransaction() {
-        return ConnectionStatus.TRANSACTION == status.get();
+        return ConnectionStatus.IN_TRANSACTION == status.get();
     }
     
     /**
      * Notify connection to finish wait if necessary.
      */
     void doNotifyIfNecessary() {
-        if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE) || status.compareAndSet(ConnectionStatus.TERMINATED, ConnectionStatus.RELEASE)) {
+        if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE) || status.compareAndSet(ConnectionStatus.READY, ConnectionStatus.RELEASE)) {
             resourceLock.doNotify();
         }
     }
@@ -83,9 +77,9 @@ public final class ConnectionStateHandler {
      * Wait until connection is released if necessary.
      */
     public void waitUntilConnectionReleasedIfNecessary() {
-        if (ConnectionStatus.RUNNING == status.get() || ConnectionStatus.TERMINATED == status.get()) {
+        if (ConnectionStatus.RUNNING == status.get() || ConnectionStatus.READY == status.get()) {
             while (!status.compareAndSet(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
-                resourceLock.doAwaitUntil();
+                resourceLock.doAwait();
             }
         }
     }

@@ -40,7 +40,7 @@ public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void commit() throws SQLException {
-        if (connection.getStateHandler().isInTransaction()) {
+        if (connection.getStatusHandler().isInTransaction()) {
             Collection<SQLException> exceptions = new LinkedList<>(commitConnections());
             throwSQLExceptionIfNecessary(exceptions);
         }
@@ -48,7 +48,7 @@ public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void rollback() throws SQLException {
-        if (connection.getStateHandler().isInTransaction()) {
+        if (connection.getStatusHandler().isInTransaction()) {
             Collection<SQLException> exceptions = new LinkedList<>(rollbackConnections());
             throwSQLExceptionIfNecessary(exceptions);
         }

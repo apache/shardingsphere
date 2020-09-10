@@ -19,63 +19,47 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import org.junit.Test;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.junit.Assert.assertTrue;
-
-public final class ConnectionStateHandlerTest {
+public final class ConnectionStatusHandlerTest {
     
-    private final ResourceLock resourceLock = new ResourceLock();
-    
-    private final ConnectionStateHandler connectionStateHandler = new ConnectionStateHandler(resourceLock);
+    private final ConnectionStatusHandler connectionStatusHandler = new ConnectionStatusHandler(new ResourceLock());
     
     @Test
     public void assertWaitUntilConnectionReleaseForNoneTransaction() throws InterruptedException {
-        AtomicBoolean flag = new AtomicBoolean(true);
         Thread waitThread = new Thread(() -> {
-            connectionStateHandler.setStatus(ConnectionStatus.RUNNING);
-            connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
-            if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
-                flag.getAndSet(false);
-            }
+            connectionStatusHandler.switchInTransactionStatus();
+            connectionStatusHandler.waitUntilConnectionReleasedIfNecessary();
         });
         Thread notifyThread = new Thread(() -> {
             try {
-                Thread.sleep(2000);
+                Thread.sleep(2000L);
             } catch (final InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
-            connectionStateHandler.doNotifyIfNecessary();
+            connectionStatusHandler.doNotifyIfNecessary();
         });
         waitThread.start();
         notifyThread.start();
         waitThread.join();
         notifyThread.join();
-        assertTrue(flag.get());
     }
     
     @Test
     public void assertWaitUntilConnectionReleaseForTransaction() throws InterruptedException {
-        AtomicBoolean flag = new AtomicBoolean(true);
         Thread waitThread = new Thread(() -> {
-            connectionStateHandler.setStatus(ConnectionStatus.TERMINATED);
-            connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
-            if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
-                flag.getAndSet(false);
-            }
+            connectionStatusHandler.switchReadyStatus();
+            connectionStatusHandler.waitUntilConnectionReleasedIfNecessary();
         });
         Thread notifyThread = new Thread(() -> {
             try {
-                Thread.sleep(2000);
+                Thread.sleep(2000L);
             } catch (final InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
-            connectionStateHandler.doNotifyIfNecessary();
+            connectionStatusHandler.doNotifyIfNecessary();
         });
         waitThread.start();
         notifyThread.start();
         waitThread.join();
         notifyThread.join();
-        assertTrue(flag.get());
     }
 }
