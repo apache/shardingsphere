@@ -63,7 +63,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private static final int MAXIMUM_RETRY_COUNT = 5;
     
-    private volatile String schema;
+    private volatile String schemaName;
     
     private TransactionType transactionType;
     
@@ -102,7 +102,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
      * @param transactionType transaction type
      */
     public void setTransactionType(final TransactionType transactionType) {
-        if (null == schema) {
+        if (null == schemaName) {
             throw new ShardingSphereException("Please select database, then switch transaction type.");
         }
         if (isSwitchFailed()) {
@@ -120,7 +120,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (isSwitchFailed()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
-        schema = schemaName;
+        this.schemaName = schemaName;
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -170,7 +170,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(schema, "current schema is null");
+        Preconditions.checkNotNull(schemaName, "current schema is null");
         List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
         synchronized (cachedConnections) {
             cachedConnections.putAll(dataSourceName, result);
@@ -179,7 +179,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(schema, "current schema is null");
+        Preconditions.checkNotNull(schemaName, "current schema is null");
         List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
         for (Connection each : result) {
             replayMethodsInvocation(each);
@@ -188,7 +188,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> getConnectionFromUnderlying(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return ProxyContext.getInstance().getBackendDataSource().getConnections(schema, dataSourceName, connectionSize, connectionMode);
+        return ProxyContext.getInstance().getBackendDataSource().getConnections(schemaName, dataSourceName, connectionSize, connectionMode);
     }
     
     @Override

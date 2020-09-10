@@ -169,7 +169,7 @@ public final class ShardingCTLHintBackendHandlerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     public void assertShowTableStatus() throws SQLException {
         clearThreadLocal();
-        when(backendConnection.getSchema()).thenReturn("schema");
+        when(backendConnection.getSchemaName()).thenReturn("schema");
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
         schemaContexts.set(ProxyContext.getInstance(),

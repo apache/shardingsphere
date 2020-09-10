@@ -76,7 +76,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         this.sql = sql;
         connection = backendConnection;
         executeEngine = sqlExecuteEngine;
-        schema = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
+        schema = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
     }
     
     @Override

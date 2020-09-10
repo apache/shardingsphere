@@ -64,7 +64,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     public void setUp() {
         when(backendConnection.getTransactionType()).thenReturn(TransactionType.LOCAL);
         setTransactionContexts();
-        when(backendConnection.getSchema()).thenReturn("schema");
+        when(backendConnection.getSchemaName()).thenReturn("schema");
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
