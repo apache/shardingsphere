@@ -43,7 +43,7 @@ public final class RegistryListenerManagerTest {
     
     @Test
     public void assertInitListeners() {
-        RegistryListenerManager actual = new RegistryListenerManager(registryRepository, Arrays.asList("sharding_db", "masterslave_db", "encrypt_db"));
+        RegistryListenerManager actual = new RegistryListenerManager(registryRepository, Arrays.asList("sharding_db", "primaryreplica_db", "encrypt_db"));
         FieldUtil.setField(actual, "instanceStateChangedListener", instanceStateChangedListener);
         FieldUtil.setField(actual, "dataSourceStateChangedListener", dataSourceStateChangedListener);
         actual.initListeners();
