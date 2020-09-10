@@ -28,7 +28,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                            ">
     <import resource="../datasource/dataSource.xml" />
-    <import resource="../datasource/masterSlaveDataSource.xml" />
+    <import resource="../datasource/primaryReplicaDataSource.xml" />
     
     <sharding:sharding-algorithm id="standardModuloDatabaseShardingAlgorithm" type="STANDARD_TEST_DB"/>
     <sharding:sharding-algorithm id="standardModuloTableShardingAlgorithm" type="STANDARD_TEST_TBL"/>
