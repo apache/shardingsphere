@@ -34,9 +34,9 @@ import java.util.List;
 
 public final class YamlGovernanceShardingSphereDataSourceFactoryTest extends AbstractYamlDataSourceTest {
     
-    private static final List<String> CONFIG_FILES = Arrays.asList("/yaml/integrate/sharding_ms/configWithDataSourceWithProps.yaml",
-            "/yaml/integrate/sharding_ms/configWithoutDataSourceWithProps.yaml",
-            "/yaml/integrate/sharding_ms/configWithDataSourceWithoutRules.yaml");
+    private static final List<String> CONFIG_FILES = Arrays.asList("/yaml/integrate/sharding_pr/configWithDataSourceWithProps.yaml",
+            "/yaml/integrate/sharding_pr/configWithoutDataSourceWithProps.yaml",
+            "/yaml/integrate/sharding_pr/configWithDataSourceWithoutRules.yaml");
     
     private static DataSource dataSource;
     
