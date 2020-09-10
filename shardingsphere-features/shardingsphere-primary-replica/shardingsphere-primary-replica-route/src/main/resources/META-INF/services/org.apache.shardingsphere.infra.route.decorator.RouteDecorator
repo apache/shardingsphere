@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecorator
+org.apache.shardingsphere.primaryreplica.route.engine.PrimaryReplicaRouteDecorator
