@@ -15,22 +15,26 @@
 # limitations under the License.
 #
 
-governance:
-  name: governance_ds
-  registryCenter:
-    type: REG_FIXTURE
-    serverLists: localhost:2181
-    props:
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
-      maxRetries: 3
-      operationTimeoutMilliseconds: 500
-  additionalConfigCenter:
-    type: CONFIG_FIXTURE
-    serverLists: localhost:3181
-    props:
-      retryIntervalMilliseconds: 10
-      timeToLiveSeconds: 10
-      maxRetries: 10
-      operationTimeoutMilliseconds: 10
-  overwrite: false
+rules:
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_inline
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: database_inline
+
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm-expression: ds_${user_id % 2}
+    t_order_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_${order_id % 2}

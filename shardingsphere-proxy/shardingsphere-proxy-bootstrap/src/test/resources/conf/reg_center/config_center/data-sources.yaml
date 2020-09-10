@@ -15,22 +15,28 @@
 # limitations under the License.
 #
 
-governance:
-  name: governance_ds
-  registryCenter:
-    type: REG_FIXTURE
-    serverLists: localhost:2181
+dataSources:
+  ds_0: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     props:
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
-      maxRetries: 3
-      operationTimeoutMilliseconds: 500
-  additionalConfigCenter:
-    type: CONFIG_FIXTURE
-    serverLists: localhost:3181
+      jdbcUrl: jdbc:fixturedb:xxx
+      username: root
+      password: pwd
+      connectionTimeout: 1000
+      idleTimeout: 2000
+      maxLifetime: 4000
+      maxPoolSize: 20
+      minPoolSize: 10
+      readOnly: true
+  ds_1: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     props:
-      retryIntervalMilliseconds: 10
-      timeToLiveSeconds: 10
-      maxRetries: 10
-      operationTimeoutMilliseconds: 10
-  overwrite: false
+      jdbcUrl: jdbc:fixturedb:xxx
+      username: root
+      password: pwd
+      connectionTimeout: 1000
+      idleTimeout: 2000
+      maxLifetime: 4000
+      maxPoolSize: 20
+      minPoolSize: 10
+      readOnly: true
