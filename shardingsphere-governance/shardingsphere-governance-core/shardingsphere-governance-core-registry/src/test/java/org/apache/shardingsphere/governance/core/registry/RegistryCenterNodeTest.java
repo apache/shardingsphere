@@ -42,24 +42,24 @@ public final class RegistryCenterNodeTest {
     
     @Test
     public void assertGetGovernanceSchema() {
-        assertThat(registryCenterNode.getGovernanceSchema("/registry/datasources/master_slave_db/slave_ds_0").get().getSchemaName(), is("master_slave_db"));
+        assertThat(registryCenterNode.getGovernanceSchema("/registry/datasources/primary_replica_db/replica_ds_0").get().getSchemaName(), is("primary_replica_db"));
     }
     
     @Test
     public void assertGetDataSourcesNodeSchemaPath() {
-        assertThat(registryCenterNode.getDataSourcesNodeSchemaPath("master_slave_db"), is("/registry/datasources/master_slave_db"));
+        assertThat(registryCenterNode.getDataSourcesNodeSchemaPath("primary_replica_db"), is("/registry/datasources/primary_replica_db"));
     }
     
     @Test
     public void assertGetDataSourcesNodeDataSourcePath() {
-        assertThat(registryCenterNode.getDataSourcesNodeDataSourcePath("master_slave_db", "slave_ds_0"), is("/registry/datasources/master_slave_db/slave_ds_0"));
+        assertThat(registryCenterNode.getDataSourcesNodeDataSourcePath("primary_replica_db", "replica_ds_0"), is("/registry/datasources/primary_replica_db/replica_ds_0"));
     }
     
     @Test
     public void assertGetAllDataSourcesSchemaPaths() {
-        Collection<String> schemaPaths = registryCenterNode.getAllDataSourcesSchemaPaths(Arrays.asList("master_slave_db", "sharding_db"));
+        Collection<String> schemaPaths = registryCenterNode.getAllDataSourcesSchemaPaths(Arrays.asList("primary_replica_db", "sharding_db"));
         assertThat(schemaPaths.size(), is(2));
-        assertThat(schemaPaths, hasItem("/registry/datasources/master_slave_db"));
+        assertThat(schemaPaths, hasItem("/registry/datasources/primary_replica_db"));
         assertThat(schemaPaths, hasItem("/registry/datasources/sharding_db"));
     }
 }
