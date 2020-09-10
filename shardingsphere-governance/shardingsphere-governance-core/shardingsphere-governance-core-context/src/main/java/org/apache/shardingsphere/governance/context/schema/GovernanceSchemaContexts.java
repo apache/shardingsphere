@@ -97,8 +97,8 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     }
     
     private void persistMetaData() {
-        schemaContexts.getSchemaContexts().forEach((key, value) -> governanceFacade.getMetaDataCenter()
-            .persistMetaDataCenterNode(key, value.getSchema().getMetaData().getRuleSchemaMetaData()));
+        schemaContexts.getSchemaContexts().forEach((key, value) -> governanceFacade.getConfigCenter()
+            .persistMetaData(key, value.getSchema().getMetaData().getRuleSchemaMetaData()));
     }
     
     @Override
@@ -158,7 +158,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContexts());
         schemas.put(event.getSchemaName(), createAddedSchemaContext(event));
         schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
-        governanceFacade.getMetaDataCenter().persistMetaDataCenterNode(event.getSchemaName(), 
+        governanceFacade.getConfigCenter().persistMetaData(event.getSchemaName(), 
                 schemaContexts.getSchemaContexts().get(event.getSchemaName()).getSchema().getMetaData().getRuleSchemaMetaData());
         ShardingSphereEventBus.getInstance().post(
                 new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), schemas.get(event.getSchemaName()).getSchema().getDataSources()));
@@ -229,7 +229,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         newSchemaContexts.remove(schemaName);
         newSchemaContexts.put(schemaName, getChangedSchemaContext(schemaContexts.getSchemaContexts().get(schemaName), event.getRuleConfigurations()));
         schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
-        governanceFacade.getMetaDataCenter().persistMetaDataCenterNode(schemaName, newSchemaContexts.get(schemaName).getSchema().getMetaData().getRuleSchemaMetaData());
+        governanceFacade.getConfigCenter().persistMetaData(schemaName, newSchemaContexts.get(schemaName).getSchema().getMetaData().getRuleSchemaMetaData());
     }
     
     /**

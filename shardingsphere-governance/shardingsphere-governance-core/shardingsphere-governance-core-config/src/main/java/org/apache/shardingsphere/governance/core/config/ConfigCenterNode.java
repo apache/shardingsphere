@@ -159,6 +159,7 @@ public final class ConfigCenterNode {
             result.add(getSchemaNamePath(schemaName));
             result.add(getRulePath(schemaName));
             result.add(getDataSourcePath(schemaName));
+            result.add(getTablePath(schemaName));
         }
         return result;
     }
