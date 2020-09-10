@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStateHandler;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatusHandler;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
@@ -124,7 +124,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     
     @Test
     public void assertNewInstanceWithSetAutoCommitToOnForInTransaction() {
-        ConnectionStateHandler stateHandler = mock(ConnectionStateHandler.class);
+        ConnectionStatusHandler stateHandler = mock(ConnectionStatusHandler.class);
         when(backendConnection.getStateHandler()).thenReturn(stateHandler);
         when(stateHandler.isInTransaction()).thenReturn(true);
         String sql = "SET AUTOCOMMIT=1";
@@ -134,7 +134,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     
     @Test
     public void assertNewInstanceWithScopeSetAutoCommitToOnForInTransaction() {
-        ConnectionStateHandler stateHandler = mock(ConnectionStateHandler.class);
+        ConnectionStatusHandler stateHandler = mock(ConnectionStatusHandler.class);
         when(backendConnection.getStateHandler()).thenReturn(stateHandler);
         when(stateHandler.isInTransaction()).thenReturn(true);
         String sql = "SET @@SESSION.AUTOCOMMIT = ON";
@@ -145,7 +145,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Test
     public void assertNewInstanceWithSetAutoCommitToOnForNotInTransaction() {
         String sql = "SET AUTOCOMMIT=1";
-        ConnectionStateHandler stateHandler = mock(ConnectionStateHandler.class);
+        ConnectionStatusHandler stateHandler = mock(ConnectionStatusHandler.class);
         when(backendConnection.getStateHandler()).thenReturn(stateHandler);
         when(stateHandler.isInTransaction()).thenReturn(false);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);

@@ -45,7 +45,7 @@ public final class BackendTransactionManagerTest {
     private BackendConnection backendConnection;
     
     @Mock
-    private ConnectionStateHandler stateHandler;
+    private ConnectionStatusHandler stateHandler;
     
     @Mock
     private LocalTransactionManager localTransactionManager;
@@ -81,7 +81,7 @@ public final class BackendTransactionManagerTest {
     public void assertBeginForLocalTransaction() {
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.begin();
-        verify(stateHandler).setStatus(ConnectionStatus.TRANSACTION);
+        verify(stateHandler).changeStatus(ConnectionStatus.TRANSACTION);
         verify(backendConnection).releaseConnections(false);
         verify(localTransactionManager).begin();
     }
@@ -90,7 +90,7 @@ public final class BackendTransactionManagerTest {
     public void assertBeginForDistributedTransaction() {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.begin();
-        verify(stateHandler, times(0)).setStatus(ConnectionStatus.TRANSACTION);
+        verify(stateHandler, times(0)).changeStatus(ConnectionStatus.TRANSACTION);
         verify(backendConnection, times(0)).releaseConnections(false);
         verify(shardingTransactionManager).begin();
     }
@@ -99,7 +99,7 @@ public final class BackendTransactionManagerTest {
     public void assertCommitForLocalTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.LOCAL, true);
         backendTransactionManager.commit();
-        verify(stateHandler).setStatus(ConnectionStatus.TERMINATED);
+        verify(stateHandler).changeStatus(ConnectionStatus.TERMINATED);
         verify(localTransactionManager).commit();
     }
     
@@ -107,7 +107,7 @@ public final class BackendTransactionManagerTest {
     public void assertCommitForDistributedTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.commit();
-        verify(stateHandler).setStatus(ConnectionStatus.TERMINATED);
+        verify(stateHandler).changeStatus(ConnectionStatus.TERMINATED);
         verify(shardingTransactionManager).commit();
     }
     
@@ -115,7 +115,7 @@ public final class BackendTransactionManagerTest {
     public void assertCommitWithoutTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.commit();
-        verify(stateHandler, times(0)).setStatus(ConnectionStatus.TERMINATED);
+        verify(stateHandler, times(0)).changeStatus(ConnectionStatus.TERMINATED);
         verify(localTransactionManager, times(0)).commit();
         verify(shardingTransactionManager, times(0)).commit();
     }
@@ -124,7 +124,7 @@ public final class BackendTransactionManagerTest {
     public void assertRollbackForLocalTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.LOCAL, true);
         backendTransactionManager.rollback();
-        verify(stateHandler).setStatus(ConnectionStatus.TERMINATED);
+        verify(stateHandler).changeStatus(ConnectionStatus.TERMINATED);
         verify(localTransactionManager).rollback();
     }
     
@@ -132,7 +132,7 @@ public final class BackendTransactionManagerTest {
     public void assertRollbackForDistributedTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.rollback();
-        verify(stateHandler).setStatus(ConnectionStatus.TERMINATED);
+        verify(stateHandler).changeStatus(ConnectionStatus.TERMINATED);
         verify(shardingTransactionManager).rollback();
     }
     
@@ -140,7 +140,7 @@ public final class BackendTransactionManagerTest {
     public void assertRollbackWithoutTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.rollback();
-        verify(stateHandler, times(0)).setStatus(ConnectionStatus.TERMINATED);
+        verify(stateHandler, times(0)).changeStatus(ConnectionStatus.TERMINATED);
         verify(localTransactionManager, times(0)).rollback();
         verify(shardingTransactionManager, times(0)).rollback();
     }

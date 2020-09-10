@@ -84,7 +84,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private final ResourceLock resourceLock = new ResourceLock();
     
-    private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceLock);
+    private final ConnectionStatusHandler stateHandler = new ConnectionStatusHandler(resourceLock);
     
     public BackendConnection(final TransactionType transactionType) {
         this(transactionType, false);

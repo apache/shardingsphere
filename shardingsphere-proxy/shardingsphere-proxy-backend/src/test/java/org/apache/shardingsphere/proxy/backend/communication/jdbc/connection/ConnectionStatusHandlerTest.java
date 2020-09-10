@@ -23,17 +23,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertTrue;
 
-public final class ConnectionStateHandlerTest {
+public final class ConnectionStatusHandlerTest {
     
-    private final ResourceLock resourceLock = new ResourceLock();
-    
-    private final ConnectionStateHandler connectionStateHandler = new ConnectionStateHandler(resourceLock);
+    private final ConnectionStatusHandler connectionStateHandler = new ConnectionStatusHandler(new ResourceLock());
     
     @Test
     public void assertWaitUntilConnectionReleaseForNoneTransaction() throws InterruptedException {
         AtomicBoolean flag = new AtomicBoolean(true);
         Thread waitThread = new Thread(() -> {
-            connectionStateHandler.setStatus(ConnectionStatus.RUNNING);
+            connectionStateHandler.changeStatus(ConnectionStatus.RUNNING);
             connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
             if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
                 flag.getAndSet(false);
@@ -58,7 +56,7 @@ public final class ConnectionStateHandlerTest {
     public void assertWaitUntilConnectionReleaseForTransaction() throws InterruptedException {
         AtomicBoolean flag = new AtomicBoolean(true);
         Thread waitThread = new Thread(() -> {
-            connectionStateHandler.setStatus(ConnectionStatus.TERMINATED);
+            connectionStateHandler.changeStatus(ConnectionStatus.TERMINATED);
             connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
             if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
                 flag.getAndSet(false);

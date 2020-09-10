@@ -22,23 +22,23 @@ import lombok.RequiredArgsConstructor;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Connection state handler.
+ * Connection status handler.
  */
 @RequiredArgsConstructor
-public final class ConnectionStateHandler {
+public final class ConnectionStatusHandler {
     
     private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.INIT);
     
     private final ResourceLock resourceLock;
     
     /**
-     * Change connection status using get and set.
+     * Change connection status.
      *
-     * @param update new update status
+     * @param status status to be updated
      */
-    public void setStatus(final ConnectionStatus update) {
-        status.getAndSet(update);
-        if (ConnectionStatus.TERMINATED == status.get()) {
+    public void changeStatus(final ConnectionStatus status) {
+        this.status.set(status);
+        if (ConnectionStatus.TERMINATED == status) {
             resourceLock.doNotify();
         }
     }
