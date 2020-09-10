@@ -22,7 +22,6 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -83,9 +82,9 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private final Collection<MethodInvocation> methodInvocations = new LinkedList<>();
     
-    private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
+    private final ResourceLock resourceLock = new ResourceLock();
     
-    private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceSynchronizer);
+    private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceLock);
     
     public BackendConnection(final TransactionType transactionType) {
         this(transactionType, false);
@@ -123,11 +122,10 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         this.schemaName = schemaName;
     }
     
-    @SneakyThrows(InterruptedException.class)
     private boolean isSwitchFailed() {
         int retryCount = 0;
         while (stateHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
-            resourceSynchronizer.doAwaitUntil();
+            resourceLock.doAwaitUntil();
             ++retryCount;
             log.warn("Current transaction have not terminated, retry count:[{}].", retryCount);
         }
