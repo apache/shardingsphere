@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
-import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
+import org.apache.shardingsphere.primaryreplica.route.engine.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.proxy.backend.schema.ProxyContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -277,7 +277,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
      */
     public synchronized void close(final boolean forceClose) throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
-        MasterVisitedManager.clear();
+        PrimaryVisitedManager.clear();
         exceptions.addAll(closeResultSets());
         exceptions.addAll(closeStatements());
         if (!stateHandler.isInTransaction() || forceClose || TransactionType.BASE == transactionType) {
