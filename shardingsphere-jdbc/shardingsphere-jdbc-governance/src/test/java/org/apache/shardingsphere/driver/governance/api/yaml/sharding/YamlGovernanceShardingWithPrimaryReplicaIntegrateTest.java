@@ -49,10 +49,10 @@ public final class YamlGovernanceShardingWithPrimaryReplicaIntegrateTest extends
     @Parameters(name = "{index}:{0}-{1}")
     public static Collection init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/sharding_ms/configWithDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/sharding_ms/configWithoutDataSourceWithoutProps.yaml", false},
-                {"/yaml/integrate/sharding_ms/configWithDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/sharding_ms/configWithoutDataSourceWithProps.yaml", false},
+                {"/yaml/integrate/sharding_pr/configWithDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/sharding_pr/configWithoutDataSourceWithoutProps.yaml", false},
+                {"/yaml/integrate/sharding_pr/configWithDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/sharding_pr/configWithoutDataSourceWithProps.yaml", false},
         });
     }
     
