@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
+       xmlns:primary-replica="http://shardingsphere.apache.org/schema/shardingsphere/primaryreplica"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                        http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/primaryreplica
+                        http://shardingsphere.apache.org/schema/shardingsphere/primaryreplica/primary-replica.xsd
+                        ">
+    <import resource="../datasource/primaryReplicaDataSource.xml" />
+    
+    <primary-replica:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
+    <primary-replica:load-balance-algorithm id="roundRobinLoadBalanceAlgorithm" type="ROUND_ROBIN" />
+
+    <primary-replica:rule id="defaultPrimaryReplicaDataSourcePrimaryReplicaRule">
+        <primary-replica:data-source-rule id="default_dbtbl_0" primary-data-source-name="dbtbl_0_primary" replica-data-source-names="dbtbl_0_replica_0, dbtbl_0_replica_1" />
+    </primary-replica:rule>
+    
+    <primary-replica:rule id="randomPrimaryReplicaDataSourcePrimaryReplicaRule">
+        <primary-replica:data-source-rule id="random_dbtbl_0" primary-data-source-name="dbtbl_0_primary" replica-data-source-names="dbtbl_0_replica_0, dbtbl_0_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm" />
+    </primary-replica:rule>
+    
+    <primary-replica:rule id="roundRobinPrimaryReplicaDataSourcePrimaryReplicaRule">
+        <primary-replica:data-source-rule id="roundRobin_dbtbl_0" primary-data-source-name="dbtbl_0_primary" replica-data-source-names="dbtbl_0_replica_0, dbtbl_0_replica_1" load-balance-algorithm-ref="roundRobinLoadBalanceAlgorithm" />
+    </primary-replica:rule>
+    
+    <primary-replica:rule id="refPrimaryReplicaDataSourcePrimaryReplicaRule">
+        <primary-replica:data-source-rule id="random_dbtbl_1" primary-data-source-name="dbtbl_1_primary" replica-data-source-names="dbtbl_1_replica_0, dbtbl_1_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm" />
+    </primary-replica:rule>
+</beans>
