@@ -166,7 +166,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement((SimpleTableSegment) visit(ctx.tableName()), null != ctx.notExistClause_().EXISTS());
+        CreateTableStatement result = new CreateTableStatement((SimpleTableSegment) visit(ctx.tableName()), null != ctx.notExistClause_());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
