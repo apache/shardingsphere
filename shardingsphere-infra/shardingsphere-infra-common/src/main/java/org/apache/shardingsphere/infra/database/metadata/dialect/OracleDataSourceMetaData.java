@@ -33,13 +33,13 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     
     private static final int DEFAULT_PORT = 1521;
     
-    private String hostName;
+    private final String hostName;
     
-    private int port;
+    private final int port;
     
-    private String catalog;
+    private final String catalog;
     
-    private String schema;
+    private final String schema;
     
     private final Pattern thinUrlPattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?([0-9]*)[:/]([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
     
@@ -49,23 +49,19 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     public OracleDataSourceMetaData(final String url, final String username) {
         Matcher matcher = thinUrlPattern.matcher(url);
         if (!matcher.find()) {
-            matchWithConnectDescriptorPattern(url, username);
+            matcher = connectDescriptorUrlPattern.matcher(url);
+            if (!matcher.find()) {
+                throw new UnrecognizedDatabaseURLException(url, connectDescriptorUrlPattern.pattern());
+            }
+            hostName = matcher.group(2);
+            port = Integer.parseInt(matcher.group(7));
+            catalog = matcher.group(8);
+            schema = username;
             return;
         }
         hostName = matcher.group(3);
         port = Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(4));
         catalog = matcher.group(5);
-        schema = username;
-    }
-    
-    private void matchWithConnectDescriptorPattern(final String url, final String username) {
-        Matcher matcher = connectDescriptorUrlPattern.matcher(url);
-        if (!matcher.find()) {
-            throw new UnrecognizedDatabaseURLException(url, connectDescriptorUrlPattern.pattern());
-        }
-        hostName = matcher.group(2);
-        port = Integer.parseInt(matcher.group(7));
-        catalog = matcher.group(8);
         schema = username;
     }
 }
