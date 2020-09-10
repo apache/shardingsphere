@@ -107,7 +107,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     }
     
     private PrimaryReplicaRuleConfiguration getPrimaryReplicaRuleConfiguration() {
-        PrimaryReplicaDataSourceRuleConfiguration dataSourceConfiguration = new PrimaryReplicaDataSourceRuleConfiguration("ds_pr", "ds_m", Collections.singletonList("ds_s"), "roundRobin");
+        PrimaryReplicaDataSourceRuleConfiguration dataSourceConfiguration = new PrimaryReplicaDataSourceRuleConfiguration("ds_pr", "ds_p", Collections.singletonList("ds_r"), "roundRobin");
         return new PrimaryReplicaRuleConfiguration(
                 Collections.singleton(dataSourceConfiguration), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties())));
     }
