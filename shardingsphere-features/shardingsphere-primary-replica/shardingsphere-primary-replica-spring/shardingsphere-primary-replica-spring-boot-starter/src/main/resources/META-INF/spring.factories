@@ -16,4 +16,4 @@
 #
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.apache.shardingsphere.masterslave.spring.boot.MasterSlaveRuleSpringbootConfiguration
+org.apache.shardingsphere.primaryreplica.spring.boot.PrimaryReplicaRuleSpringbootConfiguration
