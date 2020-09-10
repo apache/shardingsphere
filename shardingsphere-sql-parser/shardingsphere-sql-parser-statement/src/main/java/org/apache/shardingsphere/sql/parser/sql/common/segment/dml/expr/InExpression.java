@@ -25,7 +25,7 @@ import java.util.LinkedList;
 
 @Getter
 @Setter
-public class InExpression implements ExpressionSegment {
+public final class InExpression implements ExpressionSegment {
     
     private int startIndex;
     

@@ -26,10 +26,9 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,11 +73,11 @@ public final class BroadcastBackendHandlerTest {
         schemaContexts.setAccessible(true);
         schemaContexts.set(ProxyContext.getInstance(),
                 new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
-        when(backendConnection.getSchema()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(backendConnection.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
     }
     
     @Test
-    public void assertExecuteSuccess() {
+    public void assertExecuteSuccess() throws SQLException {
         mockDatabaseCommunicationEngine(new UpdateResponse());
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", mock(SQLStatement.class), backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
@@ -97,17 +96,7 @@ public final class BroadcastBackendHandlerTest {
         return result;
     }
     
-    @Test
-    public void assertExecuteFailure() {
-        ErrorResponse errorResponse = new ErrorResponse(new SQLException("no reason", "X999", -1));
-        mockDatabaseCommunicationEngine(errorResponse);
-        BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", mock(SQLStatement.class), backendConnection);
-        setBackendHandlerFactory(broadcastBackendHandler);
-        assertThat(broadcastBackendHandler.execute(), instanceOf(ErrorResponse.class));
-        verify(databaseCommunicationEngine, times(10)).execute();
-    }
-    
-    private void mockDatabaseCommunicationEngine(final BackendResponse backendResponse) {
+    private void mockDatabaseCommunicationEngine(final BackendResponse backendResponse) throws SQLException {
         when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
         when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
     }

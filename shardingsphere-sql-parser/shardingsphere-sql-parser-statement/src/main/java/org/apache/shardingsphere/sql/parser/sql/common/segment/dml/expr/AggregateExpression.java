@@ -25,7 +25,7 @@ import java.util.List;
 
 @Setter
 @Getter
-public class AggregateExpression implements ExpressionSegment {
+public final class AggregateExpression implements ExpressionSegment {
     
     private int startIndex;
     

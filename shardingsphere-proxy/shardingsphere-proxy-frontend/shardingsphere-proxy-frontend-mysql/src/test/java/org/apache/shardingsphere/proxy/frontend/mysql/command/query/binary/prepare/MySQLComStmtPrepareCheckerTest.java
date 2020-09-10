@@ -83,7 +83,7 @@ public final class MySQLComStmtPrepareCheckerTest {
         List<SQLStatement> statementList = Arrays.asList(
             new AlterTableStatement(mock(SimpleTableSegment.class)), new MySQLAlterUserStatement(), new MySQLAnalyzeTableStatement(), new MySQLCacheIndexStatement(),
             new CallStatement(), new ChangeMasterStatement(), new MySQLChecksumTableStatement(), new CommitStatement(), new CreateIndexStatement(), new DropIndexStatement(),
-            new CreateDatabaseStatement(""), new DropDatabaseStatement(""), new CreateTableStatement(mock(SimpleTableSegment.class)), new DropTableStatement(), new MySQLCreateUserStatement(),
+            new CreateDatabaseStatement(""), new DropDatabaseStatement(""), new CreateTableStatement(mock(SimpleTableSegment.class), false), new DropTableStatement(), new MySQLCreateUserStatement(),
             new MySQLRenameUserStatement(), new MySQLDropUserStatement(), new CreateViewStatement(), new DropViewStatement(), new DeleteStatement(), new DoStatement(), new MySQLFlushStatement(),
             new MySQLGrantStatement(), new InsertStatement(), new MySQLInstallPluginStatement(), new MySQLKillStatement(), 
             new MySQLLoadIndexInfoStatement(), new MySQLOptimizeTableStatement(), new RenameTableStatement(), new MySQLRepairTableStatement(), 

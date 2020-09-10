@@ -26,6 +26,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLException;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
@@ -35,7 +37,7 @@ public final class TransactionBackendHandlerTest {
     private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Test
-    public void assertExecute() {
+    public void assertExecute() throws SQLException {
         TransactionBackendHandler transactionBackendHandler = new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
         BackendResponse actual = transactionBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));

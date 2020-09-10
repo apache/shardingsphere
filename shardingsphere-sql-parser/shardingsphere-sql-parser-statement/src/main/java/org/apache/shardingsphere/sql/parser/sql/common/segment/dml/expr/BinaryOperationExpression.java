@@ -25,7 +25,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class BinaryOperationExpression implements ExpressionSegment {
+public final class BinaryOperationExpression implements ExpressionSegment {
     
     private int startIndex;
     

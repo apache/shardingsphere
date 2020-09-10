@@ -59,7 +59,7 @@ public class ShowTablesBackendHandlerTest {
         when(backendConnection.getUsername()).thenReturn("root");
         tablesBackendHandler = new ShowTablesBackendHandler("show tables", mock(SQLStatement.class), backendConnection);
         Map<String, SchemaContext> schemaContextMap = getSchemaContextMap();
-        when(backendConnection.getSchema()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(backendConnection.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
         schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(schemaContextMap, getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
@@ -83,7 +83,7 @@ public class ShowTablesBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteShowTablesBackendHandler() {
+    public void assertExecuteShowTablesBackendHandler() throws SQLException {
         QueryResponse actual = (QueryResponse) tablesBackendHandler.execute();
         assertThat(actual, instanceOf(QueryResponse.class));
         assertThat(actual.getQueryHeaders().size(), is(1));

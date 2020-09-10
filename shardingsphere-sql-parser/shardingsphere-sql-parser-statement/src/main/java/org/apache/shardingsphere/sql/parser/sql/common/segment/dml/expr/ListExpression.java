@@ -25,7 +25,7 @@ import java.util.List;
 
 @Setter
 @Getter
-public class ListExpression implements ExpressionSegment {
+public final class ListExpression implements ExpressionSegment {
     
     private int startIndex;
     

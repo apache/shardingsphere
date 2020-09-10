@@ -22,11 +22,10 @@ import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -50,11 +49,11 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
-    public BackendResponse execute() {
-        if (null == backendConnection.getSchema()) {
+    public BackendResponse execute() throws SQLException {
+        if (null == backendConnection.getSchemaName()) {
             Map<String, SchemaContext> schemaContexts = ProxyContext.getInstance().getSchemaContexts().getSchemaContexts();
             if (schemaContexts.isEmpty()) {
-                return new ErrorResponse(new NoDatabaseSelectedException());
+                throw new NoDatabaseSelectedException();
             }
             // TODO we should remove set default ShardingSphere schema after parser can recognize all DAL broadcast SQL.
             backendConnection.setCurrentSchema(schemaContexts.keySet().iterator().next());

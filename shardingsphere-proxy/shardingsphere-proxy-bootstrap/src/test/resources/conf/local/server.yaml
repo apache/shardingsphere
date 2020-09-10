@@ -18,13 +18,21 @@
 governance:
   name: governance_ds
   registryCenter:
-    type: ZooKeeper
+    type: REG_FIXTURE
     serverLists: localhost:2181
     props:
       retryIntervalMilliseconds: 500
       timeToLiveSeconds: 60
       maxRetries: 3
       operationTimeoutMilliseconds: 500
+  additionalConfigCenter:
+    type: CONFIG_FIXTURE
+    serverLists: localhost:3181
+    props:
+      retryIntervalMilliseconds: 10
+      timeToLiveSeconds: 10
+      maxRetries: 10
+      operationTimeoutMilliseconds: 10
   overwrite: false
 
 authentication:
@@ -34,3 +42,7 @@ authentication:
     sharding:
       password: sharding
       authorizedSchemas: sharding_db
+
+props:
+  alpha-1: alpha-A
+  beta-2: beta-B

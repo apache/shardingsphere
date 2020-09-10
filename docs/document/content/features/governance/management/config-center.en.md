@@ -11,22 +11,24 @@ weight = 1
 
 ## Structure in Configuration Center
 
-Under defined namespace `config` node, configuration center stores data sources, rule configurations, authentication configuration, and properties in YAML. Modifying nodes can dynamically refresh configurations.
+Under defined namespace, configuration center stores data sources, rule configurations, authentication configuration, and properties in YAML. Modifying nodes can dynamically refresh configurations.
 
 ```
-config
+namespace
     ├──authentication                            # Authentication configuration
     ├──props                                     # Properties configuration
-    ├──schema                                    # Schema configuration
-    ├      ├──schema_1                           # Schema name 1
+    ├──schemas                                   # Schema configuration
+    ├      ├──${schema_1}                        # Schema name 1
     ├      ├      ├──datasource                  # Datasource configuration
     ├      ├      ├──rule                        # Rule configuration
-    ├      ├──schema_2                           # Schema name 2
+    ├      ├      ├──table                       # Table configuration
+    ├      ├──${schema_2}                        # Schema name 2
     ├      ├      ├──datasource                  # Datasource configuration
     ├      ├      ├──rule                        # Rule configuration
+    ├      ├      ├──table                       # Table configuration
 ```
 
-### config/authentication
+### /authentication
 
 Authentication configuration. Can configure username and password for ShardingSphere-Proxy.
 
@@ -35,7 +37,7 @@ username: root
 password: root
 ```
 
-### config/props
+### /props
 
 Properties configuration. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/configuration/) for more details.
 
@@ -44,7 +46,7 @@ executor.size: 20
 sql.show: true
 ```
 
-### config/schema/schemeName/datasource
+### /schemas/${schemeName}/datasource
 
 A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by users themselves.
 
@@ -76,7 +78,7 @@ dataSources:
       maxLifetimeMilliseconds: 1800000
 ```
 
-### config/schema/schemeName/rule
+### /schemas/${schemeName}/rule
 
 Rule configurations, including sharding, read-write split, data encryption, shadow DB, multi replica configurations.
 
@@ -90,6 +92,70 @@ rules:
   
 - !ENCRYPT
   xxx
+```
+
+### /schemas/${schemeName}/table
+
+Dynamic modification of metadata content is not supported currently.
+
+```yaml
+configuredSchemaMetaData:                       # Tables of configured with sharding rules
+  tables:                                       # Tables
+    t_order:                                    # table_name
+      columns:                                  # Columns
+        id:                                     # column_name
+          caseSensitive: false
+          dataType: 0
+          generated: false
+          name: id
+          primaryKey: trues
+        order_id:
+          caseSensitive: false
+          dataType: 0
+          generated: false
+          name: order_id
+          primaryKey: false
+      indexs:                                   # Indexes
+        t_user_order_id_index:                  # index_name
+          name: t_user_order_id_index
+    t_order_item:
+      columns:
+        order_id:
+          caseSensitive: false
+          dataType: 0
+          generated: false
+          name: order_id
+          primaryKey: false
+unconfiguredSchemaMetaDataMap:                  # Tables of no sharding rules configured
+  ds_0:                                         # DataSources
+    tables:                                     # Tables
+      t_user:                                   # table_name
+        columns:                                # Columns
+          user_id:                              # column_name
+            caseSensitive: false
+            dataType: 0
+            generated: false
+            name: user_id
+            primaryKey: false
+          id:
+            caseSensitive: false
+            dataType: 0
+            generated: false
+            name: id
+            primaryKey: true
+          order_id:
+            caseSensitive: false
+            dataType: 0
+            generated: false
+            name: order_id
+            primaryKey: false
+        indexes:                                # Indexes
+          t_user_order_id_index:                # index_name
+            name: t_user_order_id_index
+          t_user_user_id_index:
+            name: t_user_user_id_index
+          primary:
+            name: PRIMARY
 ```
 
 ## Dynamic Effectiveness

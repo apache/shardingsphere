@@ -22,7 +22,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class NotExpression implements ExpressionSegment {
+public final class NotExpression implements ExpressionSegment {
     
     private int startIndex;
     

@@ -71,7 +71,7 @@ public final class MySQLCommandExecutorFactoryTest {
         schemaContexts.set(ProxyContext.getInstance(),
                 new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         BackendConnection backendConnection = mock(BackendConnection.class);
-        when(backendConnection.getSchema()).thenReturn("schema");
+        when(backendConnection.getSchemaName()).thenReturn("schema");
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_QUIT,
             mock(CommandPacket.class), backendConnection), instanceOf(MySQLComQuitExecutor.class));
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_INIT_DB,

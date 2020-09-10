@@ -7,7 +7,7 @@ ShardingSphere-Proxy 支持使用 SPI 方式接入[分布式治理](/cn/features
 
 ## Zookeeper
 
-ShardingSphere-Proxy 默认提供了 Zookeeper 解决方案，实现了配置中心、注册中心和元数据中心功能。
+ShardingSphere-Proxy 默认提供了 Zookeeper 解决方案，实现了配置中心和注册中心功能。
 [配置规则](/cn/user-manual/shardingsphere-jdbc/configuration/yaml/governance/)同 ShardingSphere-JDBC YAML 保持一致。
 
 ## 其他第三方组件

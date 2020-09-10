@@ -18,19 +18,19 @@
 package org.apache.shardingsphere.replica.route.engine;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
 import org.apache.shardingsphere.replica.constant.ReplicaOrder;
 import org.apache.shardingsphere.replica.rule.ReplicaRule;
+import org.apache.shardingsphere.replica.rule.ReplicaTableRule;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -40,29 +40,47 @@ public final class ReplicaRouteDecorator implements RouteDecorator<ReplicaRule> 
     
     @Override
     public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ReplicaRule replicaRule, final ConfigurationProperties props) {
+        Map<String, ReplicaGroup> replicaGroups = new HashMap<>();
+        String schemaName = metaData.getSchemaName();
+        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
-            RouteResult routeResult = new RouteResult();
-            for (String each : replicaRule.getSingleReplicaDataSources()) {
-                routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, each), Collections.emptyList()));
-            }
-            return new RouteContext(routeContext.getSqlStatementContext(), Collections.emptyList(), routeResult);
+            ReplicaTableRule replicaRoutingRule = replicaRule.getReplicaTableRules().iterator().next();
+            ReplicaGroup replicaGroup = new ReplicaGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),
+                    replicaRoutingRule.getDataSourceName());
+            replicaGroups.put(ReplicaGroup.BLANK_REPLICA_GROUP_KEY, replicaGroup);
+            return new RouteContext(routeContext, routeContext.getRouteResult(), new ReplicaRouteStageContext(schemaName, replicaGroups, sqlStatementContext.isReadOnly()), getTypeClass());
         }
-        Collection<RouteUnit> toBeRemoved = new LinkedList<>();
-        Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
-            String dataSourceName = each.getDataSourceMapper().getLogicName();
-            Optional<Collection<String>> replicaDataSources = replicaRule.findReplicaDataSources(dataSourceName);
-            if (!replicaDataSources.isPresent()) {
-                continue;
-            }
-            toBeRemoved.add(each);
-            for (String replicaDataSource : replicaDataSources.get()) {
-                toBeAdded.add(new RouteUnit(new RouteMapper(dataSourceName, replicaDataSource), each.getTableMappers()));
+            Collection<RouteMapper> routeMappers = each.getTableMappers();
+            if (null == routeMappers || routeMappers.isEmpty()) {
+                ReplicaTableRule replicaRoutingRule = replicaRule.getReplicaTableRules().iterator().next();
+                ReplicaGroup replicaGroup = new ReplicaGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),
+                        replicaRoutingRule.getDataSourceName());
+                replicaGroups.put(ReplicaGroup.BLANK_REPLICA_GROUP_KEY, replicaGroup);
+            } else {
+                routeReplicaGroups(routeMappers, replicaRule, replicaGroups);
             }
         }
-        routeContext.getRouteResult().getRouteUnits().removeAll(toBeRemoved);
-        routeContext.getRouteResult().getRouteUnits().addAll(toBeAdded);
-        return routeContext;
+        return new RouteContext(routeContext, routeContext.getRouteResult(), new ReplicaRouteStageContext(schemaName, replicaGroups, sqlStatementContext.isReadOnly()), getTypeClass());
+    }
+    
+    private void routeReplicaGroups(final Collection<RouteMapper> routeMappers, final ReplicaRule replicaRule, final Map<String, ReplicaGroup> replicaGroups) {
+        for (RouteMapper each : routeMappers) {
+            String actualTableName = each.getActualName();
+            Optional<ReplicaTableRule> replicaRoutingRuleOptional = replicaRule.findRoutingByTable(actualTableName);
+            ReplicaGroup replicaGroup;
+            if (replicaRoutingRuleOptional.isPresent()) {
+                ReplicaTableRule replicaRoutingRule = replicaRoutingRuleOptional.get();
+                replicaGroup = new ReplicaGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),
+                        replicaRoutingRule.getDataSourceName());
+                replicaGroups.put(actualTableName, replicaGroup);
+            } else {
+                ReplicaTableRule replicaRoutingRule = replicaRule.getReplicaTableRules().iterator().next();
+                replicaGroup = new ReplicaGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),
+                        replicaRoutingRule.getDataSourceName());
+            }
+            replicaGroups.put(actualTableName, replicaGroup);
+        }
     }
     
     @Override

@@ -39,6 +39,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -62,8 +63,7 @@ public final class UnicastBackendHandlerTest {
     private DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory;
     
     @Before
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void setUp() {
+    public void setUp() throws SQLException, IllegalAccessException, NoSuchFieldException {
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
         schemaContexts.set(ProxyContext.getInstance(),
@@ -80,7 +80,7 @@ public final class UnicastBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteWhileSchemaIsNull() {
+    public void assertExecuteWhileSchemaIsNull() throws SQLException {
         UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", mock(SQLStatement.class), backendConnection);
         backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 8));
         setDatabaseCommunicationEngine(backendHandler);
@@ -90,7 +90,7 @@ public final class UnicastBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteWhileSchemaNotNull() {
+    public void assertExecuteWhileSchemaNotNull() throws SQLException {
         backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
         UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", mock(SQLStatement.class), backendConnection);
         setDatabaseCommunicationEngine(backendHandler);
@@ -99,7 +99,7 @@ public final class UnicastBackendHandlerTest {
         backendHandler.execute();
     }
     
-    private void setUnderlyingHandler(final BackendResponse backendResponse) {
+    private void setUnderlyingHandler(final BackendResponse backendResponse) throws SQLException {
         DatabaseCommunicationEngine databaseCommunicationEngine = mock(DatabaseCommunicationEngine.class);
         when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
         when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);

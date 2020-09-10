@@ -22,7 +22,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class BetweenExpression implements ExpressionSegment {
+public final class BetweenExpression implements ExpressionSegment {
     
     private int startIndex;
     

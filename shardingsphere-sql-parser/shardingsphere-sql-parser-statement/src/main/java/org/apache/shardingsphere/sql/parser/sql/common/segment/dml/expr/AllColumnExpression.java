@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class AllColumnExpression implements ExpressionSegment {
+public final class AllColumnExpression implements ExpressionSegment {
     
     private int startIndex;
     

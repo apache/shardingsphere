@@ -24,10 +24,11 @@ import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
+import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,26 +93,19 @@ public final class ShardingCTLSetBackendHandlerTest {
         assertThat(backendConnection.getTransactionType(), is(TransactionType.LOCAL));
     }
     
-    @Test
+    @Test(expected = UnsupportedShardingCTLTypeException.class)
     public void assertSwitchTransactionTypeFailed() {
         backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-        ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=XXX", backendConnection);
-        BackendResponse actual = shardingCTLBackendHandler.execute();
-        assertThat(actual, instanceOf(ErrorResponse.class));
-        assertThat(backendConnection.getTransactionType(), is(TransactionType.LOCAL));
+        new ShardingCTLSetBackendHandler("sctl:set transaction_type=XXX", backendConnection).execute();
     }
     
-    @Test
+    @Test(expected = UnsupportedShardingCTLTypeException.class)
     public void assertNotSupportedSCTL() {
-        ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set @@session=XXX", backendConnection);
-        BackendResponse actual = shardingCTLBackendHandler.execute();
-        assertThat(actual, instanceOf(ErrorResponse.class));
+        new ShardingCTLSetBackendHandler("sctl:set @@session=XXX", backendConnection).execute();
     }
     
-    @Test
+    @Test(expected = InvalidShardingCTLFormatException.class)
     public void assertFormatErrorSCTL() {
-        ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set yyyyy", backendConnection);
-        BackendResponse actual = shardingCTLBackendHandler.execute();
-        assertThat(actual, instanceOf(ErrorResponse.class));
+        new ShardingCTLSetBackendHandler("sctl:set yyyyy", backendConnection).execute();
     }
 }
