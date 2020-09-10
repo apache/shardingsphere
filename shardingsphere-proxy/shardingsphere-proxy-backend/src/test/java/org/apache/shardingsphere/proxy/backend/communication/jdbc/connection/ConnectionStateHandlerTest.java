@@ -34,11 +34,7 @@ public final class ConnectionStateHandlerTest {
         AtomicBoolean flag = new AtomicBoolean(true);
         Thread waitThread = new Thread(() -> {
             connectionStateHandler.setStatus(ConnectionStatus.RUNNING);
-            try {
-                connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
-            } catch (final InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
+            connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
             if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
                 flag.getAndSet(false);
             }
@@ -63,11 +59,7 @@ public final class ConnectionStateHandlerTest {
         AtomicBoolean flag = new AtomicBoolean(true);
         Thread waitThread = new Thread(() -> {
             connectionStateHandler.setStatus(ConnectionStatus.TERMINATED);
-            try {
-                connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
-            } catch (final InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
+            connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
             if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
                 flag.getAndSet(false);
             }
