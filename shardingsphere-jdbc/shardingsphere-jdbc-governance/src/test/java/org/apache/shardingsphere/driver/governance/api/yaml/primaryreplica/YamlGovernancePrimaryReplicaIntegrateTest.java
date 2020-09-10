@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.api.yaml.masterslave;
+package org.apache.shardingsphere.driver.governance.api.yaml.primaryreplica;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -37,7 +37,7 @@ import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class YamlGovernanceMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
+public final class YamlGovernancePrimaryReplicaIntegrateTest extends AbstractYamlDataSourceTest {
     
     private final String filePath;
     
@@ -46,22 +46,22 @@ public final class YamlGovernanceMasterSlaveIntegrateTest extends AbstractYamlDa
     @Parameters(name = "{index}:{0}-{1}")
     public static Collection init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", false},
-                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithProps.yaml", false},
+                {"/yaml/integrate/ms/configWithPrimaryReplicaDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/ms/configWithPrimaryReplicaDataSourceWithoutProps.yaml", false},
+                {"/yaml/integrate/ms/configWithPrimaryReplicaDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/ms/configWithPrimaryReplicaDataSourceWithProps.yaml", false},
         });
     }
     
     @Test
     public void assertWithDataSource() throws Exception {
-        File yamlFile = new File(YamlGovernanceMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(YamlGovernancePrimaryReplicaIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(
-                    Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
+                    Maps.asMap(Sets.newHashSet("db_primary", "db_replica_0", "db_replica_1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
         }
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
@@ -74,13 +74,13 @@ public final class YamlGovernanceMasterSlaveIntegrateTest extends AbstractYamlDa
     
     @Test
     public void assertWithDataSourceByYamlBytes() throws Exception {
-        File yamlFile = new File(YamlGovernanceMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(YamlGovernancePrimaryReplicaIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(
-                    Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), AbstractYamlDataSourceTest::createDataSource), getYamlBytes(yamlFile));
+                    Maps.asMap(Sets.newHashSet("db_primary", "db_replica_0", "db_replica_1"), AbstractYamlDataSourceTest::createDataSource), getYamlBytes(yamlFile));
         }
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
