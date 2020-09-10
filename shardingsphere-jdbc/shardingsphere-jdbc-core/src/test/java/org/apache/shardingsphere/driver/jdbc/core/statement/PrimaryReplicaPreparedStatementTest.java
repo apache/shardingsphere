@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForMasterSlaveTest;
+import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForPrimaryReplicaTest;
 import org.junit.Test;
 
 import java.sql.PreparedStatement;
@@ -26,25 +26,25 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MasterSlavePreparedStatementTest extends AbstractShardingSphereDataSourceForMasterSlaveTest {
+public final class PrimaryReplicaPreparedStatementTest extends AbstractShardingSphereDataSourceForPrimaryReplicaTest {
     
     @Test(expected = SQLException.class)
     public void assertQueryWithNull() throws SQLException {
-        try (PreparedStatement preparedStatement = getMasterSlaveDataSource().getConnection().prepareStatement(null)) {
+        try (PreparedStatement preparedStatement = getPrimaryReplicaDataSource().getConnection().prepareStatement(null)) {
             preparedStatement.executeQuery();
         }
     }
     
     @Test(expected = SQLException.class)
     public void assertQueryWithEmptyString() throws SQLException {
-        try (PreparedStatement preparedStatement = getMasterSlaveDataSource().getConnection().prepareStatement("")) {
+        try (PreparedStatement preparedStatement = getPrimaryReplicaDataSource().getConnection().prepareStatement("")) {
             preparedStatement.executeQuery();
         }
     }
     
     @Test
     public void assertGetParameterMetaData() throws SQLException {
-        try (PreparedStatement preparedStatement = getMasterSlaveDataSource().getConnection().prepareStatement("SELECT * FROM t_global where id = ?")) {
+        try (PreparedStatement preparedStatement = getPrimaryReplicaDataSource().getConnection().prepareStatement("SELECT * FROM t_global where id = ?")) {
             assertThat(preparedStatement.getParameterMetaData().getParameterCount(), is(1));
         }
     }
