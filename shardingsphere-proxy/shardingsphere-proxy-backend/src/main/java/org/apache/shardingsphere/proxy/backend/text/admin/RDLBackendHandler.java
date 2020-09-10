@@ -18,22 +18,21 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.core.event.persist.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.persist.RulePersistEvent;
+import org.apache.shardingsphere.governance.core.event.persist.SchemaNamePersistEvent;
+import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.eventbus.event.DataSourceEvent;
-import org.apache.shardingsphere.infra.eventbus.event.RuleEvent;
-import org.apache.shardingsphere.infra.eventbus.event.SchemaNameEvent;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
@@ -67,31 +66,31 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     private final SQLStatement sqlStatement;
     
     @Override
-    public BackendResponse execute() {
+    public BackendResponse execute() throws SQLException {
         SQLStatementContext<?> context = getSQLStatementContext();
         if (!isRegistryCenterExisted()) {
-            return new ErrorResponse(new SQLException("No Registry center to execute `%s` SQL", context.getClass().getSimpleName()));
+            throw new SQLException(String.format("No Registry center to execute `%s` SQL", context.getClass().getSimpleName()));
         }
         return getBackendResponse(context);
     }
     
     private BackendResponse execute(final CreateDatabaseStatementContext context) {
-        if (ProxySchemaContexts.getInstance().getSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
-            return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
+        if (ProxyContext.getInstance().getAllSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
+            throw new DBCreateExistsException(context.getSqlStatement().getDatabaseName());
         }
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new SchemaNameEvent(context.getSqlStatement().getDatabaseName(), false));
+        ShardingSphereEventBus.getInstance().post(new SchemaNamePersistEvent(context.getSqlStatement().getDatabaseName(), false));
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
     }
     
     private BackendResponse execute(final DropDatabaseStatementContext context) {
-        if (!ProxySchemaContexts.getInstance().getSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
-            return new ErrorResponse(new DBCreateExistsException(context.getSqlStatement().getDatabaseName()));
+        if (!ProxyContext.getInstance().getAllSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
+            throw new DBCreateExistsException(context.getSqlStatement().getDatabaseName());
         }
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new SchemaNameEvent(context.getSqlStatement().getDatabaseName(), true));
+        ShardingSphereEventBus.getInstance().post(new SchemaNamePersistEvent(context.getSqlStatement().getDatabaseName(), true));
         UpdateResponse result = new UpdateResponse();
         result.setType("DROP");
         return result;
@@ -102,24 +101,24 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(parameters));
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new DataSourceEvent(backendConnection.getSchema(), dataSources));
+        ShardingSphereEventBus.getInstance().post(new DataSourcePersistEvent(backendConnection.getSchemaName(), dataSources));
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
     }
     
     private BackendResponse execute(final CreateShardingRuleStatementContext context) {
-        YamlShardingRuleConfiguration configurations = new CreateShardingRuleStatementContextConverter().convert(context);
-        Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(configurations));
+        YamlShardingRuleConfiguration configs = new CreateShardingRuleStatementContextConverter().convert(context);
+        Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(configs));
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new RuleEvent(backendConnection.getSchema(), rules));
+        ShardingSphereEventBus.getInstance().post(new RulePersistEvent(backendConnection.getSchemaName(), rules));
         UpdateResponse result = new UpdateResponse();
         result.setType("CREATE");
         return result;
     }
     
     private SQLStatementContext<?> getSQLStatementContext() {
-        DatabaseType databaseType = ProxySchemaContexts.getInstance().getSchemaContexts().getDatabaseType();
+        DatabaseType databaseType = ProxyContext.getInstance().getSchemaContexts().getDatabaseType();
         if (sqlStatement instanceof CreateDataSourcesStatement) {
             return new CreateDataSourcesStatementContext((CreateDataSourcesStatement) sqlStatement, databaseType);
         }
@@ -146,7 +145,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private boolean isRegistryCenterExisted() {
-        return !(ProxySchemaContexts.getInstance().getSchemaContexts() instanceof StandardSchemaContexts);
+        return !(ProxyContext.getInstance().getSchemaContexts() instanceof StandardSchemaContexts);
     }
     
     @Override

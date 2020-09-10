@@ -19,6 +19,7 @@ package org.apache.shardingsphere.dbtest.engine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;
@@ -57,6 +58,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+@Slf4j
 @Getter(AccessLevel.PROTECTED)
 public abstract class BatchIT extends BaseIT {
     
@@ -96,7 +98,7 @@ public abstract class BatchIT extends BaseIT {
     }
     
     @After
-    public void clearData() throws SQLException {
+    public void clearData() {
         dataSetEnvironmentManager.clear();
     }
     
@@ -109,6 +111,9 @@ public abstract class BatchIT extends BaseIT {
                 DataSet expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
                 assertThat(actualUpdateCounts[count], is(expected.getUpdateCount()));
                 expectedList.add(expected);
+            } catch (final AssertionError ex) {
+                log.error("[ERROR] SQL::{}, Expect::{}", getSql(), each);
+                throw ex;
             }
             count++;
         }

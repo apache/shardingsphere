@@ -20,7 +20,8 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
-import org.apache.shardingsphere.proxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -42,10 +43,9 @@ public final class PostgreSQLCommandExecuteEngineTest {
     
     @Test
     @SneakyThrows
-    public void assertWriteQueryDataWithError() {
+    public void assertWriteQueryDataWithUpdate() {
         PostgreSQLCommandExecuteEngine postgreSQLCommandExecuteEngine = new PostgreSQLCommandExecuteEngine();
-        when(queryCommandExecutor.isQueryResponse()).thenReturn(false);
-        when(queryCommandExecutor.isErrorResponse()).thenReturn(true);
+        when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.UPDATE);
         postgreSQLCommandExecuteEngine.writeQueryData(channelHandlerContext, null, queryCommandExecutor, 0);
         verify(channelHandlerContext, times(1)).write(isA(PostgreSQLReadyForQueryPacket.class));
     }

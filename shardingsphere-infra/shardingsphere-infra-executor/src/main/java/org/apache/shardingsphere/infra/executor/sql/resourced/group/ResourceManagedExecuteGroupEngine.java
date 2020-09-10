@@ -71,7 +71,7 @@ public abstract class ResourceManagedExecuteGroupEngine
         return result;
     }
     
-    private InputGroup<U> generateSQLExecuteGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, 
+    private InputGroup<U> generateSQLExecuteGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup,
                                                   final C connection, final ConnectionMode connectionMode) throws SQLException {
         List<U> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {

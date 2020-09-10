@@ -36,6 +36,8 @@ public final class CreateTableStatement extends AbstractSQLStatement implements 
     
     private final SimpleTableSegment table;
     
+    private final boolean isNotExisted;
+    
     private final Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
     
     private final Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();

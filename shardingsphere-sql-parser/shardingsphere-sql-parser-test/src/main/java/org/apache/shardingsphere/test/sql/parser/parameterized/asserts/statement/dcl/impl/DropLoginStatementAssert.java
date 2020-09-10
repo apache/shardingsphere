@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDropLoginStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.DropLoginStatementTestCase;
 
@@ -36,6 +36,6 @@ public final class DropLoginStatementAssert {
      * @param actual actual drop login statement
      * @param expected expected drop login statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropLoginStatement actual, final DropLoginStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerDropLoginStatement actual, final DropLoginStatementTestCase expected) {
     }
 }

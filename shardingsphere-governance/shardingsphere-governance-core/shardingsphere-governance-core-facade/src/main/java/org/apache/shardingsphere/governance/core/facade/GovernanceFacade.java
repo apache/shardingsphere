@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.facade.listener.GovernanceListenerManager;
 import org.apache.shardingsphere.governance.core.facade.repository.GovernanceRepositoryFacade;
-import org.apache.shardingsphere.governance.core.metadata.MetaDataCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -48,9 +47,6 @@ public final class GovernanceFacade implements AutoCloseable {
     @Getter
     private RegistryCenter registryCenter;
     
-    @Getter
-    private MetaDataCenter metaDataCenter;
-    
     private GovernanceListenerManager listenerManager;
     
     /**
@@ -64,7 +60,6 @@ public final class GovernanceFacade implements AutoCloseable {
         repositoryFacade = new GovernanceRepositoryFacade(config);
         registryCenter = new RegistryCenter(repositoryFacade.getRegistryRepository());
         configCenter = new ConfigCenter(repositoryFacade.getConfigurationRepository());
-        metaDataCenter = new MetaDataCenter(repositoryFacade.getConfigurationRepository());
         listenerManager = new GovernanceListenerManager(repositoryFacade.getRegistryRepository(),
                 repositoryFacade.getConfigurationRepository(), schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);
     }
@@ -91,7 +86,7 @@ public final class GovernanceFacade implements AutoCloseable {
      */
     public void onlineInstance() {
         registryCenter.persistInstanceOnline();
-        registryCenter.persistDataSourcesNode();
+        registryCenter.persistDataNodes();
         listenerManager.init();
     }
     

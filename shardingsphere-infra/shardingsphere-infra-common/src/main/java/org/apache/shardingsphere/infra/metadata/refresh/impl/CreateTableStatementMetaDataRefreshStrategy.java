@@ -44,7 +44,7 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Optional<TableMetaData> tableMetaData = callback.load(tableName);
         if (tableMetaData.isPresent()) {
-            metaData.getSchema().getConfiguredSchemaMetaData().put(tableName, tableMetaData.get());
+            metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData.get());
         } else {
             refreshUnconfiguredMetaData(metaData, databaseType, dataSourceMap, tableName);
         }
@@ -53,7 +53,7 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
     private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, 
                                              final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String tableName) throws SQLException {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Optional<TableMetaData> tableMetaData = TableMetaDataLoader.load(entry.getValue(), tableName, databaseType.getName());
+            Optional<TableMetaData> tableMetaData = TableMetaDataLoader.loadWithoutColumnMetaData(entry.getValue(), tableName, databaseType.getName());
             if (tableMetaData.isPresent()) {
                 refreshUnconfiguredMetaData(metaData, tableName, entry.getKey(), tableMetaData.get());
                 return;
@@ -62,11 +62,11 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
     }
     
     private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, final String tableName, final String dataSourceName, final TableMetaData tableMetaData) {
-        SchemaMetaData schemaMetaData = metaData.getSchema().getUnconfiguredSchemaMetaDataMap().get(dataSourceName);
+        SchemaMetaData schemaMetaData = metaData.getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get(dataSourceName);
         if (null == schemaMetaData) {
             Map<String, TableMetaData> tables = new HashMap<>(1, 1);
             tables.put(tableName, tableMetaData);
-            metaData.getSchema().getUnconfiguredSchemaMetaDataMap().put(dataSourceName, new SchemaMetaData(tables));
+            metaData.getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().put(dataSourceName, new SchemaMetaData(tables));
         } else {
             schemaMetaData.put(tableName, tableMetaData);
         }

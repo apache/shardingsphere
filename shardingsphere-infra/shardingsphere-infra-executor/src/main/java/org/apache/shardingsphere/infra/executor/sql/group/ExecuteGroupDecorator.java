@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.group;
 
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
@@ -34,9 +35,10 @@ public interface ExecuteGroupDecorator<T, R extends ShardingSphereRule> extends 
     /**
      * Decorate input groups.
      * 
+     * @param routeContext route context
      * @param rule ShardingSphere rule
      * @param inputGroups input groups to be decorated
      * @return decorated input groups.
      */
-    Collection<InputGroup<T>> decorate(R rule, Collection<InputGroup<T>> inputGroups);
+    Collection<InputGroup<T>> decorate(RouteContext routeContext, R rule, Collection<InputGroup<T>> inputGroups);
 }

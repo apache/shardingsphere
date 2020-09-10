@@ -28,10 +28,9 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStateHandler;
-import org.apache.shardingsphere.proxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.api.QueryCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.engine.CommandExecuteEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatusHandler;
+import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 import java.sql.SQLException;
@@ -67,9 +66,9 @@ public final class CommandExecutorTask implements Runnable {
         boolean isNeedFlush = false;
         try (BackendConnection backendConnection = this.backendConnection;
              PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message)) {
-            ConnectionStateHandler stateHandler = backendConnection.getStateHandler();
-            stateHandler.waitUntilConnectionReleasedIfNecessary();
-            stateHandler.setRunningStatusIfNecessary();
+            ConnectionStatusHandler statusHandler = backendConnection.getStatusHandler();
+            statusHandler.waitUntilConnectionReleasedIfNecessary();
+            statusHandler.switchRunningStatusIfNecessary();
             isNeedFlush = executeCommand(context, payload, backendConnection);
             connectionSize = backendConnection.getConnectionSize();
             // CHECKSTYLE:OFF

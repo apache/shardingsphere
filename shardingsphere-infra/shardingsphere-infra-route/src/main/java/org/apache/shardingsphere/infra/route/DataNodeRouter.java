@@ -73,7 +73,7 @@ public final class DataNodeRouter {
         routingHook.start(sql);
         try {
             RouteContext result = executeRoute(sqlStatement, parameters);
-            routingHook.finishSuccess(result, metaData.getSchema().getConfiguredSchemaMetaData());
+            routingHook.finishSuccess(result, metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData());
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -94,7 +94,7 @@ public final class DataNodeRouter {
     
     private RouteContext createRouteContext(final SQLStatement sqlStatement, final List<Object> parameters) {
         try {
-            SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema().getSchemaMetaData(), parameters, sqlStatement);
+            SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getRuleSchemaMetaData().getSchemaMetaData(), parameters, sqlStatement);
             return new RouteContext(sqlStatementContext, parameters, new RouteResult());
             // TODO should pass parameters for master-slave
         } catch (final IndexOutOfBoundsException ex) {

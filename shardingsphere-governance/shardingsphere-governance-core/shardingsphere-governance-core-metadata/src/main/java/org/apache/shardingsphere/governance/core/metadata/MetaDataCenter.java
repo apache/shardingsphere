@@ -22,8 +22,8 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.core.metadata.yaml.RuleSchemaMetaDataYamlSwapper;
 import org.apache.shardingsphere.governance.core.metadata.yaml.YamlRuleSchemaMetaData;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.eventbus.event.MetaDataEvent;
+import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.event.persist.MetaDataPersistEvent;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
@@ -74,7 +74,7 @@ public final class MetaDataCenter {
      * @param event Meta data event.
      */
     @Subscribe
-    public synchronized void renew(final MetaDataEvent event) {
+    public synchronized void renew(final MetaDataPersistEvent event) {
         persistMetaDataCenterNode(event.getSchemaName(), event.getMetaData());
     }
 }

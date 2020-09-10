@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.governance.context.schema;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.event.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.props.PropertiesChangedEvent;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.governance.core.event.rule.RuleConfigurationsCh
 import org.apache.shardingsphere.governance.core.event.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.event.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.metadata.MetaDataCenter;
 import org.apache.shardingsphere.governance.core.metadata.event.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
@@ -43,8 +43,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.jdbc.test.MockedDataSource;
+import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -83,7 +83,7 @@ public final class GovernanceSchemaContextsTest {
     private RegistryCenter registryCenter;
     
     @Mock
-    private MetaDataCenter metaDataCenter;
+    private ConfigCenter configCenter;
     
     @Mock
     private SchemaContext schemaContext;
@@ -102,8 +102,8 @@ public final class GovernanceSchemaContextsTest {
         when(databaseType.getName()).thenReturn("H2");
         when(databaseType.getDataSourceMetaData(any(), any())).thenReturn(mock(DataSourceMetaData.class));
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
+        when(governanceFacade.getConfigCenter()).thenReturn(configCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
-        when(governanceFacade.getMetaDataCenter()).thenReturn(metaDataCenter);
         governanceSchemaContexts = new GovernanceSchemaContexts(new StandardSchemaContexts(getSchemaContextMap(), authentication, configurationProperties, databaseType), governanceFacade);
     }
     

@@ -56,8 +56,11 @@ public final class BatchExecutionUnitTest {
     
     @Test
     public void assertToString() {
-        BatchExecutionUnit actual = new BatchExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.newArrayList(1))));
+        ExecutionUnit executionUnit = new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.newArrayList(1)));
+        BatchExecutionUnit actual = new BatchExecutionUnit(executionUnit);
         assertThat(actual.toString(), is(String.format("BatchExecutionUnit(executionUnit=ExecutionUnit"
-                + "(dataSourceName=%s, sqlUnit=SQLUnit(sql=%s, parameters=[%d])), jdbcAndActualAddBatchCallTimesMap={}, actualCallAddBatchTimes=0)", DATA_SOURCE_NAME, SQL, 1)));
+                + "(dataSourceName=%s, sqlUnit=SQLUnit(sql=%s, parameters=[%d], "
+                + "sqlRuntimeContext=SQLRuntimeContext(schemaName=%s, logicTables=[], actualTables=[], primaryKeyMetaDatas=[], readOnly=false))), "
+                + "jdbcAndActualAddBatchCallTimesMap={}, actualCallAddBatchTimes=0)", DATA_SOURCE_NAME, SQL, 1, "null")));
     }
 }

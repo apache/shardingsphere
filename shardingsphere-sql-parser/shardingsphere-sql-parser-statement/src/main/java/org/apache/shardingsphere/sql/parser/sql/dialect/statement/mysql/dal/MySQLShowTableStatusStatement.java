@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 import java.util.Optional;
 
 /**
- * Show table status statement.
+ * MySQL show table status statement.
  */
 @Setter
 public final class MySQLShowTableStatusStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {

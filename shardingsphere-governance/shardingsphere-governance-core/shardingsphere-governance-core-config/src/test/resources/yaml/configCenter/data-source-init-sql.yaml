@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-ds_0: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
+dataSources:
+  ds_0:
    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
    props:
      driverClassName: com.mysql.jdbc.Driver
@@ -25,13 +25,13 @@ ds_0: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConf
      connectionInitSqls:
         - set names utf8mb4;
         - set names utf8;
-ds_1: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
- dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
- props:
-   driverClassName: com.mysql.jdbc.Driver
-   url: jdbc:mysql://localhost:3306/ds_1
-   username: root
-   password: root
-   connectionInitSqls:
+  ds_1:
+   dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+   props:
+     driverClassName: com.mysql.jdbc.Driver
+     url: jdbc:mysql://localhost:3306/ds_1
+     username: root
+     password: root
+     connectionInitSqls:
       - set names utf8mb4;
       - set names utf8;

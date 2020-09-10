@@ -11,22 +11,24 @@ weight = 1
 
 ## 配置中心数据结构
 
-配置中心在定义的命名空间的 `config` 节点下，以 YAML 格式存储，包括数据源信息，规则信息、权限配置和属性配置，可通过修改节点来实现对于配置的动态管理。
+配置中心在定义的命名空间下，以 YAML 格式存储，包括数据源信息，规则信息、权限配置和属性配置，可通过修改节点来实现对于配置的动态管理。
 
 ```
-config
+namespace
     ├──authentication                            # 权限配置
     ├──props                                     # 属性配置
-    ├──schema                                    # Schema 配置
-    ├      ├──schema_1                           # Schema 名称1
+    ├──schemas                                   # Schema 配置
+    ├      ├──${schema_1}                        # Schema 名称1
     ├      ├      ├──datasource                  # 数据源配置
     ├      ├      ├──rule                        # 规则配置
-    ├      ├──schema_2                           # Schema 名称2
+    ├      ├      ├──table                       # 表结构配置
+    ├      ├──${schema_2}                        # Schema 名称2
     ├      ├      ├──datasource                  # 数据源配置
     ├      ├      ├──rule                        # 规则配置
+    ├      ├      ├──table                       # 表结构配置
 ```
 
-### config/authentication
+### /authentication
 
 权限配置，可配置访问 ShardingSphere-Proxy 的用户名和密码。
 
@@ -35,7 +37,7 @@ username: root
 password: root
 ```
 
-### config/props
+### /props
 
 属性配置，详情请参见[配置手册](/cn/user-manual/shardingsphere-jdbc/configuration/)。
 
@@ -44,38 +46,39 @@ executor.size: 20
 sql.show: true
 ```
 
-### config/schema/schemeName/datasource
+### /schemas/${schemeName}/datasource
 
 多个数据库连接池的集合，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid, HikariCP）。
 
 ```yaml
-ds_0: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
-  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  props:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
-    password: null
-    maxPoolSize: 50
-    maintenanceIntervalMilliseconds: 30000
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    minPoolSize: 1
-    username: root
-    maxLifetimeMilliseconds: 1800000
-ds_1: !!org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration
-  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  props:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
-    password: null
-    maxPoolSize: 50
-    maintenanceIntervalMilliseconds: 30000
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    minPoolSize: 1
-    username: root
-    maxLifetimeMilliseconds: 1800000
+dataSources:
+  ds_0: 
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    props:
+      url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+      password: null
+      maxPoolSize: 50
+      maintenanceIntervalMilliseconds: 30000
+      connectionTimeoutMilliseconds: 30000
+      idleTimeoutMilliseconds: 60000
+      minPoolSize: 1
+      username: root
+      maxLifetimeMilliseconds: 1800000
+  ds_1: 
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    props:
+      url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+      password: null
+      maxPoolSize: 50
+      maintenanceIntervalMilliseconds: 30000
+      connectionTimeoutMilliseconds: 30000
+      idleTimeoutMilliseconds: 60000
+      minPoolSize: 1
+      username: root
+      maxLifetimeMilliseconds: 1800000
 ```
 
-### config/schema/schemeName/rule
+### /schemas/${schemeName}/rule
 
 规则配置，可包括数据分片、读写分离、数据加密、影子库压测、多副本等配置。
 
@@ -89,6 +92,70 @@ rules:
   
 - !ENCRYPT
   xxx
+```
+
+### /schemas/${schemeName}/table
+
+表结构配置，暂不支持动态修改。
+
+```yaml
+configuredSchemaMetaData:                       # 配置了分片规则的表结构
+  tables:                                       # 表
+    t_order:                                    # 表名
+      columns:                                  # 列
+        id:                                     # 列名
+          caseSensitive: false
+          dataType: 0
+          generated: false
+          name: id
+          primaryKey: trues
+        order_id:
+          caseSensitive: false
+          dataType: 0
+          generated: false
+          name: order_id
+          primaryKey: false
+      indexs:                                   # 索引
+        t_user_order_id_index:                  # 索引名
+          name: t_user_order_id_index
+    t_order_item:
+      columns:
+        order_id:
+          caseSensitive: false
+          dataType: 0
+          generated: false
+          name: order_id
+          primaryKey: false
+unconfiguredSchemaMetaDataMap:                  # 没有配置分片规则的表结构
+  ds_0:                                         # 数据源
+    tables:                                     # 表
+      t_user:                                   # 表名
+        columns:                                # 列
+          user_id:                              # 列名
+            caseSensitive: false
+            dataType: 0
+            generated: false
+            name: user_id
+            primaryKey: false
+          id:
+            caseSensitive: false
+            dataType: 0
+            generated: false
+            name: id
+            primaryKey: true
+          order_id:
+            caseSensitive: false
+            dataType: 0
+            generated: false
+            name: order_id
+            primaryKey: false
+        indexes:                                # 索引
+          t_user_order_id_index:                # 索引名
+            name: t_user_order_id_index
+          t_user_user_id_index:
+            name: t_user_user_id_index
+          primary:
+            name: PRIMARY
 ```
 
 ## 动态生效

@@ -604,11 +604,11 @@ fieldOrVarSpec
     ;
 
 notExistClause_
-    : (IF NOT EXISTS)?
+    : IF NOT EXISTS
     ;
 
 existClause_
-    : (IF EXISTS)?
+    : IF EXISTS
     ;
 
 pattern

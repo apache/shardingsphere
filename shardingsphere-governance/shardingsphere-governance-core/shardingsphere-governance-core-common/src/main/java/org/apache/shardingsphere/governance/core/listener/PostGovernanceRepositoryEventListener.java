@@ -22,7 +22,7 @@ import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
 
 import java.util.Arrays;
 import java.util.Collection;
