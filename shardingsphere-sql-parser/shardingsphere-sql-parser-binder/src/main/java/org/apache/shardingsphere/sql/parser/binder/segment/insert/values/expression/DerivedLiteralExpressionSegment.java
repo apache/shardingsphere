@@ -31,9 +31,4 @@ public final class DerivedLiteralExpressionSegment extends LiteralExpressionSegm
     public DerivedLiteralExpressionSegment(final Object literals) {
         super(0, 0, literals);
     }
-    
-    @Override
-    public String getText() {
-        return null;
-    }
 }

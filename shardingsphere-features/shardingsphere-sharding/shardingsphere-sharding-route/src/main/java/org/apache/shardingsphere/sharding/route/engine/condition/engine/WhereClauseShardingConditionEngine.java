@@ -95,24 +95,8 @@ public final class WhereClauseShardingConditionEngine {
         Collection<ShardingCondition> result = new LinkedList<>();
     
         Collection<AndPredicate> andPredicates = new LinkedList<>();
-        if (expressionSegment instanceof BinaryOperationExpression) {
-            String operator = ((BinaryOperationExpression) expressionSegment).getOperator();
-            boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
-            if (logical) {
-                ExpressionBuildUtil utils = new ExpressionBuildUtil(((BinaryOperationExpression) expressionSegment).getLeft(), ((BinaryOperationExpression) expressionSegment).getRight(), operator);
-                andPredicates.addAll(utils.mergePredicate().getAndPredicates());
-        
-            } else {
-                AndPredicate andPredicate = new AndPredicate();
-                andPredicate.getPredicates().add(expressionSegment);
-                andPredicates.add(andPredicate);
-            }
-        } else {
-            AndPredicate andPredicate = new AndPredicate();
-            andPredicate.getPredicates().add(expressionSegment);
-            andPredicates.add(andPredicate);
-        }
-    
+        ExpressionBuildUtil util = new ExpressionBuildUtil(expressionSegment);
+        andPredicates.addAll(util.extractAndPredicates().getAndPredicates());
         for (AndPredicate each : andPredicates) {
             Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatementContext, each, parameters);
             if (routeValueMap.isEmpty()) {

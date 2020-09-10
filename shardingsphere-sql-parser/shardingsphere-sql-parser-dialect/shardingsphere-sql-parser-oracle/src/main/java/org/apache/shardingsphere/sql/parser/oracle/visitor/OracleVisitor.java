@@ -252,8 +252,6 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setExpression((ExpressionSegment) visit(ctx.expr(0)));
-        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        result.setText(text);
         return result;
     }
     
@@ -319,8 +317,6 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
             ListExpression listExpression = new ListExpression();
             listExpression.setStartIndex(ctx.LP_().getSymbol().getStartIndex());
             listExpression.setStopIndex(ctx.RP_().getSymbol().getStopIndex());
-            String text = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex()));
-            listExpression.setText(text);
             for (ExprContext each : ctx.expr()) {
                 listExpression.getItems().add((ExpressionSegment) visit(each));
             }
@@ -328,8 +324,6 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
         }
         Boolean operator = null != ctx.NOT() ? true : false;
         result.setNot(operator);
-        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        result.setText(text);
         return result;
     }
     
@@ -339,8 +333,6 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setLeft((ExpressionSegment) visit(ctx.bitExpr(0)));
         ListExpression listExpression = new ListExpression();
-        String listText = ctx.start.getInputStream().getText(new Interval(ctx.LIKE().getSymbol().getStartIndex() + 1, ctx.stop.getStopIndex()));
-        listExpression.setText(listText);
         for (SimpleExprContext each : ctx.simpleExpr()) {
             listExpression.getItems().add((ExpressionSegment) visit(each));
         }
@@ -360,8 +352,6 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
         result.setLeft((ExpressionSegment) visit(ctx.bitExpr(0)));
         result.setBetweenExpr((ExpressionSegment) visit(ctx.bitExpr(1)));
         result.setAndExpr((ExpressionSegment) visit(ctx.predicate()));
-        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        result.setText(text);
         return result;
     }
     

@@ -45,9 +45,4 @@ public final class CommonTableExpressionSegment implements ExpressionSegment {
     private final SubquerySegment subquery;
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();
-    
-    @Override
-    public String getText() {
-        return null;
-    }
 }

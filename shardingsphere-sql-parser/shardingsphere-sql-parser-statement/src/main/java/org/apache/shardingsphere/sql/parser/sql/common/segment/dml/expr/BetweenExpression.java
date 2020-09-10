@@ -35,7 +35,5 @@ public class BetweenExpression implements ExpressionSegment {
     private ExpressionSegment andExpr;
     
     private boolean not;
-    
-    private String text;
 }
 

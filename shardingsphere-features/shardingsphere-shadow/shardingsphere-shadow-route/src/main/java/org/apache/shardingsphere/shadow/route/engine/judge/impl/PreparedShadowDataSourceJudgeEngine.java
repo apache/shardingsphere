@@ -72,23 +72,8 @@ public final class PreparedShadowDataSourceJudgeEngine implements ShadowDataSour
         }
         Collection<AndPredicate> andPredicates = new LinkedList<>();
         ExpressionSegment expression = whereSegment.get().getExpr();
-        if (expression instanceof BinaryOperationExpression) {
-            String operator = ((BinaryOperationExpression) expression).getOperator();
-            boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
-            if (logical) {
-                ExpressionBuildUtil utils = new ExpressionBuildUtil(((BinaryOperationExpression) expression).getLeft(), ((BinaryOperationExpression) expression).getRight(), operator);
-                andPredicates.addAll(utils.mergePredicate().getAndPredicates());
-        
-            } else {
-                AndPredicate andPredicate = new AndPredicate();
-                andPredicate.getPredicates().add(expression);
-                andPredicates.add(andPredicate);
-            }
-        } else {
-            AndPredicate andPredicate = new AndPredicate();
-            andPredicate.getPredicates().add(expression);
-            andPredicates.add(andPredicate);
-        }
+        ExpressionBuildUtil util = new ExpressionBuildUtil(expression);
+        andPredicates.addAll(util.extractAndPredicates().getAndPredicates());
         for (AndPredicate andPredicate : andPredicates) {
             if (judgePredicateSegments(andPredicate.getPredicates())) {
                 return true;

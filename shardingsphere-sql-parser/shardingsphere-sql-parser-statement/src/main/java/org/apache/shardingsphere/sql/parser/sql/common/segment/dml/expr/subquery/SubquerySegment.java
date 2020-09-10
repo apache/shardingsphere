@@ -37,6 +37,4 @@ public final class SubquerySegment implements SQLSegment, ExpressionSegment {
     private final int stopIndex;
     
     private final SelectStatement select;
-    
-    private String text;
 }

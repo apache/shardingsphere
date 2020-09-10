@@ -62,23 +62,8 @@ public final class ShadowConditionEngine {
     
         Collection<AndPredicate> andPredicates = new LinkedList<>();
         ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
-        if (expression instanceof BinaryOperationExpression) {
-            String operator = ((BinaryOperationExpression) expression).getOperator();
-            boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
-            if (logical) {
-                ExpressionBuildUtil utils = new ExpressionBuildUtil(((BinaryOperationExpression) expression).getLeft(), ((BinaryOperationExpression) expression).getRight(), operator);
-                andPredicates.addAll(utils.mergePredicate().getAndPredicates());
-            
-            } else {
-                AndPredicate andPredicate = new AndPredicate();
-                andPredicate.getPredicates().add(expression);
-                andPredicates.add(andPredicate);
-            }
-        } else {
-            AndPredicate andPredicate = new AndPredicate();
-            andPredicate.getPredicates().add(expression);
-            andPredicates.add(andPredicate);
-        }
+        ExpressionBuildUtil util = new ExpressionBuildUtil(expression);
+        andPredicates.addAll(util.extractAndPredicates().getAndPredicates());
         for (AndPredicate each : andPredicates) {
             Optional<ShadowCondition> condition = createShadowCondition(each);
             if (condition.isPresent()) {

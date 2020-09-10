@@ -37,8 +37,6 @@ public class InExpression implements ExpressionSegment {
     
     private boolean not;
     
-    private String text;
-    
     /**
      * Get expression list from right.
      *

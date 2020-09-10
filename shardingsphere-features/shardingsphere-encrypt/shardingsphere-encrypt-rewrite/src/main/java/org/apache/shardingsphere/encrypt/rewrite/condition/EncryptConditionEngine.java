@@ -69,23 +69,8 @@ public final class EncryptConditionEngine {
     
         Collection<AndPredicate> andPredicates = new LinkedList<>();
         ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
-        if (expression instanceof BinaryOperationExpression) {
-            String operator = ((BinaryOperationExpression) expression).getOperator();
-            boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
-            if (logical) {
-                ExpressionBuildUtil utils = new ExpressionBuildUtil(((BinaryOperationExpression) expression).getLeft(), ((BinaryOperationExpression) expression).getRight(), operator);
-                andPredicates.addAll(utils.mergePredicate().getAndPredicates());
-            
-            } else {
-                AndPredicate andPredicate = new AndPredicate();
-                andPredicate.getPredicates().add(expression);
-                andPredicates.add(andPredicate);
-            }
-        } else {
-            AndPredicate andPredicate = new AndPredicate();
-            andPredicate.getPredicates().add(expression);
-            andPredicates.add(andPredicate);
-        }
+        ExpressionBuildUtil expressionBuildUtil = new ExpressionBuildUtil(expression);
+        andPredicates.addAll(expressionBuildUtil.extractAndPredicates().getAndPredicates());
         List<EncryptCondition> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
             result.addAll(createEncryptConditions(sqlStatementContext, each));

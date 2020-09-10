@@ -34,9 +34,4 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     private final int stopIndex;
     
     private final int parameterMarkerIndex;
-    
-    @Override
-    public String getText() {
-        return "?";
-    }
 }
