@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLRuntimeContext;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.group.RawExecuteGroupDecorator;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -32,8 +32,8 @@ import org.apache.shardingsphere.replica.route.engine.ReplicaRouteStageContext;
 import org.apache.shardingsphere.replica.rule.ReplicaRule;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Execute group decorator for replica.
@@ -66,19 +66,19 @@ public final class ReplicaExecuteGroupDecorator implements RawExecuteGroupDecora
     private void routeReplicaGroup(final InputGroup<RawSQLExecuteUnit> inputGroup, final String schemaName, final Map<String, ReplicaGroup> replicaGroups, final boolean readOnly) {
         for (RawSQLExecuteUnit each : inputGroup.getInputs()) {
             ExecutionUnit executionUnit = each.getExecutionUnit();
-            SQLUnit sqlUnit = executionUnit.getSqlUnit();
-            Set<String> actualTables = sqlUnit.getActualTables();
+            SQLRuntimeContext sqlRuntimeContext = executionUnit.getSqlUnit().getSqlRuntimeContext();
+            List<String> actualTables = sqlRuntimeContext.getActualTables();
             if ((null == actualTables || actualTables.isEmpty()) && !supportWithoutTableCommand) {
                 throw new ShardingSphereException("route fail: actual tables is empty");
             }
             ReplicaGroup replicaGroup = getReplicaGroup(actualTables, replicaGroups);
             each.setRawGroup(replicaGroup);
-            executionUnit.setSchemaName(schemaName);
-            sqlUnit.setReadOnly(readOnly);
+            sqlRuntimeContext.setSchemaName(schemaName);
+            sqlRuntimeContext.setReadOnly(readOnly);
         }
     }
     
-    private ReplicaGroup getReplicaGroup(final Set<String> actualTables, final Map<String, ReplicaGroup> replicaGroups) {
+    private ReplicaGroup getReplicaGroup(final List<String> actualTables, final Map<String, ReplicaGroup> replicaGroups) {
         ReplicaGroup replicaGroup = null;
         if (null != actualTables && !actualTables.isEmpty()) {
             for (String each : actualTables) {

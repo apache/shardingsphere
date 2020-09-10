@@ -33,5 +33,5 @@ public final class PrimaryKeyMetaData {
     
     private final String logicTable;
     
-    private final List<String> columns;
+    private final List<String> primaryKeyColumns;
 }

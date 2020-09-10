@@ -17,21 +17,30 @@
 
 package org.apache.shardingsphere.infra.executor.sql.context;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 /**
- * Execution unit.
+ * SQL runtime context.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 @ToString
-public final class ExecutionUnit {
+public final class SQLRuntimeContext {
     
-    private final String dataSourceName;
+    @Setter
+    private String schemaName;
     
-    private final SQLUnit sqlUnit;
+    private final List<String> logicTables;
+    
+    private final List<String> actualTables;
+    
+    private final List<PrimaryKeyMetaData> primaryKeyMetaDatas;
+    
+    @Setter
+    private boolean readOnly;
 }
