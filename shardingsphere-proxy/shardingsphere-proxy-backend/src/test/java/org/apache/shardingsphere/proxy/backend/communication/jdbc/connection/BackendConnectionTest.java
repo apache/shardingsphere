@@ -243,7 +243,7 @@ public final class BackendConnectionTest {
             backendConnection.getStatusHandler().switchInTransactionStatus();
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
             backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
-            backendConnection.getStatusHandler().switchTerminatedStatus();
+            backendConnection.getStatusHandler().switchReadyStatus();
             mockResultSetAndStatement(backendConnection);
             mockResultSetAndStatementException(backendConnection);
             actual = backendConnection;

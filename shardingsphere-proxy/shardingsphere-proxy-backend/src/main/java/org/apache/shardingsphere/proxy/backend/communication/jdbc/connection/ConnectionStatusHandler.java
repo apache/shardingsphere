@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public final class ConnectionStatusHandler {
     
-    private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.INIT);
+    private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.READY);
     
     private final ResourceLock resourceLock;
     
@@ -39,10 +39,10 @@ public final class ConnectionStatusHandler {
     }
     
     /**
-     * Switch connection status to terminated.
+     * Switch connection status to ready.
      */
-    public void switchTerminatedStatus() {
-        status.set(ConnectionStatus.TERMINATED);
+    public void switchReadyStatus() {
+        status.set(ConnectionStatus.READY);
         resourceLock.doNotify();
     }
     
@@ -68,7 +68,7 @@ public final class ConnectionStatusHandler {
      * Notify connection to finish wait if necessary.
      */
     void doNotifyIfNecessary() {
-        if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE) || status.compareAndSet(ConnectionStatus.TERMINATED, ConnectionStatus.RELEASE)) {
+        if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE) || status.compareAndSet(ConnectionStatus.READY, ConnectionStatus.RELEASE)) {
             resourceLock.doNotify();
         }
     }
@@ -77,7 +77,7 @@ public final class ConnectionStatusHandler {
      * Wait until connection is released if necessary.
      */
     public void waitUntilConnectionReleasedIfNecessary() {
-        if (ConnectionStatus.RUNNING == status.get() || ConnectionStatus.TERMINATED == status.get()) {
+        if (ConnectionStatus.RUNNING == status.get() || ConnectionStatus.READY == status.get()) {
             while (!status.compareAndSet(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
                 resourceLock.doAwait();
             }
