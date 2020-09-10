@@ -67,7 +67,7 @@ public final class GovernanceFacadeTest {
     @Before
     public void setUp() {
         GovernanceConfiguration governanceConfiguration = new GovernanceConfiguration("test_name", new GovernanceCenterConfiguration("ALL", "127.0.0.1", new Properties()), false);
-        governanceFacade.init(governanceConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
+        governanceFacade.init(governanceConfiguration, Arrays.asList("sharding_db", "primaryreplica_db"));
         FieldUtil.setField(governanceFacade, "repositoryFacade", repositoryFacade);
         FieldUtil.setField(governanceFacade, "configCenter", configCenter);
         FieldUtil.setField(governanceFacade, "registryCenter", registryCenter);
