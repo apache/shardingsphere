@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintComma
  */
 @RequiredArgsConstructor
 @Getter
-public final class HintSetMasterOnlyCommand implements HintCommand {
+public final class HintSetPrimaryOnlyCommand implements HintCommand {
     
     private final boolean primaryOnly;
 }
