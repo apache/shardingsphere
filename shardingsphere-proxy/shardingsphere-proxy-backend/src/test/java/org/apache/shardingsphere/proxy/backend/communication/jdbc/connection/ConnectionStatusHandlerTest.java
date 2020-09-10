@@ -21,13 +21,13 @@ import org.junit.Test;
 
 public final class ConnectionStatusHandlerTest {
     
-    private final ConnectionStatusHandler connectionStateHandler = new ConnectionStatusHandler(new ResourceLock());
+    private final ConnectionStatusHandler connectionStatusHandler = new ConnectionStatusHandler(new ResourceLock());
     
     @Test
     public void assertWaitUntilConnectionReleaseForNoneTransaction() throws InterruptedException {
         Thread waitThread = new Thread(() -> {
-            connectionStateHandler.changeStatus(ConnectionStatus.RUNNING);
-            connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
+            connectionStatusHandler.switchInTransactionStatus();
+            connectionStatusHandler.waitUntilConnectionReleasedIfNecessary();
         });
         Thread notifyThread = new Thread(() -> {
             try {
@@ -35,7 +35,7 @@ public final class ConnectionStatusHandlerTest {
             } catch (final InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
-            connectionStateHandler.doNotifyIfNecessary();
+            connectionStatusHandler.doNotifyIfNecessary();
         });
         waitThread.start();
         notifyThread.start();
@@ -46,8 +46,8 @@ public final class ConnectionStatusHandlerTest {
     @Test
     public void assertWaitUntilConnectionReleaseForTransaction() throws InterruptedException {
         Thread waitThread = new Thread(() -> {
-            connectionStateHandler.changeStatus(ConnectionStatus.TERMINATED);
-            connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
+            connectionStatusHandler.switchTerminatedStatus();
+            connectionStatusHandler.waitUntilConnectionReleasedIfNecessary();
         });
         Thread notifyThread = new Thread(() -> {
             try {
@@ -55,7 +55,7 @@ public final class ConnectionStatusHandlerTest {
             } catch (final InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
-            connectionStateHandler.doNotifyIfNecessary();
+            connectionStatusHandler.doNotifyIfNecessary();
         });
         waitThread.start();
         notifyThread.start();

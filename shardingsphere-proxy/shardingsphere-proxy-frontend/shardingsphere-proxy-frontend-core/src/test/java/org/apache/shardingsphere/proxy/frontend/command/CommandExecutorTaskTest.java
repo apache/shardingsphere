@@ -63,7 +63,7 @@ public final class CommandExecutorTaskTest {
     private ChannelHandlerContext handlerContext;
     
     @Mock
-    private ConnectionStatusHandler stateHandler;
+    private ConnectionStatusHandler statusHandler;
     
     @Mock
     private CommandExecuteEngine executeEngine;
@@ -97,13 +97,13 @@ public final class CommandExecutorTaskTest {
         when(executeEngine.getCommandExecutor(eq(commandPacketType), eq(commandPacket), eq(backendConnection))).thenReturn(queryCommandExecutor);
         when(executeEngine.getCommandPacketType(eq(payload))).thenReturn(commandPacketType);
         when(engine.getCommandExecuteEngine()).thenReturn(executeEngine);
-        when(backendConnection.getStateHandler()).thenReturn(stateHandler);
+        when(backendConnection.getStatusHandler()).thenReturn(statusHandler);
         when(codecEngine.createPacketPayload(eq(message))).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(stateHandler).waitUntilConnectionReleasedIfNecessary();
-        verify(stateHandler).changeRunningStatusIfNecessary();
+        verify(statusHandler).waitUntilConnectionReleasedIfNecessary();
+        verify(statusHandler).switchRunningStatusIfNecessary();
     }
     
     @Test
@@ -114,13 +114,13 @@ public final class CommandExecutorTaskTest {
         when(executeEngine.getCommandExecutor(eq(commandPacketType), eq(commandPacket), eq(backendConnection))).thenReturn(queryCommandExecutor);
         when(executeEngine.getCommandPacketType(eq(payload))).thenReturn(commandPacketType);
         when(engine.getCommandExecuteEngine()).thenReturn(executeEngine);
-        when(backendConnection.getStateHandler()).thenReturn(stateHandler);
+        when(backendConnection.getStatusHandler()).thenReturn(statusHandler);
         when(codecEngine.createPacketPayload(eq(message))).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(stateHandler).waitUntilConnectionReleasedIfNecessary();
-        verify(stateHandler).changeRunningStatusIfNecessary();
+        verify(statusHandler).waitUntilConnectionReleasedIfNecessary();
+        verify(statusHandler).switchRunningStatusIfNecessary();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
         verify(executeEngine).writeQueryData(handlerContext, backendConnection, queryCommandExecutor, 1);
@@ -136,13 +136,13 @@ public final class CommandExecutorTaskTest {
         when(executeEngine.getCommandExecutor(eq(commandPacketType), eq(commandPacket), eq(backendConnection))).thenReturn(commandExecutor);
         when(executeEngine.getCommandPacketType(eq(payload))).thenReturn(commandPacketType);
         when(engine.getCommandExecuteEngine()).thenReturn(executeEngine);
-        when(backendConnection.getStateHandler()).thenReturn(stateHandler);
+        when(backendConnection.getStatusHandler()).thenReturn(statusHandler);
         when(codecEngine.createPacketPayload(eq(message))).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(stateHandler).waitUntilConnectionReleasedIfNecessary();
-        verify(stateHandler).changeRunningStatusIfNecessary();
+        verify(statusHandler).waitUntilConnectionReleasedIfNecessary();
+        verify(statusHandler).switchRunningStatusIfNecessary();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
     }
@@ -150,7 +150,7 @@ public final class CommandExecutorTaskTest {
     @Test
     public void assertRunWithError() {
         RuntimeException mockException = new RuntimeException("mock");
-        when(backendConnection.getStateHandler()).thenThrow(mockException);
+        when(backendConnection.getStatusHandler()).thenThrow(mockException);
         when(codecEngine.createPacketPayload(message)).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         when(executeEngine.getErrorPacket(eq(mockException))).thenReturn(databasePacket);

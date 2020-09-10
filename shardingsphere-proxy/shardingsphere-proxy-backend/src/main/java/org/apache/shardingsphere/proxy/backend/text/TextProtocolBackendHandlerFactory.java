@@ -92,7 +92,7 @@ public final class TextProtocolBackendHandlerFactory {
         }
         if (tclStatement instanceof SetAutoCommitStatement) {
             if (((SetAutoCommitStatement) tclStatement).isAutoCommit()) {
-                return backendConnection.getStateHandler().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
+                return backendConnection.getStatusHandler().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
             }
             return new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
         }

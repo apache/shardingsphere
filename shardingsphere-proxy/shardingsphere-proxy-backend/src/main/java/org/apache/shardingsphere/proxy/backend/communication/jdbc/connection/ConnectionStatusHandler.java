@@ -32,33 +32,36 @@ public final class ConnectionStatusHandler {
     private final ResourceLock resourceLock;
     
     /**
-     * Change connection status.
-     *
-     * @param status status to be updated
+     * Switch connection status to in transaction.
      */
-    public void changeStatus(final ConnectionStatus status) {
-        this.status.set(status);
-        if (ConnectionStatus.TERMINATED == status) {
-            resourceLock.doNotify();
-        }
+    public void switchInTransactionStatus() {
+        status.set(ConnectionStatus.IN_TRANSACTION);
     }
     
     /**
-     * Change connection status to running if necessary.
+     * Switch connection status to terminated.
      */
-    public void changeRunningStatusIfNecessary() {
-        if (ConnectionStatus.TRANSACTION != status.get() && ConnectionStatus.RUNNING != status.get()) {
+    public void switchTerminatedStatus() {
+        status.set(ConnectionStatus.TERMINATED);
+        resourceLock.doNotify();
+    }
+    
+    /**
+     * Switch connection status to running if necessary.
+     */
+    public void switchRunningStatusIfNecessary() {
+        if (ConnectionStatus.IN_TRANSACTION != status.get() && ConnectionStatus.RUNNING != status.get()) {
             status.set(ConnectionStatus.RUNNING);
         }
     }
     
     /**
-     * Judge whether connection is in transaction or not.
+     * Judge whether connection is in transaction.
      *
-     * @return true or false
+     * @return whether connection is in transaction
      */
     public boolean isInTransaction() {
-        return ConnectionStatus.TRANSACTION == status.get();
+        return ConnectionStatus.IN_TRANSACTION == status.get();
     }
     
     /**
