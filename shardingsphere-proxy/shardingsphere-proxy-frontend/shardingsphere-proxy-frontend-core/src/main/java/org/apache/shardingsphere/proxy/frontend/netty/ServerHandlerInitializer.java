@@ -36,12 +36,14 @@ public final class ServerHandlerInitializer extends ChannelInitializer<SocketCha
     
     @Override
     protected void initChannel(final SocketChannel socketChannel) {
-        // TODO Consider loading from configuration.
-        DatabaseType databaseType = ProxyContext.getInstance().getSchemaContexts().getSchemaContexts().isEmpty() ? new MySQLDatabaseType()
-                : ProxyContext.getInstance().getSchemaContexts().getDatabaseType();
-        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseProtocolFrontendEngineFactory.newInstance(databaseType);
+        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseProtocolFrontendEngineFactory.newInstance(getDatabaseType());
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast(new PacketCodec(databaseProtocolFrontendEngine.getCodecEngine()));
         pipeline.addLast(new FrontendChannelInboundHandler(databaseProtocolFrontendEngine));
+    }
+    
+    private DatabaseType getDatabaseType() {
+        // TODO Consider loading from configuration.
+        return ProxyContext.getInstance().getSchemaContexts().getSchemaContexts().isEmpty() ? new MySQLDatabaseType() : ProxyContext.getInstance().getSchemaContexts().getDatabaseType();
     }
 }

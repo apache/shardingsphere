@@ -26,13 +26,14 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -55,11 +57,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Slf4j
 public final class BackendConnection implements JDBCExecutionConnection, AutoCloseable {
     
+    static {
+        ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
+    }
+    
     private static final int MAXIMUM_RETRY_COUNT = 5;
-    
-    private static final int MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
-    
-    private static final int POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME = 1;
     
     private volatile String schema;
     
@@ -81,14 +83,12 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private final Collection<MethodInvocation> methodInvocations = new LinkedList<>();
     
-    @Getter
     private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
     
     private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceSynchronizer);
     
     public BackendConnection(final TransactionType transactionType) {
-        this.transactionType = transactionType;
-        supportHint = false;
+        this(transactionType, false);
     }
     
     public BackendConnection(final TransactionType transactionType, final boolean supportHint) {
@@ -221,11 +221,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private void setFetchSize(final Statement statement) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getSchemaContexts().getDatabaseType();
-        if (databaseType instanceof MySQLDatabaseType) {
-            statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
-        } else if (databaseType instanceof PostgreSQLDatabaseType) {
-            statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
-        }
+        TypedSPIRegistry.getRegisteredService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getName(), new Properties()).setFetchSize(statement);
     }
     
     /**
