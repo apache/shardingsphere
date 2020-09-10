@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DenyUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
@@ -53,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLResetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -185,7 +185,7 @@ public final class SQLUtil {
     private static boolean isReadOnly(final DCLStatement sqlStatement) {
         if (sqlStatement instanceof GrantStatement
                 | sqlStatement instanceof RevokeStatement
-                | sqlStatement instanceof DenyUserStatement) {
+                | sqlStatement instanceof SQLServerDenyUserStatement) {
             return false;
         }
         return false;
