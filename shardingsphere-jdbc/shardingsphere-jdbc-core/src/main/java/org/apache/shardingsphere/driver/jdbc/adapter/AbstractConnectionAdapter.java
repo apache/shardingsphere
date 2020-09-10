@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JD
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
 import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
-import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
+import org.apache.shardingsphere.primaryreplica.route.engine.impl.PrimaryVisitedManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -194,7 +194,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void close() throws SQLException {
         closed = true;
-        MasterVisitedManager.clear();
+        PrimaryVisitedManager.clear();
         int connectionSize = cachedConnections.size();
         try {
             forceExecuteTemplateForClose.execute(cachedConnections.entries(), cachedConnections -> cachedConnections.getValue().close());
