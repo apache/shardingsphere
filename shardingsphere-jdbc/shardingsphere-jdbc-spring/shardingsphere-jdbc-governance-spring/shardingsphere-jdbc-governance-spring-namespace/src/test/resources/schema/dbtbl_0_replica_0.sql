@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-DROP SCHEMA IF EXISTS `dbtbl_0_slave_0`;
-CREATE SCHEMA `dbtbl_0_slave_0`;
+DROP SCHEMA IF EXISTS `dbtbl_0_replica_0`;
+CREATE SCHEMA `dbtbl_0_replica_0`;
 DROP TABLE IF EXISTS `t_order_0`;
 DROP TABLE IF EXISTS `t_order_1`;
 DROP TABLE IF EXISTS `t_order_2`;
