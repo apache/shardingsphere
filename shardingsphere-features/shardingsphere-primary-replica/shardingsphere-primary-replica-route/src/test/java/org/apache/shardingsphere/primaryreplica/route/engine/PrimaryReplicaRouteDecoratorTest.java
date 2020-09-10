@@ -83,7 +83,7 @@ public final class PrimaryReplicaRouteDecoratorTest {
     @Before
     public void setUp() {
         primaryReplicaRule = new PrimaryReplicaRule(new PrimaryReplicaRuleConfiguration(
-                Collections.singleton(new PrimaryReplicaDataSourceRuleConfiguration(DATASOURCE_NAME, PRIMARY_DATASOURCE, Collections.singletonList(REPLICA_DATASOURCE), null)), Collections.emptyMap()));
+            Collections.singleton(new PrimaryReplicaDataSourceRuleConfiguration(DATASOURCE_NAME, PRIMARY_DATASOURCE, Collections.singletonList(REPLICA_DATASOURCE), null)), Collections.emptyMap()));
         routeDecorator = (PrimaryReplicaRouteDecorator) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(primaryReplicaRule), RouteDecorator.class).get(primaryReplicaRule);
     }
     
