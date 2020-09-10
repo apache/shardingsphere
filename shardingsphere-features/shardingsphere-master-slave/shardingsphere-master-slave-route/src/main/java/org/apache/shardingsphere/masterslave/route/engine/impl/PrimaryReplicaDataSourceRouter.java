@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.route.engine.impl;
+package org.apache.shardingsphere.primaryreplica.route.engine.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.hint.HintManager;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveDataSourceRule;
+import org.apache.shardingsphere.primaryreplica.rule.PrimaryReplicaDataSourceRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.ArrayList;
 
 /**
- * Data source router for master-slave.
+ * Data source router for primary-replica.
  */
 @RequiredArgsConstructor
-public final class MasterSlaveDataSourceRouter {
+public final class PrimaryReplicaDataSourceRouter {
     
-    private final MasterSlaveDataSourceRule masterSlaveDataSourceRule;
+    private final PrimaryReplicaDataSourceRule primaryReplicaDataSourceRule;
     
     /**
      * Route.
@@ -40,16 +40,16 @@ public final class MasterSlaveDataSourceRouter {
      * @return data source name
      */
     public String route(final SQLStatement sqlStatement) {
-        if (isMasterRoute(sqlStatement)) {
-            MasterVisitedManager.setMasterVisited();
-            return masterSlaveDataSourceRule.getMasterDataSourceName();
+        if (isPrimaryRoute(sqlStatement)) {
+            PrimaryVisitedManager.setPrimaryVisited();
+            return primaryReplicaDataSourceRule.getPrimaryDataSourceName();
         }
-        return masterSlaveDataSourceRule.getLoadBalancer().getDataSource(
-                masterSlaveDataSourceRule.getName(), masterSlaveDataSourceRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveDataSourceRule.getSlaveDataSourceNames()));
+        return primaryReplicaDataSourceRule.getLoadBalancer().getDataSource(
+                primaryReplicaDataSourceRule.getName(), primaryReplicaDataSourceRule.getPrimaryDataSourceName(), new ArrayList<>(primaryReplicaDataSourceRule.getReplicaDataSourceNames()));
     }
     
-    private boolean isMasterRoute(final SQLStatement sqlStatement) {
-        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
+    private boolean isPrimaryRoute(final SQLStatement sqlStatement) {
+        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || PrimaryVisitedManager.isPrimaryVisited() || HintManager.isPrimaryRouteOnly();
     }
     
     private boolean containsLockSegment(final SQLStatement sqlStatement) {
