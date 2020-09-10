@@ -38,15 +38,15 @@ dataSources:
 rules:
 - !PRIMARY_REPLICA
   dataSources:
-    db_ms:
-      name: db_ms
+    db_pr:
+      name: db_pr
       primaryDataSourceName: db_primary
       replicaDataSourceNames: 
         - db_replica_0
         - db_replica_1
 
 governance:
-  name: test_ms_registry_name
+  name: test_pr_registry_name
   registryCenter:
     type: REG_TEST
     serverLists: localhost:3181
