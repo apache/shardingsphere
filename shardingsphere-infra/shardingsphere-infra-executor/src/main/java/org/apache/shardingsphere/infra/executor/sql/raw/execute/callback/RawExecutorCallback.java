@@ -28,7 +28,7 @@ import java.util.Map;
  * @param <O> type of output value
  */
 public interface RawExecutorCallback<I, O> {
-
+    
     /**
      * Execute.
      *

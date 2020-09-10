@@ -17,38 +17,21 @@
 
 package org.apache.shardingsphere.infra.executor.sql.context;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
- * SQL unit.
+ * Primary key meta data.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(of = "sql")
 @ToString
-public final class SQLUnit {
+public final class PrimaryKeyMetaData {
     
-    private final String sql;
+    private final String logicTable;
     
-    private final List<Object> parameters;
-    
-    private final Set<String> actualTables;
-    
-    private final Map<String, PrimaryKeyMetaData> primaryKeyMetaDatas;
-    
-    @Setter
-    private boolean readOnly;
-    
-    public SQLUnit(final String sql, final List<Object> parameters) {
-        this(sql, parameters, Collections.emptySet(), Collections.emptyMap());
-    }
+    private final List<String> columns;
 }
