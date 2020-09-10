@@ -21,7 +21,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xmlns:primary-replica="http://shardingsphere.apache.org/schema/shardingsphere/primaryreplica"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -31,19 +31,19 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave
-                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/primaryreplica
+                           http://shardingsphere.apache.org/schema/shardingsphere/primaryreplica/primary-replica.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            ">
     <context:property-placeholder location="classpath:conf/conf.properties" />
     
-    <bean id="ds_0_master" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
-    <bean id="ds_0_slave_0" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
-    <bean id="ds_0_slave_1" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
-    <bean id="ds_1_master" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
-    <bean id="ds_1_slave_0" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
-    <bean id="ds_1_slave_1" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
+    <bean id="ds_0_primary" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
+    <bean id="ds_0_replica_0" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
+    <bean id="ds_0_replica_1" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
+    <bean id="ds_1_primary" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
+    <bean id="ds_1_replica_0" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
+    <bean id="ds_1_replica_1" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
     
     <sharding:sharding-algorithm id="dataSourceShardingAlgorithm" type="INLINE">
         <props>
@@ -77,12 +77,12 @@
         </encrypt:table>
     </encrypt:rule>
     
-    <master-slave:rule id="masterSlaveRule">
-        <master-slave:data-source-rule id="ds_0" master-data-source-name="ds_0_master" slave-data-source-names="ds_0_slave_0,ds_0_slave_1" />
-        <master-slave:data-source-rule id="ds_1" master-data-source-name="ds_1_master" slave-data-source-names="ds_1_slave_0,ds_1_slave_1" />
-    </master-slave:rule>
+    <primary-replica:rule id="primaryReplicaRule">
+        <primary-replica:data-source-rule id="ds_0" primary-data-source-name="ds_0_primary" replica-data-source-names="ds_0_replica_0,ds_0_replica_1" />
+        <primary-replica:data-source-rule id="ds_1" primary-data-source-name="ds_1_primary" replica-data-source-names="ds_1_replica_0,ds_1_replica_1" />
+    </primary-replica:rule>
     
-    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_master,ds_0_slave_0,ds_0_slave_1,ds_1_master,ds_1_slave_0,ds_1_slave_1" rule-refs="shardingRule, masterSlaveRule, encryptRule">
+    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_primary,ds_0_replica_0,ds_0_replica_1,ds_1_primary,ds_1_replica_0,ds_1_replica_1" rule-refs="shardingRule, primaryReplicaRule, encryptRule">
         <props>
             <prop key="sql.show">false</prop>
             <prop key="executor.size">${executor.size}</prop>
