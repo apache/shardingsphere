@@ -56,7 +56,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         if (!explainStatement.isPresent()) {
             throw new InvalidShardingCTLFormatException(sql);
         }
-        SchemaContext schema = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
+        SchemaContext schema = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
         StatementExecutorWrapper statementExecutorWrapper =
                 new StatementExecutorWrapper(schema, schema.getRuntimeContext().getSqlParserEngine().parse(explainStatement.get().getSql(), false));
         executionUnits = statementExecutorWrapper.generateExecutionContext(explainStatement.get().getSql()).getExecutionUnits().iterator();

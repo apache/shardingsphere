@@ -73,7 +73,7 @@ public final class BroadcastBackendHandlerTest {
         schemaContexts.setAccessible(true);
         schemaContexts.set(ProxyContext.getInstance(),
                 new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
-        when(backendConnection.getSchema()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(backendConnection.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
     }
     
     @Test

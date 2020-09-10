@@ -56,7 +56,7 @@ public final class DatabaseCommunicationEngineFactory {
      * @return instance of text protocol backend handler
      */
     public DatabaseCommunicationEngine newTextProtocolInstance(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
-        SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
+        SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
         return new JDBCDatabaseCommunicationEngine(sql, backendConnection, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(schemaContext, sqlStatement)));
     }
     
@@ -70,7 +70,7 @@ public final class DatabaseCommunicationEngineFactory {
      * @return instance of binary protocol backend handler
      */
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
-        SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
+        SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
         return new JDBCDatabaseCommunicationEngine(sql, backendConnection, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(schemaContext, sqlStatement, parameters)));
     }
 }

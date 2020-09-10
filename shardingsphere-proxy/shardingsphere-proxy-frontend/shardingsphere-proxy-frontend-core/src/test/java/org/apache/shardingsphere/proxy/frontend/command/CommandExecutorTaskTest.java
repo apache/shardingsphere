@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.command;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
@@ -36,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -90,8 +90,7 @@ public final class CommandExecutorTaskTest {
     private FrontendContext frontendContext;
     
     @Test
-    @SneakyThrows
-    public void assertRunNeedFlushByFalse() {
+    public void assertRunNeedFlushByFalse() throws SQLException {
         when(backendConnection.getConnectionSize()).thenReturn(1);
         when(queryCommandExecutor.execute()).thenReturn(Collections.emptyList());
         when(executeEngine.getCommandPacket(eq(payload), eq(commandPacketType), eq(backendConnection))).thenReturn(commandPacket);
@@ -108,8 +107,7 @@ public final class CommandExecutorTaskTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertRunNeedFlushByTrue() {
+    public void assertRunNeedFlushByTrue() throws SQLException {
         when(backendConnection.getConnectionSize()).thenReturn(1);
         when(queryCommandExecutor.execute()).thenReturn(Collections.singletonList(databasePacket));
         when(executeEngine.getCommandPacket(eq(payload), eq(commandPacketType), eq(backendConnection))).thenReturn(commandPacket);
@@ -129,8 +127,7 @@ public final class CommandExecutorTaskTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertRunByCommandExecutor() {
+    public void assertRunByCommandExecutor() throws SQLException {
         when(frontendContext.isFlushForPerCommandPacket()).thenReturn(true);
         when(engine.getFrontendContext()).thenReturn(frontendContext);
         when(backendConnection.getConnectionSize()).thenReturn(1);

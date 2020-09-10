@@ -17,28 +17,29 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
+import lombok.SneakyThrows;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Resource synchronizer.
+ * Resource lock.
  */
-public final class ResourceSynchronizer {
+public final class ResourceLock {
     
-    private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200;
+    private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200L;
     
     private final Lock lock = new ReentrantLock();
     
     private final Condition condition = lock.newCondition();
     
     /**
-     * Do await until default timeout milliseconds.
-     *
-     * @throws InterruptedException interrupted exception
+     * Await until timeout.
      */
-    public void doAwaitUntil() throws InterruptedException {
+    @SneakyThrows(InterruptedException.class)
+    public void doAwaitUntil() {
         lock.lock();
         try {
             condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);
@@ -48,7 +49,7 @@ public final class ResourceSynchronizer {
     }
     
     /**
-     * Do notify.
+     * Notify.
      */
     public void doNotify() {
         lock.lock();

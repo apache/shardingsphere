@@ -25,20 +25,16 @@ import static org.junit.Assert.assertTrue;
 
 public final class ConnectionStateHandlerTest {
     
-    private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
+    private final ResourceLock resourceLock = new ResourceLock();
     
-    private final ConnectionStateHandler connectionStateHandler = new ConnectionStateHandler(resourceSynchronizer);
+    private final ConnectionStateHandler connectionStateHandler = new ConnectionStateHandler(resourceLock);
     
     @Test
     public void assertWaitUntilConnectionReleaseForNoneTransaction() throws InterruptedException {
         AtomicBoolean flag = new AtomicBoolean(true);
         Thread waitThread = new Thread(() -> {
             connectionStateHandler.setStatus(ConnectionStatus.RUNNING);
-            try {
-                connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
-            } catch (final InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
+            connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
             if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
                 flag.getAndSet(false);
             }
@@ -63,11 +59,7 @@ public final class ConnectionStateHandlerTest {
         AtomicBoolean flag = new AtomicBoolean(true);
         Thread waitThread = new Thread(() -> {
             connectionStateHandler.setStatus(ConnectionStatus.TERMINATED);
-            try {
-                connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
-            } catch (final InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
+            connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
             if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
                 flag.getAndSet(false);
             }

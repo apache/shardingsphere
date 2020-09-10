@@ -53,12 +53,12 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public BackendResponse execute() throws SQLException {
-        SchemaContext context = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
+        SchemaContext context = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
         if (null == context) {
             throw new NoDatabaseSelectedException();
         }
         if (!context.isComplete()) {
-            return getDefaultQueryResponse(backendConnection.getSchema());
+            return getDefaultQueryResponse(backendConnection.getSchemaName());
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
         return databaseCommunicationEngine.execute();
