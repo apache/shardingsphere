@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.primaryreplica.spring.boot.algorithm;
 
-import org.apache.shardingsphere.masterslave.spi.PrimaryReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.primaryreplica.spi.PrimaryReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;

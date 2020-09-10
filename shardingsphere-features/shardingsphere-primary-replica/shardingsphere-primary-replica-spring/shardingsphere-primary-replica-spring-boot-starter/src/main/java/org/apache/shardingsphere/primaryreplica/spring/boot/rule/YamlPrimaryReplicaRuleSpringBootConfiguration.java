@@ -19,7 +19,7 @@ package org.apache.shardingsphere.primaryreplica.spring.boot.rule;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.masterslave.yaml.config.YamlPrimaryReplicaRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.yaml.config.YamlPrimaryReplicaRuleConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
