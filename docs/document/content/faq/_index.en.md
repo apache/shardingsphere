@@ -89,13 +89,13 @@ There are two solutions for the above problem: 1. Configure JVM parameter “-or
 
 Reasons:
 
-com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues():
+`org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByValue#getOrderValues()`:
 
 ```java
     private List<Comparable<?>> getOrderValues() throws SQLException {
         List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
-        for (OrderItem each : orderByItems) {
-            Object value = resultSet.getObject(each.getIndex());
+        for (OrderByItem each : orderByItems) {
+            Object value = queryResult.getValue(each.getIndex(), Object.class);
             Preconditions.checkState(null == value || value instanceof Comparable, "Order by value must implements Comparable");
             result.add((Comparable<?>) value);
         }
@@ -230,7 +230,7 @@ The solutions are as follows:
 Answer:
 
 1. Update to 4.0.1 above, which helps speed up the process of loading table metadata from `the default dataSource`.
-2. Configure `max.connections.size.per.query`(Default value is 1) higher referring to connection pool you adopt(Version >= 3.0.0.M3).
+2. Configure `max-connections-size-per-query`(Default value is 1) higher referring to connection pool you adopt(Version >= 3.0.0.M3).
 
 ## 19. How to allow range query with using inline sharding strategy(BETWEEN AND, \>, \<, \>=, \<=)?
 
