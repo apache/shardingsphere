@@ -40,7 +40,7 @@ import java.util.Map.Entry;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class YamlGovernanceShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
+public final class YamlGovernanceShardingWithPrimaryReplicaIntegrateTest extends AbstractYamlDataSourceTest {
     
     private final String filePath;
     
@@ -58,12 +58,12 @@ public final class YamlGovernanceShardingWithMasterSlaveIntegrateTest extends Ab
     
     @Test
     public void assertWithDataSource() throws Exception {
-        File yamlFile = new File(YamlGovernanceShardingWithMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(YamlGovernanceShardingWithPrimaryReplicaIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
-            Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("db0_master", "db0_slave", "db1_master", "db1_slave"), AbstractYamlDataSourceTest::createDataSource);
+            Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("db0_primary", "db0_replica", "db1_primary", "db1_replica"), AbstractYamlDataSourceTest::createDataSource);
             Map<String, DataSource> result = new HashMap<>();
             for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
                 result.put(each.getKey(), each.getValue());
