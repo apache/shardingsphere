@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.masterslave.rule.biulder.MasterSlaveRuleBuilder
-org.apache.shardingsphere.masterslave.rule.biulder.AlgorithmProvidedMasterSlaveRuleBuilder
+org.apache.shardingsphere.primaryreplica.rule.biulder.PrimaryReplicaRuleBuilder
+org.apache.shardingsphere.primaryreplica.rule.biulder.AlgorithmProvidedPrimaryReplicaRuleBuilder
