@@ -125,15 +125,11 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     private boolean isSwitchFailed() {
         int retryCount = 0;
         while (statusHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
-            resourceLock.doAwaitUntil();
+            resourceLock.doAwait();
             ++retryCount;
-            log.warn("Current transaction have not terminated, retry count:[{}].", retryCount);
+            log.info("Current transaction have not terminated, retry count:[{}].", retryCount);
         }
-        if (retryCount >= MAXIMUM_RETRY_COUNT) {
-            log.error("Cannot do switch, exceed maximum retry count:[{}].", MAXIMUM_RETRY_COUNT);
-            return true;
-        }
-        return false;
+        return retryCount >= MAXIMUM_RETRY_COUNT;
     }
     
     @Override

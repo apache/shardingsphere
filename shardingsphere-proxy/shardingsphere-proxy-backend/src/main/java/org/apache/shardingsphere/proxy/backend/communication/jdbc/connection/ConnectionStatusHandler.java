@@ -79,7 +79,7 @@ public final class ConnectionStatusHandler {
     public void waitUntilConnectionReleasedIfNecessary() {
         if (ConnectionStatus.RUNNING == status.get() || ConnectionStatus.TERMINATED == status.get()) {
             while (!status.compareAndSet(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
-                resourceLock.doAwaitUntil();
+                resourceLock.doAwait();
             }
         }
     }
