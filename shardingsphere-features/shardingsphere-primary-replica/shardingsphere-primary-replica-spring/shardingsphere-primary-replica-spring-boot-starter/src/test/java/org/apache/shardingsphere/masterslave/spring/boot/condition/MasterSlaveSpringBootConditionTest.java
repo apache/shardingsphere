@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.boot.condition;
+package org.apache.shardingsphere.primaryreplica.spring.boot.condition;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MasterSlaveSpringBootConditionTest {
+public final class PrimaryReplicaSpringBootConditionTest {
     
     @Test
     public void assertNotMatch() {
@@ -41,7 +41,7 @@ public final class MasterSlaveSpringBootConditionTest {
         ConditionContext context = mock(ConditionContext.class);
         AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);
-        MasterSlaveSpringBootCondition condition = new MasterSlaveSpringBootCondition();
+        PrimaryReplicaSpringBootCondition condition = new PrimaryReplicaSpringBootCondition();
         ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
         assertFalse(matchOutcome.isMatch());
     }
@@ -49,11 +49,11 @@ public final class MasterSlaveSpringBootConditionTest {
     @Test
     public void assertMatch() {
         MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.rules.master-slave.data-sources.ds_ms.master-data-source-name", "ds_master");
+        mockEnvironment.setProperty("spring.shardingsphere.rules.primary-replica.data-sources.ds_ms.primary-data-source-name", "ds_primary");
         ConditionContext context = mock(ConditionContext.class);
         AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);
-        MasterSlaveSpringBootCondition condition = new MasterSlaveSpringBootCondition();
+        PrimaryReplicaSpringBootCondition condition = new PrimaryReplicaSpringBootCondition();
         ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
         assertTrue(matchOutcome.isMatch());
     }
