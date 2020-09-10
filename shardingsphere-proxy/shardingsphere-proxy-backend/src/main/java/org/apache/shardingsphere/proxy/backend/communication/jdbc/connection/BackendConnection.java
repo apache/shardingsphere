@@ -163,26 +163,22 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         return result;
     }
     
-    private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(schemaName, "current schema is null");
-        List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
-        synchronized (cachedConnections) {
-            cachedConnections.putAll(dataSourceName, result);
-        }
-        return result;
-    }
-    
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(schemaName, "current schema is null");
-        List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
+        Preconditions.checkNotNull(schemaName, "Current schema is null.");
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(schemaName, dataSourceName, connectionSize, connectionMode);
         for (Connection each : result) {
             replayMethodsInvocation(each);
         }
         return result;
     }
     
-    private List<Connection> getConnectionFromUnderlying(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return ProxyContext.getInstance().getBackendDataSource().getConnections(schemaName, dataSourceName, connectionSize, connectionMode);
+    private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+        Preconditions.checkNotNull(schemaName, "Current schema is null.");
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(schemaName, dataSourceName, connectionSize, connectionMode);
+        synchronized (cachedConnections) {
+            cachedConnections.putAll(dataSourceName, result);
+        }
+        return result;
     }
     
     @Override
