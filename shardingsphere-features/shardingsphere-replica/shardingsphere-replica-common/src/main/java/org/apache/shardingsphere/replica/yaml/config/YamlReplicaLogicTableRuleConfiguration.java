@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata;
+package org.apache.shardingsphere.replica.yaml.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * ShardingSphere meta data.
+ * Replica logic table rule configuration for YAML.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ShardingSphereMetaData {
+@Setter
+public final class YamlReplicaLogicTableRuleConfiguration implements YamlConfiguration {
     
-    private final DataSourceMetaDatas dataSourceMetaDatas;
+    private String logicTable;
     
-    private final RuleSchemaMetaData ruleSchemaMetaData;
-    
-    private final String schemaName;
+    private Collection<YamlReplicaActualTableRuleConfiguration> replicaGroups = Collections.emptyList();
 }

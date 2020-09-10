@@ -15,23 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata;
+package org.apache.shardingsphere.infra.executor.sql.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.util.List;
 
 /**
- * ShardingSphere meta data.
+ * SQL runtime context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingSphereMetaData {
+@ToString
+public final class SQLRuntimeContext {
     
-    private final DataSourceMetaDatas dataSourceMetaDatas;
+    @Setter
+    private String schemaName;
     
-    private final RuleSchemaMetaData ruleSchemaMetaData;
+    private final List<String> logicTables;
     
-    private final String schemaName;
+    private final List<String> actualTables;
+    
+    private final List<PrimaryKeyMetaData> primaryKeyMetaDatas;
+    
+    @Setter
+    private boolean readOnly;
 }

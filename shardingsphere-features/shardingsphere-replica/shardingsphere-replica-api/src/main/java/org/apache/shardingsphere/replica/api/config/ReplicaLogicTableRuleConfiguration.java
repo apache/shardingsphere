@@ -15,23 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata;
+package org.apache.shardingsphere.replica.api.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * ShardingSphere meta data.
+ * Replica logic table rule configuration.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ShardingSphereMetaData {
+public final class ReplicaLogicTableRuleConfiguration implements RuleConfiguration {
     
-    private final DataSourceMetaDatas dataSourceMetaDatas;
+    private final String logicTable;
     
-    private final RuleSchemaMetaData ruleSchemaMetaData;
+    private final Collection<ReplicaActualTableRuleConfiguration> replicaGroups;
     
-    private final String schemaName;
+    public ReplicaLogicTableRuleConfiguration(final String logicTable, final Collection<ReplicaActualTableRuleConfiguration> replicaGroups) {
+        this.logicTable = logicTable;
+        if (null != replicaGroups) {
+            this.replicaGroups = replicaGroups;
+        } else {
+            this.replicaGroups = Collections.emptyList();
+        }
+    }
 }

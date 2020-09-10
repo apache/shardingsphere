@@ -34,7 +34,7 @@ import java.util.Collection;
  */
 public final class StatementExecuteGroupEngine extends ResourceManagedExecuteGroupEngine<StatementExecuteUnit, JDBCExecutionConnection, Connection, StatementOption> {
     
-    public StatementExecuteGroupEngine(final int maxConnectionsSizePerQuery, 
+    public StatementExecuteGroupEngine(final int maxConnectionsSizePerQuery,
                                        final JDBCExecutionConnection executionConnection, final StatementOption option, final Collection<ShardingSphereRule> rules) {
         super(maxConnectionsSizePerQuery, executionConnection, option, rules);
     }

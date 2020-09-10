@@ -15,23 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata;
+package org.apache.shardingsphere.infra.executor.sql.raw.group;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupDecorator;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * ShardingSphere meta data.
+ * Raw execute group decorator.
+ *
+ * @param <T> type of input value
+ * @param <R> type of ShardingSphere rule
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingSphereMetaData {
-    
-    private final DataSourceMetaDatas dataSourceMetaDatas;
-    
-    private final RuleSchemaMetaData ruleSchemaMetaData;
-    
-    private final String schemaName;
+public interface RawExecuteGroupDecorator<T, R extends ShardingSphereRule> extends ExecuteGroupDecorator<T, R> {
 }

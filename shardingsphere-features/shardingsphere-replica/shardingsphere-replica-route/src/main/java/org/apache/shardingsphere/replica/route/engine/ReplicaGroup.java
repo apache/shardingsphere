@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata;
+package org.apache.shardingsphere.replica.route.engine;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.route.context.RawGroup;
 
 /**
- * ShardingSphere meta data.
+ * Replica group.
  */
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
-public final class ShardingSphereMetaData {
+public final class ReplicaGroup implements RawGroup {
     
-    private final DataSourceMetaDatas dataSourceMetaDatas;
+    public static final String BLANK_REPLICA_GROUP_KEY = "Nil";
     
-    private final RuleSchemaMetaData ruleSchemaMetaData;
+    private final String physicsTable;
     
-    private final String schemaName;
+    private final String replicaGroupId;
+    
+    private final String replicaPeers;
+    
+    private final String dataSourceName;
 }

@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata;
+package org.apache.shardingsphere.replica.execute.callback;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * ShardingSphere meta data.
+ * Replica executor callback.
+ *
+ * @param <I> type of input value
+ * @param <O> type of output value
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingSphereMetaData {
+public interface ReplicaExecutorCallback<I, O> {
     
-    private final DataSourceMetaDatas dataSourceMetaDatas;
-    
-    private final RuleSchemaMetaData ruleSchemaMetaData;
-    
-    private final String schemaName;
+    /**
+     * Execute.
+     *
+     * @param inputs input values
+     * @param isTrunkThread is execution in trunk thread
+     * @param dataMap data map
+     * @return execution results
+     * @throws SQLException throw when execute failure
+     */
+    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, Map<String, Object> dataMap) throws SQLException;
 }

@@ -15,23 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+package org.apache.shardingsphere.infra.route.context;
 
 /**
- * ShardingSphere meta data.
+ * Route stage context.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingSphereMetaData {
-    
-    private final DataSourceMetaDatas dataSourceMetaDatas;
-    
-    private final RuleSchemaMetaData ruleSchemaMetaData;
-    
-    private final String schemaName;
+public interface RouteStageContext {
 }

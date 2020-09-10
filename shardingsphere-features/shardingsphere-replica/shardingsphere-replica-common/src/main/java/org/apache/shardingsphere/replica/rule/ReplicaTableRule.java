@@ -15,23 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata;
+package org.apache.shardingsphere.replica.rule;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.replica.api.config.ReplicaActualTableRuleConfiguration;
 
 /**
- * ShardingSphere meta data.
+ * Replica table rule.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ShardingSphereMetaData {
+public final class ReplicaTableRule implements ShardingSphereRule {
     
-    private final DataSourceMetaDatas dataSourceMetaDatas;
+    private final String physicsTable;
     
-    private final RuleSchemaMetaData ruleSchemaMetaData;
+    private final String replicaGroupId;
     
-    private final String schemaName;
+    private final String replicaPeers;
+    
+    private final String dataSourceName;
+    
+    public ReplicaTableRule(final ReplicaActualTableRuleConfiguration configuration) {
+        physicsTable = configuration.getPhysicsTable();
+        replicaGroupId = configuration.getReplicaGroupId();
+        replicaPeers = configuration.getReplicaPeers();
+        dataSourceName = configuration.getDataSourceName();
+    }
 }

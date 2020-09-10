@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.binder.statement;
 
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 /**
  * SQL statement context.
@@ -40,4 +41,13 @@ public interface SQLStatementContext<T extends SQLStatement> {
      * @return tables context
      */
     TablesContext getTablesContext();
+    
+    /**
+     * Determine whether SQL is read-only.
+     *
+     * @return true if read-only, otherwise false
+     */
+    default boolean isReadOnly() {
+        return SQLUtil.isReadOnly(getSqlStatement());
+    }
 }

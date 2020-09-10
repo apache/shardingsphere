@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.raw.execute.callback;
+package org.apache.shardingsphere.replica.execute.callback;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
@@ -29,26 +29,26 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Raw SQL executor callback.
+ * Default replica executor callback.
  */
 @Slf4j
-public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExecuteUnit, ExecuteResult> {
-
+public final class DefaultReplicaExecutorCallback implements RawExecutorCallback<RawSQLExecuteUnit, ExecuteResult> {
+    
     static {
-        ShardingSphereServiceLoader.register(RawExecutorCallback.class);
+        ShardingSphereServiceLoader.register(ReplicaExecutorCallback.class);
     }
-
-    private final Collection<RawExecutorCallback> rawExecutorCallbacks;
-
-    public RawSQLExecutorCallback() {
-        rawExecutorCallbacks = ShardingSphereServiceLoader.newServiceInstances(RawExecutorCallback.class);
-        if (null == rawExecutorCallbacks || rawExecutorCallbacks.isEmpty()) {
-            throw new ShardingSphereException("not found raw executor callback impl");
+    
+    private final Collection<ReplicaExecutorCallback> replicaExecutorCallbacks;
+    
+    public DefaultReplicaExecutorCallback() {
+        replicaExecutorCallbacks = ShardingSphereServiceLoader.newServiceInstances(ReplicaExecutorCallback.class);
+        if (null == replicaExecutorCallbacks || replicaExecutorCallbacks.isEmpty()) {
+            throw new ShardingSphereException("not found replica executor callback impl");
         }
     }
-
+    
     @Override
     public Collection<ExecuteResult> execute(final Collection<RawSQLExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
-        return rawExecutorCallbacks.iterator().next().execute(inputs, isTrunkThread, dataMap);
+        return replicaExecutorCallbacks.iterator().next().execute(inputs, isTrunkThread, dataMap);
     }
 }
