@@ -38,24 +38,25 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SchemaMetaDataLoaderTest {
+    
     private static final String TEST_CATALOG = "catalog";
-
+    
     private static final String TABLE_TYPE = "TABLE";
-
+    
     private static final String DATABASE_TYPE_ORACLE = "Oracle";
-
+    
     @Mock
     private DataSource dataSource;
-
+    
     @Mock
     private Connection connection;
-
+    
     @Mock
     private DatabaseMetaData databaseMetaData;
-
+    
     @Mock
     private ResultSet tableExistResultSet;
-
+    
     @Before
     public void setUp() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
@@ -63,7 +64,7 @@ public final class SchemaMetaDataLoaderTest {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getTables(TEST_CATALOG, null, null, new String[]{TABLE_TYPE})).thenReturn(tableExistResultSet);
     }
-
+    
     @Test
     public void assertLoadAllTableNamesForOracle() throws SQLException {
         SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(dataSource, DATABASE_TYPE_ORACLE);
