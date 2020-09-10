@@ -110,7 +110,7 @@ public final class SchemaChangedListenerTest {
         assertThat(event.getSchemaName(), is("primaryreplica_db"));
         assertThat(event.getRuleConfigurations().iterator().next(), instanceOf(PrimaryReplicaRuleConfiguration.class));
         PrimaryReplicaRuleConfiguration primaryReplicaRuleConfig = (PrimaryReplicaRuleConfiguration) event.getRuleConfigurations().iterator().next();
-        assertThat(primaryReplicaRuleConfig.getDataSources().iterator().next().getMasterDataSourceName(), is("primary_ds"));
+        assertThat(primaryReplicaRuleConfig.getDataSources().iterator().next().getPrimaryDataSourceName(), is("primary_ds"));
     }
     
     @Test
