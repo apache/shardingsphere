@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.boot;
+package org.apache.shardingsphere.primaryreplica.spring.boot;
 
-import org.apache.shardingsphere.masterslave.algorithm.RandomMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.masterslave.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.algorithm.RandomPrimaryReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.primaryreplica.algorithm.config.AlgorithmProvidedPrimaryReplicaRuleConfiguration;
+import org.apache.shardingsphere.primaryreplica.api.config.rule.PrimaryReplicaDataSourceRuleConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -34,16 +34,16 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = MasterSlaveSpringBootStarterTest.class)
+@SpringBootTest(classes = PrimaryReplicaSpringBootStarterTest.class)
 @SpringBootApplication
-@ActiveProfiles("masterslave")
-public class MasterSlaveSpringBootStarterTest {
+@ActiveProfiles("primaryreplica")
+public class PrimaryReplicaSpringBootStarterTest {
     
     @Resource
-    private RandomMasterSlaveLoadBalanceAlgorithm random;
+    private RandomPrimaryReplicaLoadBalanceAlgorithm random;
     
     @Resource
-    private AlgorithmProvidedMasterSlaveRuleConfiguration masterSlaveRuleConfiguration;
+    private AlgorithmProvidedPrimaryReplicaRuleConfiguration primaryReplicaRuleConfiguration;
     
     @Test
     public void assertLoadBalanceAlgorithm() {
@@ -51,15 +51,15 @@ public class MasterSlaveSpringBootStarterTest {
     }
     
     @Test
-    public void assertMasterSlaveRuleConfiguration() {
-        assertThat(masterSlaveRuleConfiguration.getDataSources().size(), is(1));
-        MasterSlaveDataSourceRuleConfiguration masterSlaveDataSourceRuleConfiguration = masterSlaveRuleConfiguration.getDataSources().stream().findFirst().get();
-        assertThat(masterSlaveDataSourceRuleConfiguration.getName(), is("ds_ms"));
-        assertThat(masterSlaveDataSourceRuleConfiguration.getMasterDataSourceName(), is("ds_master"));
-        assertThat(masterSlaveDataSourceRuleConfiguration.getLoadBalancerName(), is("random"));
-        assertThat(masterSlaveDataSourceRuleConfiguration.getSlaveDataSourceNames().size(), is(2));
-        assertTrue(masterSlaveRuleConfiguration.getDataSources().contains(masterSlaveDataSourceRuleConfiguration));
-        assertThat(masterSlaveRuleConfiguration.getLoadBalanceAlgorithms().size(), is(1));
-        assertTrue(masterSlaveRuleConfiguration.getLoadBalanceAlgorithms().containsKey("random"));
+    public void assertPrimaryReplicaRuleConfiguration() {
+        assertThat(primaryReplicaRuleConfiguration.getDataSources().size(), is(1));
+        PrimaryReplicaDataSourceRuleConfiguration primaryReplicaDataSourceRuleConfiguration = primaryReplicaRuleConfiguration.getDataSources().stream().findFirst().get();
+        assertThat(primaryReplicaDataSourceRuleConfiguration.getName(), is("ds_ms"));
+        assertThat(primaryReplicaDataSourceRuleConfiguration.getPrimaryDataSourceName(), is("ds_primary"));
+        assertThat(primaryReplicaDataSourceRuleConfiguration.getLoadBalancerName(), is("random"));
+        assertThat(primaryReplicaDataSourceRuleConfiguration.getReplicaDataSourceNames().size(), is(2));
+        assertTrue(primaryReplicaRuleConfiguration.getDataSources().contains(primaryReplicaDataSourceRuleConfiguration));
+        assertThat(primaryReplicaRuleConfiguration.getLoadBalanceAlgorithms().size(), is(1));
+        assertTrue(primaryReplicaRuleConfiguration.getLoadBalanceAlgorithms().containsKey("random"));
     }
 }
