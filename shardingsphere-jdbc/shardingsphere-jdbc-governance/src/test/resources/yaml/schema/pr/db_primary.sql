@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-DROP SCHEMA IF EXISTS `db_master`;
-CREATE SCHEMA `db_master`;
+DROP SCHEMA IF EXISTS `db_primary`;
+CREATE SCHEMA `db_primary`;
 DROP TABLE IF EXISTS `t_order`;
 DROP TABLE IF EXISTS `t_order_item`;
 DROP TABLE IF EXISTS `t_config`;
