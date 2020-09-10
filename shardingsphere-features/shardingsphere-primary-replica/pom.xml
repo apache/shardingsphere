@@ -25,14 +25,14 @@
         <artifactId>shardingsphere-features</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-master-slave</artifactId>
+    <artifactId>shardingsphere-primary-replica</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
         <module>shardingsphere-primary-replica-api</module>
         <module>shardingsphere-primary-replica-common</module>
-        <module>shardingsphere-master-slave-route</module>
+        <module>shardingsphere-primary-replica-route</module>
         <module>shardingsphere-primary-replica-spring</module>
     </modules>
 </project>
