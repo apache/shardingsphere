@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule,DMLStatement;
 
 createTable
-    : CREATE createTableSpecification_ TABLE tableNotExistClause_ tableName
+    : CREATE createTableSpecification_ TABLE tableNotExistClause_? tableName
       (createDefinitionClause | (OF anyName (LP_ typedTableElementList RP_)?) | (PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec))
       inheritClause_ partitionSpec? tableAccessMethodClause? withOption? onCommitOption? tableSpace?
       (AS select withData?)?
@@ -182,7 +182,7 @@ createTableSpecification_
     ;
 
 tableNotExistClause_
-    : (IF NOT EXISTS)?
+    : IF NOT EXISTS
     ;
 
 createDefinitionClause

@@ -115,7 +115,7 @@ showCollation
     ;
 
 showCreateDatabase
-    : SHOW CREATE (DATABASE | SCHEMA) notExistClause_ schemaName
+    : SHOW CREATE (DATABASE | SCHEMA) notExistClause_? schemaName
     ;
 
 showCreateEvent
@@ -365,7 +365,7 @@ resetOption_
     ;
 
 resetPersist
-    : RESET PERSIST (existClause_ IDENTIFIER_)
+    : RESET PERSIST (existClause_? IDENTIFIER_)
     ;
 
 restart
