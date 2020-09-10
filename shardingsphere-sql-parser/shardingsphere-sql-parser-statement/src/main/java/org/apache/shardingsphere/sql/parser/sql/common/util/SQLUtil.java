@@ -171,8 +171,8 @@ public final class SQLUtil {
         }
         return result;
     }
-     
-     /*
+    
+    /**
      * Determine whether SQL is read-only.
      *
      * @param sqlStatement SQL statement
