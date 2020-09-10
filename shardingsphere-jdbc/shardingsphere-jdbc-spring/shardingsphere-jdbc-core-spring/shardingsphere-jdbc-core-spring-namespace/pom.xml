@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-master-slave-spring-namespace</artifactId>
+            <artifactId>shardingsphere-primary-replica-spring-namespace</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
