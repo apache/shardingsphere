@@ -62,7 +62,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     private int currentSequenceId;
     
     public MySQLComStmtExecuteExecutor(final MySQLComStmtExecutePacket comStmtExecutePacket, final BackendConnection backendConnection) {
-        SQLStatement sqlStatement = ProxyContext.getInstance().getSchema(backendConnection.getSchema()).getRuntimeContext().getSqlParserEngine().parse(comStmtExecutePacket.getSql(), true);
+        SQLStatement sqlStatement = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName()).getRuntimeContext().getSqlParserEngine().parse(comStmtExecutePacket.getSql(), true);
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
                 sqlStatement, comStmtExecutePacket.getSql(), comStmtExecutePacket.getParameters(), backendConnection);
     }

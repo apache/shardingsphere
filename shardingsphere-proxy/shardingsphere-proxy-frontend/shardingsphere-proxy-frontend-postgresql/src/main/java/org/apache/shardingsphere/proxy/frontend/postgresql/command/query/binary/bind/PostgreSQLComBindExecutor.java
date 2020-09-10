@@ -67,7 +67,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     public PostgreSQLComBindExecutor(final PostgreSQLComBindPacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
-        SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
+        SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
         if (null != packet.getSql() && null != schemaContext) {
             SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
             databaseCommunicationEngine =

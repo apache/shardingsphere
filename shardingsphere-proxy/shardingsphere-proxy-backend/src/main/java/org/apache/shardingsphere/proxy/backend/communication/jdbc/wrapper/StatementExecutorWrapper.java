@@ -29,10 +29,12 @@ import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.DataNodeRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -62,7 +64,9 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         RouteContext routeContext = router.route(sqlStatement, sql, Collections.emptyList());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(schema.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
                 PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).rewrite(sql, Collections.emptyList(), routeContext);
-        return new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(schema.getSchema().getMetaData(), sqlRewriteResult));
+        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
+        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(schema.getSchema().getMetaData(), sqlRewriteResult, sqlStatementContext);
+        return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
     }
     
     @Override
@@ -78,6 +82,8 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     @SuppressWarnings("unchecked")
     private ExecutionContext createExecutionContext(final String sql) {
         String dataSource = schema.getSchema().getDataSources().isEmpty() ? "" : schema.getSchema().getDataSources().keySet().iterator().next();
-        return new ExecutionContext(new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(dataSource, new SQLUnit(sql, Collections.emptyList())));
+        SQLStatementContext<?> sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
+        ExecutionUnit executionUnit = new ExecutionUnit(dataSource, new SQLUnit(sql, Collections.emptyList()));
+        return new ExecutionContext(sqlStatementContext, executionUnit, new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult()));
     }
 }

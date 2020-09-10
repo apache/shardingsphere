@@ -169,7 +169,7 @@ public final class ShardingCTLHintBackendHandlerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     public void assertShowTableStatus() throws SQLException {
         clearThreadLocal();
-        when(backendConnection.getSchema()).thenReturn("schema");
+        when(backendConnection.getSchemaName()).thenReturn("schema");
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
         schemaContexts.set(ProxyContext.getInstance(),
@@ -208,7 +208,8 @@ public final class ShardingCTLHintBackendHandlerTest {
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
         when(result.getSchema()).thenReturn(shardingSphereSchema);
         when(shardingSphereSchema.getMetaData()).thenReturn(
-                new ShardingSphereMetaData(mock(DataSourceMetaDatas.class), new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap())));
+                new ShardingSphereMetaData(mock(DataSourceMetaDatas.class), new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap()),
+                        "sharding_db"));
         return Collections.singletonMap("schema", result);
     }
     

@@ -50,7 +50,7 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public BackendResponse execute() throws SQLException {
-        if (null == backendConnection.getSchema()) {
+        if (null == backendConnection.getSchemaName()) {
             Map<String, SchemaContext> schemaContexts = ProxyContext.getInstance().getSchemaContexts().getSchemaContexts();
             if (schemaContexts.isEmpty()) {
                 throw new NoDatabaseSelectedException();

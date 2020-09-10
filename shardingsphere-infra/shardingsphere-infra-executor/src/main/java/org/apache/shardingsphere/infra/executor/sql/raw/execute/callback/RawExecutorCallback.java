@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replica.yaml.config;
+package org.apache.shardingsphere.infra.executor.sql.raw.execute.callback;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-
+import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Map;
 
 /**
- * Replica data source configuration for YAML.
+ * Raw executor callback.
+ *
+ * @param <I> type of input value
+ * @param <O> type of output value
  */
-@Getter
-@Setter
-public final class YamlReplicaDataSourceConfiguration implements YamlConfiguration {
+public interface RawExecutorCallback<I, O> {
     
-    private String name;
-    
-    private Collection<String> replicaDataSourceNames = new LinkedList<>();
+    /**
+     * Execute.
+     *
+     * @param inputs input values
+     * @param isTrunkThread is execution in trunk thread
+     * @param dataMap data map
+     * @return execution results
+     * @throws SQLException throw when execute failure
+     */
+    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, Map<String, Object> dataMap) throws SQLException;
 }

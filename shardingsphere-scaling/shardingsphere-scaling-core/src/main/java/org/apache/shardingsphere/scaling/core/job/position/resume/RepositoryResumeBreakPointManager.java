@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
-import com.google.common.base.Strings;
+import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceCenterConfigurationYamlSwapper;
-import org.apache.shardingsphere.governance.repository.zookeeper.CuratorZookeeperRepository;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 
 import java.util.concurrent.Executors;
@@ -29,16 +32,16 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Depends on zookeeper resume from break-point manager.
+ * Repository resume from break-point manager.
  */
 @Slf4j
-public final class ZookeeperResumeBreakPointManager extends AbstractResumeBreakPointManager {
+public final class RepositoryResumeBreakPointManager extends AbstractResumeBreakPointManager {
     
     private static final String INVENTORY = "/inventory";
     
     private static final String INCREMENTAL = "/incremental";
     
-    private static final CuratorZookeeperRepository CURATOR_ZOOKEEPER_REPOSITORY = new CuratorZookeeperRepository();
+    private static RegistryRepository registryRepository;
     
     private static boolean available;
     
@@ -49,16 +52,17 @@ public final class ZookeeperResumeBreakPointManager extends AbstractResumeBreakP
     private final String incrementalPath;
     
     static {
-        String name = ScalingContext.getInstance().getServerConfiguration().getName();
-        YamlGovernanceCenterConfiguration registryCenter = ScalingContext.getInstance().getServerConfiguration().getRegistryCenter();
-        if (!Strings.isNullOrEmpty(name) && null != registryCenter) {
-            CURATOR_ZOOKEEPER_REPOSITORY.init(name, new GovernanceCenterConfigurationYamlSwapper().swapToObject(registryCenter));
+        YamlGovernanceConfiguration resumeBreakPoint = ScalingContext.getInstance().getServerConfiguration().getResumeBreakPoint();
+        if (resumeBreakPoint != null) {
+            registryRepository = createRegistryRepository(new GovernanceConfigurationYamlSwapper().swapToObject(resumeBreakPoint));
+        }
+        if (registryRepository != null) {
             log.info("zookeeper resume from break-point manager is available.");
             available = true;
         }
     }
     
-    public ZookeeperResumeBreakPointManager(final String databaseType, final String taskPath) {
+    public RepositoryResumeBreakPointManager(final String databaseType, final String taskPath) {
         setDatabaseType(databaseType);
         setTaskPath(taskPath);
         inventoryPath = taskPath + INVENTORY;
@@ -67,6 +71,14 @@ public final class ZookeeperResumeBreakPointManager extends AbstractResumeBreakP
         setResumable(!getInventoryPositionManagerMap().isEmpty() && !getIncrementalPositionManagerMap().isEmpty());
         executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleWithFixedDelay(this::persistPosition, 1, 1, TimeUnit.MINUTES);
+    }
+    
+    private static RegistryRepository createRegistryRepository(final GovernanceConfiguration config) {
+        GovernanceCenterConfiguration registryCenterConfig = config.getRegistryCenterConfiguration();
+        Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");
+        RegistryRepository result = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
+        result.init(config.getName(), registryCenterConfig);
+        return result;
     }
     
     /**
@@ -85,8 +97,8 @@ public final class ZookeeperResumeBreakPointManager extends AbstractResumeBreakP
     }
     
     private void resumePosition() {
-        resumeInventoryPosition(CURATOR_ZOOKEEPER_REPOSITORY.get(inventoryPath));
-        resumeIncrementalPosition(CURATOR_ZOOKEEPER_REPOSITORY.get(incrementalPath));
+        resumeInventoryPosition(registryRepository.get(inventoryPath));
+        resumeIncrementalPosition(registryRepository.get(incrementalPath));
     }
     
     private void persistPosition() {
@@ -97,14 +109,14 @@ public final class ZookeeperResumeBreakPointManager extends AbstractResumeBreakP
     @Override
     public void persistInventoryPosition() {
         String result = getInventoryPositionData();
-        CURATOR_ZOOKEEPER_REPOSITORY.persist(inventoryPath, result);
+        registryRepository.persist(inventoryPath, result);
         log.info("persist inventory position {} = {}", inventoryPath, result);
     }
     
     @Override
     public void persistIncrementalPosition() {
         String result = getIncrementalPositionData();
-        CURATOR_ZOOKEEPER_REPOSITORY.persist(incrementalPath, result);
+        registryRepository.persist(incrementalPath, result);
         log.info("persist incremental position {} = {}", incrementalPath, result);
     }
 }

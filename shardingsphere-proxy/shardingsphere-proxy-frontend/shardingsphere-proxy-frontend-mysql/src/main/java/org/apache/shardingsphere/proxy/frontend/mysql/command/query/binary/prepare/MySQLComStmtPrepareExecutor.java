@@ -52,7 +52,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     public MySQLComStmtPrepareExecutor(final MySQLComStmtPreparePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
-        schema = ProxyContext.getInstance().getSchema(backendConnection.getSchema());
+        schema = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
     }
     
     @Override

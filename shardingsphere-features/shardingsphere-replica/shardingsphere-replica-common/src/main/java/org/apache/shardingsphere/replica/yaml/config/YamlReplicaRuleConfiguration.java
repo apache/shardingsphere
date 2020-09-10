@@ -19,11 +19,12 @@ package org.apache.shardingsphere.replica.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Replica rule configuration for YAML.
@@ -32,10 +33,10 @@ import java.util.Map;
 @Setter
 public final class YamlReplicaRuleConfiguration implements YamlRuleConfiguration {
     
-    private Map<String, YamlReplicaDataSourceConfiguration> dataSources = new LinkedHashMap<>();
+    private Collection<YamlReplicaLogicTableRuleConfiguration> tables = Collections.emptyList();
     
     @Override
-    public Class<ReplicaRuleConfiguration> getRuleConfigurationType() {
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
         return ReplicaRuleConfiguration.class;
     }
 }

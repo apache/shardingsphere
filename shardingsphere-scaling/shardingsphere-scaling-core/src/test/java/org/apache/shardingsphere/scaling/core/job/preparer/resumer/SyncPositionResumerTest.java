@@ -62,7 +62,7 @@ public final class SyncPositionResumerTest {
         ScalingContext.getInstance().init(new ServerConfiguration());
         shardingScalingJob = new ShardingScalingJob("scalingTest", 0);
         shardingScalingJob.getSyncConfigurations().add(mockSyncConfiguration());
-        resumeBreakPointManager = ResumeBreakPointManagerFactory.newInstance("MySQL", "/scalingTest/item-0");
+        resumeBreakPointManager = ResumeBreakPointManagerFactory.newInstance("MySQL", "/scalingTest/position/0");
         syncPositionResumer = new SyncPositionResumer();
     }
     

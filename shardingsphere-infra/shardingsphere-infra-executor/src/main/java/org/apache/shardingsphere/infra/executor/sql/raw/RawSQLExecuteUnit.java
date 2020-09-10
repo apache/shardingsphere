@@ -19,8 +19,10 @@ package org.apache.shardingsphere.infra.executor.sql.raw;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.route.context.RawGroup;
 
 /**
  * Raw SQL execute unit.
@@ -32,4 +34,7 @@ public final class RawSQLExecuteUnit {
     private final ExecutionUnit executionUnit;
     
     private final ConnectionMode connectionMode;
+
+    @Setter
+    private RawGroup rawGroup;
 }

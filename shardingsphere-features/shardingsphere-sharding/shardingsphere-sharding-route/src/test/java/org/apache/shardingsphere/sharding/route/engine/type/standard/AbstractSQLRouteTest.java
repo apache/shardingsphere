@@ -49,7 +49,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     protected final RouteContext assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createAllShardingRule();
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildRuleSchemaMetaData());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildRuleSchemaMetaData(), "sharding_db");
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         StandardSQLParserEngine standardSqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
         RouteContext routeContext = new DataNodeRouter(metaData, props, Collections.singletonList(shardingRule)).route(standardSqlParserEngine.parse(sql, false), sql, parameters);

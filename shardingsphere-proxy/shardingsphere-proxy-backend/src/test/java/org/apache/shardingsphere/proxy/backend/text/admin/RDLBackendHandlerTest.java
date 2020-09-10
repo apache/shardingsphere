@@ -64,7 +64,7 @@ public final class RDLBackendHandlerTest {
     @Test
     public void assertExecuteCreateDatabaseContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
-        when(connection.getSchema()).thenReturn("schema");
+        when(connection.getSchemaName()).thenReturn("schema");
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new CreateDatabaseStatement("new_db"));
         try {
             executeEngine.execute();
@@ -79,7 +79,7 @@ public final class RDLBackendHandlerTest {
     @Test
     public void assertExecuteDropDatabaseContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
-        when(connection.getSchema()).thenReturn("schema");
+        when(connection.getSchemaName()).thenReturn("schema");
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new DropDatabaseStatement("schema"));
         try {
             executeEngine.execute();
@@ -94,7 +94,7 @@ public final class RDLBackendHandlerTest {
     @Test
     public void assertExecuteCreateDatabaseContextWithException() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
-        when(connection.getSchema()).thenReturn("schema");
+        when(connection.getSchemaName()).thenReturn("schema");
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new CreateDatabaseStatement("schema"));
         try {
             executeEngine.execute();
@@ -117,7 +117,7 @@ public final class RDLBackendHandlerTest {
     @Test
     public void assertExecuteDataSourcesContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
-        when(connection.getSchema()).thenReturn("schema");
+        when(connection.getSchemaName()).thenReturn("schema");
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, mock(CreateDataSourcesStatement.class));
         try {
             executeEngine.execute();
@@ -132,7 +132,7 @@ public final class RDLBackendHandlerTest {
     @Test
     public void assertExecuteShardingRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
-        when(connection.getSchema()).thenReturn("schema");
+        when(connection.getSchemaName()).thenReturn("schema");
         RDLBackendHandler executeEngine = new RDLBackendHandler(connection, mock(CreateShardingRuleStatement.class));
         try {
             executeEngine.execute();

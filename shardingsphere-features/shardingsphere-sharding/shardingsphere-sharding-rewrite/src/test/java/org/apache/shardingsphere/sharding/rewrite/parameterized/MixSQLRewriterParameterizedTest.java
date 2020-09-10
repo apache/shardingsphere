@@ -82,7 +82,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         ConfigurationProperties props = new ConfigurationProperties(ruleConfigurations.getProps());
         RouteContext routeContext = new DataNodeRouter(metaData, props, rules).route(
                 standardSqlParserEngine.parse(getTestParameters().getInputSQL(), false), getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(), 
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
                 props, rules).rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), routeContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit()) : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
@@ -114,7 +114,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(ruleSchemaMetaData.getSchemaMetaData()).thenReturn(schemaMetaData);
-        return new ShardingSphereMetaData(mock(DataSourceMetaDatas.class), ruleSchemaMetaData);
+        return new ShardingSphereMetaData(mock(DataSourceMetaDatas.class), ruleSchemaMetaData, "sharding_db");
     }
     
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {
