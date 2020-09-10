@@ -207,7 +207,7 @@ public final class BackendConnectionTest {
             when(backendDataSource.getConnections(anyString(), anyString(), eq(12), any())).thenReturn(MockConnectionUtil.mockNewConnections(12));
             backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
             assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.INIT));
-            backendConnection.getStateHandler().setRunningStatusIfNecessary();
+            backendConnection.getStateHandler().changeRunningStatusIfNecessary();
             mockResultSetAndStatement(backendConnection);
             actual = backendConnection;
         }
