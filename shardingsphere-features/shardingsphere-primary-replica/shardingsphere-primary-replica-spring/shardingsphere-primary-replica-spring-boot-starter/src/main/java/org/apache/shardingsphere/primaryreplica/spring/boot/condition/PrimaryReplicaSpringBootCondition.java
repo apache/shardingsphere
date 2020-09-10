@@ -32,7 +32,7 @@ public final class PrimaryReplicaSpringBootCondition extends SpringBootCondition
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), RIMARY_REPLICA_PREFIX)
+        return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), PRIMARY_REPLICA_PREFIX)
                 ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere primary-replica rule configuration in local file.");
     }
 }
