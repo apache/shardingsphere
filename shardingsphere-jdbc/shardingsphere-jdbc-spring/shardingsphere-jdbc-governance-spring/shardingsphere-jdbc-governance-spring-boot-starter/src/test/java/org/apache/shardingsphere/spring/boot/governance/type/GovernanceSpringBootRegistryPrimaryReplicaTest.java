@@ -43,14 +43,14 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = GovernanceSpringBootRegistryMasterSlaveTest.class)
+@SpringBootTest(classes = GovernanceSpringBootRegistryPrimaryReplicaTest.class)
 @SpringBootApplication
-@ActiveProfiles("registry-masterslave")
-public class GovernanceSpringBootRegistryMasterSlaveTest {
+@ActiveProfiles("registry-primaryreplica")
+public class GovernanceSpringBootRegistryPrimaryReplicaTest {
     
-    private static final String DATA_SOURCE_FILE = "yaml/masterslave-databases.yaml";
+    private static final String DATA_SOURCE_FILE = "yaml/primaryreplica-databases.yaml";
     
-    private static final String RULE_FILE = "yaml/masterslave-rule.yaml";
+    private static final String RULE_FILE = "yaml/primaryreplica-rule.yaml";
     
     @Resource
     private DataSource dataSource;
@@ -67,7 +67,7 @@ public class GovernanceSpringBootRegistryMasterSlaveTest {
     
     @Test
     @SneakyThrows(ReflectiveOperationException.class)
-    public void assertWithMasterSlaveDataSource() {
+    public void assertWithPrimaryReplicaDataSource() {
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
         Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("schemaContexts");
         field.setAccessible(true);
