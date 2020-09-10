@@ -41,15 +41,15 @@ public final class Dbcp2DataSourcePropertiesSetterTest {
     @Before
     public void setUp() {
         MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.type", "org.apache.commons.dbcp2.BasicDataSource");
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.connection-properties.test", "test");
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.connection-properties.xxx", "yyy");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_primary.type", "org.apache.commons.dbcp2.BasicDataSource");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_primary.connection-properties.test", "test");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_primary.connection-properties.xxx", "yyy");
         environment = mockEnvironment;
     }
     
     @Test
     public void assertPropertiesSet() {
-        dbcp2DataSourcePropertiesSetter.propertiesSet(environment, "spring.shardingsphere.datasource.", "ds_master", dataSource);
+        dbcp2DataSourcePropertiesSetter.propertiesSet(environment, "spring.shardingsphere.datasource.", "ds_primary", dataSource);
         Properties connectionProperties = (Properties) ReflectionTestUtils.getField(dataSource, "connectionProperties");
         assertThat(connectionProperties.getProperty("test"), is("test"));
         assertThat(connectionProperties.getProperty("xxx"), is("yyy"));
