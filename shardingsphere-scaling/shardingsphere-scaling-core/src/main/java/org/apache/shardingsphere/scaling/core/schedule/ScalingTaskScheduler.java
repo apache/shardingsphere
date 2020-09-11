@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.schedule;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Sharding scaling task scheduler.
  */
+@Slf4j
 @RequiredArgsConstructor
 public final class ScalingTaskScheduler implements Runnable {
     
@@ -72,6 +74,7 @@ public final class ScalingTaskScheduler implements Runnable {
             executeIncrementalDataSyncTask();
             return;
         }
+        log.info("Start inventory data sync task.");
         for (ScalingTask<InventoryPosition> each : shardingScalingJob.getInventoryDataTasks()) {
             ScalingContext.getInstance().getTaskExecuteEngine().submit(each, inventoryDataTaskCallback);
         }
@@ -104,6 +107,7 @@ public final class ScalingTaskScheduler implements Runnable {
     }
     
     private void executeIncrementalDataSyncTask() {
+        log.info("Start incremental data sync task.");
         if (!SyncTaskControlStatus.MIGRATE_INVENTORY_DATA.name().equals(shardingScalingJob.getStatus())) {
             shardingScalingJob.setStatus(SyncTaskControlStatus.STOPPED.name());
             return;
