@@ -22,6 +22,11 @@
             <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+    <logger name="org.apache.shardingsphere" level="warn" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    <logger name="com.zaxxer.hikari" level="warn" />
+    <logger name="org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryDataTaskSplitter" level="off" />
     
     <root>
         <level value="info" />

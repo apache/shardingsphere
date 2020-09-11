@@ -22,12 +22,10 @@
             <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="org.apache.shardingsphere" level="warn" additivity="false">
-        <appender-ref ref="console" />
-    </logger>
+    <logger name="ShardingSphere-metadata" level="warn" />
     
     <root>
-        <level value="error" />
+        <level value="info" />
         <appender-ref ref="console" />
     </root>
-</configuration> 
+</configuration>

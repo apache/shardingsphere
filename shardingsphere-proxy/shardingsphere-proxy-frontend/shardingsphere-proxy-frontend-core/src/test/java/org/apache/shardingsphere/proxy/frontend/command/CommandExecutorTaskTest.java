@@ -160,5 +160,4 @@ public final class CommandExecutorTaskTest {
         actual.run();
         verify(handlerContext, atLeast(2)).writeAndFlush(databasePacket);
     }
-    
 }
