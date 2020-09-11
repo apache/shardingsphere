@@ -88,7 +88,7 @@
     
     <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule">
         <props>
-            <prop key="sql.show">false</prop>
+            <prop key="sql-show">false</prop>
         </props>
     </shardingsphere:data-source>
     

@@ -70,4 +70,4 @@ rules:
           worker-id: 123
 
 props:
-  sql.show: true
+  sql-show: true
