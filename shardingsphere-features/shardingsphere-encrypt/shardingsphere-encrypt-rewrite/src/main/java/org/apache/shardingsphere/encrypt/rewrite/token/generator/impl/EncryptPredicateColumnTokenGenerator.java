@@ -29,12 +29,10 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionUtil;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -73,7 +71,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ExpressionSegment each : andPredicate.getPredicates()) {
-            ColumnSegment column = getColumnFromExpression(each);
+            ColumnSegment column = ExpressionUtil.getColumnFromExpression(each);
             if (null == column) {
                 continue;
             }
@@ -96,18 +94,6 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
             result.add(encryptColumnNameToken);
         }
         return result;
-    }
-    
-    private ColumnSegment getColumnFromExpression(final ExpressionSegment expression) {
-        ColumnSegment column = null;
-        if (expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
-            column = (ColumnSegment) ((BinaryOperationExpression) expression).getLeft();
-        } else if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
-            column = (ColumnSegment) ((InExpression) expression).getLeft();
-        } else if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
-            column = (ColumnSegment) ((BetweenExpression) expression).getLeft();
-        }
-        return column;
     }
     
     private Optional<EncryptTable> findEncryptTable(final SQLStatementContext sqlStatementContext, final ColumnSegment column) {

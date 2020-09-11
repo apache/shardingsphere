@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.S
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -96,14 +97,7 @@ public final class EncryptConditionEngine {
     }
     
     private Optional<EncryptCondition> createEncryptCondition(final SQLStatementContext sqlStatementContext, final ExpressionSegment expression) {
-        ColumnSegment column = null;
-        if (expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
-            column = (ColumnSegment) ((BinaryOperationExpression) expression).getLeft();
-        } else if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
-            column = (ColumnSegment) ((InExpression) expression).getLeft();
-        } else if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
-            column = (ColumnSegment) ((BetweenExpression) expression).getLeft();
-        }
+        ColumnSegment column = ExpressionUtil.getColumnFromExpression(expression);
         if (null == column) {
             return Optional.empty();
         }

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.S
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionUtil;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -83,13 +84,9 @@ public final class ShadowConditionEngine {
     
     private Optional<ShadowCondition> createShadowCondition(final AndPredicate andPredicate) {
         for (ExpressionSegment predicate : andPredicate.getPredicates()) {
-            ColumnSegment column = null;
-            if (predicate instanceof BinaryOperationExpression && ((BinaryOperationExpression) predicate).getLeft() instanceof ColumnSegment) {
-                column = (ColumnSegment) ((BinaryOperationExpression) predicate).getLeft();
-            } else if (predicate instanceof InExpression && ((InExpression) predicate).getLeft() instanceof ColumnSegment) {
-                column = (ColumnSegment) ((InExpression) predicate).getLeft();
-            } else if (predicate instanceof BetweenExpression && ((BetweenExpression) predicate).getLeft() instanceof ColumnSegment) {
-                column = (ColumnSegment) ((BetweenExpression) predicate).getLeft();
+            ColumnSegment column = ExpressionUtil.getColumnFromExpression(predicate);
+            if (null != column) {
+                continue;
             }
             Collection<Integer> stopIndexes = new HashSet<>();
             if (stopIndexes.add(predicate.getStopIndex())) {

@@ -26,13 +26,11 @@ import org.apache.shardingsphere.shadow.rewrite.token.generator.BaseShadowSQLTok
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionUtil;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -68,14 +66,7 @@ public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLToke
         List<ExpressionSegment> predicates = (LinkedList<ExpressionSegment>) andPredicate.getPredicates();
         for (int i = 0; i < predicates.size(); i++) {
             ExpressionSegment expression = predicates.get(i);
-            ColumnSegment column = null;
-            if (expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
-                column = (ColumnSegment) ((BinaryOperationExpression) expression).getLeft();
-            } else if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
-                column = (ColumnSegment) ((InExpression) expression).getLeft();
-            } else if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
-                column = (ColumnSegment) ((BetweenExpression) expression).getLeft();
-            }
+            ColumnSegment column = ExpressionUtil.getColumnFromExpression(expression);
             if (null == column) {
                 continue;
             }

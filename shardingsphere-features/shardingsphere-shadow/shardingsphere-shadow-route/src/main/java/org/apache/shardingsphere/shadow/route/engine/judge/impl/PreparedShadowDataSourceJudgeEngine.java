@@ -103,7 +103,6 @@ public final class PreparedShadowDataSourceJudgeEngine implements ShadowDataSour
                     continue;
                 }
                 int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) right).getParameterMarkerIndex();
-                Object value = parameters.get(parameterMarkerIndex);
                 return ShadowValueJudgeUtil.isShadowValue(parameters.get(parameterMarkerIndex));
             }
         }
