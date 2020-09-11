@@ -33,10 +33,6 @@
         <assertion expected-data-file="insert_for_order_1.xml" />
     </dml-test-case>
     
-    <dml-test-case sql="INSERT /*+ index(field1) */ INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') RETURNING order_id" db-types="PostgreSQL">
-        <assertion expected-data-file="insert_for_order_1.xml" dml-returning="true" />
-    </dml-test-case>
-    
     <dml-test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert'), (2, 2, 'insert2')" db-types="MySQL">
         <assertion expected-data-file="insert_multiple_values_for_order_1_2.xml" />
     </dml-test-case>

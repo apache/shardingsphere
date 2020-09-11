@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.dml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -35,96 +36,96 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class InsertStatementTest {
-    
+public final class SQL92InsertStatementTest {
+
     @Test
     public void assertUseDefaultColumns() {
-        assertTrue(new InsertStatement().useDefaultColumns());
+        assertTrue(new SQL92InsertStatement().useDefaultColumns());
     }
-    
+
     @Test
     public void assertNotUseDefaultColumnsWithColumns() {
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new SQL92InsertStatement();
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
         assertFalse(insertStatement.useDefaultColumns());
     }
-    
+
     @Test
     public void assertNotUseDefaultColumnsWithSetAssignment() {
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new SQL92InsertStatement();
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.emptyList()));
         assertFalse(insertStatement.useDefaultColumns());
     }
-    
+
     @Test
     public void assertGetColumnNamesForInsertColumns() {
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new SQL92InsertStatement();
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
         assertThat(insertStatement.getColumnNames().size(), is(1));
         assertThat(insertStatement.getColumnNames().iterator().next(), is("col"));
     }
-    
+
     @Test
     public void assertGetColumnNamesForSetAssignment() {
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new SQL92InsertStatement();
         insertStatement.setSetAssignment(
                 new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
         assertThat(insertStatement.getColumnNames().size(), is(1));
         assertThat(insertStatement.getColumnNames().iterator().next(), is("col"));
     }
-    
+
     @Test
     public void assertGetValueListCountWithValues() {
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new SQL92InsertStatement();
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 2))));
         assertThat(insertStatement.getValueListCount(), is(2));
     }
-    
+
     @Test
     public void assertGetValueListCountWithSetAssignment() {
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new SQL92InsertStatement();
         insertStatement.setSetAssignment(
                 new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
         assertThat(insertStatement.getValueListCount(), is(1));
     }
-    
+
     @Test
     public void assertGetValueCountForPerGroupWithValues() {
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new SQL92InsertStatement();
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))));
         assertThat(insertStatement.getValueCountForPerGroup(), is(1));
     }
-    
+
     @Test
     public void assertGetValueCountForPerGroupWithSetAssignment() {
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new SQL92InsertStatement();
         insertStatement.setSetAssignment(
                 new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
         assertThat(insertStatement.getValueCountForPerGroup(), is(1));
     }
-    
+
     @Test
     public void assertGetValueCountForPerGroupWithoutValuesAndSetAssignment() {
-        assertThat(new InsertStatement().getValueCountForPerGroup(), is(0));
+        assertThat(new MySQLInsertStatement().getValueCountForPerGroup(), is(0));
     }
-    
+
     @Test
     public void assertGetAllValueExpressionsWithValues() {
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new SQL92InsertStatement();
         ExpressionSegment valueSegment = new LiteralExpressionSegment(0, 0, 1);
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(valueSegment)));
         assertThat(insertStatement.getAllValueExpressions().size(), is(1));
         assertThat(insertStatement.getAllValueExpressions().iterator().next().size(), is(1));
         assertThat(insertStatement.getAllValueExpressions().iterator().next().iterator().next(), is(valueSegment));
     }
-    
+
     @Test
     public void assertGetAllValueExpressionsWithSetAssignment() {
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new SQL92InsertStatement();
         ExpressionSegment valueSegment = new LiteralExpressionSegment(0, 0, 1);
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("col")), valueSegment))));
         assertThat(insertStatement.getAllValueExpressions().size(), is(1));

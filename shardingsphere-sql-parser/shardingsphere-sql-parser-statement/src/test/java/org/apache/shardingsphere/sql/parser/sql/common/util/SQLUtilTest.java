@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.util;
+package org.apache.shardingsphere.sql.parser.sql.common.util;
 
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.junit.Test;
 
 import java.math.BigDecimal;

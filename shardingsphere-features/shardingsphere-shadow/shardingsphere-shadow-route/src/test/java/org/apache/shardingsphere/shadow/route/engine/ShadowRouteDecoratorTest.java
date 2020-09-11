@@ -30,6 +30,13 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,7 +67,7 @@ public class ShadowRouteDecoratorTest {
     private InsertStatementContext sqlStatementContext;
     
     @Mock
-    private InsertStatement insertStatement;
+    private MySQLInsertStatement insertStatement;
     
     @Mock
     private CreateTableStatementContext createTableStatementContext;
@@ -77,7 +84,6 @@ public class ShadowRouteDecoratorTest {
         routeDecorator = new ShadowRouteDecorator();
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration(SHADOW_COLUMN, Collections.singletonMap(ACTUAL_DATASOURCE, SHADOW_DATASOURCE));
         shadowRule = new ShadowRule(shadowRuleConfiguration);
-        
     }
     
     @Test

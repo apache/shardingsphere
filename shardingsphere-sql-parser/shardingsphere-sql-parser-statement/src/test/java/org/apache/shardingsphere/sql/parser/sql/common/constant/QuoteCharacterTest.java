@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.constant;
+package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
