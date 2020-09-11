@@ -30,11 +30,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractFromExpression;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Predicate column token generator for shadow.
@@ -66,11 +67,11 @@ public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLToke
         List<ExpressionSegment> predicates = (LinkedList<ExpressionSegment>) andPredicate.getPredicates();
         for (int i = 0; i < predicates.size(); i++) {
             ExpressionSegment expression = predicates.get(i);
-            ColumnSegment column = ExpressionUtil.getColumnFromExpression(expression);
-            if (null == column) {
+            Optional<ColumnSegment> column = ColumnExtractFromExpression.extract(expression);
+            if (!column.isPresent()) {
                 continue;
             }
-            if (!getShadowRule().getColumn().equals(column.getIdentifier().getValue())) {
+            if (!getShadowRule().getColumn().equals(column.get().getIdentifier().getValue())) {
                 continue;
             }
             if (1 == predicates.size()) {

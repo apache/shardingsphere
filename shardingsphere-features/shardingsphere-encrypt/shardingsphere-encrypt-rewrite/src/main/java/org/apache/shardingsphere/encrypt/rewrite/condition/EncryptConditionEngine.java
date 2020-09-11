@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.S
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractFromExpression;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -97,12 +97,12 @@ public final class EncryptConditionEngine {
     }
     
     private Optional<EncryptCondition> createEncryptCondition(final SQLStatementContext sqlStatementContext, final ExpressionSegment expression) {
-        ColumnSegment column = ExpressionUtil.getColumnFromExpression(expression);
-        if (null == column) {
+        Optional<ColumnSegment> column = ColumnExtractFromExpression.extract(expression);
+        if (!column.isPresent()) {
             return Optional.empty();
         }
-        Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(column, schemaMetaData);
-        return tableName.isPresent() && encryptRule.findEncryptor(tableName.get(), column.getIdentifier().getValue()).isPresent()
+        Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(column.get(), schemaMetaData);
+        return tableName.isPresent() && encryptRule.findEncryptor(tableName.get(), column.get().getIdentifier().getValue()).isPresent()
                 ? createEncryptCondition(expression, tableName.get()) : Optional.empty();
     }
     

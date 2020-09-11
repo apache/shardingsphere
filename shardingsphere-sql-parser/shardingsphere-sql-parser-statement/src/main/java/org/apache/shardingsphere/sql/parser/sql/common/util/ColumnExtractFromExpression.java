@@ -23,7 +23,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 
-public final class ExpressionUtil {
+import java.util.Optional;
+
+public final class ColumnExtractFromExpression {
     
     /**
      * Get left value if left value of expression is ColumnSegment.
@@ -31,15 +33,17 @@ public final class ExpressionUtil {
      * @param expression ExpressionSegment.
      * @return ColumnSegment.
      */
-    public static ColumnSegment getColumnFromExpression(final ExpressionSegment expression) {
-        ColumnSegment column = null;
+    public static Optional<ColumnSegment> extract(final ExpressionSegment expression) {
         if (expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
-            column = (ColumnSegment) ((BinaryOperationExpression) expression).getLeft();
+            ColumnSegment column = (ColumnSegment) ((BinaryOperationExpression) expression).getLeft();
+            return Optional.of(column);
         } else if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
-            column = (ColumnSegment) ((InExpression) expression).getLeft();
+            ColumnSegment column = (ColumnSegment) ((InExpression) expression).getLeft();
+            return Optional.of(column);
         } else if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
-            column = (ColumnSegment) ((BetweenExpression) expression).getLeft();
+            ColumnSegment column = (ColumnSegment) ((BetweenExpression) expression).getLeft();
+            return Optional.of(column);
         }
-        return column;
+        return Optional.empty();
     }
 }

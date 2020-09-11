@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.S
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractFromExpression;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -84,13 +84,13 @@ public final class ShadowConditionEngine {
     
     private Optional<ShadowCondition> createShadowCondition(final AndPredicate andPredicate) {
         for (ExpressionSegment predicate : andPredicate.getPredicates()) {
-            ColumnSegment column = ExpressionUtil.getColumnFromExpression(predicate);
-            if (null == column) {
+            Optional<ColumnSegment> column = ColumnExtractFromExpression.extract(predicate);
+            if (!column.isPresent()) {
                 continue;
             }
             Collection<Integer> stopIndexes = new HashSet<>();
             if (stopIndexes.add(predicate.getStopIndex())) {
-                Optional<ShadowCondition> condition = shadowRule.getColumn().equals(column.getIdentifier().getValue())
+                Optional<ShadowCondition> condition = shadowRule.getColumn().equals(column.get().getIdentifier().getValue())
                         ? createShadowCondition(predicate) : Optional.empty();
                 if (condition.isPresent()) {
                     return condition;
