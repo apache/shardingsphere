@@ -227,7 +227,7 @@
     </dql-test-case>
     
     <!--<dql-test-case sql="SELECT date_format(creation_date,  '%%y-%%m-%%d') as creation_date, count(*) as c_number FROM `t_order_item` WHERE order_id in (?, ?) GROUP BY date_format(creation_date, '%%y-%%m-%%d')" db-types="MySQL">-->
-        <!--<assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 1100:int" expected-data-file="select_group_by_with_date_function.xml" />-->
+        <!--<assertion sharding-rule-type="dbtbl_with_primaryreplica" parameters="1000:int, 1100:int" expected-data-file="select_group_by_with_date_function.xml" />-->
     <!--</dql-test-case>-->
     
     <dql-test-case sql="SELECT * FROM t_order WHERE order_id = ? OR order_id = ?">
