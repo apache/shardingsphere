@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public final class ConnectionStatusHandler {
     
-    private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.READY);
+    private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.RELEASE);
     
     private final ResourceLock resourceLock;
     
