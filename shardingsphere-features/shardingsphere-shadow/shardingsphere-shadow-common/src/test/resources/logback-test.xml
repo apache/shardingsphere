@@ -25,8 +25,7 @@
     <logger name="org.apache.shardingsphere" level="warn" additivity="false">
         <appender-ref ref="console" />
     </logger>
-    
-    <logger name="com.zaxxer.hikari" level="off" />
+    <logger name="com.zaxxer.hikari" level="warn" />
     
     <root>
         <level value="error" />

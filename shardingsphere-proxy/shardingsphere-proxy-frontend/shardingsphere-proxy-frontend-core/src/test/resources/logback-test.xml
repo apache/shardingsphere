@@ -25,8 +25,7 @@
     <logger name="org.apache.shardingsphere" level="warn" additivity="false">
         <appender-ref ref="console" />
     </logger>
-    <logger name="com.zaxxer.hikari" level="warn" />
-    <logger name="org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryDataTaskSplitter" level="off" />
+    <logger name="org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask" level="off" />
     
     <root>
         <level value="info" />
