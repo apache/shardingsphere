@@ -66,8 +66,6 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private TransactionType transactionType;
     
-    private final boolean supportHint;
-    
     @Setter
     private int connectionId;
     
@@ -87,12 +85,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     private final ConnectionStatusHandler statusHandler = new ConnectionStatusHandler(resourceLock);
     
     public BackendConnection(final TransactionType transactionType) {
-        this(transactionType, false);
-    }
-    
-    public BackendConnection(final TransactionType transactionType, final boolean supportHint) {
         this.transactionType = transactionType;
-        this.supportHint = supportHint;
     }
     
     /**
