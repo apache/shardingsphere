@@ -99,7 +99,7 @@ public final class BackendTransactionManagerTest {
     public void assertCommitForLocalTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.LOCAL, true);
         backendTransactionManager.commit();
-        verify(statusHandler).switchReadyStatus();
+        verify(statusHandler).switchRunningStatusIfNecessary();
         verify(localTransactionManager).commit();
     }
     
@@ -107,7 +107,7 @@ public final class BackendTransactionManagerTest {
     public void assertCommitForDistributedTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.commit();
-        verify(statusHandler).switchReadyStatus();
+        verify(statusHandler).switchRunningStatusIfNecessary();
         verify(shardingTransactionManager).commit();
     }
     
@@ -115,7 +115,7 @@ public final class BackendTransactionManagerTest {
     public void assertCommitWithoutTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.commit();
-        verify(statusHandler, times(0)).switchReadyStatus();
+        verify(statusHandler, times(0)).switchRunningStatusIfNecessary();
         verify(localTransactionManager, times(0)).commit();
         verify(shardingTransactionManager, times(0)).commit();
     }
@@ -124,7 +124,7 @@ public final class BackendTransactionManagerTest {
     public void assertRollbackForLocalTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.LOCAL, true);
         backendTransactionManager.rollback();
-        verify(statusHandler).switchReadyStatus();
+        verify(statusHandler).switchRunningStatusIfNecessary();
         verify(localTransactionManager).rollback();
     }
     
@@ -132,7 +132,7 @@ public final class BackendTransactionManagerTest {
     public void assertRollbackForDistributedTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.rollback();
-        verify(statusHandler).switchReadyStatus();
+        verify(statusHandler).switchRunningStatusIfNecessary();
         verify(shardingTransactionManager).rollback();
     }
     
@@ -140,7 +140,7 @@ public final class BackendTransactionManagerTest {
     public void assertRollbackWithoutTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.rollback();
-        verify(statusHandler, times(0)).switchReadyStatus();
+        verify(statusHandler, times(0)).switchRunningStatusIfNecessary();
         verify(localTransactionManager, times(0)).rollback();
         verify(shardingTransactionManager, times(0)).rollback();
     }
