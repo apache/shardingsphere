@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +29,8 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -58,29 +59,28 @@ public final class PostgreSQLDataRowPacketTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertWriteWithSQLXML() {
-        when(sqlxml.getString()).thenReturn("string");
+    public void assertWriteWithSQLXML() throws SQLException {
+        when(sqlxml.getString()).thenReturn("value");
         PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(sqlxml));
         actual.write(payload);
-        verify(payload).writeInt4("string".getBytes().length);
-        verify(payload).writeStringEOF("string");
+        verify(payload).writeInt4("value".getBytes().length);
+        verify(payload).writeStringEOF("value");
     }
     
     @Test
     public void assertWriteWithString() {
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList("str"));
-        assertThat(actual.getData(), is(Collections.singletonList("str")));
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList("value"));
+        assertThat(actual.getData(), is(Collections.singletonList("value")));
         actual.write(payload);
-        verify(payload).writeInt4("str".getBytes().length);
-        verify(payload).writeStringEOF("str");
+        verify(payload).writeInt4("value".getBytes().length);
+        verify(payload).writeStringEOF("value");
     }
     
     @Test
-    @SneakyThrows
-    public void assertWriteWithSQLXML4Error() {
+    public void assertWriteWithSQLXML4Error() throws SQLException {
         when(sqlxml.getString()).thenThrow(new SQLException("mock"));
         PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(sqlxml));
         actual.write(payload);
+        verify(payload, times(0)).writeStringEOF(any());
     }
 }

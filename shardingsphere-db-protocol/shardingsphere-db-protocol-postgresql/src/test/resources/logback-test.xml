@@ -26,6 +26,8 @@
         <appender-ref ref="console"/>
     </logger>
     
+    <logger name="org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLDataRowPacket" level="off" />
+    
     <root>
         <level value="error" />
         <appender-ref ref="console" />
