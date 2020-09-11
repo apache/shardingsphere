@@ -21,15 +21,15 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CallContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AliasClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AttrNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColIdContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnrefContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DeleteContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExprListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ForLockingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.GroupByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.GroupClauseContext;
@@ -333,6 +333,12 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     }
     
     @Override
+    public ASTNode visitForLockingClause(final ForLockingClauseContext ctx) {
+        LockSegment result = new LockSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        return result;
+    }
+    
+    @Override
     public ASTNode visitSelectWithParens(final SelectWithParensContext ctx) {
         if (null != ctx.selectWithParens()) {
             return visit(ctx.selectWithParens());
@@ -457,18 +463,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             result.setAlias(alias);
         }
         return result;
-    }
-    
-    private ColumnProjectionSegment generateColumnProjection(final ColumnrefContext ctx) {
-        if (null != ctx.indirection()) {
-            PostgreSQLStatementParser.AttrNameContext attrName = ctx.indirection().indirectionEl().attrName();
-            ColumnSegment columnSegment = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(attrName.getText()));
-            OwnerSegment owner = new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
-            columnSegment.setOwner(owner);
-            return new ColumnProjectionSegment(columnSegment);
-        }
-        ColumnSegment columnSegment = new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
-        return new ColumnProjectionSegment(columnSegment);
     }
     
     @Override
