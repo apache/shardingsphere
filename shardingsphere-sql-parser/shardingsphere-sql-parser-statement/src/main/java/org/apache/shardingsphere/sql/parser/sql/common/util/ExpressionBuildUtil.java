@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.OrP
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class ExpressionBuildUtil {
+public final class ExpressionBuildUtil {
     
     private final ExpressionSegment expression;
     

@@ -59,7 +59,6 @@ public final class ShadowConditionEngine {
         if (!whereSegment.isPresent()) {
             return Optional.empty();
         }
-    
         Collection<AndPredicate> andPredicates = new LinkedList<>();
         ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
         ExpressionBuildUtil util = new ExpressionBuildUtil(expression);

@@ -498,7 +498,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             } else {
                 stopIndex = null != ctx.RP_() ? ctx.RP_().getSymbol().getStopIndex() : ctx.tableReference().start.getStopIndex();
             }
-    
             result.setStartIndex(startIndex);
             result.setStopIndex(stopIndex);
             result = visitJoinedTable(ctx.joinedTable(), result);

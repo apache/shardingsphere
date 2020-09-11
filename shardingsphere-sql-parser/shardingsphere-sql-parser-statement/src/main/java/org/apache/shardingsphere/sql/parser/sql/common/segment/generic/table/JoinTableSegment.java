@@ -28,7 +28,7 @@ import java.util.Optional;
 
 @Getter
 @Setter
-public class JoinTableSegment implements TableSegment {
+public final class JoinTableSegment implements TableSegment {
     
     private int startIndex;
     

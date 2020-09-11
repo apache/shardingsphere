@@ -136,7 +136,6 @@ public final class RowNumberPaginationContextEngineTest {
     private void assertCreatePaginationContextWhenOffsetSegmentInstanceOfNumberLiteralRowNumberValueSegmentWithGivenOperator(final String operator) {
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
-    
         BinaryOperationExpression expression = new BinaryOperationExpression();
         expression.setOperator(operator);
         expression.setRight(new LiteralExpressionSegment(0, 10, 100));

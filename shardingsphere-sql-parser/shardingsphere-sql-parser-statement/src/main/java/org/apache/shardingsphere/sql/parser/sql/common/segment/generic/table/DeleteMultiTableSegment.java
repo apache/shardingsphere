@@ -27,7 +27,7 @@ import java.util.Optional;
 
 @Setter
 @Getter
-public class DeleteMultiTableSegment implements TableSegment {
+public final class DeleteMultiTableSegment implements TableSegment {
     
     private int startIndex;
     

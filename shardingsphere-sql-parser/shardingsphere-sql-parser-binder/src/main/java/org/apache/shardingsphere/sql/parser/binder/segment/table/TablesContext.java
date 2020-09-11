@@ -47,14 +47,14 @@ public final class TablesContext {
     
     public TablesContext(final Collection<SimpleTableSegment> tableSegments) {
         Map<String, SimpleTableSegment> tableMaps = new HashMap<>(1, 1);
-        Collection<SimpleTableSegment> realtables = new LinkedList<>();
+        Collection<SimpleTableSegment> actualTables = new LinkedList<>();
         for (SimpleTableSegment each : tableSegments) {
             if (!tableMaps.containsKey(each.getTableName().getIdentifier().getValue())) {
                 tableMaps.put(each.getTableName().getIdentifier().getValue(), each);
-                realtables.add(each);
+                actualTables.add(each);
             }
         }
-        this.tables = realtables;
+        this.tables = actualTables;
     }
     
     /**

@@ -161,7 +161,6 @@ public final class TableExtractUtils {
      * @param deleteStatement DeleteStatement.
      */
     public void extractTablesFromDelete(final DeleteStatement deleteStatement) {
-        
         extractTablesFromTableSegment(deleteStatement.getTableSegment());
         if (deleteStatement.getWhere().isPresent()) {
             extractTablesFromExpression(deleteStatement.getWhere().get().getExpr());
@@ -193,7 +192,6 @@ public final class TableExtractUtils {
      * @param updateStatement UpdateStatement.
      */
     public void extractTablesFromUpdate(final UpdateStatement updateStatement) {
-        
         extractTablesFromTableSegment(updateStatement.getTableSegment());
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr());

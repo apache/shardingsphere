@@ -73,14 +73,8 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ExpressionSegment each : andPredicate.getPredicates()) {
-            ColumnSegment column;
-            if (each instanceof BinaryOperationExpression && ((BinaryOperationExpression) each).getLeft() instanceof ColumnSegment) {
-                column = (ColumnSegment) ((BinaryOperationExpression) each).getLeft();
-            } else if (each instanceof InExpression && ((InExpression) each).getLeft() instanceof ColumnSegment) {
-                column = (ColumnSegment) ((InExpression) each).getLeft();
-            } else if (each instanceof BetweenExpression && ((BetweenExpression) each).getLeft() instanceof ColumnSegment) {
-                column = (ColumnSegment) ((BetweenExpression) each).getLeft();
-            } else {
+            ColumnSegment column = getColumnFromExpression(each);
+            if (null == column) {
                 continue;
             }
             Optional<EncryptTable> encryptTable = findEncryptTable(sqlStatementContext, column);
@@ -102,6 +96,18 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
             result.add(encryptColumnNameToken);
         }
         return result;
+    }
+    
+    private ColumnSegment getColumnFromExpression(ExpressionSegment expression) {
+        ColumnSegment column = null;
+        if (expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
+            column = (ColumnSegment) ((BinaryOperationExpression) expression).getLeft();
+        } else if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
+            column = (ColumnSegment) ((InExpression) expression).getLeft();
+        } else if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
+            column = (ColumnSegment) ((BetweenExpression) expression).getLeft();
+        }
+        return column;
     }
     
     private Optional<EncryptTable> findEncryptTable(final SQLStatementContext sqlStatementContext, final ColumnSegment column) {

@@ -55,7 +55,6 @@ public final class UpdateStatementContextTest {
         when(columnSegment.getOwner()).thenReturn(Optional.of(new OwnerSegment(0, 0, new IdentifierValue("tbl_2"))));
         BinaryOperationExpression expression = new BinaryOperationExpression();
         expression.setLeft(columnSegment);
-        
         when(whereSegment.getExpr()).thenReturn(expression);
         SimpleTableSegment table1 = new SimpleTableSegment(0, 0, new IdentifierValue("tbl_1"));
         SimpleTableSegment table2 = new SimpleTableSegment(0, 0, new IdentifierValue("tbl_2"));
