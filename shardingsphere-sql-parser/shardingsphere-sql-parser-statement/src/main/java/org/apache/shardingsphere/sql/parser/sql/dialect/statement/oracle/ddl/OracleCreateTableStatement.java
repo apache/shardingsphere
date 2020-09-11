@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Alter instance statement.
+ * Oracle create table statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterInstanceStatement extends AbstractSQLStatement implements DDLStatement {
+public final class OracleCreateTableStatement extends CreateTableStatement implements DDLStatement, OracleStatement {
 }

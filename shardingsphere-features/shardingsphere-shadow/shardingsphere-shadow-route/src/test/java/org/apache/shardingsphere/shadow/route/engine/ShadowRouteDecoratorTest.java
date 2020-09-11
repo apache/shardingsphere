@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -66,7 +66,7 @@ public class ShadowRouteDecoratorTest {
     private CreateTableStatementContext createTableStatementContext;
     
     @Mock
-    private CreateTableStatement createTableStatement;
+    private MySQLCreateTableStatement createTableStatement;
     
     private ShadowRouteDecorator routeDecorator;
     

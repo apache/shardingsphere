@@ -28,6 +28,11 @@ import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStat
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -42,8 +47,43 @@ public final class ShardingCreateTableStatementValidatorTest {
     private ShardingRule shardingRule;
 
     @Test(expected = TableExistsException.class)
-    public void assertValidateCreateTable() {
-        CreateTableStatement sqlStatement = new CreateTableStatement(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")), false);
+    public void assertValidateMySQLCreateTable() {
+        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")));
+        sqlStatement.setNotExisted(false);
+        assertValidateCreateTable(sqlStatement);
+    }
+    
+    @Test(expected = TableExistsException.class)
+    public void assertValidateOracleCreateTable() {
+        OracleCreateTableStatement sqlStatement = new OracleCreateTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")));
+        assertValidateCreateTable(sqlStatement);
+    }
+    
+    @Test(expected = TableExistsException.class)
+    public void assertValidatePostgreSQLCreateTable() {
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")));
+        sqlStatement.setNotExisted(false);
+        assertValidateCreateTable(sqlStatement);
+    }
+    
+    @Test(expected = TableExistsException.class)
+    public void assertValidateSQL92CreateTable() {
+        SQL92CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")));
+        assertValidateCreateTable(sqlStatement);
+    }
+    
+    @Test(expected = TableExistsException.class)
+    public void assertValidateSQLServerCreateTable() {
+        SQLServerCreateTableStatement sqlStatement = new SQLServerCreateTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")));
+        assertValidateCreateTable(sqlStatement);
+    }
+    
+    private void assertValidateCreateTable(final CreateTableStatement sqlStatement) {
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
         RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
@@ -54,8 +94,22 @@ public final class ShardingCreateTableStatementValidatorTest {
     }
     
     @Test
-    public void assertValidateCreateTableIfNotExists() {
-        CreateTableStatement sqlStatement = new CreateTableStatement(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")), true);
+    public void assertValidateMySQLCreateTableIfNotExists() {
+        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")));
+        sqlStatement.setNotExisted(true);
+        assertValidateCreateTableIfNotExists(sqlStatement);
+    }
+    
+    @Test
+    public void assertValidatePostgreSQLCreateTableIfNotExists() {
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")));
+        sqlStatement.setNotExisted(true);
+        assertValidateCreateTableIfNotExists(sqlStatement);
+    }
+    
+    private void assertValidateCreateTableIfNotExists(final CreateTableStatement sqlStatement) {
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
         RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);

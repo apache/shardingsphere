@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Alter server statement.
+ * MySQL create server statement.
  */
-public final class AlterServerStatement extends AbstractSQLStatement implements DDLStatement {
+public final class MySQLCreateServerStatement extends AbstractSQLStatement implements DDLStatement, MySQLStatement {
 }

@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Create event statement.
+ * PostgreSQL create index statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CreateEventStatement extends AbstractSQLStatement implements DDLStatement {
+public final class PostgreSQLCreateIndexStatement extends CreateIndexStatement implements DDLStatement, PostgreSQLStatement {
 }

@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Rename table statement.
+ * PostgreSQL alter procedure statement.
  */
-public final class RenameTableStatement extends AbstractSQLStatement implements DDLStatement {
+public final class PostgreSQLAlterProcedureStatement extends AlterProcedureStatement implements DDLStatement, PostgreSQLStatement {
 }

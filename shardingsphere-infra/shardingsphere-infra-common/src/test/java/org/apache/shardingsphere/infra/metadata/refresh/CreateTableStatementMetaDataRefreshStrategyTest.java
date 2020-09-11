@@ -17,16 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
-import javax.sql.DataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.refresh.impl.CreateTableStatementMetaDataRefreshStrategy;
@@ -38,7 +28,23 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.junit.Test;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -47,10 +53,41 @@ import static org.mockito.Mockito.when;
 public final class CreateTableStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @Test
-    public void refreshMetaData() throws SQLException {
-        MetaDataRefreshStrategy<CreateTableStatementContext> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
-        CreateTableStatement createTableStatement = new CreateTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))), false);
+    public void refreshMySQLCreateTableMetaData() throws SQLException {
+        MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
+        createTableStatement.setNotExisted(false);
+        refreshMetaData(createTableStatement);
+    }
+
+    @Test
+    public void refreshOracleCreateTableMetaData() throws SQLException {
+        OracleCreateTableStatement createTableStatement = new OracleCreateTableStatement();
+        refreshMetaData(createTableStatement);
+    }
+
+    @Test
+    public void refreshPostgreSQLCreateTableMetaData() throws SQLException {
+        PostgreSQLCreateTableStatement createTableStatement = new PostgreSQLCreateTableStatement();
+        createTableStatement.setNotExisted(false);
+        refreshMetaData(createTableStatement);
+    }
+
+    @Test
+    public void refreshSQL92CreateTableMetaData() throws SQLException {
+        SQL92CreateTableStatement createTableStatement = new SQL92CreateTableStatement();
+        refreshMetaData(createTableStatement);
+    }
+
+    @Test
+    public void refreshSQLServerCreateTableMetaData() throws SQLException {
+        SQLServerCreateTableStatement createTableStatement = new SQLServerCreateTableStatement();
+        refreshMetaData(createTableStatement);
+    }
+
+    private void refreshMetaData(final CreateTableStatement createTableStatement) throws SQLException {
+        createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
         CreateTableStatementContext createTableStatementContext = new CreateTableStatementContext(createTableStatement);
+        MetaDataRefreshStrategy<CreateTableStatementContext> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createTableStatementContext, tableName -> Optional.of(new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new IndexMetaData("index")))));
@@ -58,14 +95,45 @@ public final class CreateTableStatementMetaDataRefreshStrategyTest extends Abstr
     }
     
     @Test
-    public void assertRefreshMetaDataWithUnConfigured() throws SQLException {
-        MetaDataRefreshStrategy<CreateTableStatementContext> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
-        CreateTableStatement createTableStatement = new CreateTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))), false);
+    public void assertRefreshMySQLCreateTableMetaDataWithUnConfigured() throws SQLException {
+        MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
+        createTableStatement.setNotExisted(false);
+        assertRefreshMetaDataWithUnConfigured(createTableStatement);
+    }
+
+    @Test
+    public void assertRefreshOracleCreateTableMetaDataWithUnConfigured() throws SQLException {
+        OracleCreateTableStatement createTableStatement = new OracleCreateTableStatement();
+        assertRefreshMetaDataWithUnConfigured(createTableStatement);
+    }
+
+    @Test
+    public void assertRefreshPostgreSQLCreateTableMetaDataWithUnConfigured() throws SQLException {
+        PostgreSQLCreateTableStatement createTableStatement = new PostgreSQLCreateTableStatement();
+        createTableStatement.setNotExisted(false);
+        assertRefreshMetaDataWithUnConfigured(createTableStatement);
+    }
+
+    @Test
+    public void assertRefreshSQL92CreateTableMetaDataWithUnConfigured() throws SQLException {
+        SQL92CreateTableStatement createTableStatement = new SQL92CreateTableStatement();
+        assertRefreshMetaDataWithUnConfigured(createTableStatement);
+    }
+
+    @Test
+    public void assertRefreshSQLServerCreateTableMetaDataWithUnConfigured() throws SQLException {
+        SQLServerCreateTableStatement createTableStatement = new SQLServerCreateTableStatement();
+        assertRefreshMetaDataWithUnConfigured(createTableStatement);
+    }
+
+    private void assertRefreshMetaDataWithUnConfigured(final CreateTableStatement createTableStatement) throws SQLException {
+        createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))));
         CreateTableStatementContext createTableStatementContext = new CreateTableStatementContext(createTableStatement);
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>(1, 1);
         dataSourceSourceMap.put("t_order_item", initDataSource());
+        MetaDataRefreshStrategy<CreateTableStatementContext> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), new MySQLDatabaseType(), dataSourceSourceMap, createTableStatementContext,
-            tableName -> Optional.empty());
+                tableName -> Optional.empty());
         assertTrue(getMetaData().getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get("t_order_item").containsTable("t_order_item_0"));
     }
     

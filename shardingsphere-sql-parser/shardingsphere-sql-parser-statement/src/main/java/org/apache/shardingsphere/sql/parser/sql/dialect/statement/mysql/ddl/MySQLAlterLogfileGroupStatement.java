@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Create trigger statement.
+ * MySQL alter logfile group statement.
  */
-public final class CreateTriggerStatement extends AbstractSQLStatement implements DDLStatement {
+public final class MySQLAlterLogfileGroupStatement extends AbstractSQLStatement implements DDLStatement, MySQLStatement {
 }

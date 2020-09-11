@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sql.parser.binder.statement.ddl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.type.IndexAvailable;
+import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.binder.type.IndexAvailable;
 
 import java.util.Collection;
 import java.util.Collections;

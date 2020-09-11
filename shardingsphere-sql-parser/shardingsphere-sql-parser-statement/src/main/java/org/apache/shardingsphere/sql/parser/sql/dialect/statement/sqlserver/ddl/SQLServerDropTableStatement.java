@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
- * Drop event statement.
+ * SQLServer drop table statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropEventStatement extends AbstractSQLStatement implements DDLStatement {
+public final class SQLServerDropTableStatement extends DropTableStatement implements DDLStatement, SQLServerStatement {
 }
