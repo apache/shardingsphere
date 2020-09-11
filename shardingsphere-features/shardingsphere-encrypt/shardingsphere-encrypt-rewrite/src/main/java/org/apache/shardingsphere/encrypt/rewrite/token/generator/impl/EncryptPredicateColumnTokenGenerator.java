@@ -98,7 +98,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         return result;
     }
     
-    private ColumnSegment getColumnFromExpression(ExpressionSegment expression) {
+    private ColumnSegment getColumnFromExpression(final ExpressionSegment expression) {
         ColumnSegment column = null;
         if (expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
             column = (ColumnSegment) ((BinaryOperationExpression) expression).getLeft();
