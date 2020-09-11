@@ -34,6 +34,7 @@ import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchem
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.context.runtime.RuntimeContext;
@@ -177,10 +178,10 @@ public final class GovernanceSchemaContextsTest {
     @Test
     public void assertPropertiesChanged() {
         Properties properties = new Properties();
-        properties.setProperty("sql.show", "true");
+        properties.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
         PropertiesChangedEvent event = new PropertiesChangedEvent(properties);
         governanceSchemaContexts.renew(event);
-        assertThat(governanceSchemaContexts.getProps().getProps().getProperty("sql.show"), is("true"));
+        assertThat(governanceSchemaContexts.getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is("true"));
     }
     
     @Test

@@ -78,7 +78,7 @@ rules:
           worker-id: 123
 
 props:
-  sql.show: true
+  sql-show: true
 
 governance:
   name: demo_zookeeper_yaml_ds_sharding

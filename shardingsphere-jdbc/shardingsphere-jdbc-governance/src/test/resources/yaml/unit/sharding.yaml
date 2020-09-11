@@ -93,4 +93,4 @@ rules:
         - ds_s
 
 props:
-  sql.show: false
+  sql-show: false

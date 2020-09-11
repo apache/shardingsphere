@@ -31,42 +31,42 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether show SQL in log.
      */
-    SQL_SHOW("sql.show", String.valueOf(Boolean.FALSE), boolean.class),
+    SQL_SHOW("sql-show", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
      * Whether show SQL details in simple style.
      */
-    SQL_SIMPLE("sql.simple", String.valueOf(Boolean.FALSE), boolean.class),
+    SQL_SIMPLE("sql-simple", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
      * The max thread size of accepter group to accept TCP connections.
      */
-    ACCEPTOR_SIZE("acceptor.size", String.valueOf(Runtime.getRuntime().availableProcessors() * 2), int.class),
+    ACCEPTOR_SIZE("acceptor-size", String.valueOf(Runtime.getRuntime().availableProcessors() * 2), int.class),
     
     /**
      * The max thread size of worker group to execute SQL.
      */
-    EXECUTOR_SIZE("executor.size", String.valueOf(0), int.class),
+    EXECUTOR_SIZE("executor-size", String.valueOf(0), int.class),
     
     /**
      * Max opened connection size for each query.
      */
-    MAX_CONNECTIONS_SIZE_PER_QUERY("max.connections.size.per.query", String.valueOf(1), int.class),
+    MAX_CONNECTIONS_SIZE_PER_QUERY("max-connections-size-per-query", String.valueOf(1), int.class),
     
     /**
      * Whether validate table meta data consistency when application startup or updated.
      */
-    CHECK_TABLE_METADATA_ENABLED("check.table.metadata.enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
      * Whether query with cipher column for data encrypt.
      */
-    QUERY_WITH_CIPHER_COLUMN("query.with.cipher.column", String.valueOf(Boolean.TRUE), boolean.class),
+    QUERY_WITH_CIPHER_COLUMN("query-with-cipher-column", String.valueOf(Boolean.TRUE), boolean.class),
     
     /**
      * Flush threshold for every records from databases for ShardingSphere-Proxy.
      */
-    PROXY_FRONTEND_FLUSH_THRESHOLD("proxy.frontend.flush.threshold", String.valueOf(128), int.class),
+    PROXY_FRONTEND_FLUSH_THRESHOLD("proxy-frontend-flush-threshold", String.valueOf(128), int.class),
     
     /**
      * Transaction type of proxy.
@@ -86,17 +86,17 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * ShardingSphere-Proxy will run with BASE transaction.
      * </p>
      */
-    PROXY_TRANSACTION_TYPE("proxy.transaction.type", "LOCAL", String.class),
+    PROXY_TRANSACTION_TYPE("proxy-transaction-type", "LOCAL", String.class),
     
     /**
      * Whether enable opentracing for ShardingSphere-Proxy.
      */
-    PROXY_OPENTRACING_ENABLED("proxy.opentracing.enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    PROXY_OPENTRACING_ENABLED("proxy-opentracing-enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
      * Whether enable hint for ShardingSphere-Proxy.
      */
-    PROXY_HINT_ENABLED("proxy.hint.enabled", String.valueOf(Boolean.FALSE), boolean.class);
+    PROXY_HINT_ENABLED("proxy-hint-enabled", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
     

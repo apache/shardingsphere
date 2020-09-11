@@ -112,4 +112,4 @@ rules:
       type: ROUND_ROBIN
 
 props:
-  sql.show: false
+  sql-show: false

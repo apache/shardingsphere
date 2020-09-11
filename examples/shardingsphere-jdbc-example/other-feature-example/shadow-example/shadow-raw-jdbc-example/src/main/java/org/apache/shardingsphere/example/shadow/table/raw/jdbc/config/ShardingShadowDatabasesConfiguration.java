@@ -54,7 +54,7 @@ public final class ShardingShadowDatabasesConfiguration implements ExampleConfig
         props = new Properties();
         props.setProperty("algorithm-expression", "t_user");
         shardingRuleConfiguration.getShardingAlgorithms() .put("table_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
-        props.setProperty("sql.show", "true");
+        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", shadowMappings);
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, shardingRuleConfiguration), props);
     }

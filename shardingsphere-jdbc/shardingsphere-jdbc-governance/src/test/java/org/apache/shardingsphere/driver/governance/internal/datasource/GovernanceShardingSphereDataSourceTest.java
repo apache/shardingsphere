@@ -31,6 +31,7 @@ import org.apache.shardingsphere.governance.repository.api.config.GovernanceCent
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
@@ -134,12 +135,12 @@ public final class GovernanceShardingSphereDataSourceTest {
     @Test
     public void assertRenewProperties() {
         governanceSchemaContexts.renew(getPropertiesChangedEvent());
-        assertThat(governanceSchemaContexts.getProps().getProps().getProperty("sql.show"), is("true"));
+        assertThat(governanceSchemaContexts.getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {
         Properties props = new Properties();
-        props.setProperty("sql.show", "true");
+        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
         return new PropertiesChangedEvent(props);
     }
     

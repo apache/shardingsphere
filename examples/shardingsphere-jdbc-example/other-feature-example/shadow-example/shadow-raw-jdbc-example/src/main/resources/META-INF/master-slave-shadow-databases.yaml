@@ -52,4 +52,4 @@ rules:
       slaveDataSourceNames: [ds_slave]
 
 props:
-  sql.show: true
+  sql-show: true

@@ -22,6 +22,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.spring.boot.governance.registry.TestGovernanceRepository;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
@@ -66,7 +67,7 @@ public class GovernanceSpringBootRegistryEncryptTest {
         TestGovernanceRepository repository = new TestGovernanceRepository();
         repository.persist("/schemas/logic_db/datasource", dataSource);
         repository.persist("/schemas/logic_db/rule", encryptRule);
-        repository.persist("/props", "sql.show: 'true'\n");
+        repository.persist("/props", ConfigurationPropertyKey.SQL_SHOW.getKey() + ": 'true'\n");
         repository.persist("/states/datanodes", "");
     }
     
