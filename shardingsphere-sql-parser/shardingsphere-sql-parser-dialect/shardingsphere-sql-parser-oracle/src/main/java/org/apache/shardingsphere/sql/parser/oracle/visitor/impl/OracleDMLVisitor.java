@@ -84,12 +84,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -106,18 +106,18 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
         // TODO :deal with insert select
         if (null != ctx.insertSingleTable()) {
-            InsertStatement result = (InsertStatement) visit(ctx.insertSingleTable().insertValuesClause());
+            OracleInsertStatement result = (OracleInsertStatement) visit(ctx.insertSingleTable().insertValuesClause());
             result.setTable((SimpleTableSegment) visit(ctx.insertSingleTable().insertIntoClause().tableName()));
             result.setParameterCount(getCurrentParameterIndex());
             return result;
         }
-        return new InsertStatement();
+        return new OracleInsertStatement();
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement();
+        OracleInsertStatement result = new OracleInsertStatement();
         if (null != ctx.columnNames()) {
             ColumnNamesContext columnNames = ctx.columnNames();
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);

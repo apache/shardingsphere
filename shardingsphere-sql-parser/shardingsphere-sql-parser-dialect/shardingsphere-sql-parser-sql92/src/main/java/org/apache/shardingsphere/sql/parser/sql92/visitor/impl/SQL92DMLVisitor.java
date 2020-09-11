@@ -80,12 +80,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.SQL92Visitor;
 
 import java.util.Collection;
@@ -100,7 +100,7 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        InsertStatement result = (InsertStatement) visit(ctx.insertValuesClause());
+        SQL92InsertStatement result = (SQL92InsertStatement) visit(ctx.insertValuesClause());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setParameterCount(getCurrentParameterIndex());
         return result;
@@ -109,7 +109,7 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement();
+        SQL92InsertStatement result = new SQL92InsertStatement();
         if (null != ctx.columnNames()) {
             ColumnNamesContext columnNames = ctx.columnNames();
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);

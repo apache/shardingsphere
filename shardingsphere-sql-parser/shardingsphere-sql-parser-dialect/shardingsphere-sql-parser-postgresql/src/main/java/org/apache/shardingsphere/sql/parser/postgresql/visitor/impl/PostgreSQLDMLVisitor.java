@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.postgresql.visitor.impl;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AliasClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AttrNameContext;
@@ -105,11 +106,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -125,7 +126,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
         // TODO :deal with insert select
-        InsertStatement result = (InsertStatement) visit(ctx.insertRest());
+        PostgreSQLInsertStatement result = (PostgreSQLInsertStatement) visit(ctx.insertRest());
         result.setTable((SimpleTableSegment) visit(ctx.insertTarget()));
         result.setParameterCount(getCurrentParameterIndex());
         return result;
@@ -155,7 +156,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     @Override
     public ASTNode visitInsertRest(final InsertRestContext ctx) {
-        InsertStatement result = new InsertStatement();
+        PostgreSQLInsertStatement result = new PostgreSQLInsertStatement();
         if (null != ctx.insertColumnList()) {
             InsertColumnListContext insertColumns = ctx.insertColumnList();
             CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(insertColumns);

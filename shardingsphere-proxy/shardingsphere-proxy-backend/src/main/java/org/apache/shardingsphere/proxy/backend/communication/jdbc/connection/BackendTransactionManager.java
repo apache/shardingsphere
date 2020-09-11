@@ -47,8 +47,8 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void begin() {
-        if (!connection.getStateHandler().isInTransaction()) {
-            connection.getStateHandler().setStatus(ConnectionStatus.TRANSACTION);
+        if (!connection.getStatusHandler().isInTransaction()) {
+            connection.getStatusHandler().switchInTransactionStatus();
             connection.releaseConnections(false);
         }
         if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
@@ -60,7 +60,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void commit() throws SQLException {
-        if (connection.getStateHandler().isInTransaction()) {
+        if (connection.getStatusHandler().isInTransaction()) {
             try {
                 if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
                     localTransactionManager.commit();
@@ -68,14 +68,14 @@ public final class BackendTransactionManager implements TransactionManager {
                     shardingTransactionManager.commit();
                 }
             } finally {
-                connection.getStateHandler().setStatus(ConnectionStatus.TERMINATED);
+                connection.getStatusHandler().switchReadyStatus();
             }
         }
     }
     
     @Override
     public void rollback() throws SQLException {
-        if (connection.getStateHandler().isInTransaction()) {
+        if (connection.getStatusHandler().isInTransaction()) {
             try {
                 if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
                     localTransactionManager.rollback();
@@ -83,7 +83,7 @@ public final class BackendTransactionManager implements TransactionManager {
                     shardingTransactionManager.rollback();
                 }
             } finally {
-                connection.getStateHandler().setStatus(ConnectionStatus.TERMINATED);
+                connection.getStatusHandler().switchReadyStatus();
             }
         }
     }

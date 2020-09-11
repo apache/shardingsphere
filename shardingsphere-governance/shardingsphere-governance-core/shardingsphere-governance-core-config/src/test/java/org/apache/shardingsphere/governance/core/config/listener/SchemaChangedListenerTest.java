@@ -19,17 +19,18 @@ package org.apache.shardingsphere.governance.core.config.listener;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.governance.core.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.event.metadata.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.core.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.event.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +62,8 @@ public final class SchemaChangedListenerTest {
     private static final String MASTER_SLAVE_RULE_FILE = "yaml/master-slave-rule.yaml";
     
     private static final String ENCRYPT_RULE_FILE = "yaml/encrypt-rule.yaml";
+    
+    private static final String META_DATA_FILE = "yaml/metadata.yaml";
     
     private SchemaChangedListener schemaChangedListener;
     
@@ -271,6 +274,14 @@ public final class SchemaChangedListenerTest {
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((SchemaAddedEvent) actual.get()).getSchemaName(), is("shadow_db"));
+    }
+    
+    @Test
+    public void assertCreateMetaDataChangedEvent() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/sharding_db/table", readYAML(META_DATA_FILE), ChangedType.UPDATED);
+        Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
+        assertTrue(actual.isPresent());
+        assertTrue(((MetaDataChangedEvent) actual.get()).getRuleSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames().contains("t_order"));
     }
     
     @SneakyThrows

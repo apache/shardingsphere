@@ -34,6 +34,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -60,8 +65,31 @@ public final class SimpleShadowDataSourceRouterTest {
     }
     
     @Test
-    public void judgeForInsert() {
-        InsertStatement insertStatement = new InsertStatement();
+    public void judgeForMySQLInsert() {
+        judgeForInsert(new MySQLInsertStatement());
+    }
+    
+    @Test
+    public void judgeForOracleInsert() {
+        judgeForInsert(new OracleInsertStatement());
+    }
+    
+    @Test
+    public void judgeForPostgreSQLInsert() {
+        judgeForInsert(new PostgreSQLInsertStatement());
+    }
+    
+    @Test
+    public void judgeForSQL92Insert() {
+        judgeForInsert(new SQL92InsertStatement());
+    }
+    
+    @Test
+    public void judgeForSQLServerInsert() {
+        judgeForInsert(new SQLServerInsertStatement());
+    }
+    
+    private void judgeForInsert(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0,
                 Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("shadow"))));
