@@ -19,7 +19,6 @@ package org.apache.shardingsphere.governance.core.facade.listener;
 
 import org.apache.shardingsphere.governance.core.config.listener.ConfigurationListenerManager;
 import org.apache.shardingsphere.governance.core.facade.util.FieldUtil;
-import org.apache.shardingsphere.governance.core.metadata.listener.MetaDataListenerManager;
 import org.apache.shardingsphere.governance.core.registry.listener.RegistryListenerManager;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
@@ -45,9 +44,6 @@ public final class GovernanceListenerManagerTest {
     private ConfigurationListenerManager configurationListenerManager;
     
     @Mock
-    private MetaDataListenerManager metaDataListenerManager;
-    
-    @Mock
     private RegistryListenerManager registryListenerManager;
     
     @Test
@@ -55,10 +51,8 @@ public final class GovernanceListenerManagerTest {
         GovernanceListenerManager actual = new GovernanceListenerManager(registryRepository, configurationRepository, Collections.emptyList());
         FieldUtil.setField(actual, "configurationListenerManager", configurationListenerManager);
         FieldUtil.setField(actual, "registryListenerManager", registryListenerManager);
-        FieldUtil.setField(actual, "metaDataListenerManager", metaDataListenerManager);
         actual.init();
         verify(configurationListenerManager).initListeners();
         verify(registryListenerManager).initListeners();
-        verify(metaDataListenerManager).initListeners();
     }
 }
