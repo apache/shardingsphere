@@ -45,4 +45,14 @@
     <sql-case id="drop_table_with_bracket" value="DROP TABLE [t_order]" db-types="SQLServer" />
     <sql-case id="drop_index_with_bracket" value="DROP INDEX [order_index] ON [t_order]" db-types="SQLServer" />
     <sql-case id="drop_index_if_exists_on_table" value="DROP INDEX IF EXISTS order_index ON t_order" db-types="SQLServer" />
+    <sql-case id="drop_database_if_exist" value="DROP DATABASE IF EXISTS database1" db-types="PostgreSQL" />
+    <sql-case id="drop_database" value="DROP DATABASE database1" db-types="PostgreSQL" />
+    <sql-case id="drop_function" value="DROP FUNCTION sqrt(integer)" db-types="PostgreSQL" />
+    <sql-case id="drop_functions" value="DROP FUNCTION sqrt(integer), sqrt(bigint)" db-types="PostgreSQL" />
+    <sql-case id="drop_function_without_argument_list" value="DROP FUNCTION update_employee_salaries" db-types="PostgreSQL" />
+    <sql-case id="drop_procedure" value="DROP PROCEDURE do_db_maintenance()" db-types="PostgreSQL" />
+    <sql-case id="drop_server_if_exists" value="DROP SERVER IF EXISTS foo" db-types="PostgreSQL" />
+    <sql-case id="drop_server" value="DROP SERVER foo" db-types="PostgreSQL" />
+    <sql-case id="drop_trigger" value="DROP TRIGGER if_dist_exists ON films" db-types="PostgreSQL" />
+    <sql-case id="drop_view" value="DROP VIEW kinds" db-types="PostgreSQL" />
 </sql-cases>
