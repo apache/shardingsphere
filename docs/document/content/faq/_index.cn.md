@@ -12,6 +12,8 @@ chapter = true
 在ShardingSphere-Proxy以及ShardingSphere-JDBC 1.5.0版本之后提供了`sql.show`的配置，可以将解析上下文和改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
 `sql.show`配置默认关闭，如果需要请通过配置开启。
 
+注意：5.x版本以后，`sql.show`参数调整为`sql-show`。
+
 ## 2. 阅读源码时为什么会出现编译错误?
 
 回答：
@@ -233,15 +235,18 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 回答：
 
 1. 升级到`4.0.1`以上的版本，以提高`default dataSource`的table metadata的加载速度。
-2. 参照你采用的连接池，将配置项`max-connections-size-per-query`（默认值为1）调高（版本 >= 3.0.0.M3）。
+2. 参照你采用的连接池，将：
+- 配置项`max.connections.size.per.query`（默认值为1）调高（版本 >= 3.0.0.M3且低于5.0.0）。
+- 配置项`max-connections-size-per-query`（默认值为1）调高（版本 >= 5.0.0）。
 
 ## 19. 如何在inline分表策略时，允许执行范围查询操作（BETWEEN AND、\>、\<、\>=、\<=）？
 
 回答：
 
-1. 需要使用5.x以上版本。
-2. 将配置项`allow-range-query-with-inline-sharding`设置为true即可（默认为false）。
-3. 需要注意的是，此时所有的范围查询将会使用广播的方式查询每一个分表。
+1. 需要使用4.1.0以上版本。
+2. 调整以下配置项（需要注意的是，此时所有的范围查询将会使用广播的方式查询每一个分表）：
+ - 4.x版本：`allow.range.query.with.inline.sharding`设置为true即可（默认为false）。
+ - 5.x版本：`allow-range-query-with-inline-sharding`设置为true即可（默认为false）。
 
 ## 20. 为什么配置了某个数据连接池的spring-boot-starter（比如druid）和shardingsphere-jdbc-spring-boot-starter时，系统启动会报错？
 
