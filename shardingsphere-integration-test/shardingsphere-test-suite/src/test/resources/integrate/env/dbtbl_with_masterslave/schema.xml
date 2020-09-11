@@ -18,26 +18,26 @@
 
 <schema>
     <databases>
-        <database>master_db_0</database>
-        <database>master_db_1</database>
-        <database>master_db_2</database>
-        <database>master_db_3</database>
-        <database>master_db_4</database>
-        <database>master_db_5</database>
-        <database>master_db_6</database>
-        <database>master_db_7</database>
-        <database>master_db_8</database>
-        <database>master_db_9</database>
-        <database>slave_db_0</database>
-        <database>slave_db_1</database>
-        <database>slave_db_2</database>
-        <database>slave_db_3</database>
-        <database>slave_db_4</database>
-        <database>slave_db_5</database>
-        <database>slave_db_6</database>
-        <database>slave_db_7</database>
-        <database>slave_db_8</database>
-        <database>slave_db_9</database>
+        <database>primary_db_0</database>
+        <database>primary_db_1</database>
+        <database>primary_db_2</database>
+        <database>primary_db_3</database>
+        <database>primary_db_4</database>
+        <database>primary_db_5</database>
+        <database>primary_db_6</database>
+        <database>primary_db_7</database>
+        <database>primary_db_8</database>
+        <database>primary_db_9</database>
+        <database>replica_db_0</database>
+        <database>replica_db_1</database>
+        <database>replica_db_2</database>
+        <database>replica_db_3</database>
+        <database>replica_db_4</database>
+        <database>replica_db_5</database>
+        <database>replica_db_6</database>
+        <database>replica_db_7</database>
+        <database>replica_db_8</database>
+        <database>replica_db_9</database>
     </databases>
     <table-create>
         <sql>CREATE TABLE t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))</sql>
