@@ -39,9 +39,9 @@ public final class ConnectionStatusHandler {
     }
     
     /**
-     * Switch connection status to running if necessary.
+     * Switch connection status to using if necessary.
      */
-    public void switchRunningStatusIfNecessary() {
+    public void switchUsingStatusIfNecessary() {
         if (ConnectionStatus.IN_TRANSACTION != status.get() && ConnectionStatus.USING != status.get()) {
             status.set(ConnectionStatus.USING);
         }

@@ -46,7 +46,7 @@ public final class ConnectionStatusHandlerTest {
     @Test
     public void assertWaitUntilConnectionReleaseForTransaction() throws InterruptedException {
         Thread waitThread = new Thread(() -> {
-            connectionStatusHandler.switchRunningStatusIfNecessary();
+            connectionStatusHandler.switchUsingStatusIfNecessary();
             connectionStatusHandler.waitUntilConnectionReleasedIfNecessary();
         });
         Thread notifyThread = new Thread(() -> {
