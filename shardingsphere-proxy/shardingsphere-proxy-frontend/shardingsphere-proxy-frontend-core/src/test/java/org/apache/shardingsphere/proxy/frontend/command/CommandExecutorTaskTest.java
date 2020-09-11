@@ -19,14 +19,13 @@ package org.apache.shardingsphere.proxy.frontend.command;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStateHandler;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatusHandler;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
@@ -36,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -63,7 +63,7 @@ public final class CommandExecutorTaskTest {
     private ChannelHandlerContext handlerContext;
     
     @Mock
-    private ConnectionStateHandler stateHandler;
+    private ConnectionStatusHandler statusHandler;
     
     @Mock
     private CommandExecuteEngine executeEngine;
@@ -90,47 +90,44 @@ public final class CommandExecutorTaskTest {
     private FrontendContext frontendContext;
     
     @Test
-    @SneakyThrows
-    public void assertRunNeedFlushByFalse() {
+    public void assertRunNeedFlushByFalse() throws SQLException {
         when(backendConnection.getConnectionSize()).thenReturn(1);
         when(queryCommandExecutor.execute()).thenReturn(Collections.emptyList());
         when(executeEngine.getCommandPacket(eq(payload), eq(commandPacketType), eq(backendConnection))).thenReturn(commandPacket);
         when(executeEngine.getCommandExecutor(eq(commandPacketType), eq(commandPacket), eq(backendConnection))).thenReturn(queryCommandExecutor);
         when(executeEngine.getCommandPacketType(eq(payload))).thenReturn(commandPacketType);
         when(engine.getCommandExecuteEngine()).thenReturn(executeEngine);
-        when(backendConnection.getStateHandler()).thenReturn(stateHandler);
+        when(backendConnection.getStatusHandler()).thenReturn(statusHandler);
         when(codecEngine.createPacketPayload(eq(message))).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(stateHandler).waitUntilConnectionReleasedIfNecessary();
-        verify(stateHandler).setRunningStatusIfNecessary();
+        verify(statusHandler).waitUntilConnectionReleasedIfNecessary();
+        verify(statusHandler).switchRunningStatusIfNecessary();
     }
     
     @Test
-    @SneakyThrows
-    public void assertRunNeedFlushByTrue() {
+    public void assertRunNeedFlushByTrue() throws SQLException {
         when(backendConnection.getConnectionSize()).thenReturn(1);
         when(queryCommandExecutor.execute()).thenReturn(Collections.singletonList(databasePacket));
         when(executeEngine.getCommandPacket(eq(payload), eq(commandPacketType), eq(backendConnection))).thenReturn(commandPacket);
         when(executeEngine.getCommandExecutor(eq(commandPacketType), eq(commandPacket), eq(backendConnection))).thenReturn(queryCommandExecutor);
         when(executeEngine.getCommandPacketType(eq(payload))).thenReturn(commandPacketType);
         when(engine.getCommandExecuteEngine()).thenReturn(executeEngine);
-        when(backendConnection.getStateHandler()).thenReturn(stateHandler);
+        when(backendConnection.getStatusHandler()).thenReturn(statusHandler);
         when(codecEngine.createPacketPayload(eq(message))).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(stateHandler).waitUntilConnectionReleasedIfNecessary();
-        verify(stateHandler).setRunningStatusIfNecessary();
+        verify(statusHandler).waitUntilConnectionReleasedIfNecessary();
+        verify(statusHandler).switchRunningStatusIfNecessary();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
         verify(executeEngine).writeQueryData(handlerContext, backendConnection, queryCommandExecutor, 1);
     }
     
     @Test
-    @SneakyThrows
-    public void assertRunByCommandExecutor() {
+    public void assertRunByCommandExecutor() throws SQLException {
         when(frontendContext.isFlushForPerCommandPacket()).thenReturn(true);
         when(engine.getFrontendContext()).thenReturn(frontendContext);
         when(backendConnection.getConnectionSize()).thenReturn(1);
@@ -139,13 +136,13 @@ public final class CommandExecutorTaskTest {
         when(executeEngine.getCommandExecutor(eq(commandPacketType), eq(commandPacket), eq(backendConnection))).thenReturn(commandExecutor);
         when(executeEngine.getCommandPacketType(eq(payload))).thenReturn(commandPacketType);
         when(engine.getCommandExecuteEngine()).thenReturn(executeEngine);
-        when(backendConnection.getStateHandler()).thenReturn(stateHandler);
+        when(backendConnection.getStatusHandler()).thenReturn(statusHandler);
         when(codecEngine.createPacketPayload(eq(message))).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(stateHandler).waitUntilConnectionReleasedIfNecessary();
-        verify(stateHandler).setRunningStatusIfNecessary();
+        verify(statusHandler).waitUntilConnectionReleasedIfNecessary();
+        verify(statusHandler).switchRunningStatusIfNecessary();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
     }
@@ -153,7 +150,7 @@ public final class CommandExecutorTaskTest {
     @Test
     public void assertRunWithError() {
         RuntimeException mockException = new RuntimeException("mock");
-        when(backendConnection.getStateHandler()).thenThrow(mockException);
+        when(backendConnection.getStatusHandler()).thenThrow(mockException);
         when(codecEngine.createPacketPayload(message)).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         when(executeEngine.getErrorPacket(eq(mockException))).thenReturn(databasePacket);

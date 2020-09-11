@@ -51,17 +51,17 @@ public final class MySQLBinaryStatementRegistry {
      * Register SQL.
      *
      * @param sql SQL
-     * @param parametersCount parameters count
+     * @param parameterCount parameter count
      * @return statement ID
      */
-    public synchronized int register(final String sql, final int parametersCount) {
+    public synchronized int register(final String sql, final int parameterCount) {
         Integer result = statementIdAssigner.get(sql);
         if (null != result) {
             return result;
         }
         result = sequence.incrementAndGet();
         statementIdAssigner.putIfAbsent(sql, result);
-        binaryStatements.putIfAbsent(result, new MySQLBinaryStatement(sql, parametersCount));
+        binaryStatements.putIfAbsent(result, new MySQLBinaryStatement(sql, parameterCount));
         return result;
     }
     

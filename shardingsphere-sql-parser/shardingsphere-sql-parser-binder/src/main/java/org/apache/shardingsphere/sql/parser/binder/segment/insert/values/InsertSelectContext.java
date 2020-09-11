@@ -32,24 +32,24 @@ import java.util.List;
 @ToString
 public final class InsertSelectContext {
     
-    private final int parametersCount;
+    private final int parameterCount;
     
     private final List<Object> parameters;
     
     private final SelectStatementContext selectStatementContext;
     
     public InsertSelectContext(final SelectStatementContext selectStatementContext, final List<Object> parameters, final int parametersOffset) {
-        parametersCount = selectStatementContext.getSqlStatement().getParameterCount();
+        parameterCount = selectStatementContext.getSqlStatement().getParameterCount();
         this.selectStatementContext = selectStatementContext;
         this.parameters = getParameters(parameters, parametersOffset);
     }
     
     private List<Object> getParameters(final List<Object> parameters, final int parametersOffset) {
-        if (0 == parametersCount) {
+        if (0 == parameterCount) {
             return Collections.emptyList();
         }
-        List<Object> result = new ArrayList<>(parametersCount);
-        result.addAll(parameters.subList(parametersOffset, parametersOffset + parametersCount));
+        List<Object> result = new ArrayList<>(parameterCount);
+        result.addAll(parameters.subList(parametersOffset, parametersOffset + parameterCount));
         return result;
     }
 }

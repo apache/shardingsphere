@@ -22,8 +22,6 @@ import org.apache.shardingsphere.governance.core.event.persist.MetaDataPersistEv
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataNotifier;
 
-import java.util.Properties;
-
 /**
  * Rule schema meta data notifier.
  */
@@ -35,16 +33,12 @@ public final class RuleSchemaMetaDataNotifier implements RuleMetaDataNotifier {
     }
     
     @Override
-    public String getType() {
-        return "metadata-notifier";
+    public int getOrder() {
+        return 0;
     }
     
     @Override
-    public Properties getProps() {
-        return null;
-    }
-    
-    @Override
-    public void setProps(final Properties props) {
+    public Class<RuleSchemaMetaData> getTypeClass() {
+        return RuleSchemaMetaData.class;
     }
 }

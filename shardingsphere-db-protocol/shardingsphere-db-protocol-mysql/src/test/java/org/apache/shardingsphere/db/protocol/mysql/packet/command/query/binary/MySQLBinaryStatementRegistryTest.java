@@ -41,7 +41,7 @@ public final class MySQLBinaryStatementRegistryTest {
         assertThat(MySQLBinaryStatementRegistry.getInstance().register(sql, 1), is(1));
         MySQLBinaryStatement actual = MySQLBinaryStatementRegistry.getInstance().getBinaryStatement(1);
         assertThat(actual.getSql(), is(sql));
-        assertThat(actual.getParametersCount(), is(1));
+        assertThat(actual.getParameterCount(), is(1));
     }
     
     @Test
@@ -50,7 +50,7 @@ public final class MySQLBinaryStatementRegistryTest {
         assertThat(MySQLBinaryStatementRegistry.getInstance().register(sql, 1), is(1));
         MySQLBinaryStatement actual = MySQLBinaryStatementRegistry.getInstance().getBinaryStatement(1);
         assertThat(actual.getSql(), is(sql));
-        assertThat(actual.getParametersCount(), is(1));
+        assertThat(actual.getParameterCount(), is(1));
     }
     
     @Test

@@ -18,16 +18,13 @@
 package org.apache.shardingsphere.replica.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.replica.api.config.ReplicaDataSourceConfiguration;
+import org.apache.shardingsphere.replica.api.config.ReplicaLogicTableRuleConfiguration;
 import org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration;
 import org.apache.shardingsphere.replica.constant.ReplicaOrder;
-import org.apache.shardingsphere.replica.yaml.config.YamlReplicaDataSourceConfiguration;
+import org.apache.shardingsphere.replica.yaml.config.YamlReplicaLogicTableRuleConfiguration;
 import org.apache.shardingsphere.replica.yaml.config.YamlReplicaRuleConfiguration;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -35,31 +32,24 @@ import java.util.stream.Collectors;
  */
 public final class ReplicaRuleConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlReplicaRuleConfiguration, ReplicaRuleConfiguration> {
     
+    private final ReplicaLogicTableRuleConfigurationYamlSwapper logicTableRuleConfigurationYamlSwapper = new ReplicaLogicTableRuleConfigurationYamlSwapper();
+    
     @Override
     public YamlReplicaRuleConfiguration swapToYamlConfiguration(final ReplicaRuleConfiguration data) {
+        Collection<YamlReplicaLogicTableRuleConfiguration> yamlTables = data.getTables().stream()
+                .map(logicTableRuleConfigurationYamlSwapper::swapToYamlConfiguration)
+                .collect(Collectors.toList());
         YamlReplicaRuleConfiguration result = new YamlReplicaRuleConfiguration();
-        result.setDataSources(data.getDataSources().stream().collect(Collectors.toMap(ReplicaDataSourceConfiguration::getName, this::swapToYamlConfiguration, (a, b) -> b, LinkedHashMap::new)));
-        return result;
-    }
-    
-    private YamlReplicaDataSourceConfiguration swapToYamlConfiguration(final ReplicaDataSourceConfiguration group) {
-        YamlReplicaDataSourceConfiguration result = new YamlReplicaDataSourceConfiguration();
-        result.setName(group.getName());
-        result.setReplicaDataSourceNames(group.getReplicaSourceNames());
+        result.setTables(yamlTables);
         return result;
     }
     
     @Override
-    public ReplicaRuleConfiguration swapToObject(final YamlReplicaRuleConfiguration yamlConfig) {
-        Collection<ReplicaDataSourceConfiguration> groups = new LinkedList<>();
-        for (Entry<String, YamlReplicaDataSourceConfiguration> entry : yamlConfig.getDataSources().entrySet()) {
-            groups.add(swapToObject(entry.getKey(), entry.getValue()));
-        }
-        return new ReplicaRuleConfiguration(groups);
-    }
-    
-    private ReplicaDataSourceConfiguration swapToObject(final String name, final YamlReplicaDataSourceConfiguration yamlGroup) {
-        return new ReplicaDataSourceConfiguration(name, yamlGroup.getReplicaDataSourceNames());
+    public ReplicaRuleConfiguration swapToObject(final YamlReplicaRuleConfiguration yamlConfiguration) {
+        Collection<ReplicaLogicTableRuleConfiguration> tables = yamlConfiguration.getTables().stream()
+                .map(logicTableRuleConfigurationYamlSwapper::swapToObject)
+                .collect(Collectors.toList());
+        return new ReplicaRuleConfiguration(tables);
     }
     
     @Override

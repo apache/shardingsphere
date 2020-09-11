@@ -18,17 +18,24 @@
 package org.apache.shardingsphere.replica.api.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Replica rule configuration.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ReplicaRuleConfiguration implements RuleConfiguration {
     
-    private final Collection<ReplicaDataSourceConfiguration> dataSources;
+    private final Collection<ReplicaLogicTableRuleConfiguration> tables;
+    
+    public ReplicaRuleConfiguration(final Collection<ReplicaLogicTableRuleConfiguration> tables) {
+        if (null != tables) {
+            this.tables = tables;
+        } else {
+            this.tables = Collections.emptyList();
+        }
+    }
 }

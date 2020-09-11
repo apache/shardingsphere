@@ -80,7 +80,7 @@ public final class ShardingScalingJobPreparer {
     }
     
     private ResumeBreakPointManager getResumeBreakPointManager(final String databaseType, final ShardingScalingJob shardingScalingJob) {
-        return ResumeBreakPointManagerFactory.newInstance(databaseType, String.format("/%s/item-%d", shardingScalingJob.getJobName(), shardingScalingJob.getShardingItem()));
+        return ResumeBreakPointManagerFactory.newInstance(databaseType, String.format("/%s/position/%d", shardingScalingJob.getJobName(), shardingScalingJob.getShardingItem()));
     }
     
     private void checkDatasources(final String databaseType, final DataSourceManager dataSourceManager) {

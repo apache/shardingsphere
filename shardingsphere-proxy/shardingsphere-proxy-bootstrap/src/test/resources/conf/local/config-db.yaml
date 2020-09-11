@@ -22,10 +22,22 @@ dataSources:
     url: jdbc:fixturedb:xxx
     username: root
     password: pwd
+    connectionTimeoutMilliseconds: 1000
+    idleTimeoutMilliseconds: 2000
+    maxLifetimeMilliseconds: 4000
+    maxPoolSize:  20
+    minPoolSize: 10
+    readOnly: true
   ds_1:
     url: jdbc:fixturedb:xxx
     username: root
     password: pwd
+    connectionTimeoutMilliseconds: 1000
+    idleTimeoutMilliseconds: 2000
+    maxLifetimeMilliseconds: 4000
+    maxPoolSize:  20
+    minPoolSize: 10
+    readOnly: true
 
 rules:
 - !SHARDING

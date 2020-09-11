@@ -29,5 +29,5 @@ public final class ReplicaOrder {
     /**
      * Replica order.
      */
-    public static final int ORDER = 20;
+    public static final int ORDER = 80;
 }

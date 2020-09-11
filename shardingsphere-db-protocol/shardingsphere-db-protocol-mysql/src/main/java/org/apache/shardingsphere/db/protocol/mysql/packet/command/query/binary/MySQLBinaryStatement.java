@@ -33,7 +33,7 @@ public final class MySQLBinaryStatement {
     
     private final String sql;
     
-    private final int parametersCount;
+    private final int parameterCount;
     
     private List<MySQLBinaryStatementParameterType> parameterTypes;
 }

@@ -58,7 +58,7 @@ public final class DataNodeRouterTest {
     
     @Before
     public void setUp() {
-        when(metaData.getSchema().getSchemaMetaData()).thenReturn(mock(SchemaMetaData.class));
+        when(metaData.getRuleSchemaMetaData().getSchemaMetaData()).thenReturn(mock(SchemaMetaData.class));
     }
     
     @Test
@@ -72,7 +72,7 @@ public final class DataNodeRouterTest {
         assertThat(routeUnit.getDataSourceMapper().getActualName(), is("ds_0"));
         assertTrue(routeUnit.getTableMappers().isEmpty());
         verify(routingHook).start("SELECT 1");
-        verify(routingHook).finishSuccess(actual, metaData.getSchema().getConfiguredSchemaMetaData());
+        verify(routingHook).finishSuccess(actual, metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData());
     }
     
     @Test(expected = UnsupportedOperationException.class)

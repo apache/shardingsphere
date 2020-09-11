@@ -20,19 +20,23 @@ package org.apache.shardingsphere.governance.core.config.listener;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.commons.collections4.SetUtils;
+import org.apache.shardingsphere.governance.core.config.ConfigCenter;
+import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.event.metadata.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.core.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.event.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
+import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlRuleSchemaMetaData;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
-import org.apache.shardingsphere.governance.core.config.ConfigCenter;
-import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
+import org.apache.shardingsphere.governance.core.yaml.swapper.RuleSchemaMetaDataYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -67,7 +71,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     @Override
     protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         // TODO Consider removing the following one.
-        if (configurationNode.getSchemaPath().equals(event.getKey())) {
+        if (configurationNode.getSchemasPath().equals(event.getKey())) {
             return createSchemaNamesUpdatedEvent(event.getValue());
         }
         String schemaName = configurationNode.getSchemaName(event.getKey());
@@ -103,7 +107,9 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     }
     
     private boolean isValidNodeChangedEvent(final String schemaName, final String nodeFullPath) {
-        return !existedSchemaNames.contains(schemaName) || configurationNode.getDataSourcePath(schemaName).equals(nodeFullPath) || configurationNode.getRulePath(schemaName).equals(nodeFullPath);
+        return !existedSchemaNames.contains(schemaName) || configurationNode.getDataSourcePath(schemaName).equals(nodeFullPath) 
+                || configurationNode.getRulePath(schemaName).equals(nodeFullPath)
+                || configurationNode.getTablePath(schemaName).equals(nodeFullPath);
     }
     
     private GovernanceEvent createAddedEvent(final String schemaName) {
@@ -119,7 +125,12 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     }
     
     private GovernanceEvent createUpdatedEventForExistedSchema(final String schemaName, final DataChangedEvent event) {
-        return event.getKey().equals(configurationNode.getDataSourcePath(schemaName)) ? createDataSourceChangedEvent(schemaName, event) : createRuleChangedEvent(schemaName, event);
+        if (event.getKey().equals(configurationNode.getDataSourcePath(schemaName))) {
+            return createDataSourceChangedEvent(schemaName, event);
+        } else if (event.getKey().equals(configurationNode.getRulePath(schemaName))) {
+            return createRuleChangedEvent(schemaName, event);
+        }
+        return createMetaDataChangedEvent(event);
     }
     
     private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
@@ -133,6 +144,11 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(event.getValue(), YamlRootRuleConfigurations.class);
         Preconditions.checkState(null != configurations, "No available rule to load for governance.");
         return new RuleConfigurationsChangedEvent(schemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()));
+    }
+    
+    private GovernanceEvent createMetaDataChangedEvent(final DataChangedEvent event) {
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlRuleSchemaMetaData.class));
+        return new MetaDataChangedEvent(existedSchemaNames, ruleSchemaMetaData);
     }
     
     private boolean isOwnCompleteConfigurations(final String schemaName) {

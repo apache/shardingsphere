@@ -33,6 +33,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -52,8 +57,31 @@ import static org.mockito.Mockito.when;
 public final class InsertStatementContextTest {
     
     @Test
-    public void assertInsertStatementContextWithColumnNames() {
-        InsertStatement insertStatement = new InsertStatement();
+    public void assertMySQLInsertStatementContextWithColumnNames() {
+        assertInsertStatementContextWithColumnNames(new MySQLInsertStatement());
+    }
+    
+    @Test
+    public void assertOracleInsertStatementContextWithColumnNames() {
+        assertInsertStatementContextWithColumnNames(new OracleInsertStatement());
+    }
+    
+    @Test
+    public void assertPostgreSQLInsertStatementContextWithColumnNames() {
+        assertInsertStatementContextWithColumnNames(new PostgreSQLInsertStatement());
+    }
+    
+    @Test
+    public void assertSQL92InsertStatementContextWithColumnNames() {
+        assertInsertStatementContextWithColumnNames(new SQL92InsertStatement());
+    }
+    
+    @Test
+    public void assertSQLServerInsertStatementContextWithColumnNames() {
+        assertInsertStatementContextWithColumnNames(new SQLServerInsertStatement());
+    }
+    
+    private void assertInsertStatementContextWithColumnNames(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(
                 new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("status"))));
@@ -67,7 +95,7 @@ public final class InsertStatementContextTest {
     public void assertInsertStatementContextWithoutColumnNames() {
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         setUpInsertValues(insertStatement);
         InsertStatementContext actual = new InsertStatementContext(schemaMetaData, Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
@@ -78,7 +106,7 @@ public final class InsertStatementContextTest {
     public void assertGetGroupedParametersWithoutOnDuplicateParameter() {
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         setUpInsertValues(insertStatement);
         InsertStatementContext actual = new InsertStatementContext(schemaMetaData, Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
@@ -91,7 +119,7 @@ public final class InsertStatementContextTest {
     public void assertGetGroupedParametersWithOnDuplicateParameters() {
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         setUpInsertValues(insertStatement);
         setUpOnDuplicateValues(insertStatement);
@@ -105,16 +133,16 @@ public final class InsertStatementContextTest {
     public void assertInsertSelect() {
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new MySQLInsertStatement();
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SubquerySegment insertSelect = new SubquerySegment(0, 0, selectStatement);
         insertStatement.setInsertSelect(insertSelect);
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
-        InsertStatementContext actual = new InsertStatementContext(schemaMetaData, Arrays.asList("param"), insertStatement);
-        assertThat(actual.getInsertSelectContext().getParametersCount(), is(0));
+        InsertStatementContext actual = new InsertStatementContext(schemaMetaData, Collections.singletonList("param"), insertStatement);
+        assertThat(actual.getInsertSelectContext().getParameterCount(), is(0));
         assertThat(actual.getGroupedParameters().size(), is(1));
-        assertThat(actual.getGroupedParameters().iterator().next(), is(Collections.EMPTY_LIST));
+        assertThat(actual.getGroupedParameters().iterator().next(), is(Collections.emptyList()));
     }
     
     private void setUpInsertValues(final InsertStatement insertStatement) {
@@ -125,24 +153,18 @@ public final class InsertStatementContextTest {
     }
     
     private void setUpOnDuplicateValues(final InsertStatement insertStatement) {
-        AssignmentSegment parameterMarkerExpressionAssignment = new AssignmentSegment(0, 0,
-                new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_1")),
-                new ParameterMarkerExpressionSegment(0, 0, 4)
-        );
-        AssignmentSegment literalExpressionAssignment = new AssignmentSegment(0, 0,
-                new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_2")),
-                new LiteralExpressionSegment(0, 0, 5)
-        );
-        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = new OnDuplicateKeyColumnsSegment(0, 0, Arrays.asList(
-                parameterMarkerExpressionAssignment, literalExpressionAssignment
-        ));
+        AssignmentSegment parameterMarkerExpressionAssignment = new AssignmentSegment(0, 0, 
+                new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_1")), new ParameterMarkerExpressionSegment(0, 0, 4));
+        AssignmentSegment literalExpressionAssignment = new AssignmentSegment(0, 0, 
+                new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_2")), new LiteralExpressionSegment(0, 0, 5));
+        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = new OnDuplicateKeyColumnsSegment(0, 0, Arrays.asList(parameterMarkerExpressionAssignment, literalExpressionAssignment));
         insertStatement.setOnDuplicateKeyColumns(onDuplicateKeyColumnsSegment);
     }
     
     private void assertInsertStatementContext(final InsertStatementContext actual) {
         assertTrue(actual.toString().startsWith(String.format("%s(super", InsertStatementContext.class.getSimpleName())));
         assertNotNull(actual.getTablesContext());
-        assertThat(actual.getTablesContext().getTableNames(), is(Sets.newLinkedHashSet(Arrays.asList("tbl"))));
+        assertThat(actual.getTablesContext().getTableNames(), is(Sets.newLinkedHashSet(Collections.singletonList("tbl"))));
         assertNotNull(actual.getAllTables());
         assertThat(actual.getAllTables().size(), is(1));
         SimpleTableSegment simpleTableSegment = actual.getAllTables().iterator().next();

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Kill statement.
+ * MySQL kill statement.
  */
 public final class MySQLKillStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

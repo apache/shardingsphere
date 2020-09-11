@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Show create event statement.
+ * MySQL show create event statement.
  */
 public final class MySQLShowCreateEventStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

@@ -49,24 +49,24 @@ public final class CreateTableStatementMetaDataRefreshStrategyTest extends Abstr
     @Test
     public void refreshMetaData() throws SQLException {
         MetaDataRefreshStrategy<CreateTableStatementContext> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
-        CreateTableStatement createTableStatement = new CreateTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
+        CreateTableStatement createTableStatement = new CreateTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))), false);
         CreateTableStatementContext createTableStatementContext = new CreateTableStatementContext(createTableStatement);
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createTableStatementContext, tableName -> Optional.of(new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new IndexMetaData("index")))));
-        assertTrue(getMetaData().getSchema().getConfiguredSchemaMetaData().containsTable("t_order_0"));
+        assertTrue(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().containsTable("t_order_0"));
     }
     
     @Test
     public void assertRefreshMetaDataWithUnConfigured() throws SQLException {
         MetaDataRefreshStrategy<CreateTableStatementContext> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
-        CreateTableStatement createTableStatement = new CreateTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))));
+        CreateTableStatement createTableStatement = new CreateTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))), false);
         CreateTableStatementContext createTableStatementContext = new CreateTableStatementContext(createTableStatement);
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>(1, 1);
         dataSourceSourceMap.put("t_order_item", initDataSource());
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), new MySQLDatabaseType(), dataSourceSourceMap, createTableStatementContext,
             tableName -> Optional.empty());
-        assertTrue(getMetaData().getSchema().getUnconfiguredSchemaMetaDataMap().get("t_order_item").containsTable("t_order_item_0"));
+        assertTrue(getMetaData().getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get("t_order_item").containsTable("t_order_item_0"));
     }
     
     private DataSource initDataSource() throws SQLException {

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.sctl.show;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
@@ -61,21 +60,15 @@ public final class ShardingCTLShowBackendHandlerTest {
         assertThat(queryData.getData().iterator().next(), is(0));
     }
     
-    @Test
+    @Test(expected = UnsupportedShardingCTLTypeException.class)
     public void assertShowCachedConnectionFailed() {
         backendConnection.setCurrentSchema("schema");
-        ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show cached_connectionss", backendConnection);
-        BackendResponse actual = backendHandler.execute();
-        assertThat(actual, instanceOf(ErrorResponse.class));
-        assertThat(((ErrorResponse) actual).getCause(), instanceOf(UnsupportedShardingCTLTypeException.class));
+        new ShardingCTLShowBackendHandler("sctl:show cached_connectionss", backendConnection).execute();
     }
     
-    @Test
+    @Test(expected = InvalidShardingCTLFormatException.class)
     public void assertShowCTLFormatError() {
         backendConnection.setCurrentSchema("schema");
-        ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show=xx", backendConnection);
-        BackendResponse actual = backendHandler.execute();
-        assertThat(actual, instanceOf(ErrorResponse.class));
-        assertThat(((ErrorResponse) actual).getCause(), instanceOf(InvalidShardingCTLFormatException.class));
+        new ShardingCTLShowBackendHandler("sctl:show=xx", backendConnection).execute();
     }
 }

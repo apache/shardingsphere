@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.route.fixture.decorator;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.route.context.DefaultRouteStageContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
@@ -34,7 +35,7 @@ public final class RouteDecoratorFixture implements RouteDecorator<RouteRuleFixt
     public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final RouteRuleFixture rule, final ConfigurationProperties props) {
         RouteResult routeResult = new RouteResult();
         routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.emptyList()));
-        return new RouteContext(routeContext.getSqlStatementContext(), routeContext.getParameters(), routeResult);
+        return new RouteContext(routeContext, routeResult, new DefaultRouteStageContext(), getTypeClass());
     }
     
     @Override

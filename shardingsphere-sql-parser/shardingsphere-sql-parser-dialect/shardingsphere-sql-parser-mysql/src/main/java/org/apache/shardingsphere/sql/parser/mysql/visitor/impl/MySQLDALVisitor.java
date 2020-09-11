@@ -65,7 +65,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssig
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLAnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCacheIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLChecksumTableStatement;
@@ -290,7 +290,7 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
-        SetStatement result = new SetStatement();
+        MySQLSetStatement result = new MySQLSetStatement();
         Collection<VariableAssignSegment> variableAssigns = new LinkedList<>();
         for (VariableAssignContext each : ctx.variableAssign()) {
             variableAssigns.add((VariableAssignSegment) visit(each));
@@ -301,7 +301,7 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     
     @Override
     public ASTNode visitSetName(final SetNameContext ctx) {
-        SetStatement result = new SetStatement();
+        MySQLSetStatement result = new MySQLSetStatement();
         if (null != ctx.characterSetName_() || null != ctx.DEFAULT()) {
             VariableAssignSegment characterSet = new VariableAssignSegment();
             VariableSegment variable = new VariableSegment();
@@ -322,7 +322,7 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     
     @Override
     public ASTNode visitSetCharacter(final SetCharacterContext ctx) {
-        SetStatement result = new SetStatement();
+        MySQLSetStatement result = new MySQLSetStatement();
         VariableAssignSegment characterSet = new VariableAssignSegment();
         VariableSegment variable = new VariableSegment();
         String variableName = (null != ctx.CHARSET()) ? ctx.CHARSET().getText() : "charset";

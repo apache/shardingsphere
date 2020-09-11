@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, MySQLKeyword, Literals, BaseRule, DMLStatement, DALStatement;
 
 createTable
-    : CREATE TEMPORARY? TABLE notExistClause_ tableName (createDefinitionClause? tableOptions_? partitionClause? duplicateAsQueryExpression? | createLikeClause)
+    : CREATE TEMPORARY? TABLE notExistClause_? tableName (createDefinitionClause? tableOptions_? partitionClause? duplicateAsQueryExpression? | createLikeClause)
     ;
 
 partitionClause
@@ -76,7 +76,7 @@ partitionNames
     ;
 
 dropTable
-    : DROP dropTableSpecification_ TABLE existClause_ tableNames (RESTRICT | CASCADE)?
+    : DROP dropTableSpecification_ TABLE existClause_? tableNames (RESTRICT | CASCADE)?
     ;
 
 dropIndex
@@ -121,7 +121,7 @@ alterDatabaseSpecification_
     ;
 
 dropDatabase
-    : DROP (DATABASE | SCHEMA) existClause_ schemaName
+    : DROP (DATABASE | SCHEMA) existClause_? schemaName
     ;
 
 alterInstance
@@ -140,7 +140,7 @@ channel
     ;
 
 createEvent
-    : CREATE ownerStatement? EVENT notExistClause_ eventName
+    : CREATE ownerStatement? EVENT notExistClause_? eventName
       ON SCHEDULE scheduleExpression_
       (ON COMPLETION NOT? PRESERVE)? 
       (ENABLE | DISABLE | DISABLE ON SLAVE)?
@@ -158,7 +158,7 @@ alterEvent
     ;
 
 dropEvent
-    :  DROP EVENT existClause_ eventName
+    :  DROP EVENT existClause_? eventName
     ;
 
 createFunction
@@ -174,7 +174,7 @@ alterFunction
     ;
 
 dropFunction
-    : DROP FUNCTION existClause_ functionName
+    : DROP FUNCTION existClause_? functionName
     ;
 
 createProcedure
@@ -189,7 +189,7 @@ alterProcedure
     ;
 
 dropProcedure
-    : DROP PROCEDURE existClause_ functionName
+    : DROP PROCEDURE existClause_? functionName
     ;
 
 createServer
@@ -204,7 +204,7 @@ alterServer
     ;
 
 dropServer
-    : DROP SERVER existClause_ serverName
+    : DROP SERVER existClause_? serverName
     ;
 
 createView
@@ -227,7 +227,7 @@ alterView
     ;
 
 dropView
-    : DROP VIEW existClause_ viewName (COMMA_ viewName)* (RESTRICT | CASCADE)?
+    : DROP VIEW existClause_? viewName (COMMA_ viewName)* (RESTRICT | CASCADE)?
     ;
 
 createTablespaceInnodb
@@ -300,7 +300,7 @@ createTrigger
     ;
 
 dropTrigger
-    : DROP TRIGGER existClause_ (schemaName DOT_)? triggerName
+    : DROP TRIGGER existClause_? (schemaName DOT_)? triggerName
     ;
 
 renameTable

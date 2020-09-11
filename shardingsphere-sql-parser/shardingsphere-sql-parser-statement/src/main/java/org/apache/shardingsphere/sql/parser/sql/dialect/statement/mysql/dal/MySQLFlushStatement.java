@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Flush statement.
+ * MySQL flush statement.
  */
 public final class MySQLFlushStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

@@ -34,7 +34,7 @@ public class ConnectionScopeBinaryStatementRegistryTest {
         statementRegistry.register(statementId, sql, 1, null);
         PostgreSQLBinaryStatement binaryStatement = statementRegistry.getBinaryStatement(statementId);
         assertThat(binaryStatement.getSql(), is(sql));
-        assertThat(binaryStatement.getParametersCount(), is(1));
+        assertThat(binaryStatement.getParameterCount(), is(1));
     }
     
     @Test
