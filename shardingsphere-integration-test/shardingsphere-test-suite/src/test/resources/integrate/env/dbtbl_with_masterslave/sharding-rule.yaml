@@ -54,57 +54,57 @@ rules:
     constant:
       type: Constant
       
-- !MASTER_SLAVE
+- !PRIMARY_REPLICA
   dataSources:
     db_ms_0:
-      masterDataSourceName: master_db_0
-      slaveDataSourceNames:
-        - slave_db_0
+      primaryDataSourceName: primary_db_0
+      replicaDataSourceNames:
+        - replica_db_0
       loadBalancerName: roundRobin
     db_ms_1:
-      masterDataSourceName: master_db_1
-      slaveDataSourceNames:
-        - slave_db_1
+      primaryDataSourceName: primary_db_1
+      replicaDataSourceNames:
+        - replica_db_1
       loadBalancerName: roundRobin
     db_ms_2:
-      masterDataSourceName: master_db_2
-      slaveDataSourceNames:
-        - slave_db_2
+      primaryDataSourceName: primary_db_2
+      replicaDataSourceNames:
+        - replica_db_2
       loadBalancerName: roundRobin
     db_ms_3:
-      masterDataSourceName: master_db_3
-      slaveDataSourceNames:
-        - slave_db_3
+      primaryDataSourceName: primary_db_3
+      replicaDataSourceNames:
+        - replica_db_3
       loadBalancerName: roundRobin
     db_ms_4:
-      masterDataSourceName: master_db_4
-      slaveDataSourceNames:
-        - slave_db_4
+      primaryDataSourceName: primary_db_4
+      replicaDataSourceNames:
+        - replica_db_4
       loadBalancerName: roundRobin
     db_ms_5:
-      masterDataSourceName: master_db_5
-      slaveDataSourceNames:
-        - slave_db_5
+      primaryDataSourceName: primary_db_5
+      replicaDataSourceNames:
+        - replica_db_5
       loadBalancerName: roundRobin
     db_ms_6:
-      masterDataSourceName: master_db_6
-      slaveDataSourceNames:
-        - slave_db_6
+      primaryDataSourceName: primary_db_6
+      replicaDataSourceNames:
+        - replica_db_6
       loadBalancerName: roundRobin
     db_ms_7:
-      masterDataSourceName: master_db_7
-      slaveDataSourceNames:
-        - slave_db_7
+      primaryDataSourceName: primary_db_7
+      replicaDataSourceNames:
+        - replica_db_7
       loadBalancerName: roundRobin
     db_ms_8:
-      masterDataSourceName: master_db_8
-      slaveDataSourceNames:
-        - slave_db_8
+      primaryDataSourceName: primary_db_8
+      replicaDataSourceNames:
+        - replica_db_8
       loadBalancerName: roundRobin
     db_ms_9:
-      masterDataSourceName: master_db_9
-      slaveDataSourceNames:
-        - slave_db_9
+      primaryDataSourceName: primary_db_9
+      replicaDataSourceNames:
+        - replica_db_9
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:
