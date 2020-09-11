@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropIndexStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -41,20 +39,16 @@ public final class DropIndexStatementContext extends CommonSQLStatementContext<D
     
     public DropIndexStatementContext(final DropIndexStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getTable(sqlStatement));
+        tablesContext = new TablesContext(sqlStatement.getTable());
     }
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return null == getTable(getSqlStatement()) ? Collections.emptyList() : Collections.singletonList(getTable(getSqlStatement()));
+        return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
     }
     
     @Override
     public Collection<IndexSegment> getIndexes() {
         return getSqlStatement().getIndexes();
-    }
-    
-    private SimpleTableSegment getTable(final DropIndexStatement sqlStatement) {
-        return sqlStatement instanceof SQLServerStatement ? ((SQLServerDropIndexStatement) sqlStatement).getTable() : null;
     }
 }
