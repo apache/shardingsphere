@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public final class ConnectionStatusHandler {
     
-    private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.RELEASE);
+    private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.RELEASED);
     
     private final ResourceLock resourceLock;
     
@@ -60,7 +60,7 @@ public final class ConnectionStatusHandler {
      * Notify connection to finish wait if necessary.
      */
     void doNotifyIfNecessary() {
-        if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE)) {
+        if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASED)) {
             resourceLock.doNotify();
         }
     }
@@ -70,7 +70,7 @@ public final class ConnectionStatusHandler {
      */
     public void waitUntilConnectionReleasedIfNecessary() {
         if (ConnectionStatus.RUNNING == status.get()) {
-            while (!status.compareAndSet(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
+            while (!status.compareAndSet(ConnectionStatus.RELEASED, ConnectionStatus.RUNNING)) {
                 resourceLock.doAwait();
             }
         }

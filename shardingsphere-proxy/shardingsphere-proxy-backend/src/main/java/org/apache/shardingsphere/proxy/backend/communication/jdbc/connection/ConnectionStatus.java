@@ -22,5 +22,5 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
  */
 public enum ConnectionStatus {
     
-    RUNNING, RELEASE, IN_TRANSACTION
+    RUNNING, RELEASED, IN_TRANSACTION
 }
