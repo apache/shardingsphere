@@ -24,6 +24,8 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -35,14 +37,20 @@ public class ResourceLockTest {
     
     private Condition condition;
     
+    private Lock lock;
+    
     @SneakyThrows(value = {NoSuchFieldException.class, IllegalAccessException.class})
     @Before
     public void setup() {
         resourceLock = new ResourceLock();
+        lock = mock(ReentrantLock.class);
         condition = mock(Condition.class);
-        Field field = ResourceLock.class.getDeclaredField("condition");
-        field.setAccessible(true);
-        field.set(resourceLock, condition);
+        Field lockField = ResourceLock.class.getDeclaredField("lock");
+        lockField.setAccessible(true);
+        lockField.set(resourceLock, lock);
+        Field conditionField = ResourceLock.class.getDeclaredField("condition");
+        conditionField.setAccessible(true);
+        conditionField.set(resourceLock, condition);
     }
     
     @SneakyThrows(value = InterruptedException.class)
@@ -50,6 +58,8 @@ public class ResourceLockTest {
     public void assertDoAwaitUntil() {
         resourceLock.doAwaitUntil();
         verify(condition).await(200, TimeUnit.MILLISECONDS);
+        verify(lock).lock();
+        verify(lock).unlock();
     }
     
     @SneakyThrows(value = InterruptedException.class)
@@ -57,11 +67,15 @@ public class ResourceLockTest {
     public void assertDoAwaitUntilThrowsException() {
         when(condition.await(200, TimeUnit.MILLISECONDS)).thenThrow(new InterruptedException());
         resourceLock.doAwaitUntil();
+        verify(lock).lock();
+        verify(lock).unlock();
     }
     
     @Test
     public void assertDoNotify() {
         resourceLock.doNotify();
         verify(condition).signalAll();
+        verify(lock).lock();
+        verify(lock).unlock();
     }
 }
