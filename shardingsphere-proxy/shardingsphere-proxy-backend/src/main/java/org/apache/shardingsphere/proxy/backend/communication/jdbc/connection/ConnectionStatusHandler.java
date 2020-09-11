@@ -32,19 +32,17 @@ public final class ConnectionStatusHandler {
     private final ResourceLock resourceLock;
     
     /**
+     * Switch connection status to using.
+     */
+    public void switchUsingStatus() {
+        status.set(ConnectionStatus.USING);
+    }
+    
+    /**
      * Switch connection status to in transaction.
      */
     public void switchInTransactionStatus() {
         status.set(ConnectionStatus.IN_TRANSACTION);
-    }
-    
-    /**
-     * Switch connection status to using if necessary.
-     */
-    public void switchUsingStatusIfNecessary() {
-        if (ConnectionStatus.IN_TRANSACTION != status.get() && ConnectionStatus.USING != status.get()) {
-            status.set(ConnectionStatus.USING);
-        }
     }
     
     /**
