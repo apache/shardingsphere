@@ -55,8 +55,8 @@ public class ResourceLockTest {
     
     @SneakyThrows(value = InterruptedException.class)
     @Test
-    public void assertDoAwaitUntil() {
-        resourceLock.doAwaitUntil();
+    public void assertDoAwait() {
+        resourceLock.doAwait();
         verify(condition).await(200, TimeUnit.MILLISECONDS);
         verify(lock).lock();
         verify(lock).unlock();
@@ -64,9 +64,9 @@ public class ResourceLockTest {
     
     @SneakyThrows(value = InterruptedException.class)
     @Test(expected = InterruptedException.class)
-    public void assertDoAwaitUntilThrowsException() {
+    public void assertDoAwaitThrowsException() {
         when(condition.await(200, TimeUnit.MILLISECONDS)).thenThrow(new InterruptedException());
-        resourceLock.doAwaitUntil();
+        resourceLock.doAwait();
         verify(lock).lock();
         verify(lock).unlock();
     }
