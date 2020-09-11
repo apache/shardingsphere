@@ -77,7 +77,7 @@ public final class CommandExecutorTask implements Runnable {
             context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
             Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket();
             databasePacket.ifPresent(context::writeAndFlush);
-            if (!(ex instanceof RuntimeException)) {
+            if (!isExpectedException(ex)) {
                 log.error("Exception occur: ", ex);
             }
         } finally {
@@ -86,6 +86,11 @@ public final class CommandExecutorTask implements Runnable {
             }
             rootInvokeHook.finish(connectionSize);
         }
+    }
+    
+    // TODO finish expected exception
+    private boolean isExpectedException(final Exception ex) {
+        return ex instanceof RuntimeException;
     }
     
     private boolean executeCommand(final ChannelHandlerContext context, final PacketPayload payload, final BackendConnection backendConnection) throws SQLException {
