@@ -43,7 +43,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class InsertStatement extends AbstractSQLStatement implements DMLStatement {
+public abstract class InsertStatement extends AbstractSQLStatement {
     
     private SimpleTableSegment table;
     
