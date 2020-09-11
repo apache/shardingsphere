@@ -77,7 +77,7 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
     }
 
     private Collection<ColumnMetaData> convertColumns(final Map<String, YamlColumnMetaData> indexes) {
-        return indexes.values().stream().map(this::convertColumn).collect(Collectors.toList());
+        return null == indexes ? Collections.emptyList() : indexes.values().stream().map(this::convertColumn).collect(Collectors.toList());
     }
 
     private ColumnMetaData convertColumn(final YamlColumnMetaData column) {

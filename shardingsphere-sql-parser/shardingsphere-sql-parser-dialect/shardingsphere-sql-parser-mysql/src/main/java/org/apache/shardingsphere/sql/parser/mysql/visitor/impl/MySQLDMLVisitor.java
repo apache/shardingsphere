@@ -117,6 +117,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.Boolea
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -141,13 +142,13 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
-        InsertStatement result;
+        MySQLInsertStatement result;
         if (null != ctx.insertValuesClause()) {
-            result = (InsertStatement) visit(ctx.insertValuesClause());
+            result = (MySQLInsertStatement) visit(ctx.insertValuesClause());
         } else if (null != ctx.insertSelectClause()) {
-            result = (InsertStatement) visit(ctx.insertSelectClause());
+            result = (MySQLInsertStatement) visit(ctx.insertSelectClause());
         } else {
-            result = new InsertStatement();
+            result = new MySQLInsertStatement();
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         }
         if (null != ctx.onDuplicateKeyClause()) {
@@ -160,7 +161,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
     @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
-        InsertStatement result = new InsertStatement();
+        MySQLInsertStatement result = new MySQLInsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.setInsertSelect(createInsertSelectSegment(ctx));
         return result;
@@ -173,7 +174,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement();
+        MySQLInsertStatement result = new MySQLInsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         return result;
@@ -205,7 +206,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         } else if (null != ctx.replaceSelectClause()) {
             result = (InsertStatement) visit(ctx.replaceSelectClause());
         } else {
-            result = new InsertStatement();
+            result = new MySQLInsertStatement();
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
@@ -215,7 +216,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
     @Override
     public ASTNode visitReplaceSelectClause(final ReplaceSelectClauseContext ctx) {
-        InsertStatement result = new InsertStatement();
+        MySQLInsertStatement result = new MySQLInsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.setInsertSelect(createReplaceSelectSegment(ctx));
         return result;
@@ -228,7 +229,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
     @Override
     public ASTNode visitReplaceValuesClause(final ReplaceValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement();
+        MySQLInsertStatement result = new MySQLInsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.getValues().addAll(createReplaceValuesSegments(ctx.assignmentValues()));
         return result;

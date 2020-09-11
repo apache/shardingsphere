@@ -31,6 +31,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -53,8 +58,31 @@ public final class SQLStatementContextFactoryTest {
     }
     
     @Test
-    public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement() {
-        InsertStatement insertStatement = new InsertStatement();
+    public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfMySQLInsertStatement() {
+        assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new MySQLInsertStatement());
+    }
+    
+    @Test
+    public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfOracleInsertStatement() {
+        assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new OracleInsertStatement());
+    }
+    
+    @Test
+    public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfPostgreSQLInsertStatement() {
+        assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new PostgreSQLInsertStatement());
+    }
+    
+    @Test
+    public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSQL92InsertStatement() {
+        assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new SQL92InsertStatement());
+    }
+    
+    @Test
+    public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSQLServerInsertStatement() {
+        assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new SQLServerInsertStatement());
+    }
+    
+    private void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(final InsertStatement insertStatement) {
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0,
                 Collections.singleton(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("IdentifierValue")), null))));
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
