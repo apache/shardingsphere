@@ -85,7 +85,7 @@ public final class ShadowConditionEngine {
     private Optional<ShadowCondition> createShadowCondition(final AndPredicate andPredicate) {
         for (ExpressionSegment predicate : andPredicate.getPredicates()) {
             ColumnSegment column = ExpressionUtil.getColumnFromExpression(predicate);
-            if (null != column) {
+            if (null == column) {
                 continue;
             }
             Collection<Integer> stopIndexes = new HashSet<>();
