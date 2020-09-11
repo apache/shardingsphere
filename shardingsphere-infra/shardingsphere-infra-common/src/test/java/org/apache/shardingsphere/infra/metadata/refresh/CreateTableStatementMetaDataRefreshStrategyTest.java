@@ -49,7 +49,7 @@ public final class CreateTableStatementMetaDataRefreshStrategyTest extends Abstr
     @Test
     public void refreshMetaData() throws SQLException {
         MetaDataRefreshStrategy<CreateTableStatementContext> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
-        CreateTableStatement createTableStatement = new CreateTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
+        CreateTableStatement createTableStatement = new CreateTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))), false);
         CreateTableStatementContext createTableStatementContext = new CreateTableStatementContext(createTableStatement);
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createTableStatementContext, tableName -> Optional.of(new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
@@ -60,7 +60,7 @@ public final class CreateTableStatementMetaDataRefreshStrategyTest extends Abstr
     @Test
     public void assertRefreshMetaDataWithUnConfigured() throws SQLException {
         MetaDataRefreshStrategy<CreateTableStatementContext> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
-        CreateTableStatement createTableStatement = new CreateTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))));
+        CreateTableStatement createTableStatement = new CreateTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))), false);
         CreateTableStatementContext createTableStatementContext = new CreateTableStatementContext(createTableStatement);
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>(1, 1);
         dataSourceSourceMap.put("t_order_item", initDataSource());

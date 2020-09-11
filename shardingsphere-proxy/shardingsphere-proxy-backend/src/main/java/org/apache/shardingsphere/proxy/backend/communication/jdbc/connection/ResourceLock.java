@@ -36,10 +36,10 @@ public final class ResourceLock {
     private final Condition condition = lock.newCondition();
     
     /**
-     * Await until timeout.
+     * Await.
      */
     @SneakyThrows(InterruptedException.class)
-    public void doAwaitUntil() {
+    public void doAwait() {
         lock.lock();
         try {
             condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);

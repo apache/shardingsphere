@@ -91,7 +91,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
-                backendConnection.getResourceLock().doAwaitUntil();
+                backendConnection.getResourceLock().doAwait();
             }
             DatabasePacket<?> resultValue = queryCommandExecutor.getQueryData();
             context.write(resultValue);

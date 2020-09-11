@@ -34,12 +34,13 @@ import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataNotifier;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -89,10 +90,8 @@ public abstract class AbstractStatementExecutor {
     }
     
     private void notifyPersistRuleMetaData(final String schemaName, final RuleSchemaMetaData metaData) {
-        RuleMetaDataNotifier notifier = TypedSPIRegistry.getRegisteredService(RuleMetaDataNotifier.class);
-        if (null != notifier) {
-            notifier.notify(schemaName, metaData);
-        }
+        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(metaData),
+                RuleMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, metaData));
     }
     
     /**

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.engine;
 
+import org.apache.shardingsphere.infra.route.context.DefaultRouteStageContext;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.route.engine.judge.ShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -52,20 +53,19 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         RouteResult routeResult = new RouteResult();
-        List<Object> parameters = routeContext.getParameters();
         if (!(sqlStatement instanceof DMLStatement)) {
             shadowRule.getShadowMappings().forEach((key, value) -> {
                 routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(key, key), Collections.emptyList()));
                 routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(value, value), Collections.emptyList()));
             });
-            return new RouteContext(sqlStatementContext, parameters, routeResult);
+            return new RouteContext(routeContext, routeResult, new DefaultRouteStageContext(), getTypeClass());
         }
         if (isShadow(routeContext, shadowRule)) {
             shadowRule.getShadowMappings().values().forEach(each -> routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
         } else {
             shadowRule.getShadowMappings().keySet().forEach(each -> routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
         }
-        return new RouteContext(sqlStatementContext, parameters, routeResult);
+        return new RouteContext(routeContext, routeResult, new DefaultRouteStageContext(), getTypeClass());
     }
     
     private RouteContext getRouteContextWithRouteResult(final RouteContext routeContext, final ShadowRule shadowRule) {

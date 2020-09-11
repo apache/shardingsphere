@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
@@ -41,26 +42,13 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
     
     private static final String INCREMENTAL = "/incremental";
     
-    private static RegistryRepository registryRepository;
-    
-    private static boolean available;
+    private static RegistryRepository registryRepository = RegistryRepositoryHolder.REGISTRY_REPOSITORY;
     
     private final ScheduledExecutorService executor;
     
     private final String inventoryPath;
     
     private final String incrementalPath;
-    
-    static {
-        YamlGovernanceConfiguration resumeBreakPoint = ScalingContext.getInstance().getServerConfiguration().getResumeBreakPoint();
-        if (resumeBreakPoint != null) {
-            registryRepository = createRegistryRepository(new GovernanceConfigurationYamlSwapper().swapToObject(resumeBreakPoint));
-        }
-        if (registryRepository != null) {
-            log.info("zookeeper resume from break-point manager is available.");
-            available = true;
-        }
-    }
     
     public RepositoryResumeBreakPointManager(final String databaseType, final String taskPath) {
         setDatabaseType(databaseType);
@@ -73,21 +61,13 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
         executor.scheduleWithFixedDelay(this::persistPosition, 1, 1, TimeUnit.MINUTES);
     }
     
-    private static RegistryRepository createRegistryRepository(final GovernanceConfiguration config) {
-        GovernanceCenterConfiguration registryCenterConfig = config.getRegistryCenterConfiguration();
-        Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");
-        RegistryRepository result = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
-        result.init(config.getName(), registryCenterConfig);
-        return result;
-    }
-    
     /**
      * If it is available.
      *
      * @return is available
      */
     public static boolean isAvailable() {
-        return available;
+        return RegistryRepositoryHolder.isAvailable();
     }
     
     @Override
@@ -118,5 +98,34 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
         String result = getIncrementalPositionData();
         registryRepository.persist(incrementalPath, result);
         log.info("persist incremental position {} = {}", incrementalPath, result);
+    }
+    
+    public static final class RegistryRepositoryHolder {
+    
+        public static final RegistryRepository REGISTRY_REPOSITORY = getInstance();
+        
+        @Getter
+        private static boolean available;
+    
+        private static RegistryRepository getInstance() {
+            RegistryRepository registryRepository = null;
+            YamlGovernanceConfiguration resumeBreakPoint = ScalingContext.getInstance().getServerConfiguration().getResumeBreakPoint();
+            if (resumeBreakPoint != null) {
+                registryRepository = createRegistryRepository(new GovernanceConfigurationYamlSwapper().swapToObject(resumeBreakPoint));
+            }
+            if (registryRepository != null) {
+                log.info("zookeeper resume from break-point manager is available.");
+                available = true;
+            }
+            return registryRepository;
+        }
+    
+        private static RegistryRepository createRegistryRepository(final GovernanceConfiguration config) {
+            GovernanceCenterConfiguration registryCenterConfig = config.getRegistryCenterConfiguration();
+            Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");
+            RegistryRepository result = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
+            result.init(config.getName(), registryCenterConfig);
+            return result;
+        }
     }
 }

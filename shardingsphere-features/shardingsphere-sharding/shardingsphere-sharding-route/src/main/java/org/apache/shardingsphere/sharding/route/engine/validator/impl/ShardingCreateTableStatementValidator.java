@@ -36,7 +36,7 @@ public final class ShardingCreateTableStatementValidator implements ShardingStat
     public void preValidate(final ShardingRule shardingRule, final RouteContext routeContext, final ShardingSphereMetaData metaData) {
         CreateTableStatementContext sqlStatementContext = (CreateTableStatementContext) routeContext.getSqlStatementContext();
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        if (metaData.getRuleSchemaMetaData().getAllTableNames().contains(tableName)) {
+        if (!sqlStatementContext.getSqlStatement().isNotExisted() && metaData.getRuleSchemaMetaData().getAllTableNames().contains(tableName)) {
             throw new TableExistsException(tableName);
         }
     }
