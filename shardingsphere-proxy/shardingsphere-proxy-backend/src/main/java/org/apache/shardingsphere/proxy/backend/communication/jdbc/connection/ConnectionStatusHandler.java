@@ -42,8 +42,8 @@ public final class ConnectionStatusHandler {
      * Switch connection status to running if necessary.
      */
     public void switchRunningStatusIfNecessary() {
-        if (ConnectionStatus.IN_TRANSACTION != status.get() && ConnectionStatus.RUNNING != status.get()) {
-            status.set(ConnectionStatus.RUNNING);
+        if (ConnectionStatus.IN_TRANSACTION != status.get() && ConnectionStatus.USING != status.get()) {
+            status.set(ConnectionStatus.USING);
         }
     }
     
@@ -60,7 +60,7 @@ public final class ConnectionStatusHandler {
      * Notify connection to finish wait if necessary.
      */
     void doNotifyIfNecessary() {
-        if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASED)) {
+        if (status.compareAndSet(ConnectionStatus.USING, ConnectionStatus.RELEASED)) {
             resourceLock.doNotify();
         }
     }
@@ -69,8 +69,8 @@ public final class ConnectionStatusHandler {
      * Wait until connection is released if necessary.
      */
     public void waitUntilConnectionReleasedIfNecessary() {
-        if (ConnectionStatus.RUNNING == status.get()) {
-            while (!status.compareAndSet(ConnectionStatus.RELEASED, ConnectionStatus.RUNNING)) {
+        if (ConnectionStatus.USING == status.get()) {
+            while (!status.compareAndSet(ConnectionStatus.RELEASED, ConnectionStatus.USING)) {
                 resourceLock.doAwait();
             }
         }
