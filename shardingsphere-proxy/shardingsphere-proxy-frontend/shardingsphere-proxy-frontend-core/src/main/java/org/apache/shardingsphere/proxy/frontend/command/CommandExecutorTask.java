@@ -74,10 +74,12 @@ public final class CommandExecutorTask implements Runnable {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("Exception occur: ", ex);
             context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
             Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket();
             databasePacket.ifPresent(context::writeAndFlush);
+            if (!(ex instanceof RuntimeException)) {
+                log.error("Exception occur: ", ex);
+            }
         } finally {
             if (isNeedFlush) {
                 context.flush();
