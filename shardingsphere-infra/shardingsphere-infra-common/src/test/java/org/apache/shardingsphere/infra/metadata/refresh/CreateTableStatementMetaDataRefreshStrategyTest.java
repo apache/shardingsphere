@@ -133,7 +133,7 @@ public final class CreateTableStatementMetaDataRefreshStrategyTest extends Abstr
         dataSourceSourceMap.put("t_order_item", initDataSource());
         MetaDataRefreshStrategy<CreateTableStatementContext> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), new MySQLDatabaseType(), dataSourceSourceMap, createTableStatementContext,
-                tableName -> Optional.empty());
+            tableName -> Optional.empty());
         assertTrue(getMetaData().getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get("t_order_item").containsTable("t_order_item_0"));
     }
     
