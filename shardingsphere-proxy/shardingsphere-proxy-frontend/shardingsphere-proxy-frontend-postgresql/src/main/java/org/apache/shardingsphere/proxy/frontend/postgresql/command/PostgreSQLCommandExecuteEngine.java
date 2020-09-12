@@ -63,9 +63,9 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     @Override
     public DatabasePacket<?> getErrorPacket(final Exception cause) {
-        PostgreSQLErrorResponsePacket errorResponsePacket = new PostgreSQLErrorResponsePacket();
-        errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
-        return errorResponsePacket;
+        PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
+        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
+        return result;
     }
     
     @Override
