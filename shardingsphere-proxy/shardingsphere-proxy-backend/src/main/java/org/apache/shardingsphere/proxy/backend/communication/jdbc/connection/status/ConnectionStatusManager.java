@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.status;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ResourceLock;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -57,7 +58,7 @@ public final class ConnectionStatusManager {
     /**
      * Switch connection status to released.
      */
-    void switchToReleased() {
+    public void switchToReleased() {
         if (status.compareAndSet(ConnectionStatus.USING, ConnectionStatus.RELEASED)) {
             resourceLock.doNotify();
         }

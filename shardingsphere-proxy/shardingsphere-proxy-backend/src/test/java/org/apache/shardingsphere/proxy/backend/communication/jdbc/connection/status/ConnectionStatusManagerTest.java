@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.status;
 
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ResourceLock;
 import org.junit.Test;
 
 public final class ConnectionStatusManagerTest {
