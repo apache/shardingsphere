@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Alter event statement.
+ * PostgreSQL create table statement.
  */
-@RequiredArgsConstructor
 @Getter
-public final class AlterEventStatement extends AbstractSQLStatement implements DDLStatement {
+@Setter
+public final class PostgreSQLCreateTableStatement extends CreateTableStatement implements DDLStatement, PostgreSQLStatement {
+
+    private boolean isNotExisted;
 }
