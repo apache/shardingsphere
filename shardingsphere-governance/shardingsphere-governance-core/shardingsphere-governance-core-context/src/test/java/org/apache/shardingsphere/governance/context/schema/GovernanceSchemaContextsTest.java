@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.governance.context.schema;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.event.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.event.metadata.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.core.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.event.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.metadata.MetaDataCenter;
-import org.apache.shardingsphere.governance.core.metadata.event.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
@@ -34,6 +34,7 @@ import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchem
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.context.runtime.RuntimeContext;
@@ -43,8 +44,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.jdbc.test.MockedDataSource;
+import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -83,7 +84,7 @@ public final class GovernanceSchemaContextsTest {
     private RegistryCenter registryCenter;
     
     @Mock
-    private MetaDataCenter metaDataCenter;
+    private ConfigCenter configCenter;
     
     @Mock
     private SchemaContext schemaContext;
@@ -102,8 +103,8 @@ public final class GovernanceSchemaContextsTest {
         when(databaseType.getName()).thenReturn("H2");
         when(databaseType.getDataSourceMetaData(any(), any())).thenReturn(mock(DataSourceMetaData.class));
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
+        when(governanceFacade.getConfigCenter()).thenReturn(configCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
-        when(governanceFacade.getMetaDataCenter()).thenReturn(metaDataCenter);
         governanceSchemaContexts = new GovernanceSchemaContexts(new StandardSchemaContexts(getSchemaContextMap(), authentication, configurationProperties, databaseType), governanceFacade);
     }
     
@@ -177,10 +178,10 @@ public final class GovernanceSchemaContextsTest {
     @Test
     public void assertPropertiesChanged() {
         Properties properties = new Properties();
-        properties.setProperty("sql.show", "true");
+        properties.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
         PropertiesChangedEvent event = new PropertiesChangedEvent(properties);
         governanceSchemaContexts.renew(event);
-        assertThat(governanceSchemaContexts.getProps().getProps().getProperty("sql.show"), is("true"));
+        assertThat(governanceSchemaContexts.getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is("true"));
     }
     
     @Test

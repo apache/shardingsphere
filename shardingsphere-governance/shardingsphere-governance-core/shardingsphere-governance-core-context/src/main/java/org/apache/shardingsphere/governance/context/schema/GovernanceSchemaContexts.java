@@ -22,12 +22,13 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.event.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.event.metadata.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.core.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.event.schema.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.metadata.event.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
@@ -45,7 +46,6 @@ import org.apache.shardingsphere.infra.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
-import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
@@ -97,8 +97,8 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     }
     
     private void persistMetaData() {
-        schemaContexts.getSchemaContexts().forEach((key, value) -> governanceFacade.getMetaDataCenter()
-            .persistMetaDataCenterNode(key, value.getSchema().getMetaData().getRuleSchemaMetaData()));
+        schemaContexts.getSchemaContexts().forEach((key, value) -> governanceFacade.getConfigCenter()
+            .persistMetaData(key, value.getSchema().getMetaData().getRuleSchemaMetaData()));
     }
     
     @Override
@@ -158,7 +158,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContexts());
         schemas.put(event.getSchemaName(), createAddedSchemaContext(event));
         schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
-        governanceFacade.getMetaDataCenter().persistMetaDataCenterNode(event.getSchemaName(),
+        governanceFacade.getConfigCenter().persistMetaData(event.getSchemaName(), 
                 schemaContexts.getSchemaContexts().get(event.getSchemaName()).getSchema().getMetaData().getRuleSchemaMetaData());
         ShardingSphereEventBus.getInstance().post(
                 new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), schemas.get(event.getSchemaName()).getSchema().getDataSources()));
@@ -229,7 +229,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         newSchemaContexts.remove(schemaName);
         newSchemaContexts.put(schemaName, getChangedSchemaContext(schemaContexts.getSchemaContexts().get(schemaName), event.getRuleConfigurations()));
         schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
-        governanceFacade.getMetaDataCenter().persistMetaDataCenterNode(schemaName, newSchemaContexts.get(schemaName).getSchema().getMetaData().getRuleSchemaMetaData());
+        governanceFacade.getConfigCenter().persistMetaData(schemaName, newSchemaContexts.get(schemaName).getSchema().getMetaData().getRuleSchemaMetaData());
     }
     
     /**

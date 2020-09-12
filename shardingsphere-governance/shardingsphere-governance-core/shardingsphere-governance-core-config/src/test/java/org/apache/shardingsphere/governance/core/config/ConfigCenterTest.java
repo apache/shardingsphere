@@ -20,6 +20,12 @@ package org.apache.shardingsphere.governance.core.config;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.governance.core.event.persist.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.persist.MetaDataPersistEvent;
+import org.apache.shardingsphere.governance.core.event.persist.RulePersistEvent;
+import org.apache.shardingsphere.governance.core.event.persist.SchemaNamePersistEvent;
+import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlRuleSchemaMetaData;
+import org.apache.shardingsphere.governance.core.yaml.swapper.RuleSchemaMetaDataYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
@@ -28,9 +34,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.governance.core.event.persist.DataSourcePersistEvent;
-import org.apache.shardingsphere.governance.core.event.persist.RulePersistEvent;
-import org.apache.shardingsphere.governance.core.event.persist.SchemaNamePersistEvent;
+import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -52,12 +56,15 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -81,9 +88,11 @@ public final class ConfigCenterTest {
     
     private static final String AUTHENTICATION_YAML = "yaml/configCenter/data-authentication.yaml";
     
-    private static final String PROPS_YAML = "sql.show: false\n";
+    private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
     
     private static final String DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL = "yaml/configCenter/data-source-init-sql.yaml";
+    
+    private static final String META_DATA_YAML = "yaml/metadata.yaml";
     
     @Mock
     private ConfigurationRepository configurationRepository;
@@ -484,5 +493,45 @@ public final class ConfigCenterTest {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
         verify(configurationRepository).persist(eq("/schemas"), eq("sharding_db,master_slave_db"));
+    }
+    
+    @Test
+    public void assertPersistMetaData() {
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlRuleSchemaMetaData.class));
+        ConfigCenter configCenter = new ConfigCenter(configurationRepository);
+        configCenter.persistMetaData("sharding_db", ruleSchemaMetaData);
+        verify(configurationRepository).persist(eq("/schemas/sharding_db/table"), anyString());
+    }
+    
+    @Test
+    public void assertLoadMetaData() {
+        when(configurationRepository.get("/schemas/sharding_db/table")).thenReturn(readYAML(META_DATA_YAML));
+        ConfigCenter configCenter = new ConfigCenter(configurationRepository);
+        Optional<RuleSchemaMetaData> optionalRuleSchemaMetaData = configCenter.loadMetaData("sharding_db");
+        assertTrue(optionalRuleSchemaMetaData.isPresent());
+        Optional<RuleSchemaMetaData> empty = configCenter.loadMetaData("test");
+        assertThat(empty, is(Optional.empty()));
+        RuleSchemaMetaData ruleSchemaMetaData = optionalRuleSchemaMetaData.get();
+        verify(configurationRepository).get(eq("/schemas/sharding_db/table"));
+        assertNotNull(ruleSchemaMetaData);
+        assertNotNull(ruleSchemaMetaData.getConfiguredSchemaMetaData());
+        assertNotNull(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap());
+        assertThat(ruleSchemaMetaData.getConfiguredSchemaMetaData().getAllTableNames(), is(Collections.singleton("t_order")));
+        assertThat(ruleSchemaMetaData.getConfiguredSchemaMetaData().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(ruleSchemaMetaData.getConfiguredSchemaMetaData().getAllColumnNames("t_order").size(), is(1));
+        assertThat(ruleSchemaMetaData.getConfiguredSchemaMetaData().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
+        assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().keySet(), is(Collections.singleton("ds_0")));
+        assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0").getAllTableNames(), is(Collections.singleton("t_user")));
+        assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0").get("t_user").getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0").get("t_user").getColumns().keySet(), is(Collections.singleton("id")));
+    }
+    
+    @Test
+    public void assertRenewMetaDataPersistEvent() {
+        MetaDataPersistEvent event = new MetaDataPersistEvent("sharding_db", 
+                new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlRuleSchemaMetaData.class)));
+        ConfigCenter configCenter = new ConfigCenter(configurationRepository);
+        configCenter.renew(event);
+        verify(configurationRepository).persist(eq("/schemas/sharding_db/table"), anyString());
     }
 }

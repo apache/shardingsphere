@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh;
 
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.refresh.impl.DropIndexStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
@@ -30,7 +26,16 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropIndexStatement;
 import org.junit.Test;
+
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
@@ -38,26 +43,62 @@ import static org.mockito.Mockito.mock;
 public final class DropIndexStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @Test
-    public void refreshMetaData() throws SQLException {
-        MetaDataRefreshStrategy<DropIndexStatementContext> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
-        DropIndexStatement dropIndexStatement = new DropIndexStatement();
+    public void refreshMySQLDropIndexMetaData() throws SQLException {
+        refreshMetaData(new MySQLDropIndexStatement());
+    }
+
+    @Test
+    public void refreshOracleDropIndexMetaData() throws SQLException {
+        refreshMetaData(new OracleDropIndexStatement());
+    }
+
+    @Test
+    public void refreshPostgreSQLDropIndexMetaData() throws SQLException {
+        refreshMetaData(new PostgreSQLDropIndexStatement());
+    }
+
+    @Test
+    public void refreshSQLServerDropIndexMetaData() throws SQLException {
+        refreshMetaData(new SQLServerDropIndexStatement());
+    }
+
+    private void refreshMetaData(final DropIndexStatement dropIndexStatement) throws SQLException {
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
         dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        MetaDataRefreshStrategy<DropIndexStatementContext> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
         DropIndexStatementContext dropIndexStatementContext = new DropIndexStatementContext(dropIndexStatement);
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), dropIndexStatementContext, tableName -> Optional.empty());
         assertFalse(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("index"));
     }
     
     @Test
-    public void assertRemoveIndexes() throws SQLException {
-        Map<String, IndexMetaData> actualIndex = getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes();
-        actualIndex.put("t_order_index", new IndexMetaData("t_order_index"));
-        actualIndex.put("order_id_index", new IndexMetaData("order_id_index"));
-        DropIndexStatement dropIndexStatement = new DropIndexStatement();
+    public void assertMySQLRemoveIndexes() throws SQLException {
+        assertRemoveIndexes(new MySQLDropIndexStatement());
+    }
+
+    @Test
+    public void assertOracleRemoveIndexes() throws SQLException {
+        assertRemoveIndexes(new OracleDropIndexStatement());
+    }
+
+    @Test
+    public void assertPostgreSQLRemoveIndexes() throws SQLException {
+        assertRemoveIndexes(new PostgreSQLDropIndexStatement());
+    }
+
+    @Test
+    public void assertSQLServerRemoveIndexes() throws SQLException {
+        assertRemoveIndexes(new SQLServerDropIndexStatement());
+    }
+
+    private void assertRemoveIndexes(final DropIndexStatement dropIndexStatement) throws SQLException {
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
         dropIndexStatement.getIndexes().add(new IndexSegment(2, 3, new IdentifierValue("t_order_index")));
         dropIndexStatement.getIndexes().add(new IndexSegment(3, 4, new IdentifierValue("order_id_index")));
         dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        Map<String, IndexMetaData> actualIndex = getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes();
+        actualIndex.put("t_order_index", new IndexMetaData("t_order_index"));
+        actualIndex.put("order_id_index", new IndexMetaData("order_id_index"));
         DropIndexStatementContext dropIndexStatementContext = new DropIndexStatementContext(dropIndexStatement);
         MetaDataRefreshStrategy<DropIndexStatementContext> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), dropIndexStatementContext, tableName -> Optional.empty());

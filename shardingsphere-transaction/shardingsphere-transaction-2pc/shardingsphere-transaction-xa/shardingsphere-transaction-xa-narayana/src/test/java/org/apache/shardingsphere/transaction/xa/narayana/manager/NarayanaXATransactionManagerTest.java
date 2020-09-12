@@ -19,9 +19,6 @@ package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
-import javax.sql.XADataSource;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.narayana.manager.fixture.ReflectiveUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
@@ -31,6 +28,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.XADataSource;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,7 +40,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NarayanaXATransactionManagerTest {
+public final class NarayanaXATransactionManagerTest {
     
     private final NarayanaXATransactionManager narayanaXATransactionManager = new NarayanaXATransactionManager();
     

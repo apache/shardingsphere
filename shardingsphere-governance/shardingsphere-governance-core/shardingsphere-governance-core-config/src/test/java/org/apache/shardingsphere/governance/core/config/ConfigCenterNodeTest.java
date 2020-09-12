@@ -64,11 +64,12 @@ public final class ConfigCenterNodeTest {
     @Test
     public void assertGetAllSchemaConfigPaths() {
         Collection<String> actual = configurationNode.getAllSchemaConfigPaths(Collections.singletonList(DefaultSchema.LOGIC_NAME));
-        assertThat(actual.size(), is(4));
+        assertThat(actual.size(), is(5));
         assertThat(actual, hasItems("/schemas"));
         assertThat(actual, hasItems("/schemas/logic_db"));
         assertThat(actual, hasItems("/schemas/logic_db/rule"));
         assertThat(actual, hasItems("/schemas/logic_db/datasource"));
+        assertThat(actual, hasItems("/schemas/logic_db/table"));
     }
     
     @Test

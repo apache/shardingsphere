@@ -164,14 +164,14 @@ In addition, demonstrate a set of encryption configuration rules, as follows:
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
 props:
-  query.with.cipher.column: false
+  query-with-cipher-column: false
 ```
 
 According to the above encryption rules, we need to add a column called pwd_cipher in the t_user table, that is, cipherColumn, which is used to store ciphertext data. 
 At the same time, we set plainColumn to pwd, which is used to store plaintext data, and logicColumn is also set to pwd. 
 Because the previous SQL was written using pwd, that is, the SQL was written for logical columns, so the business code did not need to be changed. 
 Through Apache ShardingSphere, for the incremental data, the plain text will be written to the pwd column, and the plain text will be encrypted and stored in the pwd_cipher column. 
-At this time, because query.with.cipher.column is set to false, for business applications, the plain text column of pwd is still used for query storage, 
+At this time, because query-with-cipher-column is set to false, for business applications, the plain text column of pwd is still used for query storage, 
 but the cipher text data of the new data is additionally stored on the underlying database table pwd_cipher. The processing flow is shown below:
 
 ![6](https://shardingsphere.apache.org/document/current/img/encrypt/6_en.png)
@@ -184,8 +184,8 @@ Now it is necessary to process historical plaintext inventory data.
 
 The incremental data has been stored by Apache ShardingSphere in the ciphertext column and the plaintext is stored in the plaintext column; after the historical data is encrypted and cleaned by the business party itself, 
 the ciphertext is also stored in the ciphertext column. That is to say, the plaintext and the ciphertext are stored in the current database. 
-Since the `query.with.cipher.column = false` in the configuration item, the ciphertext has never been used. 
-Now we need to set the `query.with.cipher.column` in the encryption configuration to true in order for the system to cut the ciphertext data for query. 
+Since the `query-with-cipher-column = false` in the configuration item, the ciphertext has never been used. 
+Now we need to set the `query-with-cipher-column` in the encryption configuration to true in order for the system to cut the ciphertext data for query. 
 After restarting the system, we found that the system business is normal, but Apache ShardingSphere has started to extract the ciphertext data from the database, 
 decrypt it and return it to the user; and for the user's insert, delete and update requirements, 
 the original data will still be stored The plaintext column, the encrypted ciphertext data is stored in the ciphertext column.
@@ -195,7 +195,7 @@ however, it will still save a copy of the original data to the plaintext column 
 Why? The answer is: in order to be able to roll back the system. 
 **Because as long as the ciphertext and plaintext always exist at the same time, we can freely switch the business query to cipherColumn or plainColumn through the configuration of the switch item.** 
 In other words, if the system is switched to the ciphertext column for query, the system reports an error and needs to be rolled back. 
-Then just set query.with.cipher.column = false, Apache ShardingSphere will restore, that is, start using plainColumn to query again. 
+Then just set query-with-cipher-column = false, Apache ShardingSphere will restore, that is, start using plainColumn to query again. 
 The processing flow is shown in the following figure:
 
 ![7](https://shardingsphere.apache.org/document/current/img/encrypt/7_en.png)
@@ -230,7 +230,7 @@ So the encryption configuration after migration is:
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
 props:
-  query.with.cipher.column: true
+  query-with-cipher-column: true
 ```
 
 The processing flow is as follows:

@@ -43,7 +43,7 @@ rules:
     column: order_id
 
 props:
-    sql.show: true
+    sql-show: true
 ```
 
 #### Get HintManager

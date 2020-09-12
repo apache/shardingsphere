@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.infra.metadata.schema.spi;
 
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
-import org.apache.shardingsphere.infra.spi.type.TypedSPI;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
 
 /**
  * Rule meta data notifier.
  */
-public interface RuleMetaDataNotifier extends TypedSPI {
+public interface RuleMetaDataNotifier extends OrderedSPI<RuleSchemaMetaData> {
     
     /**
      * Notify rule meta data changed.

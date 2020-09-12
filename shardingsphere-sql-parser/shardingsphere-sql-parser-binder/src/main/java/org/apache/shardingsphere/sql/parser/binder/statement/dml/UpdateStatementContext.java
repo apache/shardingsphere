@@ -19,22 +19,17 @@ package org.apache.shardingsphere.sql.parser.binder.statement.dml;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.util.predicate.PredicateExtractUtils;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
+import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.util.TableExtractUtils;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Update SQL statement context.
@@ -47,26 +42,16 @@ public final class UpdateStatementContext extends CommonSQLStatementContext<Upda
     
     public UpdateStatementContext(final UpdateStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables());
+        TableExtractUtils utils = new TableExtractUtils();
+        utils.extractTablesFromUpdate(sqlStatement);
+        tablesContext = new TablesContext(utils.getRewriteTables());
     }
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        Collection<SimpleTableSegment> result = new LinkedList<>(getSqlStatement().getTables());
-        if (getSqlStatement().getWhere().isPresent()) {
-            result.addAll(getAllTablesFromWhere(getSqlStatement().getWhere().get()));
-        }
-        return result;
-    }
-    
-    private Collection<SimpleTableSegment> getAllTablesFromWhere(final WhereSegment where) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        for (AndPredicate each : where.getAndPredicates()) {
-            for (PredicateSegment predicate : each.getPredicates()) {
-                result.addAll(new PredicateExtractUtils(getSqlStatement().getTables().stream().map(t -> (TableSegment) t).collect(Collectors.toList()), predicate).extractTables());
-            }
-        }
-        return result;
+        TableExtractUtils utils = new TableExtractUtils();
+        utils.extractTablesFromUpdate(getSqlStatement());
+        return utils.getRewriteTables();
     }
     
     @Override

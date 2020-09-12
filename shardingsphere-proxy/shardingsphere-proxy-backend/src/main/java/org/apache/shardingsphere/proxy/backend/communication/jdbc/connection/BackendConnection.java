@@ -66,8 +66,6 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private TransactionType transactionType;
     
-    private final boolean supportHint;
-    
     @Setter
     private int connectionId;
     
@@ -84,15 +82,10 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private final ResourceLock resourceLock = new ResourceLock();
     
-    private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceLock);
+    private final ConnectionStatusHandler statusHandler = new ConnectionStatusHandler(resourceLock);
     
     public BackendConnection(final TransactionType transactionType) {
-        this(transactionType, false);
-    }
-    
-    public BackendConnection(final TransactionType transactionType, final boolean supportHint) {
         this.transactionType = transactionType;
-        this.supportHint = supportHint;
     }
     
     /**
@@ -124,21 +117,17 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private boolean isSwitchFailed() {
         int retryCount = 0;
-        while (stateHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
-            resourceLock.doAwaitUntil();
+        while (statusHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
+            resourceLock.doAwait();
             ++retryCount;
-            log.warn("Current transaction have not terminated, retry count:[{}].", retryCount);
+            log.info("Current transaction have not terminated, retry count:[{}].", retryCount);
         }
-        if (retryCount >= MAXIMUM_RETRY_COUNT) {
-            log.error("Cannot do switch, exceed maximum retry count:[{}].", MAXIMUM_RETRY_COUNT);
-            return true;
-        }
-        return false;
+        return retryCount >= MAXIMUM_RETRY_COUNT;
     }
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return stateHandler.isInTransaction()
+        return statusHandler.isInTransaction()
                 ? getConnectionsWithTransaction(dataSourceName, connectionSize, connectionMode) : getConnectionsWithoutTransaction(dataSourceName, connectionSize, connectionMode);
     }
     
@@ -167,26 +156,22 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         return result;
     }
     
-    private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(schemaName, "current schema is null");
-        List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
-        synchronized (cachedConnections) {
-            cachedConnections.putAll(dataSourceName, result);
-        }
-        return result;
-    }
-    
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(schemaName, "current schema is null");
-        List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
+        Preconditions.checkNotNull(schemaName, "Current schema is null.");
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(schemaName, dataSourceName, connectionSize, connectionMode);
         for (Connection each : result) {
             replayMethodsInvocation(each);
         }
         return result;
     }
     
-    private List<Connection> getConnectionFromUnderlying(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return ProxyContext.getInstance().getBackendDataSource().getConnections(schemaName, dataSourceName, connectionSize, connectionMode);
+    private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+        Preconditions.checkNotNull(schemaName, "Current schema is null.");
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(schemaName, dataSourceName, connectionSize, connectionMode);
+        synchronized (cachedConnections) {
+            cachedConnections.putAll(dataSourceName, result);
+        }
+        return result;
     }
     
     @Override
@@ -228,7 +213,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
      * @return true or false
      */
     public boolean isSerialExecute() {
-        return stateHandler.isInTransaction() && (TransactionType.LOCAL == transactionType || TransactionType.XA == transactionType);
+        return statusHandler.isInTransaction() && (TransactionType.LOCAL == transactionType || TransactionType.XA == transactionType);
     }
     
     /**
@@ -274,10 +259,10 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         MasterVisitedManager.clear();
         exceptions.addAll(closeResultSets());
         exceptions.addAll(closeStatements());
-        if (!stateHandler.isInTransaction() || forceClose || TransactionType.BASE == transactionType) {
+        if (!statusHandler.isInTransaction() || forceClose || TransactionType.BASE == transactionType) {
             exceptions.addAll(releaseConnections(forceClose));
         }
-        stateHandler.doNotifyIfNecessary();
+        statusHandler.doNotifyIfNecessary();
         throwSQLExceptionIfNecessary(exceptions);
     }
     
@@ -311,7 +296,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
-                if (forceRollback && stateHandler.isInTransaction()) {
+                if (forceRollback && statusHandler.isInTransaction()) {
                     each.rollback();
                 }
                 each.close();

@@ -70,8 +70,8 @@ public class GovernanceSpringBootRegistryShardingTest {
         repository.persist("/schemas/logic_db/datasource", shardingDatabases);
         repository.persist("/schemas/logic_db/rule", shardingRule);
         repository.persist("/props", ""
-                + "executor.size: '100'\n"
-                + "sql.show: 'true'\n");
+                + ConfigurationPropertyKey.EXECUTOR_SIZE.getKey() + ": '100'\n"
+                + ConfigurationPropertyKey.SQL_SHOW.getKey() + ": 'true'\n");
         repository.persist("/states/datanodes", "");
     }
     

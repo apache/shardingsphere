@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
 import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
 import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateCompareRightValue;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +36,7 @@ import java.util.Optional;
 /**
  * Condition value generator for compare operator.
  */
-public final class ConditionValueCompareOperatorGenerator implements ConditionValueGenerator<PredicateCompareRightValue> {
+public final class ConditionValueCompareOperatorGenerator implements ConditionValueGenerator<BinaryOperationExpression> {
     
     private static final String EQUAL = "=";
     
@@ -51,16 +51,16 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
     private static final List<String> OPERATORS = Arrays.asList(EQUAL, GREATER_THAN, LESS_THAN, AT_LEAST, AT_MOST);
     
     @Override
-    public Optional<RouteValue> generate(final PredicateCompareRightValue predicateRightValue, final Column column, final List<Object> parameters) {
-        String operator = predicateRightValue.getOperator();
+    public Optional<RouteValue> generate(final BinaryOperationExpression predicate, final Column column, final List<Object> parameters) {
+        String operator = predicate.getOperator();
         if (!isSupportedOperator(operator)) {
             return Optional.empty();
         }
-        Optional<Comparable<?>> routeValue = new ConditionValue(predicateRightValue.getExpression(), parameters).getValue();
+        Optional<Comparable<?>> routeValue = new ConditionValue(predicate.getRight(), parameters).getValue();
         if (routeValue.isPresent()) {
             return generate(routeValue.get(), column, operator);
         }
-        if (ExpressionConditionUtils.isNowExpression(predicateRightValue.getExpression())) {
+        if (ExpressionConditionUtils.isNowExpression(predicate.getRight())) {
             return generate(new SPITimeService().getTime(), column, operator);
         }
         return Optional.empty();
