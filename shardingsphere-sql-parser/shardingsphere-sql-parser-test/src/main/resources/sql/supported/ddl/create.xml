@@ -124,4 +124,80 @@
     <sql-case id="create_table_in_tablespace" value="CREATE TABLE t_order (id serial,name text,location text) TABLESPACE diskvol1" db-types="PostgreSQL" />
     <sql-case id="create_table_with_sign_column" value="CREATE TABLE t_order(id INT PRIMARY KEY, order_id BIGINT(20) SIGNED)" db-types="MySQL" />
     <sql-case id="create_table_with_unsigned_column" value="CREATE TABLE t_order(id INT PRIMARY KEY, order_id BIGINT(20) UNSIGNED)" db-types="MySQL" />
+
+<!--    create database test-->
+    <sql-case id="create_database" value="CREATE DATABASE lusiadas" db-types="PostgreSQL" />
+    <sql-case id="create_database_owner" value="CREATE DATABASE sales OWNER salesapp TABLESPACE salesspace" db-types="PostgreSQL" />
+    <sql-case id="create_database_with_location_and_encoding" value="CREATE DATABASE music2
+        LC_COLLATE 'sv_SE.iso885915' LC_CTYPE 'sv_SE.iso885915'
+        ENCODING LATIN9
+        TEMPLATE template0" db-types="PostgreSQL" />
+    <sql-case id="create_database_with_location" value="CREATE DATABASE music
+        LC_COLLATE 'sv_SE.utf8' LC_CTYPE 'sv_SE.utf8'
+        TEMPLATE template0" db-types="PostgreSQL" />
+
+<!--    create function test-->
+    <sql-case id="create_function" value="CREATE FUNCTION add(integer, integer) RETURNS integer
+        AS 'select $1 + $2;'
+        LANGUAGE SQL
+        IMMUTABLE
+        RETURNS NULL ON NULL INPUT" db-types="PostgreSQL" />
+    <sql-case id="create_function_with_argname" value="CREATE OR REPLACE FUNCTION increment(i integer) RETURNS integer AS
+        $$
+            BEGIN
+                RETURN i + 1;
+            END;
+        $$ LANGUAGE plpgsql" db-types="PostgreSQL" />
+    <sql-case id="create_function_with_multiple_output_parameters" value="CREATE FUNCTION dup(in int, out f1 int, out f2 text)
+        AS $$ SELECT $1, CAST($1 AS text) || ' is text' $$
+        LANGUAGE SQL" db-types="PostgreSQL" />
+    <sql-case id="create_function_return_table" value="CREATE FUNCTION dup(int) RETURNS TABLE(f1 int, f2 text)
+        AS $$ SELECT $1, CAST($1 AS text) || ' is text' $$
+        LANGUAGE SQL" db-types="PostgreSQL" />
+
+<!--    create procedure test-->
+    <sql-case id="create_procedure" value="CREATE PROCEDURE insert_data(a integer, b integer)
+        LANGUAGE SQL
+        AS $$
+        INSERT INTO tbl VALUES (a);
+        INSERT INTO tbl VALUES (b);
+        $$" db-types="PostgreSQL" />
+
+<!--    create server test-->
+<!--    <sql-case id="create_server" value="CREATE SERVER myserver FOREIGN DATA WRAPPER postgres_fdw OPTIONS (host 'foo', dbname 'foodb', port '5432')" db-types="PostgreSQL" />-->
+
+<!--    create trigger test-->
+<!--    <sql-case id="create_trigger" value="CREATE TRIGGER check_update-->
+<!--        BEFORE UPDATE ON accounts-->
+<!--        FOR EACH ROW-->
+<!--        EXECUTE FUNCTION check_account_update()" db-types="PostgreSQL" />-->
+<!--    <sql-case id="create_trigger_of_balance" value="CREATE TRIGGER check_update-->
+<!--        BEFORE UPDATE OF balance ON accounts-->
+<!--        FOR EACH ROW-->
+<!--        EXECUTE FUNCTION check_account_update()" db-types="PostgreSQL" />-->
+<!--    <sql-case id="create_trigger_with_when" value="CREATE TRIGGER check_update-->
+<!--        BEFORE UPDATE ON accounts-->
+<!--        FOR EACH ROW-->
+<!--        WHEN (OLD.balance IS DISTINCT FROM NEW.balance)-->
+<!--        EXECUTE FUNCTION check_account_update()" db-types="PostgreSQL" />-->
+<!--    <sql-case id="create_trigger_after_update" value="CREATE TRIGGER paired_items_update-->
+<!--        AFTER UPDATE ON paired_items-->
+<!--        REFERENCING NEW TABLE AS newtab OLD TABLE AS oldtab-->
+<!--        FOR EACH ROW-->
+<!--        EXECUTE FUNCTION check_matching_pairs()" db-types="PostgreSQL" />-->
+
+<!--    create view test-->
+    <sql-case id="create_view" value="CREATE VIEW comedies AS
+        SELECT *
+        FROM films
+        WHERE kind = 'Comedy'" db-types="PostgreSQL" />
+    <sql-case id="create_view_with_check_option" value="CREATE VIEW universal_comedies AS
+        SELECT *
+        FROM comedies
+        WHERE classification = 'U'
+        WITH LOCAL CHECK OPTION" db-types="PostgreSQL" />
+    <sql-case id="create_view_with_recursive" value="CREATE RECURSIVE VIEW public.nums_1_100 (n) AS
+        VALUES (1)
+        UNION ALL
+        SELECT n+1 FROM nums_1_100 WHERE n = 100" db-types="PostgreSQL" />
 </sql-cases>
