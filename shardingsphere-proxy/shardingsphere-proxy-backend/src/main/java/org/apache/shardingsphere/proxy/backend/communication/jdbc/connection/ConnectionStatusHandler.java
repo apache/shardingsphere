@@ -34,14 +34,14 @@ public final class ConnectionStatusHandler {
     /**
      * Switch connection status to using.
      */
-    public void switchUsingStatus() {
+    public void switchToUsing() {
         status.set(ConnectionStatus.USING);
     }
     
     /**
      * Switch connection status to in transaction.
      */
-    public void switchInTransactionStatus() {
+    public void switchToInTransaction() {
         status.set(ConnectionStatus.IN_TRANSACTION);
     }
     
@@ -55,9 +55,9 @@ public final class ConnectionStatusHandler {
     }
     
     /**
-     * Notify connection to finish wait if necessary.
+     * Switch connection status to released.
      */
-    void doNotifyIfNecessary() {
+    void switchToReleased() {
         if (status.compareAndSet(ConnectionStatus.USING, ConnectionStatus.RELEASED)) {
             resourceLock.doNotify();
         }

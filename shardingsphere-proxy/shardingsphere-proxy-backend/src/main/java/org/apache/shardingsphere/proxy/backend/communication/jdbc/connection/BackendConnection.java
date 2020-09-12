@@ -262,7 +262,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (!statusHandler.isInTransaction() || forceClose || TransactionType.BASE == transactionType) {
             exceptions.addAll(releaseConnections(forceClose));
         }
-        statusHandler.doNotifyIfNecessary();
+        statusHandler.switchToReleased();
         throwSQLExceptionIfNecessary(exceptions);
     }
     

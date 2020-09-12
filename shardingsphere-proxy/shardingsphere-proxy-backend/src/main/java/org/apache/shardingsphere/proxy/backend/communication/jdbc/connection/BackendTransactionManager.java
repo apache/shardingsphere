@@ -48,7 +48,7 @@ public final class BackendTransactionManager implements TransactionManager {
     @Override
     public void begin() {
         if (!connection.getStatusHandler().isInTransaction()) {
-            connection.getStatusHandler().switchInTransactionStatus();
+            connection.getStatusHandler().switchToInTransaction();
             connection.releaseConnections(false);
         }
         if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
@@ -68,7 +68,7 @@ public final class BackendTransactionManager implements TransactionManager {
                     shardingTransactionManager.commit();
                 }
             } finally {
-                connection.getStatusHandler().switchUsingStatus();
+                connection.getStatusHandler().switchToUsing();
             }
         }
     }
@@ -83,7 +83,7 @@ public final class BackendTransactionManager implements TransactionManager {
                     shardingTransactionManager.rollback();
                 }
             } finally {
-                connection.getStatusHandler().switchUsingStatus();
+                connection.getStatusHandler().switchToUsing();
             }
         }
     }

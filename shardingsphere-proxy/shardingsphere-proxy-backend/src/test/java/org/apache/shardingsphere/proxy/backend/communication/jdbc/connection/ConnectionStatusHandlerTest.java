@@ -26,7 +26,7 @@ public final class ConnectionStatusHandlerTest {
     @Test
     public void assertWaitUntilConnectionReleaseForNoneTransaction() throws InterruptedException {
         Thread waitThread = new Thread(() -> {
-            connectionStatusHandler.switchInTransactionStatus();
+            connectionStatusHandler.switchToInTransaction();
             connectionStatusHandler.waitUntilConnectionReleasedIfNecessary();
         });
         Thread notifyThread = new Thread(() -> {
@@ -35,7 +35,7 @@ public final class ConnectionStatusHandlerTest {
             } catch (final InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
-            connectionStatusHandler.doNotifyIfNecessary();
+            connectionStatusHandler.switchToReleased();
         });
         waitThread.start();
         notifyThread.start();
@@ -46,7 +46,7 @@ public final class ConnectionStatusHandlerTest {
     @Test
     public void assertWaitUntilConnectionReleaseForTransaction() throws InterruptedException {
         Thread waitThread = new Thread(() -> {
-            connectionStatusHandler.switchUsingStatus();
+            connectionStatusHandler.switchToUsing();
             connectionStatusHandler.waitUntilConnectionReleasedIfNecessary();
         });
         Thread notifyThread = new Thread(() -> {
@@ -55,7 +55,7 @@ public final class ConnectionStatusHandlerTest {
             } catch (final InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
-            connectionStatusHandler.doNotifyIfNecessary();
+            connectionStatusHandler.switchToReleased();
         });
         waitThread.start();
         notifyThread.start();
