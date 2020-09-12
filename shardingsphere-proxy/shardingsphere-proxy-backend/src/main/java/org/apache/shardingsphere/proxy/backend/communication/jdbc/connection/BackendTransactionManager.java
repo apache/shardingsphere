@@ -47,8 +47,8 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void begin() {
-        if (!connection.getStatusHandler().isInTransaction()) {
-            connection.getStatusHandler().switchInTransactionStatus();
+        if (!connection.getStatusManager().isInTransaction()) {
+            connection.getStatusManager().switchToInTransaction();
             connection.releaseConnections(false);
         }
         if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
@@ -60,7 +60,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void commit() throws SQLException {
-        if (connection.getStatusHandler().isInTransaction()) {
+        if (connection.getStatusManager().isInTransaction()) {
             try {
                 if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
                     localTransactionManager.commit();
@@ -68,14 +68,14 @@ public final class BackendTransactionManager implements TransactionManager {
                     shardingTransactionManager.commit();
                 }
             } finally {
-                connection.getStatusHandler().switchUsingStatus();
+                connection.getStatusManager().switchToUsing();
             }
         }
     }
     
     @Override
     public void rollback() throws SQLException {
-        if (connection.getStatusHandler().isInTransaction()) {
+        if (connection.getStatusManager().isInTransaction()) {
             try {
                 if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
                     localTransactionManager.rollback();
@@ -83,7 +83,7 @@ public final class BackendTransactionManager implements TransactionManager {
                     shardingTransactionManager.rollback();
                 }
             } finally {
-                connection.getStatusHandler().switchUsingStatus();
+                connection.getStatusManager().switchToUsing();
             }
         }
     }

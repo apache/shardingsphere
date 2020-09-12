@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.status;
 
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ResourceLock;
 import org.junit.Test;
 
-public final class ConnectionStatusHandlerTest {
+public final class ConnectionStatusManagerTest {
     
-    private final ConnectionStatusHandler connectionStatusHandler = new ConnectionStatusHandler(new ResourceLock());
+    private final ConnectionStatusManager connectionStatusManager = new ConnectionStatusManager(new ResourceLock());
     
     @Test
     public void assertWaitUntilConnectionReleaseForNoneTransaction() throws InterruptedException {
         Thread waitThread = new Thread(() -> {
-            connectionStatusHandler.switchInTransactionStatus();
-            connectionStatusHandler.waitUntilConnectionReleasedIfNecessary();
+            connectionStatusManager.switchToInTransaction();
+            connectionStatusManager.waitUntilConnectionReleasedIfNecessary();
         });
         Thread notifyThread = new Thread(() -> {
             try {
@@ -35,7 +36,7 @@ public final class ConnectionStatusHandlerTest {
             } catch (final InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
-            connectionStatusHandler.doNotifyIfNecessary();
+            connectionStatusManager.switchToReleased();
         });
         waitThread.start();
         notifyThread.start();
@@ -46,8 +47,8 @@ public final class ConnectionStatusHandlerTest {
     @Test
     public void assertWaitUntilConnectionReleaseForTransaction() throws InterruptedException {
         Thread waitThread = new Thread(() -> {
-            connectionStatusHandler.switchUsingStatus();
-            connectionStatusHandler.waitUntilConnectionReleasedIfNecessary();
+            connectionStatusManager.switchToUsing();
+            connectionStatusManager.waitUntilConnectionReleasedIfNecessary();
         });
         Thread notifyThread = new Thread(() -> {
             try {
@@ -55,7 +56,7 @@ public final class ConnectionStatusHandlerTest {
             } catch (final InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
-            connectionStatusHandler.doNotifyIfNecessary();
+            connectionStatusManager.switchToReleased();
         });
         waitThread.start();
         notifyThread.start();
