@@ -42,7 +42,7 @@ public final class RepositoryResumeBreakPointManagerTest {
     public void setUp() {
         ScalingContext.getInstance().init(mockServerConfiguration());
         resumeBreakPointManager = ResumeBreakPointManagerFactory.newInstance("MySQL", "/scalingTest/position/0");
-        registryRepository = ReflectionUtil.getFieldValueFromClass(resumeBreakPointManager, "REGISTRY_REPOSITORY", RegistryRepository.class);
+        registryRepository = ReflectionUtil.getStaticFieldValueFromClass(RepositoryResumeBreakPointManager.class, "REGISTRY_REPOSITORY");
     }
     
     private ServerConfiguration mockServerConfiguration() {
