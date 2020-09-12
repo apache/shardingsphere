@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
@@ -27,49 +25,42 @@ import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class RepositoryResumeBreakPointManagerTest {
-    
-    private ResumeBreakPointManager resumeBreakPointManager;
-    
+
+    @Mock
     private RegistryRepository registryRepository;
-    
+
+    private RepositoryResumeBreakPointManager repositoryResumeBreakPointManager;
+
     @Before
     @SneakyThrows
     public void setUp() {
-        ScalingContext.getInstance().init(mockServerConfiguration());
-        resumeBreakPointManager = ResumeBreakPointManagerFactory.newInstance("MySQL", "/scalingTest/position/0");
-        registryRepository = ReflectionUtil.getStaticFieldValueFromClass(RepositoryResumeBreakPointManager.class, "REGISTRY_REPOSITORY");
+        ScalingContext.getInstance().init(new ServerConfiguration());
+        ReflectionUtil.setFieldValue(RepositoryResumeBreakPointManager.class, null, "registryRepository", registryRepository);
+        repositoryResumeBreakPointManager = new RepositoryResumeBreakPointManager("H2", "/base");
     }
-    
-    private ServerConfiguration mockServerConfiguration() {
-        ServerConfiguration result = new ServerConfiguration();
-        result.setResumeBreakPoint(new YamlGovernanceConfiguration());
-        result.getResumeBreakPoint().setName("scalingJob");
-        result.getResumeBreakPoint().setRegistryCenter(new YamlGovernanceCenterConfiguration());
-        result.getResumeBreakPoint().getRegistryCenter().setType("REG_FIXTURE");
-        return result;
-    }
-    
+
     @Test
-    @SneakyThrows
     public void assertPersistIncrementalPosition() {
-        resumeBreakPointManager.persistIncrementalPosition();
-        assertThat(registryRepository.get("/scalingTest/position/0/incremental"), is("{}"));
+        repositoryResumeBreakPointManager.persistIncrementalPosition();
+        verify(registryRepository).persist("/base/incremental", "{}");
     }
-    
+
     @Test
-    @SneakyThrows
     public void assertPersistInventoryPosition() {
-        resumeBreakPointManager.persistInventoryPosition();
-        assertThat(registryRepository.get("/scalingTest/position/0/inventory"), is("{\"unfinished\":{},\"finished\":[]}"));
+        repositoryResumeBreakPointManager.persistInventoryPosition();
+        verify(registryRepository).persist("/base/inventory", "{\"unfinished\":{},\"finished\":[]}");
     }
-    
+
     @After
     public void tearDown() {
-        resumeBreakPointManager.close();
+        repositoryResumeBreakPointManager.close();
     }
 }

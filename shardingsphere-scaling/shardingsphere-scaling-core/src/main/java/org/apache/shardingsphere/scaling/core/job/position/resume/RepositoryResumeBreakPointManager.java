@@ -42,7 +42,7 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
     
     private static final String INCREMENTAL = "/incremental";
     
-    private static final RegistryRepository REGISTRY_REPOSITORY = RegistryRepositoryHolder.REGISTRY_REPOSITORY;
+    private static RegistryRepository registryRepository = RegistryRepositoryHolder.REGISTRY_REPOSITORY;
     
     private final ScheduledExecutorService executor;
     
@@ -77,8 +77,8 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
     }
     
     private void resumePosition() {
-        resumeInventoryPosition(REGISTRY_REPOSITORY.get(inventoryPath));
-        resumeIncrementalPosition(REGISTRY_REPOSITORY.get(incrementalPath));
+        resumeInventoryPosition(registryRepository.get(inventoryPath));
+        resumeIncrementalPosition(registryRepository.get(incrementalPath));
     }
     
     private void persistPosition() {
@@ -89,14 +89,14 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
     @Override
     public void persistInventoryPosition() {
         String result = getInventoryPositionData();
-        REGISTRY_REPOSITORY.persist(inventoryPath, result);
+        registryRepository.persist(inventoryPath, result);
         log.info("persist inventory position {} = {}", inventoryPath, result);
     }
     
     @Override
     public void persistIncrementalPosition() {
         String result = getIncrementalPositionData();
-        REGISTRY_REPOSITORY.persist(incrementalPath, result);
+        registryRepository.persist(incrementalPath, result);
         log.info("persist incremental position {} = {}", incrementalPath, result);
     }
     
