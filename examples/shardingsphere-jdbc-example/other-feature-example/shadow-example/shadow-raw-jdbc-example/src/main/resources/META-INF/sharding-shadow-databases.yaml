@@ -72,4 +72,4 @@ shardingAlgorithms:
       algorithm-expression: t_user
 
 props:
-  sql.show: true
+  sql-show: true

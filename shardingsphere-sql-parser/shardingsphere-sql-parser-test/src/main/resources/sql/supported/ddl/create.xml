@@ -164,27 +164,27 @@
         $$" db-types="PostgreSQL" />
 
 <!--    create server test-->
-    <sql-case id="create_server" value="CREATE SERVER myserver FOREIGN DATA WRAPPER postgres_fdw OPTIONS (host 'foo', dbname 'foodb', port '5432')" db-types="PostgreSQL" />
+<!--    <sql-case id="create_server" value="CREATE SERVER myserver FOREIGN DATA WRAPPER postgres_fdw OPTIONS (host 'foo', dbname 'foodb', port '5432')" db-types="PostgreSQL" />-->
 
 <!--    create trigger test-->
-    <sql-case id="create_trigger" value="CREATE TRIGGER check_update
-        BEFORE UPDATE ON accounts
-        FOR EACH ROW
-        EXECUTE FUNCTION check_account_update()" db-types="PostgreSQL" />
-    <sql-case id="create_trigger_of_balance" value="CREATE TRIGGER check_update
-        BEFORE UPDATE OF balance ON accounts
-        FOR EACH ROW
-        EXECUTE FUNCTION check_account_update()" db-types="PostgreSQL" />
-    <sql-case id="create_trigger_with_when" value="CREATE TRIGGER check_update
-        BEFORE UPDATE ON accounts
-        FOR EACH ROW
-        WHEN (OLD.balance IS DISTINCT FROM NEW.balance)
-        EXECUTE FUNCTION check_account_update()" db-types="PostgreSQL" />
-    <sql-case id="create_trigger_after_update" value="CREATE TRIGGER paired_items_update
-        AFTER UPDATE ON paired_items
-        REFERENCING NEW TABLE AS newtab OLD TABLE AS oldtab
-        FOR EACH ROW
-        EXECUTE FUNCTION check_matching_pairs()" db-types="PostgreSQL" />
+<!--    <sql-case id="create_trigger" value="CREATE TRIGGER check_update-->
+<!--        BEFORE UPDATE ON accounts-->
+<!--        FOR EACH ROW-->
+<!--        EXECUTE FUNCTION check_account_update()" db-types="PostgreSQL" />-->
+<!--    <sql-case id="create_trigger_of_balance" value="CREATE TRIGGER check_update-->
+<!--        BEFORE UPDATE OF balance ON accounts-->
+<!--        FOR EACH ROW-->
+<!--        EXECUTE FUNCTION check_account_update()" db-types="PostgreSQL" />-->
+<!--    <sql-case id="create_trigger_with_when" value="CREATE TRIGGER check_update-->
+<!--        BEFORE UPDATE ON accounts-->
+<!--        FOR EACH ROW-->
+<!--        WHEN (OLD.balance IS DISTINCT FROM NEW.balance)-->
+<!--        EXECUTE FUNCTION check_account_update()" db-types="PostgreSQL" />-->
+<!--    <sql-case id="create_trigger_after_update" value="CREATE TRIGGER paired_items_update-->
+<!--        AFTER UPDATE ON paired_items-->
+<!--        REFERENCING NEW TABLE AS newtab OLD TABLE AS oldtab-->
+<!--        FOR EACH ROW-->
+<!--        EXECUTE FUNCTION check_matching_pairs()" db-types="PostgreSQL" />-->
 
 <!--    create view test-->
     <sql-case id="create_view" value="CREATE VIEW comedies AS

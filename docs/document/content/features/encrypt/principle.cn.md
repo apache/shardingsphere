@@ -126,13 +126,13 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
 props:
-  query.with.cipher.column: false
+  query-with-cipher-column: false
 ```
 
 依据上述加密规则可知，首先需要在数据库表 `t_user` 里新增一个字段叫做 `pwd_cipher`，即 cipherColumn，用于存放密文数据，同时我们把 plainColumn 设置为 `pwd`，用于存放明文数据，而把 logicColumn 也设置为 `pwd`。
 由于之前的代码 SQL 就是使用 `pwd` 进行编写，即面向逻辑列进行 SQL 编写，所以业务代码无需改动。
 通过 Apache ShardingSphere，针对新增的数据，会把明文写到pwd列，并同时把明文进行加密存储到 `pwd_cipher` 列。
-此时，由于 `query.with.cipher.column` 设置为 false，对业务应用来说，依旧使用 `pwd` 这一明文列进行查询存储，却在底层数据库表 `pwd_cipher` 上额外存储了新增数据的密文数据，其处理流程如下图所示：
+此时，由于 `query-with-cipher-column` 设置为 false，对业务应用来说，依旧使用 `pwd` 这一明文列进行查询存储，却在底层数据库表 `pwd_cipher` 上额外存储了新增数据的密文数据，其处理流程如下图所示：
 
 ![6](https://shardingsphere.apache.org/document/current/img/encrypt/6.png)
 
@@ -142,15 +142,15 @@ props:
 2. 系统迁移中
 
 新增的数据已被 Apache ShardingSphere 将密文存储到密文列，明文存储到明文列；历史数据被业务方自行加密清洗后，将密文也存储到密文列。
-也就是说现在的数据库里即存放着明文也存放着密文，只是由于配置项中的 query.with.cipher.column=false，所以密文一直没有被使用过。
-现在我们为了让系统能切到密文数据进行查询，需要将加密配置中的query.with.cipher.column设置为true。
+也就是说现在的数据库里即存放着明文也存放着密文，只是由于配置项中的 query-with-cipher-column=false，所以密文一直没有被使用过。
+现在我们为了让系统能切到密文数据进行查询，需要将加密配置中的query-with-cipher-column设置为true。
 在重启系统后，我们发现系统业务一切正常，但是 Apache ShardingSphere 已经开始从数据库里取出密文列的数据，解密后返回给用户；
 而对于用户的增删改需求，则依旧会把原文数据存储到明文列，加密后密文数据存储到密文列。
 
 虽然现在业务系统通过将密文列的数据取出，解密后返回；但是，在存储的时候仍旧会存一份原文数据到明文列，这是为什么呢？
 答案是：为了能够进行系统回滚。
 **因为只要密文和明文永远同时存在，我们就可以通过开关项配置自由将业务查询切换到 cipherColumn 或 plainColumn。**
-也就是说，如果将系统切到密文列进行查询时，发现系统报错，需要回滚。那么只需将 query.with.cipher.column=false，Apache ShardingSphere 将会还原，即又重新开始使用 plainColumn 进行查询。
+也就是说，如果将系统切到密文列进行查询时，发现系统报错，需要回滚。那么只需将 query-with-cipher-column=false，Apache ShardingSphere 将会还原，即又重新开始使用 plainColumn 进行查询。
 处理流程如下图所示：
 
 ![7](https://shardingsphere.apache.org/document/current/img/encrypt/7.png)
@@ -180,7 +180,7 @@ props:
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
 props:
-  query.with.cipher.column: true
+  query-with-cipher-column: true
 ```
 
 其处理流程如下：

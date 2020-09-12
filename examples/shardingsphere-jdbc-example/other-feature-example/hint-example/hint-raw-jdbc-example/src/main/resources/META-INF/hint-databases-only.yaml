@@ -50,4 +50,4 @@ rules:
       type: HINT_TEST
 
 props:
-  sql.show: true
+  sql-show: true

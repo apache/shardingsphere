@@ -19,15 +19,14 @@ package org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.en
 
 import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.RowNumberValueSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateCompareRightValue;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -51,27 +50,39 @@ public final class RowNumberPaginationContextEngine {
     /**
      * Create pagination context.
      * 
-     * @param andPredicates and predicates
+     * @param where where condition
      * @param projectionsContext projections context
      * @param parameters SQL parameters
      * @return pagination context
      */
-    public PaginationContext createPaginationContext(final Collection<AndPredicate> andPredicates, final ProjectionsContext projectionsContext, final List<Object> parameters) {
+    public PaginationContext createPaginationContext(final ExpressionSegment where, final ProjectionsContext projectionsContext, final List<Object> parameters) {
         Optional<String> rowNumberAlias = isRowNumberAlias(projectionsContext);
         if (!rowNumberAlias.isPresent()) {
             return new PaginationContext(null, null, parameters);
         }
-        Collection<PredicateSegment> rowNumberPredicates = getRowNumberPredicates(andPredicates, rowNumberAlias.get());
+        Collection<BinaryOperationExpression> rowNumberPredicates = getRowNumberPredicates(where, rowNumberAlias.get());
         return rowNumberPredicates.isEmpty() ? new PaginationContext(null, null, parameters) : createPaginationWithRowNumber(rowNumberPredicates, parameters);
     }
     
-    private Collection<PredicateSegment> getRowNumberPredicates(final Collection<AndPredicate> andPredicates, final String rowNumberAlias) {
-        Collection<PredicateSegment> result = new LinkedList<>();
-        for (AndPredicate each : andPredicates) {
-            for (PredicateSegment predicate : each.getPredicates()) {
-                if (isRowNumberColumn(predicate, rowNumberAlias) && isCompareCondition(predicate)) {
-                    result.add(predicate);
-                }
+    private Collection<BinaryOperationExpression> getRowNumberPredicates(final ExpressionSegment where, final String rowNumberAlias) {
+        List<BinaryOperationExpression> result = new LinkedList<>();
+        if (!(where instanceof BinaryOperationExpression)) {
+            return result;
+        }
+        String operator = ((BinaryOperationExpression) where).getOperator();
+        if (((BinaryOperationExpression) where).getLeft() instanceof ColumnSegment && isRowNumberColumn((ColumnSegment) ((BinaryOperationExpression) where).getLeft(), rowNumberAlias)
+                && isCompareCondition(operator)) {
+            result.add((BinaryOperationExpression) where);
+            return result;
+        }
+        if ("and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator) || "or".equalsIgnoreCase(operator)) {
+            Collection<BinaryOperationExpression> left = getRowNumberPredicates(((BinaryOperationExpression) where).getLeft(), rowNumberAlias);
+            if (!left.isEmpty()) {
+                return left;
+            }
+            Collection<BinaryOperationExpression> right = getRowNumberPredicates(((BinaryOperationExpression) where).getRight(), rowNumberAlias);
+            if (!left.isEmpty()) {
+                return right;
             }
         }
         return result;
@@ -87,35 +98,31 @@ public final class RowNumberPaginationContextEngine {
         return Optional.empty();
     }
     
-    private boolean isRowNumberColumn(final PredicateSegment predicate, final String rowNumberAlias) {
-        return ROW_NUMBER_IDENTIFIERS.contains(predicate.getColumn().getIdentifier().getValue()) || predicate.getColumn().getIdentifier().getValue().equalsIgnoreCase(rowNumberAlias);
+    private boolean isRowNumberColumn(final ColumnSegment column, final String rowNumberAlias) {
+        return ROW_NUMBER_IDENTIFIERS.contains(column.getIdentifier().getValue()) || column.getIdentifier().getValue().equalsIgnoreCase(rowNumberAlias);
     }
     
-    private boolean isCompareCondition(final PredicateSegment predicate) {
-        if (predicate.getRightValue() instanceof PredicateCompareRightValue) {
-            String operator = ((PredicateCompareRightValue) predicate.getRightValue()).getOperator();
-            return "<".equals(operator) || "<=".equals(operator) || ">".equals(operator) || ">=".equals(operator);
-        }
-        return false;
+    private boolean isCompareCondition(final String operator) {
+        return "<".equals(operator) || "<=".equals(operator) || ">".equals(operator) || ">=".equals(operator);
     }
     
-    private PaginationContext createPaginationWithRowNumber(final Collection<PredicateSegment> rowNumberPredicates, final List<Object> parameters) {
+    private PaginationContext createPaginationWithRowNumber(final Collection<BinaryOperationExpression> rowNumberPredicates, final List<Object> parameters) {
         RowNumberValueSegment offset = null;
         RowNumberValueSegment rowCount = null;
-        for (PredicateSegment each : rowNumberPredicates) {
-            ExpressionSegment expression = ((PredicateCompareRightValue) each.getRightValue()).getExpression();
-            switch (((PredicateCompareRightValue) each.getRightValue()).getOperator()) {
+        for (BinaryOperationExpression each : rowNumberPredicates) {
+            String operator = each.getOperator();
+            switch (operator) {
                 case ">":
-                    offset = createRowNumberValueSegment(expression, false);
+                    offset = createRowNumberValueSegment(each.getRight(), false);
                     break;
                 case ">=":
-                    offset = createRowNumberValueSegment(expression, true);
+                    offset = createRowNumberValueSegment(each.getRight(), true);
                     break;
                 case "<":
-                    rowCount = createRowNumberValueSegment(expression, false);
+                    rowCount = createRowNumberValueSegment(each.getRight(), false);
                     break;
                 case "<=":
-                    rowCount = createRowNumberValueSegment(expression, true);
+                    rowCount = createRowNumberValueSegment(each.getRight(), true);
                     break;
                 default:
                     break;

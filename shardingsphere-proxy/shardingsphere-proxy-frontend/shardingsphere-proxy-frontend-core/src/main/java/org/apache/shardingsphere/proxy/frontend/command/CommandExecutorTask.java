@@ -68,22 +68,29 @@ public final class CommandExecutorTask implements Runnable {
              PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message)) {
             ConnectionStatusHandler statusHandler = backendConnection.getStatusHandler();
             statusHandler.waitUntilConnectionReleasedIfNecessary();
-            statusHandler.switchRunningStatusIfNecessary();
+            statusHandler.switchUsingStatus();
             isNeedFlush = executeCommand(context, payload, backendConnection);
             connectionSize = backendConnection.getConnectionSize();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("Exception occur: ", ex);
             context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
             Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket();
             databasePacket.ifPresent(context::writeAndFlush);
+            if (!isExpectedException(ex)) {
+                log.error("Exception occur: ", ex);
+            }
         } finally {
             if (isNeedFlush) {
                 context.flush();
             }
             rootInvokeHook.finish(connectionSize);
         }
+    }
+    
+    // TODO finish expected exception
+    private boolean isExpectedException(final Exception ex) {
+        return ex instanceof RuntimeException;
     }
     
     private boolean executeCommand(final ChannelHandlerContext context, final PacketPayload payload, final BackendConnection backendConnection) throws SQLException {

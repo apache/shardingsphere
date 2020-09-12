@@ -23,12 +23,12 @@
         </encoder>
     </appender>
     <logger name="com.ctrip.framework.apollo" level="error" additivity="false">
-        <appender-ref ref="console"/>
+        <appender-ref ref="console" />
     </logger>
     <logger name="okhttp3.mockwebserver" level="warn" additivity="false">
-        <appender-ref ref="console"/>
+        <appender-ref ref="console" />
     </logger>
-
+    
     <root>
         <level value="error" />
         <appender-ref ref="console" />

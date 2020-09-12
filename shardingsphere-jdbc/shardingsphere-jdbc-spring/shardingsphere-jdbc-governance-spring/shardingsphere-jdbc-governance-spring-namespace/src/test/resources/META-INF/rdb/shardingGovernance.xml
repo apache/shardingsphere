@@ -51,8 +51,8 @@
     <governance:data-source id="multiBroadcastTableRulesDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBroadcastTableRulesDatasourceShardingRule" reg-center-ref="registryRepository" />
     <governance:data-source id="propsDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="propsDataSourceShardingRule" reg-center-ref="registryRepository">
         <props>
-            <prop key="sql.show">${sql_show}</prop>
-            <prop key="executor.size">10</prop>
+            <prop key="sql-show">${sql_show}</prop>
+            <prop key="executor-size">10</prop>
             <prop key="foo">bar</prop>
         </props>
     </governance:data-source>

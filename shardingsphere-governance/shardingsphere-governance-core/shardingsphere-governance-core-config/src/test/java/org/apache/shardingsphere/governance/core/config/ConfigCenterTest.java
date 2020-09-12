@@ -88,7 +88,7 @@ public final class ConfigCenterTest {
     
     private static final String AUTHENTICATION_YAML = "yaml/configCenter/data-authentication.yaml";
     
-    private static final String PROPS_YAML = "sql.show: false\n";
+    private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
     
     private static final String DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL = "yaml/configCenter/data-source-init-sql.yaml";
     

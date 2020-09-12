@@ -119,12 +119,12 @@
     <sql-case id="alter_function_set" value="ALTER FUNCTION check_password(text) SET search_path = admin,pg_temp" db-types="PostgreSQL" />
     <sql-case id="alter_function_depend_on" value="ALTER FUNCTION sqrt(integer) DEPENDS ON EXTENSION mathlib" db-types="PostgreSQL" />
 <!--alter database test-->
-    <sql-case id="alter_database_set_to" value="ALTER DATABASE test SET enable_indexscan TO off" db-types="PostgreSQL" />
-    <sql-case id="alter_database_set_to_default" value="ALTER DATABASE test SET enable_indexscan TO DEFAULT" db-types="PostgreSQL" />
-    <sql-case id="alter_database_set_equal" value="ALTER DATABASE test SET enable_indexscan = off" db-types="PostgreSQL" />
-    <sql-case id="alter_database_reset_all" value="ALTER DATABASE test RESET ALL" db-types="PostgreSQL" />
-    <sql-case id="alter_database_reset_param" value="ALTER DATABASE test RESET parameter1" db-types="PostgreSQL" />
-    <sql-case id="alter_database_owner" value="ALTER DATABASE name OWNER TO user1" db-types="PostgreSQL" />
+<!--    <sql-case id="alter_database_set_to" value="ALTER DATABASE test SET enable_indexscan TO off" db-types="PostgreSQL" />-->
+<!--    <sql-case id="alter_database_set_to_default" value="ALTER DATABASE test SET enable_indexscan TO DEFAULT" db-types="PostgreSQL" />-->
+<!--    <sql-case id="alter_database_set_equal" value="ALTER DATABASE test SET enable_indexscan = off" db-types="PostgreSQL" />-->
+<!--    <sql-case id="alter_database_reset_all" value="ALTER DATABASE test RESET ALL" db-types="PostgreSQL" />-->
+<!--    <sql-case id="alter_database_reset_param" value="ALTER DATABASE test RESET parameter1" db-types="PostgreSQL" />-->
+<!--    <sql-case id="alter_database_owner" value="ALTER DATABASE name OWNER TO user1" db-types="PostgreSQL" />-->
 <!--alter procedure test-->
     <sql-case id="alter_procedure_rename" value="ALTER PROCEDURE insert_data(integer, integer) RENAME TO insert_record" db-types="PostgreSQL" />
     <sql-case id="alter_procedure_owner" value="ALTER PROCEDURE insert_data(integer, integer) OWNER TO joe" db-types="PostgreSQL" />
@@ -133,6 +133,6 @@
     <sql-case id="alter_procedure_set_param" value="ALTER PROCEDURE check_password(text) SET search_path = admin,pg_temp" db-types="PostgreSQL" />
     <sql-case id="alter_procedure_reset_param" value="ALTER PROCEDURE check_password(text) RESET search_path" db-types="PostgreSQL" />
 <!--alter server test-->
-    <sql-case id="alter_server_options" value="ALTER SERVER foo OPTIONS (host 'foo', dbname 'foodb')" db-types="PostgreSQL" />
-    <sql-case id="alter_server_version" value="ALTER SERVER foo VERSION '8.4' OPTIONS (SET host 'baz')" db-types="PostgreSQL" />
+<!--    <sql-case id="alter_server_options" value="ALTER SERVER foo OPTIONS (host 'foo', dbname 'foodb')" db-types="PostgreSQL" />-->
+<!--    <sql-case id="alter_server_version" value="ALTER SERVER foo VERSION '8.4' OPTIONS (SET host 'baz')" db-types="PostgreSQL" />-->
 </sql-cases>

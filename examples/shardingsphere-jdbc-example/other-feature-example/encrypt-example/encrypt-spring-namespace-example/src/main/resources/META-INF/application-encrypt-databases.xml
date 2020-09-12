@@ -58,7 +58,7 @@
     
     <shardingsphere:data-source id="encryptDataSource" data-source-names="ds" rule-refs="encryptRule">
         <props>
-            <prop key="query.with.cipher.column">true</prop>
+            <prop key="query-with-cipher-column">true</prop>
         </props>
     </shardingsphere:data-source>
     

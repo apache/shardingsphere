@@ -17,8 +17,8 @@
   -->
 
 <sql-parser-test-cases>
-    <create-trigger sql-case-id="create_trigger" />
-    <create-trigger sql-case-id="create_trigger_of_balance" />
-    <create-trigger sql-case-id="create_trigger_with_when" />
-    <create-trigger sql-case-id="create_trigger_after_update" />
+<!--    <create-trigger sql-case-id="create_trigger" />-->
+<!--    <create-trigger sql-case-id="create_trigger_of_balance" />-->
+<!--    <create-trigger sql-case-id="create_trigger_with_when" />-->
+<!--    <create-trigger sql-case-id="create_trigger_after_update" />-->
 </sql-parser-test-cases>

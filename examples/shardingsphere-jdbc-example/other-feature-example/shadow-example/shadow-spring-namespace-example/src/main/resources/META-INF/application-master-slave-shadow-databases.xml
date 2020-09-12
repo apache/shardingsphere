@@ -75,7 +75,7 @@
     
     <shardingsphere:data-source id="shadowDataSource" data-source-names="ds_master,ds_slave,shadow_ds_master,shadow_ds_slave" rule-refs="shadowRule,masterSlaveRule">
         <props>
-            <prop key="sql.show">true</prop>
+            <prop key="sql-show">true</prop>
         </props>
     </shardingsphere:data-source>
     

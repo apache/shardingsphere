@@ -103,7 +103,7 @@ public final class CommandExecutorTaskTest {
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
         verify(statusHandler).waitUntilConnectionReleasedIfNecessary();
-        verify(statusHandler).switchRunningStatusIfNecessary();
+        verify(statusHandler).switchUsingStatus();
     }
     
     @Test
@@ -120,7 +120,7 @@ public final class CommandExecutorTaskTest {
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
         verify(statusHandler).waitUntilConnectionReleasedIfNecessary();
-        verify(statusHandler).switchRunningStatusIfNecessary();
+        verify(statusHandler).switchUsingStatus();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
         verify(executeEngine).writeQueryData(handlerContext, backendConnection, queryCommandExecutor, 1);
@@ -142,7 +142,7 @@ public final class CommandExecutorTaskTest {
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
         verify(statusHandler).waitUntilConnectionReleasedIfNecessary();
-        verify(statusHandler).switchRunningStatusIfNecessary();
+        verify(statusHandler).switchUsingStatus();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
     }
@@ -160,5 +160,4 @@ public final class CommandExecutorTaskTest {
         actual.run();
         verify(handlerContext, atLeast(2)).writeAndFlush(databasePacket);
     }
-    
 }

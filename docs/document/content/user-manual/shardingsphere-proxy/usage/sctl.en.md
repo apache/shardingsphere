@@ -19,4 +19,4 @@ SCTL (ShardingSphere-Proxy control language) supports modify and query the state
 |sctl:hint show status                    | For current connection, query hint status, master_only:true/false, sharding_type:databases_only/databases_tables | sctl:hint show status                          |
 |sctl:hint show table status              | For current connection, query sharding values of logic tables                                                    | sctl:hint show table status                    |
 
-ShardingSphere-Proxy does not support hint by default, to support it, set the `properties` property `proxy.hint.enabled` to true in `conf/server.yaml`.
+ShardingSphere-Proxy does not support hint by default, to support it, set the `properties` property `proxy-hint-enabled` to true in `conf/server.yaml`.

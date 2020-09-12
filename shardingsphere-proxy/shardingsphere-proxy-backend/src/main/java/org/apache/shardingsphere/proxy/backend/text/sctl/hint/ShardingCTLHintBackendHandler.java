@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl.hint;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -33,6 +35,7 @@ import java.util.Optional;
 /**
  * Sharding CTL hint backend handler.
  */
+@RequiredArgsConstructor
 public final class ShardingCTLHintBackendHandler implements TextProtocolBackendHandler {
     
     private final String sql;
@@ -41,15 +44,10 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
     
     private HintCommandExecutor hintCommandExecutor;
     
-    public ShardingCTLHintBackendHandler(final String sql, final BackendConnection backendConnection) {
-        this.sql = sql;
-        this.backendConnection = backendConnection;
-    }
-    
     @SuppressWarnings("unchecked")
     @Override
     public BackendResponse execute() {
-        if (!backendConnection.isSupportHint()) {
+        if (!ProxyContext.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)) {
             throw new UnsupportedOperationException(String.format("%s should be true, please check your config", ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey()));
         }
         Optional<ShardingCTLHintStatement> shardingTCLStatement = new ShardingCTLHintParser(sql).doParse();

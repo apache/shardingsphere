@@ -51,8 +51,8 @@
     <sql-case id="drop_functions" value="DROP FUNCTION sqrt(integer), sqrt(bigint)" db-types="PostgreSQL" />
     <sql-case id="drop_function_without_argument_list" value="DROP FUNCTION update_employee_salaries" db-types="PostgreSQL" />
     <sql-case id="drop_procedure" value="DROP PROCEDURE do_db_maintenance()" db-types="PostgreSQL" />
-    <sql-case id="drop_server_if_exists" value="DROP SERVER IF EXISTS foo" db-types="PostgreSQL" />
-    <sql-case id="drop_server" value="DROP SERVER foo" db-types="PostgreSQL" />
-    <sql-case id="drop_trigger" value="DROP TRIGGER if_dist_exists ON films" db-types="PostgreSQL" />
+<!--    <sql-case id="drop_server_if_exists" value="DROP SERVER IF EXISTS foo" db-types="PostgreSQL" />-->
+<!--    <sql-case id="drop_server" value="DROP SERVER foo" db-types="PostgreSQL" />-->
+<!--    <sql-case id="drop_trigger" value="DROP TRIGGER if_dist_exists ON films" db-types="PostgreSQL" />-->
     <sql-case id="drop_view" value="DROP VIEW kinds" db-types="PostgreSQL" />
 </sql-cases>

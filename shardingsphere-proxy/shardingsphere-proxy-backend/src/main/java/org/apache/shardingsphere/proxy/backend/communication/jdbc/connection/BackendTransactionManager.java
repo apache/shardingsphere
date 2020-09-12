@@ -68,7 +68,7 @@ public final class BackendTransactionManager implements TransactionManager {
                     shardingTransactionManager.commit();
                 }
             } finally {
-                connection.getStatusHandler().switchReadyStatus();
+                connection.getStatusHandler().switchUsingStatus();
             }
         }
     }
@@ -83,7 +83,7 @@ public final class BackendTransactionManager implements TransactionManager {
                     shardingTransactionManager.rollback();
                 }
             } finally {
-                connection.getStatusHandler().switchReadyStatus();
+                connection.getStatusHandler().switchUsingStatus();
             }
         }
     }

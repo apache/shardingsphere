@@ -27,32 +27,22 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public final class ConnectionStatusHandler {
     
-    private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.READY);
+    private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.RELEASED);
     
     private final ResourceLock resourceLock;
+    
+    /**
+     * Switch connection status to using.
+     */
+    public void switchUsingStatus() {
+        status.set(ConnectionStatus.USING);
+    }
     
     /**
      * Switch connection status to in transaction.
      */
     public void switchInTransactionStatus() {
         status.set(ConnectionStatus.IN_TRANSACTION);
-    }
-    
-    /**
-     * Switch connection status to ready.
-     */
-    public void switchReadyStatus() {
-        status.set(ConnectionStatus.READY);
-        resourceLock.doNotify();
-    }
-    
-    /**
-     * Switch connection status to running if necessary.
-     */
-    public void switchRunningStatusIfNecessary() {
-        if (ConnectionStatus.IN_TRANSACTION != status.get() && ConnectionStatus.RUNNING != status.get()) {
-            status.set(ConnectionStatus.RUNNING);
-        }
     }
     
     /**
@@ -68,7 +58,7 @@ public final class ConnectionStatusHandler {
      * Notify connection to finish wait if necessary.
      */
     void doNotifyIfNecessary() {
-        if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE) || status.compareAndSet(ConnectionStatus.READY, ConnectionStatus.RELEASE)) {
+        if (status.compareAndSet(ConnectionStatus.USING, ConnectionStatus.RELEASED)) {
             resourceLock.doNotify();
         }
     }
@@ -77,8 +67,8 @@ public final class ConnectionStatusHandler {
      * Wait until connection is released if necessary.
      */
     public void waitUntilConnectionReleasedIfNecessary() {
-        if (ConnectionStatus.RUNNING == status.get() || ConnectionStatus.READY == status.get()) {
-            while (!status.compareAndSet(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
+        if (ConnectionStatus.USING == status.get()) {
+            while (!status.compareAndSet(ConnectionStatus.RELEASED, ConnectionStatus.USING)) {
                 resourceLock.doAwait();
             }
         }

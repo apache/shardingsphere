@@ -17,6 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-server sql-case-id="alter_server_options" />
-    <alter-server sql-case-id="alter_server_version" />
+<!--    <alter-server sql-case-id="alter_server_options" />-->
+<!--    <alter-server sql-case-id="alter_server_version" />-->
 </sql-parser-test-cases>

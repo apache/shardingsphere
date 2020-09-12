@@ -33,6 +33,10 @@ import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesState
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropDatabaseStatement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,10 +66,20 @@ public final class RDLBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteCreateDatabaseContext() throws SQLException {
+    public void assertExecuteMySQLCreateDatabaseContext() throws SQLException {
+        assertExecuteCreateDatabaseContext(new MySQLCreateDatabaseStatement());
+    }
+
+    @Test
+    public void assertExecutePostgreSQLCreateDatabaseContext() throws SQLException {
+        assertExecuteCreateDatabaseContext(new PostgreSQLCreateDatabaseStatement());
+    }
+
+    private void assertExecuteCreateDatabaseContext(final CreateDatabaseStatement sqlStatement) throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
-        RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new CreateDatabaseStatement("new_db"));
+        sqlStatement.setDatabaseName("new_db");
+        RDLBackendHandler executeEngine = new RDLBackendHandler(connection, sqlStatement);
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
@@ -77,10 +91,20 @@ public final class RDLBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteDropDatabaseContext() throws SQLException {
+    public void assertExecuteMySQLDropDatabaseContext() throws SQLException {
+        assertExecuteDropDatabaseContext(new MySQLDropDatabaseStatement());
+    }
+
+    @Test
+    public void assertExecutePostgreSQLDropDatabaseContext() throws SQLException {
+        assertExecuteDropDatabaseContext(new PostgreSQLDropDatabaseStatement());
+    }
+
+    private void assertExecuteDropDatabaseContext(final DropDatabaseStatement sqlStatement) throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
-        RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new DropDatabaseStatement("schema"));
+        sqlStatement.setDatabaseName("schema");
+        RDLBackendHandler executeEngine = new RDLBackendHandler(connection, sqlStatement);
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
@@ -90,12 +114,22 @@ public final class RDLBackendHandlerTest {
         BackendResponse response = executeEngine.execute();
         assertThat(response, instanceOf(UpdateResponse.class));
     }
-    
+
     @Test
-    public void assertExecuteCreateDatabaseContextWithException() throws SQLException {
+    public void assertExecuteMySQLCreateDatabaseContextWithException() throws SQLException {
+        assertExecuteCreateDatabaseContextWithException(new MySQLCreateDatabaseStatement());
+    }
+
+    @Test
+    public void assertExecutePostgreSQLCreateDatabaseContextWithException() throws SQLException {
+        assertExecuteCreateDatabaseContextWithException(new PostgreSQLCreateDatabaseStatement());
+    }
+    
+    public void assertExecuteCreateDatabaseContextWithException(final CreateDatabaseStatement sqlStatement) throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
-        RDLBackendHandler executeEngine = new RDLBackendHandler(connection, new CreateDatabaseStatement("schema"));
+        sqlStatement.setDatabaseName("schema");
+        RDLBackendHandler executeEngine = new RDLBackendHandler(connection, sqlStatement);
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {

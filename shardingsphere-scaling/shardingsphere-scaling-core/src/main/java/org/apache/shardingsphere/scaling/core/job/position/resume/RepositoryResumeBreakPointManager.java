@@ -42,7 +42,7 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
     
     private static final String INCREMENTAL = "/incremental";
     
-    private static RegistryRepository registryRepository = RegistryRepositoryHolder.REGISTRY_REPOSITORY;
+    private static final RegistryRepository REGISTRY_REPOSITORY = RegistryRepositoryHolder.REGISTRY_REPOSITORY;
     
     private final ScheduledExecutorService executor;
     
@@ -77,8 +77,8 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
     }
     
     private void resumePosition() {
-        resumeInventoryPosition(registryRepository.get(inventoryPath));
-        resumeIncrementalPosition(registryRepository.get(incrementalPath));
+        resumeInventoryPosition(REGISTRY_REPOSITORY.get(inventoryPath));
+        resumeIncrementalPosition(REGISTRY_REPOSITORY.get(incrementalPath));
     }
     
     private void persistPosition() {
@@ -89,14 +89,14 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
     @Override
     public void persistInventoryPosition() {
         String result = getInventoryPositionData();
-        registryRepository.persist(inventoryPath, result);
+        REGISTRY_REPOSITORY.persist(inventoryPath, result);
         log.info("persist inventory position {} = {}", inventoryPath, result);
     }
     
     @Override
     public void persistIncrementalPosition() {
         String result = getIncrementalPositionData();
-        registryRepository.persist(incrementalPath, result);
+        REGISTRY_REPOSITORY.persist(incrementalPath, result);
         log.info("persist incremental position {} = {}", incrementalPath, result);
     }
     
@@ -108,16 +108,16 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
         private static boolean available;
     
         private static RegistryRepository getInstance() {
-            RegistryRepository registryRepository = null;
+            RegistryRepository result = null;
             YamlGovernanceConfiguration resumeBreakPoint = ScalingContext.getInstance().getServerConfiguration().getResumeBreakPoint();
             if (resumeBreakPoint != null) {
-                registryRepository = createRegistryRepository(new GovernanceConfigurationYamlSwapper().swapToObject(resumeBreakPoint));
+                result = createRegistryRepository(new GovernanceConfigurationYamlSwapper().swapToObject(resumeBreakPoint));
             }
-            if (registryRepository != null) {
+            if (result != null) {
                 log.info("zookeeper resume from break-point manager is available.");
                 available = true;
             }
-            return registryRepository;
+            return result;
         }
     
         private static RegistryRepository createRegistryRepository(final GovernanceConfiguration config) {

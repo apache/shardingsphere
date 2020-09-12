@@ -41,7 +41,7 @@ rules:
       slaveDataSourceNames: [ds_slave_0, ds_slave_1]
 
 props:
-  sql.show: true
+  sql-show: true
 
 governance:
   name: demo_zookeeper_yaml_ds_ms

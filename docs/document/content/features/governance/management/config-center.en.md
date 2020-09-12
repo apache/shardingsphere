@@ -42,8 +42,8 @@ password: root
 Properties configuration. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/configuration/) for more details.
 
 ```yaml
-executor.size: 20
-sql.show: true
+executor-size: 20
+sql-show: true
 ```
 
 ### /schemas/${schemeName}/datasource

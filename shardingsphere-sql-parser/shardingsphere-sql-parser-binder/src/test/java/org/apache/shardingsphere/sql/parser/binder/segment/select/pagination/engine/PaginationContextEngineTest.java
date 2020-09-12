@@ -19,15 +19,12 @@ package org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.en
 
 import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.TableFactorSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Test;
 
@@ -57,12 +54,7 @@ public final class PaginationContextEngineTest {
         projections.getProjections().add(new TopProjectionSegment(0, 10, null, "rowNumberAlias"));
         subquerySelectStatement.setProjections(projections);
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, subquerySelectStatement);
-        TableFactorSegment tableFactorSegment = new TableFactorSegment();
-        tableFactorSegment.setTable(new SubqueryTableSegment(subquerySegment));
-        TableReferenceSegment tableReferenceSegment = new TableReferenceSegment();
-        tableReferenceSegment.setTableFactor(tableFactorSegment);
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTableReferences().add(tableReferenceSegment);
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, null, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
@@ -72,7 +64,7 @@ public final class PaginationContextEngineTest {
     public void assertCreatePaginationContextWhenLimitSegmentTopSegmentAbsentAndWhereSegmentPresent() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatement.setWhere(new WhereSegment(0, 10));
+        selectStatement.setWhere(new WhereSegment(0, 10, null));
         
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, projectionsContext, Collections.emptyList());

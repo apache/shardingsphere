@@ -26,19 +26,17 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateCompareRightValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateInRightValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,7 +52,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
         UpdateStatement sqlStatement = (UpdateStatement) sqlStatementContext.getSqlStatement();
-        String tableName = sqlStatement.getTables().iterator().next().getTableName().getIdentifier().getValue();
+        String tableName = sqlStatementContext.getTablesContext().getTables().iterator().next().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
             String shardingColumn = each.getColumn().getIdentifier().getValue();
             if (shardingRule.isShardingColumn(shardingColumn, tableName)) {
@@ -95,26 +93,34 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
     }
     
     private Optional<Object> getShardingValue(final WhereSegment whereSegment, final List<Object> parameters, final String shardingColumn) {
-        for (AndPredicate each : whereSegment.getAndPredicates()) {
-            return getShardingValue(each, parameters, shardingColumn);
+        if (null != whereSegment) {
+            return getShardingValue(whereSegment.getExpr(), parameters, shardingColumn);
         }
         return Optional.empty();
     }
     
-    private Optional<Object> getShardingValue(final AndPredicate andPredicate, final List<Object> parameters, final String shardingColumn) {
-        for (PredicateSegment each : andPredicate.getPredicates()) {
-            if (!shardingColumn.equalsIgnoreCase(each.getColumn().getIdentifier().getValue())) {
-                continue;
+    private Optional<Object> getShardingValue(final ExpressionSegment expression, final List<Object> parameters, final String shardingColumn) {
+        if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
+            ColumnSegment column = (ColumnSegment) ((InExpression) expression).getLeft();
+            if (!shardingColumn.equalsIgnoreCase(column.getIdentifier().getValue())) {
+                return getPredicateInShardingValue(((InExpression) expression).getRight(), parameters);
             }
-            PredicateRightValue rightValue = each.getRightValue();
-            if (rightValue instanceof PredicateCompareRightValue) {
-                ExpressionSegment segment = ((PredicateCompareRightValue) rightValue).getExpression();
-                return getPredicateCompareShardingValue(segment, parameters);
+        }
+        if (!(expression instanceof BinaryOperationExpression)) {
+            return Optional.empty();
+        }
+        String operator = ((BinaryOperationExpression) expression).getOperator();
+        boolean compare = ">".equalsIgnoreCase(operator) || ">=".equalsIgnoreCase(operator) || "=".equalsIgnoreCase(operator) || "<".equalsIgnoreCase(operator) || "<=".equalsIgnoreCase(operator);
+        if (compare && ((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
+            ColumnSegment column = (ColumnSegment) ((BinaryOperationExpression) expression).getLeft();
+            if (shardingColumn.equalsIgnoreCase(column.getIdentifier().getValue())) {
+                return getPredicateCompareShardingValue(((BinaryOperationExpression) expression).getRight(), parameters);
             }
-            if (rightValue instanceof PredicateInRightValue) {
-                Collection<ExpressionSegment> segments = ((PredicateInRightValue) rightValue).getSqlExpressions();
-                return getPredicateInShardingValue(segments, parameters);
-            }
+        }
+        boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
+        if (logical) {
+            Optional<Object> leftResult = getShardingValue(((BinaryOperationExpression) expression).getLeft(), parameters, shardingColumn);
+            return leftResult.isPresent() ? leftResult : getShardingValue(((BinaryOperationExpression) expression).getRight(), parameters, shardingColumn);
         }
         return Optional.empty();
     }
@@ -134,9 +140,13 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
         return Optional.empty();
     }
     
-    private Optional<Object> getPredicateInShardingValue(final Collection<ExpressionSegment> segments, final List<Object> parameters) {
+    private Optional<Object> getPredicateInShardingValue(final ExpressionSegment segments, final List<Object> parameters) {
         int shardingColumnWhereIndex;
-        for (ExpressionSegment each : segments) {
+        if (!(segments instanceof ListExpression)) {
+            return Optional.empty();
+        }
+        List<ExpressionSegment> expressionSegments = ((ListExpression) segments).getItems();
+        for (ExpressionSegment each : expressionSegments) {
             if (each instanceof ParameterMarkerExpressionSegment) {
                 shardingColumnWhereIndex = ((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex();
                 if (-1 == shardingColumnWhereIndex || shardingColumnWhereIndex > parameters.size() - 1) {

@@ -22,18 +22,16 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateCompareRightValue;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -45,7 +43,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
@@ -60,7 +57,10 @@ public final class ShardingUpdateStatementValidatorTest {
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateModifyMultiTables() {
         SQLStatementContext<UpdateStatement> sqlStatementContext = new UpdateStatementContext(createUpdateStatement());
-        sqlStatementContext.getTablesContext().getTables().addAll(createMultiTablesContext().getTables());
+        JoinTableSegment joinTableSegment = new JoinTableSegment();
+        joinTableSegment.setLeft(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
+        joinTableSegment.setRight(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
+        sqlStatementContext.getSqlStatement().setTableSegment(joinTableSegment);
         RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
         new ShardingUpdateStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
@@ -107,7 +107,7 @@ public final class ShardingUpdateStatementValidatorTest {
     
     private UpdateStatement createUpdateStatement() {
         UpdateStatement result = new UpdateStatement();
-        result.getTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
+        result.setTableSegment(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         result.setSetAssignment(
                 new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, "")))));
         return result;
@@ -115,24 +115,17 @@ public final class ShardingUpdateStatementValidatorTest {
     
     private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnParameter) {
         UpdateStatement result = new UpdateStatement();
-        result.getTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
+        result.setTableSegment(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         Collection<AssignmentSegment> assignments = Collections.singletonList(
                 new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);
         result.setSetAssignment(setAssignmentSegment);
-        WhereSegment where = new WhereSegment(0, 0);
-        AndPredicate andPre = new AndPredicate();
-        andPre.getPredicates().add(new PredicateSegment(0, 1,
-                new ColumnSegment(0, 0, new IdentifierValue("id")), new PredicateCompareRightValue(0, 0, "=", new ParameterMarkerExpressionSegment(0, 0, 0))));
-        where.getAndPredicates().add(andPre);
+        BinaryOperationExpression binaryOperationExpression = new BinaryOperationExpression();
+        binaryOperationExpression.setLeft(new ColumnSegment(0, 0, new IdentifierValue("id")));
+        binaryOperationExpression.setRight(new ParameterMarkerExpressionSegment(0, 0, 0));
+        binaryOperationExpression.setOperator("=");
+        WhereSegment where = new WhereSegment(0, 0, binaryOperationExpression);
         result.setWhere(where);
         return result;
-    }
-
-    private TablesContext createMultiTablesContext() {
-        List<SimpleTableSegment> result = new LinkedList<>();
-        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
-        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
-        return new TablesContext(result);
     }
 }

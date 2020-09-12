@@ -17,5 +17,5 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-trigger sql-case-id="drop_trigger" />
+<!--    <drop-trigger sql-case-id="drop_trigger" />-->
 </sql-parser-test-cases>
