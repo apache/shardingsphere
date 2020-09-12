@@ -45,7 +45,7 @@ public final class BackendTransactionManagerTest {
     private BackendConnection backendConnection;
     
     @Mock
-    private ConnectionStatusHandler statusHandler;
+    private ConnectionStatusManager statusManager;
     
     @Mock
     private LocalTransactionManager localTransactionManager;
@@ -59,7 +59,7 @@ public final class BackendTransactionManagerTest {
     public void setUp() {
         setTransactionContexts();
         when(backendConnection.getSchemaName()).thenReturn("schema");
-        when(backendConnection.getStatusHandler()).thenReturn(statusHandler);
+        when(backendConnection.getStatusManager()).thenReturn(statusManager);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -81,7 +81,7 @@ public final class BackendTransactionManagerTest {
     public void assertBeginForLocalTransaction() {
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.begin();
-        verify(statusHandler).switchToInTransaction();
+        verify(statusManager).switchToInTransaction();
         verify(backendConnection).releaseConnections(false);
         verify(localTransactionManager).begin();
     }
@@ -90,7 +90,7 @@ public final class BackendTransactionManagerTest {
     public void assertBeginForDistributedTransaction() {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.begin();
-        verify(statusHandler, times(0)).switchToInTransaction();
+        verify(statusManager, times(0)).switchToInTransaction();
         verify(backendConnection, times(0)).releaseConnections(false);
         verify(shardingTransactionManager).begin();
     }
@@ -99,7 +99,7 @@ public final class BackendTransactionManagerTest {
     public void assertCommitForLocalTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.LOCAL, true);
         backendTransactionManager.commit();
-        verify(statusHandler).switchToUsing();
+        verify(statusManager).switchToUsing();
         verify(localTransactionManager).commit();
     }
     
@@ -107,7 +107,7 @@ public final class BackendTransactionManagerTest {
     public void assertCommitForDistributedTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.commit();
-        verify(statusHandler).switchToUsing();
+        verify(statusManager).switchToUsing();
         verify(shardingTransactionManager).commit();
     }
     
@@ -115,7 +115,7 @@ public final class BackendTransactionManagerTest {
     public void assertCommitWithoutTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.commit();
-        verify(statusHandler, times(0)).switchToUsing();
+        verify(statusManager, times(0)).switchToUsing();
         verify(localTransactionManager, times(0)).commit();
         verify(shardingTransactionManager, times(0)).commit();
     }
@@ -124,7 +124,7 @@ public final class BackendTransactionManagerTest {
     public void assertRollbackForLocalTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.LOCAL, true);
         backendTransactionManager.rollback();
-        verify(statusHandler).switchToUsing();
+        verify(statusManager).switchToUsing();
         verify(localTransactionManager).rollback();
     }
     
@@ -132,7 +132,7 @@ public final class BackendTransactionManagerTest {
     public void assertRollbackForDistributedTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.rollback();
-        verify(statusHandler).switchToUsing();
+        verify(statusManager).switchToUsing();
         verify(shardingTransactionManager).rollback();
     }
     
@@ -140,14 +140,14 @@ public final class BackendTransactionManagerTest {
     public void assertRollbackWithoutTransaction() throws SQLException {
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.rollback();
-        verify(statusHandler, times(0)).switchToUsing();
+        verify(statusManager, times(0)).switchToUsing();
         verify(localTransactionManager, times(0)).rollback();
         verify(shardingTransactionManager, times(0)).rollback();
     }
     
     private void newBackendTransactionManager(final TransactionType transactionType, final boolean inTransaction) {
         when(backendConnection.getTransactionType()).thenReturn(transactionType);
-        when(statusHandler.isInTransaction()).thenReturn(inTransaction);
+        when(statusManager.isInTransaction()).thenReturn(inTransaction);
         backendTransactionManager = new BackendTransactionManager(backendConnection);
         setLocalTransactionManager();
     }

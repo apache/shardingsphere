@@ -22,10 +22,10 @@ import lombok.RequiredArgsConstructor;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Connection status handler.
+ * Connection status manager.
  */
 @RequiredArgsConstructor
-public final class ConnectionStatusHandler {
+public final class ConnectionStatusManager {
     
     private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.RELEASED);
     
