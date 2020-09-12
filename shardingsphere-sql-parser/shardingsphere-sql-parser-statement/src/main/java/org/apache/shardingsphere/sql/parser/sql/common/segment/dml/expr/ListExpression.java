@@ -15,40 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
-@Getter
 @Setter
-public final class JoinedTableSegment implements SQLSegment {
+@Getter
+public final class ListExpression implements ExpressionSegment {
     
     private int startIndex;
     
     private int stopIndex;
     
-    private TableFactorSegment tableFactor;
-    
-    private JoinSpecificationSegment joinSpecification;
-    
-    /**
-     * get table.
-     * @return tableSegment.
-     */
-    public Collection<SimpleTableSegment> getSimpleTableSegments() {
-        Collection<SimpleTableSegment> tables = new LinkedList<>();
-        if (null != tableFactor) {
-            tables.addAll(tableFactor.getSimpleTableSegments());
-        }
-        if (null != joinSpecification) {
-            tables.addAll(joinSpecification.getSimpleTableSegments());
-        }
-        return tables;
-    }
+    private List<ExpressionSegment> items = new LinkedList<>();
 }
+

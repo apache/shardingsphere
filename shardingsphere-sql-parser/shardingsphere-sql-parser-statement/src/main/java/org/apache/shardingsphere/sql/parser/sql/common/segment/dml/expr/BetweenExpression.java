@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
-/**
- * Where segment.
- */
-@RequiredArgsConstructor
-@Getter
 @Setter
-public final class WhereSegment implements SQLSegment {
+@Getter
+public final class BetweenExpression implements ExpressionSegment {
     
-    private final int startIndex;
+    private int startIndex;
     
-    private final int stopIndex;
+    private int stopIndex;
     
-    private final ExpressionSegment expr;
+    private ExpressionSegment left;
+    
+    private ExpressionSegment betweenExpr;
+    
+    private ExpressionSegment andExpr;
+    
+    private boolean not;
 }
+

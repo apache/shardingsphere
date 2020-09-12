@@ -15,26 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateRightValue;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 
-/**
- * Predicate segment.
- */
-@RequiredArgsConstructor
+import java.util.List;
+import java.util.Optional;
+
 @Getter
-public final class PredicateSegment implements SQLSegment {
+@Setter
+public final class JoinTableSegment implements TableSegment {
     
-    private final int startIndex;
+    private int startIndex;
     
-    private final int stopIndex;
+    private int stopIndex;
     
-    private final ColumnSegment column;
+    private AliasSegment alias;
     
-    private final PredicateRightValue rightValue;
+    private TableSegment left;
+    
+    private String joinType;
+    
+    private TableSegment right;
+    
+    private List<ColumnSegment> using;
+    
+    private ExpressionSegment condition;
+    
+    @Override
+    public Optional<String> getAlias() {
+        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
+    }
 }

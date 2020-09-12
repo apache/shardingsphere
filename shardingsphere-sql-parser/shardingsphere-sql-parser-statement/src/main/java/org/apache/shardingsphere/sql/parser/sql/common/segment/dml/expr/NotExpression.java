@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import lombok.Setter;
 
-/**
- * Predicate right value for BETWEEN ... AND ... operator.
- */
-@RequiredArgsConstructor
 @Getter
-public final class PredicateBetweenRightValue implements PredicateRightValue {
+@Setter
+public final class NotExpression implements ExpressionSegment {
     
-    private final int startIndex;
+    private int startIndex;
     
-    private final int stopIndex;
+    private int stopIndex;
     
-    private final ExpressionSegment betweenExpression;
-    
-    private final ExpressionSegment andExpression;
+    private ExpressionSegment expression;
 }

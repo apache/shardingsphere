@@ -15,24 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import lombok.Setter;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
-/**
- * Predicate right value for IN operator.
- */
-@RequiredArgsConstructor
 @Getter
-public final class PredicateInRightValue implements PredicateRightValue {
+@Setter
+public final class InExpression implements ExpressionSegment {
     
-    private final int startIndex;
+    private int startIndex;
     
-    private final int stopIndex;
+    private int stopIndex;
     
-    private final Collection<ExpressionSegment> sqlExpressions;
+    private ExpressionSegment left;
+    
+    private ExpressionSegment right;
+    
+    private boolean not;
+    
+    /**
+     * Get expression list from right.
+     *
+     * @return expression list.
+     */
+    public Collection<ExpressionSegment> getExpressionList() {
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        if (right instanceof ListExpression) {
+            result.addAll(((ListExpression) right).getItems());
+        } else {
+            result.add(this);
+        }
+        return result;
+    }
 }

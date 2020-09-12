@@ -15,29 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.condition.generator;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
 
-import org.apache.shardingsphere.sharding.route.engine.condition.Column;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Condition value generator.
- *
- * @param <T> type of predicate right value
- */
-public interface ConditionValueGenerator<T extends ExpressionSegment> {
+@Setter
+@Getter
+public final class DeleteMultiTableSegment implements TableSegment {
     
-    /**
-     * Generate route value.
-     * 
-     * @param predicateRightValue predicate right value
-     * @param column column
-     * @param parameters SQL parameters
-     * @return route value
-     */
-    Optional<RouteValue> generate(T predicateRightValue, Column column, List<Object> parameters);
+    private int startIndex;
+    
+    private int stopIndex;
+    
+    private List<SimpleTableSegment> actualDeleteTables = new LinkedList<>();
+    
+    private TableSegment relationTable;
+    
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.empty();
+    }
+    
+    @Override
+    public void setAlias(final AliasSegment alias) {
+    
+    }
 }

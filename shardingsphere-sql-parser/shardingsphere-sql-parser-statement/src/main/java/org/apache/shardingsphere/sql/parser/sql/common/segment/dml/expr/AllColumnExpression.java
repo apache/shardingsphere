@@ -15,12 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-/**
- * Predicate right value.
- */
-public interface PredicateRightValue extends SQLSegment {
+@RequiredArgsConstructor
+@Getter
+public final class AllColumnExpression implements ExpressionSegment {
+    
+    private int startIndex;
+    
+    private int stopIndex;
 }

@@ -23,11 +23,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.Se
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -37,7 +35,7 @@ import java.util.Optional;
 @Setter
 public final class UpdateStatement extends AbstractSQLStatement implements DMLStatement {
     
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+    private TableSegment tableSegment;
     
     private SetAssignmentSegment setAssignment;
     

@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import lombok.Setter;
 
 /**
- * Predicate right value for compare operator.
+ * Binary operation expression.
  */
-@RequiredArgsConstructor
+@Setter
 @Getter
-public final class PredicateCompareRightValue implements PredicateRightValue {
+public final class BinaryOperationExpression implements ExpressionSegment {
     
-    private final int startIndex;
+    private int startIndex;
     
-    private final int stopIndex;
+    private int stopIndex;
     
-    private final String operator;
+    private ExpressionSegment left;
     
-    private final ExpressionSegment expression;
+    private ExpressionSegment right;
+    
+    private String operator;
+    
+    private String text;
 }
