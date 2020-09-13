@@ -89,8 +89,7 @@ public final class BackendConnectionTest {
     private void setSchemaContexts() {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(),
-                new StandardSchemaContexts(createSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        field.set(ProxyContext.getInstance(), new StandardSchemaContexts(createSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private Map<String, SchemaContext> createSchemaContextMap() {
@@ -240,7 +239,7 @@ public final class BackendConnectionTest {
         BackendConnection actual = null;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
             backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-            backendConnection.setTransactionType(TransactionType.XA);
+            backendConnection.getTransactionStatus().setTransactionType(TransactionType.XA);
             backendConnection.getTransactionStatus().setInTransaction(true);
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
             backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
@@ -278,7 +277,7 @@ public final class BackendConnectionTest {
     public void assertFailedSwitchTransactionTypeWhileBegin() {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
-        backendConnection.setTransactionType(TransactionType.XA);
+        backendConnection.getTransactionStatus().setTransactionType(TransactionType.XA);
     }
     
     @Test(expected = ShardingSphereException.class)

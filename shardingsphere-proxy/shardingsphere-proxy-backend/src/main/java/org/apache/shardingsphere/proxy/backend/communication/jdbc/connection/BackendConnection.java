@@ -22,7 +22,6 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -55,18 +54,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Backend connection.
  */
 @Getter
-@Slf4j
 public final class BackendConnection implements JDBCExecutionConnection, AutoCloseable {
     
     static {
         ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
     }
     
-    private static final int MAXIMUM_RETRY_COUNT = 5;
-    
     private volatile String schemaName;
-    
-    private TransactionType transactionType;
     
     @Setter
     private int connectionId;
@@ -86,25 +80,10 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private final ConnectionStatusManager connectionStatusManager = new ConnectionStatusManager(resourceLock);
     
-    private final TransactionStatus transactionStatus = new TransactionStatus();
+    private final TransactionStatus transactionStatus;
     
-    public BackendConnection(final TransactionType transactionType) {
-        this.transactionType = transactionType;
-    }
-    
-    /**
-     * Change transaction type of current channel.
-     *
-     * @param transactionType transaction type
-     */
-    public void setTransactionType(final TransactionType transactionType) {
-        if (null == schemaName) {
-            throw new ShardingSphereException("Please select database, then switch transaction type.");
-        }
-        if (isSwitchFailed()) {
-            throw new ShardingSphereException("Failed to switch transaction type, please terminate current transaction.");
-        }
-        this.transactionType = transactionType;
+    public BackendConnection(final TransactionType initialTransactionType) {
+        transactionStatus = new TransactionStatus(initialTransactionType);
     }
     
     /**
@@ -113,20 +92,10 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
      * @param schemaName schema name
      */
     public void setCurrentSchema(final String schemaName) {
-        if (isSwitchFailed()) {
+        if (!transactionStatus.waitingForTransactionComplete()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
         this.schemaName = schemaName;
-    }
-    
-    private boolean isSwitchFailed() {
-        int retryCount = 0;
-        while (transactionStatus.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
-            resourceLock.doAwait();
-            ++retryCount;
-            log.info("Current transaction have not terminated, retry count:[{}].", retryCount);
-        }
-        return retryCount >= MAXIMUM_RETRY_COUNT;
     }
     
     @Override
@@ -217,7 +186,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
      * @return true or false
      */
     public boolean isSerialExecute() {
-        return transactionStatus.isInTransaction() && (TransactionType.LOCAL == transactionType || TransactionType.XA == transactionType);
+        return transactionStatus.isInTransaction() && (TransactionType.LOCAL == transactionStatus.getTransactionType() || TransactionType.XA == transactionStatus.getTransactionType());
     }
     
     /**
@@ -263,7 +232,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         MasterVisitedManager.clear();
         exceptions.addAll(closeResultSets());
         exceptions.addAll(closeStatements());
-        if (!transactionStatus.isInTransaction() || forceClose || TransactionType.BASE == transactionType) {
+        if (!transactionStatus.isInTransaction() || forceClose || TransactionType.BASE == transactionStatus.getTransactionType()) {
             exceptions.addAll(releaseConnections(forceClose));
         }
         connectionStatusManager.switchToReleased();
