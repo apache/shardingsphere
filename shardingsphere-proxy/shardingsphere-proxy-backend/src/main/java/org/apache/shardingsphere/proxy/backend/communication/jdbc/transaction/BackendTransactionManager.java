@@ -48,8 +48,8 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void begin() {
-        if (!connection.getStatusManager().isInTransaction()) {
-            connection.getStatusManager().switchToInTransaction();
+        if (!connection.getTransactionStatus().isInTransaction()) {
+            connection.getTransactionStatus().setInTransaction(true);
             connection.releaseConnections(false);
         }
         if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
@@ -61,7 +61,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void commit() throws SQLException {
-        if (connection.getStatusManager().isInTransaction()) {
+        if (connection.getTransactionStatus().isInTransaction()) {
             try {
                 if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
                     localTransactionManager.commit();
@@ -69,14 +69,14 @@ public final class BackendTransactionManager implements TransactionManager {
                     shardingTransactionManager.commit();
                 }
             } finally {
-                connection.getStatusManager().switchToUsing();
+                connection.getTransactionStatus().setInTransaction(false);
             }
         }
     }
     
     @Override
     public void rollback() throws SQLException {
-        if (connection.getStatusManager().isInTransaction()) {
+        if (connection.getTransactionStatus().isInTransaction()) {
             try {
                 if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
                     localTransactionManager.rollback();
@@ -84,7 +84,7 @@ public final class BackendTransactionManager implements TransactionManager {
                     shardingTransactionManager.rollback();
                 }
             } finally {
-                connection.getStatusManager().switchToUsing();
+                connection.getTransactionStatus().setInTransaction(false);
             }
         }
     }

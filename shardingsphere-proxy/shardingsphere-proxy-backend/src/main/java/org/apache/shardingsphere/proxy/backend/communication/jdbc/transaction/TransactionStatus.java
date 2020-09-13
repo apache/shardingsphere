@@ -15,12 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.status;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Connection status.
+ * Transaction status.
  */
-public enum ConnectionStatus {
+@Getter
+@Setter
+public final class TransactionStatus {
     
-    USING, RELEASED
+    private volatile boolean inTransaction;
 }

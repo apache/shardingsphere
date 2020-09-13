@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.status.ConnectionStatusManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -83,7 +84,9 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private final ResourceLock resourceLock = new ResourceLock();
     
-    private final ConnectionStatusManager statusManager = new ConnectionStatusManager(resourceLock);
+    private final ConnectionStatusManager connectionStatusManager = new ConnectionStatusManager(resourceLock);
+    
+    private final TransactionStatus transactionStatus = new TransactionStatus();
     
     public BackendConnection(final TransactionType transactionType) {
         this.transactionType = transactionType;
@@ -118,7 +121,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private boolean isSwitchFailed() {
         int retryCount = 0;
-        while (statusManager.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
+        while (transactionStatus.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
             resourceLock.doAwait();
             ++retryCount;
             log.info("Current transaction have not terminated, retry count:[{}].", retryCount);
@@ -128,7 +131,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return statusManager.isInTransaction()
+        return transactionStatus.isInTransaction()
                 ? getConnectionsWithTransaction(dataSourceName, connectionSize, connectionMode) : getConnectionsWithoutTransaction(dataSourceName, connectionSize, connectionMode);
     }
     
@@ -214,7 +217,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
      * @return true or false
      */
     public boolean isSerialExecute() {
-        return statusManager.isInTransaction() && (TransactionType.LOCAL == transactionType || TransactionType.XA == transactionType);
+        return transactionStatus.isInTransaction() && (TransactionType.LOCAL == transactionType || TransactionType.XA == transactionType);
     }
     
     /**
@@ -260,10 +263,10 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         MasterVisitedManager.clear();
         exceptions.addAll(closeResultSets());
         exceptions.addAll(closeStatements());
-        if (!statusManager.isInTransaction() || forceClose || TransactionType.BASE == transactionType) {
+        if (!transactionStatus.isInTransaction() || forceClose || TransactionType.BASE == transactionType) {
             exceptions.addAll(releaseConnections(forceClose));
         }
-        statusManager.switchToReleased();
+        connectionStatusManager.switchToReleased();
         throwSQLExceptionIfNecessary(exceptions);
     }
     
@@ -303,7 +306,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
-                if (forceRollback && statusManager.isInTransaction()) {
+                if (forceRollback && transactionStatus.isInTransaction()) {
                     each.rollback();
                 }
                 each.close();
