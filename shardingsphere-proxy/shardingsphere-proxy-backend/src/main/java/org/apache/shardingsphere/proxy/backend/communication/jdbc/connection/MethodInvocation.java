@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
  * Reflective method invocation.
  */
 @RequiredArgsConstructor
-class MethodInvocation {
+public class MethodInvocation {
     
     @Getter
     private final Method method;
@@ -41,7 +41,7 @@ class MethodInvocation {
      * @param target target object
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    void invoke(final Object target) {
+    public void invoke(final Object target) {
         method.invoke(target, arguments);
     }
 }

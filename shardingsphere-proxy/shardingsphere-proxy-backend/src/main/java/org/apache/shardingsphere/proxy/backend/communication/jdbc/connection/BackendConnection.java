@@ -293,7 +293,13 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         return result;
     }
     
-    Collection<SQLException> releaseConnections(final boolean forceRollback) {
+    /**
+     * Release connections.
+     * 
+     * @param forceRollback is force rollback
+     * @return SQL exception when connections release
+     */
+    public Collection<SQLException> releaseConnections(final boolean forceRollback) {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
