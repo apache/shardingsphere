@@ -15,33 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
-import java.sql.SQLException;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Transaction manager interface for proxy.
+ * Transaction status.
  */
-public interface TransactionManager {
+@Getter
+@Setter
+public final class TransactionStatus {
     
-    /**
-     * Begin transaction.
-     *
-     * @throws SQLException SQL Exception
-     */
-    void begin() throws SQLException;
-    
-    /**
-     * Commit transaction.
-     *
-     * @throws SQLException SQL Exception
-     */
-    void commit() throws SQLException;
-    
-    /**
-     * Rollback transaction.
-     *
-     * @throws SQLException SQL Exception
-     */
-    void rollback() throws SQLException;
+    private volatile boolean inTransaction;
 }

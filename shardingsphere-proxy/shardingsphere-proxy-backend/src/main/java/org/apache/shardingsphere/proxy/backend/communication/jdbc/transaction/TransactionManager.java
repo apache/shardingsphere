@@ -15,33 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-
-import java.lang.reflect.Method;
+import java.sql.SQLException;
 
 /**
- * Reflective method invocation.
+ * Transaction manager interface for proxy.
  */
-@RequiredArgsConstructor
-public class MethodInvocation {
-    
-    @Getter
-    private final Method method;
-    
-    @Getter
-    private final Object[] arguments;
+public interface TransactionManager {
     
     /**
-     * Invoke method.
-     * 
-     * @param target target object
+     * Begin transaction.
+     *
+     * @throws SQLException SQL Exception
      */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void invoke(final Object target) {
-        method.invoke(target, arguments);
-    }
+    void begin() throws SQLException;
+    
+    /**
+     * Commit transaction.
+     *
+     * @throws SQLException SQL Exception
+     */
+    void commit() throws SQLException;
+    
+    /**
+     * Rollback transaction.
+     *
+     * @throws SQLException SQL Exception
+     */
+    void rollback() throws SQLException;
 }

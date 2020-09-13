@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.status.ConnectionStatusManager;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
@@ -124,9 +124,9 @@ public final class TextProtocolBackendHandlerFactoryTest {
     
     @Test
     public void assertNewInstanceWithSetAutoCommitToOnForInTransaction() {
-        ConnectionStatusManager statusManager = mock(ConnectionStatusManager.class);
-        when(backendConnection.getStatusManager()).thenReturn(statusManager);
-        when(statusManager.isInTransaction()).thenReturn(true);
+        TransactionStatus transactionStatus = mock(TransactionStatus.class);
+        when(backendConnection.getTransactionStatus()).thenReturn(transactionStatus);
+        when(transactionStatus.isInTransaction()).thenReturn(true);
         String sql = "SET AUTOCOMMIT=1";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
@@ -134,9 +134,9 @@ public final class TextProtocolBackendHandlerFactoryTest {
     
     @Test
     public void assertNewInstanceWithScopeSetAutoCommitToOnForInTransaction() {
-        ConnectionStatusManager statusManager = mock(ConnectionStatusManager.class);
-        when(backendConnection.getStatusManager()).thenReturn(statusManager);
-        when(statusManager.isInTransaction()).thenReturn(true);
+        TransactionStatus transactionStatus = mock(TransactionStatus.class);
+        when(backendConnection.getTransactionStatus()).thenReturn(transactionStatus);
+        when(transactionStatus.isInTransaction()).thenReturn(true);
         String sql = "SET @@SESSION.AUTOCOMMIT = ON";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
@@ -145,9 +145,9 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Test
     public void assertNewInstanceWithSetAutoCommitToOnForNotInTransaction() {
         String sql = "SET AUTOCOMMIT=1";
-        ConnectionStatusManager statusManager = mock(ConnectionStatusManager.class);
-        when(backendConnection.getStatusManager()).thenReturn(statusManager);
-        when(statusManager.isInTransaction()).thenReturn(false);
+        TransactionStatus transactionStatus = mock(TransactionStatus.class);
+        when(backendConnection.getTransactionStatus()).thenReturn(transactionStatus);
+        when(transactionStatus.isInTransaction()).thenReturn(false);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(SkipBackendHandler.class));
     }

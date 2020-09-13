@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.MethodInvocation;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -40,7 +42,7 @@ public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void commit() throws SQLException {
-        if (connection.getStatusManager().isInTransaction()) {
+        if (connection.getTransactionStatus().isInTransaction()) {
             Collection<SQLException> exceptions = new LinkedList<>(commitConnections());
             throwSQLExceptionIfNecessary(exceptions);
         }
@@ -48,7 +50,7 @@ public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void rollback() throws SQLException {
-        if (connection.getStatusManager().isInTransaction()) {
+        if (connection.getTransactionStatus().isInTransaction()) {
             Collection<SQLException> exceptions = new LinkedList<>(rollbackConnections());
             throwSQLExceptionIfNecessary(exceptions);
         }

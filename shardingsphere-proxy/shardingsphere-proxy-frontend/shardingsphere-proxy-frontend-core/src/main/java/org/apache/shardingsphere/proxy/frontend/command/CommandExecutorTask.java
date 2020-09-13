@@ -67,7 +67,7 @@ public final class CommandExecutorTask implements Runnable {
         boolean isNeedFlush = false;
         try (BackendConnection backendConnection = this.backendConnection;
              PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message)) {
-            ConnectionStatusManager statusManager = backendConnection.getStatusManager();
+            ConnectionStatusManager statusManager = backendConnection.getConnectionStatusManager();
             statusManager.waitUntilConnectionReleasedIfNecessary();
             statusManager.switchToUsing();
             isNeedFlush = executeCommand(context, payload, backendConnection);
