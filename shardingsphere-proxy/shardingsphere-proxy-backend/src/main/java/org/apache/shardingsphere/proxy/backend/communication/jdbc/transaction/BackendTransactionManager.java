@@ -40,7 +40,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     public BackendTransactionManager(final BackendConnection backendConnection) {
         connection = backendConnection;
-        transactionType = connection.getTransactionType();
+        transactionType = connection.getTransactionStatus().getTransactionType();
         localTransactionManager = new LocalTransactionManager(backendConnection);
         ShardingTransactionManagerEngine engine = ProxyContext.getInstance().getTransactionContexts().getEngines().get(connection.getSchemaName());
         shardingTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);

@@ -150,7 +150,7 @@ public final class BackendTransactionManagerTest {
     }
     
     private void newBackendTransactionManager(final TransactionType transactionType, final boolean inTransaction) {
-        when(backendConnection.getTransactionType()).thenReturn(transactionType);
+        when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(transactionType);
         when(transactionStatus.isInTransaction()).thenReturn(inTransaction);
         backendTransactionManager = new BackendTransactionManager(backendConnection);
         setLocalTransactionManager();

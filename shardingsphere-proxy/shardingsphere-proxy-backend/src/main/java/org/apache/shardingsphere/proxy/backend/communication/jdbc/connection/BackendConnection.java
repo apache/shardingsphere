@@ -62,8 +62,6 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private volatile String schemaName;
     
-    private TransactionType transactionType;
-    
     @Setter
     private int connectionId;
     
@@ -82,10 +80,10 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private final ConnectionStatusManager connectionStatusManager = new ConnectionStatusManager(resourceLock);
     
-    private final TransactionStatus transactionStatus = new TransactionStatus();
+    private final TransactionStatus transactionStatus;
     
-    public BackendConnection(final TransactionType transactionType) {
-        this.transactionType = transactionType;
+    public BackendConnection(final TransactionType initialTransactionType) {
+        transactionStatus = new TransactionStatus(initialTransactionType);
     }
     
     /**
@@ -94,10 +92,10 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
      * @param schemaName schema name
      */
     public void setCurrentSchema(final String schemaName) {
-        if (transactionStatus.waitingForTransactionComplete()) {
-            this.schemaName = schemaName;
+        if (!transactionStatus.waitingForTransactionComplete()) {
+            throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
-        throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
+        this.schemaName = schemaName;
     }
     
     @Override
@@ -188,7 +186,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
      * @return true or false
      */
     public boolean isSerialExecute() {
-        return transactionStatus.isInTransaction() && (TransactionType.LOCAL == transactionType || TransactionType.XA == transactionType);
+        return transactionStatus.isInTransaction() && (TransactionType.LOCAL == transactionStatus.getTransactionType() || TransactionType.XA == transactionStatus.getTransactionType());
     }
     
     /**
@@ -234,7 +232,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         MasterVisitedManager.clear();
         exceptions.addAll(closeResultSets());
         exceptions.addAll(closeStatements());
-        if (!transactionStatus.isInTransaction() || forceClose || TransactionType.BASE == transactionType) {
+        if (!transactionStatus.isInTransaction() || forceClose || TransactionType.BASE == transactionStatus.getTransactionType()) {
             exceptions.addAll(releaseConnections(forceClose));
         }
         connectionStatusManager.switchToReleased();

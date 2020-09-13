@@ -40,16 +40,20 @@ public final class TransactionStatus {
     
     private volatile TransactionType transactionType;
     
+    public TransactionStatus(final TransactionType initialTransactionType) {
+        transactionType = initialTransactionType;
+    }
+    
     /**
      * Change transaction type of current channel.
      *
      * @param transactionType transaction type
      */
     public void setTransactionType(final TransactionType transactionType) {
-        if (waitingForTransactionComplete()) {
-            this.transactionType = transactionType;
+        if (!waitingForTransactionComplete()) {
+            throw new ShardingSphereException("Failed to switch transaction type, please terminate current transaction.");
         }
-        throw new ShardingSphereException("Failed to switch transaction type, please terminate current transaction.");
+        this.transactionType = transactionType;
     }
     
     /**

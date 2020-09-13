@@ -58,7 +58,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
         }
         switch (showStatement.get().getValue()) {
             case "TRANSACTION_TYPE":
-                return createResponsePackets("TRANSACTION_TYPE", backendConnection.getTransactionType().name());
+                return createResponsePackets("TRANSACTION_TYPE", backendConnection.getTransactionStatus().getTransactionType().name());
             case "CACHED_CONNECTIONS":
                 return createResponsePackets("CACHED_CONNECTIONS", backendConnection.getConnectionSize());
             default:
