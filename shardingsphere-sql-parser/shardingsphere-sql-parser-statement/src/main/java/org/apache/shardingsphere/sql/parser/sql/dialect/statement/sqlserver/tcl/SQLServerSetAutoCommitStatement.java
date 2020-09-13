@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
- * Savepoint statement.
+ * SQLServer set auto commit statement.
  */
-public abstract class SavepointStatement extends AbstractSQLStatement {
+@Getter
+@Setter
+public final class SQLServerSetAutoCommitStatement extends SetAutoCommitStatement implements TCLStatement, SQLServerStatement {
+    
+    private boolean autoCommit;
 }

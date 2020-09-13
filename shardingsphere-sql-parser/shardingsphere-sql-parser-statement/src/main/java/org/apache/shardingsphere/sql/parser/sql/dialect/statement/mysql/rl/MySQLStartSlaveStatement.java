@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.RLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Savepoint statement.
+ * MySQL start slave statement.
  */
-public abstract class SavepointStatement extends AbstractSQLStatement {
+public final class MySQLStartSlaveStatement extends AbstractSQLStatement implements RLStatement, MySQLStatement {
 }

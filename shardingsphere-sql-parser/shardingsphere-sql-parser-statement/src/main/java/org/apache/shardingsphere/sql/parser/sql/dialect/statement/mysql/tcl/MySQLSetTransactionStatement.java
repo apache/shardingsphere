@@ -15,12 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Savepoint statement.
+ * MySQL set transaction statement.
  */
-public abstract class SavepointStatement extends AbstractSQLStatement {
+@Getter
+@Setter
+public final class MySQLSetTransactionStatement extends SetTransactionStatement implements TCLStatement, MySQLStatement {
+    
+    private String isolationLevel;
+    
+    private String scope;
+    
+    private String accessMode;
 }

@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.rl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.RLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Change master statement.
+ * MySQL change master statement.
  */
-public final class ChangeMasterStatement extends AbstractSQLStatement implements RLStatement {
+public final class MySQLChangeMasterStatement extends AbstractSQLStatement implements RLStatement, MySQLStatement {
 }
