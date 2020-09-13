@@ -19,13 +19,36 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Transaction status.
  */
 @Getter
 @Setter
+@Slf4j
 public final class TransactionStatus {
     
+    private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200L;
+    
+    private static final int MAXIMUM_RETRY_COUNT = 5;
+    
     private volatile boolean inTransaction;
+    
+    /**
+     * Waiting for transaction complete.
+     * 
+     * @return transaction complete or not
+     */
+    @SneakyThrows(InterruptedException.class)
+    public boolean waitingForTransactionComplete() {
+        int retryCount = 0;
+        while (inTransaction && retryCount < MAXIMUM_RETRY_COUNT) {
+            Thread.sleep(DEFAULT_TIMEOUT_MILLISECONDS);
+            ++retryCount;
+            log.info("Current transaction have not terminated, retry count:[{}].", retryCount);
+        }
+        return retryCount < MAXIMUM_RETRY_COUNT;
+    }
 }

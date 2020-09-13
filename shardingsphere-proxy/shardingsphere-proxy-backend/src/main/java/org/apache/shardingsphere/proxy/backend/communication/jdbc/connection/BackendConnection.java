@@ -62,8 +62,6 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
     }
     
-    private static final int MAXIMUM_RETRY_COUNT = 5;
-    
     private volatile String schemaName;
     
     private TransactionType transactionType;
@@ -101,7 +99,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (null == schemaName) {
             throw new ShardingSphereException("Please select database, then switch transaction type.");
         }
-        if (isSwitchFailed()) {
+        if (!transactionStatus.waitingForTransactionComplete()) {
             throw new ShardingSphereException("Failed to switch transaction type, please terminate current transaction.");
         }
         this.transactionType = transactionType;
@@ -113,20 +111,10 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
      * @param schemaName schema name
      */
     public void setCurrentSchema(final String schemaName) {
-        if (isSwitchFailed()) {
+        if (!transactionStatus.waitingForTransactionComplete()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
         this.schemaName = schemaName;
-    }
-    
-    private boolean isSwitchFailed() {
-        int retryCount = 0;
-        while (transactionStatus.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
-            resourceLock.doAwait();
-            ++retryCount;
-            log.info("Current transaction have not terminated, retry count:[{}].", retryCount);
-        }
-        return retryCount >= MAXIMUM_RETRY_COUNT;
     }
     
     @Override
