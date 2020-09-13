@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 146 家公司。
+共计 147 家公司。
 
 ### 金融行业
 <ul>
@@ -35,6 +35,8 @@ chapter = true
     <li><a href="https://www.kjtpay.com/" rel="nofollow">快捷通支付服务有限公司</a></li>
     <li><a href="https://www.ktjr.com/" rel="nofollow">开通金融</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
+    <li><a href="https://www.360jinrong.net/" rel="nofollow">360数科</a></li>
+    
 </ul>
 
 ### 电子商务
