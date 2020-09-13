@@ -22,7 +22,6 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -55,7 +54,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Backend connection.
  */
 @Getter
-@Slf4j
 public final class BackendConnection implements JDBCExecutionConnection, AutoCloseable {
     
     static {
@@ -91,30 +89,15 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     /**
-     * Change transaction type of current channel.
-     *
-     * @param transactionType transaction type
-     */
-    public void setTransactionType(final TransactionType transactionType) {
-        if (null == schemaName) {
-            throw new ShardingSphereException("Please select database, then switch transaction type.");
-        }
-        if (!transactionStatus.waitingForTransactionComplete()) {
-            throw new ShardingSphereException("Failed to switch transaction type, please terminate current transaction.");
-        }
-        this.transactionType = transactionType;
-    }
-    
-    /**
      * Change schema of current channel.
      *
      * @param schemaName schema name
      */
     public void setCurrentSchema(final String schemaName) {
-        if (!transactionStatus.waitingForTransactionComplete()) {
-            throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
+        if (transactionStatus.waitingForTransactionComplete()) {
+            this.schemaName = schemaName;
         }
-        this.schemaName = schemaName;
+        throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
     }
     
     @Override

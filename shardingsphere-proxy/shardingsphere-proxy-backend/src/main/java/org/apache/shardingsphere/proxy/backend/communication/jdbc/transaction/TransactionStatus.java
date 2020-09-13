@@ -21,12 +21,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 
 /**
  * Transaction status.
  */
 @Getter
-@Setter
 @Slf4j
 public final class TransactionStatus {
     
@@ -34,11 +35,26 @@ public final class TransactionStatus {
     
     private static final int MAXIMUM_RETRY_COUNT = 5;
     
+    @Setter
     private volatile boolean inTransaction;
+    
+    private volatile TransactionType transactionType;
+    
+    /**
+     * Change transaction type of current channel.
+     *
+     * @param transactionType transaction type
+     */
+    public void setTransactionType(final TransactionType transactionType) {
+        if (waitingForTransactionComplete()) {
+            this.transactionType = transactionType;
+        }
+        throw new ShardingSphereException("Failed to switch transaction type, please terminate current transaction.");
+    }
     
     /**
      * Waiting for transaction complete.
-     * 
+     *
      * @return transaction complete or not
      */
     @SneakyThrows(InterruptedException.class)
