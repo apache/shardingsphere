@@ -97,7 +97,7 @@ public final class CommandExecutorTaskTest {
         when(executeEngine.getCommandExecutor(eq(commandPacketType), eq(commandPacket), eq(backendConnection))).thenReturn(queryCommandExecutor);
         when(executeEngine.getCommandPacketType(eq(payload))).thenReturn(commandPacketType);
         when(engine.getCommandExecuteEngine()).thenReturn(executeEngine);
-        when(backendConnection.getStatusManager()).thenReturn(statusHandler);
+        when(backendConnection.getConnectionStatusManager()).thenReturn(statusHandler);
         when(codecEngine.createPacketPayload(eq(message))).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
@@ -114,7 +114,7 @@ public final class CommandExecutorTaskTest {
         when(executeEngine.getCommandExecutor(eq(commandPacketType), eq(commandPacket), eq(backendConnection))).thenReturn(queryCommandExecutor);
         when(executeEngine.getCommandPacketType(eq(payload))).thenReturn(commandPacketType);
         when(engine.getCommandExecuteEngine()).thenReturn(executeEngine);
-        when(backendConnection.getStatusManager()).thenReturn(statusHandler);
+        when(backendConnection.getConnectionStatusManager()).thenReturn(statusHandler);
         when(codecEngine.createPacketPayload(eq(message))).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
@@ -136,7 +136,7 @@ public final class CommandExecutorTaskTest {
         when(executeEngine.getCommandExecutor(eq(commandPacketType), eq(commandPacket), eq(backendConnection))).thenReturn(commandExecutor);
         when(executeEngine.getCommandPacketType(eq(payload))).thenReturn(commandPacketType);
         when(engine.getCommandExecuteEngine()).thenReturn(executeEngine);
-        when(backendConnection.getStatusManager()).thenReturn(statusHandler);
+        when(backendConnection.getConnectionStatusManager()).thenReturn(statusHandler);
         when(codecEngine.createPacketPayload(eq(message))).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
@@ -150,7 +150,7 @@ public final class CommandExecutorTaskTest {
     @Test
     public void assertRunWithError() {
         RuntimeException mockException = new RuntimeException("mock");
-        when(backendConnection.getStatusManager()).thenThrow(mockException);
+        when(backendConnection.getConnectionStatusManager()).thenThrow(mockException);
         when(codecEngine.createPacketPayload(message)).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         when(executeEngine.getErrorPacket(eq(mockException))).thenReturn(databasePacket);

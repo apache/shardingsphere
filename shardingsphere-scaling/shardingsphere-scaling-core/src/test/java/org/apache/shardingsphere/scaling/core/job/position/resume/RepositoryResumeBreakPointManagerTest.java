@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
@@ -33,34 +32,33 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class RepositoryResumeBreakPointManagerTest {
-
+    
     @Mock
     private RegistryRepository registryRepository;
-
+    
     private RepositoryResumeBreakPointManager repositoryResumeBreakPointManager;
-
+    
     @Before
-    @SneakyThrows
-    public void setUp() {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         ScalingContext.getInstance().init(new ServerConfiguration());
         ReflectionUtil.setFieldValue(RepositoryResumeBreakPointManager.class, null, "registryRepository", registryRepository);
         repositoryResumeBreakPointManager = new RepositoryResumeBreakPointManager("H2", "/base");
     }
-
+    
+    @After
+    public void tearDown() {
+        repositoryResumeBreakPointManager.close();
+    }
+    
     @Test
     public void assertPersistIncrementalPosition() {
         repositoryResumeBreakPointManager.persistIncrementalPosition();
         verify(registryRepository).persist("/base/incremental", "{}");
     }
-
+    
     @Test
     public void assertPersistInventoryPosition() {
         repositoryResumeBreakPointManager.persistInventoryPosition();
         verify(registryRepository).persist("/base/inventory", "{\"unfinished\":{},\"finished\":[]}");
-    }
-
-    @After
-    public void tearDown() {
-        repositoryResumeBreakPointManager.close();
     }
 }

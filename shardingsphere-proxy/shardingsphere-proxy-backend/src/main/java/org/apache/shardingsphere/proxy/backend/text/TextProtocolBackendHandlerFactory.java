@@ -95,6 +95,8 @@ public final class TextProtocolBackendHandlerFactory {
             return new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
         }
         if (tclStatement instanceof SetAutoCommitStatement) {
+            if (((SetAutoCommitStatement) tclStatement).isAutoCommit()) {
+                return backendConnection.getTransactionStatus().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
             if (isAutoCommit((SetAutoCommitStatement) tclStatement)) {
                 return backendConnection.getStatusManager().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
             }

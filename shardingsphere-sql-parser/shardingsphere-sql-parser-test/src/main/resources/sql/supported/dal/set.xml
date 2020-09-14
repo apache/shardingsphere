@@ -18,6 +18,7 @@
 
 <sql-cases>
     <sql-case id="set_parameter_equal" value="SET configuration_parameter = 'value'" db-types="PostgreSQL, MySQL" />
+    <sql-case id="set_parameter_equal_number" value="SET extra_float_digits = 3" db-types="PostgreSQL, MySQL" />
     <sql-case id="set_parameter_equal_session_mysql" value="SET SESSION configuration_parameter = 'value'" db-types="MySQL" />
     <sql-case id="set_parameter_to" value="SET configuration_parameter TO 'value'" db-types="PostgreSQL" />
     <sql-case id="set_parameter_for_session_scope" value="SET SESSION configuration_parameter TO 'value'" db-types="PostgreSQL" />

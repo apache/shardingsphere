@@ -40,22 +40,6 @@ public final class ConnectionStatusManager {
     }
     
     /**
-     * Switch connection status to in transaction.
-     */
-    public void switchToInTransaction() {
-        status.set(ConnectionStatus.IN_TRANSACTION);
-    }
-    
-    /**
-     * Judge whether connection is in transaction.
-     *
-     * @return whether connection is in transaction
-     */
-    public boolean isInTransaction() {
-        return ConnectionStatus.IN_TRANSACTION == status.get();
-    }
-    
-    /**
      * Switch connection status to released.
      */
     public void switchToReleased() {

@@ -66,8 +66,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             return;
         }
         boolean supportHint = ProxyContext.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED);
-        ExecutorService executorService = CommandExecutorSelector.getExecutor(
-                databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection(), supportHint, backendConnection.getTransactionType(), context.channel().id());
+        ExecutorService executorService = CommandExecutorSelector.getExecutor(databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection(), 
+                supportHint, backendConnection.getTransactionStatus().getTransactionType(), context.channel().id());
         executorService.execute(new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message));
     }
     

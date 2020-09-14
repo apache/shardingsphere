@@ -72,7 +72,7 @@ public final class ShardingCTLSetBackendHandlerTest {
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=XA", backendConnection);
         BackendResponse actual = shardingCTLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));
-        assertThat(backendConnection.getTransactionType(), is(TransactionType.XA));
+        assertThat(backendConnection.getTransactionStatus().getTransactionType(), is(TransactionType.XA));
     }
     
     @Test
@@ -81,7 +81,7 @@ public final class ShardingCTLSetBackendHandlerTest {
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set  transaction_type=BASE", backendConnection);
         BackendResponse actual = shardingCTLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));
-        assertThat(backendConnection.getTransactionType(), is(TransactionType.BASE));
+        assertThat(backendConnection.getTransactionStatus().getTransactionType(), is(TransactionType.BASE));
     }
     
     @Test
@@ -90,7 +90,7 @@ public final class ShardingCTLSetBackendHandlerTest {
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=LOCAL", backendConnection);
         BackendResponse actual = shardingCTLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));
-        assertThat(backendConnection.getTransactionType(), is(TransactionType.LOCAL));
+        assertThat(backendConnection.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
     }
     
     @Test(expected = UnsupportedShardingCTLTypeException.class)

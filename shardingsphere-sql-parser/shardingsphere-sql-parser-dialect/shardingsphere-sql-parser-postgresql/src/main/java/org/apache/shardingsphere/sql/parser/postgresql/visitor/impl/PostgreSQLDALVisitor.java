@@ -73,6 +73,9 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
         if (null != ctx.identifier(1)) {
             result.setAssignValue(ctx.identifier(1).getText());
         }
+        if (null != ctx.NUMBER_()) {
+            result.setAssignValue(ctx.NUMBER_().getText());
+        }
         if (null != ctx.DEFAULT()) {
             result.setAssignValue(ctx.DEFAULT().getText());
         }

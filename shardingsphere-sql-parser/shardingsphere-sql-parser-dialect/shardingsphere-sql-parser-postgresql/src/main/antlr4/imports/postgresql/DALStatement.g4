@@ -47,7 +47,7 @@ timeZoneClause_
     ;
 
 configurationParameterClause
-    : identifier (TO | EQ_) (identifier | STRING_ | DEFAULT)
+    : identifier (TO | EQ_) (identifier | NUMBER_ | STRING_ | DEFAULT)
     ;
 
 resetParameter
