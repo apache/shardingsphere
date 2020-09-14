@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer set transaction statement.
  */
-public final class SQLServerSetTransactionStatement extends SetTransactionStatement implements TCLStatement, SQLServerStatement {
+public final class SQLServerSetTransactionStatement extends SetTransactionStatement implements SQLServerStatement {
 }

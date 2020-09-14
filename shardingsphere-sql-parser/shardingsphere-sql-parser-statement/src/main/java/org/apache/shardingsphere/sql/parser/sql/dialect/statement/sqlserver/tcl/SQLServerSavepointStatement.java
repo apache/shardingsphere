@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer savepoint statement.
  */
-public final class SQLServerSavepointStatement extends SavepointStatement implements TCLStatement, SQLServerStatement {
+public final class SQLServerSavepointStatement extends SavepointStatement implements SQLServerStatement {
 }

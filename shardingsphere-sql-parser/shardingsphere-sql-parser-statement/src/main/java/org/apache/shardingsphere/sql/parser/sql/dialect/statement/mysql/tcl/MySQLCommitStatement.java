@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL commit statement.
  */
-public final class MySQLCommitStatement extends CommitStatement implements TCLStatement, MySQLStatement {
+public final class MySQLCommitStatement extends CommitStatement implements MySQLStatement {
 }

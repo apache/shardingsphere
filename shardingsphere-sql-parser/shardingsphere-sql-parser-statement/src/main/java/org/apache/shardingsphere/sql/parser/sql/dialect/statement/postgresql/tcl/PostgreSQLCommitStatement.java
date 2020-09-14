@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL commit statement.
  */
-public final class PostgreSQLCommitStatement extends CommitStatement implements TCLStatement, PostgreSQLStatement {
+public final class PostgreSQLCommitStatement extends CommitStatement implements PostgreSQLStatement {
 }

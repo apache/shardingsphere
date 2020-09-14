@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer commit statement.
  */
-public final class SQLServerCommitStatement extends CommitStatement implements TCLStatement, SQLServerStatement {
+public final class SQLServerCommitStatement extends CommitStatement implements SQLServerStatement {
 }

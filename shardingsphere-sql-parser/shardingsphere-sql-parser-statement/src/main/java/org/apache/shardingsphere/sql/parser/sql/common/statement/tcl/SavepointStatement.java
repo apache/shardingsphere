@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Savepoint statement.
  */
-public abstract class SavepointStatement extends AbstractSQLStatement {
+public abstract class SavepointStatement extends AbstractSQLStatement implements TCLStatement {
 }

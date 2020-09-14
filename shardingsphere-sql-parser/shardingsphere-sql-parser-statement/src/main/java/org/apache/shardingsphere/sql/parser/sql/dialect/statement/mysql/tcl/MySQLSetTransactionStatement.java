@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
  */
 @Getter
 @Setter
-public final class MySQLSetTransactionStatement extends SetTransactionStatement implements TCLStatement, MySQLStatement {
+public final class MySQLSetTransactionStatement extends SetTransactionStatement implements MySQLStatement {
     
     private String isolationLevel;
     

@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer set auto commit statement.
  */
-public final class SQLServerSetAutoCommitStatement extends SetAutoCommitStatement implements TCLStatement, SQLServerStatement {
+public final class SQLServerSetAutoCommitStatement extends SetAutoCommitStatement implements SQLServerStatement {
 }

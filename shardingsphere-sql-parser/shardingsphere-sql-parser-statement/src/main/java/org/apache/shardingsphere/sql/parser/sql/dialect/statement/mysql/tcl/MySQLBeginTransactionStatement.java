@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL begin transaction statement.
  */
-public final class MySQLBeginTransactionStatement extends BeginTransactionStatement implements TCLStatement, MySQLStatement {
+public final class MySQLBeginTransactionStatement extends BeginTransactionStatement implements MySQLStatement {
 }

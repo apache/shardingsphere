@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL savepoint statement.
  */
-public final class MySQLSavepointStatement extends SavepointStatement implements TCLStatement, MySQLStatement {
+public final class MySQLSavepointStatement extends SavepointStatement implements MySQLStatement {
 }

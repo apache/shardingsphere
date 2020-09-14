@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL set auto commit statement.
  */
-public final class MySQLSetAutoCommitStatement extends SetAutoCommitStatement implements TCLStatement, MySQLStatement {
+public final class MySQLSetAutoCommitStatement extends SetAutoCommitStatement implements MySQLStatement {
 }

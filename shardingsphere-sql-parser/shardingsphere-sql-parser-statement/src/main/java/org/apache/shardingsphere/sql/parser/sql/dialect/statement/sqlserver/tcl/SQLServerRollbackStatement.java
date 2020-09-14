@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer rollback statement.
  */
-public final class SQLServerRollbackStatement extends RollbackStatement implements TCLStatement, SQLServerStatement {
+public final class SQLServerRollbackStatement extends RollbackStatement implements SQLServerStatement {
 }

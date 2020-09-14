@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Statement;
 
 /**
  * SQL92 commit statement.
  */
-public final class SQL92CommitStatement extends CommitStatement implements TCLStatement, SQL92Statement {
+public final class SQL92CommitStatement extends CommitStatement implements SQL92Statement {
 }

@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer begin transaction statement.
  */
-public final class SQLServerBeginTransactionStatement extends BeginTransactionStatement implements TCLStatement, SQLServerStatement {
+public final class SQLServerBeginTransactionStatement extends BeginTransactionStatement implements SQLServerStatement {
 }

@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL begin transaction statement.
  */
-public final class PostgreSQLBeginTransactionStatement extends BeginTransactionStatement implements TCLStatement, PostgreSQLStatement {
+public final class PostgreSQLBeginTransactionStatement extends BeginTransactionStatement implements PostgreSQLStatement {
 }

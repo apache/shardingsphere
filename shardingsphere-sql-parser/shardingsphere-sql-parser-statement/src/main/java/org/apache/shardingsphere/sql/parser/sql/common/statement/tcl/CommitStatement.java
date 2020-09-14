@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Commit statement.
  */
-public abstract class CommitStatement extends AbstractSQLStatement {
+public abstract class CommitStatement extends AbstractSQLStatement implements TCLStatement {
 }

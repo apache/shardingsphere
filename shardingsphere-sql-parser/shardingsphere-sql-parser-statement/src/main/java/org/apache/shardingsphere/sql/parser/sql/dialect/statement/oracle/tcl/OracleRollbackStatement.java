@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle rollback statement.
  */
-public final class OracleRollbackStatement extends RollbackStatement implements TCLStatement, OracleStatement {
+public final class OracleRollbackStatement extends RollbackStatement implements OracleStatement {
 }
