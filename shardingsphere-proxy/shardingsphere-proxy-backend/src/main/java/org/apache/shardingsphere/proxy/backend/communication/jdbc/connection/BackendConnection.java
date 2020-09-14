@@ -92,7 +92,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
      * @param schemaName schema name
      */
     public void setCurrentSchema(final String schemaName) {
-        if (!transactionStatus.waitingForTransactionComplete()) {
+        if (transactionStatus.isInTransaction()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
         this.schemaName = schemaName;
