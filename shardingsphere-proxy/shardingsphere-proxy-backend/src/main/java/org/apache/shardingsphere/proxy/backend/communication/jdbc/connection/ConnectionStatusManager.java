@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.status;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ResourceLock;
 
 /**
  * Connection status manager.
