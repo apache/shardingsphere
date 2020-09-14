@@ -1,5 +1,5 @@
 +++
-title = "Hint"
+title = "Hint Sharding Route"
 weight = 6
 +++
 
