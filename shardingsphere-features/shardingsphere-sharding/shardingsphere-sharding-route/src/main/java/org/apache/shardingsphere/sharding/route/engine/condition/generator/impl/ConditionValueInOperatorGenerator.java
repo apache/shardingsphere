@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
-import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGenerator;
 import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
+import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateInRightValue;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,13 +34,13 @@ import java.util.Optional;
 /**
  * Condition value generator for in operator.
  */
-public final class ConditionValueInOperatorGenerator implements ConditionValueGenerator<PredicateInRightValue> {
+public final class ConditionValueInOperatorGenerator implements ConditionValueGenerator<InExpression> {
     
     @Override
-    public Optional<RouteValue> generate(final PredicateInRightValue predicateRightValue, final Column column, final List<Object> parameters) {
+    public Optional<RouteValue> generate(final InExpression predicate, final Column column, final List<Object> parameters) {
         List<Comparable<?>> routeValues = new LinkedList<>();
         SPITimeService timeService = new SPITimeService();
-        for (ExpressionSegment each : predicateRightValue.getSqlExpressions()) {
+        for (ExpressionSegment each : predicate.getExpressionList()) {
             Optional<Comparable<?>> routeValue = new ConditionValue(each, parameters).getValue();
             if (routeValue.isPresent()) {
                 routeValues.add(routeValue.get());

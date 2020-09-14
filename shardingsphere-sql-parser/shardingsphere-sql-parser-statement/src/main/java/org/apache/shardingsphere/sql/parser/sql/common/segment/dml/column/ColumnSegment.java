@@ -21,10 +21,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateRightValue;
 
 import java.util.Optional;
 
@@ -35,7 +35,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @ToString
-public final class ColumnSegment implements PredicateRightValue, OwnerAvailable {
+public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     
     private final int startIndex;
     

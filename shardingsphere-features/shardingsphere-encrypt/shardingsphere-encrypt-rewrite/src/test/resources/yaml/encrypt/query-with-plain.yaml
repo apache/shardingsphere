@@ -60,4 +60,4 @@ rules:
       type: ASSISTED_QUERY_ENCRYPT
 
 props:
-  query.with.cipher.column: false
+  query-with-cipher-column: false

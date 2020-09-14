@@ -21,9 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
  * Where segment.
@@ -37,5 +35,5 @@ public final class WhereSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final Collection<AndPredicate> andPredicates = new LinkedList<>();
+    private final ExpressionSegment expr;
 }

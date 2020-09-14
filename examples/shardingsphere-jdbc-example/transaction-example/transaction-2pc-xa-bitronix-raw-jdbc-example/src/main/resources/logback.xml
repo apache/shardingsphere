@@ -28,8 +28,8 @@
         </encoder>
     </appender>
     
-    <logger name="bitronix.tm" level="info"/>
-    <logger name="com.zaxxer.hikari" level="off"/>
+    <logger name="bitronix.tm" level="info" />
+    <logger name="com.zaxxer.hikari" level="off" />
     
     <root>
         <level value="INFO" />

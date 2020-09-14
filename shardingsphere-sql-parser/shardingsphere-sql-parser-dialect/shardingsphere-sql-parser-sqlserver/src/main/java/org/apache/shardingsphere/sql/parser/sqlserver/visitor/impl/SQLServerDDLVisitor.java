@@ -49,14 +49,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.SQLServerVisitor;
 
 import java.util.Collection;
@@ -71,7 +71,8 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement((SimpleTableSegment) visit(ctx.tableName()), false);
+        SQLServerCreateTableStatement result = new SQLServerCreateTableStatement();
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -158,7 +159,8 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement((SimpleTableSegment) visit(ctx.tableName()));
+        SQLServerAlterTableStatement result = new SQLServerAlterTableStatement();
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         for (AlterDefinitionClauseContext alterDefinitionClauseContext : ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(alterDefinitionClauseContext)).getValue()) {
                 if (each instanceof AddColumnDefinitionSegment) {
@@ -228,21 +230,21 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement();
+        SQLServerDropTableStatement result = new SQLServerDropTableStatement();
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        TruncateStatement result = new TruncateStatement();
+        SQLServerTruncateStatement result = new SQLServerTruncateStatement();
         result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement();
+        SQLServerCreateIndexStatement result = new SQLServerCreateIndexStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setIndex((IndexSegment) visit(ctx.indexName()));
         return result;
@@ -250,7 +252,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        AlterIndexStatement result = new AlterIndexStatement();
+        SQLServerAlterIndexStatement result = new SQLServerAlterIndexStatement();
         if (null != ctx.indexName()) {
             result.setIndex((IndexSegment) visit(ctx.indexName()));
         }
@@ -260,7 +262,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = new DropIndexStatement();
+        SQLServerDropIndexStatement result = new SQLServerDropIndexStatement();
         result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;

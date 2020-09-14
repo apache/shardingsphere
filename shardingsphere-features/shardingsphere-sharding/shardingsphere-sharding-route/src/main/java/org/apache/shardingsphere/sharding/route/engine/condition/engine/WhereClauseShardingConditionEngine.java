@@ -32,10 +32,15 @@ import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereSegmentExtractUtils;
 
@@ -73,12 +78,12 @@ public final class WhereClauseShardingConditionEngine {
         List<ShardingCondition> result = new ArrayList<>();
         Optional<WhereSegment> whereSegment = ((WhereAvailable) sqlStatementContext).getWhere();
         if (whereSegment.isPresent()) {
-            result.addAll(createShardingConditions(sqlStatementContext, whereSegment.get().getAndPredicates(), parameters));
+            result.addAll(createShardingConditions(sqlStatementContext, whereSegment.get().getExpr(), parameters));
         }
         Collection<WhereSegment> subqueryWhereSegments = sqlStatementContext.getSqlStatement() instanceof SelectStatement
                 ? WhereSegmentExtractUtils.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
         for (WhereSegment each : subqueryWhereSegments) {
-            Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(sqlStatementContext, each.getAndPredicates(), parameters);
+            Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(sqlStatementContext, each.getExpr(), parameters);
             if (!result.containsAll(subqueryShardingConditions)) {
                 result.addAll(subqueryShardingConditions);
             }
@@ -86,8 +91,12 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext sqlStatementContext, final Collection<AndPredicate> andPredicates, final List<Object> parameters) {
+    private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext sqlStatementContext, final ExpressionSegment expressionSegment, final List<Object> parameters) {
         Collection<ShardingCondition> result = new LinkedList<>();
+    
+        Collection<AndPredicate> andPredicates = new LinkedList<>();
+        ExpressionBuildUtil util = new ExpressionBuildUtil(expressionSegment);
+        andPredicates.addAll(util.extractAndPredicates().getAndPredicates());
         for (AndPredicate each : andPredicates) {
             Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatementContext, each, parameters);
             if (routeValueMap.isEmpty()) {
@@ -98,22 +107,45 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private Map<Column, Collection<RouteValue>> createRouteValueMap(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate, final List<Object> parameters) {
+    private Map<Column, Collection<RouteValue>> createRouteValueMap(final SQLStatementContext sqlStatementContext, final AndPredicate expressions, final List<Object> parameters) {
         Map<Column, Collection<RouteValue>> result = new HashMap<>();
-        for (PredicateSegment each : andPredicate.getPredicates()) {
-            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(each.getColumn(), schemaMetaData);
-            if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName.get())) {
-                continue;
+    
+        for (ExpressionSegment each : expressions.getPredicates()) {
+            Optional<RouteValue> routeValue = Optional.empty();
+            Column column = null;
+            if (each instanceof BinaryOperationExpression && ((BinaryOperationExpression) each).getLeft() instanceof ColumnSegment) {
+                ColumnSegment columnSegment = (ColumnSegment) ((BinaryOperationExpression) each).getLeft();
+                Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment, schemaMetaData);
+                if (tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
+                    column = new Column(columnSegment.getIdentifier().getValue(), tableName.get());
+                    routeValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
+                }
             }
-            Column column = new Column(each.getColumn().getIdentifier().getValue(), tableName.get());
-            Optional<RouteValue> routeValue = ConditionValueGeneratorFactory.generate(each.getRightValue(), column, parameters);
-            if (!routeValue.isPresent()) {
-                continue;
+            if (each instanceof InExpression && ((InExpression) each).getLeft() instanceof ColumnSegment) {
+                ColumnSegment columnSegment = (ColumnSegment) ((InExpression) each).getLeft();
+                Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment, schemaMetaData);
+                if (tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
+                    column = new Column(columnSegment.getIdentifier().getValue(), tableName.get());
+                    routeValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
+                }
             }
-            if (!result.containsKey(column)) {
-                result.put(column, new LinkedList<>());
+            if (each instanceof BetweenExpression && ((BetweenExpression) each).getLeft() instanceof ColumnSegment) {
+                ColumnSegment columnSegment = (ColumnSegment) ((BetweenExpression) each).getLeft();
+                Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment, schemaMetaData);
+                if (tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
+                    column = new Column(columnSegment.getIdentifier().getValue(), tableName.get());
+                    routeValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
+                }
             }
-            result.get(column).add(routeValue.get());
+            if (routeValue.isPresent()) {
+                if (!result.containsKey(column)) {
+                    Collection<RouteValue> routeValues = new LinkedList<>();
+                    routeValues.add(routeValue.get());
+                    result.put(column, routeValues);
+                } else {
+                    result.get(column).add(routeValue.get());
+                }
+            }
         }
         return result;
     }

@@ -385,7 +385,7 @@ tableReference
 	| selectWithParens aliasClause?
 	| LATERAL selectWithParens aliasClause?
 	| tableReference joinedTable
-	| tableReference LP_ joinedTable RP_ aliasClause
+	| LP_ tableReference joinedTable RP_ aliasClause?
 	;
 
 joinedTable

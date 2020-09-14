@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core.facade.listener;
 
 import org.apache.shardingsphere.governance.core.config.listener.ConfigurationListenerManager;
-import org.apache.shardingsphere.governance.core.metadata.listener.MetaDataListenerManager;
 import org.apache.shardingsphere.governance.core.registry.listener.RegistryListenerManager;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
@@ -34,12 +33,9 @@ public final class GovernanceListenerManager {
     
     private final RegistryListenerManager registryListenerManager;
     
-    private final MetaDataListenerManager metaDataListenerManager;
-    
     public GovernanceListenerManager(final RegistryRepository registryRepository, final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
         configurationListenerManager = new ConfigurationListenerManager(configurationRepository, schemaNames);
         registryListenerManager = new RegistryListenerManager(registryRepository, schemaNames);
-        metaDataListenerManager = new MetaDataListenerManager(configurationRepository, schemaNames);
     }
     
     /**
@@ -48,6 +44,5 @@ public final class GovernanceListenerManager {
     public void init() {
         configurationListenerManager.initListeners();
         registryListenerManager.initListeners();
-        metaDataListenerManager.initListeners();
     }
 }

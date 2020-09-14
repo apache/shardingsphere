@@ -47,4 +47,4 @@ rules:
     ds: ds_0
 
 props:
-  sql.show: true
+  sql-show: true

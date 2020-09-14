@@ -42,6 +42,17 @@ public final class OracleDataSourceMetaDataTest {
         assertThat(actual.getSchema(), is("test"));
     }
     
+    @Test
+    public void assertNewConstructorWithConnectDescriptorUrl() {
+        OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = 172.16.0.12)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)"
+                + "(HOST = 172.16.0.22)(PORT = 1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
+                + "(SERVICE_NAME = rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "test");
+        assertThat(actual.getHostName(), is("172.16.0.12"));
+        assertThat(actual.getPort(), is(1521));
+        assertThat(actual.getCatalog(), is("rac"));
+        assertThat(actual.getSchema(), is("test"));
+    }
+    
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertNewConstructorFailure() {
         new OracleDataSourceMetaData("jdbc:oracle:xxxxxxxx", "test");

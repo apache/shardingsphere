@@ -45,7 +45,7 @@ public final class ShardingInsertStatementValidator implements ShardingStatement
     @Override
     public void preValidate(final ShardingRule shardingRule, final RouteContext routeContext, final ShardingSphereMetaData metaData) {
         SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
-        if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext() && 1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
+        if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext() && 1 != ((TableAvailable) sqlStatementContext).getTablesContext().getTables().size()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
         InsertStatement sqlStatement = (InsertStatement) sqlStatementContext.getSqlStatement();

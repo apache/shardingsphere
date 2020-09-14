@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.sharding.merge.dql;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByMemoryMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.iterator.IteratorStreamMergedResult;
@@ -28,8 +31,6 @@ import org.apache.shardingsphere.sharding.merge.dql.pagination.TopAndRowNumberDe
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
@@ -37,8 +38,8 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.Pag
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.TableFactorSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.TableReferenceSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
@@ -46,9 +47,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.ro
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -345,11 +343,7 @@ public final class ShardingDQLResultMergerTest {
     private SelectStatement createSelectStatement() {
         SelectStatement result = new SelectStatement();
         SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new IdentifierValue("tbl"));
-        TableReferenceSegment tableReferenceSegment = new TableReferenceSegment();
-        TableFactorSegment tableFactorSegment = new TableFactorSegment();
-        tableFactorSegment.setTable(tableSegment);
-        tableReferenceSegment.setTableFactor(tableFactorSegment);
-        result.getTableReferences().add(tableReferenceSegment);
+        result.setFrom(tableSegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         result.setProjections(projectionsSegment);
         return result;

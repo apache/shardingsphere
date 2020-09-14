@@ -26,7 +26,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.S
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.limit.LimitClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.orderby.OrderByClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.set.SetClauseAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
 
@@ -57,7 +56,7 @@ public final class UpdateStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
+//        TODO to support table assert
     }
     
     private static void assertSetClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {

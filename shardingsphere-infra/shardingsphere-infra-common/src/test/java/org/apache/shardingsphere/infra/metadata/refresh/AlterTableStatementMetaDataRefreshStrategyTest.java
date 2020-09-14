@@ -27,6 +27,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLAlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterTableStatement;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -39,9 +44,33 @@ import static org.mockito.Mockito.mock;
 public final class AlterTableStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @Test
-    public void refreshMetaData() throws SQLException {
+    public void refreshMySQLAlterTableMetaData() throws SQLException {
+        refreshMetaData(new MySQLAlterTableStatement());
+    }
+
+    @Test
+    public void refreshOracleAlterTableMetaData() throws SQLException {
+        refreshMetaData(new OracleAlterTableStatement());
+    }
+
+    @Test
+    public void refreshPostgreSQLAlterTableMetaData() throws SQLException {
+        refreshMetaData(new PostgreSQLAlterTableStatement());
+    }
+
+    @Test
+    public void refreshSQL92AlterTableMetaData() throws SQLException {
+        refreshMetaData(new SQL92AlterTableStatement());
+    }
+
+    @Test
+    public void refreshSQLServerAlterTableMetaData() throws SQLException {
+        refreshMetaData(new SQLServerAlterTableStatement());
+    }
+
+    private void refreshMetaData(final AlterTableStatement alterTableStatement) throws SQLException {
         MetaDataRefreshStrategy<AlterTableStatementContext> metaDataRefreshStrategy = new AlterTableStatementMetaDataRefreshStrategy();
-        AlterTableStatement alterTableStatement = new AlterTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         AlterTableStatementContext alterTableStatementContext = new AlterTableStatementContext(alterTableStatement);
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), alterTableStatementContext, tableName -> Optional.of(new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
