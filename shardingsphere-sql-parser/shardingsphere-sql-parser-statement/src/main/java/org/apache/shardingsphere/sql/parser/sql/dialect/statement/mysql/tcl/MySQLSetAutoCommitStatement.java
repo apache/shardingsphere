@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -26,9 +24,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL set auto commit statement.
  */
-@Getter
-@Setter
 public final class MySQLSetAutoCommitStatement extends SetAutoCommitStatement implements TCLStatement, MySQLStatement {
-    
-    private boolean autoCommit;
 }

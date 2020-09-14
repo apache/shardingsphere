@@ -17,10 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Set auto commit statement.
  */
+@Getter
+@Setter
 public abstract class SetAutoCommitStatement extends AbstractSQLStatement {
+
+    private boolean autoCommit;
 }

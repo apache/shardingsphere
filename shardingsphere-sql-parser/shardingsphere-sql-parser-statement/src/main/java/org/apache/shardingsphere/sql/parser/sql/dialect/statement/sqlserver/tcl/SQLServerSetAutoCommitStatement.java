@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
@@ -26,9 +24,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer set auto commit statement.
  */
-@Getter
-@Setter
 public final class SQLServerSetAutoCommitStatement extends SetAutoCommitStatement implements TCLStatement, SQLServerStatement {
-    
-    private boolean autoCommit;
 }

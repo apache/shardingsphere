@@ -45,13 +45,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.SQLServerSetAutoCommitStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
@@ -97,8 +93,6 @@ public final class TextProtocolBackendHandlerFactory {
         if (tclStatement instanceof SetAutoCommitStatement) {
             if (((SetAutoCommitStatement) tclStatement).isAutoCommit()) {
                 return backendConnection.getTransactionStatus().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
-            if (isAutoCommit((SetAutoCommitStatement) tclStatement)) {
-                return backendConnection.getStatusManager().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
             }
             return new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
         }
@@ -126,15 +120,5 @@ public final class TextProtocolBackendHandlerFactory {
             return new BroadcastBackendHandler(sql, dalStatement, backendConnection);
         }
         return new UnicastBackendHandler(sql, dalStatement, backendConnection);
-    }
-
-    private static boolean isAutoCommit(final SetAutoCommitStatement actual) {
-        if (actual instanceof MySQLStatement) {
-            return ((MySQLSetAutoCommitStatement) actual).isAutoCommit();
-        }
-        if (actual instanceof SQLServerStatement) {
-            return ((SQLServerSetAutoCommitStatement) actual).isAutoCommit();
-        }
-        return false;
     }
 }

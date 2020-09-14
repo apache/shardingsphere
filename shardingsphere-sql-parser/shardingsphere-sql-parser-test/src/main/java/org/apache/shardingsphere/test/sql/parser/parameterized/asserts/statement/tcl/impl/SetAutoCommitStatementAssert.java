@@ -20,10 +20,6 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.SQLServerSetAutoCommitStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetAutoCommitStatementTestCase;
 
@@ -44,16 +40,6 @@ public final class SetAutoCommitStatementAssert {
      * @param expected expected set auto commit statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SetAutoCommitStatement actual, final SetAutoCommitStatementTestCase expected) {
-        assertThat(assertContext.getText("Set auto commit assertion error: "), isAutoCommit(actual), is(expected.isAutoCommit()));
-    }
-    
-    private static boolean isAutoCommit(final SetAutoCommitStatement actual) {
-        if (actual instanceof MySQLStatement) {
-            return ((MySQLSetAutoCommitStatement) actual).isAutoCommit();
-        }
-        if (actual instanceof SQLServerStatement) {
-            return ((SQLServerSetAutoCommitStatement) actual).isAutoCommit();
-        }
-        return false;
+        assertThat(assertContext.getText("Set auto commit assertion error: "), actual.isAutoCommit(), is(expected.isAutoCommit()));
     }
 }
