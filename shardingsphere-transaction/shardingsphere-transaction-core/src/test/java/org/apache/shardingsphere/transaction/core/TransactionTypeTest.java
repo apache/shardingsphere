@@ -17,20 +17,21 @@
 
 package org.apache.shardingsphere.transaction.core;
 
-/**
- * Transaction type.
- */
-public enum TransactionType {
+import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class TransactionTypeTest {
     
-    LOCAL, XA, BASE;
+    @Test
+    public void assertIsDistributedTransaction() {
+        assertTrue(TransactionType.isDistributedTransaction(TransactionType.XA));
+        assertTrue(TransactionType.isDistributedTransaction(TransactionType.BASE));
+    }
     
-    /**
-     * Judge whether distributed transaction.
-     * 
-     * @param transactionType transaction type
-     * @return is distributed transaction or not
-     */
-    public static boolean isDistributedTransaction(final TransactionType transactionType) {
-        return XA == transactionType || BASE == transactionType;
+    @Test
+    public void assertIsNotDistributedTransaction() {
+        assertFalse(TransactionType.isDistributedTransaction(TransactionType.LOCAL));
     }
 }
