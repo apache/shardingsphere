@@ -47,13 +47,14 @@ public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
                                                     final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         Set<String> tableNames = new HashSet<>();
+        // TODO :If there are two tables with the same name in different databases, only one table will be returned.
         for (QueryResult each : queryResults) {
             while (each.next()) {
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
                 Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
                 if (!tableRule.isPresent()) {
-                    if (shardingRule.getTableRules().isEmpty() || schemaMetaData.containsTable(actualTableName) && tableNames.add(actualTableName)) {
+                    if (shardingRule.getTableRules().isEmpty() || tableNames.add(actualTableName)) {
                         result.add(memoryResultSetRow);
                     }
                 } else if (tableNames.add(tableRule.get().getLogicTable())) {

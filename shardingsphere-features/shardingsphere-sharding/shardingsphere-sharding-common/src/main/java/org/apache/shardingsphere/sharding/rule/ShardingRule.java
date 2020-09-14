@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -33,8 +34,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.strategy.ShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.ShardingStrategyFactory;
 import org.apache.shardingsphere.sharding.strategy.none.NoneShardingStrategy;
@@ -80,7 +79,7 @@ public final class ShardingRule implements DataNodeRoutedRule {
     public ShardingRule(final ShardingRuleConfiguration configuration, final Collection<String> dataSourceNames) {
         Preconditions.checkArgument(null != configuration, "ShardingRuleConfig cannot be null.");
         Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data sources cannot be empty.");
-        this.dataSourceNames = getDataSourceNames(configuration.getTables(), dataSourceNames);
+        this.dataSourceNames = new LinkedHashSet<>(dataSourceNames);
         configuration.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ShardingAlgorithm.class)));
         configuration.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, KeyGenerateAlgorithm.class)));
         tableRules = new LinkedList<>(createTableRules(configuration.getTables(), configuration.getDefaultKeyGenerateStrategy()));
@@ -96,7 +95,7 @@ public final class ShardingRule implements DataNodeRoutedRule {
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration configuration, final Collection<String> dataSourceNames) {
         Preconditions.checkArgument(null != configuration, "ShardingRuleConfig cannot be null.");
         Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data sources cannot be empty.");
-        this.dataSourceNames = getDataSourceNames(configuration.getTables(), dataSourceNames);
+        this.dataSourceNames = new LinkedHashSet<>(dataSourceNames);
         shardingAlgorithms.putAll(configuration.getShardingAlgorithms());
         keyGenerators.putAll(configuration.getKeyGenerators());
         tableRules = new LinkedList<>(createTableRules(configuration.getTables(), configuration.getDefaultKeyGenerateStrategy()));
@@ -107,28 +106,6 @@ public final class ShardingRule implements DataNodeRoutedRule {
         defaultTableShardingStrategy = createDefaultShardingStrategy(configuration.getDefaultTableShardingStrategy());
         defaultKeyGenerateAlgorithm = null == configuration.getDefaultKeyGenerateStrategy()
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(configuration.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
-    }
-    
-    private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, final Collection<String> dataSourceNames) {
-        Collection<String> result = new LinkedHashSet<>();
-        if (tableRuleConfigs.isEmpty()) {
-            return dataSourceNames;
-        }
-        for (ShardingTableRuleConfiguration each : tableRuleConfigs) {
-            if (null == each.getActualDataNodes()) {
-                return dataSourceNames;
-            }
-            result.addAll(getDataSourceNames(each));
-        }
-        return result;
-    }
-    
-    private Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfiguration) {
-        Collection<String> result = new LinkedHashSet<>();
-        for (String each : new InlineExpressionParser(shardingTableRuleConfiguration.getActualDataNodes()).splitAndEvaluate()) {
-            result.add(new DataNode(each).getDataSourceName());
-        }
-        return result;
     }
     
     private Collection<TableRule> createTableRules(
