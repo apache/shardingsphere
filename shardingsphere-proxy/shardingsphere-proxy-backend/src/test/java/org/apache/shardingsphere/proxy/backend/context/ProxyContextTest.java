@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.context;
 
 import java.util.ArrayList;
-import java.util.List;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.SchemaContext;
@@ -143,5 +142,4 @@ public final class ProxyContextTest {
         }
         return result;
     }
-
 }
