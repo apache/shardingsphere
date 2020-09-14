@@ -77,7 +77,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private final ResourceLock resourceLock = new ResourceLock();
     
-    private final ConnectionStatusManager connectionStatusManager = new ConnectionStatusManager();
+    private final ConnectionStatus connectionStatus = new ConnectionStatus();
     
     private final TransactionStatus transactionStatus;
     
@@ -234,7 +234,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (!transactionStatus.isInTransaction() || forceClose || TransactionType.BASE == transactionStatus.getTransactionType()) {
             exceptions.addAll(releaseConnections(forceClose));
         }
-        connectionStatusManager.switchToReleased();
+        connectionStatus.switchToReleased();
         throwSQLExceptionIfNecessary(exceptions);
     }
     

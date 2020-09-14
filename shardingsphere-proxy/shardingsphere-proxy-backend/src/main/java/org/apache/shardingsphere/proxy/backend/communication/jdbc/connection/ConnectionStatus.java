@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 /**
- * Connection status manager.
+ * Connection status.
  */
-public final class ConnectionStatusManager {
+public final class ConnectionStatus {
     
     private final ResourceLock resourceLock = new ResourceLock();
     
