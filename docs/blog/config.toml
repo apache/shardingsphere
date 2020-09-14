@@ -21,7 +21,7 @@ languageName = "中文"
 themeVariant = "black"
 # Disable search function. It will hide search bar
 disableSearch = true
-editURL = https://github.com/apache/shardingsphere/tree/master/docs/blog/content
+editURL = "https://github.com/apache/shardingsphere/tree/master/docs/blog/content"
 
 [markup]
 [markup.tableOfContents]
