@@ -164,5 +164,5 @@
 #  keyGenerators:
 #    snowflake:
 #      type: SNOWFLAKE
-#        props:
-#          worker-id: 123
+#      props:
+#        worker-id: 123

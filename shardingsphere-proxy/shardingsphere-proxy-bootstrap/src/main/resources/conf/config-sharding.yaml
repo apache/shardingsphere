@@ -163,7 +163,7 @@
 #        algorithm-expression: t_order_item_${order_id % 2}
 #  
 #  keyGenerators:
-#      snowflake:
-#        type: SNOWFLAKE
-#        props:
-#            worker-id: 123
+#    snowflake:
+#      type: SNOWFLAKE
+#      props:
+#        worker-id: 123
