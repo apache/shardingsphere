@@ -77,7 +77,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private final ResourceLock resourceLock = new ResourceLock();
     
-    private final ConnectionStatusManager connectionStatusManager = new ConnectionStatusManager(resourceLock);
+    private final ConnectionStatusManager connectionStatusManager = new ConnectionStatusManager();
     
     private final TransactionStatus transactionStatus;
     
