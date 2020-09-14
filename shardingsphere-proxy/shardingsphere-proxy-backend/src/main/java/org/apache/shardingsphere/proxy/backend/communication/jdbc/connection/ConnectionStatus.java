@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
-import lombok.RequiredArgsConstructor;
-
 /**
- * Connection status manager.
+ * Connection status.
  */
-@RequiredArgsConstructor
-public final class ConnectionStatusManager {
+public final class ConnectionStatus {
     
-    private final ResourceLock resourceLock;
+    private final ResourceLock resourceLock = new ResourceLock();
     
     private volatile boolean isUsing;
     
@@ -47,9 +44,9 @@ public final class ConnectionStatusManager {
     }
     
     /**
-     * Wait until connection is released if necessary.
+     * Wait until connection release.
      */
-    public void waitUntilConnectionReleasedIfNecessary() {
+    public void waitUntilConnectionRelease() {
         while (isUsing) {
             resourceLock.doAwait();
         }
