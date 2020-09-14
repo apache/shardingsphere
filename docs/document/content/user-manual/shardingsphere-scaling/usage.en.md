@@ -70,20 +70,58 @@ curl -X POST \
   http://localhost:8888/scaling/job/start \
   -H 'content-type: application/json' \
   -d '{
-   "ruleConfiguration": {
-      "sourceDatasource":"dataSources:\n ds_0:\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '123456'\n    connectionTimeout: 30000\n    idleTimeout: 60000\n    maxLifetime: 1800000\n    maxPoolSize: 50\n    minPoolSize: 1\n    maintenanceIntervalMilliseconds: 30000\n    readOnly: false\n",
-      "sourceRule": "defaultDatabaseStrategy:\n  inline:\n    algorithmExpression: ds_${user_id % 2}\n    shardingColumn: user_id\ntables:\n  t1:\n    actualDataNodes: ds_0.t1\n    keyGenerateStrategy:\n      column: order_id\n      type: SNOWFLAKE\n    logicTable: t1\n    tableStrategy:\n      inline:\n        algorithmExpression: t1\n        shardingColumn: order_id\n  t2:\n    actualDataNodes: ds_0.t2\n    keyGenerateStrategy:\n      column: order_item_id\n      type: SNOWFLAKE\n    logicTable: t2\n    tableStrategy:\n      inline:\n        algorithmExpression: t2\n        shardingColumn: order_id\n",
-      "destinationDataSources": {
-         "name": "dt_0",
-         "password": "123456",
-         "url": "jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false",
-         "username": "root"
-      }
-   },
-   "jobConfiguration": {
-      "concurrency": 3
-   }
-}'
+        "ruleConfiguration": {
+          "sourceDatasource":"
+            dataSources:
+              ds_0:
+                dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+                props:
+                  driverClassName: com.mysql.jdbc.Driver
+                  jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling?useSSL=false
+                  username: scaling
+                  password: scaling
+              ds_1:
+                dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+                props:
+                  driverClassName: com.mysql.jdbc.Driver
+                  jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling?useSSL=false
+                  username: scaling
+                  password: scaling
+            ",
+          "sourceRule":"
+            tables:
+              t_order:
+                actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}
+                databaseStrategy:
+                  standard:
+                    shardingColumn: order_id
+                    shardingAlgorithmName: t_order_db_algorith
+                logicTable: t_order
+                tableStrategy:
+                  standard:
+                    shardingColumn: user_id
+                    shardingAlgorithmName: t_order_tbl_algorith
+            shardingAlgorithms:
+              t_order_db_algorith:
+                type: INLINE
+                props:
+                  algorithm-expression: ds_$->{order_id % 2}
+              t_order_tbl_algorith:
+                type: INLINE
+                props:
+                  algorithm-expression: t_order_$->{user_id % 2}
+            ",
+          "destinationDataSources":{
+            "username":"root",
+            "password":"root",
+            "url":"jdbc:mysql://127.0.0.1:3307/sharding_db?serverTimezone=UTC&useSSL=false"
+          }
+        },
+        "jobConfiguration":{
+          "jobName": "jobName",
+          "concurrency":"3"
+        }
+      }'
 ```
 
 Response：
