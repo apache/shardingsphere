@@ -102,7 +102,7 @@ public final class CommandExecutorTaskTest {
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(statusHandler).waitUntilConnectionReleasedIfNecessary();
+        verify(statusHandler).waitUntilConnectionRelease();
         verify(statusHandler).switchToUsing();
     }
     
@@ -119,7 +119,7 @@ public final class CommandExecutorTaskTest {
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(statusHandler).waitUntilConnectionReleasedIfNecessary();
+        verify(statusHandler).waitUntilConnectionRelease();
         verify(statusHandler).switchToUsing();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
@@ -141,7 +141,7 @@ public final class CommandExecutorTaskTest {
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(statusHandler).waitUntilConnectionReleasedIfNecessary();
+        verify(statusHandler).waitUntilConnectionRelease();
         verify(statusHandler).switchToUsing();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();

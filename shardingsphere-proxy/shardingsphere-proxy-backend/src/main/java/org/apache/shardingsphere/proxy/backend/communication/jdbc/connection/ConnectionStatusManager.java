@@ -47,9 +47,9 @@ public final class ConnectionStatusManager {
     }
     
     /**
-     * Wait until connection is released if necessary.
+     * Wait until connection release.
      */
-    public void waitUntilConnectionReleasedIfNecessary() {
+    public void waitUntilConnectionRelease() {
         while (isUsing) {
             resourceLock.doAwait();
         }
