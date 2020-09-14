@@ -206,7 +206,7 @@ public final class BackendConnectionTest {
             backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
             when(backendDataSource.getConnections(anyString(), anyString(), eq(12), any())).thenReturn(MockConnectionUtil.mockNewConnections(12));
             backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
-            backendConnection.getConnectionStatusManager().switchToUsing();
+            backendConnection.getConnectionStatus().switchToUsing();
             mockResultSetAndStatement(backendConnection);
             actual = backendConnection;
         }

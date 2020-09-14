@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.Stateme
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.status.ConnectionStatusManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -78,7 +77,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private final ResourceLock resourceLock = new ResourceLock();
     
-    private final ConnectionStatusManager connectionStatusManager = new ConnectionStatusManager(resourceLock);
+    private final ConnectionStatus connectionStatus = new ConnectionStatus();
     
     private final TransactionStatus transactionStatus;
     
@@ -92,7 +91,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
      * @param schemaName schema name
      */
     public void setCurrentSchema(final String schemaName) {
-        if (!transactionStatus.waitingForTransactionComplete()) {
+        if (transactionStatus.isInTransaction()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
         this.schemaName = schemaName;
@@ -235,7 +234,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (!transactionStatus.isInTransaction() || forceClose || TransactionType.BASE == transactionStatus.getTransactionType()) {
             exceptions.addAll(releaseConnections(forceClose));
         }
-        connectionStatusManager.switchToReleased();
+        connectionStatus.switchToReleased();
         throwSQLExceptionIfNecessary(exceptions);
     }
     

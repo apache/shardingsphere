@@ -15,12 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.status;
+package org.apache.shardingsphere.transaction.core;
 
-/**
- * Connection status.
- */
-public enum ConnectionStatus {
+import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class TransactionTypeTest {
     
-    USING, RELEASED
+    @Test
+    public void assertIsDistributedTransaction() {
+        assertTrue(TransactionType.isDistributedTransaction(TransactionType.XA));
+        assertTrue(TransactionType.isDistributedTransaction(TransactionType.BASE));
+    }
+    
+    @Test
+    public void assertIsNotDistributedTransaction() {
+        assertFalse(TransactionType.isDistributedTransaction(TransactionType.LOCAL));
+    }
 }

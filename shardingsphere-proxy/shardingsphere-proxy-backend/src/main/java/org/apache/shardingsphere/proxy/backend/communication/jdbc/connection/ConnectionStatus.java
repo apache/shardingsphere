@@ -15,47 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.status;
-
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ResourceLock;
-
-import java.util.concurrent.atomic.AtomicReference;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 /**
- * Connection status manager.
+ * Connection status.
  */
-@RequiredArgsConstructor
-public final class ConnectionStatusManager {
+public final class ConnectionStatus {
     
-    private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.RELEASED);
+    private final ResourceLock resourceLock = new ResourceLock();
     
-    private final ResourceLock resourceLock;
+    private volatile boolean isUsing;
     
     /**
      * Switch connection status to using.
      */
     public void switchToUsing() {
-        status.set(ConnectionStatus.USING);
+        isUsing = true;
     }
     
     /**
      * Switch connection status to released.
      */
     public void switchToReleased() {
-        if (status.compareAndSet(ConnectionStatus.USING, ConnectionStatus.RELEASED)) {
+        if (isUsing) {
             resourceLock.doNotify();
+            isUsing = false;
         }
     }
     
     /**
-     * Wait until connection is released if necessary.
+     * Wait until connection release.
      */
-    public void waitUntilConnectionReleasedIfNecessary() {
-        if (ConnectionStatus.USING == status.get()) {
-            while (!status.compareAndSet(ConnectionStatus.RELEASED, ConnectionStatus.USING)) {
-                resourceLock.doAwait();
-            }
+    public void waitUntilConnectionRelease() {
+        while (isUsing) {
+            resourceLock.doAwait();
         }
     }
 }
