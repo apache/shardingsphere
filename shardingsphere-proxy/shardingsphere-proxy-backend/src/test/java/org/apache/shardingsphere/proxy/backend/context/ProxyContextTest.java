@@ -113,18 +113,15 @@ public final class ProxyContextTest {
         when(schemaContext.getSchema()).thenReturn(shardingSphereSchema);
         when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
         Map<String, SchemaContext> schemaContextsMap = Collections.singletonMap("schema", schemaContext);
-
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
         schemaContexts.set(ProxyContext.getInstance(),
             new StandardSchemaContexts(schemaContextsMap, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
-
         assertThat(null, is(ProxyContext.getInstance().getSchema(null)));
         assertThat(null, is(ProxyContext.getInstance().getSchema("")));
         assertThat(null, is(ProxyContext.getInstance().getSchema("schema1")));
         assertThat(schemaContext, is(ProxyContext.getInstance().getSchema("schema")));
     }
-
 
     @Test
     public void assertGetAllSchemaNames() throws NoSuchFieldException, IllegalAccessException {
@@ -138,7 +135,6 @@ public final class ProxyContextTest {
             assertThat(thatList.get(i), is(ProxyContext.getInstance().getAllSchemaNames().get(i)));
         }
     }
-
 
     private Map<String, SchemaContext> getSchemaContextMap() {
         Map<String, SchemaContext> result = new HashMap<>(10);
