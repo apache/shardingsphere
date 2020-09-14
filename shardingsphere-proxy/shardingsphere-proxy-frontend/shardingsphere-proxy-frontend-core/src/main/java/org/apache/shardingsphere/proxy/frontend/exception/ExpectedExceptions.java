@@ -50,6 +50,6 @@ public final class ExpectedExceptions {
      * @return is expected exception or not
      */
     public static boolean isExpected(final Class<?> exceptionClass) {
-        return EXCEPTIONS.contains(exceptionClass);
+        return EXCEPTIONS.stream().anyMatch(each -> each.isAssignableFrom(exceptionClass));
     }
 }
