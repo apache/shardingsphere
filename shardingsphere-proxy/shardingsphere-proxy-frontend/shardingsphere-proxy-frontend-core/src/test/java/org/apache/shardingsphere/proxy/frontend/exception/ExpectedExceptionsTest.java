@@ -20,10 +20,12 @@ package org.apache.shardingsphere.proxy.frontend.exception;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.proxy.backend.exception.BackendException;
+import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.ShardingCTLException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class ExpectedExceptionsTest {
@@ -35,5 +37,12 @@ public final class ExpectedExceptionsTest {
         assertTrue(ExpectedExceptions.isExpected(SQLParsingException.class));
         assertTrue(ExpectedExceptions.isExpected(ShardingCTLException.class));
         assertTrue(ExpectedExceptions.isExpected(BackendException.class));
+        assertTrue(ExpectedExceptions.isExpected(NoDatabaseSelectedException.class));
+    }
+    
+    @Test
+    public void assertIsNotExpected() {
+        assertFalse(ExpectedExceptions.isExpected(Exception.class));
+        assertFalse(ExpectedExceptions.isExpected(IllegalArgumentException.class));
     }
 }
