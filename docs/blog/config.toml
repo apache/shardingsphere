@@ -17,14 +17,11 @@ title = "ShardingSphere - 博客"
 weight = 2
 languageName = "中文"
 
-
-[params]
-  # Change default color scheme with a variant one. Can be "red", "blue", "green".
-  themeVariant = "black"
-  # Disable search function. It will hide search bar
-  disableSearch = true
-  enableLangChange = true
-
+# Change default color scheme with a variant one. Can be "red", "blue", "green".
+themeVariant = "black"
+# Disable search function. It will hide search bar
+disableSearch = true
+editURL = "https://github.com/apache/shardingsphere/tree/master/docs/blog/content"
 
 [markup]
 [markup.tableOfContents]
@@ -35,7 +32,6 @@ startLevel = 2
 [markup.goldmark]
 [markup.goldmark.renderer]
 unsafe = true
-
 
 [menu]
 [[Languages.en.menu.main]]
@@ -53,3 +49,4 @@ unsafe = true
 [[Languages.cn.menu.main]]
   name = "视频"
   url = "/cn/videos/"
+  
