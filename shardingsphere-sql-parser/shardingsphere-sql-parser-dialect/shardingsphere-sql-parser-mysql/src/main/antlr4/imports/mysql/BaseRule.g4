@@ -381,7 +381,7 @@ simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
-    | identifier JSON_SEPARATOR STRING_
+    | identifier (JSON_SEPARATOR | JSON_UNQUOTED_SEPARATOR) STRING_
     | matchExpression_
     | caseExpression
     | intervalExpression
