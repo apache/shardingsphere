@@ -32,4 +32,7 @@
     <sql-case id="set_timezone_for_local_scope" value="SET TIME ZONE LOCAL" db-types="PostgreSQL" />
     <sql-case id="set_timezone_for_session_scope" value="SET SESSION TIME ZONE 3.5" db-types="PostgreSQL" />
     <sql-case id="set_timezone_for_local_scope_with_double_value" value="SET LOCAL TIME ZONE 3.5" db-types="PostgreSQL" />
+    <sql-case id="set_parameter_equal_boolean" value="SET extra_float_digits = true" db-types="PostgreSQL" />
+    <sql-case id="set_parameter_equal_list" value="SET extra_float_digits = 1,2,3" db-types="PostgreSQL" />
+    <sql-case id="set_parameter_equal_number_with_signal" value="SET extra_float_digits = -10.5" db-types="PostgreSQL" />
 </sql-cases>
