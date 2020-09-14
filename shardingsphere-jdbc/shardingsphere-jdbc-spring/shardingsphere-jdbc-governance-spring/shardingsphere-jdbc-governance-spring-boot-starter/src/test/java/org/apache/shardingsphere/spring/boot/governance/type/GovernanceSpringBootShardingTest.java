@@ -74,9 +74,10 @@ public class GovernanceSpringBootShardingTest {
     public void assertWithShardingSphereDataSourceNames() {
         SchemaContexts schemaContexts = getFieldValue("schemaContexts", GovernanceShardingSphereDataSource.class, dataSource);
         ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
-        assertThat(shardingRule.getDataSourceNames().size(), is(2));
+        assertThat(shardingRule.getDataSourceNames().size(), is(3));
         assertTrue(shardingRule.getDataSourceNames().contains("ds_0"));
         assertTrue(shardingRule.getDataSourceNames().contains("ds_1"));
+        assertTrue(shardingRule.getDataSourceNames().contains("ds"));
     }
     
     @Test
