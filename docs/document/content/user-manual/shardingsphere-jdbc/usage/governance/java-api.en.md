@@ -44,7 +44,7 @@ configurationMap.put("governance-shardingsphere-data-source", configuration);
 
 // Create GovernanceShardingSphereDataSource
 DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(
-        createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(),
+        createDataSourceMap(), createShardingRuleConfig(), new Properties(),
         new GovernanceConfiguration("shardingsphere-governance", configurationMap, true));
 ```
 
