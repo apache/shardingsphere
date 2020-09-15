@@ -108,16 +108,16 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
         private static boolean available;
     
         private static RegistryRepository getInstance() {
-            RegistryRepository registryRepository = null;
+            RegistryRepository result = null;
             YamlGovernanceConfiguration resumeBreakPoint = ScalingContext.getInstance().getServerConfiguration().getResumeBreakPoint();
             if (resumeBreakPoint != null) {
-                registryRepository = createRegistryRepository(new GovernanceConfigurationYamlSwapper().swapToObject(resumeBreakPoint));
+                result = createRegistryRepository(new GovernanceConfigurationYamlSwapper().swapToObject(resumeBreakPoint));
             }
-            if (registryRepository != null) {
+            if (result != null) {
                 log.info("zookeeper resume from break-point manager is available.");
                 available = true;
             }
-            return registryRepository;
+            return result;
         }
     
         private static RegistryRepository createRegistryRepository(final GovernanceConfiguration config) {

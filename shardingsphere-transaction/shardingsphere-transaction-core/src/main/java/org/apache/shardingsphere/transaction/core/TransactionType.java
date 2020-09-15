@@ -22,5 +22,15 @@ package org.apache.shardingsphere.transaction.core;
  */
 public enum TransactionType {
     
-    LOCAL, XA, BASE
+    LOCAL, XA, BASE;
+    
+    /**
+     * Judge whether distributed transaction.
+     * 
+     * @param transactionType transaction type
+     * @return is distributed transaction or not
+     */
+    public static boolean isDistributedTransaction(final TransactionType transactionType) {
+        return XA == transactionType || BASE == transactionType;
+    }
 }

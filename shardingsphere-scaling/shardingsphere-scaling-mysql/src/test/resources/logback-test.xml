@@ -22,6 +22,7 @@
             <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+    <logger name="com.zaxxer.hikari" level="warn" />
     
     <root>
         <level value="info" />

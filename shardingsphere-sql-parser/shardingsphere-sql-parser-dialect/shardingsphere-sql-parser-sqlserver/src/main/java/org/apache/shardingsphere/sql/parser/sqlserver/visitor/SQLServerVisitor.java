@@ -55,16 +55,19 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Sch
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SimpleExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SpecialFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.StringLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.util.predicate.PredicateBuildUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -76,11 +79,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateBetweenRightValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateCompareRightValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateInRightValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
@@ -99,7 +97,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.Par
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -244,111 +241,125 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         if (null != ctx.booleanPrimary()) {
             return visit(ctx.booleanPrimary());
         }
-        if (null != ctx.logicalOperator()) {
-            return new PredicateBuildUtils(visit(ctx.expr(0)), visit(ctx.expr(1)), ctx.logicalOperator().getText()).mergePredicate();
+        if (null != ctx.LP_()) {
+            return visit(ctx.expr(0));
         }
-        // TODO deal with XOR
-        return visit(ctx.expr().get(0));
+        if (null != ctx.logicalOperator()) {
+            BinaryOperationExpression result = new BinaryOperationExpression();
+            result.setStartIndex(ctx.start.getStartIndex());
+            result.setStopIndex(ctx.stop.getStopIndex());
+            result.setLeft((ExpressionSegment) visit(ctx.expr(0)));
+            result.setRight((ExpressionSegment) visit(ctx.expr(1)));
+            result.setOperator(ctx.logicalOperator().getText());
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            result.setText(text);
+            return result;
+        }
+        NotExpression result = new NotExpression();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        result.setExpression((ExpressionSegment) visit(ctx.expr(0)));
+        return result;
     }
     
     @Override
     public final ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
+        if (null != ctx.IS()) {
+            BinaryOperationExpression result = new BinaryOperationExpression();
+            result.setStartIndex(ctx.start.getStartIndex());
+            result.setStopIndex(ctx.stop.getStopIndex());
+            result.setLeft((ExpressionSegment) visit(ctx.booleanPrimary()));
+            result.setRight(new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), new Interval(ctx.IS().getSymbol().getStopIndex() + 1,
+                    ctx.stop.getStopIndex())));
+            result.setOperator("IS");
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            result.setText(text);
+            return result;
+        }
         if (null != ctx.comparisonOperator() || null != ctx.SAFE_EQ_()) {
             return createCompareSegment(ctx);
         }
-        if (null != ctx.predicate()) {
-            return visit(ctx.predicate());
-        }
-        if (null != ctx.subquery()) {
-            return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()));
-        }
-        //TODO deal with IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return visit(ctx.predicate());
     }
     
     private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
-        ASTNode leftValue = visit(ctx.booleanPrimary());
-        if (!(leftValue instanceof ColumnSegment)) {
-            return leftValue;
+        BinaryOperationExpression result = new BinaryOperationExpression();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        result.setLeft((ExpressionSegment) visit(ctx.booleanPrimary()));
+        if (null != ctx.predicate()) {
+            result.setRight((ExpressionSegment) visit(ctx.predicate()));
+        } else {
+            result.setRight((ExpressionSegment) visit(ctx.subquery()));
         }
-        PredicateRightValue rightValue = (PredicateRightValue) createPredicateRightValue(ctx);
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnSegment) leftValue, rightValue);
-    }
-    
-    private ASTNode createPredicateRightValue(final BooleanPrimaryContext ctx) {
-        if (null != ctx.subquery()) {
-            new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()));
-        }
-        ASTNode rightValue = visit(ctx.predicate());
-        return createPredicateRightValue(ctx, rightValue);
-    }
-    
-    private ASTNode createPredicateRightValue(final BooleanPrimaryContext ctx, final ASTNode rightValue) {
-        if (rightValue instanceof ColumnSegment) {
-            return rightValue;
-        }
-        return rightValue instanceof SubquerySegment ? new PredicateCompareRightValue(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), ctx.comparisonOperator().getText(),
-                new SubqueryExpressionSegment((SubquerySegment) rightValue))
-                : new PredicateCompareRightValue(ctx.predicate().start.getStartIndex(), ctx.predicate().stop.getStopIndex(), ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue);
+        String operator = null != ctx.SAFE_EQ_() ? ctx.SAFE_EQ_().getText() : ctx.comparisonOperator().getText();
+        result.setOperator(operator);
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        result.setText(text);
+        return result;
     }
     
     @Override
     public final ASTNode visitPredicate(final PredicateContext ctx) {
-        if (null != ctx.IN() && null == ctx.NOT()) {
+        if (null != ctx.IN()) {
             return createInSegment(ctx);
         }
-        if (null != ctx.BETWEEN() && null == ctx.NOT()) {
+        if (null != ctx.BETWEEN()) {
             return createBetweenSegment(ctx);
         }
-        if (1 == ctx.children.size()) {
-            return visit(ctx.bitExpr(0));
+        if (null != ctx.LIKE()) {
+            return createBinaryOperationExpressionFromLike(ctx);
         }
-        return visitRemainPredicate(ctx);
+        return visit(ctx.bitExpr(0));
     }
     
-    private PredicateSegment createInSegment(final PredicateContext ctx) {
-        ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
-        PredicateInRightValue predicateInRightValue = null != ctx.subquery() ? new PredicateInRightValue(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(),
-                getExpressionSegments(ctx))
-                : new PredicateInRightValue(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), getExpressionSegments(ctx));
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, predicateInRightValue);
-    }
-    
-    private Collection<ExpressionSegment> getExpressionSegments(final PredicateContext ctx) {
-        Collection<ExpressionSegment> result = new LinkedList<>();
-        if (null != ctx.subquery()) {
-            SubqueryContext subquery = ctx.subquery();
-            result.add(new SubqueryExpressionSegment(new SubquerySegment(subquery.getStart().getStartIndex(), subquery.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()))));
-            return result;
+    private BinaryOperationExpression createBinaryOperationExpressionFromLike(final PredicateContext ctx) {
+        BinaryOperationExpression result = new BinaryOperationExpression();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        result.setLeft((ExpressionSegment) visit(ctx.bitExpr(0)));
+        ListExpression listExpression = new ListExpression();
+        for (SimpleExprContext each : ctx.simpleExpr()) {
+            listExpression.getItems().add((ExpressionSegment) visit(each));
         }
-        for (ExprContext each : ctx.expr()) {
-            result.add((ExpressionSegment) visit(each));
-        }
+        result.setRight(listExpression);
+        String operator;
+        operator = null != ctx.NOT() ? "NOT LIKE" : "LIKE";
+        result.setOperator(operator);
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        result.setText(text);
         return result;
     }
     
-    private PredicateSegment createBetweenSegment(final PredicateContext ctx) {
-        ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
-        ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
-        ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between.getStartIndex(), and.getStopIndex(), between, and));
+    private InExpression createInSegment(final PredicateContext ctx) {
+        InExpression result = new InExpression();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        result.setLeft((ExpressionSegment) visit(ctx.bitExpr(0)));
+        if (null != ctx.subquery()) {
+            result.setRight(new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()))));
+        } else {
+            ListExpression listExpression = new ListExpression();
+            listExpression.setStartIndex(ctx.LP_().getSymbol().getStartIndex());
+            listExpression.setStopIndex(ctx.RP_().getSymbol().getStopIndex());
+            for (ExprContext each : ctx.expr()) {
+                listExpression.getItems().add((ExpressionSegment) visit(each));
+            }
+            result.setRight(listExpression);
+        }
+        boolean operator = null != ctx.NOT() ? true : false;
+        result.setNot(operator);
+        return result;
     }
     
-    private ASTNode visitRemainPredicate(final PredicateContext ctx) {
-        for (BitExprContext each : ctx.bitExpr()) {
-            visit(each);
-        }
-        for (ExprContext each : ctx.expr()) {
-            visit(each);
-        }
-        for (SimpleExprContext each : ctx.simpleExpr()) {
-            visit(each);
-        }
-        if (null != ctx.predicate()) {
-            visit(ctx.predicate());
-        }
-        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+    private BetweenExpression createBetweenSegment(final PredicateContext ctx) {
+        BetweenExpression result = new BetweenExpression();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        result.setLeft((ExpressionSegment) visit(ctx.bitExpr(0)));
+        result.setBetweenExpr((ExpressionSegment) visit(ctx.bitExpr(1)));
+        result.setAndExpr((ExpressionSegment) visit(ctx.predicate()));
+        return result;
     }
     
     @Override
@@ -356,9 +367,15 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         if (null != ctx.simpleExpr()) {
             return createExpressionSegment(visit(ctx.simpleExpr()), ctx);
         }
-        visitRemainBitExpr(ctx);
+        BinaryOperationExpression result = new BinaryOperationExpression();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        result.setLeft((ExpressionSegment) visit(ctx.getChild(0)));
+        result.setRight((ExpressionSegment) visit(ctx.getChild(2)));
+        result.setOperator(ctx.getChild(1).getText());
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+        result.setText(text);
+        return result;
     }
     
     private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
@@ -383,10 +400,6 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         return astNode;
     }
     
-    private void visitRemainBitExpr(final BitExprContext ctx) {
-        ctx.bitExpr().forEach(this::visit);
-    }
-    
     @Override
     public final ASTNode visitSimpleExpr(final SimpleExprContext ctx) {
         if (null != ctx.subquery()) {
@@ -404,7 +417,23 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         if (null != ctx.columnName()) {
             return visit(ctx.columnName());
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return visitRemainSimpleExpr(ctx);
+    }
+    
+    private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx) {
+        if (null != ctx.caseExpression()) {
+            visit(ctx.caseExpression());
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            return new OtherLiteralValue(text);
+        }
+        for (ExprContext each : ctx.expr()) {
+            visit(each);
+        }
+        for (SimpleExprContext each : ctx.simpleExpr()) {
+            visit(each);
+        }
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
     @Override

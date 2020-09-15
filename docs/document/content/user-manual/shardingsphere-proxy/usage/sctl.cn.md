@@ -20,4 +20,4 @@ SCTL (ShardingSphere Control Language) 为 ShardingSphere 特有的控制语句�
 |sctl:hint show status                    | 针对当前连接，查询 hint 状态，master_only:true/false，sharding_type:databases_only/databases_tables |
 |sctl:hint show table status              | 针对当前连接，查询逻辑表的 hint 分片值                                                               |
 
-ShardingSphere-Proxy 默认不支持 hint，如需支持，请在 `conf/server.yaml` 中，将 `properties` 的属性 `proxy.hint.enabled` 设置为 true。
+ShardingSphere-Proxy 默认不支持 hint，如需支持，请在 `conf/server.yaml` 中，将 `properties` 的属性 `proxy-hint-enabled` 设置为 true。

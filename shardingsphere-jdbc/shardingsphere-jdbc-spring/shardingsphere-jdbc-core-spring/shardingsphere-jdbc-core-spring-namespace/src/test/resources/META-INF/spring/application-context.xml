@@ -84,8 +84,8 @@
     
     <shardingsphere:data-source id="dataSource" data-source-names="ds_0_master,ds_0_slave_0,ds_0_slave_1,ds_1_master,ds_1_slave_0,ds_1_slave_1" rule-refs="shardingRule, masterSlaveRule, encryptRule">
         <props>
-            <prop key="sql.show">false</prop>
-            <prop key="executor.size">${executor.size}</prop>
+            <prop key="sql-show">false</prop>
+            <prop key="executor-size">${executor-size}</prop>
         </props>
     </shardingsphere:data-source>
     

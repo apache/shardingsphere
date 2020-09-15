@@ -22,6 +22,9 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.Paren;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
@@ -56,6 +59,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * SQL utility class.
@@ -131,6 +136,38 @@ public final class SQLUtil {
         }
         while (Paren.PARENTHESES.getLeftParen() == value.charAt(result)) {
             result++;
+        }
+        return result;
+    }
+    
+    /**
+     * Get subquery from tableSegment.
+     *
+     * @param tableSegment TableSegment.
+     * @return exactly SubqueryTableSegment list.
+     */
+    public static List<SubqueryTableSegment> getSubqueryTableSegmentFromTableSegment(final TableSegment tableSegment) {
+        List<SubqueryTableSegment> result = new LinkedList<>();
+        if (tableSegment instanceof SubqueryTableSegment) {
+            result.add((SubqueryTableSegment) tableSegment);
+        }
+        if (tableSegment instanceof JoinTableSegment) {
+            result.addAll(getSubqueryTableSegmentFromJoinTableSegment((JoinTableSegment) tableSegment));
+        }
+        return result;
+    }
+    
+    private static List<SubqueryTableSegment> getSubqueryTableSegmentFromJoinTableSegment(final JoinTableSegment joinTableSegment) {
+        List<SubqueryTableSegment> result = new LinkedList<>();
+        if (joinTableSegment.getLeft() instanceof SubqueryTableSegment) {
+            result.add((SubqueryTableSegment) joinTableSegment.getLeft());
+        } else if (joinTableSegment.getLeft() instanceof JoinTableSegment) {
+            result.addAll(getSubqueryTableSegmentFromJoinTableSegment((JoinTableSegment) joinTableSegment.getLeft()));
+        }
+        if (joinTableSegment.getRight() instanceof SubqueryTableSegment) {
+            result.add((SubqueryTableSegment) joinTableSegment.getRight());
+        } else if (joinTableSegment.getRight() instanceof JoinTableSegment) {
+            result.addAll(getSubqueryTableSegmentFromJoinTableSegment((JoinTableSegment) joinTableSegment.getRight()));
         }
         return result;
     }

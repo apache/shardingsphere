@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -88,8 +89,7 @@ public final class BackendConnectionTest {
     private void setSchemaContexts() {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(),
-                new StandardSchemaContexts(createSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        field.set(ProxyContext.getInstance(), new StandardSchemaContexts(createSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private Map<String, SchemaContext> createSchemaContextMap() {
@@ -128,44 +128,44 @@ public final class BackendConnectionTest {
     
     @Test
     public void assertGetConnectionCacheIsEmpty() throws SQLException {
-        backendConnection.getStatusHandler().switchInTransactionStatus();
+        backendConnection.getTransactionStatus().setInTransaction(true);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(2));
         assertThat(backendConnection.getConnectionSize(), is(2));
-        assertTrue(backendConnection.getStatusHandler().isInTransaction());
+        assertTrue(backendConnection.getTransactionStatus().isInTransaction());
     }
     
     @Test
     public void assertGetConnectionSizeLessThanCache() throws SQLException {
-        backendConnection.getStatusHandler().switchInTransactionStatus();
+        backendConnection.getTransactionStatus().setInTransaction(true);
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(2));
         assertThat(backendConnection.getConnectionSize(), is(10));
-        assertTrue(backendConnection.getStatusHandler().isInTransaction());
+        assertTrue(backendConnection.getTransactionStatus().isInTransaction());
     }
     
     @Test
     public void assertGetConnectionSizeGreaterThanCache() throws SQLException {
-        backendConnection.getStatusHandler().switchInTransactionStatus();
+        backendConnection.getTransactionStatus().setInTransaction(true);
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(12));
         assertThat(backendConnection.getConnectionSize(), is(12));
-        assertTrue(backendConnection.getStatusHandler().isInTransaction());
+        assertTrue(backendConnection.getTransactionStatus().isInTransaction());
     }
     
     @Test
     public void assertGetConnectionWithMethodInvocation() throws SQLException {
-        backendConnection.getStatusHandler().switchInTransactionStatus();
+        backendConnection.getTransactionStatus().setInTransaction(true);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
         setMethodInvocation();
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
         verify(backendConnection.getMethodInvocations().iterator().next(), times(2)).invoke(any());
         assertThat(actualConnections.size(), is(2));
-        assertTrue(backendConnection.getStatusHandler().isInTransaction());
+        assertTrue(backendConnection.getTransactionStatus().isInTransaction());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -192,11 +192,11 @@ public final class BackendConnectionTest {
     
     @SneakyThrows
     private void assertOneThreadResult() {
-        backendConnection.getStatusHandler().switchInTransactionStatus();
+        backendConnection.getTransactionStatus().setInTransaction(true);
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(12));
         assertThat(backendConnection.getConnectionSize(), is(12));
-        assertTrue(backendConnection.getStatusHandler().isInTransaction());
+        assertTrue(backendConnection.getTransactionStatus().isInTransaction());
     }
     
     @Test
@@ -206,7 +206,7 @@ public final class BackendConnectionTest {
             backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
             when(backendDataSource.getConnections(anyString(), anyString(), eq(12), any())).thenReturn(MockConnectionUtil.mockNewConnections(12));
             backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
-            backendConnection.getStatusHandler().switchRunningStatusIfNecessary();
+            backendConnection.getConnectionStatus().switchToUsing();
             mockResultSetAndStatement(backendConnection);
             actual = backendConnection;
         }
@@ -223,7 +223,7 @@ public final class BackendConnectionTest {
             backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
             when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
-            backendConnection.getStatusHandler().switchInTransactionStatus();
+            backendConnection.getTransactionStatus().setInTransaction(true);
             backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
             mockResultSetAndStatement(backendConnection);
             actual = backendConnection;
@@ -239,11 +239,11 @@ public final class BackendConnectionTest {
         BackendConnection actual = null;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
             backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-            backendConnection.setTransactionType(TransactionType.XA);
-            backendConnection.getStatusHandler().switchInTransactionStatus();
+            backendConnection.getTransactionStatus().setTransactionType(TransactionType.XA);
+            backendConnection.getTransactionStatus().setInTransaction(true);
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
             backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
-            backendConnection.getStatusHandler().switchReadyStatus();
+            backendConnection.getTransactionStatus().setInTransaction(false);
             mockResultSetAndStatement(backendConnection);
             mockResultSetAndStatementException(backendConnection);
             actual = backendConnection;
@@ -277,7 +277,7 @@ public final class BackendConnectionTest {
     public void assertFailedSwitchTransactionTypeWhileBegin() {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
-        backendConnection.setTransactionType(TransactionType.XA);
+        backendConnection.getTransactionStatus().setTransactionType(TransactionType.XA);
     }
     
     @Test(expected = ShardingSphereException.class)

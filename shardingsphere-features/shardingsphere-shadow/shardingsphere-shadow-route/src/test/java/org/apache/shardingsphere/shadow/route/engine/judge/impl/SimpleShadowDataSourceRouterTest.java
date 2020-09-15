@@ -25,17 +25,20 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -62,8 +65,31 @@ public final class SimpleShadowDataSourceRouterTest {
     }
     
     @Test
-    public void judgeForInsert() {
-        InsertStatement insertStatement = new InsertStatement();
+    public void judgeForMySQLInsert() {
+        judgeForInsert(new MySQLInsertStatement());
+    }
+    
+    @Test
+    public void judgeForOracleInsert() {
+        judgeForInsert(new OracleInsertStatement());
+    }
+    
+    @Test
+    public void judgeForPostgreSQLInsert() {
+        judgeForInsert(new PostgreSQLInsertStatement());
+    }
+    
+    @Test
+    public void judgeForSQL92Insert() {
+        judgeForInsert(new SQL92InsertStatement());
+    }
+    
+    @Test
+    public void judgeForSQLServerInsert() {
+        judgeForInsert(new SQLServerInsertStatement());
+    }
+    
+    private void judgeForInsert(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0,
                 Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("shadow"))));
@@ -83,12 +109,12 @@ public final class SimpleShadowDataSourceRouterTest {
     
     @Test
     public void judgeForWhereSegment() {
+        BinaryOperationExpression expression = new BinaryOperationExpression();
+        expression.setLeft(new ColumnSegment(0, 0, new IdentifierValue("shadow")));
+        expression.setRight(new LiteralExpressionSegment(0, 0, true));
+        expression.setOperator("=");
+        WhereSegment whereSegment = new WhereSegment(0, 0, expression);
         SelectStatement selectStatement = new SelectStatement();
-        WhereSegment whereSegment = new WhereSegment(0, 0);
-        AndPredicate andPredicate = new AndPredicate();
-        andPredicate.getPredicates().addAll(Collections.singletonList(
-                new PredicateSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("shadow")), new PredicateCompareRightValue(0, 0, "=", new LiteralExpressionSegment(0, 0, true)))));
-        whereSegment.getAndPredicates().addAll(Collections.singletonList(andPredicate));
         selectStatement.setWhere(whereSegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.setDistinctRow(true);
@@ -97,9 +123,8 @@ public final class SimpleShadowDataSourceRouterTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(schemaMetaData, Collections.emptyList(), selectStatement);
         SimpleShadowDataSourceJudgeEngine simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, selectStatementContext);
         assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadow());
-        andPredicate.getPredicates().clear();
-        andPredicate.getPredicates().addAll(Collections.singletonList(
-                new PredicateSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("shadow")), new PredicateCompareRightValue(0, 0, "=", new LiteralExpressionSegment(0, 0, false)))));
+        expression.setLeft(new ColumnSegment(0, 0, new IdentifierValue("shadow")));
+        expression.setRight(new LiteralExpressionSegment(0, 0, false));
         projectionsSegment.getProjections().clear();
         projectionsSegment.getProjections().addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "false")));
         assertFalse("should not be shadow", simpleShadowDataSourceRouter.isShadow());

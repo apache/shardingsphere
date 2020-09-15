@@ -34,8 +34,8 @@
     
     <governance:data-source id="encryptDataSourceGovernance" data-source-names="dbtbl_0" rule-refs="encryptRule" reg-center-ref="regCenter">
         <props>
-            <prop key="sql.show">${sql_show}</prop>
-            <prop key="query.with.cipher.column">false</prop>
+            <prop key="sql-show">${sql_show}</prop>
+            <prop key="query-with-cipher-column">false</prop>
         </props>
     </governance:data-source>
 </beans>

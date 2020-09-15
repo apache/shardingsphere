@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Create view statement.
  */
-public final class CreateViewStatement extends AbstractSQLStatement implements DDLStatement {
+public abstract class CreateViewStatement extends AbstractSQLStatement {
 }

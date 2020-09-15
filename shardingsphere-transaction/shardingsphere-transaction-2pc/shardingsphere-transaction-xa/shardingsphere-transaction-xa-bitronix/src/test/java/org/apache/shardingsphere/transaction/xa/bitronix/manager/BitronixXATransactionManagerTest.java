@@ -17,20 +17,8 @@
 
 package org.apache.shardingsphere.transaction.xa.bitronix.manager;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.resource.ResourceRegistrar;
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
-import javax.transaction.Transaction;
-import javax.transaction.xa.XAResource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.bitronix.manager.fixture.ReflectiveUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
@@ -40,8 +28,21 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
+import javax.transaction.Transaction;
+import javax.transaction.xa.XAResource;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
-public class BitronixXATransactionManagerTest {
+public final class BitronixXATransactionManagerTest {
     
     private final BitronixXATransactionManager bitronixXATransactionManager = new BitronixXATransactionManager();
     

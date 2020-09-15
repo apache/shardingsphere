@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -30,16 +30,13 @@ import java.util.LinkedList;
 /**
  * Create table statement.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CreateTableStatement extends AbstractSQLStatement implements DDLStatement {
+@Setter
+public abstract class CreateTableStatement extends AbstractSQLStatement {
     
-    private final SimpleTableSegment table;
-    
-    private final boolean isNotExisted;
+    private SimpleTableSegment table;
     
     private final Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
     
     private final Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
-    
 }

@@ -25,6 +25,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateIndexStatement;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -38,9 +42,27 @@ import static org.mockito.Mockito.mock;
 public final class CreateIndexStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @Test
-    public void refreshMetaData() throws SQLException {
+    public void refreshMySQLCreateIndexMetaData() throws SQLException {
+        refreshMetaData(new MySQLCreateIndexStatement());
+    }
+    
+    @Test
+    public void refreshOracleCreateIndexMetaData() throws SQLException {
+        refreshMetaData(new OracleCreateIndexStatement());
+    }
+    
+    @Test
+    public void refreshPostgreSQLCreateIndexMetaData() throws SQLException {
+        refreshMetaData(new PostgreSQLCreateIndexStatement());
+    }
+    
+    @Test
+    public void refreshSQLServerCreateIndexMetaData() throws SQLException {
+        refreshMetaData(new SQLServerCreateIndexStatement());
+    }
+    
+    private void refreshMetaData(final CreateIndexStatement createIndexStatement) throws SQLException {
         MetaDataRefreshStrategy<CreateIndexStatementContext> metaDataRefreshStrategy = new CreateIndexStatementMetaDataRefreshStrategy();
-        CreateIndexStatement createIndexStatement = new CreateIndexStatement();
         createIndexStatement.setIndex(new IndexSegment(1, 2, new IdentifierValue("t_order_index")));
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         CreateIndexStatementContext createIndexStatementContext = new CreateIndexStatementContext(createIndexStatement);
@@ -49,9 +71,27 @@ public final class CreateIndexStatementMetaDataRefreshStrategyTest extends Abstr
     }
     
     @Test
-    public void refreshMetaDataIfIndexIsNull() throws SQLException {
+    public void refreshMySQLCreateIndexMetaDataIfIndexIsNull() throws SQLException {
+        refreshMetaDataIfIndexIsNull(new MySQLCreateIndexStatement());
+    }
+    
+    @Test
+    public void refreshOracleCreateIndexMetaDataIfIndexIsNull() throws SQLException {
+        refreshMetaDataIfIndexIsNull(new OracleCreateIndexStatement());
+    }
+    
+    @Test
+    public void refreshPostgreSQLCreateIndexMetaDataIfIndexIsNull() throws SQLException {
+        refreshMetaDataIfIndexIsNull(new PostgreSQLCreateIndexStatement());
+    }
+    
+    @Test
+    public void refreshSQLServerCreateIndexMetaDataIfIndexIsNull() throws SQLException {
+        refreshMetaDataIfIndexIsNull(new SQLServerCreateIndexStatement());
+    }
+    
+    private void refreshMetaDataIfIndexIsNull(final CreateIndexStatement createIndexStatement) throws SQLException {
         MetaDataRefreshStrategy<CreateIndexStatementContext> metaDataRefreshStrategy = new CreateIndexStatementMetaDataRefreshStrategy();
-        CreateIndexStatement createIndexStatement = new CreateIndexStatement();
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         CreateIndexStatementContext createIndexStatementContext = new CreateIndexStatementContext(createIndexStatement);
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createIndexStatementContext, tableName -> Optional.empty());

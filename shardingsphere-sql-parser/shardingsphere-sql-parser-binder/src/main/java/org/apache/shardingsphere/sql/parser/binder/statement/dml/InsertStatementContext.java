@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.TableExtractUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -160,6 +161,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getTables();
+        TableExtractUtils utils = new TableExtractUtils();
+        utils.extractTablesFromInsert(getSqlStatement());
+        return utils.getRewriteTables();
     }
 }

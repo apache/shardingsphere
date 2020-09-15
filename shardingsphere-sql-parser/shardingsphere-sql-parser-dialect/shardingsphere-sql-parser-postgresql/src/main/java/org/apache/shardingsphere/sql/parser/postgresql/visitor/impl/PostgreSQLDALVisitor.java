@@ -66,18 +66,15 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         VariableSegment variable = new VariableSegment();
-        variable.setStartIndex(ctx.identifier(0).start.getStartIndex());
-        variable.setStopIndex(ctx.identifier(0).stop.getStopIndex());
-        variable.setVariable(ctx.identifier(0).getText());
+        variable.setStartIndex(ctx.varName().start.getStartIndex());
+        variable.setStopIndex(ctx.varName().stop.getStopIndex());
+        variable.setVariable(ctx.varName().getText());
         result.setVariable(variable);
-        if (null != ctx.identifier(1)) {
-            result.setAssignValue(ctx.identifier(1).getText());
+        if (null != ctx.varList()) {
+            result.setAssignValue(ctx.varList().getText());
         }
         if (null != ctx.DEFAULT()) {
             result.setAssignValue(ctx.DEFAULT().getText());
-        }
-        if (null != ctx.STRING_()) {
-            result.setAssignValue(ctx.STRING_().getText());
         }
         return result;
     }

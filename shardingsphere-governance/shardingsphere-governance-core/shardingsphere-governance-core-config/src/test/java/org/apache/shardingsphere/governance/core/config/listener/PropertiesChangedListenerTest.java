@@ -22,6 +22,7 @@ import org.apache.shardingsphere.governance.core.event.props.PropertiesChangedEv
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class PropertiesChangedListenerTest {
     
-    private static final String PROPERTIES_YAML = "executor.size: 16\nsql.show: true";
+    private static final String PROPERTIES_YAML = ConfigurationPropertyKey.ACCEPTOR_SIZE.getKey() + ": 16\n" + ConfigurationPropertyKey.SQL_SHOW.getKey() + ": true";
     
     private PropertiesChangedListener propertiesChangedListener;
     
@@ -53,6 +54,7 @@ public final class PropertiesChangedListenerTest {
     public void assertCreateGovernanceEvent() {
         Optional<GovernanceEvent> actual = propertiesChangedListener.createGovernanceEvent(new DataChangedEvent("test", PROPERTIES_YAML, ChangedType.UPDATED));
         assertTrue(actual.isPresent());
-        assertThat(((PropertiesChangedEvent) actual.get()).getProps().get("sql.show"), is(true));
+        assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
+        assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.ACCEPTOR_SIZE.getKey()), is(16));
     }
 }

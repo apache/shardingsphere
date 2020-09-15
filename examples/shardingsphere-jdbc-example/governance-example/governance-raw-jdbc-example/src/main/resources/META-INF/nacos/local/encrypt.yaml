@@ -37,8 +37,8 @@ rules:
         aes-key-value: 123456
 
 props:
-  query.with.cipher.column: true
-  sql.show: false
+  query-with-cipher-column: true
+  sql-show: false
 
 governance:
   name: demo_zookeeper_yaml_ds_encrypt

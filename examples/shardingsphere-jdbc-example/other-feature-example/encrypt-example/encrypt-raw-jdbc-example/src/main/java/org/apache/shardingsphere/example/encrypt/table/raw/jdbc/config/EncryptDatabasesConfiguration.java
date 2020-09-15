@@ -39,7 +39,7 @@ public final class EncryptDatabasesConfiguration implements ExampleConfiguration
     public DataSource getDataSource() {
         Properties props = new Properties();
         props.setProperty("aes-key-value", "123456");
-        props.setProperty("query.with.cipher.column", "true");
+        props.setProperty("query-with-cipher-column", "true");
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name", "user_name", "", "user_name_plain", "name_encryptor");
         EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor");
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));

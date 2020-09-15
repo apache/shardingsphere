@@ -31,7 +31,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public final class DropIndexStatement extends AbstractSQLStatement implements DDLStatement {
+public abstract class DropIndexStatement extends AbstractSQLStatement {
     
     private final Collection<IndexSegment> indexes = new LinkedList<>();
     

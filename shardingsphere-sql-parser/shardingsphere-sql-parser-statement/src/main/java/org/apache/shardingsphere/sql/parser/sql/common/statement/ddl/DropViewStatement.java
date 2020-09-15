@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop view statement.
  */
-public final class DropViewStatement extends AbstractSQLStatement implements DDLStatement {
+public abstract class DropViewStatement extends AbstractSQLStatement {
 }

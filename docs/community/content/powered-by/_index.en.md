@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 ## Who are using ShardingSphere?
 
-Total: 146 companies.
+Total: 147 companies.
 
 ### Financial Industry
 <ul>
@@ -35,6 +35,7 @@ Total: 146 companies.
     <li><a href="https://www.kjtpay.com/" rel="nofollow">KJT pay</a></li>
     <li><a href="https://www.ktjr.com/" rel="nofollow">KTJR</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">TANSUN</a></li>
+    <li><a href="https://www.360jinrong.net/" rel="nofollow">360jinrong</a></li>
 </ul>
 
 ### E-commerce

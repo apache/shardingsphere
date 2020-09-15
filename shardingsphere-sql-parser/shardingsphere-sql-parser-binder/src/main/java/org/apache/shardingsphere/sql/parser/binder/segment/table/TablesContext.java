@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.binder.segment.table;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
@@ -27,13 +26,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Tables context.
  */
-@RequiredArgsConstructor
 @ToString
 @Getter
 public final class TablesContext {
@@ -42,6 +43,18 @@ public final class TablesContext {
     
     public TablesContext(final SimpleTableSegment tableSegment) {
         this(null == tableSegment ? Collections.emptyList() : Collections.singletonList(tableSegment));
+    }
+    
+    public TablesContext(final Collection<SimpleTableSegment> tableSegments) {
+        Map<String, SimpleTableSegment> tableMaps = new HashMap<>(1, 1);
+        Collection<SimpleTableSegment> actualTables = new LinkedList<>();
+        for (SimpleTableSegment each : tableSegments) {
+            if (!tableMaps.containsKey(each.getTableName().getIdentifier().getValue())) {
+                tableMaps.put(each.getTableName().getIdentifier().getValue(), each);
+                actualTables.add(each);
+            }
+        }
+        this.tables = actualTables;
     }
     
     /**

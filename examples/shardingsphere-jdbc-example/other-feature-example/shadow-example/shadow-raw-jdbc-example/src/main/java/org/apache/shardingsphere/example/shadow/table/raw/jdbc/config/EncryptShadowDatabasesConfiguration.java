@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 import javax.sql.DataSource;
@@ -46,8 +47,8 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("shadow_demo_ds"));
         EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(getEncryptTableRuleConfigurations(), getEncryptAlgorithmConfigurations());
         Properties props = new Properties();
-        props.setProperty("sql.show", "true");
-        props.setProperty("query.with.cipher.column", "true");
+        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
+        props.setProperty(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN.getKey(), "true");
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonMap("ds", "ds_0"));
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, encryptRuleConfiguration), props);
     }

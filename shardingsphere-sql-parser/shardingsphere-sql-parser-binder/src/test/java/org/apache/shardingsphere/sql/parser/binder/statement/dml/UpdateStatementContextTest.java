@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.binder.statement.dml;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -32,7 +31,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -48,28 +48,29 @@ public final class UpdateStatementContextTest {
     private WhereSegment whereSegment;
     
     @Mock
-    private AndPredicate andPredicate;
-    
-    @Mock
-    private PredicateSegment predicateSegment;
-    
-    @Mock
     private ColumnSegment columnSegment;
     
     @Test
     public void assertNewInstance() {
         when(columnSegment.getOwner()).thenReturn(Optional.of(new OwnerSegment(0, 0, new IdentifierValue("tbl_2"))));
-        when(predicateSegment.getColumn()).thenReturn(columnSegment);
-        when(andPredicate.getPredicates()).thenReturn(Collections.singletonList(predicateSegment));
-        when(whereSegment.getAndPredicates()).thenReturn(Lists.newLinkedList(Arrays.asList(andPredicate)));
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(0, 0, new IdentifierValue("tbl_1"));
+        BinaryOperationExpression expression = new BinaryOperationExpression();
+        expression.setLeft(columnSegment);
+        when(whereSegment.getExpr()).thenReturn(expression);
+        SimpleTableSegment table1 = new SimpleTableSegment(0, 0, new IdentifierValue("tbl_1"));
+        SimpleTableSegment table2 = new SimpleTableSegment(0, 0, new IdentifierValue("tbl_2"));
+        List<SimpleTableSegment> tables = new LinkedList<>();
+        tables.add(table1);
+        tables.add(table2);
+        JoinTableSegment joinTableSegment = new JoinTableSegment();
+        joinTableSegment.setLeft(table1);
+        joinTableSegment.setRight(table2);
         UpdateStatement updateStatement = new UpdateStatement();
         updateStatement.setWhere(whereSegment);
-        updateStatement.getTables().add(simpleTableSegment);
+        updateStatement.setTableSegment(joinTableSegment);
         UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
         assertTrue(actual.toString().startsWith(String.format("%s(super", UpdateStatementContext.class.getSimpleName())));
-        assertThat(actual.getTablesContext().getTables(), is(Collections.singletonList(simpleTableSegment)));
+        assertThat(actual.getTablesContext().getTables().stream().map(a -> a.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
         assertThat(actual.getWhere(), is(Optional.of(whereSegment)));
-        assertThat(actual.getAllTables().stream().map(a -> a.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
+        assertThat(actual.getAllTables().stream().map(a -> a.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2", "tbl_2")));
     }
 }

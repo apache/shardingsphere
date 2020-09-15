@@ -21,7 +21,9 @@ import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.SchemaContext;
+import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -40,6 +42,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedSh
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +61,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -69,13 +73,9 @@ public final class ShardingCTLHintBackendHandlerTest {
     
     @Before
     public void setUp() {
-        when(backendConnection.isSupportHint()).thenReturn(true);
-    }
-    
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertNotSupportHint() {
-        when(backendConnection.isSupportHint()).thenReturn(false);
-        new ShardingCTLHintBackendHandler("", backendConnection).execute();
+        SchemaContexts schemaContexts = mock(SchemaContexts.class, RETURNS_DEEP_STUBS);
+        when(schemaContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(true);
+        ProxyContext.getInstance().init(schemaContexts, mock(TransactionContexts.class));
     }
     
     @Test(expected = InvalidShardingCTLFormatException.class)
@@ -172,8 +172,10 @@ public final class ShardingCTLHintBackendHandlerTest {
         when(backendConnection.getSchemaName()).thenReturn("schema");
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString());
         schemaContexts.set(ProxyContext.getInstance(),
-                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(props), new MySQLDatabaseType()));
         String sql = "sctl:hint show table status";
         ShardingCTLHintBackendHandler defaultShardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         BackendResponse backendResponse = defaultShardingCTLHintBackendHandler.execute();
