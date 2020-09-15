@@ -53,7 +53,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Backend connection.
  */
 @Getter
-public final class BackendConnection implements JDBCExecutionConnection, AutoCloseable {
+public final class BackendConnection implements JDBCExecutionConnection {
     
     static {
         ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
@@ -221,17 +221,16 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         cachedResultSets.add(resultSet);
     }
     
-    @Override
-    public synchronized void close() throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
+    public synchronized Collection<SQLException> close() {
+        Collection<SQLException> result = new LinkedList<>();
         MasterVisitedManager.clear();
-        exceptions.addAll(closeResultSets());
-        exceptions.addAll(closeStatements());
+        result.addAll(closeResultSets());
+        result.addAll(closeStatements());
         if (!transactionStatus.isInTransaction() || TransactionType.BASE == transactionStatus.getTransactionType()) {
-            exceptions.addAll(closeConnections(false));
+            result.addAll(closeConnections(false));
         }
         connectionStatus.switchToReleased();
-        throwSQLExceptionIfNecessary(exceptions);
+        return result;
     }
     
     /**
@@ -292,16 +291,5 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         methodInvocations.clear();
         connectionStatus.switchToReleased();
         return result;
-    }
-    
-    private void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
-        if (exceptions.isEmpty()) {
-            return;
-        }
-        SQLException ex = new SQLException("");
-        for (SQLException each : exceptions) {
-            ex.setNextException(each);
-        }
-        throw ex;
     }
 }
