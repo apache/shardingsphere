@@ -88,7 +88,7 @@ public final class CommandExecutorTask implements Runnable {
             if (!isInConnectionHeldTransaction) {
                 exceptions.addAll(backendConnection.closeConnections(false));
             }
-            processClosedExceptions(backendConnection.close());
+            processClosedExceptions(exceptions);
             rootInvokeHook.finish(connectionSize);
         }
     }

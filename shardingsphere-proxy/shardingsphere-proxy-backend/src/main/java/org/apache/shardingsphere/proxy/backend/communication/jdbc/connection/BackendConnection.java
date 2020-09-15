@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JD
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
-import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -219,18 +218,6 @@ public final class BackendConnection implements JDBCExecutionConnection {
      */
     public void add(final ResultSet resultSet) {
         cachedResultSets.add(resultSet);
-    }
-    
-    public synchronized Collection<SQLException> close() {
-        Collection<SQLException> result = new LinkedList<>();
-        MasterVisitedManager.clear();
-        result.addAll(closeResultSets());
-        result.addAll(closeStatements());
-        if (!transactionStatus.isInTransaction() || TransactionType.BASE == transactionStatus.getTransactionType()) {
-            result.addAll(closeConnections(false));
-        }
-        connectionStatus.switchToReleased();
-        return result;
     }
     
     /**
