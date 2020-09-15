@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dd
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
  */
 @Getter
 @Setter
-public final class PostgreSQLCreateTableStatement extends CreateTableStatement implements DDLStatement, PostgreSQLStatement {
+public final class PostgreSQLCreateTableStatement extends CreateTableStatement implements PostgreSQLStatement {
 
     private boolean isNotExisted;
 }

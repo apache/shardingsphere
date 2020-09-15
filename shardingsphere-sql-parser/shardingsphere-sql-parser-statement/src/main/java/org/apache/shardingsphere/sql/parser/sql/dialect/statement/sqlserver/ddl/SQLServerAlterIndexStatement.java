@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer alter index statement.
  */
-public final class SQLServerAlterIndexStatement extends AlterIndexStatement implements DDLStatement, SQLServerStatement {
+public final class SQLServerAlterIndexStatement extends AlterIndexStatement implements SQLServerStatement {
 }

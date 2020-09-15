@@ -34,7 +34,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public abstract class AlterTableStatement extends AbstractSQLStatement {
+public abstract class AlterTableStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SimpleTableSegment table;
     

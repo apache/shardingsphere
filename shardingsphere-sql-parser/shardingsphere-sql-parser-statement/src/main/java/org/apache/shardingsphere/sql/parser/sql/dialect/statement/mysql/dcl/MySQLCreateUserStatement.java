@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL create user statement.
  */
-public final class MySQLCreateUserStatement extends CreateUserStatement implements DCLStatement, MySQLStatement {
+public final class MySQLCreateUserStatement extends CreateUserStatement implements MySQLStatement {
 }

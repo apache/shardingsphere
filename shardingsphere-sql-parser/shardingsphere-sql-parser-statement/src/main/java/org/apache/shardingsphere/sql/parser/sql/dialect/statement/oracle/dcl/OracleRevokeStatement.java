@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle revoke statement.
  */
-public final class OracleRevokeStatement extends RevokeStatement implements DCLStatement, OracleStatement {
+public final class OracleRevokeStatement extends RevokeStatement implements OracleStatement {
 }

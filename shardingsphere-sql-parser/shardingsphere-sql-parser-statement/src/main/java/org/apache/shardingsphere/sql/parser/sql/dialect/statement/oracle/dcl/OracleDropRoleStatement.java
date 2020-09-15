@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle drop role statement.
  */
-public final class OracleDropRoleStatement extends DropRoleStatement implements DCLStatement, OracleStatement {
+public final class OracleDropRoleStatement extends DropRoleStatement implements OracleStatement {
 }

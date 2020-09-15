@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Create procedure statement.
  */
-public abstract class CreateProcedureStatement extends AbstractSQLStatement {
+public abstract class CreateProcedureStatement extends AbstractSQLStatement implements DDLStatement {
 }

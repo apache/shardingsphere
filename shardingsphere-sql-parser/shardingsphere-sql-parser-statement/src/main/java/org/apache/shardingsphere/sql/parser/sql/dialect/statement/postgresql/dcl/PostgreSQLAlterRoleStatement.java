@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL alter role statement.
  */
-public final class PostgreSQLAlterRoleStatement extends AlterRoleStatement implements DCLStatement, PostgreSQLStatement {
+public final class PostgreSQLAlterRoleStatement extends AlterRoleStatement implements PostgreSQLStatement {
 }
