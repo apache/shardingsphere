@@ -82,10 +82,4 @@ public final class ShowTablesMergedResultTest {
         LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), schemaMetaData, Collections.singletonList(createQueryResult("table_0")));
         assertTrue(actual.next());
     }
-    
-    @Test
-    public void assertNextForActualTableNameNotInTableRule() throws SQLException {
-        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), schemaMetaData, Collections.singletonList(createQueryResult("table_3")));
-        assertFalse(actual.next());
-    }
 }
