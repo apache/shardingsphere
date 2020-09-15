@@ -25,5 +25,5 @@ import lombok.Setter;
 public final class MethodInvocationFixture {
     
     private Integer id;
-    
 }
+
