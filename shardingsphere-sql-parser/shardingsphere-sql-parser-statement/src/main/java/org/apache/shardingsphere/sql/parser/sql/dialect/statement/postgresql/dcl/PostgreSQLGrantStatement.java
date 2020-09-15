@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL grant statement.
  */
-public final class PostgreSQLGrantStatement extends GrantStatement implements DCLStatement, PostgreSQLStatement {
+public final class PostgreSQLGrantStatement extends GrantStatement implements PostgreSQLStatement {
 }

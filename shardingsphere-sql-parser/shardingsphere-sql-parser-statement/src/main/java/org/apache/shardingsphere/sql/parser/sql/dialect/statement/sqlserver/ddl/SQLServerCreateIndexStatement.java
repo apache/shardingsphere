@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer create index statement.
  */
-public final class SQLServerCreateIndexStatement extends CreateIndexStatement implements DDLStatement, SQLServerStatement {
+public final class SQLServerCreateIndexStatement extends CreateIndexStatement implements SQLServerStatement {
 }

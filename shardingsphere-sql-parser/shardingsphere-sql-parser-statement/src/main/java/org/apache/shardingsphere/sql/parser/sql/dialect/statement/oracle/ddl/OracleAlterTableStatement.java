@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle alter table statement.
  */
-public final class OracleAlterTableStatement extends AlterTableStatement implements DDLStatement, OracleStatement {
+public final class OracleAlterTableStatement extends AlterTableStatement implements OracleStatement {
 }

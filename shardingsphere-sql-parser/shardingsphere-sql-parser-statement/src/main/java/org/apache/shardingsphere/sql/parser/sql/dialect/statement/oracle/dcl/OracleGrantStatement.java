@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle grant statement.
  */
-public final class OracleGrantStatement extends GrantStatement implements DCLStatement, OracleStatement {
+public final class OracleGrantStatement extends GrantStatement implements OracleStatement {
 }

@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL analyze table statement.
  */
-public final class PostgreSQLAnalyzeTableStatement extends AnalyzeTableStatement implements DALStatement, PostgreSQLStatement {
+public final class PostgreSQLAnalyzeTableStatement extends AnalyzeTableStatement implements PostgreSQLStatement {
 }

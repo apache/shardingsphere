@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL revoke statement.
  */
-public final class PostgreSQLRevokeStatement extends RevokeStatement implements DCLStatement, PostgreSQLStatement {
+public final class PostgreSQLRevokeStatement extends RevokeStatement implements PostgreSQLStatement {
 }

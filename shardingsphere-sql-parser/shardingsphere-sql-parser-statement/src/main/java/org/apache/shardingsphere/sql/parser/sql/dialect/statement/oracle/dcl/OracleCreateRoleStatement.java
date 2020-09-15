@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle create role statement.
  */
-public final class OracleCreateRoleStatement extends CreateRoleStatement implements DCLStatement, OracleStatement {
+public final class OracleCreateRoleStatement extends CreateRoleStatement implements OracleStatement {
 }

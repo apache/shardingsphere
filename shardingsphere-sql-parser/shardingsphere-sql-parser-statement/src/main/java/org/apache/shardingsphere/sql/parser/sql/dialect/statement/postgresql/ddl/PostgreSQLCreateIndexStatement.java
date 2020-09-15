@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL create index statement.
  */
-public final class PostgreSQLCreateIndexStatement extends CreateIndexStatement implements DDLStatement, PostgreSQLStatement {
+public final class PostgreSQLCreateIndexStatement extends CreateIndexStatement implements PostgreSQLStatement {
 }

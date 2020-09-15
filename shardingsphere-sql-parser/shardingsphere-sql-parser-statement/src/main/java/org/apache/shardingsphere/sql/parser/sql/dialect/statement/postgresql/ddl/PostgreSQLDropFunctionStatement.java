@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL drop function statement.
  */
-public final class PostgreSQLDropFunctionStatement extends DropFunctionStatement implements DDLStatement, PostgreSQLStatement {
+public final class PostgreSQLDropFunctionStatement extends DropFunctionStatement implements PostgreSQLStatement {
 }

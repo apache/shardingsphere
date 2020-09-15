@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL drop view statement.
  */
-public final class MySQLDropViewStatement extends DropViewStatement implements DDLStatement, MySQLStatement {
+public final class MySQLDropViewStatement extends DropViewStatement implements MySQLStatement {
 }

@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL create procedure statement.
  */
-public final class PostgreSQLCreateProcedureStatement extends CreateProcedureStatement implements DDLStatement, PostgreSQLStatement {
+public final class PostgreSQLCreateProcedureStatement extends CreateProcedureStatement implements PostgreSQLStatement {
 }

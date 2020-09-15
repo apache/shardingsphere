@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL truncate table statement.
  */
-public final class MySQLTruncateStatement extends TruncateStatement implements DDLStatement, MySQLStatement {
+public final class MySQLTruncateStatement extends TruncateStatement implements MySQLStatement {
 }
