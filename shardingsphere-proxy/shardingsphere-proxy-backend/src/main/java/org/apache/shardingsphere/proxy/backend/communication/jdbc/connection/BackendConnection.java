@@ -216,26 +216,26 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     @Override
-    public void close() throws SQLException {
-        close(false);
-    }
-    
-    /**
-     * Close cached connection.
-     *
-     * @param forceClose force close flag
-     * @throws SQLException SQL exception
-     */
-    public synchronized void close(final boolean forceClose) throws SQLException {
+    public synchronized void close() throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
         MasterVisitedManager.clear();
         exceptions.addAll(closeResultSets());
         exceptions.addAll(closeStatements());
-        if (!transactionStatus.isInTransaction() || forceClose || TransactionType.BASE == transactionStatus.getTransactionType()) {
-            exceptions.addAll(releaseConnections(forceClose));
+        if (!transactionStatus.isInTransaction() || TransactionType.BASE == transactionStatus.getTransactionType()) {
+            exceptions.addAll(releaseConnections(false));
         }
         connectionStatus.switchToReleased();
         throwSQLExceptionIfNecessary(exceptions);
+    }
+    
+    /**
+     * Release all resources.
+     */
+    public synchronized void releaseAllResources() {
+        MasterVisitedManager.clear();
+        closeResultSets();
+        closeStatements();
+        releaseConnections(true);
     }
     
     private Collection<SQLException> closeResultSets() {
@@ -284,6 +284,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         }
         cachedConnections.clear();
         methodInvocations.clear();
+        connectionStatus.switchToReleased();
         return result;
     }
     
