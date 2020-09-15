@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 import java.util.Optional;
 
@@ -37,6 +38,8 @@ public final class DerivedProjection implements Projection {
     private final String expression;
     
     private final String alias;
+    
+    private final SQLSegment realProjection;
     
     @Override
     public Optional<String> getAlias() {

@@ -93,7 +93,7 @@ public final class ProjectionsContextEngine {
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderItems) {
             if (!containsProjection(projections, each.getSegment(), tables)) {
-                result.add(new DerivedProjection(((TextOrderByItemSegment) each.getSegment()).getText(), derivedColumn.getDerivedColumnAlias(derivedColumnOffset++)));
+                result.add(new DerivedProjection(((TextOrderByItemSegment) each.getSegment()).getText(), derivedColumn.getDerivedColumnAlias(derivedColumnOffset++), each.getSegment()));
             }
         }
         return result;

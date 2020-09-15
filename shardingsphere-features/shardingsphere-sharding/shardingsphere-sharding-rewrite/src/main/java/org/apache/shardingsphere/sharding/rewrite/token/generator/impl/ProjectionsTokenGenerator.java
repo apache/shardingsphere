@@ -18,6 +18,12 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import com.google.common.base.Preconditions;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ProjectionsToken;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
@@ -26,16 +32,26 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.imp
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.TableExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Projections token generator.
  */
-public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
+public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute, RouteContextAware {
+    
+    @Setter
+    private RouteContext routeContext;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -44,17 +60,26 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     
     @Override
     public ProjectionsToken generateSQLToken(final SelectStatementContext selectStatementContext) {
-        Collection<String> derivedProjectionTexts = getDerivedProjectionTexts(selectStatementContext);
+        Map<RouteUnit, Collection<String>> derivedProjectionTexts = getDerivedProjectionTexts(selectStatementContext);
         return new ProjectionsToken(selectStatementContext.getProjectionsContext().getStopIndex() + 1 + " ".length(), derivedProjectionTexts);
     }
     
-    private Collection<String> getDerivedProjectionTexts(final SelectStatementContext selectStatementContext) {
-        Collection<String> result = new LinkedList<>();
-        for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
-            if (each instanceof AggregationProjection && !((AggregationProjection) each).getDerivedAggregationProjections().isEmpty()) {
-                result.addAll(((AggregationProjection) each).getDerivedAggregationProjections().stream().map(this::getDerivedProjectionText).collect(Collectors.toList()));
-            } else if (each instanceof DerivedProjection) {
-                result.add(getDerivedProjectionText(each));
+    private Map<RouteUnit, Collection<String>> getDerivedProjectionTexts(final SelectStatementContext selectStatementContext) {
+        Map<RouteUnit, Collection<String>> result = new HashMap<>();
+        for (RouteUnit routeUnit : routeContext.getRouteResult().getRouteUnits()) {
+            result.put(routeUnit, new LinkedList<>());
+            for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
+                if (each instanceof AggregationProjection && !((AggregationProjection) each).getDerivedAggregationProjections().isEmpty()) {
+                    result.get(routeUnit).addAll(((AggregationProjection) each).getDerivedAggregationProjections().stream().map(this::getDerivedProjectionText).collect(Collectors.toList()));
+                } else if (each instanceof DerivedProjection) {
+                    if (!(((DerivedProjection) each).getRealProjection() instanceof ColumnOrderByItemSegment)) {
+                        result.get(routeUnit).add(getDerivedProjectionText(each));
+                        continue;
+                    }
+                    TableExtractUtils utils = new TableExtractUtils();
+                    utils.extractTablesFromSelect(selectStatementContext.getSqlStatement());
+                    result.get(routeUnit).add(getDerivedProjectionTextFromColumnOrderByItemSegment((DerivedProjection) each, utils, routeUnit));
+                }
             }
         }
         return result;
@@ -66,5 +91,37 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
             return ((AggregationDistinctProjection) projection).getDistinctInnerExpression() + " AS " + projection.getAlias().get() + " ";
         }
         return projection.getExpression() + " AS " + projection.getAlias().get() + " ";
+    }
+    
+    private String getDerivedProjectionTextFromColumnOrderByItemSegment(final DerivedProjection projection, final TableExtractUtils utils, final RouteUnit routeUnit) {
+        Preconditions.checkState(projection.getAlias().isPresent());
+        Preconditions.checkState(projection.getRealProjection() instanceof ColumnOrderByItemSegment);
+        ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) projection.getRealProjection();
+    
+        if (columnOrderByItemSegment.getColumn().getOwner().isPresent()) {
+            OwnerSegment ownerSegment = columnOrderByItemSegment.getColumn().getOwner().get();
+            if (!(utils.needRewrite(ownerSegment))) {
+                return projection.getExpression() + " AS " + projection.getAlias().get() + " ";
+            }
+            Optional<String> actualTableName = getActualTables(routeUnit, ownerSegment.getIdentifier().getValue());
+            Preconditions.checkState(actualTableName.isPresent());
+            ColumnSegment newColumnSegment = new ColumnSegment(0, 0, columnOrderByItemSegment.getColumn().getIdentifier());
+            IdentifierValue newOwnerIdentifier = new IdentifierValue(ownerSegment.getIdentifier().getQuoteCharacter().getStartDelimiter()
+                    + actualTableName.get() + ownerSegment.getIdentifier().getQuoteCharacter().getEndDelimiter());
+            OwnerSegment newOwner = new OwnerSegment(0, 0, newOwnerIdentifier);
+            newColumnSegment.setOwner(newOwner);
+            ColumnOrderByItemSegment newColumnOrderByItem = new ColumnOrderByItemSegment(newColumnSegment, columnOrderByItemSegment.getOrderDirection());
+            return newColumnOrderByItem.getText() + " AS " + projection.getAlias().get() + " ";
+        }
+        return projection.getExpression() + " AS " + projection.getAlias().get() + " ";
+    }
+    
+    private Optional<String> getActualTables(final RouteUnit routeUnit, final String logicalTableName) {
+        for (RouteMapper each : routeUnit.getTableMappers()) {
+            if (each.getLogicName().equalsIgnoreCase(logicalTableName)) {
+                return Optional.of(each.getActualName());
+            }
+        }
+        return Optional.empty();
     }
 }

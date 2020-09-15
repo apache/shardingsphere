@@ -198,7 +198,12 @@ public final class TableExtractUtils {
         }
     }
     
-    private boolean needRewrite(final OwnerSegment owner) {
+    /**
+     * Check if the table needs to be overwritten.
+     * @param owner OwnerSegment.
+     * @return boolean.
+     */
+    public boolean needRewrite(final OwnerSegment owner) {
         for (TableSegment each : tableContext) {
             if (owner.getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
                 return false;
