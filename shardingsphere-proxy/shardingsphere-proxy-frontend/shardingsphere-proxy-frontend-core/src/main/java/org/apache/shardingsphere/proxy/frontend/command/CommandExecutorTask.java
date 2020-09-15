@@ -65,12 +65,11 @@ public final class CommandExecutorTask implements Runnable {
     public void run() {
         RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
         rootInvokeHook.start();
-        boolean isInConnectionHeldTransaction = backendConnection.getTransactionStatus().isInConnectionHeldTransaction();
         boolean isNeedFlush = false;
         int connectionSize = 0;
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message)) {
             ConnectionStatus connectionStatus = backendConnection.getConnectionStatus();
-            if (!isInConnectionHeldTransaction) {
+            if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
                 connectionStatus.waitUntilConnectionRelease();
                 connectionStatus.switchToUsing();
             }
@@ -85,7 +84,7 @@ public final class CommandExecutorTask implements Runnable {
                 context.flush();
             }
             Collection<SQLException> exceptions = closeExecutionResources();
-            if (!isInConnectionHeldTransaction) {
+            if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
                 exceptions.addAll(backendConnection.closeConnections(false));
             }
             processClosedExceptions(exceptions);
