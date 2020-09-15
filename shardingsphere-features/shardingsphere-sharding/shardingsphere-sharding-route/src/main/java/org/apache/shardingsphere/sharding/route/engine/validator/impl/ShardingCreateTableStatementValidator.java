@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsExce
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
@@ -46,9 +45,9 @@ public final class ShardingCreateTableStatementValidator implements ShardingStat
     }
     
     @Override
-    public void postValidate(final SQLStatement sqlStatement, final RouteResult routeResult) {
+    public void postValidate(final CreateTableStatement sqlStatement, final RouteResult routeResult) {
     }
-
+    
     private boolean containsNotExistClause(final CreateTableStatement sqlStatement) {
         return (sqlStatement instanceof MySQLStatement && ((MySQLCreateTableStatement) sqlStatement).isNotExisted())
                 || (sqlStatement instanceof PostgreSQLStatement && ((PostgreSQLCreateTableStatement) sqlStatement).isNotExisted());

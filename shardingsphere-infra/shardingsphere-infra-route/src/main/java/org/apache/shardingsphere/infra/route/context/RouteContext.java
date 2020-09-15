@@ -42,8 +42,8 @@ public final class RouteContext {
     private final Map<Class<? extends ShardingSphereRule>, RouteStageContext> routeStageContexts = new LinkedHashMap<>();
     
     public RouteContext(final RouteContext parent, final RouteResult routeResult, final RouteStageContext nextRouteStageContext, final Class<? extends ShardingSphereRule> ruleType) {
-        this(parent.getSqlStatementContext(), parent.getParameters(), routeResult);
-        addBeforeRouteStageContexts(parent.getRouteStageContexts());
+        this(parent.sqlStatementContext, parent.parameters, routeResult);
+        addBeforeRouteStageContexts(parent.routeStageContexts);
         addNextRouteStageContext(ruleType, nextRouteStageContext);
     }
     
@@ -53,7 +53,7 @@ public final class RouteContext {
      * @param beforeRouteStageContexts before route stage contexts
      */
     public void addBeforeRouteStageContexts(final Map<Class<? extends ShardingSphereRule>, RouteStageContext> beforeRouteStageContexts) {
-        getRouteStageContexts().putAll(beforeRouteStageContexts);
+        routeStageContexts.putAll(beforeRouteStageContexts);
     }
     
     /**
@@ -63,7 +63,7 @@ public final class RouteContext {
      * @param nextRouteStageContext next route stage contexts
      */
     public void addNextRouteStageContext(final Class<? extends ShardingSphereRule> ruleType, final RouteStageContext nextRouteStageContext) {
-        getRouteStageContexts().put(ruleType, nextRouteStageContext);
+        routeStageContexts.put(ruleType, nextRouteStageContext);
     }
     
     /**
@@ -73,6 +73,6 @@ public final class RouteContext {
      * @return route stage context
      */
     public RouteStageContext getRouteStageContext(final Class<? extends ShardingSphereRule> ruleType) {
-        return getRouteStageContexts().get(ruleType);
+        return routeStageContexts.get(ruleType);
     }
 }
