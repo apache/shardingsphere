@@ -54,4 +54,13 @@ public final class TransactionStatus {
         }
         this.transactionType = transactionType;
     }
+    
+    /**
+     * Judge whether in connection held transaction.
+     * 
+     * @return is in connection held transaction or not
+     */
+    public boolean isInConnectionHeldTransaction() {
+        return inTransaction && TransactionType.BASE != transactionType;
+    }
 }

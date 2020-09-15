@@ -27,6 +27,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -63,28 +65,29 @@ public final class CommandExecutorTask implements Runnable {
     public void run() {
         RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
         rootInvokeHook.start();
-        int connectionSize = 0;
         boolean isNeedFlush = false;
-        try (BackendConnection backendConnection = this.backendConnection;
-             PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message)) {
+        int connectionSize = 0;
+        try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message)) {
             ConnectionStatus connectionStatus = backendConnection.getConnectionStatus();
-            connectionStatus.waitUntilConnectionRelease();
-            connectionStatus.switchToUsing();
+            if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
+                connectionStatus.waitUntilConnectionRelease();
+                connectionStatus.switchToUsing();
+            }
             isNeedFlush = executeCommand(context, payload, backendConnection);
             connectionSize = backendConnection.getConnectionSize();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
-            Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket();
-            databasePacket.ifPresent(context::writeAndFlush);
-            if (!ExpectedExceptions.isExpected(ex.getClass())) {
-                log.error("Exception occur: ", ex);
-            }
+            processException(ex);
         } finally {
             if (isNeedFlush) {
                 context.flush();
             }
+            Collection<SQLException> exceptions = closeExecutionResources();
+            if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
+                exceptions.addAll(backendConnection.closeConnections(false));
+            }
+            processClosedExceptions(exceptions);
             rootInvokeHook.finish(connectionSize);
         }
     }
@@ -104,5 +107,33 @@ public final class CommandExecutorTask implements Runnable {
             return true;
         }
         return databaseProtocolFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();
+    }
+    
+    private void processException(final Exception cause) {
+        context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause));
+        Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket();
+        databasePacket.ifPresent(context::writeAndFlush);
+        if (!ExpectedExceptions.isExpected(cause.getClass())) {
+            log.error("Exception occur: ", cause);
+        }
+    }
+    
+    private Collection<SQLException> closeExecutionResources() {
+        Collection<SQLException> result = new LinkedList<>();
+        MasterVisitedManager.clear();
+        result.addAll(backendConnection.closeResultSets());
+        result.addAll(backendConnection.closeStatements());
+        return result;
+    }
+    
+    private void processClosedExceptions(final Collection<SQLException> exceptions) {
+        if (exceptions.isEmpty()) {
+            return;
+        }
+        SQLException ex = new SQLException("");
+        for (SQLException each : exceptions) {
+            ex.setNextException(each);
+        }
+        processException(ex);
     }
 }
