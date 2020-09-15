@@ -53,6 +53,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -212,5 +213,11 @@ public final class BackendConnectionTest {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
         backendConnection.setCurrentSchema("newSchema");
+    }
+    
+    @Test
+    public void assertIsNotSerialExecuteWhenNotInTransaction() {
+        backendConnection.getTransactionStatus().setInTransaction(false);
+        assertFalse(backendConnection.isSerialExecute());
     }
 }
