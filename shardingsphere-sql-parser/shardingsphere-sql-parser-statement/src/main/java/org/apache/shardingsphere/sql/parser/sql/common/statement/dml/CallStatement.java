@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Call statement.
  */
-public final class CallStatement extends AbstractSQLStatement implements DMLStatement {
+public abstract class CallStatement extends AbstractSQLStatement implements DMLStatement {
 }

@@ -102,9 +102,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLCallStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
@@ -128,12 +128,12 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        return new CallStatement();
+        return new MySQLCallStatement();
     }
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        return new DoStatement();
+        return new MySQLDoStatement();
     }
     
     @Override
@@ -317,7 +317,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement();
+        MySQLDeleteStatement result = new MySQLDeleteStatement();
         if (null != ctx.multipleTablesClause()) {
             result.setTableSegment((TableSegment) visit(ctx.multipleTablesClause()));
         } else {

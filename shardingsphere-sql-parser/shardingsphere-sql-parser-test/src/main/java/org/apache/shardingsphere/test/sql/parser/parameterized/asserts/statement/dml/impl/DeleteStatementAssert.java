@@ -21,6 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.limit.LimitClauseAssert;
@@ -49,8 +51,10 @@ public final class DeleteStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertWhereClause(assertContext, actual, expected);
-        assertOrderByClause(assertContext, actual, expected);
-        assertLimitClause(assertContext, actual, expected);
+        if (actual instanceof MySQLStatement) {
+            assertOrderByClause(assertContext, (MySQLDeleteStatement) actual, expected);
+            assertLimitClause(assertContext, (MySQLDeleteStatement) actual, expected);    
+        }
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
@@ -66,7 +70,7 @@ public final class DeleteStatementAssert {
         }
     }
     
-    private static void assertOrderByClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
+    private static void assertOrderByClause(final SQLCaseAssertContext assertContext, final MySQLDeleteStatement actual, final DeleteStatementTestCase expected) {
         if (null != expected.getOrderByClause()) {
             assertTrue(assertContext.getText("Actual order by segment should exist."), actual.getOrderBy().isPresent());
             OrderByClauseAssert.assertIs(assertContext, actual.getOrderBy().get(), expected.getOrderByClause());
@@ -75,7 +79,7 @@ public final class DeleteStatementAssert {
         }
     }
 
-    private static void assertLimitClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
+    private static void assertLimitClause(final SQLCaseAssertContext assertContext, final MySQLDeleteStatement actual, final DeleteStatementTestCase expected) {
         Optional<LimitSegment> limitSegment = actual.getLimit();
         if (null != expected.getLimitClause()) {
             assertTrue(assertContext.getText("Actual limit segment should exist."), limitSegment.isPresent());
