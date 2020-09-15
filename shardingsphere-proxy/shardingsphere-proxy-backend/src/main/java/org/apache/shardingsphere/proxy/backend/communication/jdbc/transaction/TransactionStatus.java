@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
  * Transaction status.
  */
 @Getter
-@Slf4j
 public final class TransactionStatus {
     
     private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200L;
