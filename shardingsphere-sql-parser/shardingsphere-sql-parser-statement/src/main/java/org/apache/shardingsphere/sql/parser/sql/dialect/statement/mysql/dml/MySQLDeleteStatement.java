@@ -47,9 +47,9 @@ public final class MySQLDeleteStatement extends DeleteStatement implements MySQL
     }
     
     /**
-     * Get order by segment.
+     * Get limit segment.
      *
-     * @return order by segment
+     * @return limit segment
      */
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
