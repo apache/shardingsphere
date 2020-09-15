@@ -32,12 +32,14 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
 
 /**
  * ShardingSphere-Proxy.
  */
+@Slf4j
 public final class ShardingSphereProxy {
     
     private EventLoopGroup bossGroup;
@@ -60,6 +62,7 @@ public final class ShardingSphereProxy {
                 groupsNio(bootstrap);
             }
             ChannelFuture future = bootstrap.bind(port).sync();
+            log.info("ShardingSphere-Proxy start success.");
             future.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();
