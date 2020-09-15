@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Rollback statement.
+ * Oracle set transaction statement.
  */
-public abstract class RollbackStatement extends AbstractSQLStatement implements TCLStatement {
+public final class OracleSetTransactionStatement extends SetTransactionStatement implements OracleStatement {
 }
