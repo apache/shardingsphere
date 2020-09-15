@@ -222,20 +222,20 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         exceptions.addAll(closeResultSets());
         exceptions.addAll(closeStatements());
         if (!transactionStatus.isInTransaction() || TransactionType.BASE == transactionStatus.getTransactionType()) {
-            exceptions.addAll(releaseConnections(false));
+            exceptions.addAll(closeConnections(false));
         }
         connectionStatus.switchToReleased();
         throwSQLExceptionIfNecessary(exceptions);
     }
     
     /**
-     * Release all resources.
+     * Close all resources.
      */
-    public synchronized void releaseAllResources() {
+    public synchronized void closeAllResources() {
         MasterVisitedManager.clear();
         closeResultSets();
         closeStatements();
-        releaseConnections(true);
+        closeConnections(true);
     }
     
     private Collection<SQLException> closeResultSets() {
@@ -265,12 +265,12 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     /**
-     * Release connections.
+     * Close connections.
      * 
      * @param forceRollback is force rollback
      * @return SQL exception when connections release
      */
-    public Collection<SQLException> releaseConnections(final boolean forceRollback) {
+    public Collection<SQLException> closeConnections(final boolean forceRollback) {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
