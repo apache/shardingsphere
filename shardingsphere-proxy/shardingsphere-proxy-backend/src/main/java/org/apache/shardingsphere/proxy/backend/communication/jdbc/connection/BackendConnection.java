@@ -146,6 +146,12 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         return result;
     }
     
+    private void replayMethodsInvocation(final Object target) {
+        for (MethodInvocation each : methodInvocations) {
+            each.invoke(target);
+        }
+    }
+    
     @Override
     public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
         Statement result = connection.createStatement();
@@ -229,16 +235,11 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     /**
-     * Close all resources.
+     * Close result sets.
+     *
+     * @return SQL exception when result sets close
      */
-    public synchronized void closeAllResources() {
-        MasterVisitedManager.clear();
-        closeResultSets();
-        closeStatements();
-        closeConnections(true);
-    }
-    
-    private Collection<SQLException> closeResultSets() {
+    public synchronized Collection<SQLException> closeResultSets() {
         Collection<SQLException> result = new LinkedList<>();
         for (ResultSet each : cachedResultSets) {
             try {
@@ -251,7 +252,12 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         return result;
     }
     
-    private Collection<SQLException> closeStatements() {
+    /**
+     * Close statements.
+     *
+     * @return SQL exception when statements close
+     */
+    public synchronized Collection<SQLException> closeStatements() {
         Collection<SQLException> result = new LinkedList<>();
         for (Statement each : cachedStatements) {
             try {
@@ -268,9 +274,9 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
      * Close connections.
      * 
      * @param forceRollback is force rollback
-     * @return SQL exception when connections release
+     * @return SQL exception when connections close
      */
-    public Collection<SQLException> closeConnections(final boolean forceRollback) {
+    public synchronized Collection<SQLException> closeConnections(final boolean forceRollback) {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
@@ -297,11 +303,5 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
             ex.setNextException(each);
         }
         throw ex;
-    }
-    
-    private void replayMethodsInvocation(final Object target) {
-        for (MethodInvocation each : methodInvocations) {
-            each.invoke(target);
-        }
     }
 }
