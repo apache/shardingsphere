@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.RLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Rollback statement.
+ * MySQL start slave statement.
  */
-public abstract class RollbackStatement extends AbstractSQLStatement implements TCLStatement {
+public final class MySQLStartSlaveStatement extends AbstractSQLStatement implements RLStatement, MySQLStatement {
 }

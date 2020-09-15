@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Rollback statement.
+ * PostgreSQL set transaction statement.
  */
-public abstract class RollbackStatement extends AbstractSQLStatement implements TCLStatement {
+public final class PostgreSQLSetTransactionStatement extends SetTransactionStatement implements PostgreSQLStatement {
 }
