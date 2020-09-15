@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.As
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 
 import java.util.Collection;
@@ -44,7 +43,7 @@ public final class ShardingInsertStatementValidator implements ShardingStatement
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final RouteContext routeContext, final ShardingSphereMetaData metaData) {
-        SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext() && 1 != ((TableAvailable) sqlStatementContext).getTablesContext().getTables().size()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
@@ -64,11 +63,11 @@ public final class ShardingInsertStatementValidator implements ShardingStatement
             throw new ShardingSphereException("The table inserted and the table selected must be the same or bind tables.");
         }
     }
-
+    
     @Override
-    public void postValidate(final SQLStatement sqlStatement, final RouteResult routeResult) {
+    public void postValidate(final InsertStatement sqlStatement, final RouteResult routeResult) {
     }
-
+    
     private boolean isUpdateShardingKey(final ShardingRule shardingRule, final OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment, final String tableName) {
         for (AssignmentSegment each : onDuplicateKeyColumnsSegment.getColumns()) {
             if (shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName)) {

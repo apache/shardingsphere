@@ -57,10 +57,10 @@ import java.util.Optional;
  */
 public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule> {
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ShardingRule shardingRule, final ConfigurationProperties props) {
-        SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         List<Object> parameters = routeContext.getParameters();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         Optional<ShardingStatementValidator> shardingStatementValidator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
@@ -77,8 +77,8 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         return new RouteContext(routeContext, routeResult, new DefaultRouteStageContext(), getTypeClass());
     }
 
-    private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext,
-                                                     final SchemaMetaData schemaMetaData, final ShardingRule shardingRule) {
+    private ShardingConditions getShardingConditions(final List<Object> parameters, 
+                                                     final SQLStatementContext<?> sqlStatementContext, final SchemaMetaData schemaMetaData, final ShardingRule shardingRule) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             if (sqlStatementContext instanceof InsertStatementContext) {
                 return new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule, schemaMetaData).createShardingConditions((InsertStatementContext) sqlStatementContext, parameters));
@@ -88,14 +88,14 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         return new ShardingConditions(Collections.emptyList());
     }
     
-    private boolean isNeedMergeShardingValues(final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
+    private boolean isNeedMergeShardingValues(final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule) {
         boolean selectContainsSubquery = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsSubquery();
         boolean insertSelectContainsSubquery = sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
                 && ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext().isContainsSubquery();
         return (selectContainsSubquery || insertSelectContainsSubquery) && !shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
     }
     
-    private void checkSubqueryShardingValues(final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule, final ShardingConditions shardingConditions) {
+    private void checkSubqueryShardingValues(final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule, final ShardingConditions shardingConditions) {
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent() && isRoutingByHint(shardingRule, tableRule.get())

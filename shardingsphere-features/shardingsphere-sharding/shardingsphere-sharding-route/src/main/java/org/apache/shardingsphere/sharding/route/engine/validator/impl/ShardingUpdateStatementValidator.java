@@ -34,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpr
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.util.List;
@@ -47,7 +46,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final RouteContext routeContext, final ShardingSphereMetaData metaData) {
-        SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         if (1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
@@ -71,8 +70,8 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
     }
 
     @Override
-    public void postValidate(final SQLStatement sqlStatement, final RouteResult routeResult) {
-        if (((UpdateStatement) sqlStatement).getLimit().isPresent() && routeResult.getRouteUnits().size() > 1) {
+    public void postValidate(final UpdateStatement sqlStatement, final RouteResult routeResult) {
+        if (sqlStatement.getLimit().isPresent() && routeResult.getRouteUnits().size() > 1) {
             throw new ShardingSphereException("UPDATE ... LIMIT can not support sharding route to multiple data nodes.");
         }
     }
