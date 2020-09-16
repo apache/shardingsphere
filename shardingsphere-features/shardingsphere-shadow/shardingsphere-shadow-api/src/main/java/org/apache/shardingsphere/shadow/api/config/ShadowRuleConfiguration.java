@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Shadow rule configuration.
@@ -32,12 +32,17 @@ public final class ShadowRuleConfiguration implements RuleConfiguration {
     
     private final String column;
     
-    private final Map<String, String> shadowMappings;
+    private final List<String> sourceDataSourceNames;
     
-    public ShadowRuleConfiguration(final String column, final Map<String, String> shadowMappings) {
+    private final List<String> shadowDataSourceNames;
+    
+    public ShadowRuleConfiguration(final String column, final List<String> sourceDataSourceNames, final List<String> shadowDataSourceNames) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
-        Preconditions.checkArgument(!shadowMappings.isEmpty(), "ShadowMappings is required.");
+        Preconditions.checkArgument(!sourceDataSourceNames.isEmpty(), "SourceDataSourceNames is required.");
+        Preconditions.checkArgument(!shadowDataSourceNames.isEmpty(), "ShadowDataSourceNames is required.");
+        Preconditions.checkArgument(sourceDataSourceNames.size() == shadowDataSourceNames.size(), "SourceDataSourceNames and ShadowDataSourceNames size must same.");
         this.column = column;
-        this.shadowMappings = shadowMappings;
+        this.sourceDataSourceNames = sourceDataSourceNames;
+        this.shadowDataSourceNames = shadowDataSourceNames;
     }
 }

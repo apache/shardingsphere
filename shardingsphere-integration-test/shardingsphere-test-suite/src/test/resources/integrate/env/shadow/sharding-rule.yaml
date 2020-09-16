@@ -18,8 +18,10 @@
 rules:
 - !SHADOW
   column: shadow
-  shadowMappings:
-    db: shadow_db
+  sourceDataSourceNames:
+    - ds
+  shadowDataSourceNames:
+    - shadow_db
 
 - !SHARDING
   tables:

@@ -52,6 +52,6 @@ public final class LocalShadowConfiguration implements ExampleConfiguration {
     }
     
     private ShadowRuleConfiguration getShadowRuleConfiguration() {
-        return new ShadowRuleConfiguration("shadow", Collections.singletonMap("ds", "shadow_ds"));
+        return new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
     }
 }

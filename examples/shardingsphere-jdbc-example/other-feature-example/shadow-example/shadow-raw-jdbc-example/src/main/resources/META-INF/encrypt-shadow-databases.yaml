@@ -30,8 +30,10 @@ dataSources:
 rules:
 - !SHADOW
   column: shadow
-  shadowMappings:
-    ds: ds_0
+  sourceDataSourceNames:
+    - ds
+  shadowDataSourceNames:
+    - ds_0
 
 - !ENCRYPT
   tables:

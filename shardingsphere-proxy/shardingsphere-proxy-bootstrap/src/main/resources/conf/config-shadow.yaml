@@ -48,8 +48,10 @@
 #rules:
 #- !SHADOW
 #  column: shadow
-#  shadowMappings:
-#    ds: shadow_ds
+#  sourceDataSourceNames:
+#   - ds
+#  shadowDataSourceNames:
+#   - ds_0
 #
 #
 ######################################################################################################
@@ -79,5 +81,7 @@
 #rules:
 #- !SHADOW
 #  column: shadow
-#  shadowMappings:
-#    ds: shadow_ds
+#  sourceDataSourceNames:
+#   - ds
+#  shadowDataSourceNames:
+#   - shadow_ds

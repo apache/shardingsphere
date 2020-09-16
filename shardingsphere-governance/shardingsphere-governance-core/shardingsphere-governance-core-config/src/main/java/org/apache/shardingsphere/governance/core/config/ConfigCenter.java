@@ -198,7 +198,8 @@ public final class ConfigCenter {
                 configurations.add(each);
             } else if (each instanceof ShadowRuleConfiguration) {
                 ShadowRuleConfiguration config = (ShadowRuleConfiguration) each;
-                Preconditions.checkState(!config.getColumn().isEmpty() && null != config.getShadowMappings(), "No available shadow rule configuration in `%s` for governance.", schemaName);
+                boolean isShadow = !config.getColumn().isEmpty() && null != config.getSourceDataSourceNames() && null != config.getShadowDataSourceNames();
+                Preconditions.checkState(isShadow, "No available shadow rule configuration in `%s` for governance.", schemaName);
                 configurations.add(each);
             }
         }

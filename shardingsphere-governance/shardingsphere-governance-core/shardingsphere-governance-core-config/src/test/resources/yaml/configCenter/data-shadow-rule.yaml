@@ -18,5 +18,9 @@
 rules:
 - !SHADOW
   column: shadow
-  shadowMappings:
-    ds: shadow_ds
+  sourceDataSourceNames:
+    - ds
+    - ds1
+  shadowDataSourceNames:
+    - shadow_ds
+    - shadow_ds1
