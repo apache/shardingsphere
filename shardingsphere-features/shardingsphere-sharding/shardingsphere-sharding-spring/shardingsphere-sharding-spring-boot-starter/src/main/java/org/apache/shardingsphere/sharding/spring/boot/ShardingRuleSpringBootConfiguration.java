@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.spring.boot.algorithm.KeyGenerateAlgorithmProvidedBeanRegistry;
 import org.apache.shardingsphere.sharding.spring.boot.algorithm.ShardingAlgorithmProvidedBeanRegistry;
 import org.apache.shardingsphere.sharding.spring.boot.condition.ShardingSpringBootCondition;
 import org.apache.shardingsphere.sharding.spring.boot.rule.YamlShardingRuleSpringBootConfiguration;
@@ -80,5 +81,16 @@ public class ShardingRuleSpringBootConfiguration {
     @Bean
     public static ShardingAlgorithmProvidedBeanRegistry shardingAlgorithmProvidedBeanRegistry(final Environment environment) {
         return new ShardingAlgorithmProvidedBeanRegistry(environment);
+    }
+    
+    /**
+     * Create key generator algorithm provided bean registry.
+     *
+     * @param environment environment
+     * @return key generator algorithm provided bean registry
+     */
+    @Bean
+    public static KeyGenerateAlgorithmProvidedBeanRegistry keyGenerateAlgorithmProvidedBeanRegistry(final Environment environment) {
+        return new KeyGenerateAlgorithmProvidedBeanRegistry(environment);
     }
 }
