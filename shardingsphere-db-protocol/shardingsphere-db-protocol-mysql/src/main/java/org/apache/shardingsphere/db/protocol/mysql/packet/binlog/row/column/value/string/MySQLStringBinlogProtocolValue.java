@@ -39,7 +39,7 @@ public final class MySQLStringBinlogProtocolValue implements MySQLBinlogProtocol
             case MYSQL_TYPE_STRING:
                 return payload.readStringFix(payload.getByteBuf().readUnsignedByte());
             default:
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("");
         }
     }
     

@@ -95,7 +95,7 @@ public final class PostgreSQLDataSourceCheckerTest {
     public void assertCheckPrivilegeFailure() throws SQLException {
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString(3)).thenReturn("test");
-        when(connection.prepareStatement("SELECT * FROM test LIMIT 1")).thenThrow(new SQLException());
+        when(connection.prepareStatement("SELECT * FROM test LIMIT 1")).thenThrow(new SQLException(""));
         PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
         dataSourceChecker.checkPrivilege(dataSources);
     }

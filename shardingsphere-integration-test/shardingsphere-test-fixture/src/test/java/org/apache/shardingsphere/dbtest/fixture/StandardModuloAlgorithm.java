@@ -45,7 +45,7 @@ public final class StandardModuloAlgorithm implements StandardShardingAlgorithm<
                 return each;
             }
         }
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("");
     }
     
     @Override

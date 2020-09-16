@@ -19,7 +19,6 @@ package org.apache.shardingsphere.masterslave.spring.boot.algorithm;
 
 import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.env.Environment;
 
@@ -40,7 +39,7 @@ public final class MasterSlaveAlgorithmProvidedBeanRegistry extends AbstractAlgo
     }
     
     @Override
-    public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) throws BeansException {
+    public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) {
         registerBean(MASTER_SLAVE_ALGORITHMS, MasterSlaveLoadBalanceAlgorithm.class, registry);
     }
 }

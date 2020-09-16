@@ -44,7 +44,7 @@ public final class StandardModuloTableShardingAlgorithm implements StandardShard
                 return each;
             }
         }
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("");
     }
     
     @Override

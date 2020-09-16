@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.example.transaction.base.seata.raw.jdbc;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
 /**
  Requirement before running this test:
  1. create undo_log table in demo_ds_0 and demo_ds_1
@@ -28,7 +31,7 @@ package org.apache.shardingsphere.example.transaction.base.seata.raw.jdbc;
  */
 public final class ExampleMain {
     
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) throws IOException, SQLException {
         SeataATOrderService orderService = new SeataATOrderService("/META-INF/sharding-databases-tables.yaml");
         orderService.init();
         orderService.insert();

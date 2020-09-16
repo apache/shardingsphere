@@ -95,7 +95,7 @@ public final class TestDecodingPluginTest {
     @SneakyThrows(SQLException.class)
     public void assertDecodeTime() {
         TimestampUtils timestampUtils = mock(TimestampUtils.class);
-        when(timestampUtils.toTime(eq(null), eq("1 2 3'"))).thenThrow(new SQLException());
+        when(timestampUtils.toTime(eq(null), eq("1 2 3'"))).thenThrow(new SQLException(""));
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[time without time zone]:'1 2 3'''".getBytes());
         new TestDecodingPlugin(timestampUtils).decode(data, logSequenceNumber);
     }

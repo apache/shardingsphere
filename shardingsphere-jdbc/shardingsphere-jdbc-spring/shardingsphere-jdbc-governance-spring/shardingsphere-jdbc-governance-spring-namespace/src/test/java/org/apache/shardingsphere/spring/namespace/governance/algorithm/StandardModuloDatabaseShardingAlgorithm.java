@@ -44,7 +44,7 @@ public final class StandardModuloDatabaseShardingAlgorithm implements StandardSh
                 return each;
             }
         }
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("");
     }
     
     @Override
