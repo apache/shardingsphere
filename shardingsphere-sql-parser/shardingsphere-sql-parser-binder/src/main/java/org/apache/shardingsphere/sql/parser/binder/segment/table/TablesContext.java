@@ -35,8 +35,8 @@ import java.util.Optional;
 /**
  * Tables context.
  */
-@ToString
 @Getter
+@ToString
 public final class TablesContext {
     
     private final Collection<SimpleTableSegment> tables;
@@ -54,7 +54,7 @@ public final class TablesContext {
                 actualTables.add(each);
             }
         }
-        this.tables = actualTables;
+        tables = actualTables;
     }
     
     /**

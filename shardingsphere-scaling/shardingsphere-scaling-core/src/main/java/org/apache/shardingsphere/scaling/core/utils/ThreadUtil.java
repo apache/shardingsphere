@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Thread util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ThreadUtil {
     
     /**
@@ -30,7 +34,7 @@ public final class ThreadUtil {
     public static void sleep(final long millis) {
         try {
             Thread.sleep(millis);
-        } catch (InterruptedException ignored) {
+        } catch (final InterruptedException ignored) {
         }
     }
 }

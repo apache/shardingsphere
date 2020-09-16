@@ -22,7 +22,6 @@ import org.apache.shardingsphere.governance.core.listener.PostGovernanceReposito
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
@@ -44,15 +43,10 @@ public final class DataSourceStateChangedListener extends PostGovernanceReposito
     
     @Override
     protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        Optional<GovernanceSchema> governanceSchema = registryCenterNode.getGovernanceSchema(event.getKey());
-        if (governanceSchema.isPresent()) {
-            return Optional.of(new DisabledStateChangedEvent(governanceSchema.get(), isDataSourceDisabled(event)));
-        }
-        return Optional.empty();
+        return registryCenterNode.getGovernanceSchema(event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, isDataSourceDisabled(event)));
     }
     
     private boolean isDataSourceDisabled(final DataChangedEvent event) {
-        return RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue())
-                && (ChangedType.UPDATED == event.getChangedType() || ChangedType.ADDED == event.getChangedType());
+        return RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue()) && (ChangedType.UPDATED == event.getChangedType() || ChangedType.ADDED == event.getChangedType());
     }
 }

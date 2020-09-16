@@ -53,7 +53,7 @@ public final class ShardingUnicastRoutingEngineTest {
         RouteResult routeResult = unicastRoutingEngine.route(shardingRule);
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
-        assertFalse(routeResult.getRouteUnits().iterator().next().getDataSourceMapper().getLogicName().equalsIgnoreCase("ds2"));
+        assertFalse("ds2".equalsIgnoreCase(routeResult.getRouteUnits().iterator().next().getDataSourceMapper().getLogicName()));
     }
 
     @Test

@@ -53,12 +53,11 @@ public final class DecoratedEncryptColumnsMergedResultTest {
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
         when(mergedResult.wasNull()).thenReturn(false);
-        when(mergedResult.getValue(eq(new Integer(1)), eq(this.getClass()))).thenReturn("test");
-        DecoratedEncryptColumnsMergedResult actual = new DecoratedEncryptColumnsMergedResult(mergedResult,
-                testStatementContext, mock(SchemaMetaData.class));
+        when(mergedResult.getValue(eq(new Integer(1)), eq(getClass()))).thenReturn("test");
+        DecoratedEncryptColumnsMergedResult actual = new DecoratedEncryptColumnsMergedResult(mergedResult, testStatementContext, mock(SchemaMetaData.class));
         assertNotNull(actual);
         assertTrue(actual.nextValue());
         assertFalse(actual.wasNull());
-        assertThat(actual.getOriginalValue(1, this.getClass()), is("test"));
+        assertThat(actual.getOriginalValue(1, getClass()), is("test"));
     }
 }

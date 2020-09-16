@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
  * With clause assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class WithClauseAssert {
+public final class WithClauseAssert {
     
     /**
      * Assert actual with segment is correct with expected with clause.
