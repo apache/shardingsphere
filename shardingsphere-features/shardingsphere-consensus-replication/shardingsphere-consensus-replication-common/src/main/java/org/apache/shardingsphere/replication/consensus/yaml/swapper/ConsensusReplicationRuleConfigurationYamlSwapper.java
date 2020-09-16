@@ -59,7 +59,7 @@ public final class ConsensusReplicationRuleConfigurationYamlSwapper implements Y
     
     @Override
     public String getRuleTagName() {
-        return "REPLICA";
+        return "CONSENSUS_REPLICATION";
     }
     
     @Override
