@@ -15,33 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Statement;
 
 /**
- * Delete statement.
+ * SQL92 delete statement.
  */
-@Getter
-@Setter
-public abstract class DeleteStatement extends AbstractSQLStatement implements DMLStatement {
-    
-    private TableSegment tableSegment;
-    
-    private WhereSegment where;
-    
-    /**
-     * Get where.
-     *
-     * @return where segment
-     */
-    public Optional<WhereSegment> getWhere() {
-        return Optional.ofNullable(where);
-    }
+public final class SQL92DeleteStatement extends DeleteStatement implements SQL92Statement {
 }
