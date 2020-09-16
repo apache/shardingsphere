@@ -51,8 +51,8 @@ public final class PostgreSQLErrPacketFactory {
             }
             return errorResponsePacket;
         }
-        PostgreSQLErrorResponsePacket errorResponsePacket = new PostgreSQLErrorResponsePacket();
-        errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
-        return errorResponsePacket;
+        PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
+        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
+        return result;
     }
 }
