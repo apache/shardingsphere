@@ -22,4 +22,5 @@
     <commit sql-case-id="commitWithComment" />
     <commit sql-case-id="commitForce" />
     <commit sql-case-id="commitPrepare" />
+    <commit sql-case-id="commit_in_pg" />
 </sql-parser-test-cases>
