@@ -21,10 +21,16 @@ import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.junit.Test;
@@ -52,5 +58,42 @@ public final class PreparedShadowDataSourceRouterTest {
         InsertStatementContext insertStatementContext = new InsertStatementContext(schemaMetaData, Arrays.asList(1, "Tom", 2, "Jerry", 3, true), insertStatement);
         PreparedShadowDataSourceJudgeEngine preparedShadowDataSourceRouter = new PreparedShadowDataSourceJudgeEngine(shadowRule, insertStatementContext, Arrays.asList(1, "Tom", true));
         assertTrue("should be shadow", preparedShadowDataSourceRouter.isShadow());
+    }
+    
+    @Test
+    public void isShadowSQLInLiteralExpression() {
+        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
+        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
+        ShadowRule shadowRule = new ShadowRule(shadowRuleConfiguration);
+        
+        PreparedShadowDataSourceJudgeEngine preparedShadowDataSourceRouter = new PreparedShadowDataSourceJudgeEngine(shadowRule, selectStatementContext(), Arrays.asList(1, "Tom", true));
+        assertTrue("should be shadow", preparedShadowDataSourceRouter.isShadow());
+    }
+    
+    private SelectStatementContext selectStatementContext() {
+        BinaryOperationExpression left = new BinaryOperationExpression();
+        left.setLeft(new ColumnSegment(0, 0, new IdentifierValue("id")));
+        left.setRight(new ParameterMarkerExpressionSegment(0, 0, 0));
+        left.setText("id=?");
+        left.setOperator("=");
+        
+        BinaryOperationExpression right = new BinaryOperationExpression();
+        right.setLeft(new ColumnSegment(0, 0, new IdentifierValue("shadow")));
+        right.setRight(new LiteralExpressionSegment(45, 48, "true"));
+        right.setText("shadow=true");
+        right.setOperator("=");
+        
+        BinaryOperationExpression binaryOperationExpression = new BinaryOperationExpression();
+        binaryOperationExpression.setLeft(left);
+        binaryOperationExpression.setRight(right);
+        binaryOperationExpression.setOperator("and");
+        binaryOperationExpression.setText("id=? and shadow=true");
+        
+        WhereSegment whereSegment = new WhereSegment(0, 0, binaryOperationExpression);
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setWhere(whereSegment);
+        
+        return new SelectStatementContext(selectStatement, null, null, null, null);
     }
 }
