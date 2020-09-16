@@ -23,6 +23,7 @@ import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -75,6 +76,9 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof TableExistsException) {
             return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_TABLE_EXISTS_ERROR, ((TableExistsException) cause).getTableName());
+        }
+        if (cause instanceof CircuitBreakException) {
+            return new MySQLErrPacket(sequenceId, CommonErrorCode.CIRCUIT_BREAK_MODE);
         }
         if (cause instanceof ShardingSphereConfigurationException || cause instanceof SQLParsingException) {
             return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_NOT_SUPPORTED_YET, cause.getMessage());

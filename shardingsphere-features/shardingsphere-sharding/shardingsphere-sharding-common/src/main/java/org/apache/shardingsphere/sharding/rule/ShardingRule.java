@@ -77,36 +77,36 @@ public final class ShardingRule implements DataNodeRoutedRule {
     
     private final KeyGenerateAlgorithm defaultKeyGenerateAlgorithm;
     
-    public ShardingRule(final ShardingRuleConfiguration configuration, final Collection<String> dataSourceNames) {
-        Preconditions.checkArgument(null != configuration, "ShardingRuleConfig cannot be null.");
+    public ShardingRule(final ShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
+        Preconditions.checkArgument(null != config, "ShardingRuleConfig cannot be null.");
         Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data sources cannot be empty.");
-        this.dataSourceNames = getDataSourceNames(configuration.getTables(), dataSourceNames);
-        configuration.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ShardingAlgorithm.class)));
-        configuration.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, KeyGenerateAlgorithm.class)));
-        tableRules = new LinkedList<>(createTableRules(configuration.getTables(), configuration.getDefaultKeyGenerateStrategy()));
-        tableRules.addAll(createAutoTableRules(configuration.getAutoTables(), configuration.getDefaultKeyGenerateStrategy()));
-        broadcastTables = configuration.getBroadcastTables();
-        bindingTableRules = createBindingTableRules(configuration.getBindingTableGroups());
-        defaultDatabaseShardingStrategy = createDefaultShardingStrategy(configuration.getDefaultDatabaseShardingStrategy());
-        defaultTableShardingStrategy = createDefaultShardingStrategy(configuration.getDefaultTableShardingStrategy());
-        defaultKeyGenerateAlgorithm = null == configuration.getDefaultKeyGenerateStrategy()
-                ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(configuration.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
+        this.dataSourceNames = getDataSourceNames(config.getTables(), dataSourceNames);
+        config.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ShardingAlgorithm.class)));
+        config.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, KeyGenerateAlgorithm.class)));
+        tableRules = new LinkedList<>(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
+        tableRules.addAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
+        broadcastTables = config.getBroadcastTables();
+        bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
+        defaultDatabaseShardingStrategy = createDefaultShardingStrategy(config.getDefaultDatabaseShardingStrategy());
+        defaultTableShardingStrategy = createDefaultShardingStrategy(config.getDefaultTableShardingStrategy());
+        defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
+                ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
     }
     
-    public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration configuration, final Collection<String> dataSourceNames) {
-        Preconditions.checkArgument(null != configuration, "ShardingRuleConfig cannot be null.");
+    public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
+        Preconditions.checkArgument(null != config, "ShardingRuleConfig cannot be null.");
         Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data sources cannot be empty.");
-        this.dataSourceNames = getDataSourceNames(configuration.getTables(), dataSourceNames);
-        shardingAlgorithms.putAll(configuration.getShardingAlgorithms());
-        keyGenerators.putAll(configuration.getKeyGenerators());
-        tableRules = new LinkedList<>(createTableRules(configuration.getTables(), configuration.getDefaultKeyGenerateStrategy()));
-        tableRules.addAll(createAutoTableRules(configuration.getAutoTables(), configuration.getDefaultKeyGenerateStrategy()));
-        broadcastTables = configuration.getBroadcastTables();
-        bindingTableRules = createBindingTableRules(configuration.getBindingTableGroups());
-        defaultDatabaseShardingStrategy = createDefaultShardingStrategy(configuration.getDefaultDatabaseShardingStrategy());
-        defaultTableShardingStrategy = createDefaultShardingStrategy(configuration.getDefaultTableShardingStrategy());
-        defaultKeyGenerateAlgorithm = null == configuration.getDefaultKeyGenerateStrategy()
-                ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(configuration.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
+        this.dataSourceNames = getDataSourceNames(config.getTables(), dataSourceNames);
+        shardingAlgorithms.putAll(config.getShardingAlgorithms());
+        keyGenerators.putAll(config.getKeyGenerators());
+        tableRules = new LinkedList<>(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
+        tableRules.addAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
+        broadcastTables = config.getBroadcastTables();
+        bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
+        defaultDatabaseShardingStrategy = createDefaultShardingStrategy(config.getDefaultDatabaseShardingStrategy());
+        defaultTableShardingStrategy = createDefaultShardingStrategy(config.getDefaultTableShardingStrategy());
+        defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
+                ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
     }
     
     private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, final Collection<String> dataSourceNames) {
