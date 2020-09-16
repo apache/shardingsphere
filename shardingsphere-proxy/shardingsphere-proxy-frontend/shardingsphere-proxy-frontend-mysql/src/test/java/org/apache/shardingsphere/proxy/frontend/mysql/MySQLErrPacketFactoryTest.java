@@ -36,7 +36,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithSQLException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLException("No reason", "XXX", 9999, new RuntimeException()));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLException("No reason", "XXX", 9999, new RuntimeException("")));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(9999));
         assertThat(actual.getSqlState(), is("XXX"));
@@ -44,7 +44,7 @@ public final class MySQLErrPacketFactoryTest {
     }
 
     @Test
-    public void assertNewInstanceWithSQLExceptionOfNullSqlState() {
+    public void assertNewInstanceWithSQLExceptionOfNullSQLState() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLException(new RuntimeException("No reason")));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1815));
@@ -54,7 +54,7 @@ public final class MySQLErrPacketFactoryTest {
 
     @Test
     public void assertNewInstanceWithSQLExceptionOfNullParam() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLException());
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLException(""));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1815));
         assertThat(actual.getSqlState(), is("HY000"));
