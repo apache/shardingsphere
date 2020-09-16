@@ -27,6 +27,8 @@ import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactio
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
+import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
+import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.junit.Test;
@@ -166,6 +168,24 @@ public final class MySQLErrPacketFactoryTest {
     @Test
     public void assertNewInstanceWithSQLParsingException() {
         assertCommonException(MySQLErrPacketFactory.newInstance(new SQLParsingException("No reason")));
+    }
+    
+    @Test
+    public void assertNewInstanceWithUnsupportedCommandException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedCommandException("No reason"));
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(10001));
+        assertThat(actual.getSqlState(), is("C10001"));
+        assertThat(actual.getErrorMessage(), is("Unsupported command: [No reason]"));
+    }
+    
+    @Test
+    public void assertNewInstanceWithUnsupportedPreparedStatementException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedPreparedStatementException());
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(1295));
+        assertThat(actual.getSqlState(), is("HY000"));
+        assertThat(actual.getErrorMessage(), is("This command is not supported in the prepared statement protocol yet"));
     }
     
     private void assertCommonException(final MySQLErrPacket actual) {
