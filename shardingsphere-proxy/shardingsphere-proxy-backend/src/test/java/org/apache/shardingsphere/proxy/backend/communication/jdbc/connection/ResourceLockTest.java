@@ -18,64 +18,75 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import lombok.SneakyThrows;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class ResourceLockTest {
-    
-    private ResourceLock resourceLock;
-    
-    private Condition condition;
-    
-    private Lock lock;
-    
-    @SneakyThrows(value = {NoSuchFieldException.class, IllegalAccessException.class})
-    @Before
-    public void setup() {
-        resourceLock = new ResourceLock();
-        lock = mock(ReentrantLock.class);
-        condition = mock(Condition.class);
-        Field lockField = ResourceLock.class.getDeclaredField("lock");
-        lockField.setAccessible(true);
-        lockField.set(resourceLock, lock);
-        Field conditionField = ResourceLock.class.getDeclaredField("condition");
-        conditionField.setAccessible(true);
-        conditionField.set(resourceLock, condition);
-    }
     
     @SneakyThrows(value = InterruptedException.class)
     @Test
     public void assertDoAwait() {
-        resourceLock.doAwait();
-        verify(condition).await(200, TimeUnit.MILLISECONDS);
-        verify(lock).lock();
-        verify(lock).unlock();
+        int numberOfThreads = 10;
+        ResourceLock resourceLock = new ResourceLock();
+        ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
+        CountDownLatch latch = new CountDownLatch(numberOfThreads);
+        AtomicInteger counter = new AtomicInteger();
+        for (int i = 0; i < numberOfThreads; i++) {
+            service.submit(() -> {
+                resourceLock.doAwait();
+                counter.incrementAndGet();
+                latch.countDown();
+            });
+        }
+        latch.await();
+        assertEquals(numberOfThreads, counter.get());
     }
     
     @SneakyThrows(value = InterruptedException.class)
-    @Test(expected = InterruptedException.class)
+    @Test
     public void assertDoAwaitThrowsException() {
-        when(condition.await(200, TimeUnit.MILLISECONDS)).thenThrow(new InterruptedException());
-        resourceLock.doAwait();
-        verify(lock).lock();
-        verify(lock).unlock();
+        int numberOfThreads = 10;
+        ResourceLock resourceLock = new ResourceLock();
+        ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
+        CountDownLatch latch = new CountDownLatch(numberOfThreads);
+        AtomicInteger counter = new AtomicInteger();
+        for (int i = 0; i < numberOfThreads; i++) {
+            service.submit(() -> {
+                resourceLock.doAwait();
+                counter.incrementAndGet();
+                latch.countDown();
+            });
+        }
+        latch.await(100, TimeUnit.MILLISECONDS);
+        service.shutdownNow();
+        assertNotEquals(numberOfThreads, counter.get());
     }
     
+    @SneakyThrows(value = InterruptedException.class)
     @Test
     public void assertDoNotify() {
-        resourceLock.doNotify();
-        verify(condition).signalAll();
-        verify(lock).lock();
-        verify(lock).unlock();
+        int numberOfThreads = 10;
+        ResourceLock resourceLock = new ResourceLock();
+        ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
+        CountDownLatch latch = new CountDownLatch(numberOfThreads);
+        AtomicInteger counter = new AtomicInteger();
+        for (int i = 0; i < numberOfThreads; i++) {
+            service.submit(() -> {
+                resourceLock.doAwait();
+                counter.incrementAndGet();
+                latch.countDown();
+                resourceLock.doNotify();
+            });
+        }
+        latch.await();
+        assertEquals(numberOfThreads, counter.get());
     }
 }
