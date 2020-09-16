@@ -49,12 +49,12 @@ chapter = true
 | ------------------------- | ----------------------------------------------- |
 | RouteDecorator            | Used to process routing results                 |
 
-| *Implementation Class*    | *Description*                                   |
-| ------------------------- | ----------------------------------------------- |
-| ShardingRouteDecorator    | Used to process sharding routing results        |
-| MasterSlaveRouteDecorator | Used to process master-slave routing results    |
-| ReplicaRouteDecorator     | Used to process multi replica routing results   |
-| ShadowRouteDecorator      | Used to process shadow database routing results |
+| *Implementation Class*             | *Description*                                         |
+| ---------------------------------- | ----------------------------------------------------- |
+| ShardingRouteDecorator             | Used to process sharding routing results              |
+| MasterSlaveRouteDecorator          | Used to process master-slave routing results          |
+| ConsensusReplicationRouteDecorator | Used to process consensus replication routing results |
+| ShadowRouteDecorator               | Used to process shadow database routing results       |
 
 ## SQLRewriteContextDecorator
 
@@ -74,9 +74,9 @@ chapter = true
 | ---------------------------- | -------------------------------------- |
 | ExecuteGroupDecorator        | Used by update data nodes group result |
 
-| *Implementation Class*       | *Description*                          |
-| ---------------------------- | -------------------------------------- |
-| ReplicaExecuteGroupDecorator | Used by multi replica data nodes group |
+| *Implementation Class*                    | *Description*                                  |
+| ----------------------------------------- | ---------------------------------------------- |
+| ConsensusReplicationExecuteGroupDecorator | Used by consensus replication data nodes group |
 
 ## SQLExecutionHook
 
