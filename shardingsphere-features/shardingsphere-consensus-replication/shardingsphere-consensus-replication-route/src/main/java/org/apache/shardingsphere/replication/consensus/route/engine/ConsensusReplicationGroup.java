@@ -17,22 +17,24 @@
 
 package org.apache.shardingsphere.replication.consensus.route.engine;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.route.context.RouteStageContext;
-
-import java.util.Map;
+import org.apache.shardingsphere.infra.route.context.RawGroup;
 
 /**
- * Replica route stage context.
+ * Consensus replication group.
  */
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
-public final class ReplicaRouteStageContext implements RouteStageContext {
+public final class ConsensusReplicationGroup implements RawGroup {
     
-    private final String schemaName;
+    public static final String BLANK_CONSENSUS_REPLICATION_GROUP_KEY = "Nil";
     
-    private final Map<String, ReplicaGroup> replicaGroups;
+    private final String physicsTable;
     
-    private final boolean readOnly;
+    private final String replicaGroupId;
+    
+    private final String replicaPeers;
+    
+    private final String dataSourceName;
 }
