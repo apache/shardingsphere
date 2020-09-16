@@ -129,7 +129,6 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
@@ -210,7 +209,6 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
         return visit(ctx.selectClause(0));
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SelectStatement result = new SelectStatement();

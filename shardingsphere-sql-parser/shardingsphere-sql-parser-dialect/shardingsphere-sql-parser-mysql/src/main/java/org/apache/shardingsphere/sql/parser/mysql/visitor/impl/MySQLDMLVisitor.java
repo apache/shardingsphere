@@ -250,7 +250,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
@@ -314,7 +313,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         return new StringLiteralValue(ctx.STRING_().getText());
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         MySQLDeleteStatement result = new MySQLDeleteStatement();
@@ -345,7 +343,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitMultipleTablesClause(final MultipleTablesClauseContext ctx) {
         DeleteMultiTableSegment result = new DeleteMultiTableSegment();
@@ -377,7 +374,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         return visit(ctx.selectClause(0));
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SelectStatement result = new SelectStatement();
