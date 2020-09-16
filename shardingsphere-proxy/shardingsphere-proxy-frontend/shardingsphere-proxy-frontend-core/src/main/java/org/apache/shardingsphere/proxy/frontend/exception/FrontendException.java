@@ -17,17 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
- * Unsupported command exception.
+ * Frontend exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class UnsupportedCommandException extends FrontendException {
+public abstract class FrontendException extends RuntimeException {
     
-    private static final long serialVersionUID = 8010680371699936338L;
-    
-    private final String commandType;
+    private static final long serialVersionUID = 1127309123050216974L;
 }
