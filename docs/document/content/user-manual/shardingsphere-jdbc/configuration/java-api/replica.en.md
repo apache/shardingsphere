@@ -5,6 +5,6 @@ weight = 5
 
 ## Root Configuration
 
-Class name: org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration
+Class name: org.apache.shardingsphere.replication.consensus.api.config.ReplicaRuleConfiguration
 
 TODO

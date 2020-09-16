@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.replica.execute.group.ReplicaExecuteGroupDecorator
+org.apache.shardingsphere.replication.consensus.execute.group.ReplicaExecuteGroupDecorator

@@ -5,6 +5,6 @@ weight = 5
 
 ## 配置入口
 
-类名称：org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration
+类名称：org.apache.shardingsphere.replication.consensus.api.config.ReplicaRuleConfiguration
 
 TODO
