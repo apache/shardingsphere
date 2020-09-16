@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.context;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.SchemaContext;
@@ -34,7 +33,8 @@ import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -77,7 +77,7 @@ public final class ProxyContextTest {
         SchemaContext schemaContext = mock(SchemaContext.class);
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        when(shardingSphereSchema.getDataSources()).thenReturn(new HashMap<String, DataSource>());
+        when(shardingSphereSchema.getDataSources()).thenReturn(Collections.emptyMap());
         when(schemaContext.getName()).thenReturn("schema");
         when(schemaContext.getSchema()).thenReturn(shardingSphereSchema);
         when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
@@ -97,7 +97,7 @@ public final class ProxyContextTest {
         SchemaContext schemaContext = mock(SchemaContext.class);
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        when(shardingSphereSchema.getDataSources()).thenReturn(new HashMap<String, DataSource>());
+        when(shardingSphereSchema.getDataSources()).thenReturn(Collections.emptyMap());
         when(schemaContext.getName()).thenReturn("schema");
         when(schemaContext.getSchema()).thenReturn(shardingSphereSchema);
         when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
@@ -114,19 +114,15 @@ public final class ProxyContextTest {
     
     @Test
     public void assertGetAllSchemaNames() throws NoSuchFieldException, IllegalAccessException {
-        Map<String, SchemaContext> schemaContextsMap = getSchemaContextMap();
+        Map<String, SchemaContext> schemaContextsMap = createSchemaContextMap();
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(),
-                new StandardSchemaContexts(schemaContextsMap, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
-        List<String> keyList = Lists.newArrayList(schemaContextsMap.keySet());
-        for (int i = 0; i < keyList.size(); i++) {
-            assertThat(keyList.get(i), is(ProxyContext.getInstance().getAllSchemaNames().get(i)));
-        }
+        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(schemaContextsMap, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        assertThat(new LinkedHashSet<>(ProxyContext.getInstance().getAllSchemaNames()), is(schemaContextsMap.keySet()));
     }
     
-    private Map<String, SchemaContext> getSchemaContextMap() {
-        Map<String, SchemaContext> result = new HashMap<>(10);
+    private Map<String, SchemaContext> createSchemaContextMap() {
+        Map<String, SchemaContext> result = new LinkedHashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             result.put(String.format(SCHEMA_PATTERN, i), mock(SchemaContext.class));
         }
@@ -143,5 +139,4 @@ public final class ProxyContextTest {
         when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
         return Collections.singletonMap("schema", schemaContext);
     }
-    
 }
