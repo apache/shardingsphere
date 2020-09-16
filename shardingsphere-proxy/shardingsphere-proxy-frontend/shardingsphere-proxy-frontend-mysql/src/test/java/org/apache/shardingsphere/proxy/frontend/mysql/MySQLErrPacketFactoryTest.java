@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.mysql;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -26,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseExceptio
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -144,5 +147,33 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getErrorCode(), is(1050));
         assertThat(actual.getSqlState(), is("42S01"));
         assertThat(actual.getErrorMessage(), is("Table 'table_name' already exists"));
+    }
+    
+    @Test
+    public void assertNewInstanceWithCircuitBreakException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new CircuitBreakException());
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(10000));
+        assertThat(actual.getSqlState(), is("C10000"));
+        assertThat(actual.getErrorMessage(), is("Circuit break mode is ON."));
+    }
+    
+    @Test
+    public void assertNewInstanceWithShardingSphereConfigurationException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new ShardingSphereConfigurationException("No reason"));
+        assertCommonException(actual);
+    }
+    
+    @Test
+    public void assertNewInstanceWithSQLParsingException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLParsingException("No reason"));
+        assertCommonException(actual);
+    }
+    
+    private void assertCommonException(final MySQLErrPacket actual) {
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(1235));
+        assertThat(actual.getSqlState(), is("42000"));
+        assertThat(actual.getErrorMessage(), is("This version of ShardingProxy doesn't yet support this SQL. 'No reason'"));
     }
 }
