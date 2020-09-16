@@ -62,11 +62,11 @@ public abstract class AbstractStatementExecutor {
     
     private final SQLExecutor sqlExecutor;
     
-    protected boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
+    protected final boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
         return rules.stream().anyMatch(each -> ((DataNodeRoutedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
     }
     
-    protected int accumulate(final List<Integer> results) {
+    protected final int accumulate(final List<Integer> results) {
         int result = 0;
         for (Integer each : results) {
             result += null == each ? 0 : each;
@@ -74,8 +74,8 @@ public abstract class AbstractStatementExecutor {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
-    protected void refreshTableMetaData(final SchemaContext schemaContext, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    protected final void refreshTableMetaData(final SchemaContext schemaContext, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         if (null == sqlStatementContext) {
             return;
         }
