@@ -266,11 +266,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setLeft((ExpressionSegment) visit(ctx.aExpr(0)));
         result.setRight(visitInExpression(ctx.inExpr()));
-        if (null != ctx.NOT()) {
-            result.setNot(true);
-        } else {
-            result.setNot(false);
-        }
+        result.setNot(null != ctx.NOT());
         return result;
     }
     
@@ -278,8 +274,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         if (null != ctx.selectWithParens()) {
             SelectStatement select = (SelectStatement) visit(ctx.selectWithParens());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), select);
-            SubqueryExpressionSegment result = new SubqueryExpressionSegment(subquerySegment);
-            return result;
+            return new SubqueryExpressionSegment(subquerySegment);
         }
         return (ExpressionSegment) visit(ctx.exprList());
     }
