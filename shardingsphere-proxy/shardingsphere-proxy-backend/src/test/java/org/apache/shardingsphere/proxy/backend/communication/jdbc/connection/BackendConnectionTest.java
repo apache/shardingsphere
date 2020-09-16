@@ -41,8 +41,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -53,6 +56,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -212,5 +216,62 @@ public final class BackendConnectionTest {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
         backendConnection.setCurrentSchema("newSchema");
+    }
+    
+    @Test
+    public void assertIsNotSerialExecuteWhenNotInTransaction() {
+        backendConnection.getTransactionStatus().setInTransaction(false);
+        assertFalse(backendConnection.isSerialExecute());
+    }
+    
+    @Test
+    public void assertIsNotSerialExecuteWhenInTransactionAndBaseTransactionType() {
+        backendConnection.getTransactionStatus().setInTransaction(false);
+        backendConnection.getTransactionStatus().setTransactionType(TransactionType.BASE);
+        assertFalse(backendConnection.isSerialExecute());
+    }
+    
+    @Test
+    public void assertIsSerialExecuteWhenInTransactionAndLocalTransactionType() {
+        backendConnection.getTransactionStatus().setTransactionType(TransactionType.LOCAL);
+        backendConnection.getTransactionStatus().setInTransaction(true);
+        assertTrue(backendConnection.isSerialExecute());
+    }
+    
+    @Test
+    public void assertIsSerialExecuteWhenInTransactionAndXaTransactionType() {
+        backendConnection.getTransactionStatus().setTransactionType(TransactionType.XA);
+        backendConnection.getTransactionStatus().setInTransaction(true);
+        assertTrue(backendConnection.isSerialExecute());
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertSetFetchSizeAsExpected() {
+        Statement statement = mock(Statement.class);
+        Method setFetchSizeMethod = backendConnection.getClass().getDeclaredMethod("setFetchSize", Statement.class);
+        setFetchSizeMethod.setAccessible(true);
+        setFetchSizeMethod.invoke(backendConnection, statement);
+        verify(statement, times(1)).setFetchSize(Integer.MIN_VALUE);
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertAddStatementCorrectly() {
+        Statement statement = mock(Statement.class);
+        backendConnection.add(statement);
+        Field field = backendConnection.getClass().getDeclaredField("cachedStatements");
+        field.setAccessible(true);
+        assertTrue(((Collection<Statement>) field.get(backendConnection)).contains(statement));
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertAddResultSetCorrectly() {
+        ResultSet resultSet = mock(ResultSet.class);
+        backendConnection.add(resultSet);
+        Field field = backendConnection.getClass().getDeclaredField("cachedResultSets");
+        field.setAccessible(true);
+        assertTrue(((Collection<ResultSet>) field.get(backendConnection)).contains(resultSet));
     }
 }
