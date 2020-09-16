@@ -24,7 +24,6 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.Epoll;
-import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -54,13 +53,9 @@ public final class ShardingSphereProxy {
     @SneakyThrows(InterruptedException.class)
     public void start(final int port) {
         try {
+            createEventLoopGroup();
             ServerBootstrap bootstrap = new ServerBootstrap();
-            bossGroup = createEventLoopGroup();
-            if (bossGroup instanceof EpollEventLoopGroup) {
-                groupsEpoll(bootstrap);
-            } else {
-                groupsNio(bootstrap);
-            }
+            initServerBootstrap(bootstrap);
             ChannelFuture future = bootstrap.bind(port).sync();
             log.info("ShardingSphere-Proxy start success.");
             future.channel().closeFuture().sync();
@@ -71,27 +66,14 @@ public final class ShardingSphereProxy {
         }
     }
     
-    private EventLoopGroup createEventLoopGroup() {
-        return Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
+    private void createEventLoopGroup() {
+        bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
+        workerGroup = Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
     }
     
-    private void groupsEpoll(final ServerBootstrap bootstrap) {
-        workerGroup = new EpollEventLoopGroup();
+    private void initServerBootstrap(final ServerBootstrap bootstrap) {
         bootstrap.group(bossGroup, workerGroup)
-                .channel(EpollServerSocketChannel.class)
-                .option(EpollChannelOption.SO_BACKLOG, 128)
-                .option(EpollChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
-                .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childOption(EpollChannelOption.TCP_NODELAY, true)
-                .handler(new LoggingHandler(LogLevel.INFO))
-                .childHandler(new ServerHandlerInitializer());
-    }
-    
-    private void groupsNio(final ServerBootstrap bootstrap) {
-        workerGroup = new NioEventLoopGroup();
-        bootstrap.group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
+                .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
