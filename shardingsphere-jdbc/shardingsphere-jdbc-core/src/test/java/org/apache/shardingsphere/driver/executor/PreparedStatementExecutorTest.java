@@ -233,13 +233,13 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     private PreparedStatement getPreparedStatement() throws SQLException {
-        PreparedStatement statement = mock(PreparedStatement.class);
+        PreparedStatement result = mock(PreparedStatement.class);
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(statement.getConnection()).thenReturn(connection);
-        return statement;
+        when(result.getConnection()).thenReturn(connection);
+        return result;
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> getExecuteGroups(final List<PreparedStatement> preparedStatements, final boolean isQuery) {

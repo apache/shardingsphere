@@ -260,20 +260,20 @@ public final class StreamQueryResultTest {
     }
     
     private ResultSet getResultSet() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.next()).thenReturn(true).thenReturn(false);
-        when(resultSet.getInt(1)).thenReturn(1);
-        when(resultSet.wasNull()).thenReturn(false).thenReturn(true);
-        doReturn(getResultSetMetaData()).when(resultSet).getMetaData();
-        return resultSet;
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true).thenReturn(false);
+        when(result.getInt(1)).thenReturn(1);
+        when(result.wasNull()).thenReturn(false).thenReturn(true);
+        doReturn(getResultSetMetaData()).when(result).getMetaData();
+        return result;
     }
     
     private ResultSetMetaData getResultSetMetaData() throws SQLException {
-        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
-        when(metaData.getColumnCount()).thenReturn(1);
-        when(metaData.getColumnLabel(1)).thenReturn("order_id");
-        when(metaData.getColumnName(1)).thenReturn("order_id");
-        when(metaData.isCaseSensitive(1)).thenReturn(false);
-        return metaData;
+        ResultSetMetaData result = mock(ResultSetMetaData.class);
+        when(result.getColumnCount()).thenReturn(1);
+        when(result.getColumnLabel(1)).thenReturn("order_id");
+        when(result.getColumnName(1)).thenReturn("order_id");
+        when(result.isCaseSensitive(1)).thenReturn(false);
+        return result;
     }
 }

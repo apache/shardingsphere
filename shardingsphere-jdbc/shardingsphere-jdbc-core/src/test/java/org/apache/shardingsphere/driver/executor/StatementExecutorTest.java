@@ -193,13 +193,13 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     private Statement getStatement() throws SQLException {
-        Statement statement = mock(Statement.class);
+        Statement result = mock(Statement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(statement.getConnection()).thenReturn(connection);
-        return statement;
+        when(result.getConnection()).thenReturn(connection);
+        return result;
     }
     
     @Test
@@ -232,8 +232,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteForSingleStatementFailureWithDML() throws SQLException {
         Statement statement = getStatement();
-        SQLException exp = new SQLException("");
-        when(statement.execute(DML_SQL)).thenThrow(exp);
+        SQLException ex = new SQLException("");
+        when(statement.execute(DML_SQL)).thenThrow(ex);
         assertFalse(actual.execute(getExecuteGroups(Collections.singletonList(statement), false), getSQLStatementContext()));
         verify(statement).execute(DML_SQL);
     }

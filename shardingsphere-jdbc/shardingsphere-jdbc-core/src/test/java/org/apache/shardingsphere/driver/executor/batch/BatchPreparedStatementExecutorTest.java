@@ -82,13 +82,13 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     private PreparedStatement getPreparedStatement() throws SQLException {
-        PreparedStatement statement = mock(PreparedStatement.class);
+        PreparedStatement result = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(statement.getConnection()).thenReturn(connection);
-        return statement;
+        when(result.getConnection()).thenReturn(connection);
+        return result;
     }
     
     @Test
@@ -106,8 +106,8 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @Test
     public void assertExecuteBatchForSinglePreparedStatementFailure() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
-        SQLException exp = new SQLException("");
-        when(preparedStatement.executeBatch()).thenThrow(exp);
+        SQLException ex = new SQLException("");
+        when(preparedStatement.executeBatch()).thenThrow(ex);
         setExecuteGroups(Collections.singletonList(preparedStatement));
         assertThat(actual.executeBatch(sqlStatementContext), is(new int[] {0, 0}));
         verify(preparedStatement).executeBatch();
@@ -117,9 +117,9 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     public void assertExecuteBatchForMultiplePreparedStatementsFailure() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
-        SQLException exp = new SQLException("");
-        when(preparedStatement1.executeBatch()).thenThrow(exp);
-        when(preparedStatement2.executeBatch()).thenThrow(exp);
+        SQLException ex = new SQLException("");
+        when(preparedStatement1.executeBatch()).thenThrow(ex);
+        when(preparedStatement2.executeBatch()).thenThrow(ex);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2));
         assertThat(actual.executeBatch(sqlStatementContext), is(new int[] {0, 0}));
         verify(preparedStatement1).executeBatch();

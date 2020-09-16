@@ -142,9 +142,9 @@ public final class ScalingJobControllerTest {
     }
     
     private ImporterConfiguration mockImporterConfiguration() {
-        ImporterConfiguration importerConfig = new ImporterConfiguration();
-        importerConfig.setDataSourceConfiguration(new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
-        return importerConfig;
+        ImporterConfiguration result = new ImporterConfiguration();
+        result.setDataSourceConfiguration(new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
+        return result;
     }
     
     private DumperConfiguration mockDumperConfig() {

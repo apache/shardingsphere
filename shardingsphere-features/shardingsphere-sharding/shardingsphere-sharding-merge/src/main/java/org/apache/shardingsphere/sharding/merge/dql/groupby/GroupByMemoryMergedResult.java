@@ -151,12 +151,12 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     
     private Object[] generateReturnData(final SelectStatementContext selectStatementContext) {
         List<Projection> projections = new LinkedList<>(selectStatementContext.getProjectionsContext().getProjections());
-        Object[] data = new Object[projections.size()];
+        Object[] result = new Object[projections.size()];
         for (int i = 0; i < projections.size(); i++) {
             if (projections.get(i) instanceof AggregationProjection && AggregationType.COUNT == ((AggregationProjection) projections.get(i)).getType()) {
-                data[i] = 0;
+                result[i] = 0;
             }
         }
-        return data;
+        return result;
     }
 }
