@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.rl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Change master statement.
+ * Oracle rollback statement.
  */
-public final class ChangeMasterStatement extends AbstractSQLStatement implements RLStatement {
+public final class OracleRollbackStatement extends RollbackStatement implements OracleStatement {
 }

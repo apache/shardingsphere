@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Statement;
 
 /**
  * SQL92 insert statement.
  */
-public final class SQL92InsertStatement extends InsertStatement implements DMLStatement, SQL92Statement {
+public final class SQL92InsertStatement extends InsertStatement implements SQL92Statement {
 }

@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL drop role statement.
  */
-public final class PostgreSQLDropRoleStatement extends DropRoleStatement implements DCLStatement, PostgreSQLStatement {
+public final class PostgreSQLDropRoleStatement extends DropRoleStatement implements PostgreSQLStatement {
 }

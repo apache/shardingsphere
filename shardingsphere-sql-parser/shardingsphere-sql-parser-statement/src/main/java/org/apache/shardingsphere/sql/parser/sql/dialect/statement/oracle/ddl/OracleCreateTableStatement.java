@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle create table statement.
  */
-public final class OracleCreateTableStatement extends CreateTableStatement implements DDLStatement, OracleStatement {
+public final class OracleCreateTableStatement extends CreateTableStatement implements OracleStatement {
 }

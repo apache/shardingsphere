@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle alter user statement.
  */
-public final class OracleAlterUserStatement extends AlterUserStatement implements DCLStatement, OracleStatement {
+public final class OracleAlterUserStatement extends AlterUserStatement implements OracleStatement {
 }

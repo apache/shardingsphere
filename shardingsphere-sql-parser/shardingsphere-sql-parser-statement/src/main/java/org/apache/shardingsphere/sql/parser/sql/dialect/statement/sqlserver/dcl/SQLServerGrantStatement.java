@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer grant statement.
  */
-public final class SQLServerGrantStatement extends GrantStatement implements DCLStatement, SQLServerStatement {
+public final class SQLServerGrantStatement extends GrantStatement implements SQLServerStatement {
 }

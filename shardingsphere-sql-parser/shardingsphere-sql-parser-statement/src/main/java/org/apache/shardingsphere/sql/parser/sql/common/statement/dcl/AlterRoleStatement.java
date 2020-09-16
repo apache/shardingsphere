@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter role statement.
  */
-public abstract class AlterRoleStatement extends AbstractSQLStatement {
+public abstract class AlterRoleStatement extends AbstractSQLStatement implements DCLStatement {
 }

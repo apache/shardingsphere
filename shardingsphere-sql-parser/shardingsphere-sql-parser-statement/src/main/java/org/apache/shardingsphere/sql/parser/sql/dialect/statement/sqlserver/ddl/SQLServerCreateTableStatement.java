@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer create table statement.
  */
-public final class SQLServerCreateTableStatement extends CreateTableStatement implements DDLStatement, SQLServerStatement {
+public final class SQLServerCreateTableStatement extends CreateTableStatement implements SQLServerStatement {
 }

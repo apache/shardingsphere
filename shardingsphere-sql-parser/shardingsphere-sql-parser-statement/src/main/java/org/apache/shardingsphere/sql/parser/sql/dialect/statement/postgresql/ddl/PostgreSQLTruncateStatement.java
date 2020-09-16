@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL truncate table statement.
  */
-public final class PostgreSQLTruncateStatement extends TruncateStatement implements DDLStatement, PostgreSQLStatement {
+public final class PostgreSQLTruncateStatement extends TruncateStatement implements PostgreSQLStatement {
 }

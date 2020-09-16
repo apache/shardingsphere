@@ -53,7 +53,7 @@ public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
                 Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
                 if (!tableRule.isPresent()) {
-                    if (shardingRule.getTableRules().isEmpty() || schemaMetaData.containsTable(actualTableName) && tableNames.add(actualTableName)) {
+                    if (shardingRule.getTableRules().isEmpty() || tableNames.add(actualTableName)) {
                         result.add(memoryResultSetRow);
                     }
                 } else if (tableNames.add(tableRule.get().getLogicTable())) {

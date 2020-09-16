@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL set statement.
  */
-public final class PostgreSQLSetStatement extends SetStatement implements DALStatement, PostgreSQLStatement {
+public final class PostgreSQLSetStatement extends SetStatement implements PostgreSQLStatement {
 }

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Co
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExprListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ForLockingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FromListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.GroupByItemContext;
@@ -323,6 +324,12 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             LockSegment lockSegment = (LockSegment) visit(ctx.forLockingClause());
             result.setLock(lockSegment);
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitForLockingClause(final ForLockingClauseContext ctx) {
+        LockSegment result = new LockSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         return result;
     }
     

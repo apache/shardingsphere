@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer create user statement.
  */
-public final class SQLServerCreateUserStatement extends CreateUserStatement implements DCLStatement, SQLServerStatement {
+public final class SQLServerCreateUserStatement extends CreateUserStatement implements SQLServerStatement {
 }

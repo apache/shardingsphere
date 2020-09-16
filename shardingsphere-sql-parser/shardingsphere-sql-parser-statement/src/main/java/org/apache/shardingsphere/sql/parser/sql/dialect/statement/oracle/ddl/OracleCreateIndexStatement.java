@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle create index statement.
  */
-public final class OracleCreateIndexStatement extends CreateIndexStatement implements DDLStatement, OracleStatement {
+public final class OracleCreateIndexStatement extends CreateIndexStatement implements OracleStatement {
 }

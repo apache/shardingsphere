@@ -32,6 +32,7 @@ import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -56,7 +57,7 @@ public final class CommandExecutorTaskTest {
     @Mock
     private PacketPayload payload;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private BackendConnection backendConnection;
     
     @Mock
@@ -100,6 +101,9 @@ public final class CommandExecutorTaskTest {
         when(backendConnection.getConnectionStatus()).thenReturn(connectionStatus);
         when(codecEngine.createPacketPayload(eq(message))).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
+        when(backendConnection.closeResultSets()).thenReturn(Collections.emptyList());
+        when(backendConnection.closeStatements()).thenReturn(Collections.emptyList());
+        when(backendConnection.closeConnections(false)).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
         verify(connectionStatus).waitUntilConnectionRelease();
@@ -117,6 +121,9 @@ public final class CommandExecutorTaskTest {
         when(backendConnection.getConnectionStatus()).thenReturn(connectionStatus);
         when(codecEngine.createPacketPayload(eq(message))).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
+        when(backendConnection.closeResultSets()).thenReturn(Collections.emptyList());
+        when(backendConnection.closeStatements()).thenReturn(Collections.emptyList());
+        when(backendConnection.closeConnections(false)).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
         verify(connectionStatus).waitUntilConnectionRelease();
@@ -139,6 +146,9 @@ public final class CommandExecutorTaskTest {
         when(backendConnection.getConnectionStatus()).thenReturn(connectionStatus);
         when(codecEngine.createPacketPayload(eq(message))).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
+        when(backendConnection.closeResultSets()).thenReturn(Collections.emptyList());
+        when(backendConnection.closeStatements()).thenReturn(Collections.emptyList());
+        when(backendConnection.closeConnections(false)).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
         verify(connectionStatus).waitUntilConnectionRelease();
@@ -156,6 +166,9 @@ public final class CommandExecutorTaskTest {
         when(executeEngine.getErrorPacket(eq(mockException))).thenReturn(databasePacket);
         when(executeEngine.getOtherPacket()).thenReturn(Optional.of(databasePacket));
         when(engine.getCommandExecuteEngine()).thenReturn(executeEngine);
+        when(backendConnection.closeResultSets()).thenReturn(Collections.emptyList());
+        when(backendConnection.closeStatements()).thenReturn(Collections.emptyList());
+        when(backendConnection.closeConnections(false)).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
         verify(handlerContext, atLeast(2)).writeAndFlush(databasePacket);

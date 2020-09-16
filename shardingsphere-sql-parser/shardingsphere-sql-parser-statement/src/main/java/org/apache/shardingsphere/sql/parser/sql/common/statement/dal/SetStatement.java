@@ -30,7 +30,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public abstract class SetStatement extends AbstractSQLStatement {
+public abstract class SetStatement extends AbstractSQLStatement implements DALStatement {
     
     private final List<VariableAssignSegment> variableAssigns = new LinkedList<>();
 }

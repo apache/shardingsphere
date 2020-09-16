@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
+import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -27,9 +28,9 @@ import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -41,6 +42,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -52,17 +54,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -78,15 +80,23 @@ public final class BackendConnectionTest {
     private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Before
-    public void setUp() {
+    public void setUp() throws ReflectiveOperationException {
         setSchemaContexts();
         setTransactionContexts();
         setBackendDataSource();
         backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setSchemaContexts() {
+    @After
+    public void clean() throws ReflectiveOperationException {
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
+        field.setAccessible(true);
+        Class<?> clazz = field.getType();
+        Object datasource = clazz.getDeclaredConstructors()[0].newInstance();
+        field.set(ProxyContext.getInstance(), datasource);
+    }
+    
+    private void setSchemaContexts() throws ReflectiveOperationException {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), new StandardSchemaContexts(createSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
@@ -103,8 +113,7 @@ public final class BackendConnectionTest {
         return result;
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setTransactionContexts() {
+    private void setTransactionContexts() throws ReflectiveOperationException {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("transactionContexts");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), createTransactionContexts());
@@ -119,8 +128,7 @@ public final class BackendConnectionTest {
         return result;
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setBackendDataSource() {
+    private void setBackendDataSource() throws ReflectiveOperationException {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), backendDataSource);
@@ -179,7 +187,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertMultiThreadGetConnection() throws SQLException, InterruptedException {
+    public void assertMultiThreadsGetConnection() throws SQLException, InterruptedException {
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
         Thread thread1 = new Thread(this::assertOneThreadResult);
@@ -199,80 +207,6 @@ public final class BackendConnectionTest {
         assertTrue(backendConnection.getTransactionStatus().isInTransaction());
     }
     
-    @Test
-    public void assertAutoCloseConnectionWithoutTransaction() throws SQLException {
-        BackendConnection actual;
-        try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
-            backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-            when(backendDataSource.getConnections(anyString(), anyString(), eq(12), any())).thenReturn(MockConnectionUtil.mockNewConnections(12));
-            backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
-            backendConnection.getConnectionStatus().switchToUsing();
-            mockResultSetAndStatement(backendConnection);
-            actual = backendConnection;
-        }
-        assertThat(actual.getConnectionSize(), is(0));
-        assertTrue(actual.getCachedConnections().isEmpty());
-        assertTrue(actual.getCachedResultSets().isEmpty());
-        assertTrue(actual.getCachedStatements().isEmpty());
-    }
-    
-    @Test
-    public void assertAutoCloseConnectionWithTransaction() throws SQLException {
-        BackendConnection actual;
-        try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
-            backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-            MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
-            when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
-            backendConnection.getTransactionStatus().setInTransaction(true);
-            backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
-            mockResultSetAndStatement(backendConnection);
-            actual = backendConnection;
-        }
-        assertThat(actual.getConnectionSize(), is(12));
-        assertThat(actual.getCachedConnections().get("ds1").size(), is(12));
-        assertTrue(actual.getCachedResultSets().isEmpty());
-        assertTrue(actual.getCachedStatements().isEmpty());
-    }
-    
-    @Test
-    public void assertAutoCloseConnectionWithException() {
-        BackendConnection actual = null;
-        try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
-            backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-            backendConnection.getTransactionStatus().setTransactionType(TransactionType.XA);
-            backendConnection.getTransactionStatus().setInTransaction(true);
-            MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
-            backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
-            backendConnection.getTransactionStatus().setInTransaction(false);
-            mockResultSetAndStatement(backendConnection);
-            mockResultSetAndStatementException(backendConnection);
-            actual = backendConnection;
-        } catch (final SQLException ex) {
-            assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
-        }
-        assertNotNull(actual);
-        assertThat(actual.getConnectionSize(), is(0));
-        assertTrue(actual.getCachedConnections().isEmpty());
-        assertTrue(actual.getCachedResultSets().isEmpty());
-        assertTrue(actual.getCachedStatements().isEmpty());
-    }
-    
-    private void mockResultSetAndStatement(final BackendConnection backendConnection) {
-        ResultSet resultSet = mock(ResultSet.class);
-        Statement statement = mock(Statement.class);
-        backendConnection.add(resultSet);
-        backendConnection.add(statement);
-    }
-    
-    private void mockResultSetAndStatementException(final BackendConnection backendConnection) throws SQLException {
-        for (Statement each : backendConnection.getCachedStatements()) {
-            doThrow(SQLException.class).when(each).close();
-        }
-        for (ResultSet each : backendConnection.getCachedResultSets()) {
-            doThrow(SQLException.class).when(each).close();
-        }
-    }
-    
     @Test(expected = ShardingSphereException.class)
     public void assertFailedSwitchTransactionTypeWhileBegin() {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
@@ -287,13 +221,205 @@ public final class BackendConnectionTest {
         backendConnection.setCurrentSchema("newSchema");
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    @After
-    public void clean() {
-        Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
+    @Test
+    public void assertIsNotSerialExecuteWhenNotInTransaction() {
+        backendConnection.getTransactionStatus().setInTransaction(false);
+        assertFalse(backendConnection.isSerialExecute());
+    }
+    
+    @Test
+    public void assertIsNotSerialExecuteWhenInTransactionAndBaseTransactionType() {
+        backendConnection.getTransactionStatus().setInTransaction(false);
+        backendConnection.getTransactionStatus().setTransactionType(TransactionType.BASE);
+        assertFalse(backendConnection.isSerialExecute());
+    }
+    
+    @Test
+    public void assertIsSerialExecuteWhenInTransactionAndLocalTransactionType() {
+        backendConnection.getTransactionStatus().setTransactionType(TransactionType.LOCAL);
+        backendConnection.getTransactionStatus().setInTransaction(true);
+        assertTrue(backendConnection.isSerialExecute());
+    }
+    
+    @Test
+    public void assertIsSerialExecuteWhenInTransactionAndXaTransactionType() {
+        backendConnection.getTransactionStatus().setTransactionType(TransactionType.XA);
+        backendConnection.getTransactionStatus().setInTransaction(true);
+        assertTrue(backendConnection.isSerialExecute());
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertSetFetchSizeAsExpected() {
+        Statement statement = mock(Statement.class);
+        Method setFetchSizeMethod = backendConnection.getClass().getDeclaredMethod("setFetchSize", Statement.class);
+        setFetchSizeMethod.setAccessible(true);
+        setFetchSizeMethod.invoke(backendConnection, statement);
+        verify(statement, times(1)).setFetchSize(Integer.MIN_VALUE);
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertAddStatementCorrectly() {
+        Statement statement = mock(Statement.class);
+        backendConnection.add(statement);
+        Field field = backendConnection.getClass().getDeclaredField("cachedStatements");
         field.setAccessible(true);
-        Class<?> clazz = field.getType();
-        Object datasource = clazz.getDeclaredConstructors()[0].newInstance();
-        field.set(ProxyContext.getInstance(), datasource);
+        assertTrue(((Collection<Statement>) field.get(backendConnection)).contains(statement));
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertAddResultSetCorrectly() {
+        ResultSet resultSet = mock(ResultSet.class);
+        backendConnection.add(resultSet);
+        Field field = backendConnection.getClass().getDeclaredField("cachedResultSets");
+        field.setAccessible(true);
+        assertTrue(((Collection<ResultSet>) field.get(backendConnection)).contains(resultSet));
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertCloseResultSetsCorrectly() {
+        Field field = backendConnection.getClass().getDeclaredField("cachedResultSets");
+        field.setAccessible(true);
+        Collection<ResultSet> cachedResultSets = (Collection<ResultSet>) field.get(backendConnection);
+        ResultSet resultSet = mock(ResultSet.class);
+        cachedResultSets.add(resultSet);
+        backendConnection.closeResultSets();
+        verify(resultSet, times(1)).close();
+        assertTrue(cachedResultSets.isEmpty());
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertCloseResultSetsWithExceptionThrown() {
+        Field field = backendConnection.getClass().getDeclaredField("cachedResultSets");
+        field.setAccessible(true);
+        Collection<ResultSet> cachedResultSets = (Collection<ResultSet>) field.get(backendConnection);
+        ResultSet resultSet = mock(ResultSet.class);
+        SQLException sqlException = new SQLException();
+        doThrow(sqlException).when(resultSet).close();
+        cachedResultSets.add(resultSet);
+        Collection<SQLException> result = backendConnection.closeResultSets();
+        verify(resultSet, times(1)).close();
+        assertTrue(cachedResultSets.isEmpty());
+        assertTrue(result.contains(sqlException));
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertCloseStatementsCorrectly() {
+        Field field = backendConnection.getClass().getDeclaredField("cachedStatements");
+        field.setAccessible(true);
+        Collection<Statement> cachedStatement = (Collection<Statement>) field.get(backendConnection);
+        Statement statement = mock(Statement.class);
+        cachedStatement.add(statement);
+        backendConnection.closeStatements();
+        verify(statement, times(1)).close();
+        assertTrue(cachedStatement.isEmpty());
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertCloseStatementsWithExceptionThrown() {
+        Field field = backendConnection.getClass().getDeclaredField("cachedStatements");
+        field.setAccessible(true);
+        Collection<Statement> cachedStatement = (Collection<Statement>) field.get(backendConnection);
+        Statement statement = mock(Statement.class);
+        cachedStatement.add(statement);
+        SQLException sqlException = new SQLException();
+        doThrow(sqlException).when(statement).close();
+        Collection<SQLException> result = backendConnection.closeStatements();
+        verify(statement, times(1)).close();
+        assertTrue(cachedStatement.isEmpty());
+        assertTrue(result.contains(sqlException));
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertCloseConnectionsCorrectlyWhenNotForceRollback() {
+        Field field = backendConnection.getClass().getDeclaredField("cachedConnections");
+        field.setAccessible(true);
+        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
+        Connection connection = prepareCachedConnections();
+        cachedConnections.put("ignoredDataSourceName", connection);
+        ConnectionStatus connectionStatus = mock(ConnectionStatus.class);
+        prepareConnectionStatus(connectionStatus);
+        backendConnection.closeConnections(false);
+        verify(connection, times(1)).close();
+        assertTrue(cachedConnections.isEmpty());
+        verifyMethodInvocationsEmpty();
+        verify(connectionStatus, times(1)).switchToReleased();
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertCloseConnectionsCorrectlyWhenForceRollbackAndNotInTransaction() {
+        ConnectionStatus connectionStatus = mock(ConnectionStatus.class);
+        prepareConnectionStatus(connectionStatus);
+        backendConnection.getTransactionStatus().setInTransaction(false);
+        Connection connection = prepareCachedConnections();
+        backendConnection.closeConnections(true);
+        verify(connection, never()).rollback();
+        verify(connectionStatus, times(1)).switchToReleased();
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertCloseConnectionsCorrectlyWhenForceRollbackAndInTransaction() {
+        ConnectionStatus connectionStatus = mock(ConnectionStatus.class);
+        prepareConnectionStatus(connectionStatus);
+        backendConnection.getTransactionStatus().setInTransaction(true);
+        Connection connection = prepareCachedConnections();
+        backendConnection.closeConnections(true);
+        verify(connection, times(1)).rollback();
+        verify(connectionStatus, times(1)).switchToReleased();
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertCloseConnectionsCorrectlyWhenSQLExceptionThrown() {
+        ConnectionStatus connectionStatus = mock(ConnectionStatus.class);
+        prepareConnectionStatus(connectionStatus);
+        Connection connection = prepareCachedConnections();
+        SQLException sqlException = new SQLException();
+        doThrow(sqlException).when(connection).close();
+        assertTrue(backendConnection.closeConnections(false).contains(sqlException));
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertCreateStorageResourceCorrectlyWhenConnectionModeMemoryStrictly() {
+        Connection connection = mock(Connection.class);
+        Statement statement = mock(Statement.class);
+        when(connection.createStatement()).thenReturn(statement);
+        assertThat(backendConnection.createStorageResource(connection, ConnectionMode.MEMORY_STRICTLY, null), is(statement));
+        verify(connection, times(1)).createStatement();
+    }
+    
+    @SneakyThrows
+    private Connection prepareCachedConnections() {
+        Field field = backendConnection.getClass().getDeclaredField("cachedConnections");
+        field.setAccessible(true);
+        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
+        Connection connection = mock(Connection.class);
+        cachedConnections.put("ignoredDataSourceName", connection);
+        return connection;
+    }
+    
+    @SneakyThrows
+    private void prepareConnectionStatus(final ConnectionStatus connectionStatus) {
+        Field field = backendConnection.getClass().getDeclaredField("connectionStatus");
+        field.setAccessible(true);
+        field.set(backendConnection, connectionStatus);
+    }
+    
+    @SneakyThrows
+    private void verifyMethodInvocationsEmpty() {
+        Field field = backendConnection.getClass().getDeclaredField("methodInvocations");
+        field.setAccessible(true);
+        Collection<MethodInvocation> methodInvocations = (Collection<MethodInvocation>) field.get(backendConnection);
+        assertTrue(methodInvocations.isEmpty());
     }
 }

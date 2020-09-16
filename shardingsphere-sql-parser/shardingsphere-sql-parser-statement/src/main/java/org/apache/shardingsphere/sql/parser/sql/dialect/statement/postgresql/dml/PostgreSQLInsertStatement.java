@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL insert statement.
  */
-public final class PostgreSQLInsertStatement extends InsertStatement implements DMLStatement, PostgreSQLStatement {
+public final class PostgreSQLInsertStatement extends InsertStatement implements PostgreSQLStatement {
 }

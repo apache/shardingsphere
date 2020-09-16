@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JD
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
-import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -53,7 +52,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Backend connection.
  */
 @Getter
-public final class BackendConnection implements JDBCExecutionConnection, AutoCloseable {
+public final class BackendConnection implements JDBCExecutionConnection {
     
     static {
         ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
@@ -146,6 +145,12 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         return result;
     }
     
+    private void replayMethodsInvocation(final Object target) {
+        for (MethodInvocation each : methodInvocations) {
+            each.invoke(target);
+        }
+    }
+    
     @Override
     public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
         Statement result = connection.createStatement();
@@ -215,30 +220,12 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         cachedResultSets.add(resultSet);
     }
     
-    @Override
-    public void close() throws SQLException {
-        close(false);
-    }
-    
     /**
-     * Close cached connection.
+     * Close result sets.
      *
-     * @param forceClose force close flag
-     * @throws SQLException SQL exception
+     * @return SQL exception when result sets close
      */
-    public synchronized void close(final boolean forceClose) throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        MasterVisitedManager.clear();
-        exceptions.addAll(closeResultSets());
-        exceptions.addAll(closeStatements());
-        if (!transactionStatus.isInTransaction() || forceClose || TransactionType.BASE == transactionStatus.getTransactionType()) {
-            exceptions.addAll(releaseConnections(forceClose));
-        }
-        connectionStatus.switchToReleased();
-        throwSQLExceptionIfNecessary(exceptions);
-    }
-    
-    private Collection<SQLException> closeResultSets() {
+    public synchronized Collection<SQLException> closeResultSets() {
         Collection<SQLException> result = new LinkedList<>();
         for (ResultSet each : cachedResultSets) {
             try {
@@ -251,7 +238,12 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         return result;
     }
     
-    private Collection<SQLException> closeStatements() {
+    /**
+     * Close statements.
+     *
+     * @return SQL exception when statements close
+     */
+    public synchronized Collection<SQLException> closeStatements() {
         Collection<SQLException> result = new LinkedList<>();
         for (Statement each : cachedStatements) {
             try {
@@ -265,12 +257,12 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     /**
-     * Release connections.
+     * Close connections.
      * 
      * @param forceRollback is force rollback
-     * @return SQL exception when connections release
+     * @return SQL exception when connections close
      */
-    public Collection<SQLException> releaseConnections(final boolean forceRollback) {
+    public synchronized Collection<SQLException> closeConnections(final boolean forceRollback) {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
@@ -284,23 +276,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         }
         cachedConnections.clear();
         methodInvocations.clear();
+        connectionStatus.switchToReleased();
         return result;
-    }
-    
-    private void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
-        if (exceptions.isEmpty()) {
-            return;
-        }
-        SQLException ex = new SQLException("");
-        for (SQLException each : exceptions) {
-            ex.setNextException(each);
-        }
-        throw ex;
-    }
-    
-    private void replayMethodsInvocation(final Object target) {
-        for (MethodInvocation each : methodInvocations) {
-            each.invoke(target);
-        }
     }
 }

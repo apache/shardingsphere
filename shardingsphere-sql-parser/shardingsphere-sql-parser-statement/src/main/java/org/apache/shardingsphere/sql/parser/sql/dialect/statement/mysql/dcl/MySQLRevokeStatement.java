@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL revoke statement.
  */
-public final class MySQLRevokeStatement extends RevokeStatement implements DCLStatement, MySQLStatement {
+public final class MySQLRevokeStatement extends RevokeStatement implements MySQLStatement {
 }

@@ -28,7 +28,7 @@ import java.util.LinkedList;
  * Drop table statement.
  */
 @Getter
-public abstract class DropTableStatement extends AbstractSQLStatement {
+public abstract class DropTableStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }

@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL drop index statement.
  */
-public final class PostgreSQLDropIndexStatement extends DropIndexStatement implements DDLStatement, PostgreSQLStatement {
+public final class PostgreSQLDropIndexStatement extends DropIndexStatement implements PostgreSQLStatement {
 }
