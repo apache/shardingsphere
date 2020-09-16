@@ -20,8 +20,8 @@ package org.apache.shardingsphere.example.shadow.table.raw.jdbc.config;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 import javax.sql.DataSource;
@@ -40,14 +40,8 @@ public final class MasterSlaveShadowDatabasesConfiguration implements ExampleCon
         dataSourceMap.put("ds_slave", DataSourceUtil.createDataSource("demo_ds_slave"));
         dataSourceMap.put("shadow_ds_master", DataSourceUtil.createDataSource("demo_shadow_ds_master"));
         dataSourceMap.put("shadow_ds_slave", DataSourceUtil.createDataSource("demo_shadow_ds_slave"));
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(new ShadowRuleConfiguration("shadow", createShadowMappings()), getMasterSlaveRuleConfiguration()), null);
-    }
-    
-    private Map<String, String> createShadowMappings() {
-        Map<String, String> result = new HashMap<>();
-        result.put("ds_master", "shadow_ds_master");
-        result.put("ds_slave", "shadow_ds_slave");
-        return result;
+        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Arrays.asList("ds_master", "ds_slave"), Arrays.asList("shadow_ds_master", "shadow_ds_slave"));
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, getMasterSlaveRuleConfiguration()), null);
     }
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
