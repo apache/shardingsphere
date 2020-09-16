@@ -1,6 +1,6 @@
 +++
 pre = "<b>3.8. </b>"
-title = "多数据副本"
+title = "强一致多副本"
 weight = 8
 chapter = true
 +++

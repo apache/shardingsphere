@@ -1,5 +1,5 @@
 +++
-title = "Multi Replica"
+title = "Consensus Replication"
 weight = 5
 +++
 

@@ -1,6 +1,6 @@
 +++
 pre = "<b>3.8. </b>"
-title = "Multi replica"
+title = "Consensus Replication"
 weight = 8
 chapter = true
 +++
