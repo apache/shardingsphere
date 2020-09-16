@@ -61,17 +61,6 @@ public final class ProxyContextTest {
         assertThat(actual, is(Optional.of(mockDataSourceMap.get("ds_1"))));
     }
 
-    private Map<String, SchemaContext> getSchemaContextMap(final Map<String, DataSource> mockDataSourceMap) {
-        SchemaContext schemaContext = mock(SchemaContext.class);
-        ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
-        RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        when(shardingSphereSchema.getDataSources()).thenReturn(mockDataSourceMap);
-        when(schemaContext.getName()).thenReturn("schema");
-        when(schemaContext.getSchema()).thenReturn(shardingSphereSchema);
-        when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
-        return Collections.singletonMap("schema", schemaContext);
-    }
-
     @Test
     public void assertInit() {
         SchemaContexts schemaContexts = null;
@@ -130,9 +119,20 @@ public final class ProxyContextTest {
         schemaContexts.set(ProxyContext.getInstance(),
             new StandardSchemaContexts(schemaContextsMap, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         ArrayList thatList = new ArrayList(schemaContextsMap.keySet());
-        for(int i=0;i<thatList.size();i++){
+        for (int i = 0; i < thatList.size(); i++) {
             assertThat(thatList.get(i), is(ProxyContext.getInstance().getAllSchemaNames().get(i)));
         }
+    }
+
+    private Map<String, SchemaContext> getSchemaContextMap(final Map<String, DataSource> mockDataSourceMap) {
+        SchemaContext schemaContext = mock(SchemaContext.class);
+        ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
+        RuntimeContext runtimeContext = mock(RuntimeContext.class);
+        when(shardingSphereSchema.getDataSources()).thenReturn(mockDataSourceMap);
+        when(schemaContext.getName()).thenReturn("schema");
+        when(schemaContext.getSchema()).thenReturn(shardingSphereSchema);
+        when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
+        return Collections.singletonMap("schema", schemaContext);
     }
 
     private Map<String, SchemaContext> getSchemaContextMap() {
