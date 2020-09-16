@@ -84,8 +84,7 @@ public final class ProxyContextTest {
         Map<String, SchemaContext> schemaContextsMap = Collections.singletonMap("schema", schemaContext);
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(),
-                new StandardSchemaContexts(schemaContextsMap, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(schemaContextsMap, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         boolean exists1 = ProxyContext.getInstance().schemaExists("schema");
         assertThat(true, is(exists1));
         boolean exists2 = ProxyContext.getInstance().schemaExists("schema_2");
@@ -104,8 +103,7 @@ public final class ProxyContextTest {
         Map<String, SchemaContext> schemaContextsMap = Collections.singletonMap("schema", schemaContext);
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(),
-                new StandardSchemaContexts(schemaContextsMap, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(schemaContextsMap, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         assertThat(null, is(ProxyContext.getInstance().getSchema(null)));
         assertThat(null, is(ProxyContext.getInstance().getSchema("")));
         assertThat(null, is(ProxyContext.getInstance().getSchema("schema1")));
