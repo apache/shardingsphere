@@ -160,14 +160,12 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithShardingSphereConfigurationException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new ShardingSphereConfigurationException("No reason"));
-        assertCommonException(actual);
+        assertCommonException(MySQLErrPacketFactory.newInstance(1, new ShardingSphereConfigurationException("No reason")));
     }
     
     @Test
     public void assertNewInstanceWithSQLParsingException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLParsingException("No reason"));
-        assertCommonException(actual);
+        assertCommonException(MySQLErrPacketFactory.newInstance(1, new SQLParsingException("No reason")));
     }
     
     private void assertCommonException(final MySQLErrPacket actual) {
