@@ -48,9 +48,9 @@ import java.util.stream.Collectors;
 /**
  * Projections token generator.
  */
+@Setter
 public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute, RouteContextAware {
     
-    @Setter
     private RouteContext routeContext;
     
     @Override
