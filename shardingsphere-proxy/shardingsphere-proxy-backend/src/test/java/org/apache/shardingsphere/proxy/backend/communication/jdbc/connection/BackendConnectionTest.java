@@ -220,4 +220,25 @@ public final class BackendConnectionTest {
         backendConnection.getTransactionStatus().setInTransaction(false);
         assertFalse(backendConnection.isSerialExecute());
     }
+    
+    @Test
+    public void assertIsNotSerialExecuteWhenInTransactionAndBaseTransactionType() {
+        backendConnection.getTransactionStatus().setInTransaction(false);
+        backendConnection.getTransactionStatus().setTransactionType(TransactionType.BASE);
+        assertFalse(backendConnection.isSerialExecute());
+    }
+    
+    @Test
+    public void assertIsSerialExecuteWhenInTransactionAndLocalTransactionType() {
+        backendConnection.getTransactionStatus().setTransactionType(TransactionType.LOCAL);
+        backendConnection.getTransactionStatus().setInTransaction(true);
+        assertTrue(backendConnection.isSerialExecute());
+    }
+    
+    @Test
+    public void assertIsSerialExecuteWhenInTransactionAndXaTransactionType() {
+        backendConnection.getTransactionStatus().setTransactionType(TransactionType.XA);
+        backendConnection.getTransactionStatus().setInTransaction(true);
+        assertTrue(backendConnection.isSerialExecute());
+    }
 }
