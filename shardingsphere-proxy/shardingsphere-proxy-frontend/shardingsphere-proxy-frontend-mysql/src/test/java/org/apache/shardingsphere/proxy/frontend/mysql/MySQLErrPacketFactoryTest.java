@@ -124,7 +124,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithDBCreateExistsException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new DBCreateExistsException("No reason"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new DBCreateExistsException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1007));
         assertThat(actual.getSqlState(), is("HY000"));
@@ -133,7 +133,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithDBDropExistsException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new DBDropExistsException("No reason"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new DBDropExistsException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1008));
         assertThat(actual.getSqlState(), is("HY000"));
@@ -142,7 +142,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithTableExistsException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new TableExistsException("table_name"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new TableExistsException("table_name"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1050));
         assertThat(actual.getSqlState(), is("42S01"));
@@ -151,7 +151,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithCircuitBreakException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new CircuitBreakException());
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new CircuitBreakException());
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(10000));
         assertThat(actual.getSqlState(), is("C10000"));
@@ -160,12 +160,12 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithShardingSphereConfigurationException() {
-        assertCommonException(MySQLErrPacketFactory.newInstance(1, new ShardingSphereConfigurationException("No reason")));
+        assertCommonException(MySQLErrPacketFactory.newInstance(new ShardingSphereConfigurationException("No reason")));
     }
     
     @Test
     public void assertNewInstanceWithSQLParsingException() {
-        assertCommonException(MySQLErrPacketFactory.newInstance(1, new SQLParsingException("No reason")));
+        assertCommonException(MySQLErrPacketFactory.newInstance(new SQLParsingException("No reason")));
     }
     
     private void assertCommonException(final MySQLErrPacket actual) {
