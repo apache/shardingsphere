@@ -35,9 +35,8 @@ public interface JDBCExecutorWrapper {
      * 
      * @param sql SQL
      * @return execution context
-     * @throws SQLException SQL exception
      */
-    ExecutionContext generateExecutionContext(String sql) throws SQLException;
+    ExecutionContext generateExecutionContext(String sql);
     
     /**
      * Get execute group engine.

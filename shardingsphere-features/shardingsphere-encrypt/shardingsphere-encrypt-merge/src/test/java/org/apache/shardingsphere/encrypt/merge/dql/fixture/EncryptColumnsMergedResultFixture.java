@@ -21,8 +21,6 @@ import org.apache.shardingsphere.encrypt.merge.dal.impl.EncryptColumnsMergedResu
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
-import java.sql.SQLException;
-
 public final class EncryptColumnsMergedResultFixture extends EncryptColumnsMergedResult {
     
     public EncryptColumnsMergedResultFixture(final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) {
@@ -30,17 +28,17 @@ public final class EncryptColumnsMergedResultFixture extends EncryptColumnsMerge
     }
     
     @Override
-    public boolean nextValue() throws SQLException {
+    public boolean nextValue() {
         return false;
     }
     
     @Override
-    public Object getOriginalValue(final int columnIndex, final Class<?> type) throws SQLException {
+    public Object getOriginalValue(final int columnIndex, final Class<?> type) {
         return null;
     }
     
     @Override
-    public boolean wasNull() throws SQLException {
+    public boolean wasNull() {
         return false;
     }
 }
