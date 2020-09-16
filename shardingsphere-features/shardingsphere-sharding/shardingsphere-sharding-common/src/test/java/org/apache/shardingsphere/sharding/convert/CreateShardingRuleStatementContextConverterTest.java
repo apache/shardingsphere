@@ -31,7 +31,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class CreateShardingRuleStatementContextConverterTest {
+public final class CreateShardingRuleStatementContextConverterTest {
     
     private TableRuleSegment segment;
     

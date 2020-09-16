@@ -24,7 +24,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public class BinaryStatementRegistryTest {
+public final class BinaryStatementRegistryTest {
     
     private final String sql = "SELECT * FROM tbl WHERE id=?";
     

@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
  * Reflective method invocation.
  */
 @RequiredArgsConstructor
-public class MethodInvocation {
+public final class MethodInvocation {
     
     @Getter
     private final Method method;

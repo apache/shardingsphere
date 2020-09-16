@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ShadowRouteDecoratorTest {
+public final class ShadowRouteDecoratorTest {
     
     private static final String SHADOW_COLUMN = "is_shadow";
     
