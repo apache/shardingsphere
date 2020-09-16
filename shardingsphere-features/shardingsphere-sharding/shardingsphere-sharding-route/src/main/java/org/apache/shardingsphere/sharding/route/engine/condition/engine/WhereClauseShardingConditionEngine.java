@@ -94,9 +94,8 @@ public final class WhereClauseShardingConditionEngine {
     private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ExpressionSegment expressionSegment, final List<Object> parameters) {
         Collection<ShardingCondition> result = new LinkedList<>();
     
-        Collection<AndPredicate> andPredicates = new LinkedList<>();
         ExpressionBuildUtil util = new ExpressionBuildUtil(expressionSegment);
-        andPredicates.addAll(util.extractAndPredicates().getAndPredicates());
+        Collection<AndPredicate> andPredicates = new LinkedList<>(util.extractAndPredicates().getAndPredicates());
         for (AndPredicate each : andPredicates) {
             Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatementContext, each, parameters);
             if (routeValueMap.isEmpty()) {

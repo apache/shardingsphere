@@ -29,6 +29,6 @@ public final class PostgreSQLComSyncExecutorTest {
     @Test
     public void assertNewInstance() {
         PostgreSQLComSyncExecutor actual = new PostgreSQLComSyncExecutor();
-        assertThat(actual.execute(), is(Collections.EMPTY_LIST));
+        assertThat(actual.execute(), is(Collections.emptyList()));
     }
 }

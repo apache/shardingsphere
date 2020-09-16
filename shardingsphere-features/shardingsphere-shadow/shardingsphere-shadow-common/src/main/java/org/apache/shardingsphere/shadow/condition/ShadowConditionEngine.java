@@ -60,10 +60,9 @@ public final class ShadowConditionEngine {
         if (!whereSegment.isPresent()) {
             return Optional.empty();
         }
-        Collection<AndPredicate> andPredicates = new LinkedList<>();
         ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
         ExpressionBuildUtil util = new ExpressionBuildUtil(expression);
-        andPredicates.addAll(util.extractAndPredicates().getAndPredicates());
+        Collection<AndPredicate> andPredicates = new LinkedList<>(util.extractAndPredicates().getAndPredicates());
         for (AndPredicate each : andPredicates) {
             Optional<ShadowCondition> condition = createShadowCondition(each);
             if (condition.isPresent()) {
