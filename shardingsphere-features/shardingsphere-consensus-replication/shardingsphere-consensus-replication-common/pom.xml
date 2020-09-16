@@ -22,16 +22,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-replica</artifactId>
+        <artifactId>shardingsphere-consensus-replication</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-replica-common</artifactId>
+    <artifactId>shardingsphere-consensus-replication-common</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-replica-api</artifactId>
+            <artifactId>shardingsphere-consensus-replication-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
