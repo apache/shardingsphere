@@ -38,18 +38,18 @@ public final class PostgreSQLErrPacketFactory {
     public static PostgreSQLErrorResponsePacket newInstance(final Exception cause) {
         if (cause instanceof PSQLException) {
             ServerErrorMessage serverErrorMessage = ((PSQLException) cause).getServerErrorMessage();
-            PostgreSQLErrorResponsePacket errorResponsePacket = new PostgreSQLErrorResponsePacket();
-            if (null != serverErrorMessage) {
-                errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, serverErrorMessage.getSeverity());
-                errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, serverErrorMessage.getSQLState());
-                errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, serverErrorMessage.getMessage());
-                errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_POSITION, Integer.toString(serverErrorMessage.getPosition()));
-            } else {
+            PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
+            if (null == serverErrorMessage) {
                 PSQLException ex = (PSQLException) cause;
-                errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, ex.getSQLState());
-                errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, ex.getMessage());
+                result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, ex.getSQLState());
+                result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, ex.getMessage());
+            } else {
+                result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, serverErrorMessage.getSeverity());
+                result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, serverErrorMessage.getSQLState());
+                result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, serverErrorMessage.getMessage());
+                result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_POSITION, Integer.toString(serverErrorMessage.getPosition()));
             }
-            return errorResponsePacket;
+            return result;
         }
         PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
         result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
