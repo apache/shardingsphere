@@ -45,44 +45,43 @@ public final class MySQLErrPacketFactory {
     /**
      * New instance of MySQL ERR packet.
      * 
-     * @param sequenceId sequence ID
      * @param cause cause
      * @return instance of MySQL ERR packet
      */
-    public static MySQLErrPacket newInstance(final int sequenceId, final Exception cause) {
+    public static MySQLErrPacket newInstance(final Exception cause) {
         if (cause instanceof SQLException) {
             SQLException sqlException = (SQLException) cause;
-            return null != sqlException.getSQLState() ? new MySQLErrPacket(sequenceId, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage())
-                : new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_INTERNAL_ERROR, cause.getMessage());
+            return null != sqlException.getSQLState() ? new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage())
+                : new MySQLErrPacket(1, MySQLServerErrorCode.ER_INTERNAL_ERROR, cause.getMessage());
         }
         if (cause instanceof ShardingCTLException) {
             ShardingCTLException shardingCTLException = (ShardingCTLException) cause;
-            return new MySQLErrPacket(sequenceId, ShardingCTLErrorCode.valueOf(shardingCTLException), shardingCTLException.getShardingCTL());
+            return new MySQLErrPacket(1, ShardingCTLErrorCode.valueOf(shardingCTLException), shardingCTLException.getShardingCTL());
         }
         if (cause instanceof TableModifyInTransactionException) {
-            return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, ((TableModifyInTransactionException) cause).getTableName());
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, ((TableModifyInTransactionException) cause).getTableName());
         }
         if (cause instanceof UnknownDatabaseException) {
-            return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((UnknownDatabaseException) cause).getDatabaseName());
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((UnknownDatabaseException) cause).getDatabaseName());
         }
         if (cause instanceof NoDatabaseSelectedException) {
-            return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_NO_DB_ERROR);
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
         }
         if (cause instanceof DBCreateExistsException) {
-            return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_DB_CREATE_EXISTS_ERROR, ((DBCreateExistsException) cause).getDatabaseName());
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_DB_CREATE_EXISTS_ERROR, ((DBCreateExistsException) cause).getDatabaseName());
         }
         if (cause instanceof DBDropExistsException) {
-            return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_DB_DROP_EXISTS_ERROR, ((DBDropExistsException) cause).getDatabaseName());
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_DB_DROP_EXISTS_ERROR, ((DBDropExistsException) cause).getDatabaseName());
         }
         if (cause instanceof TableExistsException) {
-            return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_TABLE_EXISTS_ERROR, ((TableExistsException) cause).getTableName());
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_TABLE_EXISTS_ERROR, ((TableExistsException) cause).getTableName());
         }
         if (cause instanceof CircuitBreakException) {
-            return new MySQLErrPacket(sequenceId, CommonErrorCode.CIRCUIT_BREAK_MODE);
+            return new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE);
         }
         if (cause instanceof ShardingSphereConfigurationException || cause instanceof SQLParsingException) {
-            return new MySQLErrPacket(sequenceId, MySQLServerErrorCode.ER_NOT_SUPPORTED_YET, cause.getMessage());
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NOT_SUPPORTED_YET, cause.getMessage());
         }
-        return new MySQLErrPacket(sequenceId, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
+        return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
 }
