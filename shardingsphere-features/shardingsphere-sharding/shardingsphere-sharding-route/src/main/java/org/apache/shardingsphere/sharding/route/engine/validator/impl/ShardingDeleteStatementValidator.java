@@ -44,8 +44,12 @@ public final class ShardingDeleteStatementValidator implements ShardingStatement
     
     @Override
     public void postValidate(final DeleteStatement sqlStatement, final RouteResult routeResult) {
-        if (sqlStatement instanceof MySQLStatement && ((MySQLDeleteStatement) sqlStatement).getLimit().isPresent() && routeResult.getRouteUnits().size() > 1) {
+        if (containsDeleteLimitClause(sqlStatement) && routeResult.getRouteUnits().size() > 1) {
             throw new ShardingSphereException("DELETE ... LIMIT can not support sharding route to multiple data nodes.");
         }
+    }
+    
+    private boolean containsDeleteLimitClause(final DeleteStatement sqlStatement) {
+        return sqlStatement instanceof MySQLStatement && ((MySQLDeleteStatement) sqlStatement).getLimit().isPresent();
     }
 }
