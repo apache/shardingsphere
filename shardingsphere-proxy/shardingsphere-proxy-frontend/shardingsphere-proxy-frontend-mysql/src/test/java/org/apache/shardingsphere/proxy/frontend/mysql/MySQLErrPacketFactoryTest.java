@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
@@ -114,5 +115,14 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getErrorCode(), is(10002));
         assertThat(actual.getSqlState(), is("C10002"));
         assertThat(actual.getErrorMessage(), is("Unknown exception: [No reason]"));
+    }
+    
+    @Test
+    public void assertNewInstanceWithDBCreateExistsException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new DBCreateExistsException("No reason"));
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(1007));
+        assertThat(actual.getSqlState(), is("HY000"));
+        assertThat(actual.getErrorMessage(), is("Can't create database 'No reason'; database exists"));
     }
 }
