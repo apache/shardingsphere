@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.admin.initdb;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
@@ -48,7 +47,7 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
             backendConnection.setCurrentSchema(packet.getSchema());
             return Collections.singletonList(new MySQLOKPacket(1));
         }
-        return Collections.singletonList(new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, packet.getSchema()));
+        throw new UnknownDatabaseException(packet.getSchema());
     }
     
     private boolean isAuthorizedSchema(final String schema) {

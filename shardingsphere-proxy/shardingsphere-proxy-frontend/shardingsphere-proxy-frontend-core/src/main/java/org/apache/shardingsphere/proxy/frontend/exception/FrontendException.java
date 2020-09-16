@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.mysql.command.generic;
-
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
-
-import java.util.Collection;
+package org.apache.shardingsphere.proxy.frontend.exception;
 
 /**
- * Unsupported command packet executor for MySQL.
+ * Frontend exception.
  */
-@RequiredArgsConstructor
-public final class MySQLUnsupportedCommandExecutor implements CommandExecutor {
+public abstract class FrontendException extends RuntimeException {
     
-    private final MySQLCommandPacketType type;
-    
-    @Override
-    public Collection<DatabasePacket<?>> execute() {
-        throw new UnsupportedCommandException(type.toString());
-    }
+    private static final long serialVersionUID = 1127309123050216974L;
 }
