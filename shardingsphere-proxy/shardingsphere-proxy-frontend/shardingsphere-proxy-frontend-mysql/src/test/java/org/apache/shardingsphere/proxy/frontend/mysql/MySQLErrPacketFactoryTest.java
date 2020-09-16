@@ -19,11 +19,13 @@ package org.apache.shardingsphere.proxy.frontend.mysql;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
+import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -124,5 +126,23 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getErrorCode(), is(1007));
         assertThat(actual.getSqlState(), is("HY000"));
         assertThat(actual.getErrorMessage(), is("Can't create database 'No reason'; database exists"));
+    }
+    
+    @Test
+    public void assertNewInstanceWithDBDropExistsException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new DBDropExistsException("No reason"));
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(1008));
+        assertThat(actual.getSqlState(), is("HY000"));
+        assertThat(actual.getErrorMessage(), is("Can't drop database 'No reason'; database doesn't exist"));
+    }
+    
+    @Test
+    public void assertNewInstanceWithTableExistsException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new TableExistsException("table_name"));
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(1050));
+        assertThat(actual.getSqlState(), is("42S01"));
+        assertThat(actual.getErrorMessage(), is("Table 'table_name' already exists"));
     }
 }
