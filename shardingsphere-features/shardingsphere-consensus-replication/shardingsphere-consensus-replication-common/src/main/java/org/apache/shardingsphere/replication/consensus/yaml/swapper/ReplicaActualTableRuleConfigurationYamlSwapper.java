@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.replication.consensus.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
-import org.apache.shardingsphere.replication.consensus.api.config.ReplicaActualTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationActualTableRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.yaml.config.YamlReplicaActualTableRuleConfiguration;
 
 /**
  * Replica actual table rule configuration YAML swapper.
  */
-public final class ReplicaActualTableRuleConfigurationYamlSwapper implements YamlSwapper<YamlReplicaActualTableRuleConfiguration, ReplicaActualTableRuleConfiguration> {
+public final class ReplicaActualTableRuleConfigurationYamlSwapper implements YamlSwapper<YamlReplicaActualTableRuleConfiguration, ConsensusReplicationActualTableRuleConfiguration> {
     
     @Override
-    public YamlReplicaActualTableRuleConfiguration swapToYamlConfiguration(final ReplicaActualTableRuleConfiguration data) {
+    public YamlReplicaActualTableRuleConfiguration swapToYamlConfiguration(final ConsensusReplicationActualTableRuleConfiguration data) {
         YamlReplicaActualTableRuleConfiguration result = new YamlReplicaActualTableRuleConfiguration();
         result.setPhysicsTable(data.getPhysicsTable());
         result.setReplicaGroupId(data.getReplicaGroupId());
@@ -37,8 +37,8 @@ public final class ReplicaActualTableRuleConfigurationYamlSwapper implements Yam
     }
     
     @Override
-    public ReplicaActualTableRuleConfiguration swapToObject(final YamlReplicaActualTableRuleConfiguration yamlConfiguration) {
-        return new ReplicaActualTableRuleConfiguration(yamlConfiguration.getPhysicsTable(), yamlConfiguration.getReplicaGroupId(),
+    public ConsensusReplicationActualTableRuleConfiguration swapToObject(final YamlReplicaActualTableRuleConfiguration yamlConfiguration) {
+        return new ConsensusReplicationActualTableRuleConfiguration(yamlConfiguration.getPhysicsTable(), yamlConfiguration.getReplicaGroupId(),
                 yamlConfiguration.getReplicaPeers(), yamlConfiguration.getDataSourceName());
     }
 }

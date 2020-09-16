@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.apache.shardingsphere.replication.consensus.api.config.ReplicaRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,6 +37,6 @@ public final class YamlReplicaRuleConfiguration implements YamlRuleConfiguration
     
     @Override
     public Class<? extends RuleConfiguration> getRuleConfigurationType() {
-        return ReplicaRuleConfiguration.class;
+        return ConsensusReplicationRuleConfiguration.class;
     }
 }

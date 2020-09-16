@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.replication.consensus.yaml.swapper;
 
-import org.apache.shardingsphere.replication.consensus.api.config.ReplicaActualTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationActualTableRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.yaml.config.YamlReplicaActualTableRuleConfiguration;
 import org.junit.Test;
 
@@ -38,13 +38,13 @@ public class ReplicaActualTableRuleConfigurationYamlSwapperTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSwapToYamlConfigurationWithMinProperties() {
-        swapper.swapToYamlConfiguration(new ReplicaActualTableRuleConfiguration(null, null, null, null));
+        swapper.swapToYamlConfiguration(new ConsensusReplicationActualTableRuleConfiguration(null, null, null, null));
     }
     
     @Test
     public void assertSwapToYamlConfigurationWithMaxProperties() {
         YamlReplicaActualTableRuleConfiguration yamlConfiguration = swapper.swapToYamlConfiguration(
-                new ReplicaActualTableRuleConfiguration(physicsTable, replicaGroupId, replicaPeers, dataSourceName));
+                new ConsensusReplicationActualTableRuleConfiguration(physicsTable, replicaGroupId, replicaPeers, dataSourceName));
         assertThat(yamlConfiguration.getDataSourceName(), is(dataSourceName));
         assertThat(yamlConfiguration.getPhysicsTable(), is(physicsTable));
         assertThat(yamlConfiguration.getReplicaGroupId(), is(replicaGroupId));
@@ -53,7 +53,7 @@ public class ReplicaActualTableRuleConfigurationYamlSwapperTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSwapToObjectWithMinProperties() {
-        new ReplicaActualTableRuleConfiguration(null, null, null, null);
+        new ConsensusReplicationActualTableRuleConfiguration(null, null, null, null);
     }
     
     @Test
@@ -63,7 +63,7 @@ public class ReplicaActualTableRuleConfigurationYamlSwapperTest {
         yamlConfiguration.setReplicaGroupId(replicaGroupId);
         yamlConfiguration.setReplicaPeers(replicaPeers);
         yamlConfiguration.setDataSourceName(dataSourceName);
-        ReplicaActualTableRuleConfiguration configuration = swapper.swapToObject(yamlConfiguration);
+        ConsensusReplicationActualTableRuleConfiguration configuration = swapper.swapToObject(yamlConfiguration);
         assertThat(configuration.getDataSourceName(), is(dataSourceName));
         assertThat(configuration.getPhysicsTable(), is(physicsTable));
         assertThat(configuration.getReplicaGroupId(), is(replicaGroupId));

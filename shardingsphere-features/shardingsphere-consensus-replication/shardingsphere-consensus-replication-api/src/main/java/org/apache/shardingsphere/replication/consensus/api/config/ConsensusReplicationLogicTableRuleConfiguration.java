@@ -24,18 +24,21 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Replica rule configuration.
+ * Consensus replication logic table rule configuration.
  */
 @Getter
-public final class ReplicaRuleConfiguration implements RuleConfiguration {
+public final class ConsensusReplicationLogicTableRuleConfiguration implements RuleConfiguration {
     
-    private final Collection<ReplicaLogicTableRuleConfiguration> tables;
+    private final String logicTable;
     
-    public ReplicaRuleConfiguration(final Collection<ReplicaLogicTableRuleConfiguration> tables) {
-        if (null != tables) {
-            this.tables = tables;
+    private final Collection<ConsensusReplicationActualTableRuleConfiguration> replicaGroups;
+    
+    public ConsensusReplicationLogicTableRuleConfiguration(final String logicTable, final Collection<ConsensusReplicationActualTableRuleConfiguration> replicaGroups) {
+        this.logicTable = logicTable;
+        if (null != replicaGroups) {
+            this.replicaGroups = replicaGroups;
         } else {
-            this.tables = Collections.emptyList();
+            this.replicaGroups = Collections.emptyList();
         }
     }
 }

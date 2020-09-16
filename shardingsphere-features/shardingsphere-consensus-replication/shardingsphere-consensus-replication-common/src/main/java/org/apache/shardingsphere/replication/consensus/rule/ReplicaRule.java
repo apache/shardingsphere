@@ -20,9 +20,9 @@ package org.apache.shardingsphere.replication.consensus.rule;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.replication.consensus.api.config.ReplicaActualTableRuleConfiguration;
-import org.apache.shardingsphere.replication.consensus.api.config.ReplicaLogicTableRuleConfiguration;
-import org.apache.shardingsphere.replication.consensus.api.config.ReplicaRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationActualTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationLogicTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationRuleConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,11 +41,11 @@ public final class ReplicaRule implements ShardingSphereRule {
     
     private final Map<String, ReplicaTableRule> physicsTableRules;
     
-    public ReplicaRule(final ReplicaRuleConfiguration configuration) {
+    public ReplicaRule(final ConsensusReplicationRuleConfiguration configuration) {
         Collection<ReplicaTableRule> replicaTableRules = new ArrayList<>();
         Map<String, ReplicaTableRule> physicsTableRules = new ConcurrentHashMap<>();
-        for (ReplicaLogicTableRuleConfiguration entry : configuration.getTables()) {
-            for (ReplicaActualTableRuleConfiguration each : entry.getReplicaGroups()) {
+        for (ConsensusReplicationLogicTableRuleConfiguration entry : configuration.getTables()) {
+            for (ConsensusReplicationActualTableRuleConfiguration each : entry.getReplicaGroups()) {
                 String physicsTable = each.getPhysicsTable();
                 ReplicaTableRule replaced = physicsTableRules.putIfAbsent(physicsTable, new ReplicaTableRule(each));
                 if (null != replaced) {

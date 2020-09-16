@@ -23,10 +23,10 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 /**
- * Replica actual table rule configuration.
+ * Consensus replication actual table rule configuration.
  */
 @Getter
-public final class ReplicaActualTableRuleConfiguration implements RuleConfiguration {
+public final class ConsensusReplicationActualTableRuleConfiguration implements RuleConfiguration {
     
     private final String physicsTable;
     
@@ -36,7 +36,7 @@ public final class ReplicaActualTableRuleConfiguration implements RuleConfigurat
     
     private final String dataSourceName;
     
-    public ReplicaActualTableRuleConfiguration(final String physicsTable, final String replicaGroupId, final String replicaPeers, final String dataSourceName) {
+    public ConsensusReplicationActualTableRuleConfiguration(final String physicsTable, final String replicaGroupId, final String replicaPeers, final String dataSourceName) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(physicsTable), "physicsTable is required.");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(replicaGroupId), "replicaGroupId is required.");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(replicaPeers), "replicaPeers is required.");

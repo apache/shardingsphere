@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.replication.consensus.rule;
 
-import org.apache.shardingsphere.replication.consensus.api.config.ReplicaActualTableRuleConfiguration;
-import org.apache.shardingsphere.replication.consensus.api.config.ReplicaLogicTableRuleConfiguration;
-import org.apache.shardingsphere.replication.consensus.api.config.ReplicaRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationActualTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationLogicTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationRuleConfiguration;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -45,10 +45,10 @@ public final class ReplicaRuleTest {
     private final String replicaPeers = "127.0.0.1:9090";
     
     private ReplicaRule createReplicaRule() {
-        ReplicaActualTableRuleConfiguration replicaGroup = new ReplicaActualTableRuleConfiguration(physicsTable, replicaGroupId, replicaPeers, dataSourceName);
-        Collection<ReplicaActualTableRuleConfiguration> replicaGroups = Collections.singleton(replicaGroup);
-        ReplicaLogicTableRuleConfiguration table = new ReplicaLogicTableRuleConfiguration(logicTableName, replicaGroups);
-        ReplicaRuleConfiguration configuration = new ReplicaRuleConfiguration(Collections.singleton(table));
+        ConsensusReplicationActualTableRuleConfiguration replicaGroup = new ConsensusReplicationActualTableRuleConfiguration(physicsTable, replicaGroupId, replicaPeers, dataSourceName);
+        Collection<ConsensusReplicationActualTableRuleConfiguration> replicaGroups = Collections.singleton(replicaGroup);
+        ConsensusReplicationLogicTableRuleConfiguration table = new ConsensusReplicationLogicTableRuleConfiguration(logicTableName, replicaGroups);
+        ConsensusReplicationRuleConfiguration configuration = new ConsensusReplicationRuleConfiguration(Collections.singleton(table));
         return new ReplicaRule(configuration);
     }
     

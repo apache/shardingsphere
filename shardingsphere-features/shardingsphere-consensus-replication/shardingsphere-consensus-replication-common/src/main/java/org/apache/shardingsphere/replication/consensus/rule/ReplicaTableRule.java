@@ -19,7 +19,7 @@ package org.apache.shardingsphere.replication.consensus.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.replication.consensus.api.config.ReplicaActualTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationActualTableRuleConfiguration;
 
 /**
  * Replica table rule.
@@ -35,7 +35,7 @@ public final class ReplicaTableRule implements ShardingSphereRule {
     
     private final String dataSourceName;
     
-    public ReplicaTableRule(final ReplicaActualTableRuleConfiguration configuration) {
+    public ReplicaTableRule(final ConsensusReplicationActualTableRuleConfiguration configuration) {
         physicsTable = configuration.getPhysicsTable();
         replicaGroupId = configuration.getReplicaGroupId();
         replicaPeers = configuration.getReplicaPeers();

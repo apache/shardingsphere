@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.replication.consensus.rule.builder;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
-import org.apache.shardingsphere.replication.consensus.api.config.ReplicaRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.constant.ReplicaOrder;
 import org.apache.shardingsphere.replication.consensus.rule.ReplicaRule;
 
@@ -27,10 +27,10 @@ import java.util.Collection;
 /**
  * Replica rule builder.
  */
-public final class ReplicaRuleBuilder implements ShardingSphereRuleBuilder<ReplicaRule, ReplicaRuleConfiguration> {
+public final class ReplicaRuleBuilder implements ShardingSphereRuleBuilder<ReplicaRule, ConsensusReplicationRuleConfiguration> {
     
     @Override
-    public ReplicaRule build(final ReplicaRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+    public ReplicaRule build(final ConsensusReplicationRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
         return new ReplicaRule(ruleConfiguration);
     }
     
@@ -40,7 +40,7 @@ public final class ReplicaRuleBuilder implements ShardingSphereRuleBuilder<Repli
     }
     
     @Override
-    public Class<ReplicaRuleConfiguration> getTypeClass() {
-        return ReplicaRuleConfiguration.class;
+    public Class<ConsensusReplicationRuleConfiguration> getTypeClass() {
+        return ConsensusReplicationRuleConfiguration.class;
     }
 }

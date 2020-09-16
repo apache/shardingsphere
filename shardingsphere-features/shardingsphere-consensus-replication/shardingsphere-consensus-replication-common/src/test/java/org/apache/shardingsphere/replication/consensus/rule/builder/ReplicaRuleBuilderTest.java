@@ -20,7 +20,7 @@ package org.apache.shardingsphere.replication.consensus.rule.builder;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
-import org.apache.shardingsphere.replication.consensus.api.config.ReplicaRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.rule.ReplicaRule;
 import org.junit.Test;
 
@@ -38,7 +38,7 @@ public final class ReplicaRuleBuilderTest {
     
     @Test
     public void assertBuild() {
-        ReplicaRuleConfiguration ruleConfig = mock(ReplicaRuleConfiguration.class);
+        ConsensusReplicationRuleConfiguration ruleConfig = mock(ConsensusReplicationRuleConfiguration.class);
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
         assertThat(builder.build(ruleConfig, Collections.emptyList()), instanceOf(ReplicaRule.class));
     }
