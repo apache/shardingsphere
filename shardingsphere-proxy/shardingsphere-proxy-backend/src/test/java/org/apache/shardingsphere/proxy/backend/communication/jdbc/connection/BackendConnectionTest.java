@@ -41,8 +41,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -240,5 +242,15 @@ public final class BackendConnectionTest {
         backendConnection.getTransactionStatus().setTransactionType(TransactionType.XA);
         backendConnection.getTransactionStatus().setInTransaction(true);
         assertTrue(backendConnection.isSerialExecute());
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertSetFetchSizeAsExpected() {
+        Statement statement = mock(Statement.class);
+        Method setFetchSizeMethod = backendConnection.getClass().getDeclaredMethod("setFetchSize", Statement.class);
+        setFetchSizeMethod.setAccessible(true);
+        setFetchSizeMethod.invoke(backendConnection, statement);
+        verify(statement, times(1)).setFetchSize(Integer.MIN_VALUE);
     }
 }
