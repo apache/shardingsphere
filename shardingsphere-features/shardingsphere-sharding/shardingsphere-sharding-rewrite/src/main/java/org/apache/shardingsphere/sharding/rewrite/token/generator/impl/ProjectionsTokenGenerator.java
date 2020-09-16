@@ -75,8 +75,9 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
                     TableExtractUtils utils = new TableExtractUtils();
                     utils.extractTablesFromSelect(selectStatementContext.getSqlStatement());
                     result.get(routeUnit).add(getDerivedProjectionTextFromColumnOrderByItemSegment((DerivedProjection) each, utils, routeUnit));
+                } else if (each instanceof DerivedProjection) {
+                    result.get(routeUnit).add(getDerivedProjectionText(each));
                 }
-                result.get(routeUnit).add(getDerivedProjectionText(each));
             }
         }
         return result;
@@ -118,7 +119,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         Optional<String> actualTableName = getActualTables(routeUnit, ownerSegment.get().getIdentifier().getValue());
         Preconditions.checkState(actualTableName.isPresent());
         ColumnSegment newColumnSegment = new ColumnSegment(0, 0, old.getColumn().getIdentifier());
-        String newOwnerString = String.format("%s%s%s", ownerSegment.get().getIdentifier().getQuoteCharacter().getStartDelimiter(),actualTableName.get(),
+        String newOwnerString = String.format("%s%s%s", ownerSegment.get().getIdentifier().getQuoteCharacter().getStartDelimiter(), actualTableName.get(),
                 ownerSegment.get().getIdentifier().getQuoteCharacter().getEndDelimiter());
         IdentifierValue newOwnerIdentifier = new IdentifierValue(newOwnerString);
         OwnerSegment newOwner = new OwnerSegment(0, 0, newOwnerIdentifier);
