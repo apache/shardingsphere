@@ -43,6 +43,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -252,5 +253,25 @@ public final class BackendConnectionTest {
         setFetchSizeMethod.setAccessible(true);
         setFetchSizeMethod.invoke(backendConnection, statement);
         verify(statement, times(1)).setFetchSize(Integer.MIN_VALUE);
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertAddStatementCorrectly() {
+        Statement statement = mock(Statement.class);
+        backendConnection.add(statement);
+        Field field = backendConnection.getClass().getDeclaredField("cachedStatements");
+        field.setAccessible(true);
+        assertTrue(((Collection<Statement>) field.get(backendConnection)).contains(statement));
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertAddResultSetCorrectly() {
+        ResultSet resultSet = mock(ResultSet.class);
+        backendConnection.add(resultSet);
+        Field field = backendConnection.getClass().getDeclaredField("cachedResultSets");
+        field.setAccessible(true);
+        assertTrue(((Collection<ResultSet>) field.get(backendConnection)).contains(resultSet));
     }
 }
