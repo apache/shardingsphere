@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
-import org.apache.shardingsphere.replication.consensus.constant.ReplicaOrder;
-import org.apache.shardingsphere.replication.consensus.rule.ReplicaRule;
-import org.apache.shardingsphere.replication.consensus.rule.ReplicaTableRule;
+import org.apache.shardingsphere.replication.consensus.constant.ConsensusReplicationOrder;
+import org.apache.shardingsphere.replication.consensus.rule.ConsensusReplicationRule;
+import org.apache.shardingsphere.replication.consensus.rule.ConsensusReplicationTableRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.util.Collection;
@@ -36,15 +36,15 @@ import java.util.Optional;
 /**
  * Route decorator for replica.
  */
-public final class ReplicaRouteDecorator implements RouteDecorator<ReplicaRule> {
+public final class ReplicaRouteDecorator implements RouteDecorator<ConsensusReplicationRule> {
     
     @Override
-    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ReplicaRule replicaRule, final ConfigurationProperties props) {
+    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ConsensusReplicationRule replicaRule, final ConfigurationProperties props) {
         Map<String, ReplicaGroup> replicaGroups = new HashMap<>();
         String schemaName = metaData.getSchemaName();
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
-            ReplicaTableRule replicaRoutingRule = replicaRule.getReplicaTableRules().iterator().next();
+            ConsensusReplicationTableRule replicaRoutingRule = replicaRule.getReplicaTableRules().iterator().next();
             ReplicaGroup replicaGroup = new ReplicaGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),
                     replicaRoutingRule.getDataSourceName());
             replicaGroups.put(ReplicaGroup.BLANK_REPLICA_GROUP_KEY, replicaGroup);
@@ -53,7 +53,7 @@ public final class ReplicaRouteDecorator implements RouteDecorator<ReplicaRule> 
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             Collection<RouteMapper> routeMappers = each.getTableMappers();
             if (null == routeMappers || routeMappers.isEmpty()) {
-                ReplicaTableRule replicaRoutingRule = replicaRule.getReplicaTableRules().iterator().next();
+                ConsensusReplicationTableRule replicaRoutingRule = replicaRule.getReplicaTableRules().iterator().next();
                 ReplicaGroup replicaGroup = new ReplicaGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),
                         replicaRoutingRule.getDataSourceName());
                 replicaGroups.put(ReplicaGroup.BLANK_REPLICA_GROUP_KEY, replicaGroup);
@@ -64,18 +64,18 @@ public final class ReplicaRouteDecorator implements RouteDecorator<ReplicaRule> 
         return new RouteContext(routeContext, routeContext.getRouteResult(), new ReplicaRouteStageContext(schemaName, replicaGroups, sqlStatementContext.isReadOnly()), getTypeClass());
     }
     
-    private void routeReplicaGroups(final Collection<RouteMapper> routeMappers, final ReplicaRule replicaRule, final Map<String, ReplicaGroup> replicaGroups) {
+    private void routeReplicaGroups(final Collection<RouteMapper> routeMappers, final ConsensusReplicationRule replicaRule, final Map<String, ReplicaGroup> replicaGroups) {
         for (RouteMapper each : routeMappers) {
             String actualTableName = each.getActualName();
-            Optional<ReplicaTableRule> replicaRoutingRuleOptional = replicaRule.findRoutingByTable(actualTableName);
+            Optional<ConsensusReplicationTableRule> replicaRoutingRuleOptional = replicaRule.findRoutingByTable(actualTableName);
             ReplicaGroup replicaGroup;
             if (replicaRoutingRuleOptional.isPresent()) {
-                ReplicaTableRule replicaRoutingRule = replicaRoutingRuleOptional.get();
+                ConsensusReplicationTableRule replicaRoutingRule = replicaRoutingRuleOptional.get();
                 replicaGroup = new ReplicaGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),
                         replicaRoutingRule.getDataSourceName());
                 replicaGroups.put(actualTableName, replicaGroup);
             } else {
-                ReplicaTableRule replicaRoutingRule = replicaRule.getReplicaTableRules().iterator().next();
+                ConsensusReplicationTableRule replicaRoutingRule = replicaRule.getReplicaTableRules().iterator().next();
                 replicaGroup = new ReplicaGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),
                         replicaRoutingRule.getDataSourceName());
             }
@@ -85,11 +85,11 @@ public final class ReplicaRouteDecorator implements RouteDecorator<ReplicaRule> 
     
     @Override
     public int getOrder() {
-        return ReplicaOrder.ORDER;
+        return ConsensusReplicationOrder.ORDER;
     }
     
     @Override
-    public Class<ReplicaRule> getTypeClass() {
-        return ReplicaRule.class;
+    public Class<ConsensusReplicationRule> getTypeClass() {
+        return ConsensusReplicationRule.class;
     }
 }

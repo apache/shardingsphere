@@ -21,18 +21,17 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
- * Replica actual table rule configuration for YAML.
+ * Consensus replication logic table rule configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlReplicaActualTableRuleConfiguration implements YamlConfiguration {
+public final class YamlConsensusReplicationLogicTableRuleConfiguration implements YamlConfiguration {
     
-    private String physicsTable;
+    private String logicTable;
     
-    private String replicaGroupId;
-    
-    private String replicaPeers;
-    
-    private String dataSourceName;
+    private Collection<YamlConsensusReplicationActualTableRuleConfiguration> replicaGroups = Collections.emptyList();
 }

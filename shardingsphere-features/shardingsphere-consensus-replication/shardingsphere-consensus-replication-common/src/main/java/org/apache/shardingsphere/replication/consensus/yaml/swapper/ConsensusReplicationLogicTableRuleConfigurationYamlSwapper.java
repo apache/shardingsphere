@@ -20,35 +20,34 @@ package org.apache.shardingsphere.replication.consensus.yaml.swapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationActualTableRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationLogicTableRuleConfiguration;
-import org.apache.shardingsphere.replication.consensus.yaml.config.YamlReplicaActualTableRuleConfiguration;
-import org.apache.shardingsphere.replication.consensus.yaml.config.YamlReplicaLogicTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.yaml.config.YamlConsensusReplicationActualTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.yaml.config.YamlConsensusReplicationLogicTableRuleConfiguration;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Replica logic table rule configuration YAML swapper.
+ * Consensus replication logic table rule configuration YAML swapper.
  */
-public final class ReplicaLogicTableRuleConfigurationYamlSwapper implements YamlSwapper<YamlReplicaLogicTableRuleConfiguration, ConsensusReplicationLogicTableRuleConfiguration> {
+public final class ConsensusReplicationLogicTableRuleConfigurationYamlSwapper 
+        implements YamlSwapper<YamlConsensusReplicationLogicTableRuleConfiguration, ConsensusReplicationLogicTableRuleConfiguration> {
     
-    private final ReplicaActualTableRuleConfigurationYamlSwapper actualTableRuleConfigurationYamlSwapper = new ReplicaActualTableRuleConfigurationYamlSwapper();
+    private final ConsensusReplicationActualTableRuleConfigurationYamlSwapper actualTableRuleConfigurationYamlSwapper = new ConsensusReplicationActualTableRuleConfigurationYamlSwapper();
     
     @Override
-    public YamlReplicaLogicTableRuleConfiguration swapToYamlConfiguration(final ConsensusReplicationLogicTableRuleConfiguration data) {
-        Collection<YamlReplicaActualTableRuleConfiguration> replicaGroups = data.getReplicaGroups().stream()
-                .map(actualTableRuleConfigurationYamlSwapper::swapToYamlConfiguration)
-                .collect(Collectors.toList());
-        YamlReplicaLogicTableRuleConfiguration result = new YamlReplicaLogicTableRuleConfiguration();
+    public YamlConsensusReplicationLogicTableRuleConfiguration swapToYamlConfiguration(final ConsensusReplicationLogicTableRuleConfiguration data) {
+        Collection<YamlConsensusReplicationActualTableRuleConfiguration> replicaGroups = data.getReplicaGroups().stream()
+                .map(actualTableRuleConfigurationYamlSwapper::swapToYamlConfiguration).collect(Collectors.toList());
+        YamlConsensusReplicationLogicTableRuleConfiguration result = new YamlConsensusReplicationLogicTableRuleConfiguration();
         result.setLogicTable(data.getLogicTable());
         result.setReplicaGroups(replicaGroups);
         return result;
     }
     
     @Override
-    public ConsensusReplicationLogicTableRuleConfiguration swapToObject(final YamlReplicaLogicTableRuleConfiguration yamlConfiguration) {
+    public ConsensusReplicationLogicTableRuleConfiguration swapToObject(final YamlConsensusReplicationLogicTableRuleConfiguration yamlConfiguration) {
         Collection<ConsensusReplicationActualTableRuleConfiguration> replicaGroups = yamlConfiguration.getReplicaGroups().stream()
-                .map(actualTableRuleConfigurationYamlSwapper::swapToObject)
-                .collect(Collectors.toList());
+                .map(actualTableRuleConfigurationYamlSwapper::swapToObject).collect(Collectors.toList());
         return new ConsensusReplicationLogicTableRuleConfiguration(yamlConfiguration.getLogicTable(), replicaGroups);
     }
 }

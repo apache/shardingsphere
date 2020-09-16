@@ -32,7 +32,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ReplicaRuleTest {
+public final class ConsensusReplicationRuleTest {
     
     private final String logicTableName = "t_order";
     
@@ -44,31 +44,31 @@ public final class ReplicaRuleTest {
     
     private final String replicaPeers = "127.0.0.1:9090";
     
-    private ReplicaRule createReplicaRule() {
-        ConsensusReplicationActualTableRuleConfiguration replicaGroup = new ConsensusReplicationActualTableRuleConfiguration(physicsTable, replicaGroupId, replicaPeers, dataSourceName);
-        Collection<ConsensusReplicationActualTableRuleConfiguration> replicaGroups = Collections.singleton(replicaGroup);
-        ConsensusReplicationLogicTableRuleConfiguration table = new ConsensusReplicationLogicTableRuleConfiguration(logicTableName, replicaGroups);
-        ConsensusReplicationRuleConfiguration configuration = new ConsensusReplicationRuleConfiguration(Collections.singleton(table));
-        return new ReplicaRule(configuration);
-    }
-    
     @Test
     public void assertCannotFindRouting() {
-        ReplicaRule replicaRule = createReplicaRule();
-        Optional<ReplicaTableRule> routingRuleOptional = replicaRule.findRoutingByTable("not_exists_table");
+        ConsensusReplicationRule consensusReplicationRule = createConsensusReplicationRule();
+        Optional<ConsensusReplicationTableRule> routingRuleOptional = consensusReplicationRule.findRoutingByTable("not_exists_table");
         assertFalse(routingRuleOptional.isPresent());
     }
     
     @Test
     public void assertRoutingFound() {
-        ReplicaRule replicaRule = createReplicaRule();
-        Optional<ReplicaTableRule> routingRuleOptional = replicaRule.findRoutingByTable(physicsTable);
+        ConsensusReplicationRule replicaRule = createConsensusReplicationRule();
+        Optional<ConsensusReplicationTableRule> routingRuleOptional = replicaRule.findRoutingByTable(physicsTable);
         assertTrue(routingRuleOptional.isPresent());
-        ReplicaTableRule routingRule = routingRuleOptional.get();
+        ConsensusReplicationTableRule routingRule = routingRuleOptional.get();
         assertNotNull(routingRule);
         assertThat(routingRule.getDataSourceName(), is(dataSourceName));
         assertThat(routingRule.getPhysicsTable(), is(physicsTable));
         assertThat(routingRule.getReplicaGroupId(), is(replicaGroupId));
         assertThat(routingRule.getReplicaPeers(), is(replicaPeers));
+    }
+    
+    private ConsensusReplicationRule createConsensusReplicationRule() {
+        ConsensusReplicationActualTableRuleConfiguration replicaGroup = new ConsensusReplicationActualTableRuleConfiguration(physicsTable, replicaGroupId, replicaPeers, dataSourceName);
+        Collection<ConsensusReplicationActualTableRuleConfiguration> replicaGroups = Collections.singleton(replicaGroup);
+        ConsensusReplicationLogicTableRuleConfiguration table = new ConsensusReplicationLogicTableRuleConfiguration(logicTableName, replicaGroups);
+        ConsensusReplicationRuleConfiguration configuration = new ConsensusReplicationRuleConfiguration(Collections.singleton(table));
+        return new ConsensusReplicationRule(configuration);
     }
 }

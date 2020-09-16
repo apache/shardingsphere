@@ -31,28 +31,28 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Replica rule.
+ * Consensus replication rule.
  */
 @Slf4j
-public final class ReplicaRule implements ShardingSphereRule {
+public final class ConsensusReplicationRule implements ShardingSphereRule {
     
     @Getter
-    private final Collection<ReplicaTableRule> replicaTableRules;
+    private final Collection<ConsensusReplicationTableRule> replicaTableRules;
     
-    private final Map<String, ReplicaTableRule> physicsTableRules;
+    private final Map<String, ConsensusReplicationTableRule> physicsTableRules;
     
-    public ReplicaRule(final ConsensusReplicationRuleConfiguration configuration) {
-        Collection<ReplicaTableRule> replicaTableRules = new ArrayList<>();
-        Map<String, ReplicaTableRule> physicsTableRules = new ConcurrentHashMap<>();
-        for (ConsensusReplicationLogicTableRuleConfiguration entry : configuration.getTables()) {
+    public ConsensusReplicationRule(final ConsensusReplicationRuleConfiguration config) {
+        Collection<ConsensusReplicationTableRule> replicaTableRules = new ArrayList<>();
+        Map<String, ConsensusReplicationTableRule> physicsTableRules = new ConcurrentHashMap<>();
+        for (ConsensusReplicationLogicTableRuleConfiguration entry : config.getTables()) {
             for (ConsensusReplicationActualTableRuleConfiguration each : entry.getReplicaGroups()) {
                 String physicsTable = each.getPhysicsTable();
-                ReplicaTableRule replaced = physicsTableRules.putIfAbsent(physicsTable, new ReplicaTableRule(each));
+                ConsensusReplicationTableRule replaced = physicsTableRules.putIfAbsent(physicsTable, new ConsensusReplicationTableRule(each));
                 if (null != replaced) {
                     log.error("key already exists, key={}", physicsTable);
                     throw new IllegalArgumentException("key already exists, key=" + physicsTable);
                 }
-                replicaTableRules.add(new ReplicaTableRule(each));
+                replicaTableRules.add(new ConsensusReplicationTableRule(each));
             }
         }
         this.replicaTableRules = replicaTableRules;
@@ -63,9 +63,9 @@ public final class ReplicaRule implements ShardingSphereRule {
      * Find routing by table.
      *
      * @param physicsTable physics table name
-     * @return replica table rule
+     * @return consensus replication table rule
      */
-    public Optional<ReplicaTableRule> findRoutingByTable(final String physicsTable) {
+    public Optional<ConsensusReplicationTableRule> findRoutingByTable(final String physicsTable) {
         return Optional.ofNullable(physicsTableRules.get(physicsTable));
     }
 }

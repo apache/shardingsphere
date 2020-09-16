@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.replication.consensus.yaml.swapper;
 
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationActualTableRuleConfiguration;
-import org.apache.shardingsphere.replication.consensus.yaml.config.YamlReplicaActualTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.yaml.config.YamlConsensusReplicationActualTableRuleConfiguration;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ReplicaActualTableRuleConfigurationYamlSwapperTest {
+public class ConsensusReplicationActualTableRuleConfigurationYamlSwapperTest {
     
-    private final ReplicaActualTableRuleConfigurationYamlSwapper swapper = new ReplicaActualTableRuleConfigurationYamlSwapper();
+    private final ConsensusReplicationActualTableRuleConfigurationYamlSwapper swapper = new ConsensusReplicationActualTableRuleConfigurationYamlSwapper();
     
     private final String dataSourceName = "demo_ds_0";
     
@@ -43,7 +43,7 @@ public class ReplicaActualTableRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlConfigurationWithMaxProperties() {
-        YamlReplicaActualTableRuleConfiguration yamlConfiguration = swapper.swapToYamlConfiguration(
+        YamlConsensusReplicationActualTableRuleConfiguration yamlConfiguration = swapper.swapToYamlConfiguration(
                 new ConsensusReplicationActualTableRuleConfiguration(physicsTable, replicaGroupId, replicaPeers, dataSourceName));
         assertThat(yamlConfiguration.getDataSourceName(), is(dataSourceName));
         assertThat(yamlConfiguration.getPhysicsTable(), is(physicsTable));
@@ -58,7 +58,7 @@ public class ReplicaActualTableRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObjectWithMaxProperties() {
-        YamlReplicaActualTableRuleConfiguration yamlConfiguration = new YamlReplicaActualTableRuleConfiguration();
+        YamlConsensusReplicationActualTableRuleConfiguration yamlConfiguration = new YamlConsensusReplicationActualTableRuleConfiguration();
         yamlConfiguration.setPhysicsTable(physicsTable);
         yamlConfiguration.setReplicaGroupId(replicaGroupId);
         yamlConfiguration.setReplicaPeers(replicaPeers);

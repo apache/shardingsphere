@@ -19,24 +19,24 @@ package org.apache.shardingsphere.replication.consensus.rule.builder;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationRuleConfiguration;
-import org.apache.shardingsphere.replication.consensus.constant.ReplicaOrder;
-import org.apache.shardingsphere.replication.consensus.rule.ReplicaRule;
+import org.apache.shardingsphere.replication.consensus.constant.ConsensusReplicationOrder;
+import org.apache.shardingsphere.replication.consensus.rule.ConsensusReplicationRule;
 
 import java.util.Collection;
 
 /**
- * Replica rule builder.
+ * Consensus replication rule builder.
  */
-public final class ReplicaRuleBuilder implements ShardingSphereRuleBuilder<ReplicaRule, ConsensusReplicationRuleConfiguration> {
+public final class ConsensusReplicationRuleBuilder implements ShardingSphereRuleBuilder<ConsensusReplicationRule, ConsensusReplicationRuleConfiguration> {
     
     @Override
-    public ReplicaRule build(final ConsensusReplicationRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
-        return new ReplicaRule(ruleConfiguration);
+    public ConsensusReplicationRule build(final ConsensusReplicationRuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
+        return new ConsensusReplicationRule(ruleConfig);
     }
     
     @Override
     public int getOrder() {
-        return ReplicaOrder.ORDER;
+        return ConsensusReplicationOrder.ORDER;
     }
     
     @Override

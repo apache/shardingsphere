@@ -20,32 +20,32 @@ package org.apache.shardingsphere.replication.consensus.yaml.swapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationLogicTableRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationRuleConfiguration;
-import org.apache.shardingsphere.replication.consensus.constant.ReplicaOrder;
-import org.apache.shardingsphere.replication.consensus.yaml.config.YamlReplicaLogicTableRuleConfiguration;
-import org.apache.shardingsphere.replication.consensus.yaml.config.YamlReplicaRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.constant.ConsensusReplicationOrder;
+import org.apache.shardingsphere.replication.consensus.yaml.config.YamlConsensusReplicationLogicTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.yaml.config.YamlConsensusReplicationRuleConfiguration;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Replica rule configuration YAML swapper.
+ * Consensus replication rule configuration YAML swapper.
  */
-public final class ReplicaRuleConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlReplicaRuleConfiguration, ConsensusReplicationRuleConfiguration> {
+public final class ConsensusReplicationRuleConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlConsensusReplicationRuleConfiguration, ConsensusReplicationRuleConfiguration> {
     
-    private final ReplicaLogicTableRuleConfigurationYamlSwapper logicTableRuleConfigurationYamlSwapper = new ReplicaLogicTableRuleConfigurationYamlSwapper();
+    private final ConsensusReplicationLogicTableRuleConfigurationYamlSwapper logicTableRuleConfigurationYamlSwapper = new ConsensusReplicationLogicTableRuleConfigurationYamlSwapper();
     
     @Override
-    public YamlReplicaRuleConfiguration swapToYamlConfiguration(final ConsensusReplicationRuleConfiguration data) {
-        Collection<YamlReplicaLogicTableRuleConfiguration> yamlTables = data.getTables().stream()
+    public YamlConsensusReplicationRuleConfiguration swapToYamlConfiguration(final ConsensusReplicationRuleConfiguration data) {
+        Collection<YamlConsensusReplicationLogicTableRuleConfiguration> yamlTables = data.getTables().stream()
                 .map(logicTableRuleConfigurationYamlSwapper::swapToYamlConfiguration)
                 .collect(Collectors.toList());
-        YamlReplicaRuleConfiguration result = new YamlReplicaRuleConfiguration();
+        YamlConsensusReplicationRuleConfiguration result = new YamlConsensusReplicationRuleConfiguration();
         result.setTables(yamlTables);
         return result;
     }
     
     @Override
-    public ConsensusReplicationRuleConfiguration swapToObject(final YamlReplicaRuleConfiguration yamlConfiguration) {
+    public ConsensusReplicationRuleConfiguration swapToObject(final YamlConsensusReplicationRuleConfiguration yamlConfiguration) {
         Collection<ConsensusReplicationLogicTableRuleConfiguration> tables = yamlConfiguration.getTables().stream()
                 .map(logicTableRuleConfigurationYamlSwapper::swapToObject)
                 .collect(Collectors.toList());
@@ -64,6 +64,6 @@ public final class ReplicaRuleConfigurationYamlSwapper implements YamlRuleConfig
     
     @Override
     public int getOrder() {
-        return ReplicaOrder.ORDER;
+        return ConsensusReplicationOrder.ORDER;
     }
 }

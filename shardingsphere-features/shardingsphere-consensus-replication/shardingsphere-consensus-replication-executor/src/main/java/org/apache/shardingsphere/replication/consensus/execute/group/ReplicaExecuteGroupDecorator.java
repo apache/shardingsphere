@@ -26,10 +26,10 @@ import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.group.RawExecuteGroupDecorator;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteStageContext;
-import org.apache.shardingsphere.replication.consensus.constant.ReplicaOrder;
+import org.apache.shardingsphere.replication.consensus.constant.ConsensusReplicationOrder;
 import org.apache.shardingsphere.replication.consensus.route.engine.ReplicaGroup;
 import org.apache.shardingsphere.replication.consensus.route.engine.ReplicaRouteStageContext;
-import org.apache.shardingsphere.replication.consensus.rule.ReplicaRule;
+import org.apache.shardingsphere.replication.consensus.rule.ConsensusReplicationRule;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,7 +39,7 @@ import java.util.Map;
  * Execute group decorator for replica.
  */
 @Slf4j
-public final class ReplicaExecuteGroupDecorator implements RawExecuteGroupDecorator<RawSQLExecuteUnit, ReplicaRule> {
+public final class ReplicaExecuteGroupDecorator implements RawExecuteGroupDecorator<RawSQLExecuteUnit, ConsensusReplicationRule> {
     
     /**
      * TODO FIXED ME when the proxy is capable of handling tableless operation commands, it can be removed.
@@ -47,7 +47,7 @@ public final class ReplicaExecuteGroupDecorator implements RawExecuteGroupDecora
     private final boolean supportWithoutTableCommand = true;
     
     @Override
-    public Collection<InputGroup<RawSQLExecuteUnit>> decorate(final RouteContext routeContext, final ReplicaRule rule, final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups) {
+    public Collection<InputGroup<RawSQLExecuteUnit>> decorate(final RouteContext routeContext, final ConsensusReplicationRule rule, final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups) {
         if (!inputGroups.isEmpty()) {
             if (!(inputGroups.iterator().next().getInputs().get(0) instanceof RawSQLExecuteUnit)) {
                 log.debug("inputGroups ExecuteUnit is not RawSQLExecuteUnit, ignore decorate");
@@ -100,11 +100,11 @@ public final class ReplicaExecuteGroupDecorator implements RawExecuteGroupDecora
     
     @Override
     public int getOrder() {
-        return ReplicaOrder.ORDER;
+        return ConsensusReplicationOrder.ORDER;
     }
     
     @Override
-    public Class<ReplicaRule> getTypeClass() {
-        return ReplicaRule.class;
+    public Class<ConsensusReplicationRule> getTypeClass() {
+        return ConsensusReplicationRule.class;
     }
 }

@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replication.consensus.rule;
+package org.apache.shardingsphere.replication.consensus.yaml.config;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationActualTableRuleConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationRuleConfiguration;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Replica table rule.
+ * Consensus replication rule configuration for YAML.
  */
 @Getter
-public final class ReplicaTableRule implements ShardingSphereRule {
+@Setter
+public final class YamlConsensusReplicationRuleConfiguration implements YamlRuleConfiguration {
     
-    private final String physicsTable;
+    private Collection<YamlConsensusReplicationLogicTableRuleConfiguration> tables = Collections.emptyList();
     
-    private final String replicaGroupId;
-    
-    private final String replicaPeers;
-    
-    private final String dataSourceName;
-    
-    public ReplicaTableRule(final ConsensusReplicationActualTableRuleConfiguration configuration) {
-        physicsTable = configuration.getPhysicsTable();
-        replicaGroupId = configuration.getReplicaGroupId();
-        replicaPeers = configuration.getReplicaPeers();
-        dataSourceName = configuration.getDataSourceName();
+    @Override
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+        return ConsensusReplicationRuleConfiguration.class;
     }
 }

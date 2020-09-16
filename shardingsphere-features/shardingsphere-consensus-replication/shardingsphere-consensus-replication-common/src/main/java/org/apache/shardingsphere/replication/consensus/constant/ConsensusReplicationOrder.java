@@ -21,13 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Replica order.
+ * Consensus replication order.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReplicaOrder {
+public final class ConsensusReplicationOrder {
     
-    /**
-     * Replica order.
-     */
     public static final int ORDER = 80;
 }
