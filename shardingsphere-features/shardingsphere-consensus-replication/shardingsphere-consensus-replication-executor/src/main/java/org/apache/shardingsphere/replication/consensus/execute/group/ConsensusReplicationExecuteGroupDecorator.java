@@ -36,10 +36,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Execute group decorator for replica.
+ * Execute group decorator for consensus replication.
  */
 @Slf4j
-public final class ReplicaExecuteGroupDecorator implements RawExecuteGroupDecorator<RawSQLExecuteUnit, ConsensusReplicationRule> {
+public final class ConsensusReplicationExecuteGroupDecorator implements RawExecuteGroupDecorator<RawSQLExecuteUnit, ConsensusReplicationRule> {
     
     /**
      * TODO FIXED ME when the proxy is capable of handling tableless operation commands, it can be removed.

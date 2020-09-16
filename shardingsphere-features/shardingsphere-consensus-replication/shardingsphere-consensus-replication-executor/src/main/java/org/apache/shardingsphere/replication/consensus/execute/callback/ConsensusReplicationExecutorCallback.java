@@ -22,12 +22,12 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Replica executor callback.
+ * Consensus replication executor callback.
  *
  * @param <I> type of input value
  * @param <O> type of output value
  */
-public interface ReplicaExecutorCallback<I, O> {
+public interface ConsensusReplicationExecutorCallback<I, O> {
     
     /**
      * Execute.

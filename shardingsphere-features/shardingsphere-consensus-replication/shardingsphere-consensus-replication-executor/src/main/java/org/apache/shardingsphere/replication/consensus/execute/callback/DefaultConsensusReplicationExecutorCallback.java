@@ -29,19 +29,19 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Default replica executor callback.
+ * Default consensus replication executor callback.
  */
 @Slf4j
-public final class DefaultReplicaExecutorCallback implements RawExecutorCallback<RawSQLExecuteUnit, ExecuteResult> {
+public final class DefaultConsensusReplicationExecutorCallback implements RawExecutorCallback<RawSQLExecuteUnit, ExecuteResult> {
     
     static {
-        ShardingSphereServiceLoader.register(ReplicaExecutorCallback.class);
+        ShardingSphereServiceLoader.register(ConsensusReplicationExecutorCallback.class);
     }
     
-    private final Collection<ReplicaExecutorCallback> replicaExecutorCallbacks;
+    private final Collection<ConsensusReplicationExecutorCallback> replicaExecutorCallbacks;
     
-    public DefaultReplicaExecutorCallback() {
-        replicaExecutorCallbacks = ShardingSphereServiceLoader.newServiceInstances(ReplicaExecutorCallback.class);
+    public DefaultConsensusReplicationExecutorCallback() {
+        replicaExecutorCallbacks = ShardingSphereServiceLoader.newServiceInstances(ConsensusReplicationExecutorCallback.class);
         if (null == replicaExecutorCallbacks || replicaExecutorCallbacks.isEmpty()) {
             throw new ShardingSphereException("not found replica executor callback impl");
         }
