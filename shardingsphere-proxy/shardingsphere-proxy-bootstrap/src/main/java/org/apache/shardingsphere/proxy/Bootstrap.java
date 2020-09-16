@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.proxy.arg.BootstrapArguments;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -45,12 +44,11 @@ public final class Bootstrap {
      */
     public static void main(final String[] args) throws IOException, SQLException {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
-        int port = bootstrapArgs.getPort();
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        createBootstrapInitializer(yamlConfig).init(yamlConfig, port);
+        createBootstrapInitializer(yamlConfig).init(yamlConfig, bootstrapArgs.getPort());
     }
     
     private static BootstrapInitializer createBootstrapInitializer(final YamlProxyConfiguration yamlConfig) {
-        return null == yamlConfig.getServerConfiguration().getGovernance() ? new StandardBootstrapInitializer() : new GovernanceBootstrapInitializer(new GovernanceFacade());
+        return null == yamlConfig.getServerConfiguration().getGovernance() ? new StandardBootstrapInitializer() : new GovernanceBootstrapInitializer();
     }
 }
