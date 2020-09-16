@@ -12,5 +12,5 @@ weight = 4
 | *名称*         | *数据类型*              | *说明*                                                            |
 | -------------- | --------------------- | ----------------------------------------------------------------- |
 | column         | String                | SQL 中的影子字段名，该值为 true 的 SQL 会路由到影子库执行               |
-| shadowMappings | Map\<String, String\> | 生产数据库与影子数据库的映射关系集合，key 为生产库名称，value 为影子库名称 |
-
+| sourceDataSourceNames | List\<String\> | 生产数据库名称 |
+| shadowDataSourceNames | List\<String\> | 影子数据库名称，与上面一一对应 |

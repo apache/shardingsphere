@@ -21,7 +21,7 @@ import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 import org.junit.Test;
 
-import java.util.Collections;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -30,10 +30,11 @@ public final class ShadowRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonMap("ds", "shadow_ds"));
+        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("shadow_ds", "shadow_ds1"));
         YamlShadowRuleConfiguration actual = new ShadowRuleConfigurationYamlSwapper().swapToYamlConfiguration(shadowRuleConfiguration);
         assertThat(actual.getColumn(), is("shadow"));
-        assertThat(actual.getShadowMappings().size(), is(1));
-        assertThat(actual.getShadowMappings().get("ds"), is("shadow_ds"));
+        assertThat(actual.getSourceDataSourceNames().size(), is(actual.getShadowDataSourceNames().size()));
+        assertThat(actual.getSourceDataSourceNames(), is(Arrays.asList("ds", "ds1")));
+        assertThat(actual.getShadowDataSourceNames(), is(Arrays.asList("shadow_ds", "shadow_ds1")));
     }
 }

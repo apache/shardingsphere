@@ -18,5 +18,7 @@
 rules:
 - !SHADOW
   column: shadow
-  shadowMappings:
-    jdbc_0: jdbc_1
+  sourceDataSourceNames:
+    - jdbc_0
+  shadowDataSourceNames:
+    - jdbc_1

@@ -42,7 +42,7 @@ public final class PreparedShadowDataSourceRouterTest {
     public void isShadowSQL() {
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonMap("ds", "shadow_ds"));
+        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
         ShadowRule shadowRule = new ShadowRule(shadowRuleConfiguration);
         InsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
