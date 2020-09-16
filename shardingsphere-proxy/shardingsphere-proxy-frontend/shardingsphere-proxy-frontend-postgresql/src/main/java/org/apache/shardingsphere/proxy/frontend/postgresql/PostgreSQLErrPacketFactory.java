@@ -37,8 +37,8 @@ public final class PostgreSQLErrPacketFactory {
      */
     public static PostgreSQLErrorResponsePacket newInstance(final Exception cause) {
         if (cause instanceof PSQLException) {
-            ServerErrorMessage serverErrorMessage = ((PSQLException) cause).getServerErrorMessage();
             PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
+            ServerErrorMessage serverErrorMessage = ((PSQLException) cause).getServerErrorMessage();
             if (null == serverErrorMessage) {
                 PSQLException ex = (PSQLException) cause;
                 result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, ex.getSQLState());
