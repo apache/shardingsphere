@@ -71,15 +71,12 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
             for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
                 if (each instanceof AggregationProjection && !((AggregationProjection) each).getDerivedAggregationProjections().isEmpty()) {
                     result.get(routeUnit).addAll(((AggregationProjection) each).getDerivedAggregationProjections().stream().map(this::getDerivedProjectionText).collect(Collectors.toList()));
-                } else if (each instanceof DerivedProjection) {
-                    if (!(((DerivedProjection) each).getRealProjection() instanceof ColumnOrderByItemSegment)) {
-                        result.get(routeUnit).add(getDerivedProjectionText(each));
-                        continue;
-                    }
+                } else if (each instanceof DerivedProjection && ((DerivedProjection) each).getProjection() instanceof ColumnOrderByItemSegment) {
                     TableExtractUtils utils = new TableExtractUtils();
                     utils.extractTablesFromSelect(selectStatementContext.getSqlStatement());
                     result.get(routeUnit).add(getDerivedProjectionTextFromColumnOrderByItemSegment((DerivedProjection) each, utils, routeUnit));
                 }
+                result.get(routeUnit).add(getDerivedProjectionText(each));
             }
         }
         return result;
@@ -95,8 +92,8 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     
     private String getDerivedProjectionTextFromColumnOrderByItemSegment(final DerivedProjection projection, final TableExtractUtils utils, final RouteUnit routeUnit) {
         Preconditions.checkState(projection.getAlias().isPresent());
-        Preconditions.checkState(projection.getRealProjection() instanceof ColumnOrderByItemSegment);
-        ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) projection.getRealProjection();
+        Preconditions.checkState(projection.getProjection() instanceof ColumnOrderByItemSegment);
+        ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) projection.getProjection();
         ColumnOrderByItemSegment newColumnOrderByItem = generateNewColumnOrderByItem(columnOrderByItemSegment, routeUnit, utils);
         return newColumnOrderByItem.getText() + " AS " + projection.getAlias().get() + " ";
     }
@@ -121,11 +118,12 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         Optional<String> actualTableName = getActualTables(routeUnit, ownerSegment.get().getIdentifier().getValue());
         Preconditions.checkState(actualTableName.isPresent());
         ColumnSegment newColumnSegment = new ColumnSegment(0, 0, old.getColumn().getIdentifier());
-        IdentifierValue newOwnerIdentifier = new IdentifierValue(ownerSegment.get().getIdentifier().getQuoteCharacter().getStartDelimiter()
-                + actualTableName.get() + ownerSegment.get().getIdentifier().getQuoteCharacter().getEndDelimiter());
+        String newOwnerString = String.format("%s%s%s", ownerSegment.get().getIdentifier().getQuoteCharacter().getStartDelimiter(),actualTableName.get(),
+                ownerSegment.get().getIdentifier().getQuoteCharacter().getEndDelimiter());
+        IdentifierValue newOwnerIdentifier = new IdentifierValue(newOwnerString);
         OwnerSegment newOwner = new OwnerSegment(0, 0, newOwnerIdentifier);
         newColumnSegment.setOwner(newOwner);
-        ColumnOrderByItemSegment newColumnOrderByItem = new ColumnOrderByItemSegment(newColumnSegment, old.getOrderDirection());
-        return newColumnOrderByItem;
+        ColumnOrderByItemSegment result = new ColumnOrderByItemSegment(newColumnSegment, old.getOrderDirection());
+        return result;
     }
 }
