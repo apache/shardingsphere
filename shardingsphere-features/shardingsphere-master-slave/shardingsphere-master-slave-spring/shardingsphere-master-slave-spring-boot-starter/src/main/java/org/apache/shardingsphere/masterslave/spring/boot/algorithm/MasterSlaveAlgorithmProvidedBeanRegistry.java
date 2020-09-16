@@ -26,7 +26,7 @@ import org.springframework.core.env.Environment;
 /**
  * Master slave algorithm provided bean registry.
  */
-public final class MasterSlaveAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry {
+public final class MasterSlaveAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry<MasterSlaveLoadBalanceAlgorithm> {
     
     private static final String MASTER_SLAVE_ALGORITHMS = "spring.shardingsphere.rules.master-slave.load-balancers.";
     

@@ -17,24 +17,24 @@
 
 package org.apache.shardingsphere.sharding.spring.boot.algorithm;
 
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.env.Environment;
 
 /**
- * Sharding algorithm provided bean registry.
+ * Key generator algorithm provided bean registry.
  */
-public final class ShardingAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry<ShardingAlgorithm> {
+public final class KeyGenerateAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry<KeyGenerateAlgorithm> {
     
-    private static final String SHARDING_ALGORITHMS = "spring.shardingsphere.rules.sharding.sharding-algorithms.";
+    private static final String KEY_GENERATORS = "spring.shardingsphere.rules.sharding.key-generators.";
     
-    public ShardingAlgorithmProvidedBeanRegistry(final Environment environment) {
+    public KeyGenerateAlgorithmProvidedBeanRegistry(final Environment environment) {
         super(environment);
     }
     
     @Override
     public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) {
-        registerBean(SHARDING_ALGORITHMS, ShardingAlgorithm.class, registry);
+        registerBean(KEY_GENERATORS, KeyGenerateAlgorithm.class, registry);
     }
 }

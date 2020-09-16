@@ -26,7 +26,7 @@ import org.springframework.core.env.Environment;
 /**
  * Encrypt algorithm provided bean registry.
  */
-public final class EncryptAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry {
+public final class EncryptAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry<EncryptAlgorithm> {
     
     private static final String ENCRYPTORS_ALGORITHMS = "spring.shardingsphere.rules.encrypt.encryptors.";
     
