@@ -18,23 +18,21 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPrepareOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -59,7 +57,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     public Collection<DatabasePacket<?>> execute() {
         SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
-            return Collections.singletonList(new MySQLErrPacket(++currentSequenceId, MySQLServerErrorCode.ER_UNSUPPORTED_PS));
+            throw new UnsupportedPreparedStatementException();
         }
         int parameterCount = sqlStatement.getParameterCount();
         int projectionCount = getProjectionCount(sqlStatement);

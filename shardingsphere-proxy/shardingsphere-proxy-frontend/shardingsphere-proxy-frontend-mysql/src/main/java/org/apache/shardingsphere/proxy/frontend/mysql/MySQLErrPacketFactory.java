@@ -32,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseExceptio
 import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLErrorCode;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.ShardingCTLException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
+import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
@@ -82,6 +83,9 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof UnsupportedCommandException) {
             return new MySQLErrPacket(1, CommonErrorCode.UNSUPPORTED_COMMAND, ((UnsupportedCommandException) cause).getCommandType());
+        }
+        if (cause instanceof UnsupportedPreparedStatementException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNSUPPORTED_PS);
         }
         if (cause instanceof ShardingSphereConfigurationException || cause instanceof SQLParsingException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NOT_SUPPORTED_YET, cause.getMessage());
