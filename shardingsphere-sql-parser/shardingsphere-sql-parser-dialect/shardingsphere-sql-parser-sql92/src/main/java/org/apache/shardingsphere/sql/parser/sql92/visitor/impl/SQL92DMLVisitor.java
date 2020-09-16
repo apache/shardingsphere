@@ -420,8 +420,7 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
         ExpressionSegment segment = (ExpressionSegment) visit(ctx.expr());
-        WhereSegment result = new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), segment);
-        return result;
+        return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), segment);
     }
     
     @Override

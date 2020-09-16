@@ -329,8 +329,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     @Override
     public ASTNode visitForLockingClause(final ForLockingClauseContext ctx) {
-        LockSegment result = new LockSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        return result;
+        return new LockSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
     }
     
     @Override
@@ -473,8 +472,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             result.setRight((TableSegment) visit(ctx.tableReference()));
             return result;
         }
-        TableSegment result = (TableSegment) visit(ctx.tableReference());
-        return result;
+        return (TableSegment) visit(ctx.tableReference());
     }
     
     @Override
@@ -574,8 +572,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
         ExpressionSegment expr = (ExpressionSegment) visit(ctx.aExpr());
-        WhereSegment result = new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
-        return result;
+        return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
     }
     
     @Override
