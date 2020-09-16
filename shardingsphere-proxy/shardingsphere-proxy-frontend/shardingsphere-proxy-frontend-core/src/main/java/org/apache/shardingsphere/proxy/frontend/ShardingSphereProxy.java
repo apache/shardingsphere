@@ -24,7 +24,6 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.Epoll;
-import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -54,8 +53,8 @@ public final class ShardingSphereProxy {
     @SneakyThrows(InterruptedException.class)
     public void start(final int port) {
         try {
-            ServerBootstrap bootstrap = new ServerBootstrap();
             createEventLoopGroup();
+            ServerBootstrap bootstrap = new ServerBootstrap();
             initServerBootstrap(bootstrap);
             ChannelFuture future = bootstrap.bind(port).sync();
             log.info("ShardingSphere-Proxy start success.");
