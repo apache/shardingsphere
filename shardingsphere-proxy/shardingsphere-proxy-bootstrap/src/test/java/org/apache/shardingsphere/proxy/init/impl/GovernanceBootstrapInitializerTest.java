@@ -21,7 +21,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.schema.GovernanceSchemaContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
-import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -67,9 +66,7 @@ public final class GovernanceBootstrapInitializerTest {
     
     private FixtureConfigurationRepository configurationRepository = new FixtureConfigurationRepository();
     
-    private GovernanceFacade governanceFacade = new GovernanceFacade();
-    
-    private GovernanceBootstrapInitializer initializer = new GovernanceBootstrapInitializer(governanceFacade);
+    private GovernanceBootstrapInitializer initializer = new GovernanceBootstrapInitializer();
     
     @Test
     public void assertGetProxyConfiguration() throws IOException {

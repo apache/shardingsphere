@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sql.parser.binder.statement.dml;
 
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLCallStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCallStatement;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -32,8 +34,16 @@ import static org.mockito.Mockito.mock;
 public final class CallStatementContextTest {
     
     @Test
-    public void assertNewInstance() {
-        CallStatement callStatement = mock(CallStatement.class);
+    public void assertMySQLNewInstance() {
+        assertNewInstance(mock(MySQLCallStatement.class));
+    }
+    
+    @Test
+    public void assertPostgreSQLNewInstance() {
+        assertNewInstance(mock(PostgreSQLCallStatement.class));
+    }
+    
+    private void assertNewInstance(final CallStatement callStatement) {
         CallStatementContext actual = new CallStatementContext(callStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(callStatement));

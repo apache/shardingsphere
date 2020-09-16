@@ -103,13 +103,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCallStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDoStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 
 import java.util.Collection;
@@ -286,7 +286,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement();
+        PostgreSQLDeleteStatement result = new PostgreSQLDeleteStatement();
         SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
         result.setTableSegment(tableSegment);
         if (null != ctx.whereOrCurrentClause()) {
@@ -641,11 +641,11 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        return new CallStatement();
+        return new PostgreSQLCallStatement();
     }
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        return new DoStatement();
+        return new PostgreSQLDoStatement();
     }
 }

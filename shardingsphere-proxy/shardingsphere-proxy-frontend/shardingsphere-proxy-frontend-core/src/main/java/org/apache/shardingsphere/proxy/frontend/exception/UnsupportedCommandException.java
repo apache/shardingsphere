@@ -15,33 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
+package org.apache.shardingsphere.proxy.frontend.exception;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Delete statement.
+ * Unsupported command exception.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public abstract class DeleteStatement extends AbstractSQLStatement implements DMLStatement {
+public final class UnsupportedCommandException extends FrontendException {
     
-    private TableSegment tableSegment;
+    private static final long serialVersionUID = 8010680371699936338L;
     
-    private WhereSegment where;
-    
-    /**
-     * Get where.
-     *
-     * @return where segment
-     */
-    public Optional<WhereSegment> getWhere() {
-        return Optional.ofNullable(where);
-    }
+    private final String commandType;
 }

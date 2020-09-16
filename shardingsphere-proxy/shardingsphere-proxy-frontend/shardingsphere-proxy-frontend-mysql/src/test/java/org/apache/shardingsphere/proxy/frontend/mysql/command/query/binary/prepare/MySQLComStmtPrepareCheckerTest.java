@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLCallStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLChangeMasterStatement;
@@ -80,10 +80,10 @@ public final class MySQLComStmtPrepareCheckerTest {
     public void assertIsStatementAllowed() {
         List<SQLStatement> statementList = Arrays.asList(
             new MySQLAlterTableStatement(), new MySQLAlterUserStatement(), new MySQLAnalyzeTableStatement(), new MySQLCacheIndexStatement(),
-            new CallStatement(), new MySQLChangeMasterStatement(), new MySQLChecksumTableStatement(), new MySQLCommitStatement(), new MySQLCreateIndexStatement(), 
+            new MySQLCallStatement(), new MySQLChangeMasterStatement(), new MySQLChecksumTableStatement(), new MySQLCommitStatement(), new MySQLCreateIndexStatement(), 
             new MySQLDropIndexStatement(), new MySQLCreateDatabaseStatement(), new MySQLDropDatabaseStatement(), new MySQLCreateTableStatement(), 
             new MySQLDropTableStatement(), new MySQLCreateUserStatement(), new MySQLRenameUserStatement(), new MySQLDropUserStatement(), 
-            new MySQLCreateViewStatement(), new MySQLDropViewStatement(), new DeleteStatement(), new DoStatement(), new MySQLFlushStatement(),
+            new MySQLCreateViewStatement(), new MySQLDropViewStatement(), new MySQLDeleteStatement(), new MySQLDoStatement(), new MySQLFlushStatement(),
             new MySQLGrantStatement(), new MySQLInsertStatement(), new MySQLInstallPluginStatement(), new MySQLKillStatement(), 
             new MySQLLoadIndexInfoStatement(), new MySQLOptimizeTableStatement(), new MySQLRenameTableStatement(), new MySQLRepairTableStatement(), 
             new MySQLResetStatement(), new MySQLRevokeStatement(), new SelectStatement(), new MySQLSetStatement(), new MySQLShowWarningsStatement(),

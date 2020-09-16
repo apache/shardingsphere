@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.init.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.context.schema.GovernanceSchemaContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
@@ -47,10 +46,9 @@ import java.util.stream.Collectors;
 /**
  * Governance bootstrap initializer.
  */
-@RequiredArgsConstructor
 public final class GovernanceBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    private final GovernanceFacade governanceFacade;
+    private final GovernanceFacade governanceFacade = new GovernanceFacade();
     
     @Override
     protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {

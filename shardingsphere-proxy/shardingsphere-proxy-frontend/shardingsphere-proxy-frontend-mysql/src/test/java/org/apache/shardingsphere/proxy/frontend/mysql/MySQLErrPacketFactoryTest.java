@@ -42,7 +42,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithSQLException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLException("No reason", "XXX", 9999, new RuntimeException("")));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new SQLException("No reason", "XXX", 9999, new RuntimeException("")));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(9999));
         assertThat(actual.getSqlState(), is("XXX"));
@@ -51,7 +51,7 @@ public final class MySQLErrPacketFactoryTest {
 
     @Test
     public void assertNewInstanceWithSQLExceptionOfNullSQLState() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLException(new RuntimeException("No reason")));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new SQLException(new RuntimeException("No reason")));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1815));
         assertThat(actual.getSqlState(), is("HY000"));
@@ -60,7 +60,7 @@ public final class MySQLErrPacketFactoryTest {
 
     @Test
     public void assertNewInstanceWithSQLExceptionOfNullParam() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLException(""));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new SQLException(""));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1815));
         assertThat(actual.getSqlState(), is("HY000"));
@@ -69,7 +69,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithInvalidShardingCTLFormatException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new InvalidShardingCTLFormatException("test"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new InvalidShardingCTLFormatException("test"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(11000));
         assertThat(actual.getSqlState(), is("S11000"));
@@ -78,7 +78,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithUnsupportedShardingCTLTypeException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new UnsupportedShardingCTLTypeException("sctl:set xxx=xxx"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedShardingCTLTypeException("sctl:set xxx=xxx"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(11001));
         assertThat(actual.getSqlState(), is("S11001"));
@@ -87,7 +87,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithTableModifyInTransactionException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new TableModifyInTransactionException("tbl"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new TableModifyInTransactionException("tbl"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(3176));
         assertThat(actual.getSqlState(), is("HY000"));
@@ -97,7 +97,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithUnknownDatabaseException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new UnknownDatabaseException("ds"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnknownDatabaseException("ds"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1049));
         assertThat(actual.getSqlState(), is("42000"));
@@ -106,7 +106,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithNoDatabaseSelectedException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new NoDatabaseSelectedException());
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new NoDatabaseSelectedException());
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1046));
         assertThat(actual.getSqlState(), is("3D000"));
@@ -115,7 +115,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithOtherException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new RuntimeException("No reason"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new RuntimeException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(10002));
         assertThat(actual.getSqlState(), is("C10002"));
