@@ -26,10 +26,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 
-public class ResourceLockTest {
+public final class ResourceLockTest {
     
     @SneakyThrows(value = InterruptedException.class)
     @Test
@@ -47,7 +48,7 @@ public class ResourceLockTest {
             });
         }
         latch.await();
-        assertEquals(numberOfThreads, counter.get());
+        assertThat(numberOfThreads, is(counter.get()));
     }
     
     @SneakyThrows(value = InterruptedException.class)
@@ -67,7 +68,7 @@ public class ResourceLockTest {
         }
         latch.await(100, TimeUnit.MILLISECONDS);
         service.shutdownNow();
-        assertNotEquals(numberOfThreads, counter.get());
+        assertThat(numberOfThreads, not(counter.get()));
     }
     
     @SneakyThrows(value = InterruptedException.class)
@@ -87,6 +88,6 @@ public class ResourceLockTest {
             });
         }
         latch.await();
-        assertEquals(numberOfThreads, counter.get());
+        assertThat(numberOfThreads, is(counter.get()));
     }
 }
