@@ -119,7 +119,7 @@ public final class InsertStatementContextTest {
     public void assertGetGroupedParametersWithOnDuplicateParameters() {
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
-        InsertStatement insertStatement = new MySQLInsertStatement();
+        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         setUpInsertValues(insertStatement);
         setUpOnDuplicateValues(insertStatement);
@@ -152,7 +152,7 @@ public final class InsertStatementContextTest {
                 new ParameterMarkerExpressionSegment(0, 0, 3), new ParameterMarkerExpressionSegment(0, 0, 4), new LiteralExpressionSegment(0, 0, "init"))));
     }
     
-    private void setUpOnDuplicateValues(final InsertStatement insertStatement) {
+    private void setUpOnDuplicateValues(final MySQLInsertStatement insertStatement) {
         AssignmentSegment parameterMarkerExpressionAssignment = new AssignmentSegment(0, 0, 
                 new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_1")), new ParameterMarkerExpressionSegment(0, 0, 4));
         AssignmentSegment literalExpressionAssignment = new AssignmentSegment(0, 0, 

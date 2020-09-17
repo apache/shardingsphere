@@ -59,7 +59,10 @@ public final class SQLStatementContextFactoryTest {
     
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfMySQLInsertStatement() {
-        assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new MySQLInsertStatement());
+        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
+        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0,
+                Collections.singleton(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("IdentifierValue")), null))));
+        assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(insertStatement);
     }
     
     @Test
@@ -83,8 +86,6 @@ public final class SQLStatementContextFactoryTest {
     }
     
     private void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(final InsertStatement insertStatement) {
-        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0,
-                Collections.singleton(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("IdentifierValue")), null))));
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(SchemaMetaData.class), null, insertStatement);
         assertNotNull(sqlStatementContext);
