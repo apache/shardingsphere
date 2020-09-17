@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
-import lombok.SneakyThrows;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
@@ -32,9 +31,8 @@ import static org.junit.Assert.assertThat;
 
 public final class ResourceLockTest {
     
-    @SneakyThrows(value = InterruptedException.class)
     @Test
-    public void assertDoAwait() {
+    public void assertDoAwait() throws InterruptedException {
         int numberOfThreads = 10;
         ResourceLock resourceLock = new ResourceLock();
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
@@ -51,9 +49,8 @@ public final class ResourceLockTest {
         assertThat(numberOfThreads, is(counter.get()));
     }
     
-    @SneakyThrows(value = InterruptedException.class)
     @Test
-    public void assertDoAwaitThrowsException() {
+    public void assertDoAwaitThrowsException() throws InterruptedException {
         int numberOfThreads = 10;
         ResourceLock resourceLock = new ResourceLock();
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
@@ -71,9 +68,8 @@ public final class ResourceLockTest {
         assertThat(numberOfThreads, not(counter.get()));
     }
     
-    @SneakyThrows(value = InterruptedException.class)
     @Test
-    public void assertDoNotify() {
+    public void assertDoNotify() throws InterruptedException {
         int numberOfThreads = 10;
         ResourceLock resourceLock = new ResourceLock();
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
