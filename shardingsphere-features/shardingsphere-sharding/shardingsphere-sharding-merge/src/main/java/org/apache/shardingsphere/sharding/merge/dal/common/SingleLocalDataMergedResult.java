@@ -60,7 +60,7 @@ public final class SingleLocalDataMergedResult implements MergedResult {
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        throw new SQLFeatureNotSupportedException("getInputStream");
     }
     
     @Override

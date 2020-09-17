@@ -137,7 +137,6 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
@@ -184,7 +183,6 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         OracleDeleteStatement result = new OracleDeleteStatement();
@@ -209,7 +207,6 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitMultipleTablesClause(final MultipleTablesClauseContext ctx) {
         DeleteMultiTableSegment result = new DeleteMultiTableSegment();
@@ -241,7 +238,6 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         return visit(ctx.selectClause(0));
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SelectStatement result = new SelectStatement();
@@ -451,8 +447,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
         ASTNode segment = visit(ctx.expr());
-        WhereSegment result = new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) segment);
-        return result;
+        return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) segment);
     }
     
     @Override

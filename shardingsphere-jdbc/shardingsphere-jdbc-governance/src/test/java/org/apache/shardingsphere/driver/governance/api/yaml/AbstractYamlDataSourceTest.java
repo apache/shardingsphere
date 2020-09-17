@@ -51,13 +51,13 @@ public abstract class AbstractYamlDataSourceTest {
         return result;
     }
     
-    protected byte[] getYamlBytes(final File yamlFile) throws IOException {
+    protected final byte[] getYamlBytes(final File yamlFile) throws IOException {
         try (FileInputStream fis = new FileInputStream(yamlFile);
              ByteArrayOutputStream bos = new ByteArrayOutputStream(1000)) {
-            byte[] b = new byte[1000];
+            byte[] bytes = new byte[1000];
             int n;
-            while ((n = fis.read(b)) != -1) {
-                bos.write(b, 0, n);
+            while ((n = fis.read(bytes)) != -1) {
+                bos.write(bytes, 0, n);
             }
             return bos.toByteArray();
         }

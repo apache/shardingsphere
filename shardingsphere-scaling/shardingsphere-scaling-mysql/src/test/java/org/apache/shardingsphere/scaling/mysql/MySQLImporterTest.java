@@ -31,7 +31,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLImporterTest {
+public final class MySQLImporterTest {
     
     @Mock
     private ImporterConfiguration importerConfiguration;

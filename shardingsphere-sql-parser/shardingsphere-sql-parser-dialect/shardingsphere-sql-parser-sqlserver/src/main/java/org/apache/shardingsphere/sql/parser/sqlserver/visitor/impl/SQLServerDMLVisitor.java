@@ -144,7 +144,6 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         SQLServerInsertStatement result = new SQLServerInsertStatement();
@@ -202,7 +201,6 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressions);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
@@ -249,7 +247,6 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         SQLServerDeleteStatement result = new SQLServerDeleteStatement();
@@ -274,7 +271,6 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitMultipleTablesClause(final MultipleTablesClauseContext ctx) {
         DeleteMultiTableSegment result = new DeleteMultiTableSegment();
@@ -306,7 +302,6 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         return visit(ctx.selectClause(0));
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SelectStatement result = new SelectStatement();
@@ -566,8 +561,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
-        WhereSegment result = new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
-        return result;
+        return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
     }
     
     @Override

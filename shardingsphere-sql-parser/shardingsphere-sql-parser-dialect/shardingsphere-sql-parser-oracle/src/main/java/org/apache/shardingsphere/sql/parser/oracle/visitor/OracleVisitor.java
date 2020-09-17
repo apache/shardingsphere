@@ -322,8 +322,7 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
             }
             result.setRight(listExpression);
         }
-        Boolean operator = null != ctx.NOT() ? true : false;
-        result.setNot(operator);
+        result.setNot(null != ctx.NOT());
         return result;
     }
     

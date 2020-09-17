@@ -53,13 +53,13 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     
     public OracleDataSourceMetaData(final String url, final String username) {
         List<Matcher> matcherList = Arrays.asList(thinUrlPattern.matcher(url), connectDescriptorUrlPattern.matcher(url));
-        Optional<Matcher> matcherOptional = matcherList.stream().filter(matcher -> matcher.find()).findAny();
+        Optional<Matcher> matcherOptional = matcherList.stream().filter(Matcher::find).findAny();
         if (!matcherOptional.isPresent()) {
             throw new UnrecognizedDatabaseURLException(url, thinUrlPattern.pattern());
         }
         Matcher matcher = matcherOptional.get();
         int groupCount = matcher.groupCount();
-        if (groupCount == THIN_MATCH_GROUP_COUNT) {
+        if (THIN_MATCH_GROUP_COUNT == groupCount) {
             hostName = matcher.group(3);
             port = Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(4));
             catalog = matcher.group(5);

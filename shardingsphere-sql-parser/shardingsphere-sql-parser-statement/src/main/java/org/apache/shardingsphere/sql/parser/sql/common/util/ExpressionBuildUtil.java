@@ -37,34 +37,34 @@ public final class ExpressionBuildUtil {
      * @return OrPredicateSegment.
      */
     public OrPredicateSegment extractAndPredicates() {
-        OrPredicateSegment orPredicate = new OrPredicateSegment();
+        OrPredicateSegment result = new OrPredicateSegment();
         if (expression instanceof BinaryOperationExpression) {
             String operator = ((BinaryOperationExpression) expression).getOperator();
             Optional<LogicalOperator> logicalOperator = LogicalOperator.valueFrom(operator);
             if (logicalOperator.isPresent() && LogicalOperator.OR == logicalOperator.get()) {
                 ExpressionBuildUtil leftUtil = new ExpressionBuildUtil(((BinaryOperationExpression) expression).getLeft());
                 ExpressionBuildUtil rightUtil = new ExpressionBuildUtil(((BinaryOperationExpression) expression).getRight());
-                orPredicate.getAndPredicates().addAll(leftUtil.extractAndPredicates().getAndPredicates());
-                orPredicate.getAndPredicates().addAll(rightUtil.extractAndPredicates().getAndPredicates());
+                result.getAndPredicates().addAll(leftUtil.extractAndPredicates().getAndPredicates());
+                result.getAndPredicates().addAll(rightUtil.extractAndPredicates().getAndPredicates());
             } else if (logicalOperator.isPresent() && LogicalOperator.AND == logicalOperator.get()) {
                 ExpressionBuildUtil leftUtil = new ExpressionBuildUtil(((BinaryOperationExpression) expression).getLeft());
                 ExpressionBuildUtil rightUtil = new ExpressionBuildUtil(((BinaryOperationExpression) expression).getRight());
                 for (AndPredicate eachLeft : leftUtil.extractAndPredicates().getAndPredicates()) {
                     for (AndPredicate eachRight : rightUtil.extractAndPredicates().getAndPredicates()) {
-                        orPredicate.getAndPredicates().add(createAndPredicate(eachLeft, eachRight));
+                        result.getAndPredicates().add(createAndPredicate(eachLeft, eachRight));
                     }
                 }
             } else {
                 AndPredicate andPredicate = new AndPredicate();
                 andPredicate.getPredicates().add(expression);
-                orPredicate.getAndPredicates().add(andPredicate);
+                result.getAndPredicates().add(andPredicate);
             }
         } else {
             AndPredicate andPredicate = new AndPredicate();
             andPredicate.getPredicates().add(expression);
-            orPredicate.getAndPredicates().add(andPredicate);
+            result.getAndPredicates().add(andPredicate);
         }
-        return orPredicate;
+        return result;
     }
     
     private AndPredicate createAndPredicate(final AndPredicate left, final AndPredicate right) {

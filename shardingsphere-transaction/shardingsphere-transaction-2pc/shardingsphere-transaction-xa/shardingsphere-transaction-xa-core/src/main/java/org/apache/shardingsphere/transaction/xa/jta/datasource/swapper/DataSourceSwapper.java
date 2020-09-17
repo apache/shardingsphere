@@ -122,9 +122,9 @@ public final class DataSourceSwapper {
     
     private Method findGetterMethod(final DataSource dataSource, final String propertyName) throws NoSuchMethodException {
         String getterMethodName = Joiner.on("").join(GETTER_PREFIX, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, propertyName));
-        Method method = dataSource.getClass().getMethod(getterMethodName);
-        method.setAccessible(true);
-        return method;
+        Method result = dataSource.getClass().getMethod(getterMethodName);
+        result.setAccessible(true);
+        return result;
     }
     
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {

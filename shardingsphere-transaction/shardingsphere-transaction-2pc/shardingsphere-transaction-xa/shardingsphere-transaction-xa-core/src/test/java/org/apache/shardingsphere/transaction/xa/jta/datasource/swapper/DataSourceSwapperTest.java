@@ -56,11 +56,11 @@ public final class DataSourceSwapperTest {
     }
     
     private DataSource createDBCPDataSource() {
-        BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setUrl("jdbc:mysql://localhost:3306/demo_ds");
-        dataSource.setUsername("root");
-        dataSource.setPassword("root");
-        return dataSource;
+        BasicDataSource result = new BasicDataSource();
+        result.setUrl("jdbc:mysql://localhost:3306/demo_ds");
+        result.setUsername("root");
+        result.setPassword("root");
+        return result;
     }
     
     @Test
@@ -70,11 +70,11 @@ public final class DataSourceSwapperTest {
     }
     
     private DataSource createHikariCPDataSource() {
-        HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/demo_ds");
-        dataSource.setUsername("root");
-        dataSource.setPassword("root");
-        return dataSource;
+        HikariDataSource result = new HikariDataSource();
+        result.setJdbcUrl("jdbc:mysql://localhost:3306/demo_ds");
+        result.setUsername("root");
+        result.setPassword("root");
+        return result;
     }
     
     private void assertResult(final XADataSource xaDataSource) {

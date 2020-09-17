@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.job.position;
 /**
  * Inventory position manager.
  */
-public final class InventoryPositionManager<T extends InventoryPosition> extends BasePositionManager<T> implements PositionManager<T> {
+public final class InventoryPositionManager<T extends InventoryPosition> extends BasePositionManager<T> {
     
     public InventoryPositionManager(final T position) {
         super(position);

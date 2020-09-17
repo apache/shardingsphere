@@ -112,7 +112,7 @@ public abstract class BatchIT extends BaseIT {
                 assertThat(actualUpdateCounts[count], is(expected.getUpdateCount()));
                 expectedList.add(expected);
             } catch (final AssertionError ex) {
-                log.error("[ERROR] SQL::{}, Expect::{}", getSql(), each);
+                log.error("[ERROR] SQL::{}, Expect::{}", sql, each);
                 throw ex;
             }
             count++;

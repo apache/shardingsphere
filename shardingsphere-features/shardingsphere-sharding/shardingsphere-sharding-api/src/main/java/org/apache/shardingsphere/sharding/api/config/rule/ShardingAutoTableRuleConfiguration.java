@@ -29,20 +29,20 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
  */
 @Getter
 @Setter
-public class ShardingAutoTableRuleConfiguration {
-
+public final class ShardingAutoTableRuleConfiguration {
+    
     private final String logicTable;
-
+    
     private final String actualDataSources;
-
+    
     private ShardingStrategyConfiguration shardingStrategy;
-
+    
     private KeyGenerateStrategyConfiguration keyGenerateStrategy;
-
+    
     public ShardingAutoTableRuleConfiguration(final String logicTable) {
         this(logicTable, null);
     }
-
+    
     public ShardingAutoTableRuleConfiguration(final String logicTable, final String actualDataSources) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTable), "LogicTable is required.");
         this.logicTable = logicTable;

@@ -94,8 +94,8 @@ public final class DataSourceManager implements AutoCloseable {
         for (DataSourceWrapper each : cachedDataSources.values()) {
             try {
                 each.close();
-            } catch (IOException e) {
-                log.warn("An exception occurred while closing the data source", e);
+            } catch (final IOException ex) {
+                log.warn("An exception occurred while closing the data source", ex);
             }
         }
         cachedDataSources.clear();

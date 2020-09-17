@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.infra.spi;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Collection;
 import org.apache.shardingsphere.infra.spi.exception.ServiceLoaderInstantiationException;
 import org.apache.shardingsphere.infra.spi.fixture.TypedSPIFixture;
 import org.junit.Test;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -47,10 +48,10 @@ public final class ShardingSphereServiceLoaderTest {
     @Test
     public void assertRegisterTwice() {
         ShardingSphereServiceLoader.register(TypedSPIFixture.class);
-        Collection actualFirstRegister = ShardingSphereServiceLoader.newServiceInstances(TypedSPIFixture.class);
+        Collection<?> actualFirstRegister = ShardingSphereServiceLoader.newServiceInstances(TypedSPIFixture.class);
         assertThat(actualFirstRegister.size(), is(1));
         ShardingSphereServiceLoader.register(TypedSPIFixture.class);
-        Collection actualSecondRegister = ShardingSphereServiceLoader.newServiceInstances(TypedSPIFixture.class);
+        Collection<?> actualSecondRegister = ShardingSphereServiceLoader.newServiceInstances(TypedSPIFixture.class);
         assertThat(actualSecondRegister.size(), is(actualFirstRegister.size()));
     }
     
@@ -61,7 +62,7 @@ public final class ShardingSphereServiceLoaderTest {
         Throwable targetException = null;
         try {
             method.invoke(null, TypedSPIFixture.class);
-        } catch (InvocationTargetException ex) {
+        } catch (final InvocationTargetException ex) {
             targetException = ex.getTargetException();
         }
         assertTrue("expected throw ServiceLoaderInstantiationException", targetException instanceof ServiceLoaderInstantiationException);

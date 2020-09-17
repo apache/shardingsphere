@@ -90,10 +90,10 @@ public final class PostgreSQLWalDumperTest {
             when(pgConnection.getTimestampUtils()).thenReturn(null);
             when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionManager.SLOT_NAME, position.getLogSequenceNumber())).thenReturn(pgReplicationStream);
             ByteBuffer data = ByteBuffer.wrap("table public.test: DELETE: data[integer]:1".getBytes());
-            when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new SQLException());
+            when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new SQLException(""));
             when(pgReplicationStream.getLastReceiveLSN()).thenReturn(LogSequenceNumber.valueOf(101L));
             postgreSQLWalDumper.start();
-        } catch (SyncTaskExecuteException ignore) {
+        } catch (final SyncTaskExecuteException ignore) {
         }
         assertThat(channel.fetchRecords(100, 0).size(), is(1));
     }

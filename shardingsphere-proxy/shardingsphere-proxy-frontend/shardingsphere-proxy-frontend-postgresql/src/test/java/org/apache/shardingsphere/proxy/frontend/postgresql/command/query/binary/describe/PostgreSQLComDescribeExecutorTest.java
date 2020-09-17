@@ -29,6 +29,6 @@ public final class PostgreSQLComDescribeExecutorTest {
     @Test
     public void assertNewInstance() {
         PostgreSQLComDescribeExecutor actual = new PostgreSQLComDescribeExecutor();
-        assertThat(actual.execute(), is(Collections.EMPTY_LIST));
+        assertThat(actual.execute(), is(Collections.emptyList()));
     }
 }

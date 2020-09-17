@@ -70,10 +70,9 @@ public final class PreparedShadowDataSourceJudgeEngine implements ShadowDataSour
         if (!whereSegment.isPresent()) {
             return false;
         }
-        Collection<AndPredicate> andPredicates = new LinkedList<>();
         ExpressionSegment expression = whereSegment.get().getExpr();
         ExpressionBuildUtil util = new ExpressionBuildUtil(expression);
-        andPredicates.addAll(util.extractAndPredicates().getAndPredicates());
+        Collection<AndPredicate> andPredicates = new LinkedList<>(util.extractAndPredicates().getAndPredicates());
         for (AndPredicate andPredicate : andPredicates) {
             if (judgePredicateSegments(andPredicate.getPredicates())) {
                 return true;

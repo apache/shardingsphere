@@ -66,7 +66,7 @@ public final class StandardTransactionContextsTest {
     @Test(expected = Exception.class)
     public void assertCloseThrowsException() throws Exception {
         ShardingTransactionManagerEngine shardingTransactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
-        doThrow(new RuntimeException()).when(shardingTransactionManagerEngine).close();
+        doThrow(new RuntimeException("")).when(shardingTransactionManagerEngine).close();
         Map<String, ShardingTransactionManagerEngine> actualEngine = new HashMap<>();
         actualEngine.put(DefaultSchema.LOGIC_NAME, shardingTransactionManagerEngine);
         StandardTransactionContexts standardTransactionContexts = new StandardTransactionContexts(actualEngine);

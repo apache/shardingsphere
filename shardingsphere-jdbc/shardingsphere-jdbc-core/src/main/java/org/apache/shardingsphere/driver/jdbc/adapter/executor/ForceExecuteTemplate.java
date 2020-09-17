@@ -51,7 +51,7 @@ public final class ForceExecuteTemplate<T> {
         if (exceptions.isEmpty()) {
             return;
         }
-        SQLException ex = new SQLException();
+        SQLException ex = new SQLException("");
         exceptions.forEach(ex::setNextException);
         throw ex;
     }

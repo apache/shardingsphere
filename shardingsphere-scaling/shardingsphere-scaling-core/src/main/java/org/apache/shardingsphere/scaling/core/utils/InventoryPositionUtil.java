@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.scaling.core.utils;
 
 import com.google.gson.Gson;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
@@ -27,6 +29,7 @@ import java.util.List;
 /**
  * Inventory position util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InventoryPositionUtil {
     
     private static final Gson GSON = new Gson();

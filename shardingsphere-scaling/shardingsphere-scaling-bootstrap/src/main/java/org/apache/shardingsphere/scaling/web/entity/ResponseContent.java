@@ -25,7 +25,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class ResponseContent<T> {
+public final class ResponseContent<T> {
     
     private boolean success = true;
     

@@ -42,7 +42,7 @@ public final class StandardModuloShardingTableAlgorithm implements StandardShard
                 return each;
             }
         }
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("");
     }
     
     @Override
@@ -55,7 +55,7 @@ public final class StandardModuloShardingTableAlgorithm implements StandardShard
                 }
             }
         } else {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("");
         }
         return result;
     }

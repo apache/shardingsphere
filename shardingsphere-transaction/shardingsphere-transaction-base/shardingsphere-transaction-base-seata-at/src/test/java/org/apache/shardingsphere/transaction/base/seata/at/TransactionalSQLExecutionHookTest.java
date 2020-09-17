@@ -77,7 +77,7 @@ public final class TransactionalSQLExecutionHookTest {
     public void assertChildThreadExecuteFailed() {
         executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, false, shardingExecuteDataMap);
         assertTrue(RootContext.inGlobalTransaction());
-        executionHook.finishFailure(new RuntimeException());
+        executionHook.finishFailure(new RuntimeException(""));
         assertFalse(RootContext.inGlobalTransaction());
     }
 }

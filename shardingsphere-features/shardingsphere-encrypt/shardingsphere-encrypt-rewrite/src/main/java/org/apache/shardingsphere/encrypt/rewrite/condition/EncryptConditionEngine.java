@@ -68,10 +68,9 @@ public final class EncryptConditionEngine {
             return Collections.emptyList();
         }
     
-        Collection<AndPredicate> andPredicates = new LinkedList<>();
         ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
         ExpressionBuildUtil expressionBuildUtil = new ExpressionBuildUtil(expression);
-        andPredicates.addAll(expressionBuildUtil.extractAndPredicates().getAndPredicates());
+        Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuildUtil.extractAndPredicates().getAndPredicates());
         List<EncryptCondition> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
             result.addAll(createEncryptConditions(sqlStatementContext, each));

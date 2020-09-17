@@ -36,10 +36,10 @@ public final class HintShowStatusExecutor extends AbstractHintQueryExecutor<Hint
     
     @Override
     protected List<QueryHeader> createQueryHeaders() {
-        List<QueryHeader> queryHeaders = new ArrayList<>(2);
-        queryHeaders.add(new QueryHeader("", "", "master_only", "", 5, Types.CHAR, 0, false, false, false, false));
-        queryHeaders.add(new QueryHeader("", "", "sharding_type", "", 255, Types.CHAR, 0, false, false, false, false));
-        return queryHeaders;
+        List<QueryHeader> result = new ArrayList<>(2);
+        result.add(new QueryHeader("", "", "master_only", "", 5, Types.CHAR, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "sharding_type", "", 255, Types.CHAR, 0, false, false, false, false));
+        return result;
     }
     
     @Override
@@ -50,9 +50,9 @@ public final class HintShowStatusExecutor extends AbstractHintQueryExecutor<Hint
     }
     
     private List<Object> createRow(final boolean masterOnly, final HintShardingType shardingType) {
-        List<Object> row = new ArrayList<>(2);
-        row.add(String.valueOf(masterOnly).toLowerCase());
-        row.add(String.valueOf(shardingType).toLowerCase());
-        return row;
+        List<Object> result = new ArrayList<>(2);
+        result.add(String.valueOf(masterOnly).toLowerCase());
+        result.add(String.valueOf(shardingType).toLowerCase());
+        return result;
     }
 }

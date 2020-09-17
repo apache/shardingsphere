@@ -76,9 +76,9 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
     private byte[] handle(final byte[] data, final byte[] key) {
         reset();
         setKey(key);
-        byte[] msg = crypt(data);
+        byte[] result = crypt(data);
         reset();
-        return msg;
+        return result;
     }
     
     private void reset() {
@@ -94,7 +94,7 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
      */
     private byte[] crypt(final byte[] message) {
         sBox = initSBox(key);
-        byte[] code = new byte[message.length];
+        byte[] result = new byte[message.length];
         int i = 0;
         int j = 0;
         for (int n = 0; n < message.length; n++) {
@@ -102,9 +102,9 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
             j = (j + sBox[i]) % SBOX_LENGTH;
             swap(i, j, sBox);
             int rand = sBox[(sBox[i] + sBox[j]) % SBOX_LENGTH];
-            code[n] = (byte) (rand ^ message[n]);
+            result[n] = (byte) (rand ^ message[n]);
         }
-        return code;
+        return result;
     }
     
     /**
@@ -115,16 +115,16 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
      * @see <a href="http://en.wikipedia.org/wiki/RC4#Key-scheduling_algorithm_.28KSA.29">Wikipedia. Init sBox</a>
      */
     private int[] initSBox(final byte[] key) {
-        int[] sbox = new int[SBOX_LENGTH];
+        int[] result = new int[SBOX_LENGTH];
         int j = 0;
         for (int i = 0; i < SBOX_LENGTH; i++) {
-            sbox[i] = i;
+            result[i] = i;
         }
         for (int i = 0; i < SBOX_LENGTH; i++) {
-            j = (j + sbox[i] + (key[i % key.length]) & 0xFF) % SBOX_LENGTH;
-            swap(i, j, sbox);
+            j = (j + result[i] + (key[i % key.length]) & 0xFF) % SBOX_LENGTH;
+            swap(i, j, result);
         }
-        return sbox;
+        return result;
     }
     
     private void swap(final int i, final int j, final int[] sBox) {

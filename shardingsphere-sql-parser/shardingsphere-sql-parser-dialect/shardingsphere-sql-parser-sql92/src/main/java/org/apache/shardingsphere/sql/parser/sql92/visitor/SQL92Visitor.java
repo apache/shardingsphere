@@ -333,8 +333,7 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
             }
             result.setRight(listExpression);
         }
-        boolean operator = null != ctx.NOT() ? true : false;
-        result.setNot(operator);
+        result.setNot(null != ctx.NOT());
         return result;
     }
     

@@ -27,7 +27,7 @@ public final class PostgreSQLUnspecifiedBinaryProtocolValue implements PostgreSQ
     
     @Override
     public int getColumnLength(final Object value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("getColumnLength");
     }
     
     @Override
@@ -41,6 +41,6 @@ public final class PostgreSQLUnspecifiedBinaryProtocolValue implements PostgreSQ
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("write");
     }
 }

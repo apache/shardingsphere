@@ -299,7 +299,7 @@ public final class BackendConnectionTest {
         field.setAccessible(true);
         Collection<ResultSet> cachedResultSets = (Collection<ResultSet>) field.get(backendConnection);
         ResultSet resultSet = mock(ResultSet.class);
-        SQLException sqlException = new SQLException();
+        SQLException sqlException = new SQLException("");
         doThrow(sqlException).when(resultSet).close();
         cachedResultSets.add(resultSet);
         Collection<SQLException> result = backendConnection.closeResultSets();
@@ -329,7 +329,7 @@ public final class BackendConnectionTest {
         Collection<Statement> cachedStatement = (Collection<Statement>) field.get(backendConnection);
         Statement statement = mock(Statement.class);
         cachedStatement.add(statement);
-        SQLException sqlException = new SQLException();
+        SQLException sqlException = new SQLException("");
         doThrow(sqlException).when(statement).close();
         Collection<SQLException> result = backendConnection.closeStatements();
         verify(statement, times(1)).close();
@@ -384,7 +384,7 @@ public final class BackendConnectionTest {
         ConnectionStatus connectionStatus = mock(ConnectionStatus.class);
         prepareConnectionStatus(connectionStatus);
         Connection connection = prepareCachedConnections();
-        SQLException sqlException = new SQLException();
+        SQLException sqlException = new SQLException("");
         doThrow(sqlException).when(connection).close();
         assertTrue(backendConnection.closeConnections(false).contains(sqlException));
     }

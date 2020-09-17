@@ -48,64 +48,56 @@ public final class EncryptDALResultDecoratorTest {
     
     @Mock
     private SchemaMetaData schemaMetaData;
-
+    
     @Mock
-    private SQLStatementContext sqlStatementContext;
-
+    private SQLStatementContext<?> sqlStatementContext;
+    
     @Test
     public void assertMergedResultWithDescribeStatement() {
         schemaMetaData = mock(SchemaMetaData.class);
         sqlStatementContext = getDescribeStatementContext();
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
-        MergedResult mergedResult = encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schemaMetaData);
-        assertThat(mergedResult, instanceOf(MergedEncryptColumnsMergedResult.class));
-        mergedResult = encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schemaMetaData);
-        assertThat(mergedResult, instanceOf(DecoratedEncryptColumnsMergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schemaMetaData), instanceOf(MergedEncryptColumnsMergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schemaMetaData), instanceOf(DecoratedEncryptColumnsMergedResult.class));
     }
-
+    
     @Test
     public void assertMergedResultWithShowColumnsStatement() {
         schemaMetaData = mock(SchemaMetaData.class);
         sqlStatementContext = getShowColumnsStatementContext();
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
-        MergedResult mergedResult = encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schemaMetaData);
-        assertThat(mergedResult, instanceOf(MergedEncryptColumnsMergedResult.class));
-        mergedResult = encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schemaMetaData);
-        assertThat(mergedResult, instanceOf(DecoratedEncryptColumnsMergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schemaMetaData), instanceOf(MergedEncryptColumnsMergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schemaMetaData), instanceOf(DecoratedEncryptColumnsMergedResult.class));
     }
-
+    
     @Test
     public void assertMergedResultWithOtherStatement() {
         schemaMetaData = mock(SchemaMetaData.class);
         sqlStatementContext = mock(SQLStatementContext.class);
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
-        MergedResult mergedResult = encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schemaMetaData);
-        assertThat(mergedResult, instanceOf(TransparentMergedResult.class));
-        mergedResult = encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schemaMetaData);
-        assertThat(mergedResult, instanceOf(MergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schemaMetaData), instanceOf(TransparentMergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schemaMetaData), instanceOf(MergedResult.class));
     }
-
-    private SQLStatementContext getDescribeStatementContext() {
-        DescribeStatementContext sqlStatementContext = mock(DescribeStatementContext.class);
+    
+    private SQLStatementContext<?> getDescribeStatementContext() {
+        DescribeStatementContext result = mock(DescribeStatementContext.class);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
-        when(sqlStatementContext.getAllTables()).thenReturn(Collections.singletonList(simpleTableSegment));
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLDescribeStatement.class));
-        return sqlStatementContext;
+        when(result.getAllTables()).thenReturn(Collections.singletonList(simpleTableSegment));
+        when(result.getSqlStatement()).thenReturn(mock(MySQLDescribeStatement.class));
+        return result;
     }
-
-    private SQLStatementContext getShowColumnsStatementContext() {
-        ShowColumnsStatementContext sqlStatementContext = mock(ShowColumnsStatementContext.class);
+    
+    private SQLStatementContext<?> getShowColumnsStatementContext() {
+        ShowColumnsStatementContext result = mock(ShowColumnsStatementContext.class);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
-        when(sqlStatementContext.getAllTables()).thenReturn(Collections.singletonList(simpleTableSegment));
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLShowColumnsStatement.class));
-        return sqlStatementContext;
+        when(result.getAllTables()).thenReturn(Collections.singletonList(simpleTableSegment));
+        when(result.getSqlStatement()).thenReturn(mock(MySQLShowColumnsStatement.class));
+        return result;
     }
-
+    
     private SimpleTableSegment getSimpleTableSegment() {
         IdentifierValue identifierValue = new IdentifierValue("test");
         TableNameSegment tableNameSegment = new TableNameSegment(1, 4, identifierValue);
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
-        return simpleTableSegment;
+        return new SimpleTableSegment(tableNameSegment);
     }
-
 }
