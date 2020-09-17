@@ -161,8 +161,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        TableExtractor utils = new TableExtractor();
-        utils.extractTablesFromInsert(getSqlStatement());
-        return utils.getRewriteTables();
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromInsert(getSqlStatement());
+        return tableExtractor.getRewriteTables();
     }
 }

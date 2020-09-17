@@ -178,9 +178,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        TableExtractor utils = new TableExtractor();
-        utils.extractTablesFromSelect(getSqlStatement());
-        return utils.getRewriteTables();
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromSelect(getSqlStatement());
+        return tableExtractor.getRewriteTables();
     }
     
     @Override
@@ -193,8 +193,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
      * @return tables.
      */
     public Collection<SimpleTableSegment> getSimpleTableSegments() {
-        TableExtractor utils = new TableExtractor();
-        utils.extractTablesFromSelect(getSqlStatement());
-        return utils.getRewriteTables();
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromSelect(getSqlStatement());
+        return tableExtractor.getRewriteTables();
     }
 }

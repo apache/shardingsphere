@@ -49,9 +49,9 @@ public final class UpdateStatementContext extends CommonSQLStatementContext<Upda
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        TableExtractor utils = new TableExtractor();
-        utils.extractTablesFromUpdate(getSqlStatement());
-        return utils.getRewriteTables();
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromUpdate(getSqlStatement());
+        return tableExtractor.getRewriteTables();
     }
     
     @Override
