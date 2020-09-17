@@ -296,15 +296,11 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     }
     
     private BetweenExpression createBetweenSegment(final AExprContext ctx) {
-        BetweenExpression result = new BetweenExpression();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setLeft((ExpressionSegment) visit(ctx.aExpr(0)));
-        result.setBetweenExpr((ExpressionSegment) visit(ctx.bExpr()));
-        result.setAndExpr((ExpressionSegment) visit(ctx.aExpr(1)));
-        if (null != ctx.NOT()) {
-            result.setNot(true);
-        }
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
+        ExpressionSegment between = (ExpressionSegment) visit(ctx.bExpr());
+        ExpressionSegment and = (ExpressionSegment) visit(ctx.aExpr(1));
+        boolean not = null != ctx.NOT() ? true : false;
+        BetweenExpression result = new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
         return result;
     }
     
@@ -314,9 +310,6 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
             return visit(ctx.cExpr());
         }
         if (null != ctx.TYPE_CAST_() || null != ctx.qualOp()) {
-//            result.setStartIndex(ctx.start.getStartIndex());
-//            result.setStopIndex(ctx.stop.getStopIndex());
-//            result.setLeft((ExpressionSegment) visit(ctx.bExpr(0)));
             ExpressionSegment left = (ExpressionSegment) visit(ctx.bExpr(0));
             ExpressionSegment right;
             String operator;
@@ -328,9 +321,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
                 right = (ExpressionSegment) visit(ctx.bExpr(1));
             }
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-//            result.setText(text);
             BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
-    
             return result;
         }
         for (BExprContext each : ctx.bExpr()) {

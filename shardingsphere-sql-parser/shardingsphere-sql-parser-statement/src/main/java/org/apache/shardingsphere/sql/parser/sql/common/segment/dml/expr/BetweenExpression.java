@@ -18,22 +18,24 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
+@RequiredArgsConstructor
 public final class BetweenExpression implements ExpressionSegment {
     
-    private int startIndex;
+    private final int startIndex;
     
-    private int stopIndex;
+    private final int stopIndex;
     
-    private ExpressionSegment left;
+    private final ExpressionSegment left;
     
-    private ExpressionSegment betweenExpr;
+    private final ExpressionSegment betweenExpr;
     
-    private ExpressionSegment andExpr;
+    private final ExpressionSegment andExpr;
     
-    private boolean not;
+    private final boolean not;
 }
 

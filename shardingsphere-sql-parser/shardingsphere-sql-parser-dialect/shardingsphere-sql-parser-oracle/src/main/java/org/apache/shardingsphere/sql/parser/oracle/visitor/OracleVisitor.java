@@ -330,12 +330,11 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
     }
     
     private BetweenExpression createBetweenSegment(final PredicateContext ctx) {
-        BetweenExpression result = new BetweenExpression();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setLeft((ExpressionSegment) visit(ctx.bitExpr(0)));
-        result.setBetweenExpr((ExpressionSegment) visit(ctx.bitExpr(1)));
-        result.setAndExpr((ExpressionSegment) visit(ctx.predicate()));
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
+        ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
+        ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
+        boolean not = null != ctx.NOT() ? true : false;
+        BetweenExpression result = new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
         return result;
     }
     

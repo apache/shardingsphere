@@ -379,12 +379,11 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     }
     
     private BetweenExpression createBetweenSegment(final PredicateContext ctx) {
-        BetweenExpression result = new BetweenExpression();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setLeft((ExpressionSegment) visit(ctx.bitExpr(0)));
-        result.setBetweenExpr((ExpressionSegment) visit(ctx.bitExpr(1)));
-        result.setAndExpr((ExpressionSegment) visit(ctx.predicate()));
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
+        ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
+        ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
+        boolean not = null != ctx.NOT() ? true : false;
+        BetweenExpression result = new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
         return result;
     }
     
@@ -398,7 +397,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         String operator = ctx.getChild(1).getText();
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
-    
         return result;
     }
     
