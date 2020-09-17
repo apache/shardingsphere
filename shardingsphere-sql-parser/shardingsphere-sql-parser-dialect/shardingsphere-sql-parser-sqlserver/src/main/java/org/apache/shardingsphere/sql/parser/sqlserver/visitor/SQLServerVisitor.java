@@ -245,14 +245,11 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
             return visit(ctx.expr(0));
         }
         if (null != ctx.logicalOperator()) {
-            BinaryOperationExpression result = new BinaryOperationExpression();
-            result.setStartIndex(ctx.start.getStartIndex());
-            result.setStopIndex(ctx.stop.getStopIndex());
-            result.setLeft((ExpressionSegment) visit(ctx.expr(0)));
-            result.setRight((ExpressionSegment) visit(ctx.expr(1)));
-            result.setOperator(ctx.logicalOperator().getText());
+            ExpressionSegment left = (ExpressionSegment) visit(ctx.expr(0));
+            ExpressionSegment right = (ExpressionSegment) visit(ctx.expr(1));
+            String operator = ctx.logicalOperator().getText();
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-            result.setText(text);
+            BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
             return result;
         }
         NotExpression result = new NotExpression();
@@ -265,15 +262,12 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     @Override
     public final ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.IS()) {
-            BinaryOperationExpression result = new BinaryOperationExpression();
-            result.setStartIndex(ctx.start.getStartIndex());
-            result.setStopIndex(ctx.stop.getStopIndex());
-            result.setLeft((ExpressionSegment) visit(ctx.booleanPrimary()));
-            result.setRight(new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), new Interval(ctx.IS().getSymbol().getStopIndex() + 1,
-                    ctx.stop.getStopIndex())));
-            result.setOperator("IS");
+            ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
+            ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), new Interval(ctx.IS().getSymbol().getStopIndex() + 1,
+                    ctx.stop.getStopIndex()));
+            String operator = "IS";
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-            result.setText(text);
+            BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
             return result;
         }
         if (null != ctx.comparisonOperator() || null != ctx.SAFE_EQ_()) {
@@ -283,19 +277,16 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     }
     
     private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
-        BinaryOperationExpression result = new BinaryOperationExpression();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setLeft((ExpressionSegment) visit(ctx.booleanPrimary()));
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
+        ExpressionSegment right;
         if (null != ctx.predicate()) {
-            result.setRight((ExpressionSegment) visit(ctx.predicate()));
+            right = (ExpressionSegment) visit(ctx.predicate());
         } else {
-            result.setRight((ExpressionSegment) visit(ctx.subquery()));
+            right = (ExpressionSegment) visit(ctx.subquery());
         }
         String operator = null != ctx.SAFE_EQ_() ? ctx.SAFE_EQ_().getText() : ctx.comparisonOperator().getText();
-        result.setOperator(operator);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        result.setText(text);
+        BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         return result;
     }
     
@@ -314,20 +305,14 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     }
     
     private BinaryOperationExpression createBinaryOperationExpressionFromLike(final PredicateContext ctx) {
-        BinaryOperationExpression result = new BinaryOperationExpression();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setLeft((ExpressionSegment) visit(ctx.bitExpr(0)));
-        ListExpression listExpression = new ListExpression();
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
+        ListExpression right = new ListExpression();
         for (SimpleExprContext each : ctx.simpleExpr()) {
-            listExpression.getItems().add((ExpressionSegment) visit(each));
+            right.getItems().add((ExpressionSegment) visit(each));
         }
-        result.setRight(listExpression);
-        String operator;
-        operator = null != ctx.NOT() ? "NOT LIKE" : "LIKE";
-        result.setOperator(operator);
+        String operator = null != ctx.NOT() ? "NOT LIKE" : "LIKE";
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        result.setText(text);
+        BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         return result;
     }
     
@@ -366,14 +351,11 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         if (null != ctx.simpleExpr()) {
             return createExpressionSegment(visit(ctx.simpleExpr()), ctx);
         }
-        BinaryOperationExpression result = new BinaryOperationExpression();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setLeft((ExpressionSegment) visit(ctx.getChild(0)));
-        result.setRight((ExpressionSegment) visit(ctx.getChild(2)));
-        result.setOperator(ctx.getChild(1).getText());
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.getChild(0));
+        ExpressionSegment right = (ExpressionSegment) visit(ctx.getChild(2));
+        String operator = ctx.getChild(1).getText();
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        result.setText(text);
+        BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         return result;
     }
     

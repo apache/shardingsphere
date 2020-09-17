@@ -18,24 +18,26 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
  * Binary operation expression.
  */
-@Setter
+@RequiredArgsConstructor
 @Getter
+@Setter
 public final class BinaryOperationExpression implements ExpressionSegment {
     
-    private int startIndex;
+    private final int startIndex;
     
-    private int stopIndex;
+    private final int stopIndex;
     
-    private ExpressionSegment left;
+    private final ExpressionSegment left;
     
-    private ExpressionSegment right;
+    private final ExpressionSegment right;
     
-    private String operator;
+    private final String operator;
     
-    private String text;
+    private final String text;
 }

@@ -120,10 +120,9 @@ public final class ShardingUpdateStatementValidatorTest {
                 new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);
         result.setSetAssignment(setAssignmentSegment);
-        BinaryOperationExpression binaryOperationExpression = new BinaryOperationExpression();
-        binaryOperationExpression.setLeft(new ColumnSegment(0, 0, new IdentifierValue("id")));
-        binaryOperationExpression.setRight(new ParameterMarkerExpressionSegment(0, 0, 0));
-        binaryOperationExpression.setOperator("=");
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        ParameterMarkerExpressionSegment right = new ParameterMarkerExpressionSegment(0, 0, 0);
+        BinaryOperationExpression binaryOperationExpression = new BinaryOperationExpression(0, 0, left, right, "=", null);
         WhereSegment where = new WhereSegment(0, 0, binaryOperationExpression);
         result.setWhere(where);
         return result;

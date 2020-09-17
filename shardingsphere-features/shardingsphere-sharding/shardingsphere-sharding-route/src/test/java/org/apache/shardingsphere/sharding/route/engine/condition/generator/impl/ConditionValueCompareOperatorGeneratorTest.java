@@ -43,9 +43,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @Test
     public void assertGenerateConditionValue() {
         int value = 1;
-        BinaryOperationExpression rightValue = new BinaryOperationExpression();
-        rightValue.setOperator("=");
-        rightValue.setRight(new LiteralExpressionSegment(0, 0, value));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 0, value), "=", null);
         Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertTrue(((ListRouteValue<Integer>) routeValue.get()).getValues().contains(value));
@@ -54,9 +52,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithLessThanOperator() {
-        BinaryOperationExpression rightValue = new BinaryOperationExpression();
-        rightValue.setOperator("<");
-        rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 0, 1), "<", null);
         Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertTrue(Range.lessThan(1).encloses(((RangeRouteValue<Integer>) routeValue.get()).getValueRange()));
@@ -65,9 +61,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithGreaterThanOperator() {
-        BinaryOperationExpression rightValue = new BinaryOperationExpression();
-        rightValue.setOperator(">");
-        rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 0, 1), ">", null);
         Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertTrue(Range.greaterThan(1).encloses(((RangeRouteValue<Integer>) routeValue.get()).getValueRange()));
@@ -76,9 +70,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithAtMostOperator() {
-        BinaryOperationExpression rightValue = new BinaryOperationExpression();
-        rightValue.setOperator("<=");
-        rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 0, 1), "<=", null);
         Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertTrue(Range.atMost(1).encloses(((RangeRouteValue<Integer>) routeValue.get()).getValueRange()));
@@ -87,9 +79,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithAtLeastOperator() {
-        BinaryOperationExpression rightValue = new BinaryOperationExpression();
-        rightValue.setOperator(">=");
-        rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 0, 1), ">=", null);
         Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertTrue(Range.atLeast(1).encloses(((RangeRouteValue<Integer>) routeValue.get()).getValueRange()));
@@ -97,26 +87,20 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     
     @Test
     public void assertGenerateConditionValueWithErrorOperator() {
-        BinaryOperationExpression rightValue = new BinaryOperationExpression();
-        rightValue.setOperator("!=");
-        rightValue.setRight(new LiteralExpressionSegment(0, 0, 1));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 0, 1), "!=", null);
         assertFalse(generator.generate(rightValue, column, new LinkedList<>()).isPresent());
     }
     
     @Test
     public void assertGenerateConditionValueWithoutNowExpression() {
-        BinaryOperationExpression rightValue = new BinaryOperationExpression();
-        rightValue.setOperator("=");
-        rightValue.setRight(new CommonExpressionSegment(0, 0, "value"));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, null, new CommonExpressionSegment(0, 0, "value"), "=", null);
         assertFalse(generator.generate(rightValue, column, new LinkedList<>()).isPresent());
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithNowExpression() {
-        BinaryOperationExpression rightValue = new BinaryOperationExpression();
-        rightValue.setOperator("=");
-        rightValue.setRight(new LiteralExpressionSegment(0, 0, "now()"));
+        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 0, "now()"), "=", null);
         Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertFalse(((ListRouteValue<Integer>) routeValue.get()).getValues().isEmpty());

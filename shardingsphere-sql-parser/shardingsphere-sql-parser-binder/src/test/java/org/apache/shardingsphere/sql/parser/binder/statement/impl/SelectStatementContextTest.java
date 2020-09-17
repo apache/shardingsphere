@@ -190,10 +190,9 @@ public final class SelectStatementContextTest {
     
     @Test
     public void assertContainsSubqueryWhereEmpty() {
-        BinaryOperationExpression expression = new BinaryOperationExpression();
-        expression.setLeft(new ColumnSegment(0, 10, new IdentifierValue("id")));
-        expression.setRight(new LiteralExpressionSegment(0, 0, 20));
-        expression.setOperator("=");
+        ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue("id"));
+        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, 20);
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, "=", null);
         WhereSegment subWhereSegment = new WhereSegment(0, 0, expression);
         SelectStatement subSelectStatement = new SelectStatement();
         subSelectStatement.setWhere(subWhereSegment);

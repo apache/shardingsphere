@@ -87,11 +87,9 @@ public final class TopPaginationContextEngineTest {
     @Test
     public void assertCreatePaginationContextWhenParameterMarkerRowNumberValueSegment() {
         String name = "rowNumberAlias";
-        BinaryOperationExpression expression = new BinaryOperationExpression();
-        expression.setOperator(">");
-        expression.setRight(new ParameterMarkerExpressionSegment(0, 10, 0));
-        expression.setLeft(new ColumnSegment(0, 10, new IdentifierValue(name)));
-        
+        ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(name));
+        ParameterMarkerExpressionSegment right = new ParameterMarkerExpressionSegment(0, 10, 0);
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, ">", null);
         PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(new TopProjectionSegment(0, 10, null, name), expression, Collections.singletonList(1));
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         PaginationValueSegment paginationValueSegment = paginationContext.getOffsetSegment().get();
@@ -105,11 +103,9 @@ public final class TopPaginationContextEngineTest {
     
     private void assertCreatePaginationContextWhenRowNumberPredicatePresentAndWithGivenOperator(final String operator) {
         String name = "rowNumberAlias";
-        BinaryOperationExpression expression = new BinaryOperationExpression();
-        expression.setOperator(operator);
-        expression.setRight(new LiteralExpressionSegment(0, 10, 100));
-        expression.setLeft(new ColumnSegment(0, 10, new IdentifierValue(name)));
-        
+        ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(name));
+        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 10, 100);
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, operator, null);
         PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(new TopProjectionSegment(0, 10, null, name), expression, Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         PaginationValueSegment paginationValueSegment = paginationContext.getOffsetSegment().get();
