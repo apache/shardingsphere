@@ -494,6 +494,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         }
         if (null != ctx.tableReference()) {
             JoinTableSegment result = new JoinTableSegment();
+            result.setLeft((TableSegment) visit(ctx.tableReference()));
             int startIndex = null != ctx.LP_() ? ctx.LP_().getSymbol().getStartIndex() : ctx.tableReference().start.getStartIndex();
             int stopIndex = 0;
             AliasSegment alias = null;
@@ -513,9 +514,8 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         return new SimpleTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("not support"));
     }
     
-    private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final TableSegment tableSegment) {
-        JoinTableSegment result = new JoinTableSegment();
-        result.setLeft(tableSegment);
+    private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final JoinTableSegment tableSegment) {
+        JoinTableSegment result = tableSegment;
         TableSegment right = (TableSegment) visit(ctx.tableReference());
         result.setRight(right);
         if (null != ctx.joinQual()) {
