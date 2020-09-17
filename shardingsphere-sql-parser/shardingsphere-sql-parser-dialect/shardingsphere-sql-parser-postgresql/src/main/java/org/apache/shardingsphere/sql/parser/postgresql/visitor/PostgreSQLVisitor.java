@@ -265,12 +265,10 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     }
     
     private InExpression createInSegment(final AExprContext ctx) {
-        InExpression result = new InExpression();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setLeft((ExpressionSegment) visit(ctx.aExpr(0)));
-        result.setRight(visitInExpression(ctx.inExpr()));
-        result.setNot(null != ctx.NOT());
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
+        ExpressionSegment right = visitInExpression(ctx.inExpr());
+        boolean not = null != ctx.NOT() ? true : false;
+        InExpression result = new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
         return result;
     }
     
@@ -285,9 +283,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     
     @Override
     public ASTNode visitExprList(final ExprListContext ctx) {
-        ListExpression result = new ListExpression();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
+        ListExpression result = new ListExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         if (null != ctx.exprList()) {
             result.getItems().addAll(((ListExpression) visitExprList(ctx.exprList())).getItems());
         }

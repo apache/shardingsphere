@@ -306,7 +306,7 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     
     private BinaryOperationExpression createBinaryOperationExpressionFromLike(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
-        ListExpression right = new ListExpression();
+        ListExpression right = new ListExpression(ctx.simpleExpr(0).start.getStartIndex(), ctx.simpleExpr().get(ctx.simpleExpr().size() - 1).stop.getStopIndex());
         for (SimpleExprContext each : ctx.simpleExpr()) {
             right.getItems().add((ExpressionSegment) visit(each));
         }
@@ -317,22 +317,19 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     }
     
     private InExpression createInSegment(final PredicateContext ctx) {
-        InExpression result = new InExpression();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setLeft((ExpressionSegment) visit(ctx.bitExpr(0)));
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
+        ExpressionSegment right;
         if (null != ctx.subquery()) {
-            result.setRight(new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()))));
+            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery())));
         } else {
-            ListExpression listExpression = new ListExpression();
-            listExpression.setStartIndex(ctx.LP_().getSymbol().getStartIndex());
-            listExpression.setStopIndex(ctx.RP_().getSymbol().getStopIndex());
+            ListExpression listExpression = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
             for (ExprContext each : ctx.expr()) {
                 listExpression.getItems().add((ExpressionSegment) visit(each));
             }
-            result.setRight(listExpression);
+            right = listExpression;
         }
-        result.setNot(null != ctx.NOT());
+        boolean not = null != ctx.NOT() ? true : false;
+        InExpression result = new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
         return result;
     }
     
