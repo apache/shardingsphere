@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.TableExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -71,10 +71,10 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
             for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
                 if (each instanceof AggregationProjection && !((AggregationProjection) each).getDerivedAggregationProjections().isEmpty()) {
                     result.get(routeUnit).addAll(((AggregationProjection) each).getDerivedAggregationProjections().stream().map(this::getDerivedProjectionText).collect(Collectors.toList()));
-                } else if (each instanceof DerivedProjection && ((DerivedProjection) each).getProjection() instanceof ColumnOrderByItemSegment) {
-                    TableExtractUtils utils = new TableExtractUtils();
-                    utils.extractTablesFromSelect(selectStatementContext.getSqlStatement());
-                    result.get(routeUnit).add(getDerivedProjectionTextFromColumnOrderByItemSegment((DerivedProjection) each, utils, routeUnit));
+                } else if (each instanceof DerivedProjection && ((DerivedProjection) each).getDerivedProjection() instanceof ColumnOrderByItemSegment) {
+                    TableExtractor tableExtractor = new TableExtractor();
+                    tableExtractor.extractTablesFromSelect(selectStatementContext.getSqlStatement());
+                    result.get(routeUnit).add(getDerivedProjectionTextFromColumnOrderByItemSegment((DerivedProjection) each, tableExtractor, routeUnit));
                 } else if (each instanceof DerivedProjection) {
                     result.get(routeUnit).add(getDerivedProjectionText(each));
                 }
@@ -91,12 +91,13 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         return projection.getExpression() + " AS " + projection.getAlias().get() + " ";
     }
     
-    private String getDerivedProjectionTextFromColumnOrderByItemSegment(final DerivedProjection projection, final TableExtractUtils utils, final RouteUnit routeUnit) {
+    private String getDerivedProjectionTextFromColumnOrderByItemSegment(final DerivedProjection projection, final TableExtractor tableExtractor, final RouteUnit routeUnit) {
         Preconditions.checkState(projection.getAlias().isPresent());
-        Preconditions.checkState(projection.getProjection() instanceof ColumnOrderByItemSegment);
-        ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) projection.getProjection();
-        ColumnOrderByItemSegment newColumnOrderByItem = generateNewColumnOrderByItem(columnOrderByItemSegment, routeUnit, utils);
-        return newColumnOrderByItem.getText() + " AS " + projection.getAlias().get() + " ";
+        Preconditions.checkState(projection.getDerivedProjection() instanceof ColumnOrderByItemSegment);
+        ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) projection.getDerivedProjection();
+        ColumnOrderByItemSegment newColumnOrderByItem = generateNewColumnOrderByItem(columnOrderByItemSegment, routeUnit, tableExtractor);
+        String result = new StringBuilder().append(newColumnOrderByItem.getText()).append(" AS ").append(projection.getAlias().get()).append(" ").toString();
+        return result;
     }
     
     private Optional<String> getActualTables(final RouteUnit routeUnit, final String logicalTableName) {
@@ -108,12 +109,12 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         return Optional.empty();
     }
 
-    private ColumnOrderByItemSegment generateNewColumnOrderByItem(final ColumnOrderByItemSegment old, final RouteUnit routeUnit, final TableExtractUtils utils) {
+    private ColumnOrderByItemSegment generateNewColumnOrderByItem(final ColumnOrderByItemSegment old, final RouteUnit routeUnit, final TableExtractor tableExtractor) {
         Optional<OwnerSegment> ownerSegment = old.getColumn().getOwner();
         if (!ownerSegment.isPresent()) {
             return old;
         }
-        if (!utils.needRewrite(ownerSegment.get())) {
+        if (!tableExtractor.needRewrite(ownerSegment.get())) {
             return old;
         }
         Optional<String> actualTableName = getActualTables(routeUnit, ownerSegment.get().getIdentifier().getValue());

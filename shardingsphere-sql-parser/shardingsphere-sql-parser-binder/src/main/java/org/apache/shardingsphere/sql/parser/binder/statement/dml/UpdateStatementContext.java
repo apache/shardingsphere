@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.TableExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.TableExtractor;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -42,14 +42,14 @@ public final class UpdateStatementContext extends CommonSQLStatementContext<Upda
     
     public UpdateStatementContext(final UpdateStatement sqlStatement) {
         super(sqlStatement);
-        TableExtractUtils utils = new TableExtractUtils();
+        TableExtractor utils = new TableExtractor();
         utils.extractTablesFromUpdate(sqlStatement);
         tablesContext = new TablesContext(utils.getRewriteTables());
     }
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        TableExtractUtils utils = new TableExtractUtils();
+        TableExtractor utils = new TableExtractor();
         utils.extractTablesFromUpdate(getSqlStatement());
         return utils.getRewriteTables();
     }

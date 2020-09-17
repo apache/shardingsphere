@@ -46,7 +46,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
 
-public final class TableExtractUtils {
+public final class TableExtractor {
     
     @Getter
     private Collection<SimpleTableSegment> rewriteTables = new LinkedList<>();
@@ -84,7 +84,7 @@ public final class TableExtractUtils {
         }
         if (tableSegment instanceof SubqueryTableSegment) {
             tableContext.add(tableSegment);
-            TableExtractUtils utils = new TableExtractUtils();
+            TableExtractor utils = new TableExtractor();
             utils.extractTablesFromSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
             rewriteTables.addAll(utils.getRewriteTables());
         }

@@ -39,7 +39,7 @@ public final class DerivedProjection implements Projection {
     
     private final String alias;
     
-    private final SQLSegment projection;
+    private final SQLSegment derivedProjection;
     
     @Override
     public Optional<String> getAlias() {
