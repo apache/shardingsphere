@@ -96,12 +96,13 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     @Test
     public void assertGetProxyConfigurationFromLocalConfiguration() throws IOException {
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/local");
-        assertProxyConfiguration(initializer.getProxyConfiguration(yamlProxyConfig));
+        ProxyConfiguration actual = initializer.getProxyConfiguration(yamlProxyConfig);
+        assertNotNull(actual);
+        assertProxyConfiguration(actual);
         closeConfigCenter();
     }
     
     private void assertProxyConfiguration(final ProxyConfiguration actual) {
-        assertNotNull(actual);
         assertSchemaDataSources(actual.getSchemaDataSources());
         assertSchemaRules(actual.getSchemaRules());
         assertAuthentication(actual.getAuthentication());
