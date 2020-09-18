@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.context.SchemaContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -37,11 +38,27 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class AbstractBootstrapInitializerTest {
+public class AbstractBootstrapInitializerTest {
     
     private static final String HOST = "127.0.0.1";
     
     private static final int PORT = 2020;
+    
+    AbstractBootstrapInitializer initializer;
+    
+    @Before
+    public void setUp() {
+        doEnvironmentPrepare();
+        prepareSpecifiedInitializer();
+    }
+    
+    protected void doEnvironmentPrepare() {
+    
+    }
+    
+    protected void prepareSpecifiedInitializer() {
+    
+    }
     
     @SneakyThrows
     @Test

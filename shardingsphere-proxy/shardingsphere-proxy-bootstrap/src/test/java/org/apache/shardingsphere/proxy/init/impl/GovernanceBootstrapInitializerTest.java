@@ -54,7 +54,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class GovernanceBootstrapInitializerTest {
+public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
     private static final String DATA_SOURCE_YAML = "conf/reg_center/config_center/data-sources.yaml";
     
@@ -65,8 +65,6 @@ public final class GovernanceBootstrapInitializerTest {
     private static final String PROPS_YAML = "conf/reg_center/config_center/props.yaml";
     
     private FixtureConfigurationRepository configurationRepository = new FixtureConfigurationRepository();
-    
-    private GovernanceBootstrapInitializer initializer = new GovernanceBootstrapInitializer();
     
     @Test
     public void assertGetProxyConfiguration() throws IOException {
@@ -226,5 +224,9 @@ public final class GovernanceBootstrapInitializerTest {
         assertThat(actualTransactionContexts, instanceOf(GovernanceTransactionContexts.class));
         assertThat(actualTransactionContexts.getEngines(), is(transactionContexts.getEngines()));
         assertThat(actualTransactionContexts.getDefaultTransactionManagerEngine(), is(transactionContexts.getDefaultTransactionManagerEngine()));
+    }
+    
+    protected void prepareSpecifiedInitializer() {
+        initializer = new GovernanceBootstrapInitializer();
     }
 }

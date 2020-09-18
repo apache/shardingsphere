@@ -35,7 +35,6 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.proxy.fixture.FixtureYamlRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -51,14 +50,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class StandardBootstrapInitializerTest {
-    
-    private final StandardBootstrapInitializer initializer = new StandardBootstrapInitializer();
-    
-    @Before
-    public void setUp() {
-        ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
-    }
+public final class StandardBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
     @Test
     public void assertGetProxyConfiguration() {
@@ -201,5 +193,13 @@ public final class StandardBootstrapInitializerTest {
     public void assertDecorateTransactionContexts() {
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
         assertThat(initializer.decorateTransactionContexts(transactionContexts), is(transactionContexts));
+    }
+    
+    protected void doEnvironmentPrepare() {
+        ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
+    }
+    
+    protected void prepareSpecifiedInitializer() {
+        initializer = new StandardBootstrapInitializer();
     }
 }
