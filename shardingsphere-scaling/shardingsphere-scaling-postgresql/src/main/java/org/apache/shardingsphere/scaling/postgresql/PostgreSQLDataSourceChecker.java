@@ -27,7 +27,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Data source checker for PostgreSQL.
+ * PostgreSQL Data source checker.
  */
 public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
     

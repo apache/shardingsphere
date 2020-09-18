@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.postgresql.spi;
 
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
+import org.apache.shardingsphere.scaling.postgresql.PostgreSQLDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.postgresql.PostgreSQLDataSourceChecker;
 import org.apache.shardingsphere.scaling.postgresql.PostgreSQLImporter;
 import org.apache.shardingsphere.scaling.postgresql.PostgreSQLJdbcDumper;
@@ -39,6 +40,7 @@ public final class ScalingEntryLoaderTest {
         assertTrue(scalingEntry instanceof PostgreSQLScalingEntry);
         assertThat(scalingEntry.getPositionManager(), equalTo(PostgreSQLPositionManager.class));
         assertThat(scalingEntry.getDataSourceCheckerClass(), equalTo(PostgreSQLDataSourceChecker.class));
+        assertThat(scalingEntry.getDataConsistencyCheckerClass(), equalTo(PostgreSQLDataConsistencyChecker.class));
         assertThat(scalingEntry.getImporterClass(), equalTo(PostgreSQLImporter.class));
         assertThat(scalingEntry.getJdbcDumperClass(), equalTo(PostgreSQLJdbcDumper.class));
         assertThat(scalingEntry.getLogDumperClass(), equalTo(PostgreSQLWalDumper.class));
