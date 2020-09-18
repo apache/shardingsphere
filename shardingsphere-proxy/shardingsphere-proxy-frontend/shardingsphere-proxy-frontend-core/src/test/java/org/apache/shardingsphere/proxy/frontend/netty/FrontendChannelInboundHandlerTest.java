@@ -25,7 +25,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ResourceSynchronizer;
 import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.executor.ChannelThreadExecutorGroup;
@@ -43,7 +42,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -71,9 +69,6 @@ public final class FrontendChannelInboundHandlerTest {
     
     @Mock
     private AuthenticationResult authenticationResult;
-    
-    @Mock
-    private ResourceSynchronizer resourceSynchronizer;
     
     @Test
     @SneakyThrows(ReflectiveOperationException.class)
@@ -120,19 +115,4 @@ public final class FrontendChannelInboundHandlerTest {
         assertNull(ChannelThreadExecutorGroup.getInstance().get(channelId));
     }
     
-    @Test
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void assertChannelWritabilityChanged() {
-        ChannelId channelId = mock(ChannelId.class);
-        when(channel.id()).thenReturn(channelId);
-        when(channel.isWritable()).thenReturn(true);
-        when(context.channel()).thenReturn(channel);
-        when(backendConnectionMock.getResourceSynchronizer()).thenReturn(resourceSynchronizer);
-        FrontendChannelInboundHandler frontendChannelInboundHandler = new FrontendChannelInboundHandler(databaseProtocolFrontendEngine);
-        Field backendConnection = frontendChannelInboundHandler.getClass().getDeclaredField("backendConnection");
-        backendConnection.setAccessible(true);
-        backendConnection.set(frontendChannelInboundHandler, backendConnectionMock);
-        frontendChannelInboundHandler.channelWritabilityChanged(context);
-        verify(resourceSynchronizer).doNotify();
-    }
 }
