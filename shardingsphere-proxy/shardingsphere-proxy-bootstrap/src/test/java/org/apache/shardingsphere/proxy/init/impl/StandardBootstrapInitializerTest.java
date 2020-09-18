@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.init.impl;
 
+import javafx.util.Pair;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
@@ -27,7 +29,6 @@ import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
@@ -48,20 +49,26 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public final class StandardBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
+    private static final String PROXY_RULE_KEY = "logic-db";
+
+    private static final String DATA_SOURCE_PARAMETER_KEY = "ds";
+    
+    @SneakyThrows
+    protected YamlProxyConfiguration makeProxyConfiguration() {
+        return new YamlProxyConfiguration(createYamlProxyServerConfiguration(), createYamlProxyRuleConfigurationMap());
+    }
+    
     @Test
     public void assertGetProxyConfiguration() {
-        YamlProxyConfiguration yamlConfig = new YamlProxyConfiguration(createYamlProxyServerConfiguration(), createYamlProxyRuleConfigurationMap());
-        ProxyConfiguration actual = initializer.getProxyConfiguration(yamlConfig);
-        assertProxyConfiguration(actual);
+        super.doAssertGetProxyConfiguration();
     }
     
     private Map<String, YamlProxyRuleConfiguration> createYamlProxyRuleConfigurationMap() {
         Map<String, YamlProxyRuleConfiguration> result = new HashMap<>(1, 1);
-        result.put("logic-db", createYamlProxyRuleConfiguration());
+        result.put(PROXY_RULE_KEY, createYamlProxyRuleConfiguration());
         return result;
     }
     
@@ -74,7 +81,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     
     private Map<String, YamlDataSourceParameter> createYamlDataSourceParameterMap() {
         Map<String, YamlDataSourceParameter> result = new HashMap<>(1, 1);
-        result.put("ds", createYamlDataSourceParameter());
+        result.put(DATA_SOURCE_PARAMETER_KEY, createYamlDataSourceParameter());
         return result;
     }
     
@@ -127,23 +134,16 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         return result;
     }
     
-    private void assertProxyConfiguration(final ProxyConfiguration actual) {
-        assertSchemaDataSources(actual.getSchemaDataSources());
-        assertSchemaRules(actual.getSchemaRules());
-        assertAuthentication(actual.getAuthentication());
-        assertProps(actual.getProps());
-    }
-    
-    private void assertSchemaDataSources(final Map<String, Map<String, DataSourceParameter>> actual) {
+    protected void assertSchemaDataSources(final Map<String, Map<String, DataSourceParameter>> actual) {
         assertThat(actual.size(), is(1));
-        assertTrue(actual.containsKey("logic-db"));
-        Map<String, DataSourceParameter> dataSourceParameterMap = actual.get("logic-db");
+        assertTrue(actual.containsKey(PROXY_RULE_KEY));
+        Map<String, DataSourceParameter> dataSourceParameterMap = actual.get(PROXY_RULE_KEY);
         assertThat(dataSourceParameterMap.size(), is(1));
-        assertTrue(dataSourceParameterMap.containsKey("ds"));
-        assertDataSourceParameter(dataSourceParameterMap.get("ds"));
+        assertTrue(dataSourceParameterMap.containsKey(DATA_SOURCE_PARAMETER_KEY));
+        assertDataSourceParameter(dataSourceParameterMap.get(DATA_SOURCE_PARAMETER_KEY));
     }
     
-    private void assertDataSourceParameter(final DataSourceParameter actual) {
+    protected void assertDataSourceParameter(final DataSourceParameter actual) {
         assertThat(actual.getUrl(), is("jdbc:mysql://localhost:3306/ds"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
@@ -155,20 +155,16 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         assertThat(actual.getMinPoolSize(), is(10));
     }
     
-    private void assertSchemaRules(final Map<String, Collection<RuleConfiguration>> actual) {
-        assertThat(actual.size(), is(1));
-        assertTrue(actual.containsKey("logic-db"));
-        Collection<RuleConfiguration> ruleConfigurations = actual.get("logic-db");
-        assertThat(ruleConfigurations.size(), is(1));
-        assertRuleConfiguration(ruleConfigurations.iterator().next());
+    protected String fetchKey() {
+        return PROXY_RULE_KEY;
     }
     
-    private void assertRuleConfiguration(final RuleConfiguration actual) {
+    protected void assertRuleConfiguration(final RuleConfiguration actual) {
         assertThat(actual, instanceOf(FixtureRuleConfiguration.class));
         assertThat(((FixtureRuleConfiguration) actual).getName(), is("testRule"));
     }
     
-    private void assertAuthentication(final Authentication actual) {
+    protected void assertAuthentication(final Authentication actual) {
         assertThat(actual.getUsers().size(), is(1));
         assertTrue(actual.getUsers().containsKey("root"));
         ProxyUser proxyUser = actual.getUsers().get("root");
@@ -178,21 +174,16 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         assertTrue(proxyUser.getAuthorizedSchemas().contains("ds-2"));
     }
     
-    private void assertProps(final Properties actual) {
-        assertThat(actual.getProperty("alpha-1"), is("alpha-A"));
-        assertThat(actual.getProperty("beta-2"), is("beta-B"));
-    }
-    
     @Test
     public void assertDecorateSchemaContexts() {
-        SchemaContexts schemaContexts = mock(SchemaContexts.class);
-        assertThat(initializer.decorateSchemaContexts(schemaContexts), is(schemaContexts));
+        Pair<SchemaContexts, SchemaContexts> schemaContextsSchemaContextPair = makeDecoratedSchemaContexts();
+        assertThat(schemaContextsSchemaContextPair.getValue(), is(schemaContextsSchemaContextPair.getKey()));
     }
     
     @Test
     public void assertDecorateTransactionContexts() {
-        TransactionContexts transactionContexts = mock(TransactionContexts.class);
-        assertThat(initializer.decorateTransactionContexts(transactionContexts), is(transactionContexts));
+        Pair<TransactionContexts, TransactionContexts> transactionContextsPair = makeDecoratedTransactionContexts();
+        assertThat(transactionContextsPair.getValue(), is(transactionContextsPair.getKey()));
     }
     
     protected void doEnvironmentPrepare() {
@@ -200,6 +191,6 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     }
     
     protected void prepareSpecifiedInitializer() {
-        initializer = new StandardBootstrapInitializer();
+        setInitializer(new StandardBootstrapInitializer());
     }
 }
