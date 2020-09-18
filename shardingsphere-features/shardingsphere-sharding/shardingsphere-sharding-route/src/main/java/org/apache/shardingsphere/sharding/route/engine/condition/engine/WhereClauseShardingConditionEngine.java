@@ -33,13 +33,11 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractFromExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereSegmentExtractUtils;
@@ -108,34 +106,17 @@ public final class WhereClauseShardingConditionEngine {
     
     private Map<Column, Collection<RouteValue>> createRouteValueMap(final SQLStatementContext<?> sqlStatementContext, final AndPredicate expressions, final List<Object> parameters) {
         Map<Column, Collection<RouteValue>> result = new HashMap<>();
-    
         for (ExpressionSegment each : expressions.getPredicates()) {
-            Optional<RouteValue> routeValue = Optional.empty();
-            Column column = null;
-            if (each instanceof BinaryOperationExpression && ((BinaryOperationExpression) each).getLeft() instanceof ColumnSegment) {
-                ColumnSegment columnSegment = (ColumnSegment) ((BinaryOperationExpression) each).getLeft();
-                Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment, schemaMetaData);
-                if (tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
-                    column = new Column(columnSegment.getIdentifier().getValue(), tableName.get());
-                    routeValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
-                }
+            Optional<ColumnSegment> columnSegment = ColumnExtractFromExpression.extract(each);
+            if (!columnSegment.isPresent()) {
+                continue;
             }
-            if (each instanceof InExpression && ((InExpression) each).getLeft() instanceof ColumnSegment) {
-                ColumnSegment columnSegment = (ColumnSegment) ((InExpression) each).getLeft();
-                Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment, schemaMetaData);
-                if (tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
-                    column = new Column(columnSegment.getIdentifier().getValue(), tableName.get());
-                    routeValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
-                }
+            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment.get(), schemaMetaData);
+            if (!(tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.get().getIdentifier().getValue(), tableName.get()))) {
+                continue;
             }
-            if (each instanceof BetweenExpression && ((BetweenExpression) each).getLeft() instanceof ColumnSegment) {
-                ColumnSegment columnSegment = (ColumnSegment) ((BetweenExpression) each).getLeft();
-                Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment, schemaMetaData);
-                if (tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
-                    column = new Column(columnSegment.getIdentifier().getValue(), tableName.get());
-                    routeValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
-                }
-            }
+            Column column = new Column(columnSegment.get().getIdentifier().getValue(), tableName.get());
+            Optional<RouteValue> routeValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
             if (routeValue.isPresent()) {
                 if (!result.containsKey(column)) {
                     Collection<RouteValue> routeValues = new LinkedList<>();
