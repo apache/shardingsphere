@@ -22,6 +22,8 @@ import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
@@ -129,15 +131,14 @@ public final class ScalingJobControllerTest {
     }
     
     private ShardingScalingJob mockShardingScalingJob() {
-        ShardingScalingJob result = new ShardingScalingJob("ScalingJob", 0);
+        ShardingScalingJob result = new ShardingScalingJob(mockScalingConfiguration());
         result.getSyncConfigurations().add(new SyncConfiguration(3, mockDumperConfig(), mockImporterConfiguration()));
         return result;
     }
     
-    private ShardingScalingJob mockPreparingFailureShardingScalingJob() {
-        ShardingScalingJob result = new ShardingScalingJob("ScalingJob", 0);
-        result.getSyncConfigurations().add(new SyncConfiguration(3, mockDumperConfig(), mockImporterConfiguration()));
-        result.setStatus(SyncTaskControlStatus.PREPARING_FAILURE.name());
+    private ScalingConfiguration mockScalingConfiguration() {
+        ScalingConfiguration result = new ScalingConfiguration();
+        result.setJobConfiguration(new JobConfiguration());
         return result;
     }
     
@@ -155,6 +156,13 @@ public final class ScalingJobControllerTest {
         Map<String, String> tableMap = new HashMap<>();
         tableMap.put("t_order", "t_order");
         result.setTableNameMap(tableMap);
+        return result;
+    }
+    
+    private ShardingScalingJob mockPreparingFailureShardingScalingJob() {
+        ShardingScalingJob result = new ShardingScalingJob(mockScalingConfiguration());
+        result.getSyncConfigurations().add(new SyncConfiguration(3, mockDumperConfig(), mockImporterConfiguration()));
+        result.setStatus(SyncTaskControlStatus.PREPARING_FAILURE.name());
         return result;
     }
 }

@@ -15,29 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.preparer.checker;
+package org.apache.shardingsphere.scaling.core.check;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 
 /**
- * Data source checker factory.
+ * Data consistency checker factory.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceCheckerCheckerFactory {
+public final class DataConsistencyCheckerFactory {
     
     /**
-     * New instance of data source checker.
+     * create data consistency checker instance.
      *
      * @param databaseType database type
-     * @return data source checker
+     * @param shardingScalingJob sharding scaling job
+     * @return data consistency checker
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static DataSourceChecker newInstanceDataSourceChecker(final String databaseType) {
+    public static DataConsistencyChecker newInstance(final String databaseType, final ShardingScalingJob shardingScalingJob) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getDataSourceCheckerClass().getConstructor().newInstance();
+        return scalingEntry.getDataConsistencyCheckerClass().getConstructor(ShardingScalingJob.class).newInstance(shardingScalingJob);
     }
 }

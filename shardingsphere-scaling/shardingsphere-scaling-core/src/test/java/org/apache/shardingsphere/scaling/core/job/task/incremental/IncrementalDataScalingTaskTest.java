@@ -60,7 +60,7 @@ public final class IncrementalDataScalingTaskTest {
         SyncProgress progress = incrementalDataSyncTask.getProgress();
         assertTrue(progress instanceof IncrementalDataSyncTaskProgress);
         assertThat(((IncrementalDataSyncTaskProgress) progress).getId(), is("ds0"));
-        assertThat(((IncrementalDataSyncTaskProgress) progress).getDelayMillisecond(), is(0L));
+        assertThat(((IncrementalDataSyncTaskProgress) progress).getDelayMillisecond(), is(Long.MAX_VALUE));
         assertTrue(((IncrementalDataSyncTaskProgress) progress).getPosition() instanceof IncrementalPosition);
     }
     

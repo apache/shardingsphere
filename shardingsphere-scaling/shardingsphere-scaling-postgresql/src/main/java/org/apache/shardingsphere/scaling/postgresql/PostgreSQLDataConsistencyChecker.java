@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position.resume;
+package org.apache.shardingsphere.scaling.postgresql;
+
+import org.apache.shardingsphere.scaling.core.check.AbstractDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSqlBuilder;
+import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 
 /**
- * Fake resume from break-point manager as default.
+ * PostgreSQL data consistency checker.
  */
-public final class FakeResumeBreakPointManager extends AbstractResumeBreakPointManager {
+public final class PostgreSQLDataConsistencyChecker extends AbstractDataConsistencyChecker implements DataConsistencyChecker {
     
-    public FakeResumeBreakPointManager(final String databaseType, final String taskPath) {
-        setDatabaseType(databaseType);
-        setTaskPath(taskPath);
+    public PostgreSQLDataConsistencyChecker(final ShardingScalingJob shardingScalingJob) {
+        super(shardingScalingJob);
     }
     
     @Override
-    public void persistInventoryPosition() {
+    public boolean dataCheck() {
+        return true;
     }
     
     @Override
-    public void persistIncrementalPosition() {
+    protected AbstractSqlBuilder getSqlBuilder() {
+        return new PostgreSQLSqlBuilder();
     }
 }

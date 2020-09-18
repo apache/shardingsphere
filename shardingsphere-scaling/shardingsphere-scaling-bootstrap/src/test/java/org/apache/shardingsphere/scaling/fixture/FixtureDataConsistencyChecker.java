@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position.resume;
+package org.apache.shardingsphere.scaling.fixture;
 
-/**
- * Fake resume from break-point manager as default.
- */
-public final class FakeResumeBreakPointManager extends AbstractResumeBreakPointManager {
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
+
+@RequiredArgsConstructor
+public final class FixtureDataConsistencyChecker implements DataConsistencyChecker {
     
-    public FakeResumeBreakPointManager(final String databaseType, final String taskPath) {
-        setDatabaseType(databaseType);
-        setTaskPath(taskPath);
+    private final ShardingScalingJob shardingScalingJob;
+    
+    @Override
+    public boolean countCheck() {
+        return false;
     }
     
     @Override
-    public void persistInventoryPosition() {
-    }
-    
-    @Override
-    public void persistIncrementalPosition() {
+    public boolean dataCheck() {
+        return false;
     }
 }

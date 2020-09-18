@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position.resume;
+package org.apache.shardingsphere.scaling.core.check;
 
 /**
- * Fake resume from break-point manager as default.
+ * Data consistency checker interface.
  */
-public final class FakeResumeBreakPointManager extends AbstractResumeBreakPointManager {
+public interface DataConsistencyChecker {
     
-    public FakeResumeBreakPointManager(final String databaseType, final String taskPath) {
-        setDatabaseType(databaseType);
-        setTaskPath(taskPath);
-    }
+    /**
+     * Check each table count is valid.
+     *
+     * @return count is valid or not.
+     */
+    boolean countCheck();
     
-    @Override
-    public void persistInventoryPosition() {
-    }
-    
-    @Override
-    public void persistIncrementalPosition() {
-    }
+    /**
+     * Check each table data is valid.
+     *
+     * @return data is valid or not.
+     */
+    boolean dataCheck();
 }
