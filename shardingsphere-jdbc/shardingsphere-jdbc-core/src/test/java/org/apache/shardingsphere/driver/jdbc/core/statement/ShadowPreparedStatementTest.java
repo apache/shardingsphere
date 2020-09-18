@@ -51,6 +51,8 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     
     private static final String SHADOW_UPDATE_SQL = "UPDATE t_encrypt SET cipher_pwd = ? WHERE id = ? AND shadow = ?";
     
+    private static final String SHADOW_UPDATE_SQL_WITH_CONDITION = "UPDATE t_encrypt SET cipher_pwd = ? WHERE id = ? AND shadow = true";
+    
     @Test
     public void assertInsertWithExecute() throws SQLException {
         try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
@@ -115,6 +117,18 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
             statement.setString(1, "cipher_pwd");
             statement.setInt(2, 99);
             statement.setBoolean(3, true);
+            result = statement.executeUpdate();
+        }
+        assertThat(result, is(1));
+        assertResultSet(true, 99, 1, "cipher_pwd");
+    }
+    
+    @Test
+    public void assertShadowUpdateConditionWithExecuteUpdate() throws SQLException {
+        int result;
+        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(SHADOW_UPDATE_SQL_WITH_CONDITION)) {
+            statement.setString(1, "cipher_pwd");
+            statement.setInt(2, 99);
             result = statement.executeUpdate();
         }
         assertThat(result, is(1));
