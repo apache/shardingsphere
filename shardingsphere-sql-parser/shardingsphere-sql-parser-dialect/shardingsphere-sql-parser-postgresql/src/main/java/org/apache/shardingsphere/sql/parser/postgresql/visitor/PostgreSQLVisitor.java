@@ -183,29 +183,19 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
             return createInSegment(ctx);
         }
         if (null != ctx.comparisonOperator()) {
-//            BinaryOperationExpression result = new BinaryOperationExpression();
-//            result.setStartIndex(ctx.start.getStartIndex());
-//            result.setStopIndex(ctx.stop.getStopIndex());
             ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
             ExpressionSegment right = (ExpressionSegment) visit(ctx.aExpr(1));
             String operator = ctx.comparisonOperator().getText();
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-//            result.setText(text);
             BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
-    
             return result;
         }
         if (null != ctx.logicalOperator()) {
-//            BinaryOperationExpression result = new BinaryOperationExpression();
-//            result.setStartIndex(ctx.start.getStartIndex());
-//            result.setStopIndex(ctx.stop.getStopIndex());
             ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
             ExpressionSegment right = (ExpressionSegment) visit(ctx.aExpr(1));
             String operator = ctx.logicalOperator().getText();
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-//            result.setText(text);
             BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
-    
             return result;
         }
         super.visitAExpr(ctx);
