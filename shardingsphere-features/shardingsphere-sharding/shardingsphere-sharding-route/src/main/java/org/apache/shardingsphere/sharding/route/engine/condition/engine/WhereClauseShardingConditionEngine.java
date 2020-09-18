@@ -38,7 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.And
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractFromExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereSegmentExtractUtils;
 
@@ -92,8 +92,8 @@ public final class WhereClauseShardingConditionEngine {
     private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ExpressionSegment expressionSegment, final List<Object> parameters) {
         Collection<ShardingCondition> result = new LinkedList<>();
     
-        ExpressionBuildUtil util = new ExpressionBuildUtil(expressionSegment);
-        Collection<AndPredicate> andPredicates = new LinkedList<>(util.extractAndPredicates().getAndPredicates());
+        ExpressionBuilder expressionBuilder = new ExpressionBuilder(expressionSegment);
+        Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
         for (AndPredicate each : andPredicates) {
             Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatementContext, each, parameters);
             if (routeValueMap.isEmpty()) {

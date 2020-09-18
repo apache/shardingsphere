@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -71,8 +71,8 @@ public final class PreparedShadowDataSourceJudgeEngine implements ShadowDataSour
             return false;
         }
         ExpressionSegment expression = whereSegment.get().getExpr();
-        ExpressionBuildUtil util = new ExpressionBuildUtil(expression);
-        Collection<AndPredicate> andPredicates = new LinkedList<>(util.extractAndPredicates().getAndPredicates());
+        ExpressionBuilder expressionBuilder = new ExpressionBuilder(expression);
+        Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
         for (AndPredicate andPredicate : andPredicates) {
             if (judgePredicateSegments(andPredicate.getPredicates())) {
                 return true;
