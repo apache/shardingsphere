@@ -15,23 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position.resume;
+package org.apache.shardingsphere.scaling.mysql;
+
+import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSqlBuilder;
 
 /**
- * Fake resume from break-point manager as default.
+ * MySQL sql builder.
  */
-public final class FakeResumeBreakPointManager extends AbstractResumeBreakPointManager {
+public final class MySQLSqlBuilder extends AbstractSqlBuilder {
     
-    public FakeResumeBreakPointManager(final String databaseType, final String taskPath) {
-        setDatabaseType(databaseType);
-        setTaskPath(taskPath);
+    @Override
+    public String getLeftIdentifierQuoteString() {
+        return "`";
     }
     
     @Override
-    public void persistInventoryPosition() {
+    public String getRightIdentifierQuoteString() {
+        return "`";
     }
     
-    @Override
-    public void persistIncrementalPosition() {
+    /**
+     * Build select sum crc32 SQL.
+     *
+     * @param tableName table Name
+     * @param column column
+     * @return select sum crc32 SQL
+     */
+    public String buildSumCrc32SQL(final String tableName, final String column) {
+        return String.format("SELECT SUM(CRC32(%s)) from %s", quote(column), quote(tableName));
     }
 }

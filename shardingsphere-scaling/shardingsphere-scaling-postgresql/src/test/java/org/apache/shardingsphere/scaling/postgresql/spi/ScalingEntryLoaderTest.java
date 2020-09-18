@@ -38,7 +38,7 @@ public final class ScalingEntryLoaderTest {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType("PostgreSQL");
         assertTrue(scalingEntry instanceof PostgreSQLScalingEntry);
         assertThat(scalingEntry.getPositionManager(), equalTo(PostgreSQLPositionManager.class));
-        assertThat(scalingEntry.getCheckerClass(), equalTo(PostgreSQLDataSourceChecker.class));
+        assertThat(scalingEntry.getDataSourceCheckerClass(), equalTo(PostgreSQLDataSourceChecker.class));
         assertThat(scalingEntry.getImporterClass(), equalTo(PostgreSQLImporter.class));
         assertThat(scalingEntry.getJdbcDumperClass(), equalTo(PostgreSQLJdbcDumper.class));
         assertThat(scalingEntry.getLogDumperClass(), equalTo(PostgreSQLWalDumper.class));

@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position.resume;
+package org.apache.shardingsphere.scaling.core.exception;
 
 /**
- * Fake resume from break-point manager as default.
+ * Data check fail exception.
  */
-public final class FakeResumeBreakPointManager extends AbstractResumeBreakPointManager {
+public final class DataCheckFailException extends RuntimeException {
     
-    public FakeResumeBreakPointManager(final String databaseType, final String taskPath) {
-        setDatabaseType(databaseType);
-        setTaskPath(taskPath);
+    public DataCheckFailException(final String message) {
+        super(message);
     }
     
-    @Override
-    public void persistInventoryPosition() {
-    }
-    
-    @Override
-    public void persistIncrementalPosition() {
+    public DataCheckFailException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }
