@@ -39,6 +39,7 @@ import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -60,10 +61,10 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     private int currentSequenceId;
     
-    public MySQLComStmtExecuteExecutor(final MySQLComStmtExecutePacket comStmtExecutePacket, final BackendConnection backendConnection) {
-        SQLStatement sqlStatement = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName()).getRuntimeContext().getSqlParserEngine().parse(comStmtExecutePacket.getSql(), true);
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
-                sqlStatement, comStmtExecutePacket.getSql(), comStmtExecutePacket.getParameters(), backendConnection);
+    public MySQLComStmtExecuteExecutor(final MySQLComStmtExecutePacket packet, final BackendConnection backendConnection) {
+        ShardingSphereSQLParserEngine sqlParserEngine = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName()).getRuntimeContext().getSqlParserEngine();
+        SQLStatement sqlStatement = sqlParserEngine.parse(packet.getSql(), true);
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatement, packet.getSql(), packet.getParameters(), backendConnection);
     }
     
     @Override
@@ -72,15 +73,15 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
             throw new CircuitBreakException();
         }
         BackendResponse backendResponse = databaseCommunicationEngine.execute();
-        if (backendResponse instanceof QueryResponse) {
-            responseType = ResponseType.QUERY;
-            return createQueryPacket((QueryResponse) backendResponse);
-        }
-        responseType = ResponseType.UPDATE;
-        return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
+        return backendResponse instanceof QueryResponse ? processQuery((QueryResponse) backendResponse) : processUpdate((UpdateResponse) backendResponse);
     }
     
-    private Collection<DatabasePacket<?>> createQueryPacket(final QueryResponse backendResponse) {
+    private Collection<DatabasePacket<?>> processQuery(final QueryResponse backendResponse) {
+        responseType = ResponseType.QUERY;
+        return createQueryPackets(backendResponse);
+    }
+    
+    private Collection<DatabasePacket<?>> createQueryPackets(final QueryResponse backendResponse) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         List<QueryHeader> queryHeader = backendResponse.getQueryHeaders();
         result.add(new MySQLFieldCountPacket(++currentSequenceId, queryHeader.size()));
@@ -92,8 +93,13 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         return result;
     }
     
-    private MySQLOKPacket createUpdatePacket(final UpdateResponse updateResponse) {
-        return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
+    private Collection<DatabasePacket<?>> processUpdate(final UpdateResponse backendResponse) {
+        responseType = ResponseType.UPDATE;
+        return createUpdatePackets(backendResponse);
+    }
+    
+    private Collection<DatabasePacket<?>> createUpdatePackets(final UpdateResponse updateResponse) {
+        return Collections.singletonList(new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId()));
     }
     
     @Override

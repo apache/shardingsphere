@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.LinkedList;
@@ -25,12 +26,13 @@ import java.util.List;
 
 @Setter
 @Getter
+@RequiredArgsConstructor
 public final class ListExpression implements ExpressionSegment {
     
-    private int startIndex;
+    private final int startIndex;
     
-    private int stopIndex;
+    private final int stopIndex;
     
-    private List<ExpressionSegment> items = new LinkedList<>();
+    private final List<ExpressionSegment> items = new LinkedList<>();
 }
 

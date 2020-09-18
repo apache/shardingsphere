@@ -31,7 +31,7 @@ public final class ShardingScalingExecuteEngineTest {
     
     @Test
     public void assertSubmitMoreThanMaxWorkerNumber() {
-        ShardingScalingExecuteEngine executeEngine = new ShardingScalingExecuteEngine(2);
+        ShardingScalingExecuteEngine executeEngine = ShardingScalingExecuteEngine.newFixedThreadInstance(2);
         try {
             for (int i = 0; i < 5; i++) {
                 Future<?> submit = executeEngine.submit(mockShardingScalingExecutor());
@@ -44,7 +44,7 @@ public final class ShardingScalingExecuteEngineTest {
     
     @Test
     public void assertSubmitAllMoreThanMaxWorkerNumber() {
-        ShardingScalingExecuteEngine executeEngine = new ShardingScalingExecuteEngine(2);
+        ShardingScalingExecuteEngine executeEngine = ShardingScalingExecuteEngine.newFixedThreadInstance(2);
         try {
             for (int i = 0; i < 5; i++) {
                 Future<?> submit = executeEngine.submitAll(Collections.singletonList(mockShardingScalingExecutor()), mockExecuteCallback());

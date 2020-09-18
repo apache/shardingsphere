@@ -26,4 +26,12 @@ public final class FakeResumeBreakPointManager extends AbstractResumeBreakPointM
         setDatabaseType(databaseType);
         setTaskPath(taskPath);
     }
+    
+    @Override
+    public void persistInventoryPosition() {
+    }
+    
+    @Override
+    public void persistIncrementalPosition() {
+    }
 }

@@ -30,10 +30,10 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Inline expression parser.
@@ -43,7 +43,7 @@ public final class InlineExpressionParser {
     
     private static final char SPLITTER = ',';
     
-    private static final Map<String, Script> SCRIPTS = new HashMap<>();
+    private static final Map<String, Script> SCRIPTS = new ConcurrentHashMap<>();
     
     private static final GroovyShell SHELL = new GroovyShell();
     

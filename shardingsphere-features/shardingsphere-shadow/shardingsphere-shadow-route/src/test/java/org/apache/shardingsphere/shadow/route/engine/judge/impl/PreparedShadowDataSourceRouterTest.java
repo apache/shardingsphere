@@ -72,24 +72,9 @@ public final class PreparedShadowDataSourceRouterTest {
     }
     
     private SelectStatementContext selectStatementContext() {
-        BinaryOperationExpression left = new BinaryOperationExpression();
-        left.setLeft(new ColumnSegment(0, 0, new IdentifierValue("id")));
-        left.setRight(new ParameterMarkerExpressionSegment(0, 0, 0));
-        left.setText("id=?");
-        left.setOperator("=");
-        
-        BinaryOperationExpression right = new BinaryOperationExpression();
-        right.setLeft(new ColumnSegment(0, 0, new IdentifierValue("shadow")));
-        right.setRight(new LiteralExpressionSegment(45, 48, "true"));
-        right.setText("shadow=true");
-        right.setOperator("=");
-        
-        BinaryOperationExpression binaryOperationExpression = new BinaryOperationExpression();
-        binaryOperationExpression.setLeft(left);
-        binaryOperationExpression.setRight(right);
-        binaryOperationExpression.setOperator("and");
-        binaryOperationExpression.setText("id=? and shadow=true");
-        
+        BinaryOperationExpression left = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new ParameterMarkerExpressionSegment(0, 0, 0), "=", "id=?");
+        BinaryOperationExpression right = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("shadow")), new LiteralExpressionSegment(45, 48, "true"), "=", "shadow=true");
+        BinaryOperationExpression binaryOperationExpression = new BinaryOperationExpression(0, 0, left, right, "and", "id=? and shadow=true");
         WhereSegment whereSegment = new WhereSegment(0, 0, binaryOperationExpression);
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setWhere(whereSegment);

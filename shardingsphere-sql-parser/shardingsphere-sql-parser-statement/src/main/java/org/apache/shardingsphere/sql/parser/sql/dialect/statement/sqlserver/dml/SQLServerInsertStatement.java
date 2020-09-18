@@ -17,11 +17,62 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * SQLServer insert statement.
  */
+@Getter
+@Setter
 public final class SQLServerInsertStatement extends InsertStatement implements SQLServerStatement {
+    
+    private WithSegment withSegment;
+
+    /**
+     * Get with segment.
+     *
+     * @return with segment.
+     */
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.ofNullable(withSegment);
+    }
+
+    @Override
+    public boolean useDefaultColumns() {
+        return getColumns().isEmpty();
+    }
+
+    @Override
+    public List<String> getColumnNames() {
+        return getColumnNamesForInsertColumns();
+    }
+
+    @Override
+    public int getValueListCount() {
+        return getValues().size();
+    }
+
+    @Override
+    public int getValueCountForPerGroup() {
+        if (!getValues().isEmpty()) {
+            return getValues().iterator().next().getValues().size();
+        }
+        if (getInsertSelect().isPresent()) {
+            return getInsertSelect().get().getSelect().getProjections().getProjections().size();
+        }
+        return 0;
+    }
+
+    @Override
+    public List<List<ExpressionSegment>> getAllValueExpressions() {
+        return getAllValueExpressionsFromValues();
+    }
 }

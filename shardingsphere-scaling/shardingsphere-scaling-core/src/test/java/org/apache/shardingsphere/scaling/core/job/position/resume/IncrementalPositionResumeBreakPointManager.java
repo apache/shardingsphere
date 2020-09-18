@@ -39,4 +39,12 @@ public final class IncrementalPositionResumeBreakPointManager extends AbstractRe
     public Map<String, PositionManager<InventoryPosition>> getInventoryPositionManagerMap() {
         return new HashMap<>(1, 1);
     }
+    
+    @Override
+    public void persistInventoryPosition() {
+    }
+    
+    @Override
+    public void persistIncrementalPosition() {
+    }
 }
