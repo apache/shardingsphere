@@ -189,5 +189,3 @@ Apache ShardingSphere (https://github.com/apache/shardingsphere) is the first to
 Published the book "Future Architecture-From Servicing to Cloud Native".
 
 GitHub: https://github.com/terrymanu, technical exchanges and corrections are always welcome.
-
-
