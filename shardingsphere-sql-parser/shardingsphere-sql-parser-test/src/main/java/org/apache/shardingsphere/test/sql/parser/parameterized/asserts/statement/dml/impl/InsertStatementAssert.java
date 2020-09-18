@@ -19,6 +19,11 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLStatementUtils;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.insert.InsertColumnsClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.insert.InsertValuesClauseAssert;
@@ -27,7 +32,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.s
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.with.WithClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+
+import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -78,14 +84,15 @@ public final class InsertStatementAssert {
     }
     
     private static void assertSetClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        Optional<SetAssignmentSegment> setAssignmentSegment = SQLStatementUtils.getSetAssignmentSegment(actual);
         if (null != expected.getSetClause()) {
-            assertTrue(assertContext.getText("Actual set assignment segment should exist."), actual.getSetAssignment().isPresent());
-            SetClauseAssert.assertIs(assertContext, actual.getSetAssignment().get(), expected.getSetClause());
+            assertTrue(assertContext.getText("Actual set assignment segment should exist."), setAssignmentSegment.isPresent());
+            SetClauseAssert.assertIs(assertContext, setAssignmentSegment.get(), expected.getSetClause());
         } else {
-            assertFalse(assertContext.getText("Actual set assignment segment should not exist."), actual.getSetAssignment().isPresent());
+            assertFalse(assertContext.getText("Actual set assignment segment should not exist."), setAssignmentSegment.isPresent());
         }
     }
-    
+
     private static void assertInsertSelectClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         if (null != expected.getSelectTestCase()) {
             assertTrue(assertContext.getText("Actual insert select segment should exist."), actual.getInsertSelect().isPresent());
@@ -96,20 +103,22 @@ public final class InsertStatementAssert {
     }
     
     private static void assertOnDuplicateKeyColumns(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = SQLStatementUtils.getOnDuplicateKeyColumnsSegment(actual);
         if (null != expected.getOnDuplicateKeyColumns()) {
-            assertTrue(assertContext.getText("Actual on duplicate key columns segment should exist."), actual.getOnDuplicateKeyColumns().isPresent());
-            OnDuplicateKeyColumnsAssert.assertIs(assertContext, actual.getOnDuplicateKeyColumns().get(), expected.getOnDuplicateKeyColumns());
+            assertTrue(assertContext.getText("Actual on duplicate key columns segment should exist."), onDuplicateKeyColumnsSegment.isPresent());
+            OnDuplicateKeyColumnsAssert.assertIs(assertContext, onDuplicateKeyColumnsSegment.get(), expected.getOnDuplicateKeyColumns());
         } else {
-            assertFalse(assertContext.getText("Actual on duplicate key columns segment should not exist."), actual.getOnDuplicateKeyColumns().isPresent());
+            assertFalse(assertContext.getText("Actual on duplicate key columns segment should not exist."), onDuplicateKeyColumnsSegment.isPresent());
         }
     }
-    
+
     private static void assertWithClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        Optional<WithSegment> withSegment = SQLStatementUtils.getWithSegment(actual);
         if (null != expected.getWithClause()) {
-            assertTrue(assertContext.getText("Actual with segment should exist."), actual.getWithSegment().isPresent());
-            WithClauseAssert.assertIs(assertContext, actual.getWithSegment().get(), expected.getWithClause()); 
+            assertTrue(assertContext.getText("Actual with segment should exist."), withSegment.isPresent());
+            WithClauseAssert.assertIs(assertContext, withSegment.get(), expected.getWithClause()); 
         } else {
-            assertFalse(assertContext.getText("Actual with segment should not exist."), actual.getWithSegment().isPresent());
+            assertFalse(assertContext.getText("Actual with segment should not exist."), withSegment.isPresent());
         }
     }
 }

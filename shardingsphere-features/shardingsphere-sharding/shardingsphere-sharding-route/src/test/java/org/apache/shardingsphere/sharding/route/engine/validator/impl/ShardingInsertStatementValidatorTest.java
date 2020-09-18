@@ -127,7 +127,7 @@ public final class ShardingInsertStatementValidatorTest {
     }
     
     private InsertStatement createInsertStatement() {
-        InsertStatement result = new MySQLInsertStatement();
+        MySQLInsertStatement result = new MySQLInsertStatement();
         result.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("id"));
         AssignmentSegment assignmentSegment = new AssignmentSegment(0, 0, columnSegment, new ParameterMarkerExpressionSegment(0, 0, 1));
