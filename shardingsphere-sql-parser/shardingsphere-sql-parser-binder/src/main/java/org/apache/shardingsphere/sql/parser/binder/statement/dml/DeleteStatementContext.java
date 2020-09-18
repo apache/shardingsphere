@@ -42,9 +42,9 @@ public final class DeleteStatementContext extends CommonSQLStatementContext<Dele
     
     public DeleteStatementContext(final DeleteStatement sqlStatement) {
         super(sqlStatement);
-        TableExtractor utils = new TableExtractor();
-        utils.extractTablesFromDelete(sqlStatement);
-        tablesContext = new TablesContext(utils.getRewriteTables());
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromDelete(sqlStatement);
+        tablesContext = new TablesContext(tableExtractor.getRewriteTables());
     }
     
     @Override

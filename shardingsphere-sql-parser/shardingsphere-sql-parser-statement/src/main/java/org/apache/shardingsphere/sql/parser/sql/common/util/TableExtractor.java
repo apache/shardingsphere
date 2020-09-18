@@ -84,9 +84,9 @@ public final class TableExtractor {
         }
         if (tableSegment instanceof SubqueryTableSegment) {
             tableContext.add(tableSegment);
-            TableExtractor utils = new TableExtractor();
-            utils.extractTablesFromSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
-            rewriteTables.addAll(utils.getRewriteTables());
+            TableExtractor tableExtractor = new TableExtractor();
+            tableExtractor.extractTablesFromSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
+            rewriteTables.addAll(tableExtractor.getRewriteTables());
         }
         if (tableSegment instanceof JoinTableSegment) {
             extractTablesFromTableSegment(((JoinTableSegment) tableSegment).getLeft());

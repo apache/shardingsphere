@@ -42,9 +42,9 @@ public final class UpdateStatementContext extends CommonSQLStatementContext<Upda
     
     public UpdateStatementContext(final UpdateStatement sqlStatement) {
         super(sqlStatement);
-        TableExtractor utils = new TableExtractor();
-        utils.extractTablesFromUpdate(sqlStatement);
-        tablesContext = new TablesContext(utils.getRewriteTables());
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromUpdate(sqlStatement);
+        tablesContext = new TablesContext(tableExtractor.getRewriteTables());
     }
     
     @Override
