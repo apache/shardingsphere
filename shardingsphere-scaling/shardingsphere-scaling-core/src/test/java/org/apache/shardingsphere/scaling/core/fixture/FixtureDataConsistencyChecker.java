@@ -17,22 +17,39 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.check.AbstractDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSqlBuilder;
+import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 
-@RequiredArgsConstructor
-public final class FixtureDataConsistencyChecker implements DataConsistencyChecker {
+public final class FixtureDataConsistencyChecker extends AbstractDataConsistencyChecker implements DataConsistencyChecker {
     
-    private final ShardingScalingJob shardingScalingJob;
+    public FixtureDataConsistencyChecker(final ShardingScalingJob shardingScalingJob) {
+        super(shardingScalingJob);
+    }
     
     @Override
     public boolean countCheck() {
-        return false;
+        return super.countCheck();
     }
     
     @Override
     public boolean dataCheck() {
         return false;
+    }
+    
+    @Override
+    protected AbstractSqlBuilder getSqlBuilder() {
+        return new AbstractSqlBuilder() {
+            @Override
+            protected String getLeftIdentifierQuoteString() {
+                return "`";
+            }
+    
+            @Override
+            protected String getRightIdentifierQuoteString() {
+                return "`";
+            }
+        };
     }
 }

@@ -142,13 +142,6 @@ public final class ScalingJobControllerTest {
         return result;
     }
     
-    private ShardingScalingJob mockPreparingFailureShardingScalingJob() {
-        ShardingScalingJob result = new ShardingScalingJob(mockScalingConfiguration());
-        result.getSyncConfigurations().add(new SyncConfiguration(3, mockDumperConfig(), mockImporterConfiguration()));
-        result.setStatus(SyncTaskControlStatus.PREPARING_FAILURE.name());
-        return result;
-    }
-    
     private ImporterConfiguration mockImporterConfiguration() {
         ImporterConfiguration importerConfig = new ImporterConfiguration();
         importerConfig.setDataSourceConfiguration(new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
@@ -163,6 +156,13 @@ public final class ScalingJobControllerTest {
         Map<String, String> tableMap = new HashMap<>();
         tableMap.put("t_order", "t_order");
         result.setTableNameMap(tableMap);
+        return result;
+    }
+    
+    private ShardingScalingJob mockPreparingFailureShardingScalingJob() {
+        ShardingScalingJob result = new ShardingScalingJob(mockScalingConfiguration());
+        result.getSyncConfigurations().add(new SyncConfiguration(3, mockDumperConfig(), mockImporterConfiguration()));
+        result.setStatus(SyncTaskControlStatus.PREPARING_FAILURE.name());
         return result;
     }
 }
