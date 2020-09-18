@@ -95,7 +95,7 @@ public final class MySQLDataSourceCheckerTest {
     
     @Test
     public void assertCheckPrivilegeFailure() throws SQLException {
-        when(resultSet.next()).thenThrow(new SQLException());
+        when(resultSet.next()).thenThrow(new SQLException(""));
         try {
             dataSourceChecker.checkPrivilege(dataSources);
         } catch (final PrepareFailedException ex) {
@@ -124,7 +124,7 @@ public final class MySQLDataSourceCheckerTest {
     
     @Test
     public void assertCheckVariableFailure() throws SQLException {
-        when(resultSet.next()).thenThrow(new SQLException());
+        when(resultSet.next()).thenThrow(new SQLException(""));
         try {
             dataSourceChecker.checkVariable(dataSources);
         } catch (final PrepareFailedException ex) {

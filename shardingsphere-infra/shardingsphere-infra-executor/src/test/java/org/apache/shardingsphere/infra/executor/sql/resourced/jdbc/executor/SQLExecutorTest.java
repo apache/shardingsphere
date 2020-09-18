@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.junit.Test;
 
@@ -36,14 +35,13 @@ import static org.mockito.Mockito.when;
 public final class SQLExecutorTest {
     
     @Test
-    @SneakyThrows(value = SQLException.class)
-    public void assertExecute() {
+    public void assertExecute() throws SQLException {
         ExecutorKernel kernel = mock(ExecutorKernel.class);
         when(kernel.execute(anyCollection(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList("test"));
         SQLExecutor sqlExecutor = new SQLExecutor(kernel, false);
-        List actual1 = sqlExecutor.execute(Collections.EMPTY_LIST, null);
+        List<?> actual1 = sqlExecutor.execute(Collections.emptyList(), null);
         assertThat(actual1, is(Collections.singletonList("test")));
-        List actual2 = sqlExecutor.execute(Collections.EMPTY_LIST, null, null);
+        List<?> actual2 = sqlExecutor.execute(Collections.emptyList(), null, null);
         assertThat(actual2, is(Collections.singletonList("test")));
     }
     
@@ -53,20 +51,19 @@ public final class SQLExecutorTest {
             ExecutorKernel kernel = mock(ExecutorKernel.class);
             when(kernel.execute(anyCollection(), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
             SQLExecutor sqlExecutor = new SQLExecutor(kernel, false);
-            sqlExecutor.execute(Collections.EMPTY_LIST, null);
-        } catch (SQLException e) {
-            assertThat(e.getMessage(), is("TestSQLException"));
+            sqlExecutor.execute(Collections.emptyList(), null);
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("TestSQLException"));
         }
     }
     
     @Test
-    @SneakyThrows(value = SQLException.class)
-    public void assertExecuteNotThrownSQLException() {
+    public void assertExecuteNotThrownSQLException() throws SQLException {
         ExecutorKernel kernel = mock(ExecutorKernel.class);
         when(kernel.execute(anyCollection(), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
         SQLExecutor sqlExecutor = new SQLExecutor(kernel, false);
         ExecutorExceptionHandler.setExceptionThrown(false);
-        List actual = sqlExecutor.execute(Collections.EMPTY_LIST, null);
-        assertThat(actual, is(Collections.EMPTY_LIST));
+        List<?> actual = sqlExecutor.execute(Collections.emptyList(), null);
+        assertThat(actual, is(Collections.emptyList()));
     }
 }

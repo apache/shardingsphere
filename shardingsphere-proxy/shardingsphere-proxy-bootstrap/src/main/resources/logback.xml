@@ -26,6 +26,18 @@
         <appender-ref ref="console" />
     </logger>
     
+    <logger name="com.zaxxer.hikari" level="error">
+        <appender-ref ref="console" />
+    </logger>
+    
+    <logger name="com.atomikos" level="error">
+        <appender-ref ref="console" />
+    </logger>
+    
+    <logger name="io.netty" level="error">
+        <appender-ref ref="console" />
+    </logger>
+    
     <root>
         <level value="info" />
         <appender-ref ref="console" />

@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer alter user statement.
  */
-public final class SQLServerAlterUserStatement extends AlterUserStatement implements DCLStatement, SQLServerStatement {
+public final class SQLServerAlterUserStatement extends AlterUserStatement implements SQLServerStatement {
 }

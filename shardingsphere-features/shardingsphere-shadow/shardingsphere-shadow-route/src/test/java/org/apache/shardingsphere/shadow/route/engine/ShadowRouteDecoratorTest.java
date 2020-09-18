@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ShadowRouteDecoratorTest {
+public final class ShadowRouteDecoratorTest {
     
     private static final String SHADOW_COLUMN = "is_shadow";
     
@@ -75,7 +75,7 @@ public class ShadowRouteDecoratorTest {
     @Before
     public void setUp() {
         routeDecorator = new ShadowRouteDecorator();
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration(SHADOW_COLUMN, Collections.singletonMap(ACTUAL_DATASOURCE, SHADOW_DATASOURCE));
+        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration(SHADOW_COLUMN, Collections.singletonList(ACTUAL_DATASOURCE), Collections.singletonList(SHADOW_DATASOURCE));
         shadowRule = new ShadowRule(shadowRuleConfiguration);
     }
     

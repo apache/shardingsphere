@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL create view statement.
  */
-public final class PostgreSQLCreateViewStatement extends CreateViewStatement implements DDLStatement, PostgreSQLStatement {
+public final class PostgreSQLCreateViewStatement extends CreateViewStatement implements PostgreSQLStatement {
 }

@@ -347,8 +347,7 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
             }
             result.setRight(listExpression);
         }
-        boolean operator = null != ctx.NOT() ? true : false;
-        result.setNot(operator);
+        result.setNot(null != ctx.NOT());
         return result;
     }
     

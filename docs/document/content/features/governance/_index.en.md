@@ -9,7 +9,7 @@ chapter = true
 
 As the scale of data continues to expand, a distributed approach using multi-node clusters has gradually become a trend. In this case, how to efficiently and automatically manage cluster nodes, realize the collaborative work of different nodes, configuration consistency, state consistency, high availability, observability, etc., has become a challenge.
 
-This section includes three modules: governance, cluster management and observability.
+This section includes three modules: governance, observability and cluster management(in plan).
 
 ## Challenges
 

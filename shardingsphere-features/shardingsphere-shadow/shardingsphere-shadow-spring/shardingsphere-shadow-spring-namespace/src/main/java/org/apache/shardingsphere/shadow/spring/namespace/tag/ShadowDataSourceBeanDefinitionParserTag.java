@@ -28,13 +28,9 @@ public final class ShadowDataSourceBeanDefinitionParserTag {
     
     public static final String ROOT_TAG = "rule";
     
-    public static final String MAPPINGS_CONFIG_TAG = "mappings";
-    
-    public static final String MAPPING_CONFIG_TAG = "mapping";
-    
     public static final String COLUMN_CONFIG_TAG = "column";
     
-    public static final String PRODUCT_DATA_SOURCE_NAME_ATTRIBUTE = "product-data-source-name";
+    public static final String SHADOW_DATASOURCE_NAMES_TAG = "shadowDataSourceNames";
     
-    public static final String SHADOW_DATA_SOURCE_NAME_ATTRIBUTE = "shadow-data-source-name";
+    public static final String SOURCE_DATASOURCE_NAMES_TAG = "sourceDataSourceNames";
 }

@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -52,8 +53,7 @@ public final class PostgreSQLBinaryResultSetRowPacketTest {
     
     @Test
     public void assertWriteIntData() {
-        PostgreSQLBinaryResultSetRowPacket rowPacket = new PostgreSQLBinaryResultSetRowPacket(Arrays.asList(10),
-                Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
+        PostgreSQLBinaryResultSetRowPacket rowPacket = new PostgreSQLBinaryResultSetRowPacket(Collections.singletonList(10), Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
         assertThat(rowPacket.getData().size(), is(1));
         rowPacket.write(payload);
         verify(payload).writeInt2(1);

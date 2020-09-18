@@ -356,8 +356,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             }
             result.setRight(listExpression);
         }
-        Boolean operator = null != ctx.NOT() ? true : false;
-        result.setNot(operator);
+        result.setNot(null != ctx.NOT());
         return result;
     }
     

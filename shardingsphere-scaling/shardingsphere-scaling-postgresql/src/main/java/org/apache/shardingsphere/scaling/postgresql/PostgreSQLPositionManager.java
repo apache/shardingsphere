@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.scaling.postgresql;
 
 import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.util.PSQLException;
@@ -32,7 +31,7 @@ import java.sql.SQLException;
 /**
  * PostgreSQL position manager.
  */
-public final class PostgreSQLPositionManager extends BasePositionManager<WalPosition> implements PositionManager<WalPosition> {
+public final class PostgreSQLPositionManager extends BasePositionManager<WalPosition> {
     
     public static final String SLOT_NAME = "sharding_scaling";
     

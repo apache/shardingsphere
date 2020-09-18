@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.In
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -180,7 +181,8 @@ public final class ProjectionsContextEngine {
     }
     
     private boolean isSameAlias(final Projection projection, final TextOrderByItemSegment orderItem) {
-        return projection.getAlias().isPresent() && (orderItem.getText().equalsIgnoreCase(projection.getAlias().get()) || orderItem.getText().equalsIgnoreCase(projection.getExpression()));
+        return projection.getAlias().isPresent() 
+                && (SQLUtil.getExactlyValue(orderItem.getText()).equalsIgnoreCase(projection.getAlias().get()) || orderItem.getText().equalsIgnoreCase(projection.getExpression()));
     }
     
     private boolean isSameQualifiedName(final Projection projection, final TextOrderByItemSegment orderItem) {

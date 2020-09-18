@@ -86,7 +86,7 @@ public final class BackendTransactionManagerTest {
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.begin();
         verify(transactionStatus).setInTransaction(true);
-        verify(backendConnection).releaseConnections(false);
+        verify(backendConnection).closeConnections(false);
         verify(localTransactionManager).begin();
     }
     
@@ -95,7 +95,7 @@ public final class BackendTransactionManagerTest {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.begin();
         verify(transactionStatus, times(0)).setInTransaction(true);
-        verify(backendConnection, times(0)).releaseConnections(false);
+        verify(backendConnection, times(0)).closeConnections(false);
         verify(shardingTransactionManager).begin();
     }
     

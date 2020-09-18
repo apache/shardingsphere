@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
@@ -27,13 +26,13 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFie
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
@@ -67,15 +66,15 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         if (ProxyContext.getInstance().getSchemaContexts().isCircuitBreak()) {
-            return Collections.singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
+            throw new CircuitBreakException();
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
-        if (backendResponse instanceof QueryResponse) {
-            responseType = ResponseType.QUERY;
-            return createQueryPackets((QueryResponse) backendResponse);
-        }
-        responseType = ResponseType.UPDATE;
-        return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
+        return backendResponse instanceof QueryResponse ? processQuery((QueryResponse) backendResponse) : processUpdate((UpdateResponse) backendResponse);
+    }
+    
+    private Collection<DatabasePacket<?>> processQuery(final QueryResponse backendResponse) {
+        responseType = ResponseType.QUERY;
+        return createQueryPackets(backendResponse);
     }
     
     private Collection<DatabasePacket<?>> createQueryPackets(final QueryResponse backendResponse) {
@@ -89,7 +88,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         result.add(new MySQLEofPacket(++currentSequenceId));
         return result;
     }
-
+    
     private int getColumnFieldDetailFlag(final QueryHeader header) {
         int result = 0;
         if (header.isPrimaryKey()) {
@@ -107,8 +106,13 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         return result;
     }
     
-    private MySQLOKPacket createUpdatePacket(final UpdateResponse updateResponse) {
-        return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
+    private Collection<DatabasePacket<?>> processUpdate(final UpdateResponse backendResponse) {
+        responseType = ResponseType.UPDATE;
+        return createUpdatePackets(backendResponse);
+    }
+    
+    private Collection<DatabasePacket<?>> createUpdatePackets(final UpdateResponse updateResponse) {
+        return Collections.singletonList(new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId()));
     }
     
     @Override

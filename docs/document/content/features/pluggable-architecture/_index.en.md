@@ -17,7 +17,7 @@ It needs to make each module decouple to independent and imperceptible to each o
 Design an architecture to completely isolate each function, not only can stimulate the enthusiasm of the open source community, but also can guarantee the quality of the project.
 
 Apache ShardingSphere begin to focus on pluggable architecture from version 5.x, features can be embedded into project flexibility.
-Currently, the features such as data sharding, read-write splitting, multi replica, data encrypt, shadow test, and SQL dialects / database protocols such as MySQL, PostgreSQL, SQLServer, Oracle supported are all weaved by plugins.
+Currently, the features such as data sharding, read-write splitting, consensus replication, data encrypt, shadow test, and SQL dialects / database protocols such as MySQL, PostgreSQL, SQLServer, Oracle supported are all weaved by plugins.
 There are lots of SPI extensions for Apache ShardingSphere now and increase continuously.
 
 ## Goal

@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL drop index statement.
  */
-public final class MySQLDropIndexStatement extends DropIndexStatement implements DDLStatement, MySQLStatement {
+public final class MySQLDropIndexStatement extends DropIndexStatement implements MySQLStatement {
 }

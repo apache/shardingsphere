@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public class ConnectionScopeBinaryStatementRegistryTest {
+public final class ConnectionScopeBinaryStatementRegistryTest {
     
     @Test
     public void assertRegister() {

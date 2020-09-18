@@ -23,6 +23,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleDeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerDeleteStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -45,14 +50,37 @@ public final class DeleteStatementContextTest {
     private WhereSegment whereSegment;
     
     @Test
-    public void assertNewInstance() {
+    public void assertMySQLNewInstance() {
+        assertNewInstance(new MySQLDeleteStatement());
+    }
+    
+    @Test
+    public void assertOracleNewInstance() {
+        assertNewInstance(new OracleDeleteStatement());
+    }
+    
+    @Test
+    public void assertPostgreSQLNewInstance() {
+        assertNewInstance(new PostgreSQLDeleteStatement());
+    }
+    
+    @Test
+    public void assertSQL92NewInstance() {
+        assertNewInstance(new SQL92DeleteStatement());
+    }
+    
+    @Test
+    public void assertSQLServerNewInstance() {
+        assertNewInstance(new SQLServerDeleteStatement());
+    }
+    
+    private void assertNewInstance(final DeleteStatement deleteStatement) {
         when(whereSegment.getExpr()).thenReturn(mock(ExpressionSegment.class));
         SimpleTableSegment table1 = new SimpleTableSegment(0, 0, new IdentifierValue("tbl_1"));
         SimpleTableSegment table2 = new SimpleTableSegment(0, 0, new IdentifierValue("tbl_2"));
         JoinTableSegment tableSegment = new JoinTableSegment();
         tableSegment.setLeft(table1);
         tableSegment.setRight(table2);
-        DeleteStatement deleteStatement = new DeleteStatement();
         deleteStatement.setWhere(whereSegment);
         deleteStatement.setTableSegment(tableSegment);
         DeleteStatementContext actual = new DeleteStatementContext(deleteStatement);

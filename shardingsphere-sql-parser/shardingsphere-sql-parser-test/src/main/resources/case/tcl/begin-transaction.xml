@@ -22,4 +22,5 @@
     <begin-transaction sql-case-id="beginWithName" />
     <begin-transaction sql-case-id="beginReadCommitted" />
     <begin-transaction sql-case-id="beginReadOnly" />
+    <begin-transaction sql-case-id="begin_with_transaction_mode" />
 </sql-parser-test-cases>

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -28,7 +26,6 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
  * Transaction status.
  */
 @Getter
-@Slf4j
 public final class TransactionStatus {
     
     private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200L;
@@ -50,25 +47,18 @@ public final class TransactionStatus {
      * @param transactionType transaction type
      */
     public void setTransactionType(final TransactionType transactionType) {
-        if (!waitingForTransactionComplete()) {
+        if (inTransaction) {
             throw new ShardingSphereException("Failed to switch transaction type, please terminate current transaction.");
         }
         this.transactionType = transactionType;
     }
     
     /**
-     * Waiting for transaction complete.
-     *
-     * @return transaction complete or not
+     * Judge whether in connection held transaction.
+     * 
+     * @return is in connection held transaction or not
      */
-    @SneakyThrows(InterruptedException.class)
-    public boolean waitingForTransactionComplete() {
-        int retryCount = 0;
-        while (inTransaction && retryCount < MAXIMUM_RETRY_COUNT) {
-            Thread.sleep(DEFAULT_TIMEOUT_MILLISECONDS);
-            ++retryCount;
-            log.info("Current transaction have not terminated, retry count:[{}].", retryCount);
-        }
-        return retryCount < MAXIMUM_RETRY_COUNT;
+    public boolean isInConnectionHeldTransaction() {
+        return inTransaction && TransactionType.BASE != transactionType;
     }
 }

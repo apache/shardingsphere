@@ -26,7 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
-import java.util.Collections;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -43,6 +43,7 @@ public class ShadowSpringBootStarterTest {
     @Test
     public void assertShadowRuleConfiguration() {
         assertThat(shadowRuleConfiguration.getColumn(), is("shadow"));
-        assertThat(shadowRuleConfiguration.getShadowMappings(), is(Collections.singletonMap("ds", "shadow_ds")));
+        assertThat(shadowRuleConfiguration.getSourceDataSourceNames(), is(Arrays.asList("ds", "ds1")));
+        assertThat(shadowRuleConfiguration.getShadowDataSourceNames(), is(Arrays.asList("shadow_ds", "shadow_ds1")));
     }
 }

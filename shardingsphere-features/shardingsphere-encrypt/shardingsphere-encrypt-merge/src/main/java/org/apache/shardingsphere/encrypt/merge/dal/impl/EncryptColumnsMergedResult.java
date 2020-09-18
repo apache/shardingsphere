@@ -114,12 +114,12 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
     
     @Override
     public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        throw new SQLFeatureNotSupportedException("");
     }
     
     @Override
     public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        throw new SQLFeatureNotSupportedException("");
     }
     
     protected abstract boolean nextValue() throws SQLException;

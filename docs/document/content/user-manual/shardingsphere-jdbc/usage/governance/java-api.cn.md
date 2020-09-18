@@ -44,7 +44,7 @@ configurationMap.put("governance-shardingsphere-data-source", configuration);
 
 // 创建 GovernanceShardingSphereDataSource
 DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(
-        createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(),
+        createDataSourceMap(), createShardingRuleConfig(), new Properties(),
         new GovernanceConfiguration("shardingsphere-governance", configurationMap, true));
 ```
 
@@ -57,7 +57,7 @@ DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSour
 
 ```java
 DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(
-        createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+        createDataSourceMap(), createShardingRuleConfig(), new Properties(), 
         new GovernanceConfiguration("shardingsphere-governance", configurationMap, true));
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (

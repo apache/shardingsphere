@@ -53,7 +53,7 @@ public final class MemoryQueryResultTest {
     @Test(expected = SQLException.class)
     public void assertConstructorWithSqlException() throws SQLException {
         ResultSet resultSet = getResultSet();
-        when(resultSet.next()).thenThrow(new SQLException());
+        when(resultSet.next()).thenThrow(new SQLException(""));
         new MemoryQueryResult(resultSet);
     }
     

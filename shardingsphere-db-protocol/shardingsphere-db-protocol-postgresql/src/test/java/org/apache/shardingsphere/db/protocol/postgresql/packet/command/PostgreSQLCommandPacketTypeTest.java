@@ -22,7 +22,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class PostgreSQLCommandPacketTypeTest {
+public final class PostgreSQLCommandPacketTypeTest {
     
     @Test
     public void assertValueOf() {

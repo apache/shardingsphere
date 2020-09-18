@@ -23,16 +23,16 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResult;
+import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.proxy.frontend.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.executor.CommandExecutorSelector;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
-import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -66,8 +66,9 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             return;
         }
         boolean supportHint = ProxyContext.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED);
-        ExecutorService executorService = CommandExecutorSelector.getExecutor(databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection(), 
-                supportHint, backendConnection.getTransactionStatus().getTransactionType(), context.channel().id());
+        boolean isOccupyThreadForPerConnection = databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection();
+        ExecutorService executorService = CommandExecutorSelector.getExecutorService(
+                isOccupyThreadForPerConnection, supportHint, backendConnection.getTransactionStatus().getTransactionType(), context.channel().id());
         executorService.execute(new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message));
     }
     
@@ -89,10 +90,17 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     }
     
     @Override
-    public void channelInactive(final ChannelHandlerContext context) throws SQLException {
+    public void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
+        closeAllResources(context);
+    }
+    
+    private void closeAllResources(final ChannelHandlerContext context) {
         databaseProtocolFrontendEngine.release(backendConnection);
-        backendConnection.close(true);
+        MasterVisitedManager.clear();
+        backendConnection.closeResultSets();
+        backendConnection.closeStatements();
+        backendConnection.closeConnections(true);
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }
     

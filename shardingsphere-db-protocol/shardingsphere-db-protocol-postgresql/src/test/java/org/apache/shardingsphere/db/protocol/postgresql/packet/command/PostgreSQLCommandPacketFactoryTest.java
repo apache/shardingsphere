@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PostgreSQLCommandPacketFactoryTest {
+public final class PostgreSQLCommandPacketFactoryTest {
     
     @Mock
     private PostgreSQLPacketPayload payload;

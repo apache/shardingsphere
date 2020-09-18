@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL alter user statement.
  */
-public final class MySQLAlterUserStatement extends AlterUserStatement implements DCLStatement, MySQLStatement {
+public final class MySQLAlterUserStatement extends AlterUserStatement implements MySQLStatement {
 }

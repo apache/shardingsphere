@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL alter table statement.
  */
-public final class MySQLAlterTableStatement extends AlterTableStatement implements DDLStatement, MySQLStatement {
+public final class MySQLAlterTableStatement extends AlterTableStatement implements MySQLStatement {
 }

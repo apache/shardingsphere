@@ -18,17 +18,17 @@ Historically, the database space has been dominated by Western technology compan
   Fully compatible with SQL and transactions for traditional relational databases, and naturally friendly to distribution, is the design goal of distributed database solutions. Its core functions are mainly concentrated in the following points:
 
 - Distributed storage: Data storage is not limited by the disk capacity of a single machine, and the storage capacity can be improved by increasing the number of data servers;
-    
+
 - Separation of computing and storage: Computing nodes are stateless and can increase computing power through horizontal expansion. Storage nodes and computing nodes can be optimized hierarchically;
-  
+
 - Distributed transaction: A high-performance, distributed transaction processing engine that fully supports the original meaning of local transactions ACID;
-    
+
 - Elastic scaling: You can dynamically expand and shrink data storage nodes anytime, anywhere without affecting existing applications;
-    
-- Multiple replica: Automatically copy the data to multiple copies across data centers in a strong and consistent manner to ensure the absolute security of the data;
-    
+
+- Consensus replication: Automatically copy the data to multiple copies across data centers in a strong and consistent manner to ensure the absolute security of the data;
+
 - HTAP: The same set of products is used to mix transactional operations of OLTP and analytical operations of OLAP.
-    
+
 
 The implementation solutions of distributed database can be divided into aggressive and stable. The aggressive implementation solution refers to the development of a new architecture of NewSQL. Such products are focus on higher performance in exchange for the lack of stability and the lack of experience in operation and maintenance; the stable implementation solution refers to the middleware that provides incremental capabilities based on the existing database. Such products sacrifice some performance to ensure the stability of the database and reuse of operation and maintenance experience.
 
@@ -261,7 +261,7 @@ Apache ShardingSphere's support for database types will be completely open. In a
 
 At present, Apache ShardingSphere only distributes SQL to the corresponding database through correct routing and rewriting to manipulate the data. The query optimizer that calculates and issues the database that can be fully utilized, but cannot effectively support complex related queries and subqueries. The SQL on KV query optimizer based on relational algebra has become mature with the development of JDTX, and its accumulated experience is fed back to the SQL query optimizer, which can enable Apache ShardingSphere to better support complex queries such as subqueries and cross-database related queries.
 
-#### Multiple replica
+#### Consensus replication
 
 The multiple data copy capabilities required by distributed databases are not currently available in Apache ShardingSphere. In the future, Apache ShardingSphere will provide multi-copy write capability based on Raft.
 

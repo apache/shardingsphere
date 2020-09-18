@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL alter user statement.
  */
-public final class PostgreSQLAlterUserStatement extends AlterUserStatement implements DCLStatement, PostgreSQLStatement {
+public final class PostgreSQLAlterUserStatement extends AlterUserStatement implements PostgreSQLStatement {
 }

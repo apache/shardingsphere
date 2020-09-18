@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle drop user statement.
  */
-public final class OracleDropUserStatement extends DropUserStatement implements DCLStatement, OracleStatement {
+public final class OracleDropUserStatement extends DropUserStatement implements OracleStatement {
 }

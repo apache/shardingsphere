@@ -84,7 +84,7 @@ public final class LocalTransactionManager implements TransactionManager {
         if (exceptions.isEmpty()) {
             return;
         }
-        SQLException ex = new SQLException();
+        SQLException ex = new SQLException("");
         for (SQLException each : exceptions) {
             ex.setNextException(each);
         }

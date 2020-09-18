@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer alter table statement.
  */
-public final class SQLServerAlterTableStatement extends AlterTableStatement implements DDLStatement, SQLServerStatement {
+public final class SQLServerAlterTableStatement extends AlterTableStatement implements SQLServerStatement {
 }

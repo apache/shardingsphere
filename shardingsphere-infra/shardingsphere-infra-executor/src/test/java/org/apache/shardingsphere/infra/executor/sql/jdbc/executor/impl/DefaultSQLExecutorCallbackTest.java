@@ -61,7 +61,7 @@ public final class DefaultSQLExecutorCallbackTest {
     private Collection<StatementExecuteUnit> units;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws SQLException {
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(metaData);
         when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
@@ -69,11 +69,11 @@ public final class DefaultSQLExecutorCallbackTest {
                 new StatementExecuteUnit(new ExecutionUnit("ds", new SQLUnit("SELECT now()", Collections.emptyList())), ConnectionMode.CONNECTION_STRICTLY, preparedStatement));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     @SneakyThrows(ReflectiveOperationException.class)
-    @SuppressWarnings("unchecked")
     public void execute() throws SQLException {
-        SQLExecutorCallback sqlExecutorCallback = new DefaultSQLExecutorCallback<Integer>(DatabaseTypes.getActualDatabaseType("MySQL"), true) {
+        SQLExecutorCallback<?> sqlExecutorCallback = new DefaultSQLExecutorCallback<Integer>(DatabaseTypes.getActualDatabaseType("MySQL"), true) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {

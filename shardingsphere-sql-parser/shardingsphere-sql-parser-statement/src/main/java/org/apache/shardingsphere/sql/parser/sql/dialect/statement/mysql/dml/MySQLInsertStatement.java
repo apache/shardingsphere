@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL insert statement.
  */
-public final class MySQLInsertStatement extends InsertStatement implements DMLStatement, MySQLStatement {
+public final class MySQLInsertStatement extends InsertStatement implements MySQLStatement {
 }

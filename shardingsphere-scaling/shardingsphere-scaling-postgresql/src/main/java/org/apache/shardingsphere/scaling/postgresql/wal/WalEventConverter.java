@@ -70,7 +70,7 @@ public final class WalEventConverter {
         } else if (event instanceof PlaceholderEvent) {
             return createPlaceholderRecord(event);
         }
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("");
     }
     
     private boolean filter(final String database, final AbstractWalEvent event) {

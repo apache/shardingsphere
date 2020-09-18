@@ -26,7 +26,6 @@ import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConf
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -66,7 +65,7 @@ public final class MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapperTest 
         assertThat(ruleConfiguration.getMasterDataSourceName(), is("masterDataSourceName"));
         assertThat(ruleConfiguration.getLoadBalancerName(), is("loadBalancerName"));
         assertThat(ruleConfiguration.getSlaveDataSourceNames(), is(Collections.singletonList("slaveDataSourceName")));
-        assertThat(actual.getLoadBalanceAlgorithms(), is(new LinkedHashMap<>()));
+        assertThat(actual.getLoadBalanceAlgorithms(), is(Collections.emptyMap()));
     }
     
     @Test
@@ -87,8 +86,7 @@ public final class MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapperTest 
     private YamlMasterSlaveRuleConfiguration createYamlMasterSlaveRuleConfiguration() {
         MasterSlaveDataSourceRuleConfiguration ruleConfiguration = new MasterSlaveDataSourceRuleConfiguration("name", "masterDataSourceName",
                 Collections.singletonList("slaveDataSourceName"), "loadBalancerName");
-        YamlMasterSlaveRuleConfiguration result = swapper.swapToYamlConfiguration(
+        return swapper.swapToYamlConfiguration(
                 new AlgorithmProvidedMasterSlaveRuleConfiguration(Collections.singletonList(ruleConfiguration), ImmutableMap.of("name", new RandomMasterSlaveLoadBalanceAlgorithm())));
-        return result;
     }
 }

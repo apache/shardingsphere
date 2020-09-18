@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle truncate table statement.
  */
-public final class OracleTruncateStatement extends TruncateStatement implements DDLStatement, OracleStatement {
+public final class OracleTruncateStatement extends TruncateStatement implements OracleStatement {
 }

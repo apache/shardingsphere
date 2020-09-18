@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Statement;
 
 /**
  * SQL92 revoke statement.
  */
-public final class SQL92RevokeStatement extends RevokeStatement implements DCLStatement, SQL92Statement {
+public final class SQL92RevokeStatement extends RevokeStatement implements SQL92Statement {
 }

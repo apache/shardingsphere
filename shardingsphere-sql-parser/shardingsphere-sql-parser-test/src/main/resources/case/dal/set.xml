@@ -22,6 +22,11 @@
             <variable name="configuration_parameter" />
         </variable-assign>
     </set-variable>
+    <set-variable sql-case-id="set_parameter_equal_number" >
+        <variable-assign value="3" >
+            <variable name="extra_float_digits" />
+        </variable-assign>
+    </set-variable>
     <set-variable sql-case-id="set_parameter_equal_session_mysql" >
         <variable-assign value="'value'" >
             <variable name="configuration_parameter" scope="SESSION"/>
@@ -55,4 +60,19 @@
     <set-variable sql-case-id="set_timezone_for_local_scope" />
     <set-variable sql-case-id="set_timezone_for_session_scope" />
     <set-variable sql-case-id="set_timezone_for_local_scope_with_double_value" />
+    <set-variable sql-case-id="set_parameter_equal_boolean" >
+        <variable-assign value="true" >
+            <variable name="extra_float_digits" />
+        </variable-assign>
+    </set-variable>
+    <set-variable sql-case-id="set_parameter_equal_list" >
+        <variable-assign value="1,2,3" >
+            <variable name="extra_float_digits" />
+        </variable-assign>
+    </set-variable>
+    <set-variable sql-case-id="set_parameter_equal_number_with_signal" >
+        <variable-assign value="-10.5" >
+            <variable name="extra_float_digits" />
+        </variable-assign>
+    </set-variable>
 </sql-parser-test-cases>

@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL grant statement.
  */
-public final class MySQLGrantStatement extends GrantStatement implements DCLStatement, MySQLStatement {
+public final class MySQLGrantStatement extends GrantStatement implements MySQLStatement {
 }

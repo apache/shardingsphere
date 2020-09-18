@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterFunctionStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL alter function statement.
  */
-public final class PostgreSQLAlterFunctionStatement extends AlterFunctionStatement implements DDLStatement, PostgreSQLStatement {
+public final class PostgreSQLAlterFunctionStatement extends AlterFunctionStatement implements PostgreSQLStatement {
 }

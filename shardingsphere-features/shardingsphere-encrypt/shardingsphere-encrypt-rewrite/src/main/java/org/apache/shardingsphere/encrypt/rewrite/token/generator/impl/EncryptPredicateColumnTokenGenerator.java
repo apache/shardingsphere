@@ -58,10 +58,9 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Preconditions.checkState(((WhereAvailable) sqlStatementContext).getWhere().isPresent());
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
-        Collection<AndPredicate> andPredicates = new LinkedList<>();
         ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
         ExpressionBuildUtil util = new ExpressionBuildUtil(expression);
-        andPredicates.addAll(util.extractAndPredicates().getAndPredicates());
+        Collection<AndPredicate> andPredicates = new LinkedList<>(util.extractAndPredicates().getAndPredicates());
         for (AndPredicate each : andPredicates) {
             result.addAll(generateSQLTokens(sqlStatementContext, each));
         }

@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL create procedure statement.
  */
-public final class MySQLCreateProcedureStatement extends CreateProcedureStatement implements DDLStatement, MySQLStatement {
+public final class MySQLCreateProcedureStatement extends CreateProcedureStatement implements MySQLStatement {
 }

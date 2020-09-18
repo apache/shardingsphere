@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.sharding.spring.namespace;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import javax.annotation.Resource;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
@@ -37,6 +33,11 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+
+import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -184,17 +185,17 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertSimpleRule() {
-        Collection<ShardingTableRuleConfiguration> actualSimpleRuleConfigurations = simpleRule.getTables();
-        assertThat(actualSimpleRuleConfigurations.size(), is(1));
-        ShardingTableRuleConfiguration actualSimpleRuleConfiguration = actualSimpleRuleConfigurations.iterator().next();
+        Collection<ShardingTableRuleConfiguration> actualSimpleRuleConfigs = simpleRule.getTables();
+        assertThat(actualSimpleRuleConfigs.size(), is(1));
+        ShardingTableRuleConfiguration actualSimpleRuleConfiguration = actualSimpleRuleConfigs.iterator().next();
         assertThat(actualSimpleRuleConfiguration.getLogicTable(), is("t_order"));
     }
     
     @Test
     public void assertComplexRule() {
-        Collection<ShardingTableRuleConfiguration> actualComplexRuleConfigurations = complexRule.getTables();
-        assertThat(actualComplexRuleConfigurations.size(), is(1));
-        ShardingTableRuleConfiguration actualComplexRuleConfiguration = actualComplexRuleConfigurations.iterator().next();
+        Collection<ShardingTableRuleConfiguration> actualComplexRuleConfigs = complexRule.getTables();
+        assertThat(actualComplexRuleConfigs.size(), is(1));
+        ShardingTableRuleConfiguration actualComplexRuleConfiguration = actualComplexRuleConfigs.iterator().next();
         assertThat(actualComplexRuleConfiguration.getLogicTable(), is("t_order"));
         assertThat(actualComplexRuleConfiguration.getActualDataNodes(), is("ds_$->{0..1}.t_order_$->{0..3}"));
         assertThat(actualComplexRuleConfiguration.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("dataSourceShardingAlgorithm"));
@@ -206,9 +207,9 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertBindingRule() {
-        Collection<ShardingTableRuleConfiguration> actualBindingTableRuleConfigurations = bindingRule.getTables();
-        assertThat(actualBindingTableRuleConfigurations.size(), is(4));
-        Iterator<ShardingTableRuleConfiguration> actualIterator = actualBindingTableRuleConfigurations.iterator();
+        Collection<ShardingTableRuleConfiguration> actualBindingTableRuleConfigus = bindingRule.getTables();
+        assertThat(actualBindingTableRuleConfigus.size(), is(4));
+        Iterator<ShardingTableRuleConfiguration> actualIterator = actualBindingTableRuleConfigus.iterator();
         assertThat(actualIterator.next().getLogicTable(), is("t_order"));
         assertThat(actualIterator.next().getLogicTable(), is("t_order_item"));
         assertThat(actualIterator.next().getLogicTable(), is("t_user"));
@@ -220,9 +221,9 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertBroadcastRule() {
-        Collection<ShardingTableRuleConfiguration> actualBroadcastTableConfigurations = broadcastRule.getTables();
-        assertThat(actualBroadcastTableConfigurations.size(), is(2));
-        Iterator<ShardingTableRuleConfiguration> actualIterator = actualBroadcastTableConfigurations.iterator();
+        Collection<ShardingTableRuleConfiguration> actualBroadcastTableConfigs = broadcastRule.getTables();
+        assertThat(actualBroadcastTableConfigs.size(), is(2));
+        Iterator<ShardingTableRuleConfiguration> actualIterator = actualBroadcastTableConfigs.iterator();
         assertThat(actualIterator.next().getLogicTable(), is("t_order"));
         assertThat(actualIterator.next().getLogicTable(), is("t_order_item"));
         Collection<String> broadcastTables = broadcastRule.getBroadcastTables();
@@ -230,16 +231,16 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
         assertTrue(broadcastTables.containsAll(Arrays.asList("t_dict", "t_address")));
         Collection<String> actualBindingTableGroups = broadcastRule.getBindingTableGroups();
         assertThat(actualBindingTableGroups.size(), is(1));
-        assertTrue(actualBindingTableGroups.containsAll(Arrays.asList("t_order, t_order_item")));
+        assertTrue(actualBindingTableGroups.contains("t_order, t_order_item"));
     }
     
     @Test
     public void assertAutoRule() {
         Collection<ShardingAutoTableRuleConfiguration> actualAutoTableConfigurations = autoRule.getAutoTables();
         assertThat(actualAutoTableConfigurations.size(), is(1));
-        ShardingAutoTableRuleConfiguration actualShardingAutoTableRuleConfiguration = actualAutoTableConfigurations.iterator().next();
-        assertThat(actualShardingAutoTableRuleConfiguration.getLogicTable(), is("t_order"));
-        assertThat(actualShardingAutoTableRuleConfiguration.getActualDataSources(), is("ds_0, ds_1"));
-        assertThat(actualShardingAutoTableRuleConfiguration.getShardingStrategy().getShardingAlgorithmName(), is("modShardingAlgorithm"));
+        ShardingAutoTableRuleConfiguration actualAutoTableRuleConfig = actualAutoTableConfigurations.iterator().next();
+        assertThat(actualAutoTableRuleConfig.getLogicTable(), is("t_order"));
+        assertThat(actualAutoTableRuleConfig.getActualDataSources(), is("ds_0, ds_1"));
+        assertThat(actualAutoTableRuleConfig.getShardingStrategy().getShardingAlgorithmName(), is("modShardingAlgorithm"));
     }
 }

@@ -20,11 +20,14 @@ package org.apache.shardingsphere.tracing.opentracing;
 import com.google.common.base.Preconditions;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 /**
  * OpenTracing tracer object container.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OpenTracingTracer {
     
     public static final String OPENTRACING_TRACER_CLASS_NAME = "org.apache.shardingsphere.tracing.opentracing.tracer.class";

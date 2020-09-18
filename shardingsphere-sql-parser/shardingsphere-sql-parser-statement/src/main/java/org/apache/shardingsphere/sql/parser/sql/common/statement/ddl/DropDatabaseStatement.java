@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
  */
 @Getter
 @Setter
-public abstract class DropDatabaseStatement extends AbstractSQLStatement {
+public abstract class DropDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
     
     private String databaseName;
 }

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Analyze table statement.
  */
-public abstract class AnalyzeTableStatement extends AbstractSQLStatement {
+public abstract class AnalyzeTableStatement extends AbstractSQLStatement implements DALStatement {
 }

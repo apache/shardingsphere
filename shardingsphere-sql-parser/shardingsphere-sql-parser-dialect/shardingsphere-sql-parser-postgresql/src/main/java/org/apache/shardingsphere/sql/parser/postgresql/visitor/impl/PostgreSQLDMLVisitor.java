@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Co
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExprListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ForLockingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FromListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.GroupByItemContext;
@@ -102,13 +103,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCallStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDoStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 
 import java.util.Collection;
@@ -285,7 +286,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement();
+        PostgreSQLDeleteStatement result = new PostgreSQLDeleteStatement();
         SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
         result.setTableSegment(tableSegment);
         if (null != ctx.whereOrCurrentClause()) {
@@ -324,6 +325,11 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             result.setLock(lockSegment);
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitForLockingClause(final ForLockingClauseContext ctx) {
+        return new LockSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
     }
     
     @Override
@@ -466,8 +472,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             result.setRight((TableSegment) visit(ctx.tableReference()));
             return result;
         }
-        TableSegment result = (TableSegment) visit(ctx.tableReference());
-        return result;
+        return (TableSegment) visit(ctx.tableReference());
     }
     
     @Override
@@ -489,6 +494,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         }
         if (null != ctx.tableReference()) {
             JoinTableSegment result = new JoinTableSegment();
+            result.setLeft((TableSegment) visit(ctx.tableReference()));
             int startIndex = null != ctx.LP_() ? ctx.LP_().getSymbol().getStartIndex() : ctx.tableReference().start.getStartIndex();
             int stopIndex = 0;
             AliasSegment alias = null;
@@ -508,9 +514,8 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         return new SimpleTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("not support"));
     }
     
-    private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final TableSegment tableSegment) {
-        JoinTableSegment result = new JoinTableSegment();
-        result.setLeft(tableSegment);
+    private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final JoinTableSegment tableSegment) {
+        JoinTableSegment result = tableSegment;
         TableSegment right = (TableSegment) visit(ctx.tableReference());
         result.setRight(right);
         if (null != ctx.joinQual()) {
@@ -567,8 +572,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
         ExpressionSegment expr = (ExpressionSegment) visit(ctx.aExpr());
-        WhereSegment result = new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
-        return result;
+        return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
     }
     
     @Override
@@ -634,11 +638,11 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        return new CallStatement();
+        return new PostgreSQLCallStatement();
     }
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        return new DoStatement();
+        return new PostgreSQLDoStatement();
     }
 }

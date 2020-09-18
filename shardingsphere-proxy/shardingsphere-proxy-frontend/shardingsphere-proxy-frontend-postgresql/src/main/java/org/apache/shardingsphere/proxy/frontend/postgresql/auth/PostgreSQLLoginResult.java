@@ -24,7 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLError
  * PostgreSQL login result.
  */
 @Getter
-public class PostgreSQLLoginResult {
+public final class PostgreSQLLoginResult {
     
     private final PostgreSQLErrorCode errorCode;
     

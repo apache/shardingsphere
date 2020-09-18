@@ -25,26 +25,31 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStateme
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 
 /**
  * Sharding delete statement validator.
  */
 public final class ShardingDeleteStatementValidator implements ShardingStatementValidator<DeleteStatement> {
-
+    
     @Override
     public void preValidate(final ShardingRule shardingRule, final RouteContext routeContext, final ShardingSphereMetaData metaData) {
-        SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         if (1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
     }
-
+    
     @Override
-    public void postValidate(final SQLStatement sqlStatement, final RouteResult routeResult) {
-        if (((DeleteStatement) sqlStatement).getLimit().isPresent() && routeResult.getRouteUnits().size() > 1) {
+    public void postValidate(final DeleteStatement sqlStatement, final RouteResult routeResult) {
+        if (containsDeleteLimitClause(sqlStatement) && routeResult.getRouteUnits().size() > 1) {
             throw new ShardingSphereException("DELETE ... LIMIT can not support sharding route to multiple data nodes.");
         }
+    }
+    
+    private boolean containsDeleteLimitClause(final DeleteStatement sqlStatement) {
+        return sqlStatement instanceof MySQLStatement && ((MySQLDeleteStatement) sqlStatement).getLimit().isPresent();
     }
 }

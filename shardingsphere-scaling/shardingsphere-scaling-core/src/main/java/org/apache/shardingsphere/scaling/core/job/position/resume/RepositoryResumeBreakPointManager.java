@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
@@ -100,6 +102,7 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
         log.info("persist incremental position {} = {}", incrementalPath, result);
     }
     
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class RegistryRepositoryHolder {
     
         public static final RegistryRepository REGISTRY_REPOSITORY = getInstance();

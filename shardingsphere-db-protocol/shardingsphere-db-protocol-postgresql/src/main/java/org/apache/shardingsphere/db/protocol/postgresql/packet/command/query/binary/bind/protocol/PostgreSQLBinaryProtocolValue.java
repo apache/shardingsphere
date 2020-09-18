@@ -19,8 +19,6 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
-import java.sql.SQLException;
-
 /**
  * Binary protocol value for PostgreSQL.
  */
@@ -39,9 +37,8 @@ public interface PostgreSQLBinaryProtocolValue {
      *
      * @param payload payload operation for PostgreSQL packet
      * @return binary value result
-     * @throws SQLException SQL exception
      */
-    Object read(PostgreSQLPacketPayload payload) throws SQLException;
+    Object read(PostgreSQLPacketPayload payload);
     
     /**
      * Write binary protocol value.

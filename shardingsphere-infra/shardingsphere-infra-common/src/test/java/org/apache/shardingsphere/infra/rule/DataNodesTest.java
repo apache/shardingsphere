@@ -94,7 +94,7 @@ public final class DataNodesTest {
         Collection<DataNode> result = new LinkedList<>();
         for (String each : dataSourceNames) {
             if (logicDataSourceName.equals(each)) {
-                replicaDataSourceNames.stream().forEach(a -> result.add(new DataNode(a, logicTableName)));
+                replicaDataSourceNames.forEach(dataSourceName -> result.add(new DataNode(dataSourceName, logicTableName)));
             } else {
                 result.add(new DataNode(each, logicTableName));
             }

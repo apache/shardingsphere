@@ -22,4 +22,5 @@
     <rollback sql-case-id="rollbackToSavepoint" />
     <rollback sql-case-id="rollbackForce" />
     <rollback sql-case-id="rollbackPrepare" />
+    <rollback sql-case-id="rollback_in_pg" />
 </sql-parser-test-cases>

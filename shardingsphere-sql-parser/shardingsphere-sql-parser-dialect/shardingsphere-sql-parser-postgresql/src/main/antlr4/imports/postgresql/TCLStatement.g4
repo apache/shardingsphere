@@ -25,21 +25,50 @@ setTransaction
     ;
 
 beginTransaction
-    : BEGIN | START TRANSACTION
+    : BEGIN (WORK | TRANSACTION)? transactionModeList?
     ;
 
 commit
-    : COMMIT
-    ;
-
-rollback
-    : ROLLBACK
+    : COMMIT (WORK | TRANSACTION)? (AND (NO)? CHAIN)?
     ;
 
 savepoint
-    : SAVEPOINT
+    : SAVEPOINT colId
     ;
 
 abort
     : ABORT (WORK | TRANSACTION)? (AND (NO)? CHAIN)?
     ;
+
+startTransaction
+    : START TRANSACTION transactionModeList?
+    ;
+
+end
+    : END (WORK | TRANSACTION)? (AND (NO)? CHAIN)?
+    ;
+
+rollback
+    : ROLLBACK (WORK | TRANSACTION)? (AND (NO)? CHAIN)?
+    ;
+
+releaseSavepoint
+    : RELEASE SAVEPOINT? colId
+    ;
+
+rollbackToSavepoint
+    : ROLLBACK (WORK | TRANSACTION)? TO SAVEPOINT? colId
+    ;
+
+prepareTransaction
+    : PREPARE TRANSACTION STRING_
+    ;
+
+commitPrepared
+    : COMMIT PREPARED STRING_
+    ;
+
+rollbackPrepared
+    : ROLLBACK PREPARED STRING_
+    ;
+

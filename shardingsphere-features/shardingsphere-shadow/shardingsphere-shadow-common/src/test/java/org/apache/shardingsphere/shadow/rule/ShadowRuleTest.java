@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shadow.rule;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,7 +30,7 @@ public final class ShadowRuleTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewWithEmptyDataSourceRule() {
-        new ShadowRule(new ShadowRuleConfiguration("", Collections.emptyMap()));
+        new ShadowRule(new ShadowRuleConfiguration("", Collections.emptyList(), Collections.emptyList()));
     }
     
     @Test
@@ -38,13 +39,14 @@ public final class ShadowRuleTest {
     }
     
     private ShadowRule createShadowRule() {
-        ShadowRuleConfiguration configuration = new ShadowRuleConfiguration("shadow", Collections.singletonMap("ds", "shadow_ds"));
+        ShadowRuleConfiguration configuration = new ShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("shadow_ds", "shadow_ds1"));
         return new ShadowRule(configuration);
     }
     
     private void assertShadowRule(final ShadowRule rule) {
         assertThat(rule.getColumn(), is("shadow"));
-        assertThat(rule.getShadowMappings().size(), is(1));
+        assertThat(rule.getShadowMappings().size(), is(2));
         assertThat(rule.getShadowMappings().get("ds"), is("shadow_ds"));
+        assertThat(rule.getShadowMappings().get("ds1"), is("shadow_ds1"));
     }
 }

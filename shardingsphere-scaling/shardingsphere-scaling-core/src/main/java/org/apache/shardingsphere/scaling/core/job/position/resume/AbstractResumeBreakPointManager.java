@@ -66,7 +66,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
     
     private String taskPath;
     
-    protected void resumeInventoryPosition(final String data) {
+    protected final void resumeInventoryPosition(final String data) {
         if (Strings.isNullOrEmpty(data)) {
             return;
         }
@@ -81,7 +81,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         }
     }
     
-    protected void resumeIncrementalPosition(final String data) {
+    protected final void resumeIncrementalPosition(final String data) {
         if (Strings.isNullOrEmpty(data)) {
             return;
         }
@@ -92,7 +92,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         }
     }
     
-    protected String getInventoryPositionData() {
+    protected final String getInventoryPositionData() {
         JsonObject result = new JsonObject();
         JsonObject unfinished = new JsonObject();
         Set<String> finished = Sets.newHashSet();
@@ -108,7 +108,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         return result.toString();
     }
     
-    protected String getIncrementalPositionData() {
+    protected final String getIncrementalPositionData() {
         JsonObject result = new JsonObject();
         for (Entry<String, PositionManager<IncrementalPosition>> entry : incrementalPositionManagerMap.entrySet()) {
             result.add(entry.getKey(), entry.getValue().getPosition().toJson());

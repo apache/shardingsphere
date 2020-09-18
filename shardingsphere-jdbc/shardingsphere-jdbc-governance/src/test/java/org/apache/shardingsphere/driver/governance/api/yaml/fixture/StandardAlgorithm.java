@@ -43,7 +43,7 @@ public final class StandardAlgorithm implements StandardShardingAlgorithm<Intege
                 return each;
             }
         }
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("");
     }
     
     @Override

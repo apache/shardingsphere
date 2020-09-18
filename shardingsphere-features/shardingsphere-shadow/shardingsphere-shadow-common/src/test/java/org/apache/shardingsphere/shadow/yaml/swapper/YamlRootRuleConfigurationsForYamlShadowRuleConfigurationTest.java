@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -63,7 +64,8 @@ public final class YamlRootRuleConfigurationsForYamlShadowRuleConfigurationTest 
     
     private void assertShadowRule(final YamlShadowRuleConfiguration actual) {
         assertThat(actual.getColumn(), is("shadow"));
-        assertThat(actual.getShadowMappings().size(), is(1));
-        assertThat(actual.getShadowMappings().get("ds"), is("shadow_ds"));
+        assertThat(actual.getSourceDataSourceNames().size(), is(actual.getShadowDataSourceNames().size()));
+        assertThat(actual.getSourceDataSourceNames(), is(Arrays.asList("ds", "ds1")));
+        assertThat(actual.getShadowDataSourceNames(), is(Arrays.asList("shadow_ds", "shadow_ds1")));
     }
 }
