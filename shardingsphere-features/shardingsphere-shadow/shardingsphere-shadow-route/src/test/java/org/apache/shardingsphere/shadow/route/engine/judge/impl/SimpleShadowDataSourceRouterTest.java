@@ -109,10 +109,9 @@ public final class SimpleShadowDataSourceRouterTest {
     
     @Test
     public void judgeForWhereSegment() {
-        BinaryOperationExpression expression = new BinaryOperationExpression();
-        expression.setLeft(new ColumnSegment(0, 0, new IdentifierValue("shadow")));
-        expression.setRight(new LiteralExpressionSegment(0, 0, true));
-        expression.setOperator("=");
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("shadow"));
+        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, true);
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, "=", null);
         WhereSegment whereSegment = new WhereSegment(0, 0, expression);
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setWhere(whereSegment);
@@ -123,8 +122,9 @@ public final class SimpleShadowDataSourceRouterTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(schemaMetaData, Collections.emptyList(), selectStatement);
         SimpleShadowDataSourceJudgeEngine simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, selectStatementContext);
         assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadow());
-        expression.setLeft(new ColumnSegment(0, 0, new IdentifierValue("shadow")));
-        expression.setRight(new LiteralExpressionSegment(0, 0, false));
+        expression = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("shadow")), new LiteralExpressionSegment(0, 0, false), "=", null);
+        whereSegment = new WhereSegment(0, 0, expression);
+        selectStatement.setWhere(whereSegment);
         projectionsSegment.getProjections().clear();
         projectionsSegment.getProjections().addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "false")));
         assertFalse("should not be shadow", simpleShadowDataSourceRouter.isShadow());

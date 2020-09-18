@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.OrP
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public final class ExpressionBuildUtil {
+public final class ExpressionBuilder {
     
     private final ExpressionSegment expression;
     
@@ -42,15 +42,15 @@ public final class ExpressionBuildUtil {
             String operator = ((BinaryOperationExpression) expression).getOperator();
             Optional<LogicalOperator> logicalOperator = LogicalOperator.valueFrom(operator);
             if (logicalOperator.isPresent() && LogicalOperator.OR == logicalOperator.get()) {
-                ExpressionBuildUtil leftUtil = new ExpressionBuildUtil(((BinaryOperationExpression) expression).getLeft());
-                ExpressionBuildUtil rightUtil = new ExpressionBuildUtil(((BinaryOperationExpression) expression).getRight());
-                result.getAndPredicates().addAll(leftUtil.extractAndPredicates().getAndPredicates());
-                result.getAndPredicates().addAll(rightUtil.extractAndPredicates().getAndPredicates());
+                ExpressionBuilder leftBuilder = new ExpressionBuilder(((BinaryOperationExpression) expression).getLeft());
+                ExpressionBuilder rightBuilder = new ExpressionBuilder(((BinaryOperationExpression) expression).getRight());
+                result.getAndPredicates().addAll(leftBuilder.extractAndPredicates().getAndPredicates());
+                result.getAndPredicates().addAll(rightBuilder.extractAndPredicates().getAndPredicates());
             } else if (logicalOperator.isPresent() && LogicalOperator.AND == logicalOperator.get()) {
-                ExpressionBuildUtil leftUtil = new ExpressionBuildUtil(((BinaryOperationExpression) expression).getLeft());
-                ExpressionBuildUtil rightUtil = new ExpressionBuildUtil(((BinaryOperationExpression) expression).getRight());
-                for (AndPredicate eachLeft : leftUtil.extractAndPredicates().getAndPredicates()) {
-                    for (AndPredicate eachRight : rightUtil.extractAndPredicates().getAndPredicates()) {
+                ExpressionBuilder leftBuilder = new ExpressionBuilder(((BinaryOperationExpression) expression).getLeft());
+                ExpressionBuilder rightBuilder = new ExpressionBuilder(((BinaryOperationExpression) expression).getRight());
+                for (AndPredicate eachLeft : leftBuilder.extractAndPredicates().getAndPredicates()) {
+                    for (AndPredicate eachRight : rightBuilder.extractAndPredicates().getAndPredicates()) {
                         result.getAndPredicates().add(createAndPredicate(eachLeft, eachRight));
                     }
                 }
