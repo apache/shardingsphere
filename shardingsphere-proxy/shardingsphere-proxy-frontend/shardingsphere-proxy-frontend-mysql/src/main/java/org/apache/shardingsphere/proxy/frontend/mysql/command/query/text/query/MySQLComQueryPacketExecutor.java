@@ -69,12 +69,12 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
             throw new CircuitBreakException();
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
-        if (backendResponse instanceof QueryResponse) {
-            responseType = ResponseType.QUERY;
-            return createQueryPackets((QueryResponse) backendResponse);
-        }
-        responseType = ResponseType.UPDATE;
-        return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
+        return backendResponse instanceof QueryResponse ? processQuery((QueryResponse) backendResponse) : processUpdate((UpdateResponse) backendResponse);
+    }
+    
+    private Collection<DatabasePacket<?>> processQuery(final QueryResponse backendResponse) {
+        responseType = ResponseType.QUERY;
+        return createQueryPackets(backendResponse);
     }
     
     private Collection<DatabasePacket<?>> createQueryPackets(final QueryResponse backendResponse) {
@@ -88,7 +88,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         result.add(new MySQLEofPacket(++currentSequenceId));
         return result;
     }
-
+    
     private int getColumnFieldDetailFlag(final QueryHeader header) {
         int result = 0;
         if (header.isPrimaryKey()) {
@@ -106,8 +106,13 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         return result;
     }
     
-    private MySQLOKPacket createUpdatePacket(final UpdateResponse updateResponse) {
-        return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
+    private Collection<DatabasePacket<?>> processUpdate(final UpdateResponse backendResponse) {
+        responseType = ResponseType.UPDATE;
+        return createUpdatePackets(backendResponse);
+    }
+    
+    private Collection<DatabasePacket<?>> createUpdatePackets(final UpdateResponse updateResponse) {
+        return Collections.singletonList(new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId()));
     }
     
     @Override
