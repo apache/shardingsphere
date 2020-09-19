@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.text.admin.UseDatabaseBackendHand
 import org.apache.shardingsphere.proxy.backend.text.query.QueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
-import org.apache.shardingsphere.proxy.backend.text.transaction.SkipBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngineFactory;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.RDLStatement;
