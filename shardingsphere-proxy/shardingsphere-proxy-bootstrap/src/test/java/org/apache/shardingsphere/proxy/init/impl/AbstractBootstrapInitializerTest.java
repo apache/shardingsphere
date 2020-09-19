@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.init.impl;
 
-import javafx.util.Pair;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -119,12 +119,12 @@ public abstract class AbstractBootstrapInitializerTest {
     
     protected Pair<SchemaContexts, SchemaContexts> makeDecoratedSchemaContexts() {
         SchemaContexts original = mock(SchemaContexts.class);
-        return new Pair<>(original, initializer.decorateSchemaContexts(original));
+        return Pair.of(original, initializer.decorateSchemaContexts(original));
     }
     
     protected Pair<TransactionContexts, TransactionContexts> makeDecoratedTransactionContexts() {
         TransactionContexts original = mock(TransactionContexts.class);
-        return new Pair<>(original, initializer.decorateTransactionContexts(original));
+        return Pair.of(original, initializer.decorateTransactionContexts(original));
     }
     
     @SneakyThrows

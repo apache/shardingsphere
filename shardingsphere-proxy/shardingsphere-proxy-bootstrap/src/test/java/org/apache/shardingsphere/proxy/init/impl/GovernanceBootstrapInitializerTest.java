@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.init.impl;
 
-import javafx.util.Pair;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.governance.context.schema.GovernanceSchemaContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
@@ -110,8 +110,8 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     @Test
     public void assertDecorateSchemaContexts() {
         Pair<SchemaContexts, SchemaContexts> schemaContextsSchemaContextPair = makeDecoratedSchemaContexts();
-        SchemaContexts schemaContexts = schemaContextsSchemaContextPair.getKey();
-        SchemaContexts actualSchemaContexts = schemaContextsSchemaContextPair.getValue();
+        SchemaContexts schemaContexts = schemaContextsSchemaContextPair.getLeft();
+        SchemaContexts actualSchemaContexts = schemaContextsSchemaContextPair.getRight();
         assertNotNull(actualSchemaContexts);
         assertThat(actualSchemaContexts, instanceOf(GovernanceSchemaContexts.class));
         assertThat(actualSchemaContexts.getDatabaseType(), is(schemaContexts.getDatabaseType()));
@@ -125,8 +125,8 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     @Test
     public void assertDecorateTransactionContexts() {
         Pair<TransactionContexts, TransactionContexts> transactionContextsPair = makeDecoratedTransactionContexts();
-        TransactionContexts transactionContexts = transactionContextsPair.getKey();
-        TransactionContexts actualTransactionContexts = transactionContextsPair.getValue();
+        TransactionContexts transactionContexts = transactionContextsPair.getLeft();
+        TransactionContexts actualTransactionContexts = transactionContextsPair.getRight();
         assertNotNull(actualTransactionContexts);
         assertThat(actualTransactionContexts, instanceOf(GovernanceTransactionContexts.class));
         assertThat(actualTransactionContexts.getEngines(), is(transactionContexts.getEngines()));

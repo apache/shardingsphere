@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.init.impl;
 
-import javafx.util.Pair;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
@@ -177,13 +177,13 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     @Test
     public void assertDecorateSchemaContexts() {
         Pair<SchemaContexts, SchemaContexts> schemaContextsSchemaContextPair = makeDecoratedSchemaContexts();
-        assertThat(schemaContextsSchemaContextPair.getValue(), is(schemaContextsSchemaContextPair.getKey()));
+        assertThat(schemaContextsSchemaContextPair.getRight(), is(schemaContextsSchemaContextPair.getLeft()));
     }
     
     @Test
     public void assertDecorateTransactionContexts() {
         Pair<TransactionContexts, TransactionContexts> transactionContextsPair = makeDecoratedTransactionContexts();
-        assertThat(transactionContextsPair.getValue(), is(transactionContextsPair.getKey()));
+        assertThat(transactionContextsPair.getRight(), is(transactionContextsPair.getLeft()));
     }
     
     protected void doEnvironmentPrepare() {

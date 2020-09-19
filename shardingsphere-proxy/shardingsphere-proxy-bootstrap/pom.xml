@@ -88,6 +88,13 @@
             <artifactId>shardingsphere-tracing-opentracing</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.10</version>
+            <scope>test</scope>
+        </dependency>
         
         <dependency>
             <groupId>com.zaxxer</groupId>
