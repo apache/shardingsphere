@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.mysql.command.query.util;
+package org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
