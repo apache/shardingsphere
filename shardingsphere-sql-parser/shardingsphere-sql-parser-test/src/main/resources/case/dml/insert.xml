@@ -100,6 +100,26 @@
         </values>
     </insert>
 
+    <insert sql-case-id="insert_with_columnname_uuid" parameters="1, 1">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="28">
+            <column name="id" start-index="21" stop-index="22" />
+            <column name="uuid" start-index="24" stop-index="27" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="38" stop-index="38"/>
+                    <literal-expression value="1" start-index="38" stop-index="38" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" start-index="41" stop-index="41"/>
+                    <literal-expression value="1" start-index="41" stop-index="41" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
     <insert sql-case-id="insert_with_multiple_values">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="46">

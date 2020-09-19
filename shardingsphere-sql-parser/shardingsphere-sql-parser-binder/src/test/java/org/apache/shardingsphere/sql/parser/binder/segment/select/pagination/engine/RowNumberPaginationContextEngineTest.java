@@ -89,8 +89,8 @@ public final class RowNumberPaginationContextEngineTest {
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
         AndPredicate andPredicate = new AndPredicate();
-        BinaryOperationExpression predicateSegment = new BinaryOperationExpression();
-        predicateSegment.setLeft(new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME)));
+        ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME));
+        BinaryOperationExpression predicateSegment = new BinaryOperationExpression(0, 0, left, null, null, null);
         andPredicate.getPredicates().addAll(Collections.singleton(predicateSegment));
         PaginationContext paginationContext = new RowNumberPaginationContextEngine().createPaginationContext(null, projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
@@ -101,11 +101,9 @@ public final class RowNumberPaginationContextEngineTest {
     public void assertCreatePaginationContextWhenParameterMarkerRowNumberValueSegment() {
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
-    
-        BinaryOperationExpression expression = new BinaryOperationExpression();
-        expression.setOperator(">");
-        expression.setRight(new ParameterMarkerExpressionSegment(0, 10, 0));
-        expression.setLeft(new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME)));
+        ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME));
+        ParameterMarkerExpressionSegment right = new ParameterMarkerExpressionSegment(0, 10, 0);
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, ">", null);
         PaginationContext paginationContext = new RowNumberPaginationContextEngine()
                 .createPaginationContext(expression, projectionsContext, Collections.singletonList(1));
         Optional<PaginationValueSegment> offSetSegmentPaginationValue = paginationContext.getOffsetSegment();
@@ -117,10 +115,9 @@ public final class RowNumberPaginationContextEngineTest {
     private void assertCreatePaginationContextWhenRowNumberAliasPresentAndRowNumberPredicatedNotEmptyWithGivenOperator(final String operator) {
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
-        BinaryOperationExpression expression = new BinaryOperationExpression();
-        expression.setOperator(operator);
-        expression.setRight(new LiteralExpressionSegment(0, 10, 100));
-        expression.setLeft(new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME)));
+        ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME));
+        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 10, 100);
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, operator, null);
         PaginationContext paginationContext = new RowNumberPaginationContextEngine().createPaginationContext(expression, projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         Optional<PaginationValueSegment> paginationValueSegmentOptional = paginationContext.getRowCountSegment();
@@ -136,11 +133,9 @@ public final class RowNumberPaginationContextEngineTest {
     private void assertCreatePaginationContextWhenOffsetSegmentInstanceOfNumberLiteralRowNumberValueSegmentWithGivenOperator(final String operator) {
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
-        BinaryOperationExpression expression = new BinaryOperationExpression();
-        expression.setOperator(operator);
-        expression.setRight(new LiteralExpressionSegment(0, 10, 100));
-        expression.setLeft(new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME)));
-        
+        ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME));
+        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 10, 100);
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, operator, null);
         PaginationContext rowNumberPaginationContextEngine = new RowNumberPaginationContextEngine()
                 .createPaginationContext(expression, projectionsContext, Collections.emptyList());
         Optional<PaginationValueSegment> paginationValueSegment = rowNumberPaginationContextEngine.getOffsetSegment();

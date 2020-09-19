@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -52,27 +50,10 @@ public final class SQLServerInsertStatementTest {
     }
 
     @Test
-    public void assertNotUseDefaultColumnsWithSetAssignment() {
-        InsertStatement insertStatement = new SQLServerInsertStatement();
-        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
-        insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.emptyList()));
-        assertFalse(insertStatement.useDefaultColumns());
-    }
-
-    @Test
     public void assertGetColumnNamesForInsertColumns() {
         InsertStatement insertStatement = new SQLServerInsertStatement();
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
-        assertThat(insertStatement.getColumnNames().size(), is(1));
-        assertThat(insertStatement.getColumnNames().iterator().next(), is("col"));
-    }
-
-    @Test
-    public void assertGetColumnNamesForSetAssignment() {
-        InsertStatement insertStatement = new SQLServerInsertStatement();
-        insertStatement.setSetAssignment(
-                new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
         assertThat(insertStatement.getColumnNames().size(), is(1));
         assertThat(insertStatement.getColumnNames().iterator().next(), is("col"));
     }
@@ -86,25 +67,9 @@ public final class SQLServerInsertStatementTest {
     }
 
     @Test
-    public void assertGetValueListCountWithSetAssignment() {
-        InsertStatement insertStatement = new SQLServerInsertStatement();
-        insertStatement.setSetAssignment(
-                new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
-        assertThat(insertStatement.getValueListCount(), is(1));
-    }
-
-    @Test
     public void assertGetValueCountForPerGroupWithValues() {
         InsertStatement insertStatement = new SQLServerInsertStatement();
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))));
-        assertThat(insertStatement.getValueCountForPerGroup(), is(1));
-    }
-
-    @Test
-    public void assertGetValueCountForPerGroupWithSetAssignment() {
-        InsertStatement insertStatement = new SQLServerInsertStatement();
-        insertStatement.setSetAssignment(
-                new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
         assertThat(insertStatement.getValueCountForPerGroup(), is(1));
     }
 
@@ -118,16 +83,6 @@ public final class SQLServerInsertStatementTest {
         InsertStatement insertStatement = new SQLServerInsertStatement();
         ExpressionSegment valueSegment = new LiteralExpressionSegment(0, 0, 1);
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(valueSegment)));
-        assertThat(insertStatement.getAllValueExpressions().size(), is(1));
-        assertThat(insertStatement.getAllValueExpressions().iterator().next().size(), is(1));
-        assertThat(insertStatement.getAllValueExpressions().iterator().next().iterator().next(), is(valueSegment));
-    }
-
-    @Test
-    public void assertGetAllValueExpressionsWithSetAssignment() {
-        InsertStatement insertStatement = new SQLServerInsertStatement();
-        ExpressionSegment valueSegment = new LiteralExpressionSegment(0, 0, 1);
-        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("col")), valueSegment))));
         assertThat(insertStatement.getAllValueExpressions().size(), is(1));
         assertThat(insertStatement.getAllValueExpressions().iterator().next().size(), is(1));
         assertThat(insertStatement.getAllValueExpressions().iterator().next().iterator().next(), is(valueSegment));

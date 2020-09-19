@@ -71,4 +71,5 @@
     <sql-case id="insert_without_columns_with_default_values" value="INSERT INTO t_order DEFAULT VALUES" db-types="SQLServer" />
     <sql-case id="insert_with_top" value="INSERT TOP(10) t_order (order_id, user_id) SELECT order_id, user_id FROM t_order" db-types="SQLServer" />
     <sql-case id="insert_with_top_percent" value="INSERT TOP(10) PERCENT t_order (order_id, user_id) SELECT order_id, user_id FROM t_order" db-types="SQLServer" />
+    <sql-case id="insert_with_columnname_uuid" value="insert into t_order (id,uuid) values (?, ?)" db-types="PostgreSQL" />
 </sql-cases>

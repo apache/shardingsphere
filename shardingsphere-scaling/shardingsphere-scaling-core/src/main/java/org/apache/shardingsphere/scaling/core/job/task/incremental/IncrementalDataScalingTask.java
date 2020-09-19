@@ -57,7 +57,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     
     private Dumper dumper;
     
-    private long delayMillisecond;
+    private long delayMillisecond = Long.MAX_VALUE;
     
     @SuppressWarnings("unchecked")
     public IncrementalDataScalingTask(final int concurrency, final DumperConfiguration dumperConfiguration, final ImporterConfiguration importerConfiguration) {
@@ -134,5 +134,4 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     public SyncProgress getProgress() {
         return new IncrementalDataSyncTaskProgress(getTaskId(), delayMillisecond, getPositionManager().getPosition());
     }
-    
 }

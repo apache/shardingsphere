@@ -38,6 +38,6 @@ public final class DataSourceCheckerCheckerFactory {
     @SneakyThrows(ReflectiveOperationException.class)
     public static DataSourceChecker newInstanceDataSourceChecker(final String databaseType) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getCheckerClass().getConstructor().newInstance();
+        return scalingEntry.getDataSourceCheckerClass().getConstructor().newInstance();
     }
 }

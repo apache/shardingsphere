@@ -18,16 +18,18 @@
 package org.apache.shardingsphere.scaling.core.job;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
+import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -35,7 +37,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Getter
 @Setter
-@RequiredArgsConstructor
 public final class ShardingScalingJob {
     
     private static final AtomicInteger ID_AUTO_INCREASE_GENERATOR = new AtomicInteger();
@@ -48,9 +49,19 @@ public final class ShardingScalingJob {
     
     private final transient List<ScalingTask<IncrementalPosition>> incrementalDataTasks = new LinkedList<>();
     
-    private final String jobName;
+    private final transient ScalingConfiguration scalingConfiguration;
     
-    private final int shardingItem;
+    private transient DataConsistencyChecker dataConsistencyChecker;
+    
+    private String jobName = "ScalingJob";
+    
+    private int shardingItem;
     
     private String status = SyncTaskControlStatus.RUNNING.name();
+    
+    public ShardingScalingJob(final ScalingConfiguration scalingConfiguration) {
+        this.scalingConfiguration = scalingConfiguration;
+        jobName = Optional.ofNullable(scalingConfiguration.getJobConfiguration().getJobName()).orElse(jobName);
+        shardingItem = scalingConfiguration.getJobConfiguration().getShardingItem();
+    }
 }

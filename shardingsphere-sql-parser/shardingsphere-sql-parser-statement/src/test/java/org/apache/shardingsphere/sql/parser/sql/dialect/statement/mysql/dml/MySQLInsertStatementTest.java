@@ -52,7 +52,7 @@ public final class MySQLInsertStatementTest {
 
     @Test
     public void assertNotUseDefaultColumnsWithSetAssignment() {
-        InsertStatement insertStatement = new MySQLInsertStatement();
+        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.emptyList()));
         assertFalse(insertStatement.useDefaultColumns());
@@ -69,7 +69,7 @@ public final class MySQLInsertStatementTest {
 
     @Test
     public void assertGetColumnNamesForSetAssignment() {
-        InsertStatement insertStatement = new MySQLInsertStatement();
+        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setSetAssignment(
                 new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
         assertThat(insertStatement.getColumnNames().size(), is(1));
@@ -86,7 +86,7 @@ public final class MySQLInsertStatementTest {
 
     @Test
     public void assertGetValueListCountWithSetAssignment() {
-        InsertStatement insertStatement = new MySQLInsertStatement();
+        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setSetAssignment(
                 new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
         assertThat(insertStatement.getValueListCount(), is(1));
@@ -101,7 +101,7 @@ public final class MySQLInsertStatementTest {
 
     @Test
     public void assertGetValueCountForPerGroupWithSetAssignment() {
-        InsertStatement insertStatement = new MySQLInsertStatement();
+        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setSetAssignment(
                 new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
         assertThat(insertStatement.getValueCountForPerGroup(), is(1));
@@ -124,7 +124,7 @@ public final class MySQLInsertStatementTest {
 
     @Test
     public void assertGetAllValueExpressionsWithSetAssignment() {
-        InsertStatement insertStatement = new MySQLInsertStatement();
+        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         ExpressionSegment valueSegment = new LiteralExpressionSegment(0, 0, 1);
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("col")), valueSegment))));
         assertThat(insertStatement.getAllValueExpressions().size(), is(1));
