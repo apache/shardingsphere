@@ -32,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.text.query.QueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandlerFactory;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngineFactory;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -40,15 +40,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
-import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
  * Text protocol backend handler factory.
@@ -78,31 +73,12 @@ public final class TextProtocolBackendHandlerFactory {
             return new RDLBackendHandler(backendConnection, sqlStatement);
         }
         if (sqlStatement instanceof TCLStatement) {
-            return createTCLBackendHandler(sql, (TCLStatement) sqlStatement, backendConnection);
+            return TransactionBackendHandlerFactory.newInstance(sql, (TCLStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof DALStatement) {
             return createDALBackendHandler(sql, (DALStatement) sqlStatement, backendConnection);
         }
         return new QueryBackendHandler(sql, sqlStatement, backendConnection);
-    }
-    
-    private static TextProtocolBackendHandler createTCLBackendHandler(final String sql, final TCLStatement tclStatement, final BackendConnection backendConnection) {
-        if (tclStatement instanceof BeginTransactionStatement) {
-            return new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
-        }
-        if (tclStatement instanceof SetAutoCommitStatement) {
-            if (((SetAutoCommitStatement) tclStatement).isAutoCommit()) {
-                return backendConnection.getTransactionStatus().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
-            }
-            return new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
-        }
-        if (tclStatement instanceof CommitStatement) {
-            return new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection);
-        }
-        if (tclStatement instanceof RollbackStatement) {
-            return new TransactionBackendHandler(TransactionOperationType.ROLLBACK, backendConnection);
-        }
-        return new BroadcastBackendHandler(sql, tclStatement, backendConnection);
     }
     
     private static TextProtocolBackendHandler createDALBackendHandler(final String sql, final DALStatement dalStatement, final BackendConnection backendConnection) {
