@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.fetchsize;
 
 import org.apache.shardingsphere.infra.spi.type.TypedSPI;
 

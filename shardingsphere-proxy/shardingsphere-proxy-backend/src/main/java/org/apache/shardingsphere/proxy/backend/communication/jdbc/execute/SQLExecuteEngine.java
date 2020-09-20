@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
 
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.LogicSQLContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 
 import java.sql.SQLException;
@@ -29,13 +28,11 @@ import java.sql.SQLException;
 public interface SQLExecuteEngine {
     
     /**
-     * Generate execution context.
-     *
-     * @param logicSQLContext logic SQL context
-     * @return execution context
-     * @throws SQLException SQL exception
+     * Check execute prerequisites.
+     * 
+     * @param executionContext execution context
      */
-    ExecutionContext generateExecutionContext(LogicSQLContext logicSQLContext) throws SQLException;
+    void checkExecutePrerequisites(ExecutionContext executionContext);
     
     /**
      * Execute SQL.
