@@ -56,26 +56,26 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     private final SQLStatement sqlStatement;
     
     @Override
-    public ExecutionContext generateExecutionContext(final String sql) {
+    public ExecutionContext generateExecutionContext(final LogicSQLContext logicSQLContext) {
         Collection<ShardingSphereRule> rules = schema.getSchema().getRules();
         if (rules.isEmpty()) {
-            return createExecutionContext(sql);
+            return createExecutionContext(logicSQLContext);
         }
         DataNodeRouter router = new DataNodeRouter(schema.getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules);
-        RouteContext routeContext = router.route(sqlStatement, sql, Collections.emptyList());
+        RouteContext routeContext = router.route(sqlStatement, logicSQLContext.getSql(), Collections.emptyList());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(schema.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
-                PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).rewrite(sql, Collections.emptyList(), routeContext);
+                PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).rewrite(logicSQLContext.getSql(), Collections.emptyList(), routeContext);
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(schema.getSchema().getMetaData(), sqlRewriteResult, sqlStatementContext);
         return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
     }
     
     @SuppressWarnings("unchecked")
-    private ExecutionContext createExecutionContext(final String sql) {
+    private ExecutionContext createExecutionContext(final LogicSQLContext logicSQLContext) {
         String dataSourceName = schema.getSchema().getDataSources().isEmpty() ? "" : schema.getSchema().getDataSources().keySet().iterator().next();
         SQLStatementContext<?> sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         List<Object> parameters = Collections.emptyList();
-        ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, new SQLUnit(sql, parameters));
+        ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, new SQLUnit(logicSQLContext.getSql(), parameters));
         RouteContext routeContext = new RouteContext(sqlStatementContext, parameters, new RouteResult());
         return new ExecutionContext(sqlStatementContext, executionUnit, routeContext);
     }

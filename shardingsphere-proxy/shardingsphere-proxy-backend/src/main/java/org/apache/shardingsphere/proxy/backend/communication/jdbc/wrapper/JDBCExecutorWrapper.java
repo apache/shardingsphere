@@ -33,10 +33,10 @@ public interface JDBCExecutorWrapper {
     /**
      * Generate execution context.
      * 
-     * @param sql SQL
+     * @param logicSQLContext logic SQL context
      * @return execution context
      */
-    ExecutionContext generateExecutionContext(String sql);
+    ExecutionContext generateExecutionContext(LogicSQLContext logicSQLContext);
     
     /**
      * Get execute group engine.

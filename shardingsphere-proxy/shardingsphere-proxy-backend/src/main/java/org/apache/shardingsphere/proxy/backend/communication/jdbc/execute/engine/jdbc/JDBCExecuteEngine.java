@@ -40,6 +40,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.LogicSQLContext;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
@@ -77,7 +78,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     @Override
     public ExecutionContext generateExecutionContext(final String sql) {
-        return jdbcExecutorWrapper.generateExecutionContext(sql);
+        return jdbcExecutorWrapper.generateExecutionContext(new LogicSQLContext(null, sql, null, null));
     }
     
     @Override
