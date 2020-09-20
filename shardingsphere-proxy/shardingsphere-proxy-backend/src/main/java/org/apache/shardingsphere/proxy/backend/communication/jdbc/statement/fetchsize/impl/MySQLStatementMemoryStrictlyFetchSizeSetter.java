@@ -15,31 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.fetchsize.impl;
 
-import lombok.SneakyThrows;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.fetchsize.StatementMemoryStrictlyFetchSizeSetter;
 
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetterTest {
+/**
+ * Statement memory strictly fetch size setter for MySQL.
+ */
+@Getter
+@Setter
+public final class MySQLStatementMemoryStrictlyFetchSizeSetter implements StatementMemoryStrictlyFetchSizeSetter {
     
-    @SneakyThrows
-    @Test
-    public void assertSetFetchSize() {
-        Statement statement = mock(Statement.class);
-        new PostgreSQLStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement);
-        verify(statement, times(1)).setFetchSize(1);
+    private Properties props;
+    
+    @Override
+    public void setFetchSize(final Statement statement) throws SQLException {
+        statement.setFetchSize(Integer.MIN_VALUE);
     }
     
-    @Test
-    public void assertGetType() {
-        assertThat(new PostgreSQLStatementMemoryStrictlyFetchSizeSetter().getType(), is("PostgreSQL"));
+    @Override
+    public String getType() {
+        return "MySQL";
     }
 }

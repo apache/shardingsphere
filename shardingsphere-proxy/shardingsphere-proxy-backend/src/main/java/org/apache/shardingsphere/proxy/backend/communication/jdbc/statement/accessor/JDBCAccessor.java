@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.kernel;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor;
 
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementExecuteGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -25,27 +25,31 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
- * Proxy kernel processor for statement.
+ * JDBC accessor.
  */
-public final class StatementProxyKernelProcessor extends ProxyKernelProcessor {
+public interface JDBCAccessor {
     
-    @Override
-    protected List<Object> cloneParameters(final List<Object> parameters) {
-        return Collections.emptyList();
-    }
+    /**
+     * Get execute group engine.
+     *
+     * @param backendConnection backend connection
+     * @param maxConnectionsSizePerQuery max connections size per query
+     * @param option statement option
+     * @param rules rules
+     * @return execute group engine
+     */
+    ExecuteGroupEngine<?> getExecuteGroupEngine(BackendConnection backendConnection, int maxConnectionsSizePerQuery, StatementOption option, Collection<ShardingSphereRule> rules);
     
-    @Override
-    public StatementExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, 
-                                                             final int maxConnectionsSizePerQuery, final StatementOption option, final Collection<ShardingSphereRule> rules) {
-        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, rules);
-    }
-    
-    @Override
-    public boolean execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
-        return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
-    }
+    /**
+     * Execute SQL.
+     *
+     * @param statement statement
+     * @param sql SQL to be executed
+     * @param isReturnGeneratedKeys is return generated keys
+     * @return {@code true} is for query, {@code false} is for update
+     * @throws SQLException SQL exception
+     */
+    boolean execute(Statement statement, String sql, boolean isReturnGeneratedKeys) throws SQLException;
 }

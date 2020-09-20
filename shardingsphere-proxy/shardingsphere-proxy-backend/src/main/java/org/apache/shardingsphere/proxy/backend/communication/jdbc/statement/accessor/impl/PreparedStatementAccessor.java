@@ -15,33 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.kernel;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.impl;
 
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.PreparedStatementExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
- * Proxy kernel processor for prepared statement.
+ * Prepared statement accessor.
  */
-public final class PreparedStatementProxyKernelProcessor extends ProxyKernelProcessor {
+public final class PreparedStatementAccessor implements JDBCAccessor {
     
     @Override
-    protected List<Object> cloneParameters(final List<Object> parameters) {
-        return new ArrayList<>(parameters);
-    }
-    
-    @Override
-    public ExecuteGroupEngine<?> getExecuteGroupEngine(final BackendConnection backendConnection, 
+    public ExecuteGroupEngine<?> getExecuteGroupEngine(final BackendConnection backendConnection,
                                                        final int maxConnectionsSizePerQuery, final StatementOption option, final Collection<ShardingSphereRule> rules) {
         return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, rules);
     }
