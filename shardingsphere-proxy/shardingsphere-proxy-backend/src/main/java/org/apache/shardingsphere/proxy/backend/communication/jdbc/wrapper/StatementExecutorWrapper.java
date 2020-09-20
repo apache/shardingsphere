@@ -51,28 +51,29 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private static final ProxyContext PROXY_SCHEMA_CONTEXTS = ProxyContext.getInstance();
     
-    private final SchemaContext schema;
+    private final SchemaContext schemaContext;
     
     private final SQLStatement sqlStatement;
     
     @Override
     public ExecutionContext generateExecutionContext(final LogicSQLContext logicSQLContext) {
-        Collection<ShardingSphereRule> rules = schema.getSchema().getRules();
+        Collection<ShardingSphereRule> rules = logicSQLContext.getSchemaContext().getSchema().getRules();
         if (rules.isEmpty()) {
             return createExecutionContext(logicSQLContext);
         }
-        DataNodeRouter router = new DataNodeRouter(schema.getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules);
+        DataNodeRouter router = new DataNodeRouter(logicSQLContext.getSchemaContext().getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules);
         RouteContext routeContext = router.route(sqlStatement, logicSQLContext.getSql(), Collections.emptyList());
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(schema.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
                 PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).rewrite(logicSQLContext.getSql(), Collections.emptyList(), routeContext);
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
-        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(schema.getSchema().getMetaData(), sqlRewriteResult, sqlStatementContext);
+        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(logicSQLContext.getSchemaContext().getSchema().getMetaData(), sqlRewriteResult, sqlStatementContext);
         return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
     }
     
     @SuppressWarnings("unchecked")
     private ExecutionContext createExecutionContext(final LogicSQLContext logicSQLContext) {
-        String dataSourceName = schema.getSchema().getDataSources().isEmpty() ? "" : schema.getSchema().getDataSources().keySet().iterator().next();
+        String dataSourceName = logicSQLContext.getSchemaContext().getSchema().getDataSources().isEmpty()
+                ? "" : logicSQLContext.getSchemaContext().getSchema().getDataSources().keySet().iterator().next();
         SQLStatementContext<?> sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         List<Object> parameters = Collections.emptyList();
         ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, new SQLUnit(logicSQLContext.getSql(), parameters));
@@ -82,7 +83,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     @Override
     public StatementExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, final int maxConnectionsSizePerQuery, final StatementOption option) {
-        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
+        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schemaContext.getSchema().getRules());
     }
     
     @Override

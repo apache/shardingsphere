@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.LogicSQLContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
@@ -65,7 +66,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private final SQLExecuteEngine executeEngine;
     
-    private final SchemaContext schema;
+    private final SchemaContext schemaContext;
     
     private BackendResponse response;
     
@@ -75,12 +76,12 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         this.sql = sql;
         connection = backendConnection;
         executeEngine = sqlExecuteEngine;
-        schema = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
+        schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
     }
     
     @Override
     public BackendResponse execute() throws SQLException {
-        ExecutionContext executionContext = executeEngine.generateExecutionContext(sql);
+        ExecutionContext executionContext = executeEngine.generateExecutionContext(new LogicSQLContext(schemaContext, sql, null, null));
         logSQL(executionContext);
         return doExecute(executionContext);
     }
@@ -122,16 +123,16 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(schema.getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                    schema.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
-            ShardingSphereEventBus.getInstance().post(new MetaDataPersistEvent(schema.getName(), schema.getSchema().getMetaData().getRuleSchemaMetaData()));
+            refreshStrategy.get().refreshMetaData(schemaContext.getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
+                    schemaContext.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
+            ShardingSphereEventBus.getInstance().post(new MetaDataPersistEvent(schemaContext.getName(), schemaContext.getSchema().getMetaData().getRuleSchemaMetaData()));
         }
     }
     
     private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(schema.getSchema().getRules());
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(schemaContext.getSchema().getRules());
         return loader.load(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                schema.getSchema().getDataSources(), tableName, ProxyContext.getInstance().getSchemaContexts().getProps());
+                schemaContext.getSchema().getDataSources(), tableName, ProxyContext.getInstance().getSchemaContexts().getProps());
     }
     
     private BackendResponse merge(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
@@ -150,13 +151,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = schema.getSchema().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = 
+                schemaContext.getSchema().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         return dataNodeRoutedRule.isPresent() && dataNodeRoutedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                schema.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), ProxyContext.getInstance().getSchemaContexts().getProps(), schema.getSchema().getRules());
+                schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), 
+                ProxyContext.getInstance().getSchemaContexts().getProps(), schemaContext.getSchema().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     

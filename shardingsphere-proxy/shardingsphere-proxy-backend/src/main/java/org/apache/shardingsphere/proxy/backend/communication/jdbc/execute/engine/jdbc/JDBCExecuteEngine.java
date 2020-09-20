@@ -77,8 +77,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     @Override
-    public ExecutionContext generateExecutionContext(final String sql) {
-        return jdbcExecutorWrapper.generateExecutionContext(new LogicSQLContext(null, sql, null, null));
+    public ExecutionContext generateExecutionContext(final LogicSQLContext logicSQLContext) {
+        return jdbcExecutorWrapper.generateExecutionContext(logicSQLContext);
     }
     
     @Override
