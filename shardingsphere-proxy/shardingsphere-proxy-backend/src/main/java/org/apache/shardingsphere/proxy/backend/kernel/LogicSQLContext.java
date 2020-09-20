@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper;
+package org.apache.shardingsphere.proxy.backend.kernel;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

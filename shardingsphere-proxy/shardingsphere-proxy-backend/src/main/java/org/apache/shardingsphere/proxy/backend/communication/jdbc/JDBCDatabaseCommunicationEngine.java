@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.LogicSQLContext;
+import org.apache.shardingsphere.proxy.backend.kernel.LogicSQLContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;

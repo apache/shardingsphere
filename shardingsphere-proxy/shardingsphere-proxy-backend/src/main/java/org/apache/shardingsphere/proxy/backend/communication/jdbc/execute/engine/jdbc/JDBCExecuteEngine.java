@@ -39,8 +39,8 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.LogicSQLContext;
+import org.apache.shardingsphere.proxy.backend.kernel.ProxyKernelProcessor;
+import org.apache.shardingsphere.proxy.backend.kernel.LogicSQLContext;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
@@ -63,22 +63,22 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     private final BackendConnection backendConnection;
     
     @Getter
-    private final JDBCExecutorWrapper jdbcExecutorWrapper;
+    private final ProxyKernelProcessor proxyKernelProcessor;
     
     private final SQLExecutor sqlExecutor;
     
     private final RawProxyExecutor rawExecutor;
     
-    public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
+    public JDBCExecuteEngine(final BackendConnection backendConnection, final ProxyKernelProcessor proxyKernelProcessor) {
         this.backendConnection = backendConnection;
-        this.jdbcExecutorWrapper = jdbcExecutorWrapper;
+        this.proxyKernelProcessor = proxyKernelProcessor;
         sqlExecutor = new SQLExecutor(BackendExecutorContext.getInstance().getExecutorKernel(), backendConnection.isSerialExecute());
         rawExecutor = new RawProxyExecutor(BackendExecutorContext.getInstance().getExecutorKernel(), backendConnection.isSerialExecute());
     }
     
     @Override
     public ExecutionContext generateExecutionContext(final LogicSQLContext logicSQLContext) {
-        return jdbcExecutorWrapper.generateExecutionContext(logicSQLContext);
+        return proxyKernelProcessor.generateExecutionContext(logicSQLContext);
     }
     
     @Override
@@ -111,15 +111,15 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
                                                                  final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getSchemaContexts().getDatabaseType();
         return sqlExecutor.execute(generateInputGroups(executionContext.getExecutionUnits(), maxConnectionsSizePerQuery, isReturnGeneratedKeys, executionContext.getRouteContext()),
-                new ProxySQLExecutorCallback(databaseType, executionContext.getSqlStatementContext(), backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
-                new ProxySQLExecutorCallback(databaseType, executionContext.getSqlStatementContext(), backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
+                new ProxySQLExecutorCallback(databaseType, executionContext.getSqlStatementContext(), backendConnection, proxyKernelProcessor, isExceptionThrown, isReturnGeneratedKeys, true),
+                new ProxySQLExecutorCallback(databaseType, executionContext.getSqlStatementContext(), backendConnection, proxyKernelProcessor, isExceptionThrown, isReturnGeneratedKeys, false));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<InputGroup<StatementExecuteUnit>> generateInputGroups(final Collection<ExecutionUnit> executionUnits, final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys,
                                                                              final RouteContext routeContext) throws SQLException {
         Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName()).getSchema().getRules();
-        ExecuteGroupEngine executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine(backendConnection, maxConnectionsSizePerQuery, new StatementOption(isReturnGeneratedKeys), rules);
+        ExecuteGroupEngine executeGroupEngine = proxyKernelProcessor.getExecuteGroupEngine(backendConnection, maxConnectionsSizePerQuery, new StatementOption(isReturnGeneratedKeys), rules);
         return (Collection<InputGroup<StatementExecuteUnit>>) executeGroupEngine.generate(routeContext, executionUnits);
     }
     

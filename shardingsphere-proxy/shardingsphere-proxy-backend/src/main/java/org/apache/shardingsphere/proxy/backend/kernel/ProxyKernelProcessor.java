@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper;
+package org.apache.shardingsphere.proxy.backend.kernel;
 
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
@@ -40,9 +40,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * JDBC Executor wrapper.
+ * Proxy kernel processor.
  */
-public abstract class JDBCExecutorWrapper {
+public abstract class ProxyKernelProcessor {
     
     /**
      * Generate execution context.

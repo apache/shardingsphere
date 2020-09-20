@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper;
+package org.apache.shardingsphere.proxy.backend.kernel;
 
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.PreparedStatementExecuteGroupEngine;
@@ -31,9 +31,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Executor wrapper for prepared statement.
+ * Proxy kernel processor for prepared statement.
  */
-public final class PreparedStatementExecutorWrapper extends JDBCExecutorWrapper {
+public final class PreparedStatementProxyKernelProcessor extends ProxyKernelProcessor {
     
     @Override
     protected List<Object> cloneParameters(final List<Object> parameters) {

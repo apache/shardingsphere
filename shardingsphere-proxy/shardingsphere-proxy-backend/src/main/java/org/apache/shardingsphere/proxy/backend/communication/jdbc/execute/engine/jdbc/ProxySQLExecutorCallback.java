@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.impl
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.MemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
+import org.apache.shardingsphere.proxy.backend.kernel.ProxyKernelProcessor;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
@@ -51,7 +51,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     
     private final BackendConnection backendConnection;
     
-    private final JDBCExecutorWrapper jdbcExecutorWrapper;
+    private final ProxyKernelProcessor proxyKernelProcessor;
 
     private final boolean isReturnGeneratedKeys;
     
@@ -60,12 +60,12 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     private boolean hasMetaData;
 
     public ProxySQLExecutorCallback(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, 
-                                    final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper,
+                                    final BackendConnection backendConnection, final ProxyKernelProcessor proxyKernelProcessor,
                                     final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
         super(databaseType, isExceptionThrown);
         this.sqlStatementContext = sqlStatementContext;
         this.backendConnection = backendConnection;
-        this.jdbcExecutorWrapper = jdbcExecutorWrapper;
+        this.proxyKernelProcessor = proxyKernelProcessor;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         this.fetchMetaData = fetchMetaData;
     }
@@ -81,7 +81,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     
     private ExecuteResult executeSQL(final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean withMetadata) throws SQLException {
         backendConnection.add(statement);
-        if (jdbcExecutorWrapper.execute(statement, sql, isReturnGeneratedKeys)) {
+        if (proxyKernelProcessor.execute(statement, sql, isReturnGeneratedKeys)) {
             ResultSet resultSet = statement.getResultSet();
             backendConnection.add(resultSet);
             return new ExecuteQueryResult(withMetadata ? getQueryHeaders(sqlStatementContext, resultSet.getMetaData()) : null, createQueryResult(resultSet, connectionMode));
