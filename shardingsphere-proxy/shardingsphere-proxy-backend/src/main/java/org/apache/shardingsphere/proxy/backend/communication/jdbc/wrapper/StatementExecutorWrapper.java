@@ -17,56 +17,25 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper;
 
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
-import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
-import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
-import org.apache.shardingsphere.infra.route.DataNodeRouter;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Executor wrapper for statement.
  */
-public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
+public final class StatementExecutorWrapper extends JDBCExecutorWrapper {
     
     @Override
-    public ExecutionContext generateExecutionContext(final LogicSQLContext logicSQLContext) {
-        Collection<ShardingSphereRule> rules = logicSQLContext.getSchemaContext().getSchema().getRules();
-        if (rules.isEmpty()) {
-            return createExecutionContext(logicSQLContext);
-        }
-        DataNodeRouter router = new DataNodeRouter(logicSQLContext.getSchemaContext().getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getProps(), rules);
-        RouteContext routeContext = router.route(logicSQLContext.getSqlStatement(), logicSQLContext.getSql(), logicSQLContext.getParameters());
-        SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
-                ProxyContext.getInstance().getSchemaContexts().getProps(), rules);
-        SQLRewriteResult sqlRewriteResult = rewriteEntry.rewrite(logicSQLContext.getSql(), logicSQLContext.getParameters(), routeContext);
-        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
-        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(logicSQLContext.getSchemaContext().getSchema().getMetaData(), sqlRewriteResult, sqlStatementContext);
-        return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private ExecutionContext createExecutionContext(final LogicSQLContext logicSQLContext) {
-        String dataSourceName = logicSQLContext.getSchemaContext().getSchema().getDataSources().isEmpty()
-                ? "" : logicSQLContext.getSchemaContext().getSchema().getDataSources().keySet().iterator().next();
-        SQLStatementContext<?> sqlStatementContext = new CommonSQLStatementContext(logicSQLContext.getSqlStatement());
-        ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, new SQLUnit(logicSQLContext.getSql(), logicSQLContext.getParameters()));
-        RouteContext routeContext = new RouteContext(sqlStatementContext, logicSQLContext.getParameters(), new RouteResult());
-        return new ExecutionContext(sqlStatementContext, executionUnit, routeContext);
+    protected List<Object> cloneParameters(final List<Object> parameters) {
+        return Collections.emptyList();
     }
     
     @Override
