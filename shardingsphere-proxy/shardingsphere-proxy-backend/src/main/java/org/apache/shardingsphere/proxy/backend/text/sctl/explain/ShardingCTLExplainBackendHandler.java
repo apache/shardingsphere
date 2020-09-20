@@ -30,9 +30,11 @@ import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -58,9 +60,10 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
             throw new InvalidShardingCTLFormatException(sql);
         }
         SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
-        StatementExecutorWrapper statementExecutorWrapper =
-                new StatementExecutorWrapper(schemaContext, schemaContext.getRuntimeContext().getSqlParserEngine().parse(explainStatement.get().getSql(), false));
-        executionUnits = statementExecutorWrapper.generateExecutionContext(new LogicSQLContext(schemaContext, explainStatement.get().getSql(), null, null)).getExecutionUnits().iterator();
+        SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(explainStatement.get().getSql(), false);
+        StatementExecutorWrapper statementExecutorWrapper = new StatementExecutorWrapper(schemaContext, sqlStatement);
+        executionUnits = statementExecutorWrapper.generateExecutionContext(
+                new LogicSQLContext(schemaContext, explainStatement.get().getSql(), Collections.emptyList(), sqlStatement)).getExecutionUnits().iterator();
         queryHeaders = new ArrayList<>(2);
         queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, 0, false, false, false, false));
         queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, 0, false, false, false, false));
