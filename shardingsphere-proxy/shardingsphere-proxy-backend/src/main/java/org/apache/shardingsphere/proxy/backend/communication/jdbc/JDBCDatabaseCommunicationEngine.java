@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.persist.MetaDataPersistEvent;
 import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.Tr
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.kernel.LogicSQLContext;
+import org.apache.shardingsphere.proxy.backend.kernel.ProxyKernelProcessor;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
@@ -55,27 +57,22 @@ import java.util.Optional;
 /**
  * Database access engine for JDBC.
  */
+@RequiredArgsConstructor
 public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicationEngine {
     
     private final LogicSQLContext logicSQLContext;
     
     private final TransactionStatus transactionStatus;
     
-    private final SQLExecuteEngine executeEngine;
+    private final SQLExecuteEngine sqlExecuteEngine;
     
     private BackendResponse response;
     
     private MergedResult mergedResult;
     
-    public JDBCDatabaseCommunicationEngine(final LogicSQLContext logicSQLContext, final TransactionStatus transactionStatus, final SQLExecuteEngine sqlExecuteEngine) {
-        this.logicSQLContext = logicSQLContext;
-        this.transactionStatus = transactionStatus;
-        executeEngine = sqlExecuteEngine;
-    }
-    
     @Override
     public BackendResponse execute() throws SQLException {
-        ExecutionContext executionContext = executeEngine.generateExecutionContext(logicSQLContext);
+        ExecutionContext executionContext = new ProxyKernelProcessor().generateExecutionContext(logicSQLContext);
         logSQL(executionContext);
         return doExecute(executionContext);
     }
@@ -94,7 +91,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (isExecuteDDLInXATransaction(sqlStatementContext.getSqlStatement())) {
             throw new TableModifyInTransactionException(getTableName(sqlStatementContext));
         }
-        response = executeEngine.execute(executionContext);
+        response = sqlExecuteEngine.execute(executionContext);
         refreshTableMetaData(executionContext.getSqlStatementContext());
         return merge(executionContext.getSqlStatementContext());
     }

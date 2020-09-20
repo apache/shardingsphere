@@ -41,8 +41,6 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExe
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.kernel.LogicSQLContext;
-import org.apache.shardingsphere.proxy.backend.kernel.ProxyKernelProcessor;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
@@ -63,8 +61,6 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final JDBCAccessor accessor;
     
-    private final ProxyKernelProcessor processor;
-    
     private final SQLExecutor sqlExecutor;
     
     private final RawProxyExecutor rawExecutor;
@@ -72,14 +68,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCAccessor accessor) {
         this.backendConnection = backendConnection;
         this.accessor = accessor;
-        processor = new ProxyKernelProcessor();
         sqlExecutor = new SQLExecutor(BackendExecutorContext.getInstance().getExecutorKernel(), backendConnection.isSerialExecute());
         rawExecutor = new RawProxyExecutor(BackendExecutorContext.getInstance().getExecutorKernel(), backendConnection.isSerialExecute());
-    }
-    
-    @Override
-    public ExecutionContext generateExecutionContext(final LogicSQLContext logicSQLContext) {
-        return processor.generateExecutionContext(logicSQLContext);
     }
     
     @Override
