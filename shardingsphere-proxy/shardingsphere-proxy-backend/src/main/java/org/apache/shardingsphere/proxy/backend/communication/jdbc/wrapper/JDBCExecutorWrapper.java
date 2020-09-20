@@ -53,7 +53,7 @@ public abstract class JDBCExecutorWrapper {
     public final ExecutionContext generateExecutionContext(final LogicSQLContext logicSQLContext) {
         Collection<ShardingSphereRule> rules = logicSQLContext.getSchemaContext().getSchema().getRules();
         if (rules.isEmpty()) {
-            return createExecutionContext(logicSQLContext);
+            return createDefaultExecutionContext(logicSQLContext);
         }
         DataNodeRouter router = new DataNodeRouter(logicSQLContext.getSchemaContext().getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getProps(), rules);
         RouteContext routeContext = router.route(logicSQLContext.getSqlStatement(), logicSQLContext.getSql(), logicSQLContext.getParameters());
@@ -66,7 +66,7 @@ public abstract class JDBCExecutorWrapper {
     }
     
     @SuppressWarnings("unchecked")
-    private ExecutionContext createExecutionContext(final LogicSQLContext logicSQLContext) {
+    private ExecutionContext createDefaultExecutionContext(final LogicSQLContext logicSQLContext) {
         String dataSourceName = logicSQLContext.getSchemaContext().getSchema().getDataSources().isEmpty()
                 ? "" : logicSQLContext.getSchemaContext().getSchema().getDataSources().keySet().iterator().next();
         SQLStatementContext<?> sqlStatementContext = new CommonSQLStatementContext(logicSQLContext.getSqlStatement());
