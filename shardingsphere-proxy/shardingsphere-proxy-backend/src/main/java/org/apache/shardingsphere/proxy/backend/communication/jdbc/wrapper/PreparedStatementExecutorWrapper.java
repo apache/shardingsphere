@@ -36,14 +36,12 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Executor wrapper for prepared statement.
@@ -55,10 +53,6 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     private final SchemaContext schemaContext;
     
-    private final SQLStatement sqlStatement;
-    
-    private final List<Object> parameters;
-    
     @Override
     public ExecutionContext generateExecutionContext(final LogicSQLContext logicSQLContext) {
         Collection<ShardingSphereRule> rules = logicSQLContext.getSchemaContext().getSchema().getRules();
@@ -66,10 +60,10 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
             return createExecutionContext(logicSQLContext);
         }
         DataNodeRouter dataNodeRouter = new DataNodeRouter(logicSQLContext.getSchemaContext().getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules);
-        RouteContext routeContext = dataNodeRouter.route(sqlStatement, logicSQLContext.getSql(), parameters);
+        RouteContext routeContext = dataNodeRouter.route(logicSQLContext.getSqlStatement(), logicSQLContext.getSql(), logicSQLContext.getParameters());
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
                 PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules);
-        SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(logicSQLContext.getSql(), new ArrayList<>(parameters), routeContext);
+        SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(logicSQLContext.getSql(), new ArrayList<>(logicSQLContext.getParameters()), routeContext);
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(logicSQLContext.getSchemaContext().getSchema().getMetaData(), sqlRewriteResult, sqlStatementContext);
         return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
@@ -79,9 +73,9 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     private ExecutionContext createExecutionContext(final LogicSQLContext logicSQLContext) {
         String dataSourceName = logicSQLContext.getSchemaContext().getSchema().getDataSources().isEmpty()
                 ? "" : logicSQLContext.getSchemaContext().getSchema().getDataSources().keySet().iterator().next();
-        SQLStatementContext<?> sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
-        ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, new SQLUnit(logicSQLContext.getSql(), parameters));
-        RouteContext routeContext = new RouteContext(sqlStatementContext, parameters, new RouteResult());
+        SQLStatementContext<?> sqlStatementContext = new CommonSQLStatementContext(logicSQLContext.getSqlStatement());
+        ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, new SQLUnit(logicSQLContext.getSql(), logicSQLContext.getParameters()));
+        RouteContext routeContext = new RouteContext(sqlStatementContext, logicSQLContext.getParameters(), new RouteResult());
         return new ExecutionContext(sqlStatementContext, executionUnit, routeContext);
     }
     
