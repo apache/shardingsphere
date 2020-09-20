@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.init.impl;
 
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.infra.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
@@ -47,8 +47,10 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class StandardBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
@@ -63,12 +65,15 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     
     @Test
     public void assertGetProxyConfiguration() {
-        super.doAssertGetProxyConfiguration();
+        YamlProxyConfiguration yamlConfig = makeProxyConfiguration();
+        ProxyConfiguration actual = getInitializer().getProxyConfiguration(yamlConfig);
+        assertNotNull(actual);
+        assertProxyConfiguration(actual);
     }
     
     private Map<String, YamlProxyRuleConfiguration> createYamlProxyRuleConfigurationMap() {
         Map<String, YamlProxyRuleConfiguration> result = new HashMap<>(1, 1);
-        result.put(PROXY_RULE_KEY, createYamlProxyRuleConfiguration());
+        result.put("logic-db", createYamlProxyRuleConfiguration());
         return result;
     }
     
@@ -79,9 +84,15 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         return result;
     }
     
+    private Collection<YamlRuleConfiguration> createYamlRuleConfigurations() {
+        FixtureYamlRuleConfiguration result = new FixtureYamlRuleConfiguration();
+        result.setName("testRule");
+        return Collections.singletonList(result);
+    }
+    
     private Map<String, YamlDataSourceParameter> createYamlDataSourceParameterMap() {
         Map<String, YamlDataSourceParameter> result = new HashMap<>(1, 1);
-        result.put(DATA_SOURCE_PARAMETER_KEY, createYamlDataSourceParameter());
+        result.put("ds", createYamlDataSourceParameter());
         return result;
     }
     
@@ -99,16 +110,68 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         return result;
     }
     
-    private Collection<YamlRuleConfiguration> createYamlRuleConfigurations() {
-        FixtureYamlRuleConfiguration result = new FixtureYamlRuleConfiguration();
-        result.setName("testRule");
-        return Collections.singletonList(result);
+    private void assertProxyConfiguration(final ProxyConfiguration actual) {
+        assertSchemaDataSources(actual.getSchemaDataSources());
+        assertSchemaRules(actual.getSchemaRules());
+        assertAuthentication(actual.getAuthentication());
+        assertProps(actual.getProps());
+    }
+    
+    private void assertSchemaDataSources(final Map<String, Map<String, DataSourceParameter>> actual) {
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.containsKey("logic-db"));
+        Map<String, DataSourceParameter> dataSourceParameterMap = actual.get("logic-db");
+        assertThat(dataSourceParameterMap.size(), is(1));
+        assertTrue(dataSourceParameterMap.containsKey("ds"));
+        assertDataSourceParameter(dataSourceParameterMap.get("ds"));
+    }
+    
+    private void assertDataSourceParameter(final DataSourceParameter actual) {
+        assertThat(actual.getUrl(), is("jdbc:mysql://localhost:3306/ds"));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("root"));
+        assertFalse(actual.isReadOnly());
+        assertThat(actual.getConnectionTimeoutMilliseconds(), is(1000L));
+        assertThat(actual.getIdleTimeoutMilliseconds(), is(2000L));
+        assertThat(actual.getMaxLifetimeMilliseconds(), is(4000L));
+        assertThat(actual.getMaxPoolSize(), is(20));
+        assertThat(actual.getMinPoolSize(), is(10));
+    }
+    
+    private void assertSchemaRules(final Map<String, Collection<RuleConfiguration>> actual) {
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.containsKey("logic-db"));
+        Collection<RuleConfiguration> ruleConfigurations = actual.get("logic-db");
+        assertThat(ruleConfigurations.size(), is(1));
+        assertRuleConfiguration(ruleConfigurations.iterator().next());
+    }
+    
+    private void assertRuleConfiguration(final RuleConfiguration actual) {
+        assertThat(actual, instanceOf(FixtureRuleConfiguration.class));
+        assertThat(((FixtureRuleConfiguration) actual).getName(), is("testRule"));
+    }
+    
+    private void assertAuthentication(final Authentication actual) {
+        assertThat(actual.getUsers().size(), is(1));
+        assertTrue(actual.getUsers().containsKey("root"));
+        ProxyUser proxyUser = actual.getUsers().get("root");
+        assertThat(proxyUser.getPassword(), is("root"));
+        assertThat(proxyUser.getAuthorizedSchemas().size(), is(2));
+        assertTrue(proxyUser.getAuthorizedSchemas().contains("ds-1"));
+        assertTrue(proxyUser.getAuthorizedSchemas().contains("ds-2"));
     }
     
     private YamlProxyServerConfiguration createYamlProxyServerConfiguration() {
         YamlProxyServerConfiguration result = new YamlProxyServerConfiguration();
         result.setAuthentication(createYamlAuthenticationConfiguration());
         result.setProps(createProperties());
+        return result;
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("alpha-1", "alpha-A");
+        result.setProperty("beta-2", "beta-B");
         return result;
     }
     
@@ -127,63 +190,16 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         return result;
     }
     
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("alpha-1", "alpha-A");
-        result.setProperty("beta-2", "beta-B");
-        return result;
-    }
-    
-    protected void assertSchemaDataSources(final Map<String, Map<String, DataSourceParameter>> actual) {
-        assertThat(actual.size(), is(1));
-        assertTrue(actual.containsKey(PROXY_RULE_KEY));
-        Map<String, DataSourceParameter> dataSourceParameterMap = actual.get(PROXY_RULE_KEY);
-        assertThat(dataSourceParameterMap.size(), is(1));
-        assertTrue(dataSourceParameterMap.containsKey(DATA_SOURCE_PARAMETER_KEY));
-        assertDataSourceParameter(dataSourceParameterMap.get(DATA_SOURCE_PARAMETER_KEY));
-    }
-    
-    protected void assertDataSourceParameter(final DataSourceParameter actual) {
-        assertThat(actual.getUrl(), is("jdbc:mysql://localhost:3306/ds"));
-        assertThat(actual.getUsername(), is("root"));
-        assertThat(actual.getPassword(), is("root"));
-        assertFalse(actual.isReadOnly());
-        assertThat(actual.getConnectionTimeoutMilliseconds(), is(1000L));
-        assertThat(actual.getIdleTimeoutMilliseconds(), is(2000L));
-        assertThat(actual.getMaxLifetimeMilliseconds(), is(4000L));
-        assertThat(actual.getMaxPoolSize(), is(20));
-        assertThat(actual.getMinPoolSize(), is(10));
-    }
-    
-    protected String fetchKey() {
-        return PROXY_RULE_KEY;
-    }
-    
-    protected void assertRuleConfiguration(final RuleConfiguration actual) {
-        assertThat(actual, instanceOf(FixtureRuleConfiguration.class));
-        assertThat(((FixtureRuleConfiguration) actual).getName(), is("testRule"));
-    }
-    
-    protected void assertAuthentication(final Authentication actual) {
-        assertThat(actual.getUsers().size(), is(1));
-        assertTrue(actual.getUsers().containsKey("root"));
-        ProxyUser proxyUser = actual.getUsers().get("root");
-        assertThat(proxyUser.getPassword(), is("root"));
-        assertThat(proxyUser.getAuthorizedSchemas().size(), is(2));
-        assertTrue(proxyUser.getAuthorizedSchemas().contains("ds-1"));
-        assertTrue(proxyUser.getAuthorizedSchemas().contains("ds-2"));
-    }
-    
     @Test
     public void assertDecorateSchemaContexts() {
-        Pair<SchemaContexts, SchemaContexts> schemaContextsSchemaContextPair = makeDecoratedSchemaContexts();
-        assertThat(schemaContextsSchemaContextPair.getRight(), is(schemaContextsSchemaContextPair.getLeft()));
+        SchemaContexts schemaContexts = mock(SchemaContexts.class);
+        assertThat(getInitializer().decorateSchemaContexts(schemaContexts), is(schemaContexts));
     }
     
     @Test
     public void assertDecorateTransactionContexts() {
-        Pair<TransactionContexts, TransactionContexts> transactionContextsPair = makeDecoratedTransactionContexts();
-        assertThat(transactionContextsPair.getRight(), is(transactionContextsPair.getLeft()));
+        TransactionContexts transactionContexts = mock(TransactionContexts.class);
+        assertThat(getInitializer().decorateTransactionContexts(transactionContexts), is(transactionContexts));
     }
     
     protected void doEnvironmentPrepare() {

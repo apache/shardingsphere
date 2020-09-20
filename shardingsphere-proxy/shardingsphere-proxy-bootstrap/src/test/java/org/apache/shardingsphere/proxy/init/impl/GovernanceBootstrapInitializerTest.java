@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.init.impl;
 
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.governance.context.schema.GovernanceSchemaContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
@@ -33,12 +32,16 @@ import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.fixture.FixtureConfigurationRepository;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -46,8 +49,10 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
@@ -62,15 +67,10 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     private FixtureConfigurationRepository configurationRepository = new FixtureConfigurationRepository();
     
     @Test
-    public void assertGetProxyConfiguration() {
-        super.doAssertGetProxyConfiguration();
-    }
-    
-    protected void beforeAssertGetProxyConfiguration() {
+    public void assertGetProxyConfiguration() throws IOException {
         initConfigCenter();
-    }
-    
-    protected void afterAssertGetProxyConfiguration() {
+        YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/reg_center/");
+        assertProxyConfiguration(getInitializer().getProxyConfiguration(yamlProxyConfig));
         closeConfigCenter();
     }
     
@@ -107,11 +107,107 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         closeConfigCenter();
     }
     
+    private void assertProxyConfiguration(final ProxyConfiguration actual) {
+        assertNotNull(actual);
+        assertSchemaDataSources(actual.getSchemaDataSources());
+        assertSchemaRules(actual.getSchemaRules());
+        assertAuthentication(actual.getAuthentication());
+        assertProps(actual.getProps());
+    }
+    
+    private void assertSchemaDataSources(final Map<String, Map<String, DataSourceParameter>> actual) {
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.containsKey("db"));
+        Map<String, DataSourceParameter> dataSourceParameterMap = actual.get("db");
+        assertThat(dataSourceParameterMap.size(), is(2));
+        assertTrue(dataSourceParameterMap.containsKey("ds_0"));
+        assertDataSourceParameter(dataSourceParameterMap.get("ds_0"));
+        assertTrue(dataSourceParameterMap.containsKey("ds_1"));
+        assertDataSourceParameter(dataSourceParameterMap.get("ds_1"));
+    }
+    
+    private void assertDataSourceParameter(final DataSourceParameter actual) {
+        assertThat(actual.getUrl(), is("jdbc:fixturedb:xxx"));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("pwd"));
+        assertTrue(actual.isReadOnly());
+        assertThat(actual.getConnectionTimeoutMilliseconds(), is(1000L));
+        assertThat(actual.getIdleTimeoutMilliseconds(), is(2000L));
+        assertThat(actual.getMaxLifetimeMilliseconds(), is(4000L));
+        assertThat(actual.getMaxPoolSize(), is(20));
+        assertThat(actual.getMinPoolSize(), is(10));
+    }
+    
+    private void assertSchemaRules(final Map<String, Collection<RuleConfiguration>> actual) {
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.containsKey("db"));
+        Collection<RuleConfiguration> ruleConfigurations = actual.get("db");
+        assertThat(ruleConfigurations.size(), is(1));
+        assertRuleConfiguration(ruleConfigurations.iterator().next());
+    }
+    
+    private void assertRuleConfiguration(final RuleConfiguration actual) {
+        assertNotNull(actual);
+        assertThat(actual, instanceOf(ShardingRuleConfiguration.class));
+        ShardingRuleConfiguration shardingRule = (ShardingRuleConfiguration) actual;
+        assertShardingTableRules(shardingRule.getTables());
+        assertShardingAlgorithms(shardingRule.getShardingAlgorithms());
+    }
+    
+    private void assertShardingTableRules(final Collection<ShardingTableRuleConfiguration> shardingTableRules) {
+        assertNotNull(shardingTableRules);
+        assertThat(shardingTableRules.size(), is(1));
+        ShardingTableRuleConfiguration shardingTableRule = shardingTableRules.iterator().next();
+        assertNotNull(shardingTableRule);
+        assertThat(shardingTableRule.getLogicTable(), is("t_order"));
+        assertThat(shardingTableRule.getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
+        assertShardingStrategy(shardingTableRule.getTableShardingStrategy(), "order_id", "t_order_inline");
+        assertShardingStrategy(shardingTableRule.getDatabaseShardingStrategy(), "user_id", "database_inline");
+        assertNull(shardingTableRule.getKeyGenerateStrategy());
+    }
+    
+    private void assertShardingStrategy(final ShardingStrategyConfiguration shardingStrategy, final String shardingColumn, final String shardingAlgorithmName) {
+        assertNotNull(shardingStrategy);
+        assertThat(shardingStrategy, instanceOf(StandardShardingStrategyConfiguration.class));
+        StandardShardingStrategyConfiguration standardShardingStrategy = (StandardShardingStrategyConfiguration) shardingStrategy;
+        assertThat(standardShardingStrategy.getShardingColumn(), is(shardingColumn));
+        assertThat(standardShardingStrategy.getShardingAlgorithmName(), is(shardingAlgorithmName));
+    }
+    
+    private void assertShardingAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms) {
+        assertNotNull(shardingAlgorithms);
+        assertThat(shardingAlgorithms.size(), is(2));
+        assertTrue(shardingAlgorithms.containsKey("database_inline"));
+        assertShardingAlgorithm(shardingAlgorithms.get("database_inline"), "ds_${user_id % 2}");
+        assertTrue(shardingAlgorithms.containsKey("t_order_inline"));
+        assertShardingAlgorithm(shardingAlgorithms.get("t_order_inline"), "t_order_${order_id % 2}");
+    }
+    
+    private void assertShardingAlgorithm(final ShardingSphereAlgorithmConfiguration shardingAlgorithm, final String expectedAlgorithmExpr) {
+        assertNotNull(shardingAlgorithm);
+        assertThat(shardingAlgorithm.getType(), is("INLINE"));
+        Properties props = shardingAlgorithm.getProps();
+        assertNotNull(props);
+        assertThat(props.getProperty("algorithm-expression"), is(expectedAlgorithmExpr));
+    }
+    
+    private void assertAuthentication(final Authentication actual) {
+        assertThat(actual.getUsers().size(), is(2));
+        assertTrue(actual.getUsers().containsKey("root"));
+        ProxyUser rootProxyUser = actual.getUsers().get("root");
+        assertThat(rootProxyUser.getPassword(), is("root"));
+        assertThat(rootProxyUser.getAuthorizedSchemas().size(), is(0));
+        assertTrue(actual.getUsers().containsKey("sharding"));
+        ProxyUser shardingProxyUser = actual.getUsers().get("sharding");
+        assertThat(shardingProxyUser.getPassword(), is("sharding"));
+        assertThat(shardingProxyUser.getAuthorizedSchemas().size(), is(1));
+        assertTrue(shardingProxyUser.getAuthorizedSchemas().contains("sharding_db"));
+    }
+    
     @Test
     public void assertDecorateSchemaContexts() {
-        Pair<SchemaContexts, SchemaContexts> schemaContextsSchemaContextPair = makeDecoratedSchemaContexts();
-        SchemaContexts schemaContexts = schemaContextsSchemaContextPair.getLeft();
-        SchemaContexts actualSchemaContexts = schemaContextsSchemaContextPair.getRight();
+        SchemaContexts schemaContexts = mock(SchemaContexts.class);
+        SchemaContexts actualSchemaContexts = getInitializer().decorateSchemaContexts(schemaContexts);
         assertNotNull(actualSchemaContexts);
         assertThat(actualSchemaContexts, instanceOf(GovernanceSchemaContexts.class));
         assertThat(actualSchemaContexts.getDatabaseType(), is(schemaContexts.getDatabaseType()));
@@ -124,70 +220,16 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     @Test
     public void assertDecorateTransactionContexts() {
-        Pair<TransactionContexts, TransactionContexts> transactionContextsPair = makeDecoratedTransactionContexts();
-        TransactionContexts transactionContexts = transactionContextsPair.getLeft();
-        TransactionContexts actualTransactionContexts = transactionContextsPair.getRight();
+        TransactionContexts transactionContexts = mock(TransactionContexts.class);
+        TransactionContexts actualTransactionContexts = getInitializer().decorateTransactionContexts(transactionContexts);
         assertNotNull(actualTransactionContexts);
         assertThat(actualTransactionContexts, instanceOf(GovernanceTransactionContexts.class));
         assertThat(actualTransactionContexts.getEngines(), is(transactionContexts.getEngines()));
         assertThat(actualTransactionContexts.getDefaultTransactionManagerEngine(), is(transactionContexts.getDefaultTransactionManagerEngine()));
     }
     
+    @Override
     protected void prepareSpecifiedInitializer() {
         setInitializer(new GovernanceBootstrapInitializer());
-    }
-    
-    protected void assertSchemaDataSources(final Map<String, Map<String, DataSourceParameter>> actual) {
-        assertThat(actual.size(), is(1));
-        String key = fetchKey();
-        assertTrue(actual.containsKey(key));
-        Map<String, DataSourceParameter> dataSourceParameterMap = actual.get(key);
-        assertThat(dataSourceParameterMap.size(), is(2));
-        assertTrue(dataSourceParameterMap.containsKey("ds_0"));
-        assertDataSourceParameter(dataSourceParameterMap.get("ds_0"));
-        assertTrue(dataSourceParameterMap.containsKey("ds_1"));
-        assertDataSourceParameter(dataSourceParameterMap.get("ds_1"));
-    }
-    
-    protected String fetchKey() {
-        return "db";
-    }
-    
-    protected void assertRuleConfiguration(final RuleConfiguration actual) {
-        assertNotNull(actual);
-        assertThat(actual, instanceOf(ShardingRuleConfiguration.class));
-        ShardingRuleConfiguration shardingRule = (ShardingRuleConfiguration) actual;
-        assertShardingTableRules(shardingRule.getTables());
-        assertShardingAlgorithms(shardingRule.getShardingAlgorithms());
-    }
-    
-    protected void assertShardingAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms) {
-        assertNotNull(shardingAlgorithms);
-        assertThat(shardingAlgorithms.size(), is(2));
-        assertTrue(shardingAlgorithms.containsKey("database_inline"));
-        assertShardingAlgorithm(shardingAlgorithms.get("database_inline"), "ds_${user_id % 2}");
-        assertTrue(shardingAlgorithms.containsKey("t_order_inline"));
-        assertShardingAlgorithm(shardingAlgorithms.get("t_order_inline"), "t_order_${order_id % 2}");
-    }
-    
-    protected void assertShardingAlgorithm(final ShardingSphereAlgorithmConfiguration shardingAlgorithm, final String expectedAlgorithmExpr) {
-        assertNotNull(shardingAlgorithm);
-        assertThat(shardingAlgorithm.getType(), is("INLINE"));
-        Properties props = shardingAlgorithm.getProps();
-        assertNotNull(props);
-        assertThat(props.getProperty("algorithm-expression"), is(expectedAlgorithmExpr));
-    }
-    
-    protected void assertAuthentication(final Authentication actual) {
-        assertThat(actual.getUsers().size(), is(2));
-        assertTrue(actual.getUsers().containsKey("root"));
-        ProxyUser rootProxyUser = actual.getUsers().get("root");
-        assertThat(rootProxyUser.getPassword(), is("root"));
-        assertThat(rootProxyUser.getAuthorizedSchemas().size(), is(0));
-        assertTrue(actual.getUsers().containsKey("sharding"));
-        ProxyUser shardingProxyUser = actual.getUsers().get("sharding");
-        assertThat(shardingProxyUser.getPassword(), is("sharding"));
-        assertThat(shardingProxyUser.getAuthorizedSchemas().size(), is(1));
-        assertTrue(shardingProxyUser.getAuthorizedSchemas().contains("sharding_db"));
     }
 }
