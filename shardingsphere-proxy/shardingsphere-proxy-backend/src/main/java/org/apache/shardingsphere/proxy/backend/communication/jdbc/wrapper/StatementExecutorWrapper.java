@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -48,8 +47,6 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private static final ProxyContext PROXY_SCHEMA_CONTEXTS = ProxyContext.getInstance();
     
-    private final SchemaContext schemaContext;
-    
     @Override
     public ExecutionContext generateExecutionContext(final LogicSQLContext logicSQLContext) {
         Collection<ShardingSphereRule> rules = logicSQLContext.getSchemaContext().getSchema().getRules();
@@ -77,7 +74,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     @Override
     public StatementExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, final int maxConnectionsSizePerQuery, final StatementOption option) {
-        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schemaContext.getSchema().getRules());
+        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, PROXY_SCHEMA_CONTEXTS.getSchema(backendConnection.getSchemaName()).getSchema().getRules());
     }
     
     @Override
