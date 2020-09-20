@@ -54,10 +54,6 @@ import static org.mockito.Mockito.mock;
 
 public final class StandardBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
-    private static final String PROXY_RULE_KEY = "logic-db";
-
-    private static final String DATA_SOURCE_PARAMETER_KEY = "ds";
-    
     @SneakyThrows
     protected YamlProxyConfiguration makeProxyConfiguration() {
         return new YamlProxyConfiguration(createYamlProxyServerConfiguration(), createYamlProxyRuleConfigurationMap());
