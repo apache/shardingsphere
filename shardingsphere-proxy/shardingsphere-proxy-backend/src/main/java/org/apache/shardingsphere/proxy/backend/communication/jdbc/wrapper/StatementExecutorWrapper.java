@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -42,10 +41,7 @@ import java.util.Collection;
 /**
  * Executor wrapper for statement.
  */
-@RequiredArgsConstructor
 public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
-    
-    private static final ProxyContext PROXY_SCHEMA_CONTEXTS = ProxyContext.getInstance();
     
     @Override
     public ExecutionContext generateExecutionContext(final LogicSQLContext logicSQLContext) {
@@ -53,10 +49,10 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         if (rules.isEmpty()) {
             return createExecutionContext(logicSQLContext);
         }
-        DataNodeRouter router = new DataNodeRouter(logicSQLContext.getSchemaContext().getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules);
+        DataNodeRouter router = new DataNodeRouter(logicSQLContext.getSchemaContext().getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getProps(), rules);
         RouteContext routeContext = router.route(logicSQLContext.getSqlStatement(), logicSQLContext.getSql(), logicSQLContext.getParameters());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
-                PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules).rewrite(logicSQLContext.getSql(), logicSQLContext.getParameters(), routeContext);
+                ProxyContext.getInstance().getSchemaContexts().getProps(), rules).rewrite(logicSQLContext.getSql(), logicSQLContext.getParameters(), routeContext);
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(logicSQLContext.getSchemaContext().getSchema().getMetaData(), sqlRewriteResult, sqlStatementContext);
         return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
@@ -74,7 +70,8 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     @Override
     public StatementExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, final int maxConnectionsSizePerQuery, final StatementOption option) {
-        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, PROXY_SCHEMA_CONTEXTS.getSchema(backendConnection.getSchemaName()).getSchema().getRules());
+        return new StatementExecuteGroupEngine(
+                maxConnectionsSizePerQuery, backendConnection, option, ProxyContext.getInstance().getSchema(backendConnection.getSchemaName()).getSchema().getRules());
     }
     
     @Override
