@@ -52,11 +52,11 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         if (rules.isEmpty()) {
             return createExecutionContext(logicSQLContext);
         }
-        DataNodeRouter dataNodeRouter = new DataNodeRouter(logicSQLContext.getSchemaContext().getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getProps(), rules);
-        RouteContext routeContext = dataNodeRouter.route(logicSQLContext.getSqlStatement(), logicSQLContext.getSql(), logicSQLContext.getParameters());
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
+        DataNodeRouter router = new DataNodeRouter(logicSQLContext.getSchemaContext().getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getProps(), rules);
+        RouteContext routeContext = router.route(logicSQLContext.getSqlStatement(), logicSQLContext.getSql(), logicSQLContext.getParameters());
+        SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
                 ProxyContext.getInstance().getSchemaContexts().getProps(), rules);
-        SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(logicSQLContext.getSql(), new ArrayList<>(logicSQLContext.getParameters()), routeContext);
+        SQLRewriteResult sqlRewriteResult = rewriteEntry.rewrite(logicSQLContext.getSql(), new ArrayList<>(logicSQLContext.getParameters()), routeContext);
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(logicSQLContext.getSchemaContext().getSchema().getMetaData(), sqlRewriteResult, sqlStatementContext);
         return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
@@ -73,9 +73,9 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     @Override
-    public ExecuteGroupEngine<?> getExecuteGroupEngine(final BackendConnection backendConnection, final int maxConnectionsSizePerQuery, final StatementOption option) {
-        return new PreparedStatementExecuteGroupEngine(
-                maxConnectionsSizePerQuery, backendConnection, option, ProxyContext.getInstance().getSchema(backendConnection.getSchemaName()).getSchema().getRules());
+    public ExecuteGroupEngine<?> getExecuteGroupEngine(final BackendConnection backendConnection, 
+                                                       final int maxConnectionsSizePerQuery, final StatementOption option, final Collection<ShardingSphereRule> rules) {
+        return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, rules);
     }
     
     @Override

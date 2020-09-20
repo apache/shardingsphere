@@ -20,10 +20,12 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 
 /**
  * JDBC executor wrapper.
@@ -44,9 +46,10 @@ public interface JDBCExecutorWrapper {
      * @param backendConnection backend connection
      * @param maxConnectionsSizePerQuery max connections size per query
      * @param option statement option
+     * @param rules rules
      * @return execute group engine
      */
-    ExecuteGroupEngine<?> getExecuteGroupEngine(BackendConnection backendConnection, int maxConnectionsSizePerQuery, StatementOption option);
+    ExecuteGroupEngine<?> getExecuteGroupEngine(BackendConnection backendConnection, int maxConnectionsSizePerQuery, StatementOption option, Collection<ShardingSphereRule> rules);
     
     /**
      * Execute SQL.

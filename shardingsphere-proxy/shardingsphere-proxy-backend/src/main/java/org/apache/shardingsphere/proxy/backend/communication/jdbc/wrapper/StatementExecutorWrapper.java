@@ -51,8 +51,9 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         }
         DataNodeRouter router = new DataNodeRouter(logicSQLContext.getSchemaContext().getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getProps(), rules);
         RouteContext routeContext = router.route(logicSQLContext.getSqlStatement(), logicSQLContext.getSql(), logicSQLContext.getParameters());
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
-                ProxyContext.getInstance().getSchemaContexts().getProps(), rules).rewrite(logicSQLContext.getSql(), logicSQLContext.getParameters(), routeContext);
+        SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
+                ProxyContext.getInstance().getSchemaContexts().getProps(), rules);
+        SQLRewriteResult sqlRewriteResult = rewriteEntry.rewrite(logicSQLContext.getSql(), logicSQLContext.getParameters(), routeContext);
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(logicSQLContext.getSchemaContext().getSchema().getMetaData(), sqlRewriteResult, sqlStatementContext);
         return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
@@ -69,9 +70,9 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     @Override
-    public StatementExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, final int maxConnectionsSizePerQuery, final StatementOption option) {
-        return new StatementExecuteGroupEngine(
-                maxConnectionsSizePerQuery, backendConnection, option, ProxyContext.getInstance().getSchema(backendConnection.getSchemaName()).getSchema().getRules());
+    public StatementExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, 
+                                                             final int maxConnectionsSizePerQuery, final StatementOption option, final Collection<ShardingSphereRule> rules) {
+        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, rules);
     }
     
     @Override

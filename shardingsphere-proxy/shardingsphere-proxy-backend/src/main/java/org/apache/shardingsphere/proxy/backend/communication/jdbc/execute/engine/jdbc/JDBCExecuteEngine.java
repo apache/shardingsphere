@@ -118,7 +118,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<InputGroup<StatementExecuteUnit>> generateInputGroups(final Collection<ExecutionUnit> executionUnits, final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys,
                                                                              final RouteContext routeContext) throws SQLException {
-        ExecuteGroupEngine executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine(backendConnection, maxConnectionsSizePerQuery, new StatementOption(isReturnGeneratedKeys));
+        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName()).getSchema().getRules();
+        ExecuteGroupEngine executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine(backendConnection, maxConnectionsSizePerQuery, new StatementOption(isReturnGeneratedKeys), rules);
         return (Collection<InputGroup<StatementExecuteUnit>>) executeGroupEngine.generate(routeContext, executionUnits);
     }
     
