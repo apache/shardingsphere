@@ -31,11 +31,11 @@ import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyF
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
-import org.apache.shardingsphere.proxy.backend.kernel.LogicSQLContext;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
+import org.apache.shardingsphere.proxy.backend.kernel.LogicSQLContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
@@ -59,7 +59,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private final LogicSQLContext logicSQLContext;
     
-    private final BackendConnection connection;
+    private final TransactionStatus transactionStatus;
     
     private final SQLExecuteEngine executeEngine;
     
@@ -67,9 +67,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private MergedResult mergedResult;
     
-    public JDBCDatabaseCommunicationEngine(final LogicSQLContext logicSQLContext, final BackendConnection backendConnection, final SQLExecuteEngine sqlExecuteEngine) {
+    public JDBCDatabaseCommunicationEngine(final LogicSQLContext logicSQLContext, final TransactionStatus transactionStatus, final SQLExecuteEngine sqlExecuteEngine) {
         this.logicSQLContext = logicSQLContext;
-        connection = backendConnection;
+        this.transactionStatus = transactionStatus;
         executeEngine = sqlExecuteEngine;
     }
     
@@ -100,7 +100,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
-        return TransactionType.XA == connection.getTransactionStatus().getTransactionType() && sqlStatement instanceof DDLStatement && connection.getTransactionStatus().isInTransaction();
+        return TransactionType.XA == transactionStatus.getTransactionType() && sqlStatement instanceof DDLStatement && transactionStatus.isInTransaction();
     }
     
     private String getTableName(final SQLStatementContext<?> sqlStatementContext) {
