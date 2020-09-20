@@ -41,6 +41,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Executor wrapper for statement.
@@ -69,6 +70,16 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
     }
     
+    @SuppressWarnings("unchecked")
+    private ExecutionContext createExecutionContext(final String sql) {
+        String dataSourceName = schema.getSchema().getDataSources().isEmpty() ? "" : schema.getSchema().getDataSources().keySet().iterator().next();
+        SQLStatementContext<?> sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
+        List<Object> parameters = Collections.emptyList();
+        ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, new SQLUnit(sql, parameters));
+        RouteContext routeContext = new RouteContext(sqlStatementContext, parameters, new RouteResult());
+        return new ExecutionContext(sqlStatementContext, executionUnit, routeContext);
+    }
+    
     @Override
     public StatementExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, final int maxConnectionsSizePerQuery, final StatementOption option) {
         return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getSchema().getRules());
@@ -77,13 +88,5 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     @Override
     public boolean execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private ExecutionContext createExecutionContext(final String sql) {
-        String dataSource = schema.getSchema().getDataSources().isEmpty() ? "" : schema.getSchema().getDataSources().keySet().iterator().next();
-        SQLStatementContext<?> sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
-        ExecutionUnit executionUnit = new ExecutionUnit(dataSource, new SQLUnit(sql, Collections.emptyList()));
-        return new ExecutionContext(sqlStatementContext, executionUnit, new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult()));
     }
 }

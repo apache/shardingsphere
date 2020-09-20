@@ -59,14 +59,11 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     private final List<Object> parameters;
     
-    @SuppressWarnings("unchecked")
     @Override
     public ExecutionContext generateExecutionContext(final String sql) {
         Collection<ShardingSphereRule> rules = schema.getSchema().getRules();
         if (rules.isEmpty()) {
-            SQLStatementContext<?> sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
-            return new ExecutionContext(sqlStatementContext, new ExecutionUnit(schema.getSchema().getDataSources().keySet().iterator().next(), new SQLUnit(sql, parameters)),
-                    new RouteContext(sqlStatementContext, parameters, new RouteResult()));
+            return createExecutionContext(sql);
         }
         DataNodeRouter dataNodeRouter = new DataNodeRouter(schema.getSchema().getMetaData(), PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps(), rules);
         RouteContext routeContext = dataNodeRouter.route(sqlStatement, sql, parameters);
@@ -76,6 +73,15 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(schema.getSchema().getMetaData(), sqlRewriteResult, sqlStatementContext);
         return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private ExecutionContext createExecutionContext(final String sql) {
+        String dataSourceName = schema.getSchema().getDataSources().isEmpty() ? "" : schema.getSchema().getDataSources().keySet().iterator().next();
+        SQLStatementContext<?> sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
+        ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, new SQLUnit(sql, parameters));
+        RouteContext routeContext = new RouteContext(sqlStatementContext, parameters, new RouteResult());
+        return new ExecutionContext(sqlStatementContext, executionUnit, routeContext);
     }
     
     @Override

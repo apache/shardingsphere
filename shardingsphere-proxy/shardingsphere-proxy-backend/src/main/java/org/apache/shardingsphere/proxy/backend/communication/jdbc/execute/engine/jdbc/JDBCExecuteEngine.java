@@ -76,7 +76,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     @Override
-    public ExecutionContext generateExecutionContext(final String sql) throws SQLException {
+    public ExecutionContext generateExecutionContext(final String sql) {
         return jdbcExecutorWrapper.generateExecutionContext(sql);
     }
     
