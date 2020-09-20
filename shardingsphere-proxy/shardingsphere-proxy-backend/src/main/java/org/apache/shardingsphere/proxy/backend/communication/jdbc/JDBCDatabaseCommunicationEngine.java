@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.persist.MetaDataPersistEvent;
 import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
@@ -57,38 +55,34 @@ import java.util.Optional;
 /**
  * Database access engine for JDBC.
  */
-@RequiredArgsConstructor
 public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicationEngine {
     
-    private final String sql;
+    private final LogicSQLContext logicSQLContext;
     
     private final BackendConnection connection;
     
     private final SQLExecuteEngine executeEngine;
     
-    private final SchemaContext schemaContext;
-    
     private BackendResponse response;
     
     private MergedResult mergedResult;
     
-    public JDBCDatabaseCommunicationEngine(final String sql, final BackendConnection backendConnection, final SQLExecuteEngine sqlExecuteEngine) {
-        this.sql = sql;
+    public JDBCDatabaseCommunicationEngine(final LogicSQLContext logicSQLContext, final BackendConnection backendConnection, final SQLExecuteEngine sqlExecuteEngine) {
+        this.logicSQLContext = logicSQLContext;
         connection = backendConnection;
         executeEngine = sqlExecuteEngine;
-        schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
     }
     
     @Override
     public BackendResponse execute() throws SQLException {
-        ExecutionContext executionContext = executeEngine.generateExecutionContext(new LogicSQLContext(schemaContext, sql, null, null));
+        ExecutionContext executionContext = executeEngine.generateExecutionContext(logicSQLContext);
         logSQL(executionContext);
         return doExecute(executionContext);
     }
     
     private void logSQL(final ExecutionContext executionContext) {
         if (ProxyContext.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
-            SQLLogger.logSQL(sql, ProxyContext.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
+            SQLLogger.logSQL(logicSQLContext.getSql(), ProxyContext.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }
     }
     
@@ -123,16 +117,17 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(schemaContext.getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                    schemaContext.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
-            ShardingSphereEventBus.getInstance().post(new MetaDataPersistEvent(schemaContext.getName(), schemaContext.getSchema().getMetaData().getRuleSchemaMetaData()));
+            refreshStrategy.get().refreshMetaData(logicSQLContext.getSchemaContext().getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
+                    logicSQLContext.getSchemaContext().getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
+            ShardingSphereEventBus.getInstance().post(
+                    new MetaDataPersistEvent(logicSQLContext.getSchemaContext().getName(), logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData()));
         }
     }
     
     private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(schemaContext.getSchema().getRules());
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(logicSQLContext.getSchemaContext().getSchema().getRules());
         return loader.load(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                schemaContext.getSchema().getDataSources(), tableName, ProxyContext.getInstance().getSchemaContexts().getProps());
+                logicSQLContext.getSchemaContext().getSchema().getDataSources(), tableName, ProxyContext.getInstance().getSchemaContexts().getProps());
     }
     
     private BackendResponse merge(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
@@ -151,15 +146,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = 
-                schemaContext.getSchema().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule =
+                logicSQLContext.getSchemaContext().getSchema().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         return dataNodeRoutedRule.isPresent() && dataNodeRoutedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), 
-                ProxyContext.getInstance().getSchemaContexts().getProps(), schemaContext.getSchema().getRules());
+                logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), 
+                ProxyContext.getInstance().getSchemaContexts().getProps(), logicSQLContext.getSchemaContext().getSchema().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
