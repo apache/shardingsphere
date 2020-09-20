@@ -53,7 +53,7 @@ public final class DatabaseCommunicationEngineFactory {
     /**
      * Create new instance of text protocol backend handler.
      *
-     * @param sqlStatement sql statement
+     * @param sqlStatement SQL statement
      * @param sql SQL to be executed
      * @param backendConnection backend connection
      * @return text protocol backend handler
@@ -66,7 +66,7 @@ public final class DatabaseCommunicationEngineFactory {
     /**
      * Create new instance of binary protocol backend handler.
      *
-     * @param sqlStatement sql statement
+     * @param sqlStatement SQL statement
      * @param sql SQL to be executed
      * @param parameters SQL parameters
      * @param backendConnection backend connection
