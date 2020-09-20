@@ -60,7 +60,7 @@ public final class DatabaseCommunicationEngineFactory {
      */
     public DatabaseCommunicationEngine newTextProtocolInstance(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
         LogicSQLContext logicSQLContext = createLogicSQLContext(sqlStatement, sql, Collections.emptyList(), backendConnection);
-        return new JDBCDatabaseCommunicationEngine(logicSQLContext, backendConnection.getTransactionStatus(), new JDBCExecuteEngine(backendConnection, new StatementAccessor()));
+        return new JDBCDatabaseCommunicationEngine(logicSQLContext, new JDBCExecuteEngine(backendConnection, new StatementAccessor()));
     }
     
     /**
@@ -74,7 +74,7 @@ public final class DatabaseCommunicationEngineFactory {
      */
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
         LogicSQLContext logicSQLContext = createLogicSQLContext(sqlStatement, sql, new ArrayList<>(parameters), backendConnection);
-        return new JDBCDatabaseCommunicationEngine(logicSQLContext, backendConnection.getTransactionStatus(), new JDBCExecuteEngine(backendConnection, new PreparedStatementAccessor()));
+        return new JDBCDatabaseCommunicationEngine(logicSQLContext, new JDBCExecuteEngine(backendConnection, new PreparedStatementAccessor()));
     }
     
     private LogicSQLContext createLogicSQLContext(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {

@@ -33,9 +33,7 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.kernel.LogicSQLContext;
 import org.apache.shardingsphere.proxy.backend.kernel.ProxyKernelProcessor;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
@@ -44,10 +42,6 @@ import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -61,8 +55,6 @@ import java.util.Optional;
 public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicationEngine {
     
     private final LogicSQLContext logicSQLContext;
-    
-    private final TransactionStatus transactionStatus;
     
     private final SQLExecuteEngine sqlExecuteEngine;
     
@@ -87,24 +79,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponse();
         }
-        SQLStatementContext<?> sqlStatementContext = executionContext.getSqlStatementContext();
-        if (isExecuteDDLInXATransaction(sqlStatementContext.getSqlStatement())) {
-            throw new TableModifyInTransactionException(getTableName(sqlStatementContext));
-        }
+        sqlExecuteEngine.checkExecutePrerequisites(executionContext);
         response = sqlExecuteEngine.execute(executionContext);
         refreshTableMetaData(executionContext.getSqlStatementContext());
         return merge(executionContext.getSqlStatementContext());
-    }
-    
-    private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
-        return TransactionType.XA == transactionStatus.getTransactionType() && sqlStatement instanceof DDLStatement && transactionStatus.isInTransaction();
-    }
-    
-    private String getTableName(final SQLStatementContext<?> sqlStatementContext) {
-        if (sqlStatementContext instanceof TableAvailable && !((TableAvailable) sqlStatementContext).getAllTables().isEmpty()) {
-            return ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
-        }
-        return "unknown_table";
     }
     
     @SuppressWarnings("unchecked")
