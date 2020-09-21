@@ -29,15 +29,15 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultS
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.statement.metadata.ShardingSphereParameterMetaData;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.sql.LogicSQLContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ExecutorConstant;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.RawJDBCExecutor;
@@ -50,13 +50,8 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.Stateme
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
-import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
-import org.apache.shardingsphere.infra.route.DataNodeRouter;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -258,15 +253,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private ExecutionContext createExecutionContext() {
-        SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
-        DataNodeRouter router = new DataNodeRouter(schemaContext.getSchema().getMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules());
-        RouteContext routeContext = router.route(sqlStatement, sql, getParameters());
-        SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
-                schemaContexts.getProps(), schemaContext.getSchema().getRules());
-        SQLRewriteResult rewriteResult = rewriteEntry.rewrite(sql, new ArrayList<>(getParameters()), routeContext);
-        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
-        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(schemaContext.getSchema().getMetaData(), rewriteResult, sqlStatementContext);
-        ExecutionContext result = new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
+        LogicSQLContext logicSQLContext = new LogicSQLContext(schemaContexts.getDefaultSchemaContext(), sql, new ArrayList<>(getParameters()), sqlStatement);
+        ExecutionContext result = new KernelProcessor().generateExecutionContext(logicSQLContext, schemaContexts.getProps());
         findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.add(generatedKey.getGeneratedValues().getLast()));
         logSQL(result);
         return result;

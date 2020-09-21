@@ -73,7 +73,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     private Collection<DatabasePacket<?>> processQuery(final QueryResponse queryResponse) {
         responseType = ResponseType.QUERY;
         Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponse);
-        currentSequenceId = result.size() + 1;
+        currentSequenceId = result.size();
         return result;
     }
     
