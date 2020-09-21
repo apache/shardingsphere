@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.kernel;
+package org.apache.shardingsphere.infra.context.kernel;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.sql.LogicSQLContext;
@@ -35,9 +35,9 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import java.util.Collection;
 
 /**
- * Proxy kernel processor.
+ * Kernel processor.
  */
-public final class ProxyKernelProcessor {
+public final class KernelProcessor {
     
     /**
      * Generate execution context.
@@ -54,17 +54,16 @@ public final class ProxyKernelProcessor {
         DataNodeRouter router = new DataNodeRouter(logicSQLContext.getSchemaContext().getSchema().getMetaData(), props, rules);
         RouteContext routeContext = router.route(logicSQLContext.getSqlStatement(), logicSQLContext.getSql(), logicSQLContext.getParameters());
         SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), props, rules);
-        SQLRewriteResult sqlRewriteResult = rewriteEntry.rewrite(logicSQLContext.getSql(), logicSQLContext.getParameters(), routeContext);
+        SQLRewriteResult rewriteResult = rewriteEntry.rewrite(logicSQLContext.getSql(), logicSQLContext.getParameters(), routeContext);
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
-        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(logicSQLContext.getSchemaContext().getSchema().getMetaData(), sqlRewriteResult, sqlStatementContext);
+        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(logicSQLContext.getSchemaContext().getSchema().getMetaData(), rewriteResult, sqlStatementContext);
         return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
     }
     
-    @SuppressWarnings("unchecked")
     private ExecutionContext createDefaultExecutionContext(final LogicSQLContext logicSQLContext) {
         String dataSourceName = logicSQLContext.getSchemaContext().getSchema().getDataSources().isEmpty()
                 ? "" : logicSQLContext.getSchemaContext().getSchema().getDataSources().keySet().iterator().next();
-        SQLStatementContext<?> sqlStatementContext = new CommonSQLStatementContext(logicSQLContext.getSqlStatement());
+        SQLStatementContext<?> sqlStatementContext = new CommonSQLStatementContext<>(logicSQLContext.getSqlStatement());
         ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, new SQLUnit(logicSQLContext.getSql(), logicSQLContext.getParameters()));
         RouteContext routeContext = new RouteContext(sqlStatementContext, logicSQLContext.getParameters(), new RouteResult());
         return new ExecutionContext(sqlStatementContext, executionUnit, routeContext);
