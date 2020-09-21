@@ -205,4 +205,9 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     protected void prepareSpecifiedInitializer() {
         setInitializer(new StandardBootstrapInitializer());
     }
+    
+    @Override
+    protected int getProxyPort() {
+        return 3030;
+    }
 }

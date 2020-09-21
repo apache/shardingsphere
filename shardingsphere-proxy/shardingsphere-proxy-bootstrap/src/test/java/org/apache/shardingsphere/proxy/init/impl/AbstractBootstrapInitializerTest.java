@@ -49,8 +49,6 @@ public abstract class AbstractBootstrapInitializerTest {
     
     private static final String HOST = "127.0.0.1";
     
-    private static final int PORT = 2020;
-    
     @Getter
     @Setter
     private AbstractBootstrapInitializer initializer;
@@ -71,7 +69,7 @@ public abstract class AbstractBootstrapInitializerTest {
     @Test
     public void assertInit() {
         new Thread(this::triggerAbstractBootstrapInitializerInit).start();
-        TimeUnit.SECONDS.sleep(5);
+        TimeUnit.MILLISECONDS.sleep(900);
         assertTrue(isAvailable());
     }
     
@@ -86,12 +84,14 @@ public abstract class AbstractBootstrapInitializerTest {
         doReturn(schemaContexts).when(abstractBootstrapInitializer).decorateSchemaContexts(any());
         doReturn(mock(TransactionContexts.class)).when(abstractBootstrapInitializer).decorateTransactionContexts(any());
         YamlProxyConfiguration yamlConfig = mock(YamlProxyConfiguration.class);
-        abstractBootstrapInitializer.init(yamlConfig, PORT);
+        abstractBootstrapInitializer.init(yamlConfig, getProxyPort());
     }
     
-    private static boolean isAvailable() {
+    protected abstract int getProxyPort();
+    
+    private  boolean isAvailable() {
         boolean portFree;
-        try (Socket socket = new Socket(HOST, PORT)) {
+        try (Socket socket = new Socket(HOST, getProxyPort())) {
             portFree = true;
         } catch (UnknownHostException ex) {
             portFree = false;
