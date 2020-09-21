@@ -184,7 +184,7 @@ public final class RDLBackendHandlerTest {
         schemaContexts.setAccessible(true);
         if (isGovernance) {
             SchemaContexts mockedSchemaContexts = mock(SchemaContexts.class);
-            when(mockedSchemaContexts.getSchemaContexts()).thenReturn(Collections.singletonMap("schema", mock(SchemaContext.class)));
+            when(mockedSchemaContexts.getSchemaContextMap()).thenReturn(Collections.singletonMap("schema", mock(SchemaContext.class)));
             schemaContexts.set(ProxyContext.getInstance(), mockedSchemaContexts);
         } else {
             schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts());

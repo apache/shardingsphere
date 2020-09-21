@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.context.impl;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.SchemaContext;
+import org.apache.shardingsphere.infra.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.junit.Test;
@@ -40,15 +42,16 @@ public final class StandardSchemaContextsTest {
     public void assertGetDefaultSchemaContext() {
         StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts();
         SchemaContext expected = mock(SchemaContext.class);
-        standardSchemaContexts.getSchemaContexts().put("logic_db", expected);
+        standardSchemaContexts.getSchemaContextMap().put("logic_db", expected);
         assertThat(standardSchemaContexts.getDefaultSchemaContext(), is(expected));
     }
     
     @Test
     public void assertClose() {
-        SchemaContext schemaContext = mock(SchemaContext.class, RETURNS_DEEP_STUBS);
+        RuntimeContext runtimeContext = mock(RuntimeContext.class, RETURNS_DEEP_STUBS);
         ExecutorKernel executorKernel = mock(ExecutorKernel.class);
-        when(schemaContext.getRuntimeContext().getExecutorKernel()).thenReturn(executorKernel);
+        when(runtimeContext.getExecutorKernel()).thenReturn(executorKernel);
+        SchemaContext schemaContext = new SchemaContext("logic_db", mock(ShardingSphereSchema.class), runtimeContext);
         StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts(
                 Collections.singletonMap("logic_db", schemaContext), new Authentication(), new ConfigurationProperties(new Properties()), mock(DatabaseType.class));
         standardSchemaContexts.close();

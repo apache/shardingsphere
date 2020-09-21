@@ -43,4 +43,11 @@ public final class SchemaContext {
     public boolean isComplete() {
         return !schema.getRules().isEmpty() && !schema.getDataSources().isEmpty();
     }
+    
+    /**
+     * Close executorKernel in runtimeContext.
+     */
+    public void close() {
+        runtimeContext.getExecutorKernel().close();
+    }
 }

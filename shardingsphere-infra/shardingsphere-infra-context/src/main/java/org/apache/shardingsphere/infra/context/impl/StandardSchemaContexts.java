@@ -38,7 +38,7 @@ import java.util.Properties;
 @Getter
 public final class StandardSchemaContexts implements SchemaContexts {
     
-    private final Map<String, SchemaContext> schemaContexts;
+    private final Map<String, SchemaContext> schemaContextMap;
     
     private final Authentication authentication;
     
@@ -53,17 +53,17 @@ public final class StandardSchemaContexts implements SchemaContexts {
         this(new HashMap<>(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType(), false);
     }
     
-    public StandardSchemaContexts(final Map<String, SchemaContext> schemaContexts, final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
-        this(schemaContexts, authentication, props, databaseType, false);
+    public StandardSchemaContexts(final Map<String, SchemaContext> schemaContextMap, final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
+        this(schemaContextMap, authentication, props, databaseType, false);
     }
     
     @Override
     public SchemaContext getDefaultSchemaContext() {
-        return schemaContexts.get(DefaultSchema.LOGIC_NAME);
+        return schemaContextMap.get(DefaultSchema.LOGIC_NAME);
     }
     
     @Override
     public void close() {
-        schemaContexts.values().forEach(each -> each.getRuntimeContext().getExecutorKernel().close());
+        schemaContextMap.values().forEach(each -> each.close());
     }
 }

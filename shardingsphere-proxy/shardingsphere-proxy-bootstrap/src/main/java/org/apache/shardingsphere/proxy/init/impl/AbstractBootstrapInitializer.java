@@ -95,8 +95,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private TransactionContexts createTransactionContexts(final SchemaContexts schemaContexts) {
-        Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(schemaContexts.getSchemaContexts().size(), 1);
-        for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContexts().entrySet()) {
+        Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(schemaContexts.getSchemaContextMap().size(), 1);
+        for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContextMap().entrySet()) {
             ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
             engine.init(schemaContexts.getDatabaseType(), entry.getValue().getSchema().getDataSources());
             transactionManagerEngines.put(entry.getKey(), engine);
