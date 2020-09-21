@@ -32,7 +32,6 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -56,7 +55,7 @@ public abstract class AbstractBootstrapInitializerTest {
     private AbstractBootstrapInitializer initializer;
     
     @Before
-    public void setUp() {
+    public final void setUp() {
         doEnvironmentPrepare();
         prepareSpecifiedInitializer();
     }
@@ -67,12 +66,11 @@ public abstract class AbstractBootstrapInitializerTest {
     
     protected abstract void prepareSpecifiedInitializer();
     
-    @SneakyThrows
     @Test
-    public void assertInit() {
+    public final void assertInit() throws InterruptedException {
         new Thread(this::triggerAbstractBootstrapInitializerInit).start();
-        TimeUnit.SECONDS.sleep(5);
-        assertTrue(isAvailable());
+        TimeUnit.SECONDS.sleep(5L);
+        assertTrue(isSocketAvailable());
     }
     
     @SneakyThrows
@@ -80,28 +78,26 @@ public abstract class AbstractBootstrapInitializerTest {
         AbstractBootstrapInitializer abstractBootstrapInitializer = mock(AbstractBootstrapInitializer.class, Mockito.CALLS_REAL_METHODS);
         doReturn(mock(ProxyConfiguration.class)).when(abstractBootstrapInitializer).getProxyConfiguration(any());
         SchemaContexts schemaContexts = mock(SchemaContexts.class);
-        ConfigurationProperties properties = mock(ConfigurationProperties.class);
-        when(properties.getValue(any())).thenReturn(Boolean.FALSE);
-        when(schemaContexts.getProps()).thenReturn(properties);
+        ConfigurationProperties props = mock(ConfigurationProperties.class);
+        when(props.getValue(any())).thenReturn(Boolean.FALSE);
+        when(schemaContexts.getProps()).thenReturn(props);
         doReturn(schemaContexts).when(abstractBootstrapInitializer).decorateSchemaContexts(any());
         doReturn(mock(TransactionContexts.class)).when(abstractBootstrapInitializer).decorateTransactionContexts(any());
         YamlProxyConfiguration yamlConfig = mock(YamlProxyConfiguration.class);
         abstractBootstrapInitializer.init(yamlConfig, PORT);
     }
     
-    private static boolean isAvailable() {
-        boolean portFree;
+    private static boolean isSocketAvailable() {
+        boolean result;
         try (Socket socket = new Socket(HOST, PORT)) {
-            portFree = true;
-        } catch (UnknownHostException ex) {
-            portFree = false;
-        } catch (IOException e) {
-            portFree = false;
+            result = true;
+        } catch (final IOException ex) {
+            result = false;
         }
-        return portFree;
+        return result;
     }
     
-    protected void assertProps(final Properties actual) {
+    protected final void assertProps(final Properties actual) {
         assertThat(actual.getProperty("alpha-1"), is("alpha-A"));
         assertThat(actual.getProperty("beta-2"), is("beta-B"));
     }

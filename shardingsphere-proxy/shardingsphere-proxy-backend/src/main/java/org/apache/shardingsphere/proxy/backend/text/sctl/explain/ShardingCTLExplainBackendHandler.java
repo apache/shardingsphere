@@ -61,8 +61,8 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         }
         SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
         SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(explainStatement.get().getSql(), false);
-        executionUnits = new ProxyKernelProcessor().generateExecutionContext(
-                new LogicSQLContext(schemaContext, explainStatement.get().getSql(), Collections.emptyList(), sqlStatement)).getExecutionUnits().iterator();
+        LogicSQLContext logicSQLContext = new LogicSQLContext(schemaContext, explainStatement.get().getSql(), Collections.emptyList(), sqlStatement);
+        executionUnits = new ProxyKernelProcessor().generateExecutionContext(logicSQLContext, ProxyContext.getInstance().getSchemaContexts().getProps()).getExecutionUnits().iterator();
         queryHeaders = new ArrayList<>(2);
         queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, 0, false, false, false, false));
         queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, 0, false, false, false, false));

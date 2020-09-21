@@ -259,8 +259,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private ExecutionContext createExecutionContext() {
         SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
-        DataNodeRouter dataNodeRouter = new DataNodeRouter(schemaContext.getSchema().getMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules());
-        RouteContext routeContext = dataNodeRouter.route(sqlStatement, sql, getParameters());
+        DataNodeRouter router = new DataNodeRouter(schemaContext.getSchema().getMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules());
+        RouteContext routeContext = router.route(sqlStatement, sql, getParameters());
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
                 schemaContexts.getProps(), schemaContext.getSchema().getRules());
         SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(sql, new ArrayList<>(getParameters()), routeContext);

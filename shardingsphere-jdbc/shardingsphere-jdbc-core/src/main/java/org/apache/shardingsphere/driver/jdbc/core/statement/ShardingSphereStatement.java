@@ -285,8 +285,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         clearStatements();
         SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
         SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(sql, false);
-        DataNodeRouter dataNodeRouter = new DataNodeRouter(schemaContext.getSchema().getMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules());
-        RouteContext routeContext = dataNodeRouter.route(sqlStatement, sql, Collections.emptyList());
+        DataNodeRouter router = new DataNodeRouter(schemaContext.getSchema().getMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules());
+        RouteContext routeContext = router.route(sqlStatement, sql, Collections.emptyList());
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
                 schemaContexts.getProps(), schemaContext.getSchema().getRules());
         SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(sql, Collections.emptyList(), routeContext);
