@@ -23,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.context.SchemaContexts;
-import org.apache.shardingsphere.infra.context.SchemaContextsBuilder;
+import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
@@ -34,7 +34,6 @@ import org.apache.shardingsphere.transaction.context.impl.StandardTransactionCon
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -113,7 +112,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
      * Close dataSources.
      * 
      * @param dataSourceNames data source names
-     * @throws IOException exception
+     * @throws Exception exception
      */
     public void close(final Collection<String> dataSourceNames) throws Exception {
         for (String each : dataSourceNames) {

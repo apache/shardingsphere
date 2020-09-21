@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.schema.fixture;
+package org.apache.shardingsphere.infra.context.fixture;
 
 import javax.sql.DataSource;
 import java.io.Closeable;

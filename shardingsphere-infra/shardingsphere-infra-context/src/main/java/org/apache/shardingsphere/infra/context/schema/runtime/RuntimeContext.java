@@ -15,39 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context;
+package org.apache.shardingsphere.infra.context.schema.runtime;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.context.runtime.RuntimeContext;
-import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 
 /**
- * Schema context.
+ * Runtime context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaContext {
+public final class RuntimeContext {
     
-    private final String name;
+    private final CachedDatabaseMetaData cachedDatabaseMetaData;
     
-    private final ShardingSphereSchema schema;
+    private final ExecutorKernel executorKernel;
     
-    private final RuntimeContext runtimeContext;
-    
-    /**
-     * Is complete schema context.
-     *
-     * @return is complete schema context or not
-     */
-    public boolean isComplete() {
-        return !schema.getRules().isEmpty() && !schema.getDataSources().isEmpty();
-    }
-    
-    /**
-     * Close executorKernel in runtimeContext.
-     */
-    public void close() {
-        runtimeContext.getExecutorKernel().close();
-    }
+    private final ShardingSphereSQLParserEngine sqlParserEngine;
 }
