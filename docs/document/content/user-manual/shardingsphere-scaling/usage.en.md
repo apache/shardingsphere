@@ -89,27 +89,29 @@ curl -X POST \
                   password: scaling
             ",
           "sourceRule":"
-            tables:
-              t_order:
-                actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}
-                databaseStrategy:
-                  standard:
-                    shardingColumn: order_id
-                    shardingAlgorithmName: t_order_db_algorith
-                logicTable: t_order
-                tableStrategy:
-                  standard:
-                    shardingColumn: user_id
-                    shardingAlgorithmName: t_order_tbl_algorith
-            shardingAlgorithms:
-              t_order_db_algorith:
-                type: INLINE
-                props:
-                  algorithm-expression: ds_$->{order_id % 2}
-              t_order_tbl_algorith:
-                type: INLINE
-                props:
-                  algorithm-expression: t_order_$->{user_id % 2}
+            rules:
+            - !SHARDING
+              tables:
+                t_order:
+                  actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}
+                  databaseStrategy:
+                    standard:
+                      shardingColumn: order_id
+                      shardingAlgorithmName: t_order_db_algorith
+                  logicTable: t_order
+                  tableStrategy:
+                    standard:
+                      shardingColumn: user_id
+                      shardingAlgorithmName: t_order_tbl_algorith
+              shardingAlgorithms:
+                t_order_db_algorith:
+                  type: INLINE
+                  props:
+                    algorithm-expression: ds_$->{order_id % 2}
+                t_order_tbl_algorith:
+                  type: INLINE
+                  props:
+                    algorithm-expression: t_order_$->{user_id % 2}
             ",
           "destinationDataSources":{
             "username":"root",
