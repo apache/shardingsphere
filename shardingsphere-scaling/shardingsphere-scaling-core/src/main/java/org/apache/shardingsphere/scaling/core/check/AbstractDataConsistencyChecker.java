@@ -49,10 +49,6 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     
     private final ShardingScalingJob shardingScalingJob;
     
-    private DataSource sourceDataSource;
-    
-    private DataSource destinationDataSource;
-    
     @Override
     public boolean countCheck() {
         return shardingScalingJob.getSyncConfigurations().stream().allMatch(each -> each.getDumperConfiguration().getTableNameMap().values().stream().distinct().allMatch(this::countCheck));
@@ -68,27 +64,19 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     }
     
     protected DataSource getSourceDataSource() {
-        if (sourceDataSource != null) {
-            return sourceDataSource;
-        }
         try {
             Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(
                     ConfigurationYamlConverter.loadDataSourceConfigurations(shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getSourceDatasource()));
             ShardingRuleConfiguration ruleConfiguration = ConfigurationYamlConverter.loadShardingRuleConfiguration(shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getSourceRule());
-            sourceDataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Lists.newArrayList(ruleConfiguration), null);
+            return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Lists.newArrayList(ruleConfiguration), null);
         } catch (SQLException ex) {
             throw new DataCheckFailException("get source data source failed.", ex);
         }
-        return sourceDataSource;
     }
     
     protected DataSource getDestinationDataSource() {
-        if (destinationDataSource != null) {
-            return destinationDataSource;
-        }
         RuleConfiguration.YamlDataSourceParameter parameter = shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getDestinationDataSources();
-        destinationDataSource = new DataSourceFactory().newInstance(new JDBCDataSourceConfiguration(parameter.getUrl(), parameter.getUsername(), parameter.getPassword()));
-        return destinationDataSource;
+        return new DataSourceFactory().newInstance(new JDBCDataSourceConfiguration(parameter.getUrl(), parameter.getUsername(), parameter.getPassword()));
     }
     
     private long count(final DataSource dataSource, final String table) {
