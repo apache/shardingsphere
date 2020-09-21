@@ -50,79 +50,79 @@ import static org.mockito.Mockito.when;
 public final class QueryHeaderBuilderTest {
     
     @Test
-    public void assertQueryHeaderSchema() throws Exception {
+    public void assertQueryHeaderSchema() throws SQLException {
         QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getSchema(), is("sharding_schema"));
     }
     
     @Test
-    public void assertQueryHeaderTable() throws Exception {
+    public void assertQueryHeaderTable() throws SQLException {
         QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getTable(), is("t_logic_order"));
     }
     
     @Test
-    public void assertQueryHeaderColumnLabel() throws Exception {
+    public void assertQueryHeaderColumnLabel() throws SQLException {
         QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getColumnLabel(), is("order_id"));
     }
     
     @Test
-    public void assertQueryHeaderColumnNameWithoutProjectionsContext() throws Exception {
+    public void assertQueryHeaderColumnNameWithoutProjectionsContext() throws SQLException {
         QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getColumnName(), is("order_id"));
     }
     
     @Test
-    public void assertQueryHeaderColumnNameFromProjectionsContext() throws Exception {
+    public void assertQueryHeaderColumnNameFromProjectionsContext() throws SQLException {
         QueryHeader header = QueryHeaderBuilder.build(createProjectionsContext(), createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getColumnName(), is("order_id"));
     }
     
     @Test
-    public void assertQueryHeaderColumnNameFromMetaData() throws Exception {
+    public void assertQueryHeaderColumnNameFromMetaData() throws SQLException {
         QueryHeader header = QueryHeaderBuilder.build(createProjectionsContext(), createResultSetMetaData(), getSchemaContext(), 2);
         assertThat(header.getColumnName(), is("expr"));
     }
     
     @Test
-    public void assertQueryHeaderColumnLength() throws Exception {
+    public void assertQueryHeaderColumnLength() throws SQLException {
         QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getColumnLength(), is(1));
     }
     
     @Test
-    public void assertQueryHeaderColumnType() throws Exception {
+    public void assertQueryHeaderColumnType() throws SQLException {
         QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getColumnType(), is(Types.INTEGER));
     }
     
     @Test
-    public void assertQueryHeaderDecimals() throws Exception {
+    public void assertQueryHeaderDecimals() throws SQLException {
         QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getDecimals(), is(1));
     }
     
     @Test
-    public void assertQueryHeaderSigned() throws Exception {
+    public void assertQueryHeaderSigned() throws SQLException {
         QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertTrue(header.isSigned());
     }
     
     @Test
-    public void assertQueryHeaderPrimaryKey() throws Exception {
+    public void assertQueryHeaderPrimaryKey() throws SQLException {
         QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertTrue(header.isPrimaryKey());
     }
     
     @Test
-    public void assertQueryHeaderNotNull() throws Exception {
+    public void assertQueryHeaderNotNull() throws SQLException {
         QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertTrue(header.isNotNull());
     }
     
     @Test
-    public void assertQueryHeaderAutoIncrement() throws Exception {
+    public void assertQueryHeaderAutoIncrement() throws SQLException {
         QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertTrue(header.isAutoIncrement());
     }

@@ -28,6 +28,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Del
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleDeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerDeleteStatement;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -41,11 +46,34 @@ public final class ShardingDeleteStatementValidatorTest {
     private ShardingRule shardingRule;
 
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateDeleteModifyMultiTables() {
+    public void assertValidateMySQLDeleteModifyMultiTables() {
+        assertValidateDeleteModifyMultiTables(new MySQLDeleteStatement());
+    }
+
+    @Test(expected = ShardingSphereException.class)
+    public void assertValidateOracleDeleteModifyMultiTables() {
+        assertValidateDeleteModifyMultiTables(new OracleDeleteStatement());
+    }
+
+    @Test(expected = ShardingSphereException.class)
+    public void assertValidatePostgreSQLDeleteModifyMultiTables() {
+        assertValidateDeleteModifyMultiTables(new PostgreSQLDeleteStatement());
+    }
+
+    @Test(expected = ShardingSphereException.class)
+    public void assertValidateSQL92DeleteModifyMultiTables() {
+        assertValidateDeleteModifyMultiTables(new SQL92DeleteStatement());
+    }
+
+    @Test(expected = ShardingSphereException.class)
+    public void assertValidateSQLServerDeleteModifyMultiTables() {
+        assertValidateDeleteModifyMultiTables(new SQLServerDeleteStatement());
+    }
+    
+    private void assertValidateDeleteModifyMultiTables(final DeleteStatement sqlStatement) {
         DeleteMultiTableSegment tableSegment = new DeleteMultiTableSegment();
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
-        DeleteStatement sqlStatement = new DeleteStatement();
         sqlStatement.setTableSegment(tableSegment);
         SQLStatementContext<DeleteStatement> sqlStatementContext = new DeleteStatementContext(sqlStatement);
         RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());

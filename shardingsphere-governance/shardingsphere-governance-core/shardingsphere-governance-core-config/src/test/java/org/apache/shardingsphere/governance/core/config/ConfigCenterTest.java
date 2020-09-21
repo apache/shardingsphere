@@ -371,7 +371,8 @@ public final class ConfigCenterTest {
         when(configurationRepository.get("/schemas/sharding_db/rule")).thenReturn(readYAML(SHADOW_RULE_YAML));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         ShadowRuleConfiguration actual = (ShadowRuleConfiguration) configCenter.loadRuleConfigurations("sharding_db").iterator().next();
-        assertThat(actual.getShadowMappings().get("ds"), is("shadow_ds"));
+        assertThat(actual.getSourceDataSourceNames(), is(Arrays.asList("ds", "ds1")));
+        assertThat(actual.getShadowDataSourceNames(), is(Arrays.asList("shadow_ds", "shadow_ds1")));
         assertThat(actual.getColumn(), is("shadow"));
     }
     

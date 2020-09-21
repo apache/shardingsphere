@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquer
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
@@ -30,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class SubquerySegment implements SQLSegment, ExpressionSegment {
+public final class SubquerySegment implements ExpressionSegment {
     
     private final int startIndex;
     

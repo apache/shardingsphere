@@ -40,10 +40,12 @@ dataSources:
 rules:
 - !SHADOW
   column: shadow
-  shadowMappings:
-    ds_0: shadow_ds_0
-    ds_1: shadow_ds_1
-
+  sourceDataSourceNames:
+    - ds_0
+    - ds_1
+  shadowDataSourceNames:
+    - shadow_ds_0
+    - shadow_ds_1
 - !SHARDING
   tables:
     t_user:

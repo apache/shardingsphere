@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Scaling constants.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScalingConstant {
     
     /**

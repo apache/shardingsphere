@@ -22,5 +22,5 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 /**
  * Alter server statement test case.
  */
-public class AlterServerStatementTestCase extends SQLParserTestCase {
+public final class AlterServerStatementTestCase extends SQLParserTestCase {
 }

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -107,10 +108,7 @@ public final class ExecutionContextBuilder {
         if (null != sqlStatementContext) {
             tablesContext = sqlStatementContext.getTablesContext();
         }
-        if (null != tablesContext) {
-            return tablesContext.getTableNames().stream().collect(Collectors.toList());
-        }
-        return Collections.emptyList();
+        return null == tablesContext ? Collections.emptyList() : new ArrayList<>(tablesContext.getTableNames());
     }
     
     private static List<PrimaryKeyMetaData> getPrimaryKeyColumns(final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext) {

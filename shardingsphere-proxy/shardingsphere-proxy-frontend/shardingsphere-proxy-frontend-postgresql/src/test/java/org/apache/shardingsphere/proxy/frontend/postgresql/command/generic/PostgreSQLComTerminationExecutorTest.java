@@ -29,6 +29,6 @@ public final class PostgreSQLComTerminationExecutorTest {
     @Test
     public void assertNewInstance() {
         PostgreSQLComTerminationExecutor actual = new PostgreSQLComTerminationExecutor();
-        assertThat(actual.execute(), is(Collections.EMPTY_LIST));
+        assertThat(actual.execute(), is(Collections.emptyList()));
     }
 }

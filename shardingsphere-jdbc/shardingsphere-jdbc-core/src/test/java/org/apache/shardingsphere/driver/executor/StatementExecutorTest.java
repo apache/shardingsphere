@@ -117,8 +117,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteQueryForSingleStatementFailure() throws SQLException {
         Statement statement = getStatement();
-        SQLException exp = new SQLException("");
-        when(statement.executeQuery(DQL_SQL)).thenThrow(exp);
+        SQLException ex = new SQLException("");
+        when(statement.executeQuery(DQL_SQL)).thenThrow(ex);
         assertThat(actual.executeQuery(getExecuteGroups(Collections.singletonList(statement), true)), is(Collections.singletonList((QueryResult) null)));
         verify(statement).executeQuery(DQL_SQL);
     }
@@ -127,9 +127,9 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteQueryForMultipleStatementsFailure() throws SQLException {
         Statement statement1 = getStatement();
         Statement statement2 = getStatement();
-        SQLException exp = new SQLException("");
-        when(statement1.executeQuery(DQL_SQL)).thenThrow(exp);
-        when(statement2.executeQuery(DQL_SQL)).thenThrow(exp);
+        SQLException ex = new SQLException("");
+        when(statement1.executeQuery(DQL_SQL)).thenThrow(ex);
+        when(statement2.executeQuery(DQL_SQL)).thenThrow(ex);
         List<QueryResult> actualResultSets = actual.executeQuery(getExecuteGroups(Arrays.asList(statement1, statement2), true));
         assertThat(actualResultSets, is(Arrays.asList((QueryResult) null, null)));
         verify(statement1).executeQuery(DQL_SQL);
@@ -158,8 +158,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteUpdateForSingleStatementFailure() throws SQLException {
         Statement statement = getStatement();
-        SQLException exp = new SQLException("");
-        when(statement.executeUpdate(DML_SQL)).thenThrow(exp);
+        SQLException ex = new SQLException("");
+        when(statement.executeUpdate(DML_SQL)).thenThrow(ex);
         assertThat(actual.executeUpdate(getExecuteGroups(Collections.singletonList(statement), false), getSQLStatementContext()), is(0));
         verify(statement).executeUpdate(DML_SQL);
     }
@@ -168,9 +168,9 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteUpdateForMultipleStatementsFailure() throws SQLException {
         Statement statement1 = getStatement();
         Statement statement2 = getStatement();
-        SQLException exp = new SQLException("");
-        when(statement1.executeUpdate(DML_SQL)).thenThrow(exp);
-        when(statement2.executeUpdate(DML_SQL)).thenThrow(exp);
+        SQLException ex = new SQLException("");
+        when(statement1.executeUpdate(DML_SQL)).thenThrow(ex);
+        when(statement2.executeUpdate(DML_SQL)).thenThrow(ex);
         assertThat(actual.executeUpdate(getExecuteGroups(Arrays.asList(statement1, statement2), false), getSQLStatementContext()), is(0));
         verify(statement1).executeUpdate(DML_SQL);
         verify(statement2).executeUpdate(DML_SQL);
@@ -193,13 +193,13 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     private Statement getStatement() throws SQLException {
-        Statement statement = mock(Statement.class);
+        Statement result = mock(Statement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(statement.getConnection()).thenReturn(connection);
-        return statement;
+        when(result.getConnection()).thenReturn(connection);
+        return result;
     }
     
     @Test
@@ -232,8 +232,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteForSingleStatementFailureWithDML() throws SQLException {
         Statement statement = getStatement();
-        SQLException exp = new SQLException("");
-        when(statement.execute(DML_SQL)).thenThrow(exp);
+        SQLException ex = new SQLException("");
+        when(statement.execute(DML_SQL)).thenThrow(ex);
         assertFalse(actual.execute(getExecuteGroups(Collections.singletonList(statement), false), getSQLStatementContext()));
         verify(statement).execute(DML_SQL);
     }
@@ -242,9 +242,9 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteForMultipleStatementsFailureWithDML() throws SQLException {
         Statement statement1 = getStatement();
         Statement statement2 = getStatement();
-        SQLException exp = new SQLException("");
-        when(statement1.execute(DML_SQL)).thenThrow(exp);
-        when(statement2.execute(DML_SQL)).thenThrow(exp);
+        SQLException ex = new SQLException("");
+        when(statement1.execute(DML_SQL)).thenThrow(ex);
+        when(statement2.execute(DML_SQL)).thenThrow(ex);
         assertFalse(actual.execute(getExecuteGroups(Arrays.asList(statement1, statement2), false), getSQLStatementContext()));
         verify(statement1).execute(DML_SQL);
         verify(statement2).execute(DML_SQL);
@@ -297,8 +297,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertOverallExceptionFailure() throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(true);
         Statement statement = getStatement();
-        SQLException exp = new SQLException("");
-        when(statement.execute(DML_SQL)).thenThrow(exp);
+        SQLException ex = new SQLException("");
+        when(statement.execute(DML_SQL)).thenThrow(ex);
         try {
             assertFalse(actual.execute(getExecuteGroups(Collections.singletonList(statement), false), getSQLStatementContext()));
         } catch (final SQLException ignored) {

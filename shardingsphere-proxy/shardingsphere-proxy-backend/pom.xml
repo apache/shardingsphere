@@ -109,12 +109,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-replica-route</artifactId>
+            <artifactId>shardingsphere-consensus-replication-route</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-replica-execute</artifactId>
+            <artifactId>shardingsphere-consensus-replication-executor</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

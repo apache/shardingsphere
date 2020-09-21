@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractFromExpression;
 
 import java.util.Collection;
@@ -60,10 +60,9 @@ public final class ShadowConditionEngine {
         if (!whereSegment.isPresent()) {
             return Optional.empty();
         }
-        Collection<AndPredicate> andPredicates = new LinkedList<>();
         ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
-        ExpressionBuildUtil util = new ExpressionBuildUtil(expression);
-        andPredicates.addAll(util.extractAndPredicates().getAndPredicates());
+        ExpressionBuilder expressionBuilder = new ExpressionBuilder(expression);
+        Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
         for (AndPredicate each : andPredicates) {
             Optional<ShadowCondition> condition = createShadowCondition(each);
             if (condition.isPresent()) {

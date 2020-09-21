@@ -38,8 +38,6 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     private static final String ALLOW_RANGE_QUERY_KEY = "allow-range-query-with-inline-sharding";
     
-    private Closure<?> closure;
-    
     private boolean allowRangeQuery;
     
     @Getter
@@ -48,7 +46,6 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public void init() {
-        closure = createClosure();
         allowRangeQuery = isAllowRangeQuery();
     }
     
@@ -67,6 +64,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
+        Closure<?> closure = createClosure();
         closure.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
         return closure.call().toString();
     }

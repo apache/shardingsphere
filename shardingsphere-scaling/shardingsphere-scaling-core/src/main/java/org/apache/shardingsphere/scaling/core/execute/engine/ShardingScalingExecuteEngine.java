@@ -22,10 +22,12 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.impl.ShardingSphereThreadFactoryBuilder;
 import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -35,12 +37,30 @@ import java.util.concurrent.Future;
 /**
  * Sharding scaling executor engine.
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingScalingExecuteEngine {
+    
+    public static final String THREAD_NAME_FORMAT = "ShardingScaling-execute-%d";
     
     private final ListeningExecutorService executorService;
     
-    public ShardingScalingExecuteEngine(final int maxWorkerNumber) {
-        executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkerNumber, ShardingSphereThreadFactoryBuilder.build("ShardingScaling-execute-%d")));
+    /**
+     * Create sharding scaling execute engine instance with cached thread pool.
+     *
+     * @return sharding scaling execute engine instance
+     */
+    public static ShardingScalingExecuteEngine newCachedThreadInstance() {
+        return new ShardingScalingExecuteEngine(MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(ShardingSphereThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
+    }
+    
+    /**
+     * Create sharding scaling execute engine instance with fixed thread pool.
+     *
+     * @param threadNumber thread number
+     * @return sharding scaling execute engine instance
+     */
+    public static ShardingScalingExecuteEngine newFixedThreadInstance(final int threadNumber) {
+        return new ShardingScalingExecuteEngine(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(threadNumber, ShardingSphereThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
     }
     
     /**
@@ -93,8 +113,9 @@ public final class ShardingScalingExecuteEngine {
         public void onSuccess(final V result) {
             executeCallback.onSuccess();
         }
-    
+        
         @Override
+        @ParametersAreNonnullByDefault
         public void onFailure(final Throwable throwable) {
             executeCallback.onFailure(throwable);
         }

@@ -23,11 +23,14 @@ import org.apache.shardingsphere.infra.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.jdbc.JDBCExecuteEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.PreparedStatementExecutorWrapper;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.StatementExecutorWrapper;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.impl.PreparedStatementAccessor;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.impl.StatementAccessor;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.kernel.LogicSQLContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,27 +53,32 @@ public final class DatabaseCommunicationEngineFactory {
     /**
      * Create new instance of text protocol backend handler.
      *
-     * @param sqlStatement sql statement
+     * @param sqlStatement SQL statement
      * @param sql SQL to be executed
      * @param backendConnection backend connection
-     * @return instance of text protocol backend handler
+     * @return text protocol backend handler
      */
     public DatabaseCommunicationEngine newTextProtocolInstance(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
-        SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
-        return new JDBCDatabaseCommunicationEngine(sql, backendConnection, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(schemaContext, sqlStatement)));
+        LogicSQLContext logicSQLContext = createLogicSQLContext(sqlStatement, sql, Collections.emptyList(), backendConnection);
+        return new JDBCDatabaseCommunicationEngine(logicSQLContext, new JDBCExecuteEngine(backendConnection, new StatementAccessor()));
     }
     
     /**
      * Create new instance of binary protocol backend handler.
      *
-     * @param sqlStatement sql statement
+     * @param sqlStatement SQL statement
      * @param sql SQL to be executed
      * @param parameters SQL parameters
      * @param backendConnection backend connection
-     * @return instance of binary protocol backend handler
+     * @return binary protocol backend handler
      */
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
+        LogicSQLContext logicSQLContext = createLogicSQLContext(sqlStatement, sql, new ArrayList<>(parameters), backendConnection);
+        return new JDBCDatabaseCommunicationEngine(logicSQLContext, new JDBCExecuteEngine(backendConnection, new PreparedStatementAccessor()));
+    }
+    
+    private LogicSQLContext createLogicSQLContext(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
         SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
-        return new JDBCDatabaseCommunicationEngine(sql, backendConnection, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(schemaContext, sqlStatement, parameters)));
+        return new LogicSQLContext(schemaContext, sql, parameters, sqlStatement);
     }
 }

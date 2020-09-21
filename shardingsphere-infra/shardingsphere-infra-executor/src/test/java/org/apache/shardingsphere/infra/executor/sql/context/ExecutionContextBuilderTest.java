@@ -63,9 +63,9 @@ public final class ExecutionContextBuilderTest {
     
     @Test
     public void assertBuildRouteSQLRewriteResult() {
-        RouteUnit routeUnit1 = new RouteUnit(new RouteMapper("logicName1", "actualName1"), Arrays.asList(new RouteMapper("logicName1", "actualName1")));
+        RouteUnit routeUnit1 = new RouteUnit(new RouteMapper("logicName1", "actualName1"), Collections.singletonList(new RouteMapper("logicName1", "actualName1")));
         SQLRewriteUnit sqlRewriteUnit1 = new SQLRewriteUnit("sql1", Collections.singletonList("parameter1"));
-        RouteUnit routeUnit2 = new RouteUnit(new RouteMapper("logicName2", "actualName2"), Arrays.asList(new RouteMapper("logicName1", "actualName1")));
+        RouteUnit routeUnit2 = new RouteUnit(new RouteMapper("logicName2", "actualName2"), Collections.singletonList(new RouteMapper("logicName1", "actualName1")));
         SQLRewriteUnit sqlRewriteUnit2 = new SQLRewriteUnit("sql2", Collections.singletonList("parameter2"));
         Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits = new HashMap<>(2, 1);
         sqlRewriteUnits.put(routeUnit1, sqlRewriteUnit1);
@@ -74,7 +74,7 @@ public final class ExecutionContextBuilderTest {
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, new RouteSQLRewriteResult(sqlRewriteUnits), mock(SQLStatementContext.class));
         ExecutionUnit expectedUnit1 = new ExecutionUnit("actualName1", new SQLUnit("sql1", Collections.singletonList("parameter1")));
         ExecutionUnit expectedUnit2 = new ExecutionUnit("actualName2", new SQLUnit("sql2", Collections.singletonList("parameter2")));
-        Collection<ExecutionUnit> expected = new LinkedHashSet<>();
+        Collection<ExecutionUnit> expected = new LinkedHashSet<>(2, 1);
         expected.add(expectedUnit1);
         expected.add(expectedUnit2);
         assertThat(actual, is(expected));

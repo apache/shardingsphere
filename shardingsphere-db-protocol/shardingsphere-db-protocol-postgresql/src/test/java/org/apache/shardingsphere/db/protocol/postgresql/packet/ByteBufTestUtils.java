@@ -20,7 +20,10 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.buffer.UnpooledHeapByteBuf;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ByteBufTestUtils {
     
     /**

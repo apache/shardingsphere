@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuildUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractFromExpression;
 
 import java.util.Collection;
@@ -68,10 +68,9 @@ public final class EncryptConditionEngine {
             return Collections.emptyList();
         }
     
-        Collection<AndPredicate> andPredicates = new LinkedList<>();
         ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
-        ExpressionBuildUtil expressionBuildUtil = new ExpressionBuildUtil(expression);
-        andPredicates.addAll(expressionBuildUtil.extractAndPredicates().getAndPredicates());
+        ExpressionBuilder expressionBuilder = new ExpressionBuilder(expression);
+        Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
         List<EncryptCondition> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
             result.addAll(createEncryptConditions(sqlStatementContext, each));

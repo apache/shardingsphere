@@ -69,9 +69,7 @@ public class GovernanceSpringBootRegistryShardingTest {
         TestGovernanceRepository repository = new TestGovernanceRepository();
         repository.persist("/schemas/logic_db/datasource", shardingDatabases);
         repository.persist("/schemas/logic_db/rule", shardingRule);
-        repository.persist("/props", ""
-                + ConfigurationPropertyKey.EXECUTOR_SIZE.getKey() + ": '100'\n"
-                + ConfigurationPropertyKey.SQL_SHOW.getKey() + ": 'true'\n");
+        repository.persist("/props", ConfigurationPropertyKey.EXECUTOR_SIZE.getKey() + ": '100'\n" + ConfigurationPropertyKey.SQL_SHOW.getKey() + ": 'true'\n");
         repository.persist("/states/datanodes", "");
     }
     

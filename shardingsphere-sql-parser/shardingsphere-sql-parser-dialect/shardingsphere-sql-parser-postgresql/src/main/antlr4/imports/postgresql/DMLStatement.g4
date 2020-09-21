@@ -433,17 +433,6 @@ havingClause
     : HAVING aExpr
     ;
 
-call
-    : CALL funcName LP_ callClauses? RP_
-    ;
-
-callClauses
-    : (ALL | DISTINCT)? funcArgList sortClause?
-    | VARIADIC funcArgExpr sortClause
-    | funcArgList COMMA_ VARIADIC funcArgExpr sortClause
-    | ASTERISK_
-    ;
-
 doStatement
     : DO dostmtOptList
     ;

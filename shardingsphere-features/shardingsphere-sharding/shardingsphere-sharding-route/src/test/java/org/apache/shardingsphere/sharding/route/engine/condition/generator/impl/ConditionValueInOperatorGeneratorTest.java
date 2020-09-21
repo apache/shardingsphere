@@ -41,10 +41,9 @@ public final class ConditionValueInOperatorGeneratorTest {
     
     @Test
     public void assertNowExpression() {
-        ListExpression listExpression = new ListExpression();
+        ListExpression listExpression = new ListExpression(0, 0);
         listExpression.getItems().add(new CommonExpressionSegment(0, 0, "now()"));
-        InExpression inExpression = new InExpression();
-        inExpression.setRight(listExpression);
+        InExpression inExpression = new InExpression(0, 0, null, listExpression, false);
         Optional<RouteValue> routeValue = generator.generate(inExpression, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertThat(((ListRouteValue) routeValue.get()).getValues().iterator().next(), instanceOf(Date.class));

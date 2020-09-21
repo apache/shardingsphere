@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.Collection;
@@ -25,17 +26,18 @@ import java.util.LinkedList;
 
 @Getter
 @Setter
+@RequiredArgsConstructor
 public final class InExpression implements ExpressionSegment {
     
-    private int startIndex;
+    private final int startIndex;
     
-    private int stopIndex;
+    private final int stopIndex;
     
-    private ExpressionSegment left;
+    private final ExpressionSegment left;
     
-    private ExpressionSegment right;
+    private final ExpressionSegment right;
     
-    private boolean not;
+    private final boolean not;
     
     /**
      * Get expression list from right.

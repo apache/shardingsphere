@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
@@ -46,12 +45,9 @@ public final class PostgreSQLStringBinaryProtocolValueTest {
     @Test
     public void assertNewInstance() {
         when(byteBuf.readerIndex()).thenReturn(8);
-        doAnswer(new Answer<ByteBuf>() {
-            @Override
-            public ByteBuf answer(final InvocationOnMock invocation) throws Throwable {
-                ((byte[]) invocation.getArguments()[0])[0] = 97;
-                return byteBuf;
-            }
+        doAnswer((Answer<ByteBuf>) invocation -> {
+            ((byte[]) invocation.getArguments()[0])[0] = 97;
+            return byteBuf;
         }).when(byteBuf).readBytes(any(byte[].class));
         PostgreSQLStringBinaryProtocolValue actual = new PostgreSQLStringBinaryProtocolValue();
         assertThat(actual.getColumnLength("str"), equalTo("str".length()));

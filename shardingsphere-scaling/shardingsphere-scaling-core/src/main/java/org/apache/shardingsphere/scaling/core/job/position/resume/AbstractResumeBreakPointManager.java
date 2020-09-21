@@ -30,11 +30,13 @@ import org.apache.shardingsphere.scaling.core.job.position.FinishedInventoryPosi
 import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManagerFactory;
-import org.apache.shardingsphere.scaling.core.utils.InventoryPositionUtil;
+import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 
 import java.io.Closeable;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -64,15 +66,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
     
     private String taskPath;
     
-    @Override
-    public void persistInventoryPosition() {
-    }
-    
-    @Override
-    public void persistIncrementalPosition() {
-    }
-    
-    protected void resumeInventoryPosition(final String data) {
+    protected final void resumeInventoryPosition(final String data) {
         if (Strings.isNullOrEmpty(data)) {
             return;
         }
@@ -87,7 +81,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         }
     }
     
-    protected void resumeIncrementalPosition(final String data) {
+    protected final void resumeIncrementalPosition(final String data) {
         if (Strings.isNullOrEmpty(data)) {
             return;
         }
@@ -98,7 +92,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         }
     }
     
-    protected String getInventoryPositionData() {
+    protected final String getInventoryPositionData() {
         JsonObject result = new JsonObject();
         JsonObject unfinished = new JsonObject();
         Set<String> finished = Sets.newHashSet();
@@ -114,7 +108,7 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         return result.toString();
     }
     
-    protected String getIncrementalPositionData() {
+    protected final String getIncrementalPositionData() {
         JsonObject result = new JsonObject();
         for (Entry<String, PositionManager<IncrementalPosition>> entry : incrementalPositionManagerMap.entrySet()) {
             result.add(entry.getKey(), entry.getValue().getPosition().toJson());
@@ -144,9 +138,17 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
             InventoryPositions result = new InventoryPositions();
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();
             Map<String, Object> unfinished = GSON.<Map<String, Object>>fromJson(json.getAsJsonObject(UNFINISHED), Map.class);
-            result.setUnfinished(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> InventoryPositionUtil.fromJson(entry.getValue().toString()))));
+            result.setUnfinished(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> fromJson(entry.getValue()))));
             result.setFinished(GSON.<Set<String>>fromJson(json.getAsJsonArray(FINISHED), Set.class));
             return result;
+        }
+        
+        private static InventoryPosition fromJson(final Object json) {
+            List<Double> values = GSON.<List<Double>>fromJson(json.toString(), List.class);
+            if (2 == values.size()) {
+                return new PrimaryKeyPosition(values.get(0).longValue(), values.get(1).longValue());
+            }
+            return new PlaceholderInventoryPosition();
         }
     }
 }

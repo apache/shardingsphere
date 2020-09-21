@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.spi;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Map;
@@ -25,6 +27,7 @@ import java.util.TreeMap;
 /**
  * Scaling entry loader.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScalingEntryLoader {
     
     private static final Map<String, ScalingEntry> SCALING_ENTRY_MAP = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);

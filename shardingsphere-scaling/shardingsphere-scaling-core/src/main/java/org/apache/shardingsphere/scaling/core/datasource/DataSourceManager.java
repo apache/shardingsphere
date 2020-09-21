@@ -56,9 +56,9 @@ public final class DataSourceManager implements AutoCloseable {
     private void createSourceDatasources(final List<SyncConfiguration> syncConfigs) {
         for (SyncConfiguration syncConfiguration : syncConfigs) {
             DataSourceConfiguration dataSourceConfig = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration();
-            DataSourceWrapper hikariDataSource = dataSourceFactory.newInstance(dataSourceConfig);
-            cachedDataSources.put(dataSourceConfig, hikariDataSource);
-            sourceDatasources.put(dataSourceConfig, hikariDataSource);
+            DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
+            cachedDataSources.put(dataSourceConfig, dataSource);
+            sourceDatasources.put(dataSourceConfig, dataSource);
         }
     }
     
@@ -94,8 +94,8 @@ public final class DataSourceManager implements AutoCloseable {
         for (DataSourceWrapper each : cachedDataSources.values()) {
             try {
                 each.close();
-            } catch (IOException e) {
-                log.warn("An exception occurred while closing the data source", e);
+            } catch (final IOException ex) {
+                log.warn("An exception occurred while closing the data source", ex);
             }
         }
         cachedDataSources.clear();

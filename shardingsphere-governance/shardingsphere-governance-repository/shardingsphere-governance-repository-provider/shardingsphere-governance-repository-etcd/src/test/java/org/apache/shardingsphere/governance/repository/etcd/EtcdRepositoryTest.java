@@ -110,8 +110,8 @@ public final class EtcdRepositoryTest {
         FieldSetter.setField(repository, repository.getClass().getDeclaredField("etcdProperties"), new EtcdProperties(new Properties()));
     }
     
-    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @SuppressWarnings("unchecked")
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     private Client mockClient() {
         when(client.getKVClient()).thenReturn(kv);
         when(kv.get(any(ByteSequence.class))).thenReturn(getFuture);

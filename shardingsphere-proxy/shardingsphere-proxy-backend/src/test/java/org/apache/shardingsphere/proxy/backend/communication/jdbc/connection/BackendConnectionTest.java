@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -298,7 +299,7 @@ public final class BackendConnectionTest {
         field.setAccessible(true);
         Collection<ResultSet> cachedResultSets = (Collection<ResultSet>) field.get(backendConnection);
         ResultSet resultSet = mock(ResultSet.class);
-        SQLException sqlException = new SQLException();
+        SQLException sqlException = new SQLException("");
         doThrow(sqlException).when(resultSet).close();
         cachedResultSets.add(resultSet);
         Collection<SQLException> result = backendConnection.closeResultSets();
@@ -328,7 +329,7 @@ public final class BackendConnectionTest {
         Collection<Statement> cachedStatement = (Collection<Statement>) field.get(backendConnection);
         Statement statement = mock(Statement.class);
         cachedStatement.add(statement);
-        SQLException sqlException = new SQLException();
+        SQLException sqlException = new SQLException("");
         doThrow(sqlException).when(statement).close();
         Collection<SQLException> result = backendConnection.closeStatements();
         verify(statement, times(1)).close();
@@ -383,7 +384,7 @@ public final class BackendConnectionTest {
         ConnectionStatus connectionStatus = mock(ConnectionStatus.class);
         prepareConnectionStatus(connectionStatus);
         Connection connection = prepareCachedConnections();
-        SQLException sqlException = new SQLException();
+        SQLException sqlException = new SQLException("");
         doThrow(sqlException).when(connection).close();
         assertTrue(backendConnection.closeConnections(false).contains(sqlException));
     }
@@ -396,6 +397,27 @@ public final class BackendConnectionTest {
         when(connection.createStatement()).thenReturn(statement);
         assertThat(backendConnection.createStorageResource(connection, ConnectionMode.MEMORY_STRICTLY, null), is(statement));
         verify(connection, times(1)).createStatement();
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertGetConnectionsWithoutTransactions() {
+        backendConnection.getTransactionStatus().setInTransaction(false);
+        List<Connection> connectionList = MockConnectionUtil.mockNewConnections(1);
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(connectionList);
+        List<Connection> fetchedConnections = backendConnection.getConnections("ds1", 1, null);
+        assertThat(fetchedConnections.size(), is(1));
+        assertTrue(fetchedConnections.contains(connectionList.get(0)));
+        assertConnectionsCached("ds1", connectionList);
+    }
+    
+    @SneakyThrows
+    private void assertConnectionsCached(final String dataSourceName, final Collection<Connection> collectionList) {
+        Field field = backendConnection.getClass().getDeclaredField("cachedConnections");
+        field.setAccessible(true);
+        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
+        assertTrue(cachedConnections.containsKey(dataSourceName));
+        assertArrayEquals(cachedConnections.get(dataSourceName).toArray(), collectionList.toArray());
     }
     
     @SneakyThrows

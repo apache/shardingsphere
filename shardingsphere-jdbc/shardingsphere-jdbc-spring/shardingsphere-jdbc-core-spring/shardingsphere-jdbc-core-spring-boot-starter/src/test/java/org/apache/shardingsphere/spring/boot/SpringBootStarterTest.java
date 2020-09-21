@@ -48,7 +48,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -92,22 +91,20 @@ public class SpringBootStarterTest {
         assertThat(rule.getDataSourceNames(), is(Sets.newHashSet("ds_0", "ds_1")));
         Map<String, ShardingAlgorithm> shardingAlgorithmMap = rule.getShardingAlgorithms();
         assertNotNull(shardingAlgorithmMap);
-        InlineShardingAlgorithm databaseShardingAlgorithm = InlineShardingAlgorithm.class.cast(shardingAlgorithmMap.get("databaseShardingAlgorithm"));
+        InlineShardingAlgorithm databaseShardingAlgorithm = (InlineShardingAlgorithm) shardingAlgorithmMap.get("databaseShardingAlgorithm");
         assertThat(databaseShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("ds_$->{user_id % 2}"));
-        InlineShardingAlgorithm orderTableShardingAlgorithm = InlineShardingAlgorithm.class.cast(shardingAlgorithmMap.get("orderTableShardingAlgorithm"));
+        InlineShardingAlgorithm orderTableShardingAlgorithm = (InlineShardingAlgorithm) shardingAlgorithmMap.get("orderTableShardingAlgorithm");
         assertThat(orderTableShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("t_order_$->{order_id % 2}"));
         Collection<TableRule> tableRules = rule.getTableRules();
         assertNotNull(tableRules);
-        assertThat(tableRules.size(), equalTo(1));
+        assertThat(tableRules.size(), is(1));
         TableRule tableRule = tableRules.iterator().next();
         assertThat(tableRule.getLogicTable(), is("t_order"));
-        List<DataNode> dataNodes = Arrays.asList(new DataNode("ds_0.t_order_0"),
-                new DataNode("ds_0.t_order_1"), new DataNode("ds_1.t_order_0"), new DataNode("ds_1.t_order_1"));
+        List<DataNode> dataNodes = Arrays.asList(new DataNode("ds_0.t_order_0"), new DataNode("ds_0.t_order_1"), new DataNode("ds_1.t_order_0"), new DataNode("ds_1.t_order_1"));
         assertThat(tableRule.getActualDataNodes(), is(dataNodes));
         assertThat(tableRule.getActualDatasourceNames(), is(Sets.newHashSet("ds_0", "ds_1")));
         assertThat(tableRule.getDataNodeGroups(), is(DataNodeUtil.getDataNodeGroups(dataNodes)));
-        assertThat(tableRule.getDatasourceToTablesMap(), is(ImmutableMap.of("ds_1",
-                Sets.newHashSet("t_order_0", "t_order_1"), "ds_0", Sets.newHashSet("t_order_0", "t_order_1"))));
+        assertThat(tableRule.getDatasourceToTablesMap(), is(ImmutableMap.of("ds_1", Sets.newHashSet("t_order_0", "t_order_1"), "ds_0", Sets.newHashSet("t_order_0", "t_order_1"))));
         ShardingStrategy databaseShardingStrategy = tableRule.getDatabaseShardingStrategy();
         assertNotNull(databaseShardingStrategy);
         assertThat(databaseShardingStrategy.getShardingColumns(), is(Sets.newTreeSet(Collections.singleton("user_id"))));
@@ -130,7 +127,7 @@ public class SpringBootStarterTest {
     }
     
     private void assertEncryptRule(final EncryptRule rule) {
-        assertThat(rule.getEncryptTableNames(), is(Sets.newLinkedHashSet(Arrays.asList("t_order"))));
+        assertThat(rule.getEncryptTableNames(), is(Sets.newLinkedHashSet(Collections.singletonList("t_order"))));
         assertThat(rule.getCipherColumn("t_order", "pwd"), is("pwd_cipher"));
         assertThat(rule.getAssistedQueryColumns("t_order"), is(Collections.singletonList("pwd_assisted_query_cipher")));
         assertThat(rule.getLogicAndCipherColumns("t_order"), is(Collections.singletonMap("pwd", "pwd_cipher")));

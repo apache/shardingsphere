@@ -220,7 +220,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
             return null;
         }
         Optional<DataNodeRoutedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
-        return dataNodeRoutedRule.isPresent() ? dataNodeRoutedRule.get().findFirstActualTable(table).orElse(table) : table;
+        return dataNodeRoutedRule.map(nodeRoutedRule -> nodeRoutedRule.findFirstActualTable(table).orElse(table)).orElse(table);
     }
     
     private Optional<DataNodeRoutedRule> findDataNodeRoutedRule() {

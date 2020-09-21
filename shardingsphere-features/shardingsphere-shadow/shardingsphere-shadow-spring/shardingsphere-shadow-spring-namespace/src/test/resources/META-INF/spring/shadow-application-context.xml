@@ -24,9 +24,5 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
                            ">
-    <shadow:rule id="shadowRule" column="shadow">
-        <shadow:mappings>
-            <shadow:mapping product-data-source-name="prod_ds" shadow-data-source-name="shadow_ds" />
-        </shadow:mappings>
-    </shadow:rule>
+    <shadow:rule id="shadowRule" column="shadow" sourceDataSourceNames="ds,ds1" shadowDataSourceNames="shadow_ds,shadow_ds1"/>
 </beans>

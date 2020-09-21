@@ -54,6 +54,16 @@ public abstract class AbstractSqlBuilder {
     protected abstract String getRightIdentifierQuoteString();
     
     /**
+     * Add left and right identifier quote string.
+     *
+     * @param item to add quote item
+     * @return add quote string
+     */
+    protected StringBuilder quote(final String item) {
+        return new StringBuilder().append(getLeftIdentifierQuoteString()).append(item).append(getRightIdentifierQuoteString());
+    }
+    
+    /**
      * Build insert SQL.
      *
      * @param dataRecord data record
@@ -71,12 +81,12 @@ public abstract class AbstractSqlBuilder {
         StringBuilder columnsLiteral = new StringBuilder();
         StringBuilder holder = new StringBuilder();
         for (Column each : columns) {
-            columnsLiteral.append(String.format("%s%s%s,", getLeftIdentifierQuoteString(), each.getName(), getRightIdentifierQuoteString()));
+            columnsLiteral.append(String.format("%s,", quote(each.getName())));
             holder.append("?,");
         }
         columnsLiteral.setLength(columnsLiteral.length() - 1);
         holder.setLength(holder.length() - 1);
-        return String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), columnsLiteral, holder);
+        return String.format("INSERT INTO %s(%s) VALUES(%s)", quote(tableName), columnsLiteral, holder);
     }
     
     /**
@@ -93,14 +103,14 @@ public abstract class AbstractSqlBuilder {
         }
         StringBuilder updatedColumnString = new StringBuilder();
         for (Column each : extractUpdatedColumns(dataRecord.getColumns())) {
-            updatedColumnString.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each.getName(), getRightIdentifierQuoteString()));
+            updatedColumnString.append(String.format("%s = ?,", quote(each.getName())));
         }
         updatedColumnString.setLength(updatedColumnString.length() - 1);
         return String.format(sqlCacheMap.get(sqlCacheKey), updatedColumnString);
     }
     
     private String buildUpdateSQLInternal(final String tableName, final Collection<Column> conditionColumns) {
-        return String.format("UPDATE %s%s%s SET %%s WHERE %s", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), buildWhereSQL(conditionColumns));
+        return String.format("UPDATE %s SET %%s WHERE %s", quote(tableName), buildWhereSQL(conditionColumns));
     }
     
     private Collection<Column> extractUpdatedColumns(final Collection<Column> columns) {
@@ -123,15 +133,25 @@ public abstract class AbstractSqlBuilder {
     }
     
     private String buildDeleteSQLInternal(final String tableName, final Collection<Column> conditionColumns) {
-        return String.format("DELETE FROM %s%s%s WHERE %s", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), buildWhereSQL(conditionColumns));
+        return String.format("DELETE FROM %s WHERE %s", quote(tableName), buildWhereSQL(conditionColumns));
     }
     
     private String buildWhereSQL(final Collection<Column> conditionColumns) {
         StringBuilder where = new StringBuilder();
         for (Column each : conditionColumns) {
-            where.append(String.format("%s%s%s = ? and ", getLeftIdentifierQuoteString(), each.getName(), getRightIdentifierQuoteString()));
+            where.append(String.format("%s = ? and ", quote(each.getName())));
         }
         where.setLength(where.length() - 5);
         return where.toString();
+    }
+    
+    /**
+     * Build count SQL.
+     *
+     * @param tableName table name
+     * @return count SQL
+     */
+    public String buildCountSQL(final String tableName) {
+        return String.format("SELECT COUNT(*) FROM %s", quote(tableName));
     }
 }

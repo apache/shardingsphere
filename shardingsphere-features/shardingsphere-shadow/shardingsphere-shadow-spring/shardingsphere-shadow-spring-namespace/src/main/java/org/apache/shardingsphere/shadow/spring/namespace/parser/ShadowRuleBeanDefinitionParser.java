@@ -23,12 +23,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Shadow rule parser for spring namespace.
@@ -37,7 +32,7 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
     
     /**
      * Parse shadow rule element.
-     * 
+     *
      * @param element element
      * @return bean definition of shadow rule
      */
@@ -45,17 +40,8 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShadowRuleConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(ShadowDataSourceBeanDefinitionParserTag.COLUMN_CONFIG_TAG));
-        factory.addConstructorArgValue(parseShadowMappings(DomUtils.getChildElementByTagName(element, ShadowDataSourceBeanDefinitionParserTag.MAPPINGS_CONFIG_TAG)));
+        factory.addConstructorArgValue(element.getAttribute(ShadowDataSourceBeanDefinitionParserTag.SOURCE_DATASOURCE_NAMES_TAG).split(","));
+        factory.addConstructorArgValue(element.getAttribute(ShadowDataSourceBeanDefinitionParserTag.SHADOW_DATASOURCE_NAMES_TAG).split(","));
         return factory.getBeanDefinition();
-    }
-    
-    private static Map<String, String> parseShadowMappings(final Element element) {
-        List<Element> shadowMappingElements = DomUtils.getChildElementsByTagName(element, ShadowDataSourceBeanDefinitionParserTag.MAPPING_CONFIG_TAG);
-        Map<String, String> result = new HashMap<>(shadowMappingElements.size());
-        for (Element each : shadowMappingElements) {
-            result.put(each.getAttribute(ShadowDataSourceBeanDefinitionParserTag.PRODUCT_DATA_SOURCE_NAME_ATTRIBUTE), 
-                    each.getAttribute(ShadowDataSourceBeanDefinitionParserTag.SHADOW_DATA_SOURCE_NAME_ATTRIBUTE));
-        }
-        return result;
     }
 }

@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -32,8 +34,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -84,7 +84,7 @@ public final class MetaDataManagerTest {
     private ResultSetMetaData resultSetMetaData;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getCatalog()).thenReturn("");
         when(connection.getSchema()).thenReturn("");
@@ -133,7 +133,7 @@ public final class MetaDataManagerTest {
     
     @Test(expected = RuntimeException.class)
     public void assertGetTableMetaDataFailure() throws SQLException {
-        when(dataSource.getConnection()).thenThrow(new SQLException());
+        when(dataSource.getConnection()).thenThrow(new SQLException(""));
         new MetaDataManager(dataSource).getTableMetaData(TEST_TABLE);
     }
 }

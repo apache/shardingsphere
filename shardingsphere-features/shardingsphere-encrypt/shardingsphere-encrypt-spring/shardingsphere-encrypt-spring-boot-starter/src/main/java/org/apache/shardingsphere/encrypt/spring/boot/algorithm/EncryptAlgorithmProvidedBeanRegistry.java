@@ -19,14 +19,13 @@ package org.apache.shardingsphere.encrypt.spring.boot.algorithm;
 
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.env.Environment;
 
 /**
  * Encrypt algorithm provided bean registry.
  */
-public final class EncryptAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry {
+public final class EncryptAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry<EncryptAlgorithm> {
     
     private static final String ENCRYPTORS_ALGORITHMS = "spring.shardingsphere.rules.encrypt.encryptors.";
     
@@ -40,7 +39,7 @@ public final class EncryptAlgorithmProvidedBeanRegistry extends AbstractAlgorith
     }
     
     @Override
-    public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) throws BeansException {
+    public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) {
         registerBean(ENCRYPTORS_ALGORITHMS, EncryptAlgorithm.class, registry);
     }
 }

@@ -83,7 +83,7 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
                 return entry.getKey();
             }
         }
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("");
     }
     
     @Override

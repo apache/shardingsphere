@@ -33,17 +33,6 @@ public final class MySQLImporter extends AbstractJDBCImporter {
     
     @Override
     protected AbstractSqlBuilder createSqlBuilder() {
-        return new AbstractSqlBuilder() {
-            
-            @Override
-            public String getLeftIdentifierQuoteString() {
-                return "`";
-            }
-            
-            @Override
-            public String getRightIdentifierQuoteString() {
-                return "`";
-            }
-        };
+        return new MySQLSqlBuilder();
     }
 }

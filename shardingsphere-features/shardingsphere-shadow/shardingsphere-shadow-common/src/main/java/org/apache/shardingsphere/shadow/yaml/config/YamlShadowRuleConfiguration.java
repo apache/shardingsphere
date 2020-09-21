@@ -19,10 +19,10 @@ package org.apache.shardingsphere.shadow.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Shadow rule configuration.
@@ -33,7 +33,9 @@ public final class YamlShadowRuleConfiguration implements YamlRuleConfiguration 
     
     private String column;
     
-    private Map<String, String> shadowMappings;
+    private List<String> sourceDataSourceNames;
+    
+    private List<String> shadowDataSourceNames;
     
     @Override
     public Class<ShadowRuleConfiguration> getRuleConfigurationType() {

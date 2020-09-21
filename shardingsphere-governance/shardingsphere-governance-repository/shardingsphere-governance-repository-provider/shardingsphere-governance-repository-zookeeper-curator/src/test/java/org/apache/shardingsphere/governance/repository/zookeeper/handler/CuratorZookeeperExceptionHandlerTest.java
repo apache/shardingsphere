@@ -29,10 +29,10 @@ public final class CuratorZookeeperExceptionHandlerTest {
     @Test
     public void assertHandleException() {
         CuratorZookeeperExceptionHandler.handleException(null);
-        CuratorZookeeperExceptionHandler.handleException(new NoNodeException());
-        CuratorZookeeperExceptionHandler.handleException(new Exception(new NoNodeException()));
+        CuratorZookeeperExceptionHandler.handleException(new NoNodeException(""));
+        CuratorZookeeperExceptionHandler.handleException(new Exception(new NoNodeException("")));
         try {
-            CuratorZookeeperExceptionHandler.handleException(new Exception());
+            CuratorZookeeperExceptionHandler.handleException(new Exception(""));
             fail("must be failed handle new Exception().");
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

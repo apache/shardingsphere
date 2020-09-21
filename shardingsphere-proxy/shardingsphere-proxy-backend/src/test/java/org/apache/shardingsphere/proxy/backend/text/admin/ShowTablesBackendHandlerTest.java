@@ -46,7 +46,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ShowTablesBackendHandlerTest {
+public final class ShowTablesBackendHandlerTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     

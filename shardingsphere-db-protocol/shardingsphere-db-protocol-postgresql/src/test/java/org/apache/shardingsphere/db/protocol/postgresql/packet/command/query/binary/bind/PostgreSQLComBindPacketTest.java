@@ -29,7 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -57,7 +57,7 @@ public final class PostgreSQLComBindPacketTest {
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt8()).thenReturn(11L);
         String sql = "select * from order where id = ? ";
-        BinaryStatementRegistry.getInstance().get(1).register("sts-id", sql, 1, Arrays.asList(new PostgreSQLBinaryStatementParameterType(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8)));
+        BinaryStatementRegistry.getInstance().get(1).register("sts-id", sql, 1, Collections.singletonList(new PostgreSQLBinaryStatementParameterType(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8)));
         PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(payload, 1);
         bindPacket.write(payload);
         assertThat(bindPacket.getSql(), is(sql));

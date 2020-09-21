@@ -88,7 +88,7 @@ public final class LogicalReplicationTest {
     @Test(expected = SQLException.class)
     @SneakyThrows(SQLException.class)
     public void assertCreateReplicationStreamFailure() {
-        when(pgConnection.unwrap(PGConnection.class)).thenThrow(new SQLException());
+        when(pgConnection.unwrap(PGConnection.class)).thenThrow(new SQLException(""));
         logicalReplication.createReplicationStream(pgConnection, "", LogSequenceNumber.valueOf(100L));
     }
 }

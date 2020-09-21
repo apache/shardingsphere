@@ -28,6 +28,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XADataSource;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -76,7 +78,7 @@ public final class AtomikosTransactionManagerTest {
     }
     
     @Test
-    public void assertEnListResource() throws Exception {
+    public void assertEnListResource() throws SystemException, RollbackException {
         SingleXAResource singleXAResource = mock(SingleXAResource.class);
         Transaction transaction = mock(Transaction.class);
         when(userTransactionManager.getTransaction()).thenReturn(transaction);

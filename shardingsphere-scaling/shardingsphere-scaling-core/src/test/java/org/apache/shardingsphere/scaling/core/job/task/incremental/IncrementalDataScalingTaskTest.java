@@ -60,7 +60,7 @@ public final class IncrementalDataScalingTaskTest {
         SyncProgress progress = incrementalDataSyncTask.getProgress();
         assertTrue(progress instanceof IncrementalDataSyncTaskProgress);
         assertThat(((IncrementalDataSyncTaskProgress) progress).getId(), is("ds0"));
-        assertThat(((IncrementalDataSyncTaskProgress) progress).getDelayMillisecond(), is(0L));
+        assertThat(((IncrementalDataSyncTaskProgress) progress).getDelayMillisecond(), is(Long.MAX_VALUE));
         assertTrue(((IncrementalDataSyncTaskProgress) progress).getPosition() instanceof IncrementalPosition);
     }
     
@@ -70,9 +70,9 @@ public final class IncrementalDataScalingTaskTest {
     }
     
     private ImporterConfiguration mockImporterConfiguration() {
-        ImporterConfiguration importerConfig = new ImporterConfiguration();
-        importerConfig.setDataSourceConfiguration(new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
-        return importerConfig;
+        ImporterConfiguration result = new ImporterConfiguration();
+        result.setDataSourceConfiguration(new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
+        return result;
     }
     
     private DumperConfiguration mockDumperConfig() {
@@ -80,7 +80,7 @@ public final class IncrementalDataScalingTaskTest {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName("ds0");
         result.setDataSourceConfiguration(dataSourceConfiguration);
-        Map<String, String> tableMap = new HashMap<>();
+        Map<String, String> tableMap = new HashMap<>(1, 1);
         tableMap.put("t_order", "t_order");
         result.setTableNameMap(tableMap);
         result.setPositionManager(new FixtureNopManager(""));

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.shadow.spring.namespace;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -37,6 +37,7 @@ public final class ShadowSpringNamespaceTest extends AbstractJUnit4SpringContext
     @Test
     public void assertDataSource() {
         assertThat(shadowRule.getColumn(), is("shadow"));
-        assertThat(shadowRule.getShadowMappings(), is(ImmutableMap.of("prod_ds", "shadow_ds")));
+        assertThat(shadowRule.getSourceDataSourceNames(), is(Arrays.asList("ds", "ds1")));
+        assertThat(shadowRule.getShadowDataSourceNames(), is(Arrays.asList("shadow_ds", "shadow_ds1")));
     }
 }

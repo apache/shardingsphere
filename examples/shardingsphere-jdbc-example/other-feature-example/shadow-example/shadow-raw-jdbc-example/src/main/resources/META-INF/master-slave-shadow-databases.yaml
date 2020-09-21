@@ -40,9 +40,12 @@ dataSources:
 rules:
 - !SHADOW
   column: shadow
-  shadowMappings:
-    ds_master: shadow_ds_master
-    ds_slave: shadow_ds_slave
+  sourceDataSourceNames:
+    - ds_master
+    - ds_slave
+  shadowDataSourceNames:
+    - shadow_ds_master
+    - shadow_ds_slave
 
 - !MASTER_SLAVE
   dataSources:

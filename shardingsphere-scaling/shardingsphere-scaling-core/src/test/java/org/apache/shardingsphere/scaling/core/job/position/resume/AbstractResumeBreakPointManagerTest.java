@@ -46,6 +46,14 @@ public final class AbstractResumeBreakPointManagerTest {
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         resumeBreakPointManager = new AbstractResumeBreakPointManager() {
+            
+            @Override
+            public void persistInventoryPosition() {
+            }
+    
+            @Override
+            public void persistIncrementalPosition() {
+            }
         };
         resumeBreakPointManager.setDatabaseType("H2");
         resumeBreakPointManager.setTaskPath("/");
