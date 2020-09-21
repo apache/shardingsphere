@@ -89,7 +89,7 @@ public abstract class AbstractBootstrapInitializerTest {
     
     protected abstract int getProxyPort();
     
-    private  boolean isAvailable() {
+    private boolean isAvailable() {
         boolean portFree;
         try (Socket socket = new Socket(HOST, getProxyPort())) {
             portFree = true;
