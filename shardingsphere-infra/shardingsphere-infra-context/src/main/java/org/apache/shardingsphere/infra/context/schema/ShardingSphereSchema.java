@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import javax.sql.DataSource;
-import java.io.Closeable;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
@@ -57,10 +55,10 @@ public final class ShardingSphereSchema {
     }
     
     private void close(final DataSource dataSource) throws SQLException {
-        if (dataSource instanceof Closeable) {
+        if (dataSource instanceof AutoCloseable) {
             try {
-                ((Closeable) dataSource).close();
-            } catch (IOException e) {
+                ((AutoCloseable) dataSource).close();
+            } catch (Exception e) {
                 throw new SQLException(e);
             }
         }

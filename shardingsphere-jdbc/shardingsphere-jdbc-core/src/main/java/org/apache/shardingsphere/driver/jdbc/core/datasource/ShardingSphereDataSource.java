@@ -34,7 +34,6 @@ import org.apache.shardingsphere.transaction.context.impl.StandardTransactionCon
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
-import java.io.Closeable;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -48,7 +47,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements Closeable {
+public final class ShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
     private final SchemaContexts schemaContexts;
     
@@ -106,7 +105,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     }
     
     @Override
-    public void close() throws IOException {
+    public void close() throws Exception {
         close(getDataSourceMap().keySet());
     }
     
@@ -116,16 +115,16 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
      * @param dataSourceNames data source names
      * @throws IOException exception
      */
-    public void close(final Collection<String> dataSourceNames) throws IOException {
+    public void close(final Collection<String> dataSourceNames) throws Exception {
         for (String each : dataSourceNames) {
             close(getDataSourceMap().get(each));
         }
         schemaContexts.close();
     }
     
-    private void close(final DataSource dataSource) throws IOException {
-        if (dataSource instanceof Closeable) {
-            ((Closeable) dataSource).close();
+    private void close(final DataSource dataSource) throws Exception {
+        if (dataSource instanceof AutoCloseable) {
+            ((AutoCloseable) dataSource).close();
         }
     }
 }
