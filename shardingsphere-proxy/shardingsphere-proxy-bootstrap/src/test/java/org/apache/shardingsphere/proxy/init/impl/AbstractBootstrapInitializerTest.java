@@ -24,29 +24,28 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.io.IOException;
-import java.net.Socket;
+import java.lang.reflect.Field;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @Ignore
 public abstract class AbstractBootstrapInitializerTest {
-    
-    private static final String HOST = "127.0.0.1";
     
     @Getter
     @Setter
@@ -64,16 +63,14 @@ public abstract class AbstractBootstrapInitializerTest {
     
     protected abstract void prepareSpecifiedInitializer();
     
+    @SneakyThrows
     @Test
     public final void assertInit() throws InterruptedException {
-        new Thread(this::triggerAbstractBootstrapInitializerInit).start();
-        TimeUnit.MILLISECONDS.sleep(600L);
-        assertTrue(isSocketAvailable());
-    }
-    
-    @SneakyThrows
-    private void triggerAbstractBootstrapInitializerInit() {
         AbstractBootstrapInitializer abstractBootstrapInitializer = mock(AbstractBootstrapInitializer.class, Mockito.CALLS_REAL_METHODS);
+        ShardingSphereProxy shardingSphereProxy = mock(ShardingSphereProxy.class);
+        Field field = AbstractBootstrapInitializer.class.getDeclaredField("shardingSphereProxy");
+        field.setAccessible(true);
+        field.set(abstractBootstrapInitializer, shardingSphereProxy);
         doReturn(mock(ProxyConfiguration.class)).when(abstractBootstrapInitializer).getProxyConfiguration(any());
         SchemaContexts schemaContexts = mock(SchemaContexts.class);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
@@ -82,19 +79,8 @@ public abstract class AbstractBootstrapInitializerTest {
         doReturn(schemaContexts).when(abstractBootstrapInitializer).decorateSchemaContexts(any());
         doReturn(mock(TransactionContexts.class)).when(abstractBootstrapInitializer).decorateTransactionContexts(any());
         YamlProxyConfiguration yamlConfig = mock(YamlProxyConfiguration.class);
-        abstractBootstrapInitializer.init(yamlConfig, getProxyPort());
-    }
-    
-    protected abstract int getProxyPort();
-    
-    private boolean isSocketAvailable() {
-        boolean result;
-        try (Socket socket = new Socket(HOST, getProxyPort())) {
-            result = true;
-        } catch (final IOException e) {
-            result = false;
-        }
-        return result;
+        abstractBootstrapInitializer.init(yamlConfig, eq(anyInt()));
+        verify(shardingSphereProxy).start(anyInt());
     }
     
     protected final void assertProps(final Properties actual) {

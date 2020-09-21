@@ -232,9 +232,4 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     protected void prepareSpecifiedInitializer() {
         setInitializer(new GovernanceBootstrapInitializer());
     }
-    
-    @Override
-    protected int getProxyPort() {
-        return 2020;
-    }
 }
