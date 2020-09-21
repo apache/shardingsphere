@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.schema;
+package org.apache.shardingsphere.infra.config.datasource;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
