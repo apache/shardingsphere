@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDupl
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLStatementUtils;
+import org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml.InsertStatementHelper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,7 +44,8 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertStatementContext && SQLStatementUtils.getOnDuplicateKeyColumnsSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent();
+        return sqlStatementContext instanceof InsertStatementContext 
+                && InsertStatementHelper.getOnDuplicateKeyColumnsSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent();
     }
     
     @Override
@@ -52,8 +53,8 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
         Collection<EncryptAssignmentToken> result = new LinkedList<>();
         InsertStatement insertStatement = insertStatementContext.getSqlStatement();
         String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
-        Preconditions.checkState(SQLStatementUtils.getOnDuplicateKeyColumnsSegment(insertStatement).isPresent());
-        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = SQLStatementUtils.getOnDuplicateKeyColumnsSegment(insertStatement).get();
+        Preconditions.checkState(InsertStatementHelper.getOnDuplicateKeyColumnsSegment(insertStatement).isPresent());
+        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = InsertStatementHelper.getOnDuplicateKeyColumnsSegment(insertStatement).get();
         Collection<AssignmentSegment> onDuplicateKeyColumnsSegments = onDuplicateKeyColumnsSegment.getColumns();
         if (onDuplicateKeyColumnsSegments.isEmpty()) {
             return result;

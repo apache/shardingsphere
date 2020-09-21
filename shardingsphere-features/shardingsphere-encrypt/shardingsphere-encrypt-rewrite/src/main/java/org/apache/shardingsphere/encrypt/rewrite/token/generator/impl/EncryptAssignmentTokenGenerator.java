@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLStatementUtils;
+import org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml.InsertStatementHelper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -49,7 +49,8 @@ public final class EncryptAssignmentTokenGenerator extends BaseEncryptSQLTokenGe
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof UpdateStatementContext
-                || (sqlStatementContext instanceof InsertStatementContext && SQLStatementUtils.getSetAssignmentSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent());
+                || (sqlStatementContext instanceof InsertStatementContext 
+                && InsertStatementHelper.getSetAssignmentSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent());
     }
     
     @Override
@@ -66,7 +67,7 @@ public final class EncryptAssignmentTokenGenerator extends BaseEncryptSQLTokenGe
     
     private SetAssignmentSegment getSetAssignmentSegment(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            Optional<SetAssignmentSegment> result = SQLStatementUtils.getSetAssignmentSegment((InsertStatement) sqlStatement);
+            Optional<SetAssignmentSegment> result = InsertStatementHelper.getSetAssignmentSegment((InsertStatement) sqlStatement);
             Preconditions.checkState(result.isPresent());
             return result.get();
         }

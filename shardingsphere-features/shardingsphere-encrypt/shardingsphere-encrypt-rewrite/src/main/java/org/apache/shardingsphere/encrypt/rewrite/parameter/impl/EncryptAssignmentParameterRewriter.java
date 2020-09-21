@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLStatementUtils;
+import org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml.InsertStatementHelper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -51,7 +51,7 @@ public final class EncryptAssignmentParameterRewriter extends EncryptParameterRe
             return true;
         }
         if (sqlStatementContext instanceof InsertStatementContext) {
-            return SQLStatementUtils.getSetAssignmentSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent();
+            return InsertStatementHelper.getSetAssignmentSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent();
         }
         return false;
     }
@@ -70,7 +70,7 @@ public final class EncryptAssignmentParameterRewriter extends EncryptParameterRe
     
     private SetAssignmentSegment getSetAssignmentSegment(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            Optional<SetAssignmentSegment> result = SQLStatementUtils.getSetAssignmentSegment((InsertStatement) sqlStatement);
+            Optional<SetAssignmentSegment> result = InsertStatementHelper.getSetAssignmentSegment((InsertStatement) sqlStatement);
             Preconditions.checkState(result.isPresent());
             return result.get();
         }

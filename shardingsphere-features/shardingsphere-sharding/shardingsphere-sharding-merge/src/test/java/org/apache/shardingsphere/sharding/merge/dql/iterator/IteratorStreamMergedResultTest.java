@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderB
 import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -46,7 +46,7 @@ public final class IteratorStreamMergedResultTest {
     
     @Before
     public void setUp() {
-        selectStatementContext = new SelectStatementContext(new SelectStatement(), 
+        selectStatementContext = new SelectStatementContext(new MySQLSelectStatement(), 
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
     }

@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.pagination;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
@@ -24,10 +27,7 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.Pag
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -44,7 +44,7 @@ public final class RowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextForSkipAll() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("Oracle"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(new SelectStatement(), 
+        SelectStatementContext selectStatementContext = new SelectStatementContext(new OracleSelectStatement(), 
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.emptyList()),
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null, Collections.emptyList()));
@@ -55,7 +55,7 @@ public final class RowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("Oracle"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(new SelectStatement(), 
+        SelectStatementContext selectStatementContext = new SelectStatementContext(new OracleSelectStatement(), 
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
         MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult(), createQueryResult()), selectStatementContext, null);
@@ -68,7 +68,7 @@ public final class RowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextForRowCountBoundOpenedFalse() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("Oracle"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(new SelectStatement(), 
+        SelectStatementContext selectStatementContext = new SelectStatementContext(new OracleSelectStatement(), 
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.emptyList()),
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, false), Collections.emptyList()));
@@ -81,7 +81,7 @@ public final class RowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextForRowCountBoundOpenedTrue() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("Oracle"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(new SelectStatement(), 
+        SelectStatementContext selectStatementContext = new SelectStatementContext(new OracleSelectStatement(), 
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.emptyList()),
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, true), Collections.emptyList()));

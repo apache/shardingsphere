@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
@@ -34,7 +35,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.In
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.FieldSetter;
 
@@ -50,10 +55,33 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class OrderByValueTest {
-    
+
     @Test
-    public void assertCompareToForAsc() throws SQLException, NoSuchFieldException {
-        SelectStatement selectStatement = new SelectStatement();
+    public void assertCompareToForAscForMySQL() throws SQLException, NoSuchFieldException {
+        assertCompareToForAsc(new MySQLSelectStatement());   
+    }
+
+    @Test
+    public void assertCompareToForAscForOracle() throws SQLException, NoSuchFieldException {
+        assertCompareToForAsc(new OracleSelectStatement());
+    }
+
+    @Test
+    public void assertCompareToForAscForPostgreSQL() throws SQLException, NoSuchFieldException {
+        assertCompareToForAsc(new PostgreSQLSelectStatement());
+    }
+
+    @Test
+    public void assertCompareToForAscForSQL92() throws SQLException, NoSuchFieldException {
+        assertCompareToForAsc(new SQL92SelectStatement());
+    }
+
+    @Test
+    public void assertCompareToForAscForSQLServer() throws SQLException, NoSuchFieldException {
+        assertCompareToForAsc(new SQLServerSelectStatement());
+    }
+    
+    private void assertCompareToForAsc(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         SelectStatementContext selectStatementContext = new SelectStatementContext(
@@ -77,10 +105,33 @@ public final class OrderByValueTest {
         assertFalse(orderByValue1.getQueryResult().next());
         assertFalse(orderByValue2.getQueryResult().next());
     }
-    
+
     @Test
-    public void assertCompareToForDesc() throws SQLException, NoSuchFieldException {
-        SelectStatement selectStatement = new SelectStatement();
+    public void assertCompareToForDescForMySQL() throws SQLException, NoSuchFieldException {
+        assertCompareToForDesc(new MySQLSelectStatement());
+    }
+
+    @Test
+    public void assertCompareToForDescForOracle() throws SQLException, NoSuchFieldException {
+        assertCompareToForDesc(new OracleSelectStatement());
+    }
+
+    @Test
+    public void assertCompareToForDescForPostgreSQL() throws SQLException, NoSuchFieldException {
+        assertCompareToForDesc(new PostgreSQLSelectStatement());
+    }
+
+    @Test
+    public void assertCompareToForDescForSQL92() throws SQLException, NoSuchFieldException {
+        assertCompareToForDesc(new SQL92SelectStatement());
+    }
+
+    @Test
+    public void assertCompareToForDescForSQLServer() throws SQLException, NoSuchFieldException {
+        assertCompareToForDesc(new SQLServerSelectStatement());
+    }
+    
+    private void assertCompareToForDesc(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         SelectStatementContext selectStatementContext = new SelectStatementContext(
@@ -104,10 +155,33 @@ public final class OrderByValueTest {
         assertFalse(orderByValue1.getQueryResult().next());
         assertFalse(orderByValue2.getQueryResult().next());
     }
-    
+
     @Test
-    public void assertCompareToWhenEqual() throws SQLException, NoSuchFieldException {
-        SelectStatement selectStatement = new SelectStatement();
+    public void assertCompareToWhenEqualForMySQL() throws SQLException, NoSuchFieldException {
+        assertCompareToWhenEqual(new MySQLSelectStatement());
+    }
+
+    @Test
+    public void assertCompareToWhenEqualForOracle() throws SQLException, NoSuchFieldException {
+        assertCompareToWhenEqual(new OracleSelectStatement());
+    }
+
+    @Test
+    public void assertCompareToWhenEqualForPostgreSQL() throws SQLException, NoSuchFieldException {
+        assertCompareToWhenEqual(new PostgreSQLSelectStatement());
+    }
+
+    @Test
+    public void assertCompareToWhenEqualForSQL92() throws SQLException, NoSuchFieldException {
+        assertCompareToWhenEqual(new SQL92SelectStatement());
+    }
+
+    @Test
+    public void assertCompareToWhenEqualForSQLServer() throws SQLException, NoSuchFieldException {
+        assertCompareToWhenEqual(new SQLServerSelectStatement());
+    }
+    
+    private void assertCompareToWhenEqual(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         SelectStatementContext selectStatementContext = new SelectStatementContext(

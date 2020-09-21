@@ -34,8 +34,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLStatementUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.TableExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml.InsertStatementHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -106,7 +106,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     }
     
     private Optional<OnDuplicateUpdateContext> getOnDuplicateKeyUpdateValueContext(final List<Object> parameters, final AtomicInteger parametersOffset) {
-        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = SQLStatementUtils.getOnDuplicateKeyColumnsSegment(getSqlStatement());
+        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHelper.getOnDuplicateKeyColumnsSegment(getSqlStatement());
         if (!onDuplicateKeyColumnsSegment.isPresent()) {
             return Optional.empty();
         }
