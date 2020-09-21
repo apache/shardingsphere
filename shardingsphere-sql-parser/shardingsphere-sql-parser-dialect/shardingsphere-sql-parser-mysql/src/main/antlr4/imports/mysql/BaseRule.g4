@@ -433,7 +433,11 @@ frameBetween_
 
 specialFunction
     : groupConcatFunction | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction 
-    | charFunction | trimFunction_ | weightStringFunction | valuesFunction_
+    | charFunction | trimFunction_ | weightStringFunction | valuesFunction_ | currentUserFunction
+    ;
+
+currentUserFunction
+    : CURRENT_USER (LP_ RP_)?
     ;
 
 groupConcatFunction
