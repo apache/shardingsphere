@@ -67,7 +67,7 @@ public abstract class AbstractBootstrapInitializerTest {
     @Test
     public final void assertInit() throws InterruptedException {
         new Thread(this::triggerAbstractBootstrapInitializerInit).start();
-        TimeUnit.MILLISECONDS.sleep(900L);
+        TimeUnit.MILLISECONDS.sleep(600L);
         assertTrue(isSocketAvailable());
     }
     
