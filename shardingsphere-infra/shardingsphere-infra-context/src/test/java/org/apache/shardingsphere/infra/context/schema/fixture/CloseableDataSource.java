@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.context.schema.fixture;
 
 import javax.sql.DataSource;
+import java.io.Closeable;
 
-public interface ClosableDataSource extends DataSource, AutoCloseable {
+public interface CloseableDataSource extends DataSource, Closeable {
 }

@@ -80,7 +80,7 @@ public final class ProxyContext {
      * @return schema exists or not
      */
     public boolean schemaExists(final String schemaName) {
-        return schemaContexts.getSchemaContexts().containsKey(schemaName);
+        return schemaContexts.getSchemaContextMap().containsKey(schemaName);
     }
     
     /**
@@ -90,7 +90,7 @@ public final class ProxyContext {
      * @return schema context
      */
     public SchemaContext getSchema(final String schemaName) {
-        return Strings.isNullOrEmpty(schemaName) ? null : schemaContexts.getSchemaContexts().get(schemaName);
+        return Strings.isNullOrEmpty(schemaName) ? null : schemaContexts.getSchemaContextMap().get(schemaName);
     }
     
     /**
@@ -99,7 +99,7 @@ public final class ProxyContext {
      * @return all schema names
      */
     public List<String> getAllSchemaNames() {
-        return new ArrayList<>(schemaContexts.getSchemaContexts().keySet());
+        return new ArrayList<>(schemaContexts.getSchemaContextMap().keySet());
     }
     
     /**

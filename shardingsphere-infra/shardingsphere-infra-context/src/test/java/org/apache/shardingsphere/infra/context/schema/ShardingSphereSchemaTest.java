@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.schema;
 
-import org.apache.shardingsphere.infra.context.schema.fixture.ClosableDataSource;
+import org.apache.shardingsphere.infra.context.schema.fixture.CloseableDataSource;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,10 +38,10 @@ import static org.mockito.Mockito.verify;
 public final class ShardingSphereSchemaTest {
     
     @Mock
-    private ClosableDataSource dataSource0;
+    private CloseableDataSource dataSource0;
     
     @Mock
-    private ClosableDataSource dataSource1;
+    private CloseableDataSource dataSource1;
     
     @Mock
     private DataSource dataSource2;
