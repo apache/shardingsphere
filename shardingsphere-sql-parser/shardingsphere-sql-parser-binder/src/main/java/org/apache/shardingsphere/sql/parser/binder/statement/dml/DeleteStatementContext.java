@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.TableExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -42,16 +42,16 @@ public final class DeleteStatementContext extends CommonSQLStatementContext<Dele
     
     public DeleteStatementContext(final DeleteStatement sqlStatement) {
         super(sqlStatement);
-        TableExtractUtils utils = new TableExtractUtils();
-        utils.extractTablesFromDelete(sqlStatement);
-        tablesContext = new TablesContext(utils.getRewriteTables());
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromDelete(sqlStatement);
+        tablesContext = new TablesContext(tableExtractor.getRewriteTables());
     }
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        TableExtractUtils utils = new TableExtractUtils();
-        utils.extractTablesFromDelete(getSqlStatement());
-        return utils.getRewriteTables();
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromDelete(getSqlStatement());
+        return tableExtractor.getRewriteTables();
     }
     
     @Override

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.util;
+package org.apache.shardingsphere.sql.parser.sql.common.extractor;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -46,7 +46,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
 
-public final class TableExtractUtils {
+public final class TableExtractor {
     
     @Getter
     private Collection<SimpleTableSegment> rewriteTables = new LinkedList<>();
@@ -84,9 +84,9 @@ public final class TableExtractUtils {
         }
         if (tableSegment instanceof SubqueryTableSegment) {
             tableContext.add(tableSegment);
-            TableExtractUtils utils = new TableExtractUtils();
-            utils.extractTablesFromSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
-            rewriteTables.addAll(utils.getRewriteTables());
+            TableExtractor tableExtractor = new TableExtractor();
+            tableExtractor.extractTablesFromSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
+            rewriteTables.addAll(tableExtractor.getRewriteTables());
         }
         if (tableSegment instanceof JoinTableSegment) {
             extractTablesFromTableSegment(((JoinTableSegment) tableSegment).getLeft());
@@ -198,7 +198,12 @@ public final class TableExtractUtils {
         }
     }
     
-    private boolean needRewrite(final OwnerSegment owner) {
+    /**
+     * Check if the table needs to be overwritten.
+     * @param owner OwnerSegment.
+     * @return boolean.
+     */
+    public boolean needRewrite(final OwnerSegment owner) {
         for (TableSegment each : tableContext) {
             if (owner.getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
                 return false;

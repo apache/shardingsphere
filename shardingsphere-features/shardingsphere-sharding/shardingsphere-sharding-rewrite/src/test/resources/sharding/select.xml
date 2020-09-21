@@ -92,18 +92,18 @@
         <output sql="SELECT distinct a.account_id FROM t_account_1 as a ORDER BY a.account_id ASC " />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_for_literals_with_table_prefix" db-type="MySQL">
-        <input sql="SELECT `t_account`.`account_id` FROM `t_account` order by `t_account`.`account_id` ASC" />
-        <output sql="SELECT `t_account_0`.`account_id` FROM `t_account_0` order by `t_account_0`.`account_id` ASC" />
-        <output sql="SELECT `t_account_1`.`account_id` FROM `t_account_1` order by `t_account_1`.`account_id` ASC" />
+    <rewrite-assertion id="select_for_literals_with_order_by_with_table_prefix" db-type="MySQL">
+        <input sql="SELECT `t_account`.`amount` FROM `t_account` order by `t_account`.`account_id` ASC" />
+        <output sql="SELECT `t_account_0`.`amount` , `t_account_0`.`account_id` AS ORDER_BY_DERIVED_0 FROM `t_account_0` order by `t_account_0`.`account_id` ASC" />
+        <output sql="SELECT `t_account_1`.`amount` , `t_account_1`.`account_id` AS ORDER_BY_DERIVED_0 FROM `t_account_1` order by `t_account_1`.`account_id` ASC" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_for_literals_no_quote_with_table_prefix" db-type="MySQL">
-        <input sql="SELECT t_account.account_id FROM t_account order by t_account.account_id ASC" />
-        <output sql="SELECT t_account_0.account_id FROM t_account_0 order by t_account_0.account_id ASC" />
-        <output sql="SELECT t_account_1.account_id FROM t_account_1 order by t_account_1.account_id ASC" />
+    <rewrite-assertion id="select_for_literals_with_order_by_no_quote_with_table_prefix" db-type="MySQL">
+        <input sql="SELECT t_account.amount FROM t_account order by t_account.account_id ASC" />
+        <output sql="SELECT t_account_0.amount , t_account_0.account_id AS ORDER_BY_DERIVED_0 FROM t_account_0 order by t_account_0.account_id ASC" />
+        <output sql="SELECT t_account_1.amount , t_account_1.account_id AS ORDER_BY_DERIVED_0 FROM t_account_1 order by t_account_1.account_id ASC" />
     </rewrite-assertion>
-    
+
     <rewrite-assertion id="select_binding_table_with_sharding_value_for_parameters">
         <input sql="SELECT * FROM t_account o, t_account_detail i WHERE o.account_id=i.account_id AND o.account_id = ?" parameters="100" />
         <output sql="SELECT * FROM t_account_0 o, t_account_detail_0 i WHERE o.account_id=i.account_id AND o.account_id = ?" parameters="100" />

@@ -87,8 +87,8 @@ public final class ProjectionEngine {
     }
     
     private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
-        String owner = projectionSegment.getColumn().getOwner().isPresent() ? projectionSegment.getColumn().getOwner().get().getIdentifier().getValueWithQuoteCharacters() : null;
-        return new ColumnProjection(owner, projectionSegment.getColumn().getIdentifier().getValueWithQuoteCharacters(), projectionSegment.getAlias().orElse(null));
+        String owner = projectionSegment.getColumn().getOwner().isPresent() ? projectionSegment.getColumn().getOwner().get().getIdentifier().getValue() : null;
+        return new ColumnProjection(owner, projectionSegment.getColumn().getIdentifier().getValue(), projectionSegment.getAlias().orElse(null));
     }
     
     private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {
