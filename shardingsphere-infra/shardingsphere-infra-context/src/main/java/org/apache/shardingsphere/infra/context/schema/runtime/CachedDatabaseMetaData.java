@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.runtime;
+package org.apache.shardingsphere.infra.context.schema.runtime;
 
 import lombok.Getter;
 

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.schema;
 
-import org.apache.shardingsphere.infra.context.schema.fixture.CloseableDataSource;
+import org.apache.shardingsphere.infra.context.fixture.CloseableDataSource;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
