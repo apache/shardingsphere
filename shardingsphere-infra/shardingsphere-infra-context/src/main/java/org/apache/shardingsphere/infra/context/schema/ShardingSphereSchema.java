@@ -58,7 +58,9 @@ public final class ShardingSphereSchema {
         if (dataSource instanceof AutoCloseable) {
             try {
                 ((AutoCloseable) dataSource).close();
-            } catch (Exception e) {
+            // CHECKSTYLE:OFF
+            } catch (final Exception e) {
+            // CHECKSTYLE:ON
                 throw new SQLException(e);
             }
         }
