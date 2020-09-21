@@ -23,6 +23,7 @@ import org.apache.shardingsphere.driver.governance.internal.circuit.connection.C
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.SQLWarning;
 
 /**
@@ -97,7 +98,16 @@ public final class CircuitBreakerStatement extends AbstractUnsupportedOperationS
     public int getFetchSize() {
         return 0;
     }
-    
+
+    @Override
+    public int getFetchDirection() throws SQLException {
+        return ResultSet.FETCH_FORWARD;
+    }
+
+    @Override
+    public void setFetchDirection(final int direction) throws SQLException {
+    }
+
     @Override
     public int getResultSetConcurrency() {
         return ResultSet.CONCUR_READ_ONLY;

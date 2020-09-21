@@ -54,20 +54,6 @@ public final class UnsupportedOperationStatementTest extends AbstractShardingSph
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetFetchDirection() throws SQLException {
-        for (Statement each : statements) {
-            each.getFetchDirection();
-        }
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetFetchDirection() throws SQLException {
-        for (Statement each : statements) {
-            each.setFetchDirection(ResultSet.FETCH_UNKNOWN);
-        }
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertAddBatch() throws SQLException {
         for (Statement each : statements) {
             each.addBatch("");

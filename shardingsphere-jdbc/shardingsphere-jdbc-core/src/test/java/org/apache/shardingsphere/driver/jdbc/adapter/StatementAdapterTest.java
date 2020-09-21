@@ -121,7 +121,26 @@ public final class StatementAdapterTest extends AbstractShardingSphereDataSource
             assertThat(each.getFetchSize(), is(fetchSize));
         }
     }
-    
+
+    @Test
+    public void assertSetFetchDirection() throws SQLException {
+        for (Statement each : statements.values()) {
+            each.setFetchDirection(ResultSet.FETCH_FORWARD);
+            each.executeQuery(sql);
+            assertFetchDirection((ShardingSphereStatement) each, ResultSet.FETCH_FORWARD);
+            each.setFetchDirection(ResultSet.FETCH_REVERSE);
+            assertFetchDirection((ShardingSphereStatement) each, ResultSet.FETCH_REVERSE);
+        }
+    }
+
+    private void assertFetchDirection(final ShardingSphereStatement actual, final int fetchDirection) throws SQLException {
+        assertThat(actual.getFetchDirection(), is(fetchDirection));
+        for (Statement each : actual.getRoutedStatements()) {
+            // H2,MySQL getFetchDirection() always return ResultSet.FETCH_FORWARD
+            assertThat(each.getFetchDirection(), is(ResultSet.FETCH_FORWARD));
+        }
+    }
+
     @Test
     public void assertSetEscapeProcessing() throws SQLException {
         for (Statement each : statements.values()) {
