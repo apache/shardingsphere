@@ -35,9 +35,9 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.SchemaContext;
-import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.infra.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.infra.context.schema.SchemaContext;
+import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -128,7 +128,7 @@ public final class GovernanceSchemaContextsTest {
     
     @Test
     public void assertGetSchemaContexts() {
-        assertThat(governanceSchemaContexts.getSchemaContexts().get("schema"), is(schemaContext));
+        assertThat(governanceSchemaContexts.getSchemaContextMap().get("schema"), is(schemaContext));
     }
     
     @Test
@@ -156,7 +156,7 @@ public final class GovernanceSchemaContextsTest {
     public void assertSchemaAdd() {
         SchemaAddedEvent event = new SchemaAddedEvent("schema_add", getDataSourceConfigurations(), new LinkedList<>());
         governanceSchemaContexts.renew(event);
-        assertNotNull(governanceSchemaContexts.getSchemaContexts().get("schema_add"));
+        assertNotNull(governanceSchemaContexts.getSchemaContextMap().get("schema_add"));
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
@@ -172,7 +172,7 @@ public final class GovernanceSchemaContextsTest {
     public void assertSchemaDelete() {
         SchemaDeletedEvent event = new SchemaDeletedEvent("schema");
         governanceSchemaContexts.renew(event);
-        assertNull(governanceSchemaContexts.getSchemaContexts().get("schema"));
+        assertNull(governanceSchemaContexts.getSchemaContextMap().get("schema"));
     }
     
     @Test
@@ -196,24 +196,24 @@ public final class GovernanceSchemaContextsTest {
     public void assertMetaDataChanged() {
         MetaDataChangedEvent event = new MetaDataChangedEvent(Collections.singletonList("schema_changed"), mock(RuleSchemaMetaData.class));
         governanceSchemaContexts.renew(event);
-        assertTrue(governanceSchemaContexts.getSchemaContexts().containsKey("schema"));
-        assertFalse(governanceSchemaContexts.getSchemaContexts().containsKey("schema_changed"));
+        assertTrue(governanceSchemaContexts.getSchemaContextMap().containsKey("schema"));
+        assertFalse(governanceSchemaContexts.getSchemaContextMap().containsKey("schema_changed"));
     }
     
     @Test
     public void assertMetaDataChangedWithExistSchema() {
         MetaDataChangedEvent event = new MetaDataChangedEvent(Collections.singletonList("schema"), mock(RuleSchemaMetaData.class));
         governanceSchemaContexts.renew(event);
-        assertThat(governanceSchemaContexts.getSchemaContexts().get("schema"), not(schemaContext));
+        assertThat(governanceSchemaContexts.getSchemaContextMap().get("schema"), not(schemaContext));
     }
     
     @Test
     @SneakyThrows
     public void assertRuleConfigurationsChanged() {
-        assertThat(governanceSchemaContexts.getSchemaContexts().get("schema"), is(schemaContext));
+        assertThat(governanceSchemaContexts.getSchemaContextMap().get("schema"), is(schemaContext));
         RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("schema", new LinkedList<>());
         governanceSchemaContexts.renew(event);
-        assertThat(governanceSchemaContexts.getSchemaContexts().get("schema"), not(schemaContext));
+        assertThat(governanceSchemaContexts.getSchemaContextMap().get("schema"), not(schemaContext));
     }
     
     @Test
@@ -228,7 +228,7 @@ public final class GovernanceSchemaContextsTest {
     public void assertDataSourceChanged() {
         DataSourceChangedEvent event = new DataSourceChangedEvent("schema", getChangedDataSourceConfigurations());
         governanceSchemaContexts.renew(event);
-        assertTrue(governanceSchemaContexts.getSchemaContexts().get("schema").getSchema().getDataSources().containsKey("ds_2"));
+        assertTrue(governanceSchemaContexts.getSchemaContextMap().get("schema").getSchema().getDataSources().containsKey("ds_2"));
     }
     
     private Map<String, DataSourceConfiguration> getChangedDataSourceConfigurations() {

@@ -77,19 +77,6 @@ public final class HttpServerHandlerTest {
         assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("{\"success\":true"));
     }
     
-    private void startScalingJob() {
-        scalingConfiguration.getRuleConfiguration().setSourceDatasource("dataSources:\n ds_0:\n  "
-                + "dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    "
-                + "jdbcUrl: jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\n    username: root\n    password: 'password'\n    connectionTimeout: 30000\n    "
-                + "idleTimeout: 60000\n    maxLifetime: 1800000\n    maxPoolSize: 50\n    minPoolSize: 1\n    maintenanceIntervalMilliseconds: 30000\n    readOnly: false\n");
-        scalingConfiguration.getRuleConfiguration().getDestinationDataSources().setUrl("jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        scalingConfiguration.getRuleConfiguration().getDestinationDataSources().setName("root");
-        scalingConfiguration.getRuleConfiguration().getDestinationDataSources().setPassword("password");
-        ByteBuf byteBuf = Unpooled.copiedBuffer(GSON.toJson(scalingConfiguration), CharsetUtil.UTF_8);
-        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/scaling/job/start", byteBuf);
-        httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
-    }
-    
     @Test
     public void assertChannelReadProgressFail() {
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/scaling/job/progress/9");
@@ -159,6 +146,12 @@ public final class HttpServerHandlerTest {
         Throwable throwable = mock(Throwable.class);
         httpServerHandler.exceptionCaught(channelHandlerContext, throwable);
         verify(channelHandlerContext).close();
+    }
+
+    private void startScalingJob() {
+        ByteBuf byteBuf = Unpooled.copiedBuffer(GSON.toJson(scalingConfiguration), CharsetUtil.UTF_8);
+        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/scaling/job/start", byteBuf);
+        httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
     }
     
     private void initConfig(final String configFile) {

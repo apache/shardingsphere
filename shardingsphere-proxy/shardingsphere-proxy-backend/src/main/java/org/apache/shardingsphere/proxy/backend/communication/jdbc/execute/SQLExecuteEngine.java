@@ -28,13 +28,11 @@ import java.sql.SQLException;
 public interface SQLExecuteEngine {
     
     /**
-     * Generate execution context.
-     *
-     * @param sql SQL
-     * @return execution context
-     * @throws SQLException SQL exception
+     * Check execute prerequisites.
+     * 
+     * @param executionContext execution context
      */
-    ExecutionContext generateExecutionContext(String sql) throws SQLException;
+    void checkExecutePrerequisites(ExecutionContext executionContext);
     
     /**
      * Execute SQL.

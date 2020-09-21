@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.SchemaContext;
-import org.apache.shardingsphere.infra.context.SchemaContexts;
-import org.apache.shardingsphere.infra.context.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.schema.SchemaContext;
+import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -184,7 +184,7 @@ public final class RDLBackendHandlerTest {
         schemaContexts.setAccessible(true);
         if (isGovernance) {
             SchemaContexts mockedSchemaContexts = mock(SchemaContexts.class);
-            when(mockedSchemaContexts.getSchemaContexts()).thenReturn(Collections.singletonMap("schema", mock(SchemaContext.class)));
+            when(mockedSchemaContexts.getSchemaContextMap()).thenReturn(Collections.singletonMap("schema", mock(SchemaContext.class)));
             schemaContexts.set(ProxyContext.getInstance(), mockedSchemaContexts);
         } else {
             schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts());

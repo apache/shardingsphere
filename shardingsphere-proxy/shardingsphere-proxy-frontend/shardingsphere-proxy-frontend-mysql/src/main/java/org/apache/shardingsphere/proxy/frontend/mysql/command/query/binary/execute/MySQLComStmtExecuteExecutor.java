@@ -20,14 +20,9 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.exec
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLBinaryResultSetRowPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -39,14 +34,13 @@ import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.ResponsePacketBuilder;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -76,30 +70,16 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         return backendResponse instanceof QueryResponse ? processQuery((QueryResponse) backendResponse) : processUpdate((UpdateResponse) backendResponse);
     }
     
-    private Collection<DatabasePacket<?>> processQuery(final QueryResponse backendResponse) {
+    private Collection<DatabasePacket<?>> processQuery(final QueryResponse queryResponse) {
         responseType = ResponseType.QUERY;
-        return createQueryPackets(backendResponse);
-    }
-    
-    private Collection<DatabasePacket<?>> createQueryPackets(final QueryResponse backendResponse) {
-        Collection<DatabasePacket<?>> result = new LinkedList<>();
-        List<QueryHeader> queryHeader = backendResponse.getQueryHeaders();
-        result.add(new MySQLFieldCountPacket(++currentSequenceId, queryHeader.size()));
-        for (QueryHeader each : queryHeader) {
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, each.getSchema(), each.getTable(), each.getTable(),
-                    each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), MySQLColumnType.valueOfJDBCType(each.getColumnType()), each.getDecimals()));
-        }
-        result.add(new MySQLEofPacket(++currentSequenceId));
+        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponse);
+        currentSequenceId = result.size();
         return result;
     }
     
-    private Collection<DatabasePacket<?>> processUpdate(final UpdateResponse backendResponse) {
+    private Collection<DatabasePacket<?>> processUpdate(final UpdateResponse updateResponse) {
         responseType = ResponseType.UPDATE;
-        return createUpdatePackets(backendResponse);
-    }
-    
-    private Collection<DatabasePacket<?>> createUpdatePackets(final UpdateResponse updateResponse) {
-        return Collections.singletonList(new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId()));
+        return ResponsePacketBuilder.buildUpdateResponsePackets(updateResponse);
     }
     
     @Override
