@@ -65,7 +65,7 @@ public abstract class AbstractBootstrapInitializerTest {
     
     @SneakyThrows
     @Test
-    public final void assertInit() throws InterruptedException {
+    public final void assertInit() {
         AbstractBootstrapInitializer abstractBootstrapInitializer = mock(AbstractBootstrapInitializer.class, Mockito.CALLS_REAL_METHODS);
         ShardingSphereProxy shardingSphereProxy = mock(ShardingSphereProxy.class);
         Field field = AbstractBootstrapInitializer.class.getDeclaredField("shardingSphereProxy");
