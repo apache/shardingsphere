@@ -104,7 +104,6 @@ public final class GroupByContextEngineTest {
         OrderByItemSegment indexOrderByItemSegment2 = new IndexOrderByItemSegment(2, 3, 3, OrderDirection.ASC, OrderDirection.DESC);
         GroupBySegment groupBySegment = new GroupBySegment(0, 10, Arrays.asList(columnOrderByItemSegment, indexOrderByItemSegment1, indexOrderByItemSegment2));
         selectStatement.setGroupBy(groupBySegment);
-
         GroupByContext actualGroupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
         OrderByItem expectedOrderByItem1 = new OrderByItem(columnOrderByItemSegment);
         OrderByItem expectedOrderByItem2 = new OrderByItem(indexOrderByItemSegment1);

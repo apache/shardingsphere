@@ -49,27 +49,27 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class OrderByContextEngineTest {
-
+    
     @Test
     public void assertCreateOrderByWithoutOrderByForMySQL() {
         assertCreateOrderByWithoutOrderBy(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertCreateOrderByWithoutOrderByForOracle() {
         assertCreateOrderByWithoutOrderBy(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertCreateOrderByWithoutOrderByForPostgreSQL() {
         assertCreateOrderByWithoutOrderBy(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertCreateOrderByWithoutOrderByForSQL92() {
         assertCreateOrderByWithoutOrderBy(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertCreateOrderByWithoutOrderByForSQLServer() {
         assertCreateOrderByWithoutOrderBy(new SQLServerSelectStatement());
@@ -84,27 +84,27 @@ public final class OrderByContextEngineTest {
         assertThat(actualOrderByContext.getItems(), is(orderByItems));
         assertTrue(actualOrderByContext.isGenerated());
     }
-
+    
     @Test
     public void assertCreateOrderByWithOrderByForMySQL() {
         assertCreateOrderByWithOrderBy(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertCreateOrderByWithOrderByForOracle() {
         assertCreateOrderByWithOrderBy(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertCreateOrderByWithOrderByForPostgreSQL() {
         assertCreateOrderByWithOrderBy(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertCreateOrderByWithOrderByForSQL92() {
         assertCreateOrderByWithOrderBy(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertCreateOrderByWithOrderByForSQLServer() {
         assertCreateOrderByWithOrderBy(new SQLServerSelectStatement());
@@ -126,27 +126,27 @@ public final class OrderByContextEngineTest {
         assertThat(actualOrderByContext.getItems(), is(Arrays.asList(expectedOrderByItem1, expectedOrderByItem2, expectedOrderByItem3)));
         assertFalse(actualOrderByContext.isGenerated());
     }
-
+    
     @Test
     public void assertCreateOrderInDistinctByWithoutOrderByForMySQL() {
         assertCreateOrderInDistinctByWithoutOrderBy(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertCreateOrderInDistinctByWithoutOrderByForOracle() {
         assertCreateOrderInDistinctByWithoutOrderBy(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertCreateOrderInDistinctByWithoutOrderByForPostgreSQL() {
         assertCreateOrderInDistinctByWithoutOrderBy(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertCreateOrderInDistinctByWithoutOrderByForSQL92() {
         assertCreateOrderInDistinctByWithoutOrderBy(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertCreateOrderInDistinctByWithoutOrderByForSQLServer() {
         assertCreateOrderInDistinctByWithoutOrderBy(new SQLServerSelectStatement());

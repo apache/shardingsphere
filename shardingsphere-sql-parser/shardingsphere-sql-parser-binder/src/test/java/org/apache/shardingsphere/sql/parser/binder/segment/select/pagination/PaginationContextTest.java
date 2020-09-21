@@ -129,27 +129,27 @@ public final class PaginationContextTest {
     public void assertGetRevisedOffset() {
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedOffset(), is(0L));
     }
-
+    
     @Test
     public void getRevisedRowCountForMySQL() {
         getRevisedRowCount(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void getRevisedRowCountForOracle() {
         getRevisedRowCount(new OracleSelectStatement());
     }
-
+    
     @Test
     public void getRevisedRowCountForPostgreSQL() {
         getRevisedRowCount(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void getRevisedRowCountForSQL92() {
         getRevisedRowCount(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void getRevisedRowCountForSQLServer() {
         getRevisedRowCount(new SQLServerSelectStatement());
@@ -160,27 +160,27 @@ public final class PaginationContextTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(null, Collections.emptyList(), selectStatement);
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectStatementContext), is(50L));
     }
-
+    
     @Test
     public void getRevisedRowCountWithMaxForMySQL() {
         getRevisedRowCountWithMax(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void getRevisedRowCountWithMaxForOracle() {
         getRevisedRowCountWithMax(new OracleSelectStatement());
     }
-
+    
     @Test
     public void getRevisedRowCountWithMaxForPostgreSQL() {
         getRevisedRowCountWithMax(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void getRevisedRowCountWithMaxForSQL92() {
         getRevisedRowCountWithMax(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void getRevisedRowCountWithMaxForSQLServer() {
         getRevisedRowCountWithMax(new SQLServerSelectStatement());
