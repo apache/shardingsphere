@@ -261,11 +261,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
         DataNodeRouter router = new DataNodeRouter(schemaContext.getSchema().getMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules());
         RouteContext routeContext = router.route(sqlStatement, sql, getParameters());
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
+        SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
                 schemaContexts.getProps(), schemaContext.getSchema().getRules());
-        SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(sql, new ArrayList<>(getParameters()), routeContext);
+        SQLRewriteResult rewriteResult = rewriteEntry.rewrite(sql, new ArrayList<>(getParameters()), routeContext);
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
-        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(schemaContext.getSchema().getMetaData(), sqlRewriteResult, sqlStatementContext);
+        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(schemaContext.getSchema().getMetaData(), rewriteResult, sqlStatementContext);
         ExecutionContext result = new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
         findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.add(generatedKey.getGeneratedValues().getLast()));
         logSQL(result);

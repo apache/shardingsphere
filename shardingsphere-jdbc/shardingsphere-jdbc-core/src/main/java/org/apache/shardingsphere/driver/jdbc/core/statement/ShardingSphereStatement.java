@@ -287,11 +287,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(sql, false);
         DataNodeRouter router = new DataNodeRouter(schemaContext.getSchema().getMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules());
         RouteContext routeContext = router.route(sqlStatement, sql, Collections.emptyList());
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
+        SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
                 schemaContexts.getProps(), schemaContext.getSchema().getRules());
-        SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(sql, Collections.emptyList(), routeContext);
+        SQLRewriteResult rewriteResult = rewriteEntry.rewrite(sql, Collections.emptyList(), routeContext);
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
-        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(schemaContext.getSchema().getMetaData(), sqlRewriteResult, sqlStatementContext);
+        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(schemaContext.getSchema().getMetaData(), rewriteResult, sqlStatementContext);
         ExecutionContext result = new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
         logSQL(sql, schemaContexts.getProps(), result);
         return result;
