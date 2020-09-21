@@ -54,7 +54,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class GovernanceBootstrapInitializerTest {
+public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
     private static final String DATA_SOURCE_YAML = "conf/reg_center/config_center/data-sources.yaml";
     
@@ -66,14 +66,17 @@ public final class GovernanceBootstrapInitializerTest {
     
     private FixtureConfigurationRepository configurationRepository = new FixtureConfigurationRepository();
     
-    private GovernanceBootstrapInitializer initializer = new GovernanceBootstrapInitializer();
-    
     @Test
     public void assertGetProxyConfiguration() throws IOException {
         initConfigCenter();
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/reg_center/");
-        assertProxyConfiguration(initializer.getProxyConfiguration(yamlProxyConfig));
+        assertProxyConfiguration(getInitializer().getProxyConfiguration(yamlProxyConfig));
         closeConfigCenter();
+    }
+    
+    @SneakyThrows
+    protected YamlProxyConfiguration makeProxyConfiguration() {
+        return ProxyConfigurationLoader.load("/conf/reg_center/");
     }
     
     private void initConfigCenter() {
@@ -98,7 +101,9 @@ public final class GovernanceBootstrapInitializerTest {
     @Test
     public void assertGetProxyConfigurationFromLocalConfiguration() throws IOException {
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/local");
-        assertProxyConfiguration(initializer.getProxyConfiguration(yamlProxyConfig));
+        ProxyConfiguration actual = getInitializer().getProxyConfiguration(yamlProxyConfig);
+        assertNotNull(actual);
+        assertProxyConfiguration(actual);
         closeConfigCenter();
     }
     
@@ -199,15 +204,10 @@ public final class GovernanceBootstrapInitializerTest {
         assertTrue(shardingProxyUser.getAuthorizedSchemas().contains("sharding_db"));
     }
     
-    private void assertProps(final Properties actual) {
-        assertThat(actual.getProperty("alpha-1"), is("alpha-A"));
-        assertThat(actual.getProperty("beta-2"), is("beta-B"));
-    }
-    
     @Test
     public void assertDecorateSchemaContexts() {
         SchemaContexts schemaContexts = mock(SchemaContexts.class);
-        SchemaContexts actualSchemaContexts = initializer.decorateSchemaContexts(schemaContexts);
+        SchemaContexts actualSchemaContexts = getInitializer().decorateSchemaContexts(schemaContexts);
         assertNotNull(actualSchemaContexts);
         assertThat(actualSchemaContexts, instanceOf(GovernanceSchemaContexts.class));
         assertThat(actualSchemaContexts.getDatabaseType(), is(schemaContexts.getDatabaseType()));
@@ -221,10 +221,15 @@ public final class GovernanceBootstrapInitializerTest {
     @Test
     public void assertDecorateTransactionContexts() {
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
-        TransactionContexts actualTransactionContexts = initializer.decorateTransactionContexts(transactionContexts);
+        TransactionContexts actualTransactionContexts = getInitializer().decorateTransactionContexts(transactionContexts);
         assertNotNull(actualTransactionContexts);
         assertThat(actualTransactionContexts, instanceOf(GovernanceTransactionContexts.class));
         assertThat(actualTransactionContexts.getEngines(), is(transactionContexts.getEngines()));
         assertThat(actualTransactionContexts.getDefaultTransactionManagerEngine(), is(transactionContexts.getDefaultTransactionManagerEngine()));
+    }
+    
+    @Override
+    protected void prepareSpecifiedInitializer() {
+        setInitializer(new GovernanceBootstrapInitializer());
     }
 }

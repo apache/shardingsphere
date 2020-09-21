@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.init.impl;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
@@ -35,7 +36,6 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.proxy.fixture.FixtureYamlRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -47,23 +47,23 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class StandardBootstrapInitializerTest {
+public final class StandardBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
-    private final StandardBootstrapInitializer initializer = new StandardBootstrapInitializer();
-    
-    @Before
-    public void setUp() {
-        ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
+    @SneakyThrows
+    protected YamlProxyConfiguration makeProxyConfiguration() {
+        return new YamlProxyConfiguration(createYamlProxyServerConfiguration(), createYamlProxyRuleConfigurationMap());
     }
     
     @Test
     public void assertGetProxyConfiguration() {
-        YamlProxyConfiguration yamlConfig = new YamlProxyConfiguration(createYamlProxyServerConfiguration(), createYamlProxyRuleConfigurationMap());
-        ProxyConfiguration actual = initializer.getProxyConfiguration(yamlConfig);
+        YamlProxyConfiguration yamlConfig = makeProxyConfiguration();
+        ProxyConfiguration actual = getInitializer().getProxyConfiguration(yamlConfig);
+        assertNotNull(actual);
         assertProxyConfiguration(actual);
     }
     
@@ -78,6 +78,12 @@ public final class StandardBootstrapInitializerTest {
         result.setDataSources(createYamlDataSourceParameterMap());
         result.setRules(createYamlRuleConfigurations());
         return result;
+    }
+    
+    private Collection<YamlRuleConfiguration> createYamlRuleConfigurations() {
+        FixtureYamlRuleConfiguration result = new FixtureYamlRuleConfiguration();
+        result.setName("testRule");
+        return Collections.singletonList(result);
     }
     
     private Map<String, YamlDataSourceParameter> createYamlDataSourceParameterMap() {
@@ -97,41 +103,6 @@ public final class StandardBootstrapInitializerTest {
         result.setMaxLifetimeMilliseconds(4000L);
         result.setMaxPoolSize(20);
         result.setMinPoolSize(10);
-        return result;
-    }
-    
-    private Collection<YamlRuleConfiguration> createYamlRuleConfigurations() {
-        FixtureYamlRuleConfiguration result = new FixtureYamlRuleConfiguration();
-        result.setName("testRule");
-        return Collections.singletonList(result);
-    }
-    
-    private YamlProxyServerConfiguration createYamlProxyServerConfiguration() {
-        YamlProxyServerConfiguration result = new YamlProxyServerConfiguration();
-        result.setAuthentication(createYamlAuthenticationConfiguration());
-        result.setProps(createProperties());
-        return result;
-    }
-    
-    private YamlAuthenticationConfiguration createYamlAuthenticationConfiguration() {
-        Map<String, YamlProxyUserConfiguration> users = new HashMap<>(1, 1);
-        users.put("root", createYamlProxyUserConfiguration());
-        YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
-        result.setUsers(users);
-        return result;
-    }
-    
-    private YamlProxyUserConfiguration createYamlProxyUserConfiguration() {
-        YamlProxyUserConfiguration result = new YamlProxyUserConfiguration();
-        result.setPassword("root");
-        result.setAuthorizedSchemas("ds-1,ds-2");
-        return result;
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("alpha-1", "alpha-A");
-        result.setProperty("beta-2", "beta-B");
         return result;
     }
     
@@ -186,20 +157,52 @@ public final class StandardBootstrapInitializerTest {
         assertTrue(proxyUser.getAuthorizedSchemas().contains("ds-2"));
     }
     
-    private void assertProps(final Properties actual) {
-        assertThat(actual.getProperty("alpha-1"), is("alpha-A"));
-        assertThat(actual.getProperty("beta-2"), is("beta-B"));
+    private YamlProxyServerConfiguration createYamlProxyServerConfiguration() {
+        YamlProxyServerConfiguration result = new YamlProxyServerConfiguration();
+        result.setAuthentication(createYamlAuthenticationConfiguration());
+        result.setProps(createProperties());
+        return result;
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("alpha-1", "alpha-A");
+        result.setProperty("beta-2", "beta-B");
+        return result;
+    }
+    
+    private YamlAuthenticationConfiguration createYamlAuthenticationConfiguration() {
+        Map<String, YamlProxyUserConfiguration> users = new HashMap<>(1, 1);
+        users.put("root", createYamlProxyUserConfiguration());
+        YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
+        result.setUsers(users);
+        return result;
+    }
+    
+    private YamlProxyUserConfiguration createYamlProxyUserConfiguration() {
+        YamlProxyUserConfiguration result = new YamlProxyUserConfiguration();
+        result.setPassword("root");
+        result.setAuthorizedSchemas("ds-1,ds-2");
+        return result;
     }
     
     @Test
     public void assertDecorateSchemaContexts() {
         SchemaContexts schemaContexts = mock(SchemaContexts.class);
-        assertThat(initializer.decorateSchemaContexts(schemaContexts), is(schemaContexts));
+        assertThat(getInitializer().decorateSchemaContexts(schemaContexts), is(schemaContexts));
     }
     
     @Test
     public void assertDecorateTransactionContexts() {
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
-        assertThat(initializer.decorateTransactionContexts(transactionContexts), is(transactionContexts));
+        assertThat(getInitializer().decorateTransactionContexts(transactionContexts), is(transactionContexts));
+    }
+    
+    protected void doEnvironmentPrepare() {
+        ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
+    }
+    
+    protected void prepareSpecifiedInitializer() {
+        setInitializer(new StandardBootstrapInitializer());
     }
 }
