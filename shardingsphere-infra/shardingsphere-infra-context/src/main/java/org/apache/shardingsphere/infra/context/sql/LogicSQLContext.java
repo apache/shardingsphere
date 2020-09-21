@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.kernel;
+package org.apache.shardingsphere.infra.context.sql;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

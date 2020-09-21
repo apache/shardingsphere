@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.impl.PreparedStatementAccessor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.impl.StatementAccessor;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.kernel.LogicSQLContext;
+import org.apache.shardingsphere.infra.context.sql.LogicSQLContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.ArrayList;
