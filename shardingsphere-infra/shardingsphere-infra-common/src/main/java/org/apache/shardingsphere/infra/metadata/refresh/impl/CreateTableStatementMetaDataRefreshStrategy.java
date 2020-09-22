@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStat
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -64,7 +64,7 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
     private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, final String tableName, final String dataSourceName) {
         Collection<String> schemaMetaData = metaData.getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get(dataSourceName);
         if (null == schemaMetaData) {
-            metaData.getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().put(dataSourceName, Arrays.asList(tableName));
+            metaData.getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().put(dataSourceName, Lists.newArrayList(tableName));
         } else {
             schemaMetaData.add(tableName);
         }
