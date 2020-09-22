@@ -28,7 +28,7 @@
     <artifactId>shardingsphere-primary-replica-replication</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>shardingsphere-primary-replica-replication-api</module>
         <module>shardingsphere-primary-replica-replication-common</module>

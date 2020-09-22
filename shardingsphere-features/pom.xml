@@ -31,7 +31,7 @@
     
     <modules>
         <module>shardingsphere-sharding</module>
-        <module>shardingsphere-master-slave</module>
+        <module>shardingsphere-primary-replica-replication</module>
         <module>shardingsphere-encrypt</module>
         <module>shardingsphere-shadow</module>
         <module>shardingsphere-consensus-replication</module>

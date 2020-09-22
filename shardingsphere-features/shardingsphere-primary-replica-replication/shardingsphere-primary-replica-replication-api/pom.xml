@@ -22,21 +22,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-master-slave</artifactId>
+        <artifactId>shardingsphere-primary-replica-replication</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-master-slave-route</artifactId>
+    <artifactId>shardingsphere-primary-replica-replication-api</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-route</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-master-slave-common</artifactId>
+            <artifactId>shardingsphere-infra-common</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
