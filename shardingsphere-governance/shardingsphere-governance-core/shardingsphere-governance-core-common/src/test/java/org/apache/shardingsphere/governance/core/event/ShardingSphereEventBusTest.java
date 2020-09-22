@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.eventbus;
+package org.apache.shardingsphere.governance.core.event;
 
 import org.junit.Test;
 

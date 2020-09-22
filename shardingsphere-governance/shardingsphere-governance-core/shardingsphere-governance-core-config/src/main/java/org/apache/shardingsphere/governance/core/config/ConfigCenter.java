@@ -28,7 +28,7 @@ import org.apache.shardingsphere.governance.core.event.persist.DataSourcePersist
 import org.apache.shardingsphere.governance.core.event.persist.MetaDataPersistEvent;
 import org.apache.shardingsphere.governance.core.event.persist.RulePersistEvent;
 import org.apache.shardingsphere.governance.core.event.persist.SchemaNamePersistEvent;
-import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.event.ShardingSphereEventBus;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlRuleSchemaMetaData;
