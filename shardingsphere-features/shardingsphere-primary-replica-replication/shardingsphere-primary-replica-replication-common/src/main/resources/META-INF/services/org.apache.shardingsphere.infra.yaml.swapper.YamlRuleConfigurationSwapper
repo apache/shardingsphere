@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.masterslave.yaml.swapper.MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapper
-org.apache.shardingsphere.masterslave.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper
+org.apache.shardingsphere.replication.primaryreplica.yaml.swapper.MasterSlaveRuleAlgorithmProviderConfigurationYamlSwapper
+org.apache.shardingsphere.replication.primaryreplica.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper

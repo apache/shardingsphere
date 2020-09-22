@@ -5,7 +5,7 @@ weight = 2
 
 ## 配置入口
 
-类名称：org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration
+类名称：MasterSlaveRuleConfiguration
 
 可配置属性：
 
@@ -16,7 +16,7 @@ weight = 2
 
 ## 主从数据源配置
 
-类名称：org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration
+类名称：MasterSlaveDataSourceRuleConfiguration
 
 可配置属性：
 
