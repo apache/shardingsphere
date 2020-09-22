@@ -27,14 +27,14 @@ public interface DataConsistencyChecker {
     /**
      * Check each table count is valid.
      *
-     * @return count check result.
+     * @return count check result
      */
     Map<String, DataConsistencyCheckResult> countCheck();
     
     /**
      * Check each table data is valid.
      *
-     * @return data is valid or not.
+     * @return data is valid or not
      */
     Map<String, Boolean> dataCheck();
 }
