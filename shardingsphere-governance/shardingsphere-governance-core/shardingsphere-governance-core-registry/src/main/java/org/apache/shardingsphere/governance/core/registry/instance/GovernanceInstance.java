@@ -39,9 +39,9 @@ public final class GovernanceInstance {
     }
     
     /**
-     * Getter for instanceId.
+     * Getter for instance ID.
      *
-     * @return  instanceId
+     * @return  instance ID
      */
     public String getInstanceId() {
         return instanceId;

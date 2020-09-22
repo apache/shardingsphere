@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event.datasource;
+package org.apache.shardingsphere.governance.core.event.listener;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-
-import java.util.Map;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
 
 /**
- * Data source changed event.
+ * Governance listener.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DataSourceChangedEvent implements GovernanceEvent {
+public interface GovernanceListener {
     
-    private final String schemaName;
-    
-    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
+    /**
+     * Start to watch.
+     * 
+     * @param watchedChangedTypes watched data change types
+     */
+    void watch(ChangedType... watchedChangedTypes);
 }

@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event.persist;
+package org.apache.shardingsphere.governance.core.event.model.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
 import java.util.Map;
 
 /**
- * Data source event.
+ * Data source changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourcePersistEvent implements GovernanceEvent {
+public final class DataSourceChangedEvent implements GovernanceEvent {
     
     private final String schemaName;
     

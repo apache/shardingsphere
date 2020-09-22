@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 
 /**

@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event.props;
+package org.apache.shardingsphere.governance.core.event.model.persist;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
-
-import java.util.Properties;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 /**
- * Properties changed event.
+ * Schema name event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PropertiesChangedEvent implements GovernanceEvent {
+public final class SchemaNamePersistEvent implements GovernanceEvent {
     
-    private final Properties props;
+    private final String schemaName;
+    
+    private final boolean isDrop; 
 }

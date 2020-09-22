@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.governance.core.config.listener;
 
-import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;

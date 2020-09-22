@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.persist.DataSourcePersistEvent;
-import org.apache.shardingsphere.governance.core.event.persist.RulePersistEvent;
-import org.apache.shardingsphere.governance.core.event.persist.SchemaNamePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.persist.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.persist.RulePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.persist.SchemaNamePersistEvent;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;

@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event.schema;
+package org.apache.shardingsphere.governance.core.event.model.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
-import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
+import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Schema added event.
+ * Data source change completed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaAddedEvent implements GovernanceEvent {
+public final class DataSourceChangeCompletedEvent implements GovernanceEvent {
     
     private final String schemaName;
     
-    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
+    private final DatabaseType databaseType;
     
-    private final Collection<RuleConfiguration> ruleConfigurations;
+    private final Map<String, DataSource> dataSources;
 }

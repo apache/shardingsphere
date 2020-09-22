@@ -15,10 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event;
+package org.apache.shardingsphere.governance.core.event.model.schema;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 /**
- * Governance event.
+ * Schema deleted event.
  */
-public interface GovernanceEvent {
+@RequiredArgsConstructor
+@Getter
+public final class SchemaDeletedEvent implements GovernanceEvent {
+    
+    private final String schemaName;
 }
