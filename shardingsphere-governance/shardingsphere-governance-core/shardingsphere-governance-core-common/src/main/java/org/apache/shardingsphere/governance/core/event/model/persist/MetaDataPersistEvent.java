@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event.rule;
+package org.apache.shardingsphere.governance.core.event.model.persist;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
+import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 
 /**
- * Rule configurations changed event.
+ * Meta data event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RuleConfigurationsChangedEvent implements GovernanceEvent {
+public final class MetaDataPersistEvent implements GovernanceEvent {
     
     private final String schemaName;
     
-    private final Collection<RuleConfiguration> ruleConfigurations;
+    private final RuleSchemaMetaData metaData;
 }

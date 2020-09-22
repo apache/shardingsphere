@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event.auth;
+package org.apache.shardingsphere.governance.core.event.model.props;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
+
+import java.util.Properties;
 
 /**
- * Authentication changed event.
+ * Properties changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AuthenticationChangedEvent implements GovernanceEvent {
+public final class PropertiesChangedEvent implements GovernanceEvent {
     
-    private final Authentication authentication;
+    private final Properties props;
 }

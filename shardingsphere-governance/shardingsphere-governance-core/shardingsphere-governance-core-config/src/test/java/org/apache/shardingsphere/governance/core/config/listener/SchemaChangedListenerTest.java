@@ -19,12 +19,12 @@ package org.apache.shardingsphere.governance.core.config.listener;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.metadata.MetaDataChangedEvent;
-import org.apache.shardingsphere.governance.core.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.event.schema.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.event.schema.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAddedEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;

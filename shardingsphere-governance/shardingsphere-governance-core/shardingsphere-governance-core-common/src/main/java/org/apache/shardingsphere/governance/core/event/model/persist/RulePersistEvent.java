@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.listener;
+package org.apache.shardingsphere.governance.core.event.model.persist;
 
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+
+import java.util.Collection;
 
 /**
- * Governance listener.
+ * Rule event.
  */
-public interface GovernanceListener {
+@RequiredArgsConstructor
+@Getter
+public final class RulePersistEvent implements GovernanceEvent {
     
-    /**
-     * Start to watch.
-     * 
-     * @param watchedChangedTypes watched data change types
-     */
-    void watch(ChangedType... watchedChangedTypes);
+    private final String schemaName;
+    
+    private final Collection<RuleConfiguration> ruleConfigurations;
 }
