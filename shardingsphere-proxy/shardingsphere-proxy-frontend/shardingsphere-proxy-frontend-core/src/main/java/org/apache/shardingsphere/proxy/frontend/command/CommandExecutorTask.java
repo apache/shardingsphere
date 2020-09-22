@@ -80,14 +80,14 @@ public final class CommandExecutorTask implements Runnable {
             // CHECKSTYLE:ON
             processException(ex);
         } finally {
+            Collection<SQLException> exceptions = closeExecutionResources();
             if (isNeedFlush) {
                 context.flush();
             }
             if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
-                Collection<SQLException> exceptions = closeExecutionResources();
                 exceptions.addAll(backendConnection.closeConnections(false));
-                processClosedExceptions(exceptions);
             }
+            processClosedExceptions(exceptions);
             rootInvokeHook.finish(connectionSize);
         }
     }
