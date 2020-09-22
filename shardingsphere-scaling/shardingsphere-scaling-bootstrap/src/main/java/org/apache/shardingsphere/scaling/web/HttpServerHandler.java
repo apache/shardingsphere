@@ -34,6 +34,7 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.ScalingJobController;
+import org.apache.shardingsphere.scaling.core.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
@@ -42,6 +43,7 @@ import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
 import org.apache.shardingsphere.scaling.utils.ResponseContentUtil;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -122,8 +124,8 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     private void checkJob(final ChannelHandlerContext context, final String requestPath) {
         int jobId = Integer.parseInt(requestPath.split("/")[4]);
         try {
-            boolean success = SCALING_JOB_CONTROLLER.check(jobId);
-            response(GSON.toJson(ResponseContentUtil.build(success)), context, HttpResponseStatus.OK);
+            Map<String, DataConsistencyCheckResult> result = SCALING_JOB_CONTROLLER.check(jobId);
+            response(GSON.toJson(ResponseContentUtil.build(result)), context, HttpResponseStatus.OK);
         } catch (final ScalingJobNotFoundException ex) {
             response(GSON.toJson(ResponseContentUtil.handleBadRequest(ex.getMessage())), context, HttpResponseStatus.BAD_REQUEST);
         }

@@ -59,7 +59,7 @@ public final class DataSourceManagerTest {
     public void assertGetDataSource() {
         DataSourceManager dataSourceManager = new DataSourceManager();
         DataSource actual = dataSourceManager.getDataSource(syncConfigurations.get(0).getDumperConfiguration().getDataSourceConfiguration());
-        assertThat(actual, instanceOf(HikariDataSourceWrapper.class));
+        assertThat(actual, instanceOf(DataSourceWrapper.class));
     }
     
     @Test

@@ -15,28 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.fixture;
+package org.apache.shardingsphere.scaling.core.check;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyCheckResult;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Collections;
-import java.util.Map;
-
-@RequiredArgsConstructor
-public final class FixtureDataConsistencyChecker implements DataConsistencyChecker {
+/**
+ * Data consistency check result.
+ */
+@Getter
+@Setter
+public final class DataConsistencyCheckResult {
     
-    private final ShardingScalingJob shardingScalingJob;
+    private final long sourceCount;
     
-    @Override
-    public Map<String, DataConsistencyCheckResult> countCheck() {
-        return Collections.emptyMap();
-    }
+    private final long destinationCount;
     
-    @Override
-    public Map<String, Boolean> dataCheck() {
-        return Collections.emptyMap();
+    private final boolean countValid;
+    
+    private boolean dataValid;
+    
+    public DataConsistencyCheckResult(final long sourceCount, final long destinationCount) {
+        this.sourceCount = sourceCount;
+        this.destinationCount = destinationCount;
+        countValid = sourceCount == destinationCount;
     }
 }

@@ -22,6 +22,9 @@ import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSqlBuilder;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * PostgreSQL data consistency checker.
  */
@@ -32,8 +35,8 @@ public final class PostgreSQLDataConsistencyChecker extends AbstractDataConsiste
     }
     
     @Override
-    public boolean dataCheck() {
-        return true;
+    public Map<String, Boolean> dataCheck() {
+        return Collections.emptyMap();
     }
     
     @Override

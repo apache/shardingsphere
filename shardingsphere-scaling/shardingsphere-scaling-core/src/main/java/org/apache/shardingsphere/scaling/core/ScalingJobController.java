@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core;
 
+import org.apache.shardingsphere.scaling.core.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.job.ScalingJobProgress;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -96,12 +98,17 @@ public final class ScalingJobController {
      * @param shardingScalingJobId sharding scaling job id
      * @return check success or not
      */
-    public boolean check(final int shardingScalingJobId) {
+    public Map<String, DataConsistencyCheckResult> check(final int shardingScalingJobId) {
         if (!scalingJobMap.containsKey(shardingScalingJobId)) {
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", shardingScalingJobId));
         }
         DataConsistencyChecker dataConsistencyChecker = scalingJobMap.get(shardingScalingJobId).getDataConsistencyChecker();
-        return dataConsistencyChecker.countCheck() && dataConsistencyChecker.dataCheck();
+        Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
+        if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountValid)) {
+            Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck();
+            result.forEach((key, value) -> value.setDataValid(dataCheckResult.getOrDefault(key, false)));
+        }
+        return result;
     }
     
     /**
