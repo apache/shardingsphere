@@ -43,6 +43,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
@@ -164,9 +165,10 @@ public final class GeneratedKeyContextEngineTest {
         Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(Collections.singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(3));
-        assertThat(actual.get().getGeneratedValues().get(0), is((Comparable) 1));
-        assertThat(actual.get().getGeneratedValues().get(1), is((Comparable) 100));
-        assertThat(actual.get().getGeneratedValues().get(2), is((Comparable) "value"));
+        Iterator<Comparable<?>> generatedValuesIterator = actual.get().getGeneratedValues().iterator();
+        assertThat(generatedValuesIterator.next(), is((Comparable) 1));
+        assertThat(generatedValuesIterator.next(), is((Comparable) 100));
+        assertThat(generatedValuesIterator.next(), is((Comparable) "value"));
         assertTrue(new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(Collections.singletonList(1), insertStatement).isPresent());
     }
 }

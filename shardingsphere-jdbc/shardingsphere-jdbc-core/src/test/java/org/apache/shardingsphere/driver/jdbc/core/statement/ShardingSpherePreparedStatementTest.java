@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.fixture.ResetIncrementKeyGenerateAlgorithm;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -94,7 +93,6 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
         }
     }
     
-    @Ignore
     @Test
     public void assertMultiValuesWithGenerateShardingKeyColumn() throws SQLException {
         try (
@@ -137,7 +135,6 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
         }
     }
     
-    @Ignore
     @Test
     public void assertAddBatchMultiValuesWithGenerateShardingKeyColumn() throws SQLException {
         try (
