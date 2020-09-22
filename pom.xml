@@ -511,7 +511,6 @@
     </dependencies>
     
     <build>
-        <finalName>apache-shardingsphere-${project.version}</finalName>
         <extensions>
             <extension>
                 <groupId>kr.motd.maven</groupId>
