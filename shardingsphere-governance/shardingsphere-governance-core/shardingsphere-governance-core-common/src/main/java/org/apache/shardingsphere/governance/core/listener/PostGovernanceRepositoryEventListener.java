@@ -22,7 +22,7 @@ import org.apache.shardingsphere.governance.core.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
-import org.apache.shardingsphere.governance.core.event.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,7 +50,7 @@ public abstract class PostGovernanceRepositoryEventListener implements Governanc
         governanceRepository.watch(watchKey, dataChangedEvent -> {
             if (changedTypes.contains(dataChangedEvent.getChangedType())) {
                 Optional<GovernanceEvent> event = createGovernanceEvent(dataChangedEvent);
-                event.ifPresent(ShardingSphereEventBus.getInstance()::post);
+                event.ifPresent(GovernanceEventBus.getInstance()::post);
             }
         });
     }
