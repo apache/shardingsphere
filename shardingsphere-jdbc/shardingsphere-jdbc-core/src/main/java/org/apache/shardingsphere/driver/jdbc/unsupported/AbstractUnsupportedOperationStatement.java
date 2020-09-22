@@ -27,17 +27,7 @@ import java.sql.Statement;
  * Unsupported {@code Statement} methods.
  */
 public abstract class AbstractUnsupportedOperationStatement extends WrapperAdapter implements Statement {
-    
-    @Override
-    public final int getFetchDirection() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getFetchDirection");
-    }
-    
-    @Override
-    public final void setFetchDirection(final int direction) throws SQLException {
-        throw new SQLFeatureNotSupportedException("setFetchDirection");
-    }
-    
+
     @Override
     public final void addBatch(final String sql) throws SQLException {
         throw new SQLFeatureNotSupportedException("addBatch sql");
