@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class AbstractBootstrapInitializer implements BootstrapInitializer {
     
-    private ShardingSphereProxy shardingSphereProxy = new ShardingSphereProxy();
+    private final ShardingSphereProxy shardingSphereProxy = new ShardingSphereProxy();
     
     @Override
     public final void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {

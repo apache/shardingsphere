@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -66,10 +67,13 @@ public abstract class AbstractBootstrapInitializerTest {
     @SneakyThrows
     @Test
     public final void assertInit() {
-        AbstractBootstrapInitializer abstractBootstrapInitializer = mock(AbstractBootstrapInitializer.class, Mockito.CALLS_REAL_METHODS);
-        ShardingSphereProxy shardingSphereProxy = mock(ShardingSphereProxy.class);
         Field field = AbstractBootstrapInitializer.class.getDeclaredField("shardingSphereProxy");
         field.setAccessible(true);
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+        AbstractBootstrapInitializer abstractBootstrapInitializer = mock(AbstractBootstrapInitializer.class, Mockito.CALLS_REAL_METHODS);
+        ShardingSphereProxy shardingSphereProxy = mock(ShardingSphereProxy.class);
         field.set(abstractBootstrapInitializer, shardingSphereProxy);
         doReturn(mock(ProxyConfiguration.class)).when(abstractBootstrapInitializer).getProxyConfiguration(any());
         SchemaContexts schemaContexts = mock(SchemaContexts.class);
