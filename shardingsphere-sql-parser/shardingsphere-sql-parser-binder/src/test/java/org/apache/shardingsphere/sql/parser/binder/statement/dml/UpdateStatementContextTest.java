@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -63,7 +64,7 @@ public final class UpdateStatementContextTest {
         JoinTableSegment joinTableSegment = new JoinTableSegment();
         joinTableSegment.setLeft(table1);
         joinTableSegment.setRight(table2);
-        UpdateStatement updateStatement = new UpdateStatement();
+        UpdateStatement updateStatement = new MySQLUpdateStatement();
         updateStatement.setWhere(whereSegment);
         updateStatement.setTableSegment(joinTableSegment);
         UpdateStatementContext actual = new UpdateStatementContext(updateStatement);

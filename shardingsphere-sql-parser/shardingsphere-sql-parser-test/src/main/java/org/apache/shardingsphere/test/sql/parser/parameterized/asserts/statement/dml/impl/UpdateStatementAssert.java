@@ -19,8 +19,10 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml.UpdateStatementHelper;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.limit.LimitClauseAssert;
@@ -73,16 +75,17 @@ public final class UpdateStatementAssert {
     }
 
     private static void assertOrderByClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
+        Optional<OrderBySegment> orderBySegment = UpdateStatementHelper.getOrderBySegment(actual);
         if (null != expected.getOrderByClause()) {
-            assertTrue(assertContext.getText("Actual order by segment should exist."), actual.getOrderBy().isPresent());
-            OrderByClauseAssert.assertIs(assertContext, actual.getOrderBy().get(), expected.getOrderByClause());
+            assertTrue(assertContext.getText("Actual order by segment should exist."), orderBySegment.isPresent());
+            OrderByClauseAssert.assertIs(assertContext, orderBySegment.get(), expected.getOrderByClause());
         } else {
-            assertFalse(assertContext.getText("Actual order by segment should not exist."), actual.getOrderBy().isPresent());
+            assertFalse(assertContext.getText("Actual order by segment should not exist."), orderBySegment.isPresent());
         }
     }
 
     private static void assertLimitClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
-        Optional<LimitSegment> limitSegment = actual.getLimit();
+        Optional<LimitSegment> limitSegment = UpdateStatementHelper.getLimitSegment(actual);
         if (null != expected.getLimitClause()) {
             assertTrue(assertContext.getText("Actual limit segment should exist."), limitSegment.isPresent());
             LimitClauseAssert.assertRowCount(assertContext, limitSegment.get().getRowCount().orElse(null), expected.getLimitClause().getRowCount());
