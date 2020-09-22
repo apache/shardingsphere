@@ -51,7 +51,7 @@ public final class GeneratedKeyAssignmentTokenGenerator extends BaseGeneratedKey
         InsertStatement insertStatement = insertStatementContext.getSqlStatement();
         Preconditions.checkState(InsertStatementHelper.getSetAssignmentSegment(insertStatement).isPresent());
         int startIndex = InsertStatementHelper.getSetAssignmentSegment(insertStatement).get().getStopIndex() + 1;
-        return parameters.isEmpty() ? new LiteralGeneratedKeyAssignmentToken(startIndex, generatedKey.get().getColumnName(), generatedKey.get().getGeneratedValues().getLast())
+        return parameters.isEmpty() ? new LiteralGeneratedKeyAssignmentToken(startIndex, generatedKey.get().getColumnName(), generatedKey.get().getGeneratedValues().iterator().next())
                 : new ParameterMarkerGeneratedKeyAssignmentToken(startIndex, generatedKey.get().getColumnName());
     }
 }

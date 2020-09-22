@@ -54,7 +54,7 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
         Preconditions.checkState(result.isPresent());
         Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
         Preconditions.checkState(generatedKey.isPresent());
-        Iterator<Comparable<?>> generatedValues = generatedKey.get().getGeneratedValues().descendingIterator();
+        Iterator<Comparable<?>> generatedValues = generatedKey.get().getGeneratedValues().iterator();
         int count = 0;
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = result.get().getInsertValues().get(count);

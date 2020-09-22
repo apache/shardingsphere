@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.fixture.ResetIncrementKeyGenerateAlgorithm;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -40,11 +39,13 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
 
     private static final String INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "INSERT INTO t_user (name) VALUES (?),(?),(?),(?)";
 
-    private static final String SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "SELECT name FROM t_user WHERE id=%d";
+    private static final String SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "SELECT name FROM t_user WHERE id=%dL";
     
     private static final String INSERT_WITH_GENERATE_KEY_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)";
     
     private static final String INSERT_WITHOUT_GENERATE_KEY_SQL = "INSERT INTO t_order_item (order_id, user_id, status) VALUES (?, ?, ?)";
+    
+    private static final String INSERT_WITH_GENERATE_KEY_SQL_WITH_MULTI_VALUES = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (1, ?, ?, ?), (2, ?, ?, ?)";
     
     private static final String INSERT_ON_DUPLICATE_KEY_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?), (?, ?, ?, ?) ON DUPLICATE KEY UPDATE status = ?";
     
@@ -94,7 +95,6 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
         }
     }
     
-    @Ignore
     @Test
     public void assertMultiValuesWithGenerateShardingKeyColumn() throws SQLException {
         try (
@@ -137,7 +137,6 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
         }
     }
     
-    @Ignore
     @Test
     public void assertAddBatchMultiValuesWithGenerateShardingKeyColumn() throws SQLException {
         try (
@@ -323,6 +322,26 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
                 assertTrue(resultSet.next());
                 assertThat(resultSet.getInt(1), is(4));
             }
+        }
+    }
+    
+    @Test
+    public void assertGeneratedKeysForBatchInsert() throws SQLException {
+        try (Connection connection = getShardingSphereDataSource().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL_WITH_MULTI_VALUES, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setInt(1, 11);
+            preparedStatement.setInt(2, 11);
+            preparedStatement.setString(3, "MULTI");
+            preparedStatement.setInt(4, 12);
+            preparedStatement.setInt(5, 12);
+            preparedStatement.setString(6, "MULTI");
+            int result = preparedStatement.executeUpdate();
+            ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
+            assertThat(result, is(2));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getInt(1), is(1));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getInt(1), is(2));
         }
     }
     

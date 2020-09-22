@@ -255,7 +255,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private ExecutionContext createExecutionContext() {
         LogicSQLContext logicSQLContext = new LogicSQLContext(schemaContexts.getDefaultSchemaContext(), sql, new ArrayList<>(getParameters()), sqlStatement);
         ExecutionContext result = new KernelProcessor().generateExecutionContext(logicSQLContext, schemaContexts.getProps());
-        findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.add(generatedKey.getGeneratedValues().getLast()));
+        findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.addAll(generatedKey.getGeneratedValues()));
         logSQL(result);
         return result;
     }

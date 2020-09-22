@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.Collection;
 import java.util.LinkedList;
 
 /**
@@ -35,5 +36,5 @@ public final class GeneratedKeyContext {
     
     private final boolean generated;
     
-    private final LinkedList<Comparable<?>> generatedValues = new LinkedList<>();
+    private final Collection<Comparable<?>> generatedValues = new LinkedList<>();
 }
