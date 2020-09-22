@@ -37,7 +37,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLShowStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -48,11 +53,35 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingResultMergerEngineTest {
-    
+
     @Test
-    public void assertNewInstanceWithSelectStatement() {
+    public void assertNewInstanceWithSelectStatementForMySQL() {
+        assertNewInstanceWithSelectStatement(new MySQLSelectStatement());
+    }
+
+    @Test
+    public void assertNewInstanceWithSelectStatementForOracle() {
+        assertNewInstanceWithSelectStatement(new OracleSelectStatement());
+    }
+
+    @Test
+    public void assertNewInstanceWithSelectStatementForPostgreSQL() {
+        assertNewInstanceWithSelectStatement(new PostgreSQLSelectStatement());
+    }
+
+    @Test
+    public void assertNewInstanceWithSelectStatementForSQL92() {
+        assertNewInstanceWithSelectStatement(new SQL92SelectStatement());
+    }
+
+    @Test
+    public void assertNewInstanceWithSelectStatementForSQLServer() {
+        assertNewInstanceWithSelectStatement(new SQLServerSelectStatement());
+    }
+    
+    private void assertNewInstanceWithSelectStatement(final SelectStatement selectStatement) {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        SelectStatementContext sqlStatementContext = new SelectStatementContext(new SelectStatement(),
+        SelectStatementContext sqlStatementContext = new SelectStatementContext(selectStatement,
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
         assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, props, sqlStatementContext), instanceOf(ShardingDQLResultMerger.class));

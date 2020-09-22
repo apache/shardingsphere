@@ -33,6 +33,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -61,24 +66,46 @@ public final class PreparedShadowDataSourceRouterTest {
     }
     
     @Test
-    public void isShadowSQLInLiteralExpression() {
+    public void isShadowSQLInLiteralExpressionForMySQL() {
+        isShadowSQLInLiteralExpression(new MySQLSelectStatement());
+    }
+
+    @Test
+    public void isShadowSQLInLiteralExpressionForOracle() {
+        isShadowSQLInLiteralExpression(new OracleSelectStatement());
+    }
+
+    @Test
+    public void isShadowSQLInLiteralExpressionForPostgreSQL() {
+        isShadowSQLInLiteralExpression(new PostgreSQLSelectStatement());
+    }
+
+    @Test
+    public void isShadowSQLInLiteralExpressionForSQL92() {
+        isShadowSQLInLiteralExpression(new SQL92SelectStatement());
+    }
+
+    @Test
+    public void isShadowSQLInLiteralExpressionForSQLServer() {
+        isShadowSQLInLiteralExpression(new SQLServerSelectStatement());
+    }
+
+    private void isShadowSQLInLiteralExpression(final SelectStatement selectStatement) {
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
         ShadowRule shadowRule = new ShadowRule(shadowRuleConfiguration);
-        
-        PreparedShadowDataSourceJudgeEngine preparedShadowDataSourceRouter = new PreparedShadowDataSourceJudgeEngine(shadowRule, selectStatementContext(), Arrays.asList(1, "Tom", true));
+        PreparedShadowDataSourceJudgeEngine preparedShadowDataSourceRouter = new PreparedShadowDataSourceJudgeEngine(shadowRule, 
+                selectStatementContext(selectStatement), Arrays.asList(1, "Tom", true));
         assertTrue("should be shadow", preparedShadowDataSourceRouter.isShadow());
     }
     
-    private SelectStatementContext selectStatementContext() {
+    private SelectStatementContext selectStatementContext(final SelectStatement selectStatement) {
         BinaryOperationExpression left = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new ParameterMarkerExpressionSegment(0, 0, 0), "=", "id=?");
         BinaryOperationExpression right = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("shadow")), new LiteralExpressionSegment(45, 48, "true"), "=", "shadow=true");
         BinaryOperationExpression binaryOperationExpression = new BinaryOperationExpression(0, 0, left, right, "and", "id=? and shadow=true");
         WhereSegment whereSegment = new WhereSegment(0, 0, binaryOperationExpression);
-        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setWhere(whereSegment);
-        
         return new SelectStatementContext(selectStatement, null, null, null, null);
     }
 }

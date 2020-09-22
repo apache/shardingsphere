@@ -47,6 +47,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.ro
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -65,7 +68,7 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildIteratorStreamMergedResult() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(new MySQLSelectStatement()),
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
         assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createSchemaMetaData()), instanceOf(IteratorStreamMergedResult.class));
@@ -74,7 +77,7 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildIteratorStreamMergedResultWithLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(new MySQLSelectStatement()),
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
@@ -84,7 +87,7 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildIteratorStreamMergedResultWithMySQLLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(new MySQLSelectStatement()),
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
@@ -96,7 +99,7 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildIteratorStreamMergedResultWithOracleLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("Oracle"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(new OracleSelectStatement()),
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
@@ -108,7 +111,7 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildIteratorStreamMergedResultWithSQLServerLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("SQLServer"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(new SQLServerSelectStatement()),
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
@@ -121,7 +124,7 @@ public final class ShardingDQLResultMergerTest {
     public void assertBuildOrderByStreamMergedResult() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                createSelectStatement(), new GroupByContext(Collections.emptyList(), 0),
+                createSelectStatement(new MySQLSelectStatement()), new GroupByContext(Collections.emptyList(), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
         assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createSchemaMetaData()), instanceOf(OrderByStreamMergedResult.class));
@@ -131,7 +134,7 @@ public final class ShardingDQLResultMergerTest {
     public void assertBuildOrderByStreamMergedResultWithMySQLLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                createSelectStatement(), new GroupByContext(Collections.emptyList(), 0),
+                createSelectStatement(new MySQLSelectStatement()), new GroupByContext(Collections.emptyList(), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
@@ -144,7 +147,7 @@ public final class ShardingDQLResultMergerTest {
     public void assertBuildOrderByStreamMergedResultWithOracleLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("Oracle"));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                createSelectStatement(), new GroupByContext(Collections.emptyList(), 0),
+                createSelectStatement(new OracleSelectStatement()), new GroupByContext(Collections.emptyList(), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
@@ -157,7 +160,7 @@ public final class ShardingDQLResultMergerTest {
     public void assertBuildOrderByStreamMergedResultWithSQLServerLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("SQLServer"));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                createSelectStatement(), new GroupByContext(Collections.emptyList(), 0),
+                createSelectStatement(new SQLServerSelectStatement()), new GroupByContext(Collections.emptyList(), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
@@ -169,7 +172,7 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildGroupByStreamMergedResult() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(new MySQLSelectStatement()),
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
@@ -179,7 +182,7 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildGroupByStreamMergedResultWithMySQLLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(new MySQLSelectStatement()),
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
@@ -192,7 +195,7 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildGroupByStreamMergedResultWithOracleLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("Oracle"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(new OracleSelectStatement()),
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
@@ -205,7 +208,7 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildGroupByStreamMergedResultWithSQLServerLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("SQLServer"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(new SQLServerSelectStatement()),
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
@@ -218,7 +221,7 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildGroupByMemoryMergedResult() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(new MySQLSelectStatement()),
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0), 
                 new OrderByContext(Collections.emptyList(), false), new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(null, null, Collections.emptyList()));
@@ -228,7 +231,7 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithMySQLLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(new MySQLSelectStatement()),
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0), 
                 new OrderByContext(Collections.emptyList(), false), new ProjectionsContext(0, 0, false, Collections.emptyList()),
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
@@ -240,7 +243,7 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithOracleLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("Oracle"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(new OracleSelectStatement()),
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
@@ -253,7 +256,7 @@ public final class ShardingDQLResultMergerTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithSQLServerLimit() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("SQLServer"));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createSelectStatement(new SQLServerSelectStatement()),
                 new GroupByContext(Arrays.asList(
                         new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)), 
                         new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC))), 0), new OrderByContext(Collections.emptyList(), false),
@@ -270,7 +273,7 @@ public final class ShardingDQLResultMergerTest {
         ProjectionsContext projectionsContext = new ProjectionsContext(
                 0, 0, false, Collections.singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                createSelectStatement(), new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
+                createSelectStatement(new MySQLSelectStatement()), new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 projectionsContext, new PaginationContext(null, null, Collections.emptyList()));
         assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createSchemaMetaData()), instanceOf(GroupByMemoryMergedResult.class));
     }
@@ -281,7 +284,7 @@ public final class ShardingDQLResultMergerTest {
         ProjectionsContext projectionsContext = new ProjectionsContext(
                 0, 0, false, Collections.singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                createSelectStatement(), new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
+                createSelectStatement(new MySQLSelectStatement()), new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 projectionsContext, new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createSchemaMetaData());
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
@@ -294,7 +297,7 @@ public final class ShardingDQLResultMergerTest {
         ProjectionsContext projectionsContext = new ProjectionsContext(
                 0, 0, false, Collections.singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                createSelectStatement(), new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
+                createSelectStatement(new OracleSelectStatement()), new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                         projectionsContext, new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createSchemaMetaData());
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
@@ -307,7 +310,7 @@ public final class ShardingDQLResultMergerTest {
         ProjectionsContext projectionsContext = new ProjectionsContext(
                 0, 0, false, Collections.singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                createSelectStatement(), new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
+                createSelectStatement(new SQLServerSelectStatement()), new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 projectionsContext, new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createSchemaMetaData());
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
@@ -340,8 +343,7 @@ public final class ShardingDQLResultMergerTest {
         return new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData));
     }
     
-    private SelectStatement createSelectStatement() {
-        SelectStatement result = new SelectStatement();
+    private SelectStatement createSelectStatement(final SelectStatement result) {
         SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new IdentifierValue("tbl"));
         result.setFrom(tableSegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);

@@ -39,7 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
@@ -221,7 +221,7 @@ public final class ShardingRouteEngineFactoryTest {
     public void assertNewInstanceForSelectWithUnconfiguredTables() {
         tableNames.add("tbl");
         when(shardingRule.tableRuleExists(tableNames)).thenReturn(false);
-        SQLStatement sqlStatement = mock(SelectStatement.class);
+        SQLStatement sqlStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingUnconfiguredTablesRoutingEngine.class));
@@ -229,7 +229,7 @@ public final class ShardingRouteEngineFactoryTest {
     
     @Test
     public void assertNewInstanceForSelectWithoutUnconfiguredTables() {
-        SQLStatement sqlStatement = mock(SelectStatement.class);
+        SQLStatement sqlStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
@@ -247,7 +247,7 @@ public final class ShardingRouteEngineFactoryTest {
     @Test
     public void assertNewInstanceForSelectBroadcastTable() {
         when(shardingRule.isAllBroadcastTables(tableNames)).thenReturn(true);
-        SQLStatement sqlStatement = mock(SelectStatement.class);
+        SQLStatement sqlStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
