@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-master-slave-spring-boot-starter</artifactId>
+            <artifactId>shardingsphere-primary-replica-replication-spring-boot-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
