@@ -134,7 +134,7 @@ public final class CreateTableStatementMetaDataRefreshStrategyTest extends Abstr
         MetaDataRefreshStrategy<CreateTableStatementContext> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), new MySQLDatabaseType(), dataSourceSourceMap, createTableStatementContext,
             tableName -> Optional.empty());
-        assertTrue(getMetaData().getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get("t_order_item").containsTable("t_order_item_0"));
+        assertTrue(getMetaData().getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get("t_order_item").contains("t_order_item_0"));
     }
     
     private DataSource initDataSource() throws SQLException {

@@ -48,27 +48,15 @@ public final class SchemaMetaDataLoader {
     private static final String TABLE_NAME = "TABLE_NAME";
     
     /**
-     * Load schema meta data.
-     *
-     * @param dataSource data source
-     * @param databaseType database type
-     * @return schema meta data
-     * @throws SQLException SQL exception
-     */
-    public static SchemaMetaData load(final DataSource dataSource, final String databaseType) throws SQLException {
-        return load(dataSource, databaseType, Collections.emptyList());
-    }
-    
-    /**
-     * Load schema meta data.
+     * Load unconfigured table name.
      *
      * @param dataSource data source
      * @param databaseType database type
      * @param excludedTableNames excluded table names
-     * @return schema meta data
+     * @return Unconfigured table names
      * @throws SQLException SQL exception
      */
-    public static SchemaMetaData load(final DataSource dataSource, final String databaseType, final Collection<String> excludedTableNames) throws SQLException {
+    public static Collection<String> loadUnconfiguredTableNames(final DataSource dataSource, final String databaseType, final Collection<String> excludedTableNames) throws SQLException {
         List<String> tableNames;
         try (MetaDataConnection connection = new MetaDataConnection(dataSource.getConnection())) {
             tableNames = loadAllTableNames(connection, databaseType);
@@ -76,11 +64,9 @@ public final class SchemaMetaDataLoader {
         }
         log.info("Loading {} tables' meta data.", tableNames.size());
         if (tableNames.isEmpty()) {
-            return new SchemaMetaData(Collections.emptyMap());
+            return Collections.emptyList();
         }
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(tableNames.size(), 1);
-        tableNames.forEach(tableName -> tableMetaDataMap.put(tableName, new TableMetaData(Collections.emptyList(), Collections.emptyList())));
-        return new SchemaMetaData(tableMetaDataMap);
+        return tableNames;
     }
     
     private static List<String> loadAllTableNames(final Connection connection, final String databaseType) throws SQLException {

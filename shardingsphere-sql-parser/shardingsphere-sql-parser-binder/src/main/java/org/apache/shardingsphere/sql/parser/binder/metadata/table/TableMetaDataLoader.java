@@ -69,7 +69,7 @@ public final class TableMetaDataLoader {
             if (!isTableExist(connection, tableNamePattern, databaseType)) {
                 return Optional.empty();
             }
-            return Optional.of(new TableMetaData(Collections.emptyList(), Collections.emptyList()));
+            return Optional.of(new TableMetaData());
         }
     }
     

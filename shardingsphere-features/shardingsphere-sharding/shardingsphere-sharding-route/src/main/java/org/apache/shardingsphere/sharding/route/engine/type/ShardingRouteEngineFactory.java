@@ -95,7 +95,7 @@ public final class ShardingRouteEngineFactory {
     }
     
     private static ShardingRouteEngine getDALRoutingEngine(final ShardingRule shardingRule, 
-                                                           final Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap, final SQLStatement sqlStatement, final Collection<String> tableNames) {
+                                                           final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap, final SQLStatement sqlStatement, final Collection<String> tableNames) {
         if (sqlStatement instanceof MySQLUseStatement) {
             return new ShardingIgnoreRoutingEngine();
         }
