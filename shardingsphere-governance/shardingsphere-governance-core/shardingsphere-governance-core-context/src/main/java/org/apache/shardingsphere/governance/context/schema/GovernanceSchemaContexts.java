@@ -27,7 +27,7 @@ import org.apache.shardingsphere.governance.core.event.props.PropertiesChangedEv
 import org.apache.shardingsphere.governance.core.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.event.schema.SchemaDeletedEvent;
-import org.apache.shardingsphere.governance.core.event.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
@@ -78,7 +78,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     public GovernanceSchemaContexts(final SchemaContexts schemaContexts, final GovernanceFacade governanceFacade) {
         this.governanceFacade = governanceFacade;
         this.schemaContexts = schemaContexts;
-        ShardingSphereEventBus.getInstance().register(this);
+        GovernanceEventBus.getInstance().register(this);
         disableDataSources();
         persistMetaData();
     }
@@ -161,7 +161,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
         governanceFacade.getConfigCenter().persistMetaData(event.getSchemaName(), 
                 schemaContexts.getSchemaContextMap().get(event.getSchemaName()).getSchema().getMetaData().getRuleSchemaMetaData());
-        ShardingSphereEventBus.getInstance().post(
+        GovernanceEventBus.getInstance().post(
                 new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), schemas.get(event.getSchemaName()).getSchema().getDataSources()));
     }
     
@@ -246,7 +246,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         newSchemaContexts.remove(schemaName);
         newSchemaContexts.put(schemaName, getChangedSchemaContext(schemaContexts.getSchemaContextMap().get(schemaName), event.getDataSourceConfigurations()));
         schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
-        ShardingSphereEventBus.getInstance().post(
+        GovernanceEventBus.getInstance().post(
                 new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), newSchemaContexts.get(event.getSchemaName()).getSchema().getDataSources()));
     }
     

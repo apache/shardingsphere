@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.governance.internal.metadata;
 
-import org.apache.shardingsphere.governance.core.event.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.event.persist.MetaDataPersistEvent;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataNotifier;
@@ -29,7 +29,7 @@ public final class RuleSchemaMetaDataNotifier implements RuleMetaDataNotifier {
     
     @Override
     public void notify(final String schemaName, final RuleSchemaMetaData metaData) {
-        ShardingSphereEventBus.getInstance().post(new MetaDataPersistEvent(schemaName, metaData));
+        GovernanceEventBus.getInstance().post(new MetaDataPersistEvent(schemaName, metaData));
     }
     
     @Override
