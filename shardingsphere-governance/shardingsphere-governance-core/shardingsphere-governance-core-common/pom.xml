@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-primary-replica-replication-common</artifactId>
+            <artifactId>shardingsphere-master-slave-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

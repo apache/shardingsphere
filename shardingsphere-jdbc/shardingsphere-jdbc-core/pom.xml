@@ -69,7 +69,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-primary-replica-replication-route</artifactId>
+            <artifactId>shardingsphere-master-slave-route</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
