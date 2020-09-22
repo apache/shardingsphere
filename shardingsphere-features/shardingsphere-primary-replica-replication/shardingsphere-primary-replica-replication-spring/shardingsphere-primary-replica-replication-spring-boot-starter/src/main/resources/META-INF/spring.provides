@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-provides: shardingsphere-master-slave-spring-boot-starter
+provides: shardingsphere-primary-replica-replication-spring-boot-starter
