@@ -45,6 +45,8 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     
     private static final String INSERT_WITHOUT_GENERATE_KEY_SQL = "INSERT INTO t_order_item (order_id, user_id, status) VALUES (?, ?, ?)";
     
+    private static final String INSERT_WITH_GENERATE_KEY_SQL_WITH_MULTI_VALUES = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (1, ?, ?, ?), (2, ?, ?, ?)";
+    
     private static final String INSERT_ON_DUPLICATE_KEY_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?), (?, ?, ?, ?) ON DUPLICATE KEY UPDATE status = ?";
     
     private static final String SELECT_SQL_WITHOUT_PARAMETER_MARKER = "SELECT item_id FROM t_order_item WHERE user_id = %d AND order_id= %s AND status = 'BATCH'";
@@ -320,6 +322,26 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
                 assertTrue(resultSet.next());
                 assertThat(resultSet.getInt(1), is(4));
             }
+        }
+    }
+    
+    @Test
+    public void assertGeneratedKeysForBatchInsert() throws SQLException {
+        try (Connection connection = getShardingSphereDataSource().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL_WITH_MULTI_VALUES, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setInt(1, 11);
+            preparedStatement.setInt(2, 11);
+            preparedStatement.setString(3, "MULTI");
+            preparedStatement.setInt(4, 12);
+            preparedStatement.setInt(5, 12);
+            preparedStatement.setString(6, "MULTI");
+            int result = preparedStatement.executeUpdate();
+            ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
+            assertThat(result, is(2));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getInt(1), is(1));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getInt(1), is(2));
         }
     }
     
