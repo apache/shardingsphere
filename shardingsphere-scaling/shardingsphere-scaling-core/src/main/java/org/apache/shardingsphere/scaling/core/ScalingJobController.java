@@ -93,10 +93,10 @@ public final class ScalingJobController {
     }
     
     /**
-     * Execute data consistency check by strict model.
+     * Execute data consistency check.
      *
      * @param shardingScalingJobId sharding scaling job id
-     * @return check success or not
+     * @return check result
      */
     public Map<String, DataConsistencyCheckResult> check(final int shardingScalingJobId) {
         if (!scalingJobMap.containsKey(shardingScalingJobId)) {
