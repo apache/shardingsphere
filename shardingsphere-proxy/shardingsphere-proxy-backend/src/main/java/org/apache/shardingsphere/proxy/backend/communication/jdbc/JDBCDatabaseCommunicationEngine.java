@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.persist.MetaDataPersistEvent;
-import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.event.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;

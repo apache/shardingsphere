@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.persist.DataSourcePersistEvent;
 import org.apache.shardingsphere.governance.core.event.persist.RulePersistEvent;
 import org.apache.shardingsphere.governance.core.event.persist.SchemaNamePersistEvent;
-import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.event.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.governance.internal.metadata;
 
-import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.event.ShardingSphereEventBus;
 import org.apache.shardingsphere.governance.core.event.persist.MetaDataPersistEvent;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataNotifier;
