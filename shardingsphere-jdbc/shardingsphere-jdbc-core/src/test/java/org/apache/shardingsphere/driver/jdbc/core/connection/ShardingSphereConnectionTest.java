@@ -138,16 +138,16 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertIsValid() throws SQLException {
-        Connection masterConnection = mock(Connection.class);
-        Connection upSlaveConnection = mock(Connection.class);
-        Connection downSlaveConnection = mock(Connection.class);
-        when(masterConnection.isValid(anyInt())).thenReturn(true);
-        when(upSlaveConnection.isValid(anyInt())).thenReturn(true);
-        when(downSlaveConnection.isValid(anyInt())).thenReturn(false);
-        connection.getCachedConnections().put("test_master", masterConnection);
-        connection.getCachedConnections().put("test_replica_up", upSlaveConnection);
+        Connection primaryConnection = mock(Connection.class);
+        Connection upReplicaConnection = mock(Connection.class);
+        Connection downReplicaConnection = mock(Connection.class);
+        when(primaryConnection.isValid(anyInt())).thenReturn(true);
+        when(upReplicaConnection.isValid(anyInt())).thenReturn(true);
+        when(downReplicaConnection.isValid(anyInt())).thenReturn(false);
+        connection.getCachedConnections().put("test_primary", primaryConnection);
+        connection.getCachedConnections().put("test_replica_up", upReplicaConnection);
         assertTrue(connection.isValid(0));
-        connection.getCachedConnections().put("test_replica_down", downSlaveConnection);
+        connection.getCachedConnections().put("test_replica_down", downReplicaConnection);
         assertFalse(connection.isValid(0));
     }
 }

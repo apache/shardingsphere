@@ -33,6 +33,6 @@
         </props>
     </governance:reg-center>
     
-    <governance:data-source id="masterSlaveShardingDataSourceByDefaultStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="masterSlaveShardingDataSourceByDefaultStrategyShardingRule, masterSlaveShardingDataSourceByDefaultStrategyMasterSlaveRule" reg-center-ref="regCenter" />
-    <governance:data-source id="masterSlaveShardingDataSourceByUserStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="masterSlaveShardingDataSourceByUserStrategyShardingRule, masterSlaveShardingDataSourceByUserStrategyMasterSlaveRule" reg-center-ref="regCenter" />
+    <governance:data-source id="dataSourceByDefaultStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="masterSlaveShardingDataSourceByDefaultStrategyShardingRule, masterSlaveShardingDataSourceByDefaultStrategyMasterSlaveRule" reg-center-ref="regCenter" />
+    <governance:data-source id="dataSourceByUserStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="masterSlaveShardingDataSourceByUserStrategyShardingRule, masterSlaveShardingDataSourceByUserStrategyMasterSlaveRule" reg-center-ref="regCenter" />
 </beans>

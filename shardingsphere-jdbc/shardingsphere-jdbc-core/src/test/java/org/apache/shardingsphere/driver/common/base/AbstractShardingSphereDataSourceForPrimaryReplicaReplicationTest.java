@@ -57,7 +57,7 @@ public abstract class AbstractShardingSphereDataSourceForPrimaryReplicaReplicati
                 AbstractShardingSphereDataSourceForPrimaryReplicaReplicationTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
-    protected final ShardingSphereDataSource getMasterSlaveDataSource() {
+    protected final ShardingSphereDataSource getPrimaryReplicaReplicationDataSource() {
         return dataSource;
     }
     

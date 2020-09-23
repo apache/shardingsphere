@@ -23,18 +23,18 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public final class MasterSlaveStatementTest extends AbstractShardingSphereDataSourceForPrimaryReplicaReplicationTest {
+public final class PrimaryReplicaReplicationStatementTest extends AbstractShardingSphereDataSourceForPrimaryReplicaReplicationTest {
     
     @Test(expected = SQLException.class)
     public void assertQueryWithNull() throws SQLException {
-        try (Statement statement = getMasterSlaveDataSource().getConnection().createStatement()) {
+        try (Statement statement = getPrimaryReplicaReplicationDataSource().getConnection().createStatement()) {
             statement.executeQuery(null);
         }
     }
     
     @Test(expected = SQLException.class)
     public void assertQueryWithEmptyString() throws SQLException {
-        try (Statement statement = getMasterSlaveDataSource().getConnection().createStatement()) {
+        try (Statement statement = getPrimaryReplicaReplicationDataSource().getConnection().createStatement()) {
             statement.executeQuery("");
         }
     }

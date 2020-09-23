@@ -90,7 +90,7 @@ public final class GovernanceSchemaContextsTest {
     private SchemaContext schemaContext;
     
     @Mock
-    private PrimaryReplicaReplicationRule masterSlaveRule;
+    private PrimaryReplicaReplicationRule primaryReplicaReplicationRule;
     
     private Authentication authentication = new Authentication();
     
@@ -117,7 +117,7 @@ public final class GovernanceSchemaContextsTest {
         when(schemaContext.getSchema()).thenReturn(shardingSphereSchema);
         when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
         when(shardingSphereSchema.getMetaData()).thenReturn(shardingSphereMetaData);
-        when(shardingSphereSchema.getRules()).thenReturn(Collections.singletonList(masterSlaveRule));
+        when(shardingSphereSchema.getRules()).thenReturn(Collections.singletonList(primaryReplicaReplicationRule));
         return Collections.singletonMap("schema", schemaContext);
     }
     
@@ -220,7 +220,7 @@ public final class GovernanceSchemaContextsTest {
     public void assertDisableStateChanged() {
         DisabledStateChangedEvent event = new DisabledStateChangedEvent(new GovernanceSchema("schema.ds_0"), true);
         governanceSchemaContexts.renew(event);
-        verify(masterSlaveRule, times(2)).updateRuleStatus(any(RuleChangedEvent.class));
+        verify(primaryReplicaReplicationRule, times(2)).updateRuleStatus(any(RuleChangedEvent.class));
     }
     
     @Test

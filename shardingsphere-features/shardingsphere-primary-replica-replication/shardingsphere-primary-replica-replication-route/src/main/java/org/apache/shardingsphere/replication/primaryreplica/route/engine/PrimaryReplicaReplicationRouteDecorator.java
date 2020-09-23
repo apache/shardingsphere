@@ -42,9 +42,9 @@ import java.util.Optional;
 public final class PrimaryReplicaReplicationRouteDecorator implements RouteDecorator<PrimaryReplicaReplicationRule> {
     
     @Override
-    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final PrimaryReplicaReplicationRule masterSlaveRule, final ConfigurationProperties props) {
+    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final PrimaryReplicaReplicationRule rule, final ConfigurationProperties props) {
         if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
-            String dataSourceName = new PrimaryReplicaReplicationDataSourceRouter(masterSlaveRule.getSingleDataSourceRule()).route(routeContext.getSqlStatementContext().getSqlStatement());
+            String dataSourceName = new PrimaryReplicaReplicationDataSourceRouter(rule.getSingleDataSourceRule()).route(routeContext.getSqlStatementContext().getSqlStatement());
             RouteResult routeResult = new RouteResult();
             routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
             return new RouteContext(routeContext, routeResult, new DefaultRouteStageContext(), getTypeClass());
@@ -53,7 +53,7 @@ public final class PrimaryReplicaReplicationRouteDecorator implements RouteDecor
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             String dataSourceName = each.getDataSourceMapper().getLogicName();
-            Optional<PrimaryReplicaReplicationDataSourceRule> dataSourceRule = masterSlaveRule.findDataSourceRule(dataSourceName);
+            Optional<PrimaryReplicaReplicationDataSourceRule> dataSourceRule = rule.findDataSourceRule(dataSourceName);
             if (dataSourceRule.isPresent() && dataSourceRule.get().getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 toBeRemoved.add(each);
                 String actualDataSourceName = new PrimaryReplicaReplicationDataSourceRouter(dataSourceRule.get()).route(routeContext.getSqlStatementContext().getSqlStatement());
