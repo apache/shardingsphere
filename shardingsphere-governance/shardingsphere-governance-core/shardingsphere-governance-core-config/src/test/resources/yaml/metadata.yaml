@@ -30,15 +30,4 @@ configuredSchemaMetaData:
             name: PRIMARY          
 unconfiguredSchemaMetaDataMap:
   ds_0:
-    tables:
-      t_user:
-        columns:
-          id:
-            caseSensitive: false
-            dataType: 0
-            generated: false
-            name: id
-            primaryKey: true
-        indexes:
-          primary:
-            name: PRIMARY
+    - t_user
