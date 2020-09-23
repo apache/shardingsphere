@@ -681,5 +681,5 @@
     <row data-node="replica_ds_7.key_word" values="1, init_replica" />
     <row data-node="replica_ds_8.key_word" values="1, init_replica" />
     <row data-node="replica_ds_9.key_word" values="1, init_replica" />
-    <row data-node="replica_ds_0.t_global" values="1, global_slave" />
+    <row data-node="replica_ds_0.t_global" values="1, global_replica" />
 </dataset>

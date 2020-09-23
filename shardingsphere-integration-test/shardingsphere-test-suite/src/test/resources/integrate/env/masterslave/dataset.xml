@@ -285,7 +285,7 @@
     <row data-node="replica_0.t_order_item" values="290102, 2901, 29, init_replica, 2017-08-08" />
     <row data-node="replica_0.t_broadcast_table" values="1, init_replica" />
     <row data-node="replica_0.key_word" values="1, init_replica" />
-    <row data-node="replica_0.t_global" values="1, global_slave_0" />
+    <row data-node="replica_0.t_global" values="1, global_replica_0" />
     <row data-node="replica_1.t_order" values="1000, 10, init_replica" />
     <row data-node="replica_1.t_order" values="1001, 10, init_replica" />
     <row data-node="replica_1.t_order" values="1100, 11, init_replica" />
@@ -408,5 +408,5 @@
     <row data-node="replica_1.t_order_item" values="290102, 2901, 29, init_replica, 2017-08-08" />
     <row data-node="replica_1.t_broadcast_table" values="1, init_replica" />
     <row data-node="replica_1.key_word" values="1, init_replica" />
-    <row data-node="replica_1.t_global" values="1, global_slave_1" />
+    <row data-node="replica_1.t_global" values="1, global_replica_1" />
 </dataset>
