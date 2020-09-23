@@ -57,54 +57,54 @@ rules:
 - !PRIMARY_REPLICA_REPLICATION
   dataSources:
     pr_ds_0:
-      primaryDataSourceName: master_db_0
+      primaryDataSourceName: primary_ds_0
       replicaDataSourceNames:
-        - slave_db_0
+        - replica_ds_0
       loadBalancerName: roundRobin
     pr_ds_1:
-      primaryDataSourceName: master_db_1
+      primaryDataSourceName: primary_ds_1
       replicaDataSourceNames:
-        - slave_db_1
+        - replica_ds_1
       loadBalancerName: roundRobin
     pr_ds_2:
-      primaryDataSourceName: master_db_2
+      primaryDataSourceName: primary_ds_2
       replicaDataSourceNames:
-        - slave_db_2
+        - replica_ds_2
       loadBalancerName: roundRobin
     pr_ds_3:
-      primaryDataSourceName: master_db_3
+      primaryDataSourceName: primary_ds_3
       replicaDataSourceNames:
-        - slave_db_3
+        - replica_ds_3
       loadBalancerName: roundRobin
     pr_ds_4:
-      primaryDataSourceName: master_db_4
+      primaryDataSourceName: primary_ds_4
       replicaDataSourceNames:
-        - slave_db_4
+        - replica_ds_4
       loadBalancerName: roundRobin
     pr_ds_5:
-      primaryDataSourceName: master_db_5
+      primaryDataSourceName: primary_ds_5
       replicaDataSourceNames:
-        - slave_db_5
+        - replica_ds_5
       loadBalancerName: roundRobin
     pr_ds_6:
-      primaryDataSourceName: master_db_6
+      primaryDataSourceName: primary_ds_6
       replicaDataSourceNames:
-        - slave_db_6
+        - replica_ds_6
       loadBalancerName: roundRobin
     pr_ds_7:
-      primaryDataSourceName: master_db_7
+      primaryDataSourceName: primary_ds_7
       replicaDataSourceNames:
-        - slave_db_7
+        - replica_ds_7
       loadBalancerName: roundRobin
     pr_ds_8:
-      primaryDataSourceName: master_db_8
+      primaryDataSourceName: primary_ds_8
       replicaDataSourceNames:
-        - slave_db_8
+        - replica_ds_8
       loadBalancerName: roundRobin
     pr_ds_9:
-      primaryDataSourceName: master_db_9
+      primaryDataSourceName: primary_ds_9
       replicaDataSourceNames:
-        - slave_db_9
+        - replica_ds_9
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:
