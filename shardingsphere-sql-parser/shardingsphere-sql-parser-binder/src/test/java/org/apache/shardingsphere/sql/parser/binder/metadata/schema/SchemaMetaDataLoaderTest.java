@@ -29,6 +29,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -64,9 +65,8 @@ public final class SchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadAllTableNamesForOracle() throws SQLException {
-        SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(dataSource, DATABASE_TYPE_ORACLE);
-        Collection<String> allTableNames = schemaMetaData.getAllTableNames();
-        assertThat(allTableNames.size(), is(0));
+    public void assertLoadUnconfiguredTableNamesForOracle() throws SQLException {
+        Collection<String> tableNames = SchemaMetaDataLoader.loadUnconfiguredTableNames(dataSource, DATABASE_TYPE_ORACLE, Collections.emptyList());
+        assertThat(tableNames.size(), is(0));
     }
 }

@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingSta
 import org.apache.shardingsphere.sharding.route.engine.type.unconfigured.ShardingUnconfiguredTablesRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.unicast.ShardingUnicastRoutingEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -95,7 +94,7 @@ public final class ShardingRouteEngineFactory {
     }
     
     private static ShardingRouteEngine getDALRoutingEngine(final ShardingRule shardingRule, 
-                                                           final Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap, final SQLStatement sqlStatement, final Collection<String> tableNames) {
+                                                           final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap, final SQLStatement sqlStatement, final Collection<String> tableNames) {
         if (sqlStatement instanceof MySQLUseStatement) {
             return new ShardingIgnoreRoutingEngine();
         }

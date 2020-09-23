@@ -20,8 +20,8 @@ package org.apache.shardingsphere.example.governance.raw.jdbc.config.local;
 import org.apache.shardingsphere.driver.governance.api.GovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.replication.primaryreplica.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.replication.primaryreplica.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 
 import javax.sql.DataSource;

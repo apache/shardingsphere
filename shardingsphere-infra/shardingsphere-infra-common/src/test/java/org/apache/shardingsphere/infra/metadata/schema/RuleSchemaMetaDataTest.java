@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.metadata.schema;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.junit.Test;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +32,7 @@ public final class RuleSchemaMetaDataTest {
     @Test
     public void assertGetSchemaMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
-        Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
+        Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaData(new SchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
         SchemaMetaData schemaMetaData = ruleSchemaMetaData.getSchemaMetaData();
         assertNotNull("SchemaMetaData is null", schemaMetaData);

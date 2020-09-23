@@ -48,6 +48,10 @@ public final class TableMetaData {
     
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
+    public TableMetaData() {
+        this(Collections.emptyList(), Collections.emptyList());
+    }
+    
     public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList, final Collection<IndexMetaData> indexMetaDataList) {
         columns = getColumns(columnMetaDataList);
         indexes = getIndexes(indexMetaDataList);
