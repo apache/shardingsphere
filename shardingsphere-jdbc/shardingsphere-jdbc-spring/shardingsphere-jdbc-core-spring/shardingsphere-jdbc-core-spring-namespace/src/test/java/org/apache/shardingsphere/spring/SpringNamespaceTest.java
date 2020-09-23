@@ -52,7 +52,7 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
             if (each instanceof ShardingRule) {
                 assertShardingRule((ShardingRule) each);
             } else if (each instanceof PrimaryReplicaReplicationRule) {
-                assertMasterSlaveRule((PrimaryReplicaReplicationRule) each);
+                assertPrimaryReplicaReplicationRule((PrimaryReplicaReplicationRule) each);
             } else if (each instanceof EncryptRule) {
                 assertEncryptRule((EncryptRule) each);
             }
@@ -61,10 +61,10 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
     
     private void assertDataSourceMap() {
         assertThat(dataSource.getDataSourceMap().size(), is(6));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_0_master"));
+        assertTrue(dataSource.getDataSourceMap().containsKey("ds_0_primary"));
         assertTrue(dataSource.getDataSourceMap().containsKey("ds_0_replica_0"));
         assertTrue(dataSource.getDataSourceMap().containsKey("ds_0_replica_1"));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_1_master"));
+        assertTrue(dataSource.getDataSourceMap().containsKey("ds_1_primary"));
         assertTrue(dataSource.getDataSourceMap().containsKey("ds_1_replica_0"));
         assertTrue(dataSource.getDataSourceMap().containsKey("ds_1_replica_1"));
     }
@@ -78,12 +78,12 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
         assertThat(rule.getTableRule("t_order").getTableShardingStrategy().getShardingAlgorithm().getProps().getProperty("algorithm-expression"), is("t_order_$->{order_id % 4}"));
     }
     
-    private void assertMasterSlaveRule(final PrimaryReplicaReplicationRule rule) {
+    private void assertPrimaryReplicaReplicationRule(final PrimaryReplicaReplicationRule rule) {
         assertTrue(rule.findDataSourceRule("ds_0").isPresent());
-        assertThat(rule.findDataSourceRule("ds_0").get().getPrimaryDataSourceName(), is("ds_0_master"));
+        assertThat(rule.findDataSourceRule("ds_0").get().getPrimaryDataSourceName(), is("ds_0_primary"));
         assertThat(rule.findDataSourceRule("ds_0").get().getReplicaDataSourceNames(), is(Arrays.asList("ds_0_replica_0", "ds_0_replica_1")));
         assertTrue(rule.findDataSourceRule("ds_1").isPresent());
-        assertThat(rule.findDataSourceRule("ds_1").get().getPrimaryDataSourceName(), is("ds_1_master"));
+        assertThat(rule.findDataSourceRule("ds_1").get().getPrimaryDataSourceName(), is("ds_1_primary"));
         assertThat(rule.findDataSourceRule("ds_1").get().getReplicaDataSourceNames(), is(Arrays.asList("ds_1_replica_0", "ds_1_replica_1")));
     }
     

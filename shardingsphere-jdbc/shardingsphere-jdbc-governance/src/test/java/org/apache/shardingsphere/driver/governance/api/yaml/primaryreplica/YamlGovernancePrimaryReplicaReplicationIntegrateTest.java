@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.api.yaml.masterslave;
+package org.apache.shardingsphere.driver.governance.api.yaml.primaryreplica;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -46,10 +46,10 @@ public final class YamlGovernancePrimaryReplicaReplicationIntegrateTest extends 
     @Parameters(name = "{index}:{0}-{1}")
     public static Collection<?> init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", false},
-                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithProps.yaml", false},
+                {"/yaml/integrate/ms/configWithPrimaryReplicaReplicationDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/ms/configWithPrimaryReplicaReplicationDataSourceWithoutProps.yaml", false},
+                {"/yaml/integrate/ms/configWithPrimaryReplicaReplicationDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/ms/configWithPrimaryReplicaReplicationDataSourceWithProps.yaml", false},
         });
     }
     

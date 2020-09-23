@@ -26,25 +26,25 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MasterSlavePreparedStatementTest extends AbstractShardingSphereDataSourceForPrimaryReplicaReplicationTest {
+public final class PrimaryReplicaReplicationPreparedStatementTest extends AbstractShardingSphereDataSourceForPrimaryReplicaReplicationTest {
     
     @Test(expected = SQLException.class)
     public void assertQueryWithNull() throws SQLException {
-        try (PreparedStatement preparedStatement = getMasterSlaveDataSource().getConnection().prepareStatement(null)) {
+        try (PreparedStatement preparedStatement = getPrimaryReplicaReplicationDataSource().getConnection().prepareStatement(null)) {
             preparedStatement.executeQuery();
         }
     }
     
     @Test(expected = SQLException.class)
     public void assertQueryWithEmptyString() throws SQLException {
-        try (PreparedStatement preparedStatement = getMasterSlaveDataSource().getConnection().prepareStatement("")) {
+        try (PreparedStatement preparedStatement = getPrimaryReplicaReplicationDataSource().getConnection().prepareStatement("")) {
             preparedStatement.executeQuery();
         }
     }
     
     @Test
     public void assertGetParameterMetaData() throws SQLException {
-        try (PreparedStatement preparedStatement = getMasterSlaveDataSource().getConnection().prepareStatement("SELECT * FROM t_global where id = ?")) {
+        try (PreparedStatement preparedStatement = getPrimaryReplicaReplicationDataSource().getConnection().prepareStatement("SELECT * FROM t_global where id = ?")) {
             assertThat(preparedStatement.getParameterMetaData().getParameterCount(), is(1));
         }
     }

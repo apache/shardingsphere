@@ -44,14 +44,14 @@ public class GovernanceShardingPrimaryReplicaReplicationNamespaceTest extends Ab
     
     @Test
     public void assertPrimaryReplicaReplicationShardingDataSourceByUserStrategy() {
-        Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByUserStrategyGovernance");
+        Map<String, DataSource> dataSourceMap = getDataSourceMap("dataSourceByUserStrategyGovernance");
         assertNotNull(dataSourceMap.get("dbtbl_primary_0"));
         assertNotNull(dataSourceMap.get("dbtbl_0_replica_0"));
         assertNotNull(dataSourceMap.get("dbtbl_0_replica_1"));
         assertNotNull(dataSourceMap.get("dbtbl_primary_1"));
         assertNotNull(dataSourceMap.get("dbtbl_1_replica_0"));
         assertNotNull(dataSourceMap.get("dbtbl_1_replica_1"));
-        ShardingRule shardingRule = getShardingRule("masterSlaveShardingDataSourceByUserStrategyGovernance");
+        ShardingRule shardingRule = getShardingRule("dataSourceByUserStrategyGovernance");
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
     }

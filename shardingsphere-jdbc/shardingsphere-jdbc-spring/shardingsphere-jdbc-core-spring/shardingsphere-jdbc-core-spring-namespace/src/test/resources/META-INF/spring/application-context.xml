@@ -38,10 +38,10 @@
                            ">
     <context:property-placeholder location="classpath:conf/conf.properties" />
     
-    <bean id="ds_0_master" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
+    <bean id="ds_0_primary" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
     <bean id="ds_0_replica_0" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
     <bean id="ds_0_replica_1" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
-    <bean id="ds_1_master" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
+    <bean id="ds_1_primary" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
     <bean id="ds_1_replica_0" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
     <bean id="ds_1_replica_1" class="org.apache.shardingsphere.jdbc.test.MockedDataSource" />
     
@@ -77,12 +77,12 @@
         </encrypt:table>
     </encrypt:rule>
     
-    <primary-replica-replication:rule id="masterSlaveRule">
-        <primary-replica-replication:data-source-rule id="ds_0" primary-data-source-name="ds_0_master" replica-data-source-names="ds_0_replica_0,ds_0_replica_1" />
-        <primary-replica-replication:data-source-rule id="ds_1" primary-data-source-name="ds_1_master" replica-data-source-names="ds_1_replica_0,ds_1_replica_1" />
+    <primary-replica-replication:rule id="primaryReplicaReplicationRule">
+        <primary-replica-replication:data-source-rule id="ds_0" primary-data-source-name="ds_0_primary" replica-data-source-names="ds_0_replica_0,ds_0_replica_1" />
+        <primary-replica-replication:data-source-rule id="ds_1" primary-data-source-name="ds_1_primary" replica-data-source-names="ds_1_replica_0,ds_1_replica_1" />
     </primary-replica-replication:rule>
     
-    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_master,ds_0_replica_0,ds_0_replica_1,ds_1_master,ds_1_replica_0,ds_1_replica_1" rule-refs="shardingRule, masterSlaveRule, encryptRule">
+    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_primary,ds_0_replica_0,ds_0_replica_1,ds_1_primary,ds_1_replica_0,ds_1_replica_1" rule-refs="shardingRule, primaryReplicaReplicationRule, encryptRule">
         <props>
             <prop key="sql-show">false</prop>
             <prop key="executor-size">${executor-size}</prop>

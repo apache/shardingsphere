@@ -84,10 +84,10 @@ public final class ProxyConfigurationLoaderTest {
             each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration).isPresent());
         assertFalse(actual.getRules().stream().filter(
             each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(configuration -> (YamlEncryptRuleConfiguration) configuration).isPresent());
-        Optional<YamlPrimaryReplicaReplicationRuleConfiguration> masterSlaveRuleConfiguration = actual.getRules().stream().filter(
+        Optional<YamlPrimaryReplicaReplicationRuleConfiguration> ruleConfig = actual.getRules().stream().filter(
             each -> each instanceof YamlPrimaryReplicaReplicationRuleConfiguration).findFirst().map(configuration -> (YamlPrimaryReplicaReplicationRuleConfiguration) configuration);
-        assertTrue(masterSlaveRuleConfiguration.isPresent());
-        for (YamlPrimaryReplicaReplicationDataSourceRuleConfiguration each : masterSlaveRuleConfiguration.get().getDataSources().values()) {
+        assertTrue(ruleConfig.isPresent());
+        for (YamlPrimaryReplicaReplicationDataSourceRuleConfiguration each : ruleConfig.get().getDataSources().values()) {
             assertPrimaryReplicaReplicationRuleConfiguration(each);
         }
     }
