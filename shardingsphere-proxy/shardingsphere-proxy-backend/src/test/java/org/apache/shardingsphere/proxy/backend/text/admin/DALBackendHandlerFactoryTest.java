@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.hamcrest.Matcher;
-import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -99,6 +98,6 @@ public final class DALBackendHandlerFactoryTest {
         Field field = classInstance.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         T value = (T) field.get(classInstance);
-        MatcherAssert.assertThat(value, matcher);
+        assertThat(value, matcher);
     }
 }
