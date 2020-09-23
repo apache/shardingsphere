@@ -46,10 +46,8 @@ public final class ResponsePacketBuilderTest {
         QueryHeader queryHeader2 = new QueryHeader("schema2", "table2", "columnLabel2", "columnName2", 7, 8, 9, false, true, true, true);
         List<QueryHeader> queryHeaders = Arrays.asList(new QueryHeader[]{queryHeader1, queryHeader2});
         QueryResponse queryResponse = new QueryResponse(queryHeaders);
-
         Collection<DatabasePacket<?>> actual = ResponsePacketBuilder.buildQueryResponsePackets(queryResponse);
         assertThat(actual.stream().findAny().get(), anyOf(instanceOf(MySQLFieldCountPacket.class), instanceOf(MySQLColumnDefinition41Packet.class), instanceOf(MySQLEofPacket.class)));
-
     }
 
     @Test
@@ -57,13 +55,10 @@ public final class ResponsePacketBuilderTest {
         UpdateResponse updateResponse = mock(UpdateResponse.class);
         when(updateResponse.getUpdateCount()).thenReturn(10L);
         when(updateResponse.getLastInsertId()).thenReturn(100L);
-
         Collection<DatabasePacket<?>> actual = ResponsePacketBuilder.buildUpdateResponsePackets(updateResponse);
         MySQLOKPacket actualItem = (MySQLOKPacket) actual.stream().findAny().get();
         assertThat(actualItem, instanceOf(MySQLOKPacket.class));
         assertThat(actualItem.getAffectedRows(), is(10L));
         assertThat(actualItem.getLastInsertId(), is(100L));
-
     }
-
 }
