@@ -20,5 +20,5 @@
         <column name="order_id" />
         <column name="user_id" />
     </metadata>
-    <row values="1000,10,init_slave,100001,null" />
+    <row values="1000,10,init_replica,100001,null" />
 </dataset>
