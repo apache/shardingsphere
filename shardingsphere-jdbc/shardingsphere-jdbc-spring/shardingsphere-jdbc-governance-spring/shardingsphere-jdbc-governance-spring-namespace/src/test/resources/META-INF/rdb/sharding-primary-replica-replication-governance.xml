@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -15,15 +16,15 @@
   ~ limitations under the License.
   -->
 
-<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:governance="http://shardingsphere.apache.org/schema/shardingsphere/governance"
-       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/governance
-                           http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd 
                            ">
-    <import resource="namespace/encryptDataSourceNamespace.xml" />
+    <import resource="namespace/sharding-master-slave-namespace.xml" />
     
     <governance:reg-center id="regCenter" type="TestRegistry" server-lists="localhost:3181">
         <props>
@@ -32,10 +33,6 @@
         </props>
     </governance:reg-center>
     
-    <governance:data-source id="encryptDataSourceGovernance" data-source-names="dbtbl_0" rule-refs="encryptRule" reg-center-ref="regCenter">
-        <props>
-            <prop key="sql-show">${sql_show}</prop>
-            <prop key="query-with-cipher-column">false</prop>
-        </props>
-    </governance:data-source>
+    <governance:data-source id="masterSlaveShardingDataSourceByDefaultStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="masterSlaveShardingDataSourceByDefaultStrategyShardingRule, masterSlaveShardingDataSourceByDefaultStrategyMasterSlaveRule" reg-center-ref="regCenter" />
+    <governance:data-source id="masterSlaveShardingDataSourceByUserStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="masterSlaveShardingDataSourceByUserStrategyShardingRule, masterSlaveShardingDataSourceByUserStrategyMasterSlaveRule" reg-center-ref="regCenter" />
 </beans>

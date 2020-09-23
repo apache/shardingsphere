@@ -34,8 +34,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/shardingMasterSlaveGovernance.xml")
-public class GovernanceShardingMasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
+@ContextConfiguration(locations = "classpath:META-INF/rdb/sharding-primary-replica-replication-governance.xml")
+public class GovernanceShardingPrimaryReplicaReplicationNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @BeforeClass
     public static void init() {
@@ -43,12 +43,12 @@ public class GovernanceShardingMasterSlaveNamespaceTest extends AbstractJUnit4Sp
     }
     
     @Test
-    public void assertMasterSlaveShardingDataSourceByUserStrategy() {
+    public void assertPrimaryReplicaReplicationShardingDataSourceByUserStrategy() {
         Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByUserStrategyGovernance");
-        assertNotNull(dataSourceMap.get("dbtbl_0_master"));
+        assertNotNull(dataSourceMap.get("dbtbl_primary_0"));
         assertNotNull(dataSourceMap.get("dbtbl_0_replica_0"));
         assertNotNull(dataSourceMap.get("dbtbl_0_replica_1"));
-        assertNotNull(dataSourceMap.get("dbtbl_1_master"));
+        assertNotNull(dataSourceMap.get("dbtbl_primary_1"));
         assertNotNull(dataSourceMap.get("dbtbl_1_replica_0"));
         assertNotNull(dataSourceMap.get("dbtbl_1_replica_1"));
         ShardingRule shardingRule = getShardingRule("masterSlaveShardingDataSourceByUserStrategyGovernance");
@@ -56,14 +56,14 @@ public class GovernanceShardingMasterSlaveNamespaceTest extends AbstractJUnit4Sp
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
     }
     
-    private Map<String, DataSource> getDataSourceMap(final String shardingSphereDataSourceName) {
-        GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(shardingSphereDataSourceName, GovernanceShardingSphereDataSource.class);
+    private Map<String, DataSource> getDataSourceMap(final String dataSourceName) {
+        GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
         SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "schemaContexts");
         return schemaContexts.getDefaultSchemaContext().getSchema().getDataSources();
     }
     
-    private ShardingRule getShardingRule(final String shardingSphereDataSourceName) {
-        GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(shardingSphereDataSourceName, GovernanceShardingSphereDataSource.class);
+    private ShardingRule getShardingRule(final String dataSourceName) {
+        GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
         SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "schemaContexts");
         return (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
     }

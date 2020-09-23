@@ -27,7 +27,7 @@
                            http://www.springframework.org/schema/util
                            https://www.springframework.org/schema/util/spring-util.xsd
                            ">
-    <import resource="namespace/shardingDataSourceNamespace.xml" />
+    <import resource="namespace/sharding-data-source-namespace.xml" />
     
     <util:properties id="instance-props">
         <prop key="max-retries">3</prop>

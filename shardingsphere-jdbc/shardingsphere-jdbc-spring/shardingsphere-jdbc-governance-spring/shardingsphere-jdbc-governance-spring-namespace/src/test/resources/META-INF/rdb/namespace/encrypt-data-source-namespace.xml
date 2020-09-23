@@ -18,16 +18,13 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
                            ">
-    <import resource="../datasource/dataSource.xml" />
+    <import resource="../datasource/data-source.xml" />
     
     <encrypt:encrypt-algorithm id="aes_encryptor" type="AES">
         <props>

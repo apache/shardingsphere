@@ -24,7 +24,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/governance
                            http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd
                            ">
-    <import resource="namespace/masterSlaveDataSourceNamespace.xml" />
+    <import resource="namespace/primary-replica-replication-data-source-namespace.xml" />
     
     <governance:reg-center id="regCenter" type="TestRegistry" server-lists="localhost:3181">
         <props>
@@ -33,14 +33,14 @@
         </props>
     </governance:reg-center>
     
-    <governance:data-source id="defaultMasterSlaveDataSourceGovernance" data-source-names="dbtbl_0_master, dbtbl_0_replica_0, dbtbl_0_replica_1" rule-refs="defaultMasterSlaveDataSourceMasterSlaveRule" reg-center-ref="regCenter">
+    <governance:data-source id="defaultMasterSlaveDataSourceGovernance" data-source-names="dbtbl_primary_0, dbtbl_0_replica_0, dbtbl_0_replica_1" rule-refs="defaultPrimaryReplicaReplicationRule" reg-center-ref="regCenter">
         <props>
             <prop key="sql-show">${sql_show}</prop>
             <prop key="executor-size">10</prop>
             <prop key="foo">bar</prop>
         </props>
     </governance:data-source>
-    <governance:data-source id="randomMasterSlaveDataSourceGovernance" data-source-names="dbtbl_0_master, dbtbl_0_replica_0, dbtbl_0_replica_1" rule-refs="randomMasterSlaveDataSourceMasterSlaveRule" reg-center-ref="regCenter" />
-    <governance:data-source id="roundRobinMasterSlaveDataSourceGovernance" data-source-names="dbtbl_0_master, dbtbl_0_replica_0, dbtbl_0_replica_1" rule-refs="roundRobinMasterSlaveDataSourceMasterSlaveRule" reg-center-ref="regCenter" />
-    <governance:data-source id="refMasterSlaveDataSourceGovernance" data-source-names="dbtbl_1_master, dbtbl_1_replica_0, dbtbl_1_replica_1" rule-refs="refMasterSlaveDataSourceMasterSlaveRule" reg-center-ref="regCenter" />
+    <governance:data-source id="randomMasterSlaveDataSourceGovernance" data-source-names="dbtbl_primary_0, dbtbl_0_replica_0, dbtbl_0_replica_1" rule-refs="randomPrimaryReplicaReplicationRule" reg-center-ref="regCenter" />
+    <governance:data-source id="roundRobinMasterSlaveDataSourceGovernance" data-source-names="dbtbl_primary_0, dbtbl_0_replica_0, dbtbl_0_replica_1" rule-refs="roundRobinPrimaryReplicaReplicationRule" reg-center-ref="regCenter" />
+    <governance:data-source id="refMasterSlaveDataSourceGovernance" data-source-names="dbtbl_primary_1, dbtbl_1_replica_0, dbtbl_1_replica_1" rule-refs="refPrimaryReplicaReplicationRule" reg-center-ref="regCenter" />
 </beans>

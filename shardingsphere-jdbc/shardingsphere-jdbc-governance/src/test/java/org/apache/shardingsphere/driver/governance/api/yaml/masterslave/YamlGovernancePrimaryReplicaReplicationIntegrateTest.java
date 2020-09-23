@@ -37,14 +37,14 @@ import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class YamlGovernanceMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
+public final class YamlGovernancePrimaryReplicaReplicationIntegrateTest extends AbstractYamlDataSourceTest {
     
     private final String filePath;
     
     private final boolean hasDataSource;
     
     @Parameters(name = "{index}:{0}-{1}")
-    public static Collection init() {
+    public static Collection<?> init() {
         return Arrays.asList(new Object[][]{
                 {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", true},
                 {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", false},
@@ -55,7 +55,7 @@ public final class YamlGovernanceMasterSlaveIntegrateTest extends AbstractYamlDa
     
     @Test
     public void assertWithDataSource() throws Exception {
-        File yamlFile = new File(YamlGovernanceMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(YamlGovernancePrimaryReplicaReplicationIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
@@ -74,7 +74,7 @@ public final class YamlGovernanceMasterSlaveIntegrateTest extends AbstractYamlDa
     
     @Test
     public void assertWithDataSourceByYamlBytes() throws Exception {
-        File yamlFile = new File(YamlGovernanceMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(YamlGovernancePrimaryReplicaReplicationIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);

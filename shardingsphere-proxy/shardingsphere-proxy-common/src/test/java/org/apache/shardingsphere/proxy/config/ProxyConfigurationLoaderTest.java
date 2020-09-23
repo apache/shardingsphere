@@ -45,7 +45,7 @@ public final class ProxyConfigurationLoaderTest {
         assertThat(actual.getServerConfiguration().getGovernance().getRegistryCenter().getServerLists(), is("localhost:2181"));
         assertThat(actual.getRuleConfigurations().size(), is(3));
         assertShardingRuleConfiguration(actual.getRuleConfigurations().get("sharding_db"));
-        assertMasterSlaveRuleConfiguration(actual.getRuleConfigurations().get("primary_replica_db"));
+        assertPrimaryReplicaReplicationRuleConfiguration(actual.getRuleConfigurations().get("primary_replica_db"));
         assertEncryptRuleConfiguration(actual.getRuleConfigurations().get("encrypt_db"));
     }
     
@@ -73,7 +73,7 @@ public final class ProxyConfigurationLoaderTest {
         assertNotNull(actual.getDefaultDatabaseStrategy().getNone());
     }
     
-    private void assertMasterSlaveRuleConfiguration(final YamlProxyRuleConfiguration actual) {
+    private void assertPrimaryReplicaReplicationRuleConfiguration(final YamlProxyRuleConfiguration actual) {
         assertThat(actual.getSchemaName(), is("primary_replica_db"));
         assertThat(actual.getDataSources().size(), is(3));
         assertNull(actual.getDataSource());
@@ -88,11 +88,11 @@ public final class ProxyConfigurationLoaderTest {
             each -> each instanceof YamlPrimaryReplicaReplicationRuleConfiguration).findFirst().map(configuration -> (YamlPrimaryReplicaReplicationRuleConfiguration) configuration);
         assertTrue(masterSlaveRuleConfiguration.isPresent());
         for (YamlPrimaryReplicaReplicationDataSourceRuleConfiguration each : masterSlaveRuleConfiguration.get().getDataSources().values()) {
-            assertMasterSlaveRuleConfiguration(each);
+            assertPrimaryReplicaReplicationRuleConfiguration(each);
         }
     }
     
-    private void assertMasterSlaveRuleConfiguration(final YamlPrimaryReplicaReplicationDataSourceRuleConfiguration actual) {
+    private void assertPrimaryReplicaReplicationRuleConfiguration(final YamlPrimaryReplicaReplicationDataSourceRuleConfiguration actual) {
         assertThat(actual.getName(), is("pr_ds"));
         assertThat(actual.getPrimaryDataSourceName(), is("primary_ds"));
         assertThat(actual.getReplicaDataSourceNames().size(), is(2));

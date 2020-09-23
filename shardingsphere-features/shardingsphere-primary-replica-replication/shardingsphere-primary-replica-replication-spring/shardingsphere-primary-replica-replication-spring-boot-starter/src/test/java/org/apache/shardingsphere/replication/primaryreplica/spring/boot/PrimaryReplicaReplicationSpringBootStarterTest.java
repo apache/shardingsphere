@@ -51,14 +51,14 @@ public class PrimaryReplicaReplicationSpringBootStarterTest {
     }
     
     @Test
-    public void assertMasterSlaveRuleConfiguration() {
+    public void assertPrimaryReplicaReplicationRuleConfiguration() {
         assertThat(config.getDataSources().size(), is(1));
-        PrimaryReplicaReplicationDataSourceRuleConfiguration masterSlaveDataSourceRuleConfig = config.getDataSources().stream().findFirst().get();
-        assertThat(masterSlaveDataSourceRuleConfig.getName(), is("pr_ds"));
-        assertThat(masterSlaveDataSourceRuleConfig.getPrimaryDataSourceName(), is("primary_ds"));
-        assertThat(masterSlaveDataSourceRuleConfig.getLoadBalancerName(), is("random"));
-        assertThat(masterSlaveDataSourceRuleConfig.getReplicaDataSourceNames().size(), is(2));
-        assertTrue(config.getDataSources().contains(masterSlaveDataSourceRuleConfig));
+        PrimaryReplicaReplicationDataSourceRuleConfiguration dataSourceRuleConfig = config.getDataSources().stream().findFirst().get();
+        assertThat(dataSourceRuleConfig.getName(), is("pr_ds"));
+        assertThat(dataSourceRuleConfig.getPrimaryDataSourceName(), is("primary_ds"));
+        assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("random"));
+        assertThat(dataSourceRuleConfig.getReplicaDataSourceNames().size(), is(2));
+        assertTrue(config.getDataSources().contains(dataSourceRuleConfig));
         assertThat(config.getLoadBalanceAlgorithms().size(), is(1));
         assertTrue(config.getLoadBalanceAlgorithms().containsKey("random"));
     }

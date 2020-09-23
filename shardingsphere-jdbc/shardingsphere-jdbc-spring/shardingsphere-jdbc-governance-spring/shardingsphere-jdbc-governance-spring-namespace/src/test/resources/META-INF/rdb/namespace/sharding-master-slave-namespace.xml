@@ -27,7 +27,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication
                            http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication.xsd
                            ">
-    <import resource="../datasource/masterSlaveDataSource.xml" />
+    <import resource="../datasource/primary-replica-replication-data-source.xml" />
     
     <sharding:sharding-algorithm id="standardModuloDatabaseShardingAlgorithm" type="STANDARD_TEST_DB" />
     <sharding:sharding-algorithm id="standardModuloTableShardingAlgorithm" type="STANDARD_TEST_TBL" />
@@ -56,8 +56,8 @@
         </sharding:table-rules>
     </sharding:rule>
     <primary-replica-replication:rule id="masterSlaveShardingDataSourceByDefaultStrategyMasterSlaveRule">
-        <primary-replica-replication:data-source-rule id="dbtbl_0" primary-data-source-name="dbtbl_0_master" replica-data-source-names="dbtbl_0_replica_0,dbtbl_0_replica_1"/>
-        <primary-replica-replication:data-source-rule id="dbtbl_1" primary-data-source-name="dbtbl_1_master" replica-data-source-names="dbtbl_1_replica_0,dbtbl_1_replica_1"/>
+        <primary-replica-replication:data-source-rule id="dbtbl_0" primary-data-source-name="dbtbl_primary_0" replica-data-source-names="dbtbl_0_replica_0,dbtbl_0_replica_1"/>
+        <primary-replica-replication:data-source-rule id="dbtbl_1" primary-data-source-name="dbtbl_primary_1" replica-data-source-names="dbtbl_1_replica_0,dbtbl_1_replica_1"/>
     </primary-replica-replication:rule>
     
     <sharding:rule id="masterSlaveShardingDataSourceByUserStrategyShardingRule" default-key-generate-strategy-ref="keyGenerateStrategy">
@@ -66,7 +66,7 @@
         </sharding:table-rules>
     </sharding:rule>
     <primary-replica-replication:rule id="masterSlaveShardingDataSourceByUserStrategyMasterSlaveRule">
-        <primary-replica-replication:data-source-rule id="dbtbl_0" primary-data-source-name="dbtbl_0_master" replica-data-source-names="dbtbl_0_replica_0,dbtbl_0_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm"/>
-        <primary-replica-replication:data-source-rule id="dbtbl_1" primary-data-source-name="dbtbl_1_master" replica-data-source-names="dbtbl_1_replica_0,dbtbl_1_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm"/>
+        <primary-replica-replication:data-source-rule id="dbtbl_0" primary-data-source-name="dbtbl_primary_0" replica-data-source-names="dbtbl_0_replica_0,dbtbl_0_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm"/>
+        <primary-replica-replication:data-source-rule id="dbtbl_1" primary-data-source-name="dbtbl_primary_1" replica-data-source-names="dbtbl_1_replica_0,dbtbl_1_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm"/>
     </primary-replica-replication:rule>
 </beans>

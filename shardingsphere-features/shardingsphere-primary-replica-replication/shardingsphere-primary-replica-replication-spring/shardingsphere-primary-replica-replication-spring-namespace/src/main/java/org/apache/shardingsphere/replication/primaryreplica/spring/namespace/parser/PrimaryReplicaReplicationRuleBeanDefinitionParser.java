@@ -43,33 +43,33 @@ public final class PrimaryReplicaReplicationRuleBeanDefinitionParser extends Abs
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration.class);
-        factory.addConstructorArgValue(parseMasterSlaveDataSourceRuleConfigurations(element));
+        factory.addConstructorArgValue(parsePrimaryReplicaReplicationDataSourceRuleConfigurations(element));
         factory.addConstructorArgValue(ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ReplicaLoadBalanceAlgorithmFactoryBean.class));
         return factory.getBeanDefinition();
     }
     
-    private List<BeanDefinition> parseMasterSlaveDataSourceRuleConfigurations(final Element element) {
-        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(element, PrimaryReplicaReplicationRuleBeanDefinitionTag.DATA_SOURCE_TAG);
-        List<BeanDefinition> result = new ManagedList<>(masterSlaveDataSourceElements.size());
-        for (Element each : masterSlaveDataSourceElements) {
-            result.add(parseMasterSlaveDataSourceRuleConfiguration(each));
+    private List<BeanDefinition> parsePrimaryReplicaReplicationDataSourceRuleConfigurations(final Element element) {
+        List<Element> dataSourceElements = DomUtils.getChildElementsByTagName(element, PrimaryReplicaReplicationRuleBeanDefinitionTag.DATA_SOURCE_TAG);
+        List<BeanDefinition> result = new ManagedList<>(dataSourceElements.size());
+        for (Element each : dataSourceElements) {
+            result.add(parsePrimaryReplicaReplicationDataSourceRuleConfiguration(each));
         }
         return result;
     }
     
-    private BeanDefinition parseMasterSlaveDataSourceRuleConfiguration(final Element element) {
+    private BeanDefinition parsePrimaryReplicaReplicationDataSourceRuleConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(PrimaryReplicaReplicationDataSourceRuleConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(PrimaryReplicaReplicationRuleBeanDefinitionTag.PRIMARY_REPLICA_REPLICATION_DATA_SOURCE_ID_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(PrimaryReplicaReplicationRuleBeanDefinitionTag.PRIMARY_DATA_SOURCE_NAME_ATTRIBUTE));
-        factory.addConstructorArgValue(parseSlaveDataSourcesRef(element));
+        factory.addConstructorArgValue(parseReplicaDataSourcesRef(element));
         factory.addConstructorArgValue(element.getAttribute(PrimaryReplicaReplicationRuleBeanDefinitionTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     
-    private Collection<String> parseSlaveDataSourcesRef(final Element element) {
-        List<String> slaveDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(PrimaryReplicaReplicationRuleBeanDefinitionTag.REPLICA_DATA_SOURCE_NAMES_ATTRIBUTE));
-        Collection<String> result = new ManagedList<>(slaveDataSources.size());
-        result.addAll(slaveDataSources);
+    private Collection<String> parseReplicaDataSourcesRef(final Element element) {
+        List<String> replicaDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(PrimaryReplicaReplicationRuleBeanDefinitionTag.REPLICA_DATA_SOURCE_NAMES_ATTRIBUTE));
+        Collection<String> result = new ManagedList<>(replicaDataSources.size());
+        result.addAll(replicaDataSources);
         return result;
     }
 }

@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.driver.common.base;
 
 import com.google.common.collect.Sets;
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.driver.common.env.DatabaseEnvironment;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.h2.tools.RunScript;
 import org.junit.BeforeClass;
 
@@ -45,7 +43,6 @@ public abstract class AbstractSQLTest {
     
     private static final Set<DatabaseType> DATABASE_TYPES = Sets.newHashSet(DatabaseTypes.getActualDatabaseType("H2"));
     
-    @Getter(AccessLevel.PROTECTED)
     private static final Map<DatabaseType, Map<String, DataSource>> DATABASE_TYPE_MAP = new HashMap<>();
     
     @BeforeClass
@@ -85,5 +82,9 @@ public abstract class AbstractSQLTest {
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
+    }
+    
+    protected static Map<DatabaseType, Map<String, DataSource>> getDatabaseTypeMap() {
+        return DATABASE_TYPE_MAP;
     }
 }

@@ -24,24 +24,24 @@
                         http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication
                         http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication.xsd
                         ">
-    <import resource="../datasource/masterSlaveDataSource.xml" />
+    <import resource="../datasource/primary-replica-replication-data-source.xml" />
     
     <primary-replica-replication:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
     <primary-replica-replication:load-balance-algorithm id="roundRobinLoadBalanceAlgorithm" type="ROUND_ROBIN" />
-
-    <primary-replica-replication:rule id="defaultMasterSlaveDataSourceMasterSlaveRule">
-        <primary-replica-replication:data-source-rule id="default_dbtbl_0" primary-data-source-name="dbtbl_0_master" replica-data-source-names="dbtbl_0_replica_0, dbtbl_0_replica_1" />
+    
+    <primary-replica-replication:rule id="defaultPrimaryReplicaReplicationRule">
+        <primary-replica-replication:data-source-rule id="default_dbtbl_0" primary-data-source-name="dbtbl_primary_0" replica-data-source-names="dbtbl_0_replica_0, dbtbl_0_replica_1" />
     </primary-replica-replication:rule>
     
-    <primary-replica-replication:rule id="randomMasterSlaveDataSourceMasterSlaveRule">
-        <primary-replica-replication:data-source-rule id="random_dbtbl_0" primary-data-source-name="dbtbl_0_master" replica-data-source-names="dbtbl_0_replica_0, dbtbl_0_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm" />
+    <primary-replica-replication:rule id="randomPrimaryReplicaReplicationRule">
+        <primary-replica-replication:data-source-rule id="random_dbtbl_0" primary-data-source-name="dbtbl_primary_0" replica-data-source-names="dbtbl_0_replica_0, dbtbl_0_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm" />
     </primary-replica-replication:rule>
     
-    <primary-replica-replication:rule id="roundRobinMasterSlaveDataSourceMasterSlaveRule">
-        <primary-replica-replication:data-source-rule id="roundRobin_dbtbl_0" primary-data-source-name="dbtbl_0_master" replica-data-source-names="dbtbl_0_replica_0, dbtbl_0_replica_1" load-balance-algorithm-ref="roundRobinLoadBalanceAlgorithm" />
+    <primary-replica-replication:rule id="roundRobinPrimaryReplicaReplicationRule">
+        <primary-replica-replication:data-source-rule id="roundRobin_dbtbl_0" primary-data-source-name="dbtbl_primary_0" replica-data-source-names="dbtbl_0_replica_0, dbtbl_0_replica_1" load-balance-algorithm-ref="roundRobinLoadBalanceAlgorithm" />
     </primary-replica-replication:rule>
     
-    <primary-replica-replication:rule id="refMasterSlaveDataSourceMasterSlaveRule">
-        <primary-replica-replication:data-source-rule id="random_dbtbl_1" primary-data-source-name="dbtbl_1_master" replica-data-source-names="dbtbl_1_replica_0, dbtbl_1_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm" />
+    <primary-replica-replication:rule id="refPrimaryReplicaReplicationRule">
+        <primary-replica-replication:data-source-rule id="random_dbtbl_1" primary-data-source-name="dbtbl_primary_1" replica-data-source-names="dbtbl_1_replica_0, dbtbl_1_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm" />
     </primary-replica-replication:rule>
 </beans>

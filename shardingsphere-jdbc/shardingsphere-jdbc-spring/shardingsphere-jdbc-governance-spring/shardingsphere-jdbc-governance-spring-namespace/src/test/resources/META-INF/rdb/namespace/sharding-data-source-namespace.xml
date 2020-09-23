@@ -18,17 +18,14 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                            ">
-    <import resource="../datasource/dataSource.xml" />
-    <import resource="../datasource/masterSlaveDataSource.xml" />
+    <import resource="../datasource/data-source.xml" />
+    <import resource="../datasource/primary-replica-replication-data-source.xml" />
     
     <sharding:sharding-algorithm id="standardModuloDatabaseShardingAlgorithm" type="STANDARD_TEST_DB"/>
     <sharding:sharding-algorithm id="standardModuloTableShardingAlgorithm" type="STANDARD_TEST_TBL"/>

@@ -32,41 +32,41 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractShardingSphereDataSourceForMasterSlaveTest extends AbstractSQLTest {
+public abstract class AbstractShardingSphereDataSourceForPrimaryReplicaReplicationTest extends AbstractSQLTest {
     
-    private static ShardingSphereDataSource masterSlaveDataSource;
+    private static ShardingSphereDataSource dataSource;
     
-    private static final String CONFIG_MASTER_SLAVE = "config-master-slave.yaml";
+    private static final String CONFIG = "config-primary-replica-replication.yaml";
     
-    private static final List<String> MASTER_SLAVE_DB_NAMES = Arrays.asList("test_primary_ds", "test_replica_ds");
+    private static final List<String> DATA_SOURCE_NAMES = Arrays.asList("test_primary_ds", "test_replica_ds");
     
     @BeforeClass
-    public static void initMasterSlaveDataSources() throws SQLException, IOException {
-        if (null != masterSlaveDataSource) {
+    public static void initPrimaryReplicaReplicationDataSources() throws SQLException, IOException {
+        if (null != dataSource) {
             return;
         }
-        masterSlaveDataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_MASTER_SLAVE));
+        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG));
     }
     
     private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getDATABASE_TYPE_MAP().values().iterator().next(), MASTER_SLAVE_DB_NAMES::contains);
+        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), DATA_SOURCE_NAMES::contains);
     }
     
     private static File getFile(final String fileName) {
         return new File(Preconditions.checkNotNull(
-                AbstractShardingSphereDataSourceForMasterSlaveTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
+                AbstractShardingSphereDataSourceForPrimaryReplicaReplicationTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
     protected final ShardingSphereDataSource getMasterSlaveDataSource() {
-        return masterSlaveDataSource;
+        return dataSource;
     }
     
     @AfterClass
     public static void clear() throws Exception {
-        if (null == masterSlaveDataSource) {
+        if (null == dataSource) {
             return;
         }
-        masterSlaveDataSource.close();
-        masterSlaveDataSource = null;
+        dataSource.close();
+        dataSource = null;
     }
 }

@@ -43,10 +43,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = GovernanceSpringBootMasterSlaveTest.class)
+@SpringBootTest(classes = GovernanceSpringBootPrimaryReplicaReplicationTest.class)
 @SpringBootApplication
-@ActiveProfiles("masterslave")
-public class GovernanceSpringBootMasterSlaveTest {
+@ActiveProfiles("primary-replica-replication")
+public class GovernanceSpringBootPrimaryReplicaReplicationTest {
     
     @Resource
     private DataSource dataSource;
@@ -69,10 +69,10 @@ public class GovernanceSpringBootMasterSlaveTest {
         }
         Collection<ShardingSphereRule> rules = schemaContexts.getDefaultSchemaContext().getSchema().getRules();
         assertThat(rules.size(), is(1));
-        assertMasterSlaveRule((PrimaryReplicaReplicationRule) rules.iterator().next());
+        assertPrimaryReplicaReplicationRule((PrimaryReplicaReplicationRule) rules.iterator().next());
     }
     
-    private void assertMasterSlaveRule(final PrimaryReplicaReplicationRule rule) {
+    private void assertPrimaryReplicaReplicationRule(final PrimaryReplicaReplicationRule rule) {
         PrimaryReplicaReplicationDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
         assertThat(dataSourceRule.getName(), is("pr_ds"));
         assertThat(dataSourceRule.getName(), is("pr_ds"));
